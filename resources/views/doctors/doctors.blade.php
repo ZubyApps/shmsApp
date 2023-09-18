@@ -28,7 +28,7 @@
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td><button class="btn btn-outline-primary consultBtn">Consult</button></td>
+                            <td><button class="btn btn-outline-primary consultBtn"><i class="bi bi-clipboard-plus"></i></button></td>
                         </tbody>
                         <tfoot class="fw-bolder text-primary">
                             <tr>

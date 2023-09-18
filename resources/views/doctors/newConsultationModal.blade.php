@@ -49,54 +49,141 @@
                             </div>
                         </div>
                         <div class="mb-2">
-                            <x-form-span>Bio</x-form-span>
-                            <!-- first row -->
+                            <x-form-span>Vital Signs</x-form-span>
                             <div class="row">
                                 <x-form-div>
-                                    <x-input-span id="firstNameLabel">First Name<x-required-span /></x-input-span>
-                                    <x-form-input name="firstName" id="firstName" />
+                                    <x-input-span id="bloodPressureLabel">Blood Pressur<x-required-span /></x-input-span>
+                                    <x-form-input name="bloodPressure" id="bloodPressure" />
                                 </x-form-div>
                                 <x-form-div>
-                                    <x-input-span id="middleNameLabel">Middle Name</x-input-span>
-                                    <x-form-input name="middleName" id="middleName" />
+                                    <x-input-span id="temperatureLabel">Temparature</x-input-span>
+                                    <x-form-input name="temperature" id="temperature" />
                                 </x-form-div>
                                 <x-form-div>
-                                    <x-input-span id="surnameLabel">Surname<x-required-span /></x-input-span>
-                                    <x-form-input name="surname" id="surname" />
+                                    <x-input-span id="sugarLevelLabel">Sugar Level<x-required-span /></x-input-span>
+                                    <x-form-input name="sugarLevel" id="sugarLevel" />
                                 </x-form-div>
+                                <x-form-div>
+                                    <x-input-span id="pulseRateLabel">Pulse Rate<x-required-span /></x-input-span>
+                                    <x-form-input type="text" name="pulseRate" id="pulseRate" />
+                                </x-form-div>
+                                <x-form-div>
+                                    <x-input-span id="respiratoryRateLabel">Respiratory Rate<x-required-span /></x-input-span>
+                                    <x-form-input type="text" name="respiratoryRate" id="respiratoryRate" />
+                                </x-form-div>
+                                <x-form-div>
+                                    <x-input-span id="weightLabel">Weight<x-required-span /></x-input-span>
+                                    <x-form-input type="text" name="weight" id="weight" />
+                                </x-form-div>
+                                <x-form-div>
+                                    <x-input-span id="heightLabel">Height<x-required-span /></x-input-span>
+                                    <x-form-input type="text" name="height" id="height" />
+                                </x-form-div>
+                                
                             </div>
-                            <!-- second row -->
-                            <div class="row">
-                                <x-form-div>
-                                    <x-input-span id="dateOfBirthLabel">Date of Birth<x-required-span /></x-input-span>
-                                    <x-form-input type="date" name="dateOfBirth" id="dateOfBirth" />
-                                </x-form-div>
-                                <x-form-div>
-                                    <x-input-span id="dateOfBirthLabel">Sex<x-required-span /></x-input-span>
-                                    <select class="form-select form-select-md sex" aria-label="sex" name="sex">
-                                        <option value="">Select</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Male">Male</option>
-                                    </select>
-                                </x-form-div>
-                                <x-form-div>
-                                    <x-input-span id="maritalStatusLabel">Marital Status<x-required-span /></x-input-span>
-                                    <select class="form-select form-select-md" aria-label="marital-status"
-                                        name="maritalStatus">
-                                        <option value="">Select</option>
-                                        <option value="Single">Single</option>
-                                        <option value="Married">Married</option>
-                                        <option value="Widow">Widow</option>
-                                        <option value="Widower">Widower</option>
-                                        <option value="Divorced">Divorced</option>
-                                    </select>
-                                </x-form-div>
-                            </div>
-
                         </div>
-                        
-                        
-                        
+                        <div class="mb-2">
+                            <x-form-span>Consultation</x-form-span>
+                            <div class="row">
+                                <x-form-div class="col-xl-6">
+                                    <x-input-span id="presentingComplainLabel">Presenting <br/> Complain</x-input-span>
+                                    <x-form-textarea name="presentingComplain" id="presentingComplain" cols="10" rows="3"></x-form-textarea>
+                                </x-form-div>
+                                <x-form-div class="col-xl-6">
+                                    <x-input-span id="historyOfPresentingComplainLabel">History of <br/> Presenting <br/> Complain</x-input-span>
+                                    <x-form-textarea name="historyOfPresentingComplain" id="historyOfPresentingComplain" cols="10" rows="3"></x-form-textarea>
+                                </x-form-div>
+                                <x-form-div class="col-xl-6">
+                                    <x-input-span id="medicalHistoryLabel">Past Medical/ <br/> Surgical History</x-input-span>
+                                    <x-form-textarea name="medicalHistory" id="medicalHistory" cols="10" rows="3"></x-form-textarea>
+                                </x-form-div>
+                                <x-form-div class="col-xl-6">
+                                    <x-input-span id="obGyneHistoryLabel">Obstetrics/<br/>Gynecological <br/> History</x-input-span>
+                                    <x-form-textarea type="text" name="obGyneHistory" id="obGyneHistory" cols="10" rows="3"></x-form-textarea>
+                                </x-form-div>
+                                <x-form-div class="col-xl-6">
+                                    <x-input-span id="examinationFindingsLabel">Examination <br/> Findings</x-input-span>
+                                    <x-form-textarea type="text" name="examinationFindings" id="examinationFindings" cols="10" rows="3"></x-form-textarea>
+                                </x-form-div>
+                                <x-form-div class="col-xl-6">
+                                    <x-input-span id="diagnosisLabel">Diagnosis</x-input-span>
+                                    <x-form-textarea type="text" name="diagnosis" id="diagnosis" cols="10" rows="3"></x-form-textarea>
+                                </x-form-div>
+                                <x-form-div class="col-xl-6">
+                                    <x-input-span id="physiciansPlanLabel">Physicians Plan</x-input-span>
+                                    <x-form-textarea type="text" name="physiciansPlan" id="physiciansPlan" cols="10" rows="3"></x-form-textarea>
+                                </x-form-div>
+                            </div>
+                            <div class="row">
+                                <x-form-div>
+                                    <x-input-span id="admitLabel">Admit?</x-input-span>
+                                    <select class="form-select form-select-md"
+                                            name="admit">
+                                            <option value="">Select</option>
+                                            <option value="Outpatient">No</option>
+                                            <option value="Inpatient">Yes</option>
+                                        </select>
+                                </x-form-div>
+                                <x-form-div>
+                                    <x-input-span id="wardLabel">Ward</x-input-span>
+                                    <select class="form-select form-select-md"
+                                            name="ward">
+                                            <option value="">Select Ward</option>
+                                            <option value="Outpatient">Private Ward</option>
+                                            <option value="Inpatient">General Ward</option>
+                                        </select>
+                                </x-form-div>
+                                <x-form-div>
+                                    <x-input-span id="physiciansPlanLabel">Bed No.</x-input-span>
+                                    <select class="form-select form-select-md"
+                                            name="bedNo">
+                                            <option value="unknown">Select</option>
+                                            <option value="Bed 1">Bed 1</option>
+                                            <option value="Bed 2">Bed 2</option>
+                                            <option value="Bed 3">Bed 3</option>
+                                        </select>
+                                </x-form-div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <x-form-span>Investigation and Management</x-form-span>
+                            <div class="row">
+                                <x-form-div class="col-xl-6">
+                                    <x-input-span id="productLabel">Product/Service</x-input-span>
+                                    <x-form-input type="search" name="product" id="product" placeholder="search"  />
+                                </x-form-div>
+                                <x-form-div class="col-xl-6">
+                                    <x-input-span id="prescriptionLabel">Prescription</x-input-span>
+                                    <x-form-input type="text" name="prescription" id="prescription" placeholder="eg: 5mg BD x5" />
+                                </x-form-div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <table id="prescriptionTable" class="table table-hover align-middle table-sm bg-primary">
+                                <thead>
+                                    <tr>
+                                        <th>Billed at</th>
+                                        <th>Item</th>
+                                        <th>Prescription</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><button class="btn btn-outline-primary deleteBtn"><i class="bi bi-trash"></i></button></td>
+                                </tbody>
+                                <tfoot class="fw-bolder text-primary">
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer px-5">
