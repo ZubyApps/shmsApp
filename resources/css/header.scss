@@ -1,0 +1,20 @@
+.blog-header-logo {
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif, sans-serif;
+}
+.nav-scroller {
+    position: relative;
+    z-index: 2;
+    height: 3.75rem;
+    overflow-y: hidden;
+}
+
+.nav-scroller .nav {
+    display: flex;
+    flex-wrap: nowrap;
+    padding-bottom: 1rem;
+    margin-top: -1px;
+    overflow-x: auto;
+    text-align: center;
+    white-space: nowrap;
+    -webkit-overflow-scrolling:touch;
+}

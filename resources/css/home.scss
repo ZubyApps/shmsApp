@@ -1,0 +1,10 @@
+h1, h2, h3, h4, h5, h6, p {
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif/*rtl:Amiri, Georgia, "Times New Roman", serif*/;
+  }
+  
+  .cover-image {
+    background-image: url("../img/doctor-long.png");
+    background-position-x: right;
+    background-size: cover;
+    background-repeat: repeat-y; 
+  }
