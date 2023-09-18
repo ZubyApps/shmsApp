@@ -14,11 +14,11 @@
                             <div class="row">
                                 <x-form-div class="">
                                     <x-input-span id="patientLabel">Patient</x-input-span>
-                                    <x-form-input name="patientIds" readonly value="Patrick Abiodun Aso"/>
+                                    <x-form-input name="patientIds" readonly value="SH23/7865 Patrick Abiodun Aso"/>
                                 </x-form-div>
                                 <x-form-div class="sponsorNameDiv">
                                     <x-input-span id="sponsorNameLabel">Sponsor Name</x-input-span>
-                                    <x-form-input type="search" class="sponsorName" name="sponsorName" value="Axe Mansard" readonly/>
+                                    <x-form-input type="search" class="sponsorName" name="sponsorName" value="Axe Mansard HMO" readonly/>
                                 </x-form-div>
                                 <x-form-div class="">
                                     <x-input-span>Age</x-input-span>
@@ -85,7 +85,7 @@
                         <div class="mb-2">
                             <x-form-span>Consultation</x-form-span>
                             <div class="row">
-                                <x-form-div class="col-xl-6">
+                                <x-form-div class="col-xl-12">
                                     <x-input-span id="presentingComplainLabel">Presenting <br/> Complain</x-input-span>
                                     <x-form-textarea name="presentingComplain" id="presentingComplain" cols="10" rows="3"></x-form-textarea>
                                 </x-form-div>
@@ -105,16 +105,25 @@
                                     <x-input-span id="examinationFindingsLabel">Examination <br/> Findings</x-input-span>
                                     <x-form-textarea type="text" name="examinationFindings" id="examinationFindings" cols="10" rows="3"></x-form-textarea>
                                 </x-form-div>
+                                <x-form-div class="col-xl-12 mt-2">
+                                    <x-input-span>Search for <br/> ICD11 Diagnosis</x-input-span>
+                                    <x-icd11-diagnosis-input />
+                                </x-form-div>
+                                <x-icd11-diagnosis-div />
                                 <x-form-div class="col-xl-6">
                                     <x-input-span id="diagnosisLabel">Diagnosis</x-input-span>
-                                    <x-form-textarea type="text" name="diagnosis" id="diagnosis" cols="10" rows="3"></x-form-textarea>
+                                    <x-form-textarea type="text" name="diagnosis" class="diagnosis" cols="10" rows="3"></x-form-textarea>
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
+                                    <x-input-span id="diagnosisLabel">Suppport <br/> Diagnosis</x-input-span>
+                                    <x-form-textarea type="text" name="diagnosis" class="diagnosis" cols="10" rows="3"></x-form-textarea>
+                                </x-form-div>
+                                <x-form-div class="col-xl-12 mt-2">
                                     <x-input-span id="physiciansPlanLabel">Physicians Plan</x-input-span>
                                     <x-form-textarea type="text" name="physiciansPlan" id="physiciansPlan" cols="10" rows="3"></x-form-textarea>
                                 </x-form-div>
                             </div>
-                            <div class="row">
+                            <div class="row mt-2">
                                 <x-form-div>
                                     <x-input-span id="admitLabel">Admit?</x-input-span>
                                     <select class="form-select form-select-md"
@@ -162,20 +171,36 @@
                             <table id="prescriptionTable" class="table table-hover align-middle table-sm bg-primary">
                                 <thead>
                                     <tr>
+                                        <th>S/N</th>
                                         <th>Billed at</th>
                                         <th>Item</th>
                                         <th>Prescription</th>
+                                        <th>Qty</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td><button class="btn btn-outline-primary deleteBtn"><i class="bi bi-trash"></i></button></td>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>12/09/2023 11:02pm</td>
+                                        <td>N/S 500mls</td>
+                                        <td>500mls 12hrly x2</td>
+                                        <td></td>
+                                        <td><button class="btn btn-outline-primary deleteBtn"><i class="bi bi-trash"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>12/09/2023 11:15pm</td>
+                                        <td>5% mls Syringe</td>
+                                        <td></td>
+                                        <td>4</td>
+                                        <td><button class="btn btn-outline-primary deleteBtn"><i class="bi bi-trash"></i></button></td>
+                                    </tr>
                                 </tbody>
                                 <tfoot class="fw-bolder text-primary">
                                     <tr>
+                                        <td></td>
+                                        <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
@@ -191,9 +216,9 @@
                         <i class="bi bi-x-circle me-1"></i>
                         Close
                     </button>
-                    <button type="button" id="{{ $isUpdate ? 'saveBtn' : 'registerBtn' }}" class="btn bg-primary text-white">
+                    <button type="button" id="saveBtn" class="btn bg-primary text-white">
                         <i class="bi bi-check-circle me-1"></i>
-                        {{ $isUpdate ? 'Update' : 'Register' }}
+                        Save
                     </button>
                 </div>
             </div>

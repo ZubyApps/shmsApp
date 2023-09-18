@@ -7,7 +7,7 @@
     <x-form-div>
         <x-input-span>Genotype</x-input-span>
         <select class="form-select form-select-md" aria-label="genotype" name="genotype" >
-            <option value="unknown">Select</option>
+            <option value="">Select</option>
             <option value="AA">AA</option>
             <option value="AS">AS</option>
             <option value="SS">SS</option>

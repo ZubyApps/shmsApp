@@ -9,7 +9,7 @@
                 <div class="mb-2">
                     <x-form-label>Sponsor Information</x-form-label>
                     <div class="row">
-                        <x-form-div1 class="my-2">
+                        <x-form-div class="my-2">
                             <x-input-span>Category<x-required-span /></x-input-span>
                             <select class="form-select form-select-md sponsorCategory1" name="category">
                                 <option value="">Select Category</option>
@@ -18,33 +18,33 @@
                                 <option value="hmo">HMO</option>
                                 <option value="Company/Org">Company/Organization</option>
                             </select>
-                        </x-form-div1>
+                        </x-form-div>
                     </div>
 
                     <!-- first row -->
                     <div class="{{ !$isUpdate ? 'd-none' : '' }} allSponsorInputsDiv">
                         <div class="row">
-                            <x-form-div1>
+                            <x-form-div>
                                 <x-input-span>Name<x-required-span /></x-input-span>
                                 <x-form-input name="sponsorName" />
-                            </x-form-div1>
-                            <x-form-div1>
+                            </x-form-div>
+                            <x-form-div>
                                 <x-input-span>Phone No.<x-required-span /></x-input-span>
                                 <x-form-input name="phoneNumber" />
-                            </x-form-div1>
-                            <x-form-div1>
+                            </x-form-div>
+                            <x-form-div>
                                 <x-input-span>Email</x-input-span>
                                 <x-form-input name="email" />
-                            </x-form-div1>
-                            <x-form-div1>
+                            </x-form-div>
+                            <x-form-div>
                                 <x-input-span id="payClassLabel">Pay Class<x-required-span /></x-input-span>
                                 <select class="form-select form-select-md" name="payClass">
                                     <option value="">Select Class</option>
                                     <option value="Cash">Cash</option>
                                     <option value="Credit">Credit</option>
                                 </select>
-                            </x-form-div1>
-                            <x-form-div1 class="registrationBillDiv1 d-none">
+                            </x-form-div>
+                            <x-form-div class="registrationBillDiv1 d-none">
                                 <x-input-span>Registration Bill<x-required-span /></x-input-span>
                                 <select class="form-select form-select-md familyRegistrationBill"
                                     name="registrationBill">
@@ -52,8 +52,8 @@
                                     <option value="1500">1500 - Upgrade</option>
                                     <option value="Paid">Paid</option>
                                 </select>
-                            </x-form-div1>
-                            <x-form-div1>
+                            </x-form-div>
+                            <x-form-div>
                                 <x-input-span id="maritalStatusLabel">Bill Matrix %<x-required-span /></x-input-span>
                                 <select class="form-select form-select-md" name="billMatrix">
                                     <option value="">Select Value</option>
@@ -62,8 +62,8 @@
                                     <option value="10">10%</option>
                                     <option value="0">0%</option>
                                 </select>
-                            </x-form-div1>
-                            <x-form-div1>
+                            </x-form-div>
+                            <x-form-div>
                                 <x-input-span id="maritalStatusLabel">Balance
                                     Required?<x-required-span /></x-input-span>
                                 <select class="form-select form-select-md" aria-label="balance-required"
@@ -71,7 +71,7 @@
                                     <option value="Yes">Yes</option>
                                     <option value="No">No</option>
                                 </select>
-                            </x-form-div1>
+                            </x-form-div>
                         </div>
                     </div>
                 </div>
