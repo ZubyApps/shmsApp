@@ -8,14 +8,16 @@ window.addEventListener('DOMContentLoaded', function(){
     const consultBtn                        = document.querySelector('.consultBtn')
     const knownConditionsInput              = document.querySelector('.knownConditions')
 
-    const saveBtn                           = document.querySelector('#saveBtn')
+    const saveConsultationBtn               = document.querySelector('#saveConsultationBtn')
     const addKnownClinicalInfoBtn           = document.querySelector('#addKnownClincalInfoBtn')
     const addVitalsignsBtn                  = document.querySelector('#addVitalsignsBtn')
 
     const knownClinicanInfoDiv              = document.querySelector('.knownClinicalInfoDiv')
     const addVitalsignsDiv                  = document.querySelector('.addVitalsignsDiv')
+    const consultationDiv                   = document.querySelector('.consultationDiv')
+    const investigationAndManagementDiv     = document.querySelector('.investigationAndManagmentDiv')
 
-    const diagnosisInput                    = document.querySelector('.diagnosis')
+    const diagnosisInput                    = document.querySelector('.selectedDiagnosis')
 
     const mySettings = {apiServerUrl: "https://icd11restapi-developer-test.azurewebsites.net"}
 
@@ -34,8 +36,12 @@ window.addEventListener('DOMContentLoaded', function(){
         knownConditionsInput.removeAttribute('readonly')
     })
 
-    saveBtn.addEventListener('click', function() {
-        console.log(getConsultationFormData(newConsultationModal))
+    saveConsultationBtn.addEventListener('click', function() {
+        console.log(getConsultationDivData(consultationDiv))
+        const tagNames = consultationDiv.querySelectorAll('input, select, textarea')
+        addAttribute(tagNames, 'disabled')
+        saveConsultationBtn.innerHTML === '<i class="bi bi-pencil"></i> Edit' ? saveConsultationBtn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Save` : saveConsultationBtn.innerHTML = '<i class="bi bi-pencil"></i> Edit'
+        investigationAndManagementDiv.classList.remove('d-none')
     })
       
       // ICD11 handler
@@ -43,11 +49,12 @@ window.addEventListener('DOMContentLoaded', function(){
 
     addKnownClinicalInfoBtn.addEventListener('click', function () {
         const tagName = knownClinicanInfoDiv.querySelectorAll('input, select, textarea')
-            tagName.forEach(tag => {
-                tag.toggleAttribute('disabled')
-            })
-        addKnownClinicalInfoBtn.textContent === "Done" ? addKnownClinicalInfoBtn.innerHTML = `<i class="bi bi-wrench-adjustable"></i>
-        Change` : addKnownClinicalInfoBtn.textContent = "Done"
+            // tagName.forEach(tag => {
+            //     tag.toggleAttribute('disabled')
+            // })
+        addAttribute(tagName, 'disabled', '')
+        addKnownClinicalInfoBtn.textContent === "Done" ? addKnownClinicalInfoBtn.innerHTML = `<i class="bi bi-arrow-up-circle"></i>
+        Update` : addKnownClinicalInfoBtn.textContent = "Done"
     })
 
     addVitalsignsBtn.addEventListener('click', function () {
@@ -70,4 +77,26 @@ function getConsultationFormData(modal) {
     })
     
     return data
+}
+
+function getConsultationDivData(div) {
+    let data     = {}
+    const fields = [
+        ...div.getElementsByTagName('input'),
+        ...div.getElementsByTagName('select'),
+        ...div.getElementsByTagName('textarea')
+    ]
+
+    fields.forEach(select => {
+        select.hasAttribute('name') ?
+        data[select.name] = select.value : ''
+    })
+    
+    return data
+}
+
+function addAttribute(element, attribute, value) {
+    element.forEach(tag => {
+        tag.toggleAttribute(attribute)
+    })
 }
