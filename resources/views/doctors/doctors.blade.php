@@ -4,6 +4,7 @@
 @vite(['resources/js/doctors.js'])
 
 @include('doctors.newConsultationModal', ['title' => 'New Consultation', 'isUpdate' => false, 'id' => 'newConsultationModal'])
+@include('doctors.reviewConsultationModal', ['title' => 'Review Consultation', 'isUpdate' => false, 'id' => 'reviewConsultationModal'])
 
     <div class="container p-1 mt-5">
         <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
@@ -21,14 +22,14 @@
                                 <th>Name</th>
                                 <th>Age</th>
                                 <th>Sponsor</th>
-                                <th>Actions</th>
+                                <th>Consult</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td><button class="btn btn-outline-primary consultBtn"><i class="bi bi-clipboard-plus"></i></button></td>
+                            <td>SH23/7865 Patrick Abiodun Aso</td>
+                            <td>32</td>
+                            <td>Axe Mansard HMO</td>
+                            <td><button class="btn btn-outline-primary newConsultationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
                         </tbody>
                         <tfoot class="fw-bolder text-primary">
                             <tr>
@@ -91,14 +92,14 @@
                                 </tr>
                             </thead>
                             <tbody></tbody>
-                            <tfoot class="fw-bolder text-primary">
+                            <tfoot class="text-primary">
                                 <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td>20/09/23</td>
+                                    <td>SH23/7865 Patrick Abiodun Aso</td>
+                                    <td>QC30-Malingering</td>
+                                    <td>Axe Mansard HMO</td>
+                                    <td>Out-patient</td>
+                                    <td><button class="btn btn-outline-primary reviewConsultationBtn">Review</button></td>
                                 </tr>
                             </tfoot>
                         </table>

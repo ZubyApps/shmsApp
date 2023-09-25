@@ -1,3 +1,3 @@
 @props(['disabled' => false])
 
-<textarea {{ $disabled ? 'disabled' : '' }} {{ $attributes->merge(['class' => 'form-control']) }}></textarea>
+<textarea {{ $disabled ? 'disabled' : '' }} {{ $attributes->merge(['class' => 'form-control']) }} spellcheck="true" autocorrect="on"></textarea>

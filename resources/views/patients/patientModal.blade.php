@@ -234,7 +234,7 @@
                             <span class="fw-semibold">Previously Known Clinical Info</span>
                             <!-- first row -->
                             <div class="row">
-                                @include("patients.partials.known-clinical-info", ["readonly" => false  ])
+                                @include("patients.partials.known-clinical-info", ["disabled" => false  ])
                             </div>
                             <!-- second row -->
                         </div>
