@@ -1,20 +1,21 @@
 import { Modal } from "bootstrap"
 import * as ECT from '@whoicd/icd11ect'
 import '@whoicd/icd11ect/style.css'
-import { consultationDetails } from "./data"
+import { consultationDetails, items } from "./data"
 import { clearDivValues } from "./helpers"
 
 window.addEventListener('DOMContentLoaded', function () {
-    const newConsultationModal = new Modal(document.getElementById('newConsultationModal'))
-    const reviewConsultationModal = new Modal(document.getElementById('reviewConsultationModal'))
+    const newConsultationModal      = new Modal(document.getElementById('newConsultationModal'))
+    const reviewConsultationModal   = new Modal(document.getElementById('reviewConsultationModal'))
+    const surgeryModal              = new Modal(document.getElementById('surgeryModal'))
 
-    const newConsultationBtn = document.querySelector('.newConsultationBtn')
-    const reviewConsultationBtn = document.querySelector('.reviewConsultationBtn')
+    const newConsultationBtn        = document.querySelector('.newConsultationBtn')
+    const reviewConsultationBtn     = document.querySelector('.reviewConsultationBtn')
 
-    const saveNewConsultationBtn = document.querySelector('#saveNewConsultationBtn')
+    const saveNewConsultationBtn    = document.querySelector('#saveNewConsultationBtn')
     const saveReviewConsultationBtn = document.querySelector('#saveReviewConsultationBtn')
 
-    const addKnownClinicalInfoBtn = newConsultationModal._element.querySelector('.addKnownClinicalInfoBtn')
+    const addKnownClinicalInfoBtn   = newConsultationModal._element.querySelector('.addKnownClinicalInfoBtn')
     const reviewAddKnownClinicalInfoBtn = reviewConsultationModal._element.querySelector('.reviewKnownClinicalInfoBtn')
 
     const addVitalsignsBtn = document.querySelector('#addVitalsignsBtn')
@@ -29,9 +30,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const newInvestigationAndManagementDiv = document.querySelector('.newInvestigationAndManagmentDiv')
     const reviewInvestigationAndManagementDiv = document.querySelector('.reviewInvestigationAndManagmentDiv')
-    const updateInvestigationAndManagementDiv = document.querySelector('.updateInvestigationAndManagmentDiv')
 
     const diagnosisInput = document.querySelector('.selectedDiagnosis')
+    const newConsultationItemInput = newConsultationModal._element.querySelector('#item')
 
 
     // ICD11settings
@@ -53,6 +54,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // show new consultation modal
     newConsultationBtn.addEventListener('click', function () {
+        displayItemsList(newInvestigationAndManagementDiv, items)
         newConsultationModal.show()
     })
 
@@ -72,7 +74,7 @@ window.addEventListener('DOMContentLoaded', function () {
    
     // save new consultation
     saveNewConsultationBtn.addEventListener('click', function () {
-        console.log(getConsultationDivData(newConsultationDiv))
+        //console.log(getConsultationDivData(newConsultationDiv))
 
         toggleAttributeLoop(querySelectAllTags(newConsultationDiv, ['input, select, textarea']), 'disabled')
 
@@ -80,8 +82,28 @@ window.addEventListener('DOMContentLoaded', function () {
         saveNewConsultationBtn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Save` : 
         saveNewConsultationBtn.innerHTML = '<i class="bi bi-pencil"></i> Edit'
 
+
         newInvestigationAndManagementDiv.classList.remove('d-none')
     })
+
+    // newConsultationItemInput.addEventListener('keyup', function() {
+
+    //     const searchTerm = newConsultationItemInput.value
+    //     const list = []
+    //     for(var i=0; i<items.length; i++) {
+    //         for(var key in items[i]) {
+    //             //console.log(items[i])
+    //             console.log(key)
+    //           if(items[i][key].indexOf(searchTerm)!=-1) {
+    //             list.push(items[i]);
+    //           }
+    //         }
+    //       }
+
+       
+    //     //console.log(list, searchTerm)
+    //     displayItemsList(newInvestigationAndManagementDiv, list)
+    // })
 
     // tasks to run when closing new consultation modal
     newConsultationModal._element.addEventListener('hidden.bs.modal', function() {
@@ -257,8 +279,9 @@ window.addEventListener('DOMContentLoaded', function () {
                                 <div class="row">
                                     <div class="col-xl-4 themed-grid-col col-xl-6">
                                         <div class="input-group mb-1">
-                                            <span class="input-group-text" id="productLabel"> Product/Service</span> 
-                                            <input class="form-control" type="search" name="product" id="product" placeholder="search" autocomplete="">
+                                            <span class="input-group-text" id="itemLabel">Item</span> 
+                                            <input class="form-control" type="search" name="item" id="item" placeholder="search" autocomplete="">
+                                            <datalist name="item" type="text" class="decoration-none"></datalist>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 themed-grid-col col-xl-6">
@@ -331,7 +354,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             File
                             <i class="bi bi-archive"></i>
                             </button>
-                            <button type="button" id="deleteConsultationBtn" class="btn btn-outline-primary">
+                            <button type="button" id="surgeryBtn" class="btn btn-outline-primary">
                                 Surgery 
                             <i class="bi bi-pencil-square"></i>
                             </button>
@@ -521,8 +544,8 @@ window.addEventListener('DOMContentLoaded', function () {
                                 <div class="row">
                                     <div class="col-xl-4 themed-grid-col col-xl-6">
                                         <div class="input-group mb-1">
-                                            <span class="input-group-text" id="productLabel"> Product/Service</span> 
-                                            <input class="form-control" type="search" name="product" id="product" placeholder="search" autocomplete="">
+                                            <span class="input-group-text" id="itemLabel">Item</span> 
+                                            <input class="form-control" type="search" name="item" id="item" placeholder="search" autocomplete="">
                                         </div>
                                     </div>
                                     <div class="col-xl-4 themed-grid-col col-xl-6">
@@ -595,7 +618,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             File
                             <i class="bi bi-archive"></i>
                             </button>
-                            <button type="button" id="deleteConsultationBtn" class="btn btn-outline-primary">
+                            <button type="button" id="surgeryBtn" class="btn btn-outline-primary">
                                 Surgery 
                             <i class="bi bi-pencil-square"></i>
                             </button>
@@ -637,6 +660,8 @@ window.addEventListener('DOMContentLoaded', function () {
         saveReviewConsultationBtn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Save` : 
         saveReviewConsultationBtn.innerHTML = '<i class="bi bi-pencil"></i> Edit'
 
+        displayItemsList(reviewInvestigationAndManagementDiv, items)
+        console.log(reviewInvestigationAndManagementDiv)
         reviewInvestigationAndManagementDiv.classList.remove('d-none')
     })
 
@@ -645,6 +670,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const deleteConsultationBtn                 = event.target.closest('#deleteConsultationBtn')
         const updateInvestigationAndManagmentBtn    = event.target.closest('.updateInvestigationAndManagmentBtn')
         const updateInvestigationAndManagmentDiv    = document.querySelectorAll('.updateInvestigationAndManagmentDiv')
+        const surgeryBtn                            = event.target.closest('#surgeryBtn')
 
         if (deleteConsultationBtn) {
             if (confirm('If you delete this consultation you cannot get it back! Are you sure you want to delete?')) {
@@ -653,12 +679,18 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
         if (updateInvestigationAndManagmentBtn) {
-            console.log(updateInvestigationAndManagmentBtn.getAttribute('data-id') )
             updateInvestigationAndManagmentDiv.forEach(div => {
-                console.log(div)
-                div.getAttribute('data-id') === updateInvestigationAndManagmentBtn.getAttribute('data-id') ?
-                div.classList.toggle('d-none') : ''
+
+                if (div.getAttribute('data-id') === updateInvestigationAndManagmentBtn.getAttribute('data-id')) {
+                    div.classList.toggle('d-none')
+                    displayItemsList(div, items)
+                }
+                
             })
+        }
+
+        if (surgeryBtn) {
+            surgeryModal.show()
         }
     })
 
@@ -675,6 +707,8 @@ window.addEventListener('DOMContentLoaded', function () {
         removeAttributeLoop(querySelectAllTags(reviewConsultationDiv, ['input, select, textarea']), 'disabled')
         clearDivValues(reviewConsultationDiv)
     })
+
+
 })
 
 function getConsultationFormData(modal) {
@@ -724,3 +758,34 @@ function toggleAttributeLoop(element, attribute, value) {
 function querySelectAllTags(div, ...tags){
     return div.querySelectorAll(tags)
 }
+
+function displayItemsList(div, data) {
+    data.forEach(line => {
+        const option = document.createElement("OPTION")
+        option.setAttribute('id', 'itemsOption')
+
+        // if (div.id === 'editJobModal')
+        // {
+        //     var elementAttributes = {
+        //     "value"     : line.name,
+        //     "data-id"   : line.id,
+        //     "name"      : line.name,
+        //     }
+        // } else {
+            var elementAttributes = {
+            "value"     : line.name + ' ' + line.phoneNumber,
+            "data-id"   : line.id,
+            "name"      : line.name + ' ' + line.phoneNumber,
+            }
+        //}
+
+
+        Object.keys(elementAttributes).forEach(attribute => {
+        option.setAttribute(attribute, elementAttributes[attribute])
+        
+        div.querySelector('#item').setAttribute('list', 'itemsList')
+        div.querySelector('datalist').setAttribute('id', 'itemsList')
+        div.querySelector('#itemsList').appendChild(option)
+        });
+        })
+    }

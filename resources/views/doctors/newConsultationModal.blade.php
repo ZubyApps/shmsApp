@@ -173,9 +173,9 @@
                                 <x-form-span>Investigation & Management</x-form-span>
                                 <div class="row">
                                     <x-form-div class="col-xl-6">
-                                        <x-input-span id="productLabel">Product/Service</x-input-span>
-                                        <x-form-input type="search" name="product" id="product"
-                                            placeholder="search" />
+                                        <x-input-span id="itemLabel">Item</x-input-span>
+                                        <x-form-input type="search" name="item" id="item" placeholder="search" />
+                                        <datalist name="item" type="text" class="decoration-none"></datalist>
                                     </x-form-div>
                                     <x-form-div class="col-xl-6">
                                         <x-input-span id="prescriptionLabel">Prescription</x-input-span>

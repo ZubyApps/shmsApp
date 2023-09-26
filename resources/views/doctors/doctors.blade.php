@@ -5,6 +5,7 @@
 
 @include('doctors.newConsultationModal', ['title' => 'New Consultation', 'isUpdate' => false, 'id' => 'newConsultationModal'])
 @include('doctors.reviewConsultationModal', ['title' => 'Review Consultation', 'isUpdate' => false, 'id' => 'reviewConsultationModal'])
+@include('doctors.surgeryModal', ['title' => 'New Surgery', 'isUpdate' => false, 'id' => 'surgeryModal'])
 
     <div class="container p-1 mt-5">
         <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
@@ -26,10 +27,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <td>SH23/7865 Patrick Abiodun Aso</td>
-                            <td>32</td>
-                            <td>Axe Mansard HMO</td>
-                            <td><button class="btn btn-outline-primary newConsultationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
+                            <tr>
+                                <td>SH21/4012 Joesphine Ene Odeh</td>
+                                <td>25</td>
+                                <td>Alex Odeh Family</td>
+                                <td><button class="btn btn-outline-primary newConsultationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>SH23/7865 Patrick Abiodun Aso</td>
+                                <td>32</td>
+                                <td>Axe Mansard HMO</td>
+                                <td><button class="btn btn-outline-primary newConsultationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
+                            </tr>
+                            
                         </tbody>
                         <tfoot class="fw-bolder text-primary">
                             <tr>
