@@ -2,12 +2,13 @@ import { Modal } from "bootstrap"
 import * as ECT from '@whoicd/icd11ect'
 import '@whoicd/icd11ect/style.css'
 import { consultationDetails, items } from "./data"
-import { clearDivValues } from "./helpers"
+import { clearDivValues, clearItemsList } from "./helpers"
 
 window.addEventListener('DOMContentLoaded', function () {
     const newConsultationModal      = new Modal(document.getElementById('newConsultationModal'))
     const reviewConsultationModal   = new Modal(document.getElementById('reviewConsultationModal'))
     const surgeryModal              = new Modal(document.getElementById('surgeryModal'))
+    const fileModal                 = new Modal(document.getElementById('fileModal'))
 
     const newConsultationBtn        = document.querySelector('.newConsultationBtn')
     const reviewConsultationBtn     = document.querySelector('.reviewConsultationBtn')
@@ -33,6 +34,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const diagnosisInput = document.querySelector('.selectedDiagnosis')
     const newConsultationItemInput = newConsultationModal._element.querySelector('#item')
+    const reviewConsultationItemInput = reviewConsultationModal._element.querySelector('#item')
 
 
     // ICD11settings
@@ -86,24 +88,24 @@ window.addEventListener('DOMContentLoaded', function () {
         newInvestigationAndManagementDiv.classList.remove('d-none')
     })
 
-    // newConsultationItemInput.addEventListener('keyup', function() {
+    newConsultationItemInput.addEventListener('keyup', function() {
 
-    //     const searchTerm = newConsultationItemInput.value
-    //     const list = []
-    //     for(var i=0; i<items.length; i++) {
-    //         for(var key in items[i]) {
-    //             //console.log(items[i])
-    //             console.log(key)
-    //           if(items[i][key].indexOf(searchTerm)!=-1) {
-    //             list.push(items[i]);
-    //           }
-    //         }
-    //       }
+        const searchTerm = newConsultationItemInput.value
+        const list = []
+        for(var i=0; i<items.length; i++) {
+            for(var key in items[i]) {
+                //console.log(items[i])
+                console.log(key)
+              if(items[i][key].indexOf(searchTerm)!=-1) {
+                list.push(items[i]);
+              }
+            }
+          }
 
        
-    //     //console.log(list, searchTerm)
-    //     displayItemsList(newInvestigationAndManagementDiv, list)
-    // })
+        //console.log(list, searchTerm)
+        displayItemsList(newInvestigationAndManagementDiv, list)
+    })
 
     // tasks to run when closing new consultation modal
     newConsultationModal._element.addEventListener('hidden.bs.modal', function() {
@@ -236,7 +238,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                 <table id="prescriptionTable" class="table table-hover align-middle table-sm bg-primary">
                                     <thead>
                                         <tr>
-                                            <th>Prescribed At</th>
+                                            <th>Prescribed</th>
                                             <th>Treatment/Medication</th>
                                             <th>Dosaage</th>
                                             <th>Qty</th>
@@ -273,7 +275,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                 Update Investigation & Managment
                             </button>
                         </div> 
-                        <div class="updateInvestigationAndManagmentDiv d-none" data-id="${iteration}">
+                        <div class="updateInvestigationAndManagmentDiv mt-2 d-none" data-id="${iteration}">
                             <div class="mb-2 form-control">
                                 <span class="fw-semibold">Investigation & Management</span>
                                 <div class="row">
@@ -309,7 +311,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                     <thead>
                                         <tr>
                                             <th>S/N</th>
-                                            <th>Billed at</th>
+                                            <th>Prescribed</th>
                                             <th>Item</th>
                                             <th>Prescription</th>
                                             <th>Qty</th>
@@ -349,8 +351,8 @@ window.addEventListener('DOMContentLoaded', function () {
                                 </table>
                             </div>
                         </div>`}
-                        <div class="d-flex justify-content-start my-2 gap-2">
-                            <button type="button" id="deleteConsultationBtn" class="btn btn-outline-primary">
+                        <div class="d-flex justify-content-start my-3 gap-2">
+                            <button type="button" id="fileBtn" class="btn btn-outline-primary">
                             File
                             <i class="bi bi-archive"></i>
                             </button>
@@ -371,7 +373,7 @@ window.addEventListener('DOMContentLoaded', function () {
             consultationReviewDiv.innerHTML += `
             <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample">
                 <span class="mx-2">Consultation ${iteration}</span>
-                <i class="bi bi-chevron-double-down text-primary"> </i>
+                <i class="bi bi-chevron-double-down text-primary"></i>
             </div>
             <div class="collapse" id="collapseExample${iteration}" style="">
                 <div class="card card-body">
@@ -500,7 +502,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                 <table id="prescriptionTable" class="table table-hover align-middle table-sm bg-primary">
                                     <thead>
                                         <tr>
-                                            <th>Prescribed At</th>
+                                            <th>Prescribed</th>
                                             <th>Treatment/Medication</th>
                                             <th>Dosaage</th>
                                             <th>Qty</th>
@@ -545,7 +547,8 @@ window.addEventListener('DOMContentLoaded', function () {
                                     <div class="col-xl-4 themed-grid-col col-xl-6">
                                         <div class="input-group mb-1">
                                             <span class="input-group-text" id="itemLabel">Item</span> 
-                                            <input class="form-control" type="search" name="item" id="item" placeholder="search" autocomplete="">
+                                            <input class="form-control" type="search" name="item" id="item" placeholder="search" autocomplete="off">
+                                            <datalist name="item" type="text" class="decoration-none"></datalist>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 themed-grid-col col-xl-6">
@@ -573,7 +576,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                     <thead>
                                         <tr>
                                             <th>S/N</th>
-                                            <th>Billed at</th>
+                                            <th>Prescribed</th>
                                             <th>Item</th>
                                             <th>Prescription</th>
                                             <th>Qty</th>
@@ -614,7 +617,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             </div>
                         </div>`}
                         <div class="d-flex justify-content-start my-2 gap-2">
-                            <button type="button" id="deleteConsultationBtn" class="btn btn-outline-primary">
+                            <button type="button" id="fileBtn" class="btn btn-outline-primary">
                             File
                             <i class="bi bi-archive"></i>
                             </button>
@@ -660,17 +663,30 @@ window.addEventListener('DOMContentLoaded', function () {
         saveReviewConsultationBtn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Save` : 
         saveReviewConsultationBtn.innerHTML = '<i class="bi bi-pencil"></i> Edit'
 
-        displayItemsList(reviewInvestigationAndManagementDiv, items)
-        console.log(reviewInvestigationAndManagementDiv)
+        //displayItemsList(reviewInvestigationAndManagementDiv, items)
+        //console.log(reviewInvestigationAndManagementDiv)
         reviewInvestigationAndManagementDiv.classList.remove('d-none')
     })
 
-    // delete consultation
+    // review consultation item input
+    reviewConsultationItemInput.addEventListener('keyup', function() {
+
+        let records = items.filter(d => d.name.toLocaleLowerCase().includes(reviewConsultationItemInput.value.toLocaleLowerCase()) ? d : '')
+        console.log(records)
+
+        displayItemsList(reviewInvestigationAndManagementDiv, records)
+        // get('/clients/list', {searchTerm :clientInput.value})
+        //         .then(response => response.json())
+        //         .then(response => displayItemsList(reviewInvestigationAndManagementDiv, items))
+    })
+
+    // review consultation loops
     document.querySelector('#consultationReviewDiv').addEventListener('click', function (event) {
         const deleteConsultationBtn                 = event.target.closest('#deleteConsultationBtn')
         const updateInvestigationAndManagmentBtn    = event.target.closest('.updateInvestigationAndManagmentBtn')
         const updateInvestigationAndManagmentDiv    = document.querySelectorAll('.updateInvestigationAndManagmentDiv')
         const surgeryBtn                            = event.target.closest('#surgeryBtn')
+        const fileBtn                               = event.target.closest('#fileBtn')
 
         if (deleteConsultationBtn) {
             if (confirm('If you delete this consultation you cannot get it back! Are you sure you want to delete?')) {
@@ -683,7 +699,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
                 if (div.getAttribute('data-id') === updateInvestigationAndManagmentBtn.getAttribute('data-id')) {
                     div.classList.toggle('d-none')
-                    displayItemsList(div, items)
+                    div.querySelector('#item').addEventListener('keyup', ()=> {
+                        let records = items.filter(d => d.name.toLocaleLowerCase().includes(div.querySelector('#item').value.toLocaleLowerCase()) ? d : '')
+                        displayItemsList(div, records)
+                        console.log(div)
+                        console.log(records)
+                    })
                 }
                 
             })
@@ -691,6 +712,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (surgeryBtn) {
             surgeryModal.show()
+        }
+
+        if (fileBtn) {
+            fileModal.show()
         }
     })
 
@@ -706,6 +731,9 @@ window.addEventListener('DOMContentLoaded', function () {
         saveReviewConsultationBtn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Save`
         removeAttributeLoop(querySelectAllTags(reviewConsultationDiv, ['input, select, textarea']), 'disabled')
         clearDivValues(reviewConsultationDiv)
+        clearDivValues(reviewInvestigationAndManagementDiv)
+        reviewConsultationModal._element.querySelectorAll('#itemsList').forEach(list => clearItemsList(list))
+        
     })
 
 
@@ -760,32 +788,23 @@ function querySelectAllTags(div, ...tags){
 }
 
 function displayItemsList(div, data) {
+    //const dataListId = div.querySelector('#itemsList')
+
     data.forEach(line => {
         const option = document.createElement("OPTION")
         option.setAttribute('id', 'itemsOption')
+        option.setAttribute('value', line.name)
+        option.setAttribute('data-id', line.id)
+        option.setAttribute('name', line.name)
 
-        // if (div.id === 'editJobModal')
-        // {
-        //     var elementAttributes = {
-        //     "value"     : line.name,
-        //     "data-id"   : line.id,
-        //     "name"      : line.name,
-        //     }
-        // } else {
-            var elementAttributes = {
-            "value"     : line.name + ' ' + line.phoneNumber,
-            "data-id"   : line.id,
-            "name"      : line.name + ' ' + line.phoneNumber,
-            }
-        //}
+        let previous = div.querySelectorAll('#itemsOption')
+            let elBox = []
+            previous.forEach(node => {
+               elBox.push(node.dataset.id)
+            })
 
-
-        Object.keys(elementAttributes).forEach(attribute => {
-        option.setAttribute(attribute, elementAttributes[attribute])
-        
-        div.querySelector('#item').setAttribute('list', 'itemsList')
-        div.querySelector('datalist').setAttribute('id', 'itemsList')
-        div.querySelector('#itemsList').appendChild(option)
-        });
-        })
-    }
+            div.querySelector('#item').setAttribute('list', 'itemsList')
+            div.querySelector('datalist').setAttribute('id', 'itemsList')
+            !elBox.includes(option.dataset.id) ? div.querySelector('#itemsList').appendChild(option) : ''
+    })
+}

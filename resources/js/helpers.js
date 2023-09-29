@@ -6,4 +6,8 @@ function clearDivValues(div) {
         });        
 }
 
-export {clearDivValues}
+function clearItemsList(element){
+    element.innerHTML = ''
+}
+
+export {clearDivValues, clearItemsList}

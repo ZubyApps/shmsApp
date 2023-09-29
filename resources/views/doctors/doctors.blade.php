@@ -6,6 +6,7 @@
 @include('doctors.newConsultationModal', ['title' => 'New Consultation', 'isUpdate' => false, 'id' => 'newConsultationModal'])
 @include('doctors.reviewConsultationModal', ['title' => 'Review Consultation', 'isUpdate' => false, 'id' => 'reviewConsultationModal'])
 @include('doctors.surgeryModal', ['title' => 'New Surgery', 'isUpdate' => false, 'id' => 'surgeryModal'])
+@include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
 
     <div class="container p-1 mt-5">
         <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
@@ -101,8 +102,7 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
-                            <tfoot class="text-primary">
+                            <tbody>
                                 <tr>
                                     <td>20/09/23</td>
                                     <td>SH23/7865 Patrick Abiodun Aso</td>
@@ -111,6 +111,16 @@
                                     <td>Out-patient</td>
                                     <td><button class="btn btn-outline-primary reviewConsultationBtn">Review</button></td>
                                 </tr>
+                                <tr>
+                                    <td>21/05/22</td>
+                                    <td>SH21/4012 Josephine Ene Ode</td>
+                                    <td>QC30-Malingering</td>
+                                    <td>Self</td>
+                                    <td>In-patient</td>
+                                    <td><button class="btn btn-outline-primary reviewConsultationBtn">Review</button></td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="text-primary">
                             </tfoot>
                         </table>
                     </div>

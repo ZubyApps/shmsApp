@@ -138,7 +138,7 @@ $consultationDetails = [
 
 <div class="container">
     <div class="modal fade " id="{{ $id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fs-4 text-primary">{{ $title }}</h5>
@@ -168,8 +168,8 @@ $consultationDetails = [
                             <div class="mb-2 form-control">
                                 <x-form-label>Review Patient</x-form-label>
                                 <div class="row">
-                                    <x-form-span class="fw-semibold">Vital Signs</x-form-span>
                                     <div class="row addReviewVitalsignsDiv d-none">
+                                        <x-form-span class="fw-semibold">Vital Signs</x-form-span>
                                         @include('vitalsigns.vitalsigns', ['disabled' => true])
                                     </div>
                                     <div class="d-flex justify-content-center">
@@ -243,8 +243,8 @@ $consultationDetails = [
                                 <div class="row">
                                     <x-form-div class="col-xl-6">
                                         <x-input-span id="itemsLabel">Item</x-input-span>
-                                        <x-form-input type="search" name="item" id="item" placeholder="search" />
-                                        <datalist name="item" type="text" class="decoration-none"></datalist>
+                                        <x-form-input type="search" name="item" id="item" placeholder="search" list="itemsList"/>
+                                        <datalist name="item" type="text" class="decoration-none" id="itemsList"></datalist>
                                     </x-form-div>
                                     <x-form-div class="col-xl-6">
                                         <x-input-span id="prescriptionLabel">Prescription</x-input-span>
