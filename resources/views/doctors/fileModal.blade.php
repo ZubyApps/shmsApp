@@ -11,7 +11,7 @@
                     <div class="allSponsorInputsDiv">
                         <div class="row">
                             <x-form-div class="col-xl-12">
-                                <x-input-span>Name this file<x-required-span /></x-input-span>
+                                <x-input-span>Name File<x-required-span /></x-input-span>
                                 <x-form-input name="name" placeholder="eg: x-ray, ultrasound scan" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">

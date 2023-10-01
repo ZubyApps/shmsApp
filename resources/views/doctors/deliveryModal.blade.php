@@ -7,73 +7,48 @@
             </div>
             <div class="modal-body">
                 <div class="mb-2">
-                    <x-form-label>Surgery Details</x-form-label>
-                    <div class="allSponsorInputsDiv">
-                        <div class="row">
-                            <x-form-div>
-                                <x-input-span>Date<x-required-span /></x-input-span>
-                                <x-form-input type="date" name="date" value="{{ date() }}" />
-                            </x-form-div>
-                            <x-form-div>
-                                <x-input-span>Surgeon<x-required-span /></x-input-span>
-                                <x-form-input name="surgeon" />
-                            </x-form-div>
-                            <x-form-div>
-                                <x-input-span>Assitant Surgeon</x-input-span>
-                                <x-form-input name="assistantSurgeon" />
-                            </x-form-div>
-                            <x-form-div>
-                                <x-input-span>Type of Aneasthesia</x-input-span>
-                                <x-form-input name="typeOfAneasthesia" />
-                            </x-form-div>
-                            <x-form-div>
-                                <x-input-span>Anesthetist</x-input-span>
-                                <x-form-input name="anesthetist" />
-                            </x-form-div>
-                            <x-form-div>
-                                <x-input-span>Scrub Nurse</x-input-span>
-                                <x-form-input name="scrubNurse" />
-                            </x-form-div>
-                            <x-form-div>
-                                <x-input-span>Type of Operation</x-input-span>
-                                <x-form-input name="typeOfOperation" />
-                            </x-form-div>
-                            <x-form-div>
-                                <x-input-span>Surgical Procedure</x-input-span>
-                                <x-form-textarea name="surgicalProcedure"></x-form-textarea>
-                            </x-form-div>
-                            <x-form-div>
-                                <x-input-span>Surgeon's Notes</x-input-span>
-                                <x-form-textarea name="surgeonsNotes"></x-form-textarea>
-                            </x-form-div>
-                            <x-form-div>
-                                <x-input-span>Aneasthetist's Notes</x-input-span>
-                                <x-form-textarea name="assistantSurgeon"></x-form-textarea>
-                            </x-form-div>
-                            <x-form-div>
-                                <x-input-span>Post <br> Operarion <br> Notes</x-input-span>
-                                <x-form-textarea name="assistantSurgeon" ></x-form-textarea>
-                            </x-form-div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mb-2">
-                    <x-form-label>Anesthesiologist's Notes</x-form-label>
-                    <div class="{{ !$isUpdate ? 'd-none' : '' }} allSponsorInputsDiv">
-                        <div class="row">
-                            <x-form-div>
-                                <x-input-span>Name<x-required-span /></x-input-span>
-                                <x-form-input name="sponsorName" />
-                            </x-form-div>
-                            <x-form-div>
-                                <x-input-span>Phone No.<x-required-span /></x-input-span>
-                                <x-form-input name="phoneNumber" />
-                            </x-form-div>
-                            <x-form-div>
-                                <x-input-span>Email</x-input-span>
-                                <x-form-input name="email" />
-                            </x-form-div>
-                        </div>
+                    <x-form-label>Delivery Note</x-form-label>
+                    <div class="row">
+                        <x-form-div>
+                            <x-input-span>Date<x-required-span /></x-input-span>
+                            <x-form-input type="date" name="date" value="" />
+                        </x-form-div>
+                        <x-form-div>
+                            <x-input-span>Time of Admission<x-required-span /></x-input-span>
+                            <x-form-input type="datetime-local" name="timeOfAdmission" />
+                        </x-form-div>
+                        <x-form-div>
+                            <x-input-span>Time of Delivery</x-input-span>
+                            <x-form-input type="datetime-local" name="timeOfDelivery" />
+                        </x-form-div>
+                        <x-form-div>
+                            <x-input-span>Apgar Score</x-input-span>
+                            <x-form-input name="apgarScore" />
+                        </x-form-div>
+                        <x-form-div>
+                            <x-input-span>Weight</x-input-span>
+                            <x-form-input name="weight" />
+                        </x-form-div>
+                        <x-form-div>
+                            <x-input-span>Mode of Delivery</x-input-span>
+                            <x-form-input name="modeOfDelivery" />
+                        </x-form-div>
+                        <x-form-div>
+                            <x-input-span>Lenght of Parity</x-input-span>
+                            <x-form-input name="lengthOfParity" />
+                        </x-form-div>
+                        <x-form-div>
+                            <x-input-span>Head Circumference</x-input-span>
+                            <x-form-input name="headCircumference" />
+                        </x-form-div>
+                        <x-form-div>
+                            <x-input-span>Sex<x-required-span /></x-input-span>
+                            <x-form-input name="sex" />
+                        </x-form-div>
+                        <x-form-div>
+                            <x-input-span>EBL</x-input-span>
+                            <x-form-input name="ebl" />
+                        </x-form-div>
                     </div>
                 </div>
             </div>
