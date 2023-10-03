@@ -138,7 +138,7 @@ $consultationDetails = [
 
 <div class="container">
     <div class="modal fade " id="{{ $id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fs-4 text-primary">{{ $title }}</h5>
@@ -153,22 +153,15 @@ $consultationDetails = [
                             <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
                             <div class="row knownClinicalInfoDiv">
                                 @include('patients.partials.known-clinical-info', ['disabled' => true])
-                                <div class="d-flex justify-content-center">
-                                    <button type="button" id=""
-                                        class="btn bg-primary text-white reviewKnownClinicalInfoBtn">
-                                        <i class="bi bi-arrow-up-circle"></i>
-                                        Update
-                                    </button>
-                                </div>
                             </div>
                         </div>
                         <div id="consultationReviewDiv">
                         </div>
-                        <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseReviewDiv" role="button" aria-expanded="true" aria-controls="collapseReviewDiv">
-                            <span class="mx-2">New Review</span>
-                            <i class="bi bi-chevron-double-right text-primary"> </i>
+                        <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="true" aria-controls="collapseExample">
+                            <span class="mx-2">Review Patient</span>
+                            <i class="bi bi-chevron-double-down text-primary"> </i>
                         </div>
-                        <div class="collapse mb-2 reviewDiv" id="collapseReviewDiv" style="">
+                        <div class="collapse mb-2 reviewDiv" id="collapseExample" style="">
                             <div class="card card-body">
                                 <div id="reviewConsultationDiv">
                                     <div class="mb-2 form-control">
@@ -203,17 +196,6 @@ $consultationDetails = [
                                                     Findings </x-input-span>
                                                 <x-form-textarea name="examinationFindings" id="examinationFindings"
                                                     cols="10" rows="3"></x-form-textarea>
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-12">
-                                                <x-input-span>Search <br />ICD11 for Diagnosis</x-input-span>
-                                                <x-icd11-diagnosis-input :number="2" />
-                                            </x-form-div>
-                                            <x-icd11-diagnosis-div :number="2" />
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="diagnosisLabel">Selected <br />ICD11 <br />
-                                                    Diagnosis</x-input-span>
-                                                <x-form-textarea type="text" name="selectedDiagnosis" class="selectedDiagnosis-2"
-                                                style="height: 100px"></x-form-textarea>
                                             </x-form-div>
                                             <x-form-div class="col-xl-6">
                                                 <x-input-span class="" id="assessmentLabel"> Assessment
@@ -318,181 +300,9 @@ $consultationDetails = [
                                         </table>
                                     </div>
                                 </div>
-                                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center"  id="collapseReview" data-bs-toggle="collapse" href="#collapseReviewDiv" role="button" aria-expanded="true" aria-controls="collapseReviewDiv">
-                                    <span class="mx-2">Close New Review</span>
-                                    <i class="bi bi-chevron-double-left text-primary"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="specialistConsultation" data-bs-toggle="collapse" href="#collapseSpecialistConsultation" role="button" aria-expanded="true" aria-controls="collapseSpecialistConsultation">
-                            <span class="mx-2">New Specialist Consultation</span>
-                            <i class="bi bi-chevron-double-right text-primary"> </i>
-                        </div>
-                        <div class="collapse mb-2 specialistConsultationDiv" id="collapseSpecialistConsultation" style="">
-                            <div class="card card-body">
-                                <div id="reviewConsultationDiv">
-                                    <div class="mb-2 form-control">
-                                        <x-form-label>Specialist Consultation</x-form-label>
-                                        <div class="row">
-                                            <div class="row addReviewVitalsignsDiv d-none">
-                                                <x-form-span class="fw-semibold">Vital Signs</x-form-span>
-                                                @include('vitalsigns.vitalsigns', ['disabled' => true])
-                                            </div>
-                                            <div class="d-flex justify-content-center">
-                                                <button type="button" id="addReviewVitalsignsBtn"
-                                                    class="btn bg-primary text-white">
-                                                    <i class="bi bi-bag-plus"></i>
-                                                    vital signs
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <x-form-span class="fw-semibold">Consultation</x-form-span>
-                                            <x-form-div class="col-xl-12">
-                                                <x-input-span id="presentingComplainLabel">Presenting <br /> Complain</x-input-span>
-                                                <x-form-textarea name="presentingComplain" id="presentingComplain" cols="10"
-                                                    rows="3"></x-form-textarea>
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="historyOfPresentingComplainLabel">History of <br /> Presenting
-                                                    <br /> Complain</x-input-span>
-                                                <x-form-textarea name="historyOfPresentingComplain" id="historyOfPresentingComplain"
-                                                    cols="10" rows="3"></x-form-textarea>
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="medicalHistoryLabel">Past Medical/ <br /> Surgical
-                                                    History</x-input-span>
-                                                <x-form-textarea name="medicalHistory" id="medicalHistory" cols="10"
-                                                    rows="3"></x-form-textarea>
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="obGyneHistoryLabel">Obstetrics/<br />Gynecological <br />
-                                                    History</x-input-span>
-                                                <x-form-textarea type="text" name="obGyneHistory" id="obGyneHistory"
-                                                    cols="10" rows="3"></x-form-textarea>
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="examinationFindingsLabel">Examination <br />
-                                                    Findings</x-input-span>
-                                                <x-form-textarea type="text" name="examinationFindings"
-                                                    id="examinationFindings" cols="10" rows="3"></x-form-textarea>
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-12">
-                                                <x-input-span>Search <br />ICD11 for Diagnosis</x-input-span>
-                                                <x-icd11-diagnosis-input :number="3" />
-                                            </x-form-div>
-                                            <x-icd11-diagnosis-div :number="3" />
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="diagnosisLabel">Selected <br />ICD11 <br />
-                                                    Diagnosis</x-input-span>
-                                                <x-form-textarea type="text" name="selectedDiagnosis" class="selectedDiagnosis-3"
-                                                style="height: 100px"></x-form-textarea>
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="diagnosisLabel">Addional <br /> Diagnosis</x-input-span>
-                                                <x-form-textarea type="text" name="additionalDiagnosis" class="additionalDiagnosis"
-                                                    cols="10" rows="3"></x-form-textarea>
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-12">
-                                                <x-input-span id="physiciansPlanLabel">Physicians Plan</x-input-span>
-                                                <x-form-textarea type="text" name="physiciansPlan" id="physiciansPlan"
-                                                    cols="10" rows="3"></x-form-textarea>
-                                            </x-form-div>
-                                        </div>
-                                        <div class="row my-2">
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="admitLabel">Admit?</x-input-span>
-                                                <select class="form-select form-select-md" name="admit">
-                                                    <option value="">Select</option>
-                                                    <option value="Outpatient">No</option>
-                                                    <option value="Inpatient">Yes</option>
-                                                </select>
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="wardLabel">Ward</x-input-span>
-                                                <select class="form-select form-select-md" name="ward">
-                                                    <option value="">Select Ward</option>
-                                                    <option value="Private Ward">Private Ward</option>
-                                                    <option value="General Ward">General Ward</option>
-                                                </select>
-                                            </x-form-div>
-                                        </div>
-                                        <div class="d-flex justify-content-center">
-                                            <button type="button" id="saveReviewConsultationBtn"
-                                                class="btn bg-primary text-white">
-                                                <i class="bi bi-check-circle me-1"></i>
-                                                Save
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="reviewInvestigationAndManagmentDiv d-none">
-                                    <div class="mb-2 form-control">
-                                        <x-form-span>Investigation & Management</x-form-span>
-                                        <div class="row">
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="itemsLabel">Item</x-input-span>
-                                                <x-form-input type="search" name="item" id="item" placeholder="search" list="itemsList"/>
-                                                <datalist name="item" type="text" class="decoration-none" id="itemsList"></datalist>
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="prescriptionLabel">Prescription</x-input-span>
-                                                <x-form-input type="text" name="prescription" id="prescription"
-                                                    placeholder="eg: 5mg BD x5" />
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="quantityLabel">Quantity</x-input-span>
-                                                <x-form-input type="number" name="quantity" id="quantity"
-                                                    placeholder="" />
-                                            </x-form-div>
-                                        </div>
-                                        <div class="d-flex justify-content-center">
-                                            <button type="button" id="addInvestigationAndManagmnentBtn"
-                                                class="btn btn-primary">
-                                                add
-                                                <i class="bi bi-prescription"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="mb-2 form-control">
-                                        <table id="prescriptionTable"
-                                            class="table table-hover align-middle table-sm bg-primary">
-                                            <thead>
-                                                <tr>
-                                                    <th>S/N</th>
-                                                    <th>Billed at</th>
-                                                    <th>Item</th>
-                                                    <th>Prescription</th>
-                                                    <th>Qty</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <td>12/09/2023 11:02pm</td>
-                                                    <td>N/S 500mls</td>
-                                                    <td>500mls 12hrly x2</td>
-                                                    <td></td>
-                                                    <td><button class="btn btn-outline-primary deleteBtn"><i
-                                                                class="bi bi-trash"></i></button></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>2</td>
-                                                    <td>12/09/2023 11:15pm</td>
-                                                    <td>5% mls Syringe</td>
-                                                    <td></td>
-                                                    <td>4</td>
-                                                    <td><button class="btn btn-outline-primary deleteBtn"><i
-                                                                class="bi bi-trash"></i></button></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center"  id="specialistConsultation" data-bs-toggle="collapse" href="#collapseSpecialistConsultation" role="button" aria-expanded="true" aria-controls="collapseSpecialistConsultation">
-                                    <span class="mx-2">Close Specialist Consultation</span>
-                                    <i class="bi bi-chevron-double-left text-primary"></i>
+                                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center"  id="collapseReview" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="true" aria-controls="collapseExample">
+                                    <span class="mx-2">Close Review</span>
+                                    <i class="bi bi-chevron-double-up text-primary"></i>
                                 </div>
                             </div>
                         </div>

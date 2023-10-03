@@ -67,7 +67,7 @@ const consultationDetails = {
             "weight": "96kg",
             "activeUser": "Admin",
             "selectedDiagnosis": "Acute Spundolosis",
-            "complain": "Headache and weakness in the knees. But also, patient wants to talk for long. He wants to go on and on and on. I want to continue writing all these things till the line overflows",
+            "complain": "Headache and weakness in the knees. But also, patient wants to talk for long. He wants to go on and on and on. I want to continue writing all these things till the line overflows. It needs to overflow more and more for theses things to be very very clear to really really see. I should be right about done now",
             "examinationFindings": "Server yellowness in both eyes",
             "notes": "patient not improved after 24hrs of rocephine. I will continue",
             "plan": "change to meropenim for the next 24hrs, and if no improvement, refer.",

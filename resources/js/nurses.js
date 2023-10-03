@@ -1,122 +1,25 @@
-import { Modal, Collapse } from "bootstrap"
-import * as ECT from '@whoicd/icd11ect'
-import '@whoicd/icd11ect/style.css'
+import { Offcanvas, Modal } from "bootstrap";
 import { consultationDetails, items } from "./data"
 import { clearDivValues, clearItemsList } from "./helpers"
 
+
 window.addEventListener('DOMContentLoaded', function () {
-    const newConsultationModal      = new Modal(document.getElementById('newConsultationModal'))
-    const reviewConsultationModal   = new Modal(document.getElementById('reviewConsultationModal'))
-    const surgeryModal              = new Modal(document.getElementById('surgeryModal'))
-    const fileModal                 = new Modal(document.getElementById('fileModal'))
-    const deliveryModal             = new Modal(document.getElementById('deliveryModal'))
+    const medicationCanvasTable = new Offcanvas(document.getElementById('offcanvasWithBothOptions'))
 
-    const newConsultationBtn        = document.querySelector('.newConsultationBtn')
-    const reviewConsultationBtn     = document.querySelector('.reviewConsultationBtn')
+    const reviewDetailsModal    = new Modal(document.getElementById('reviewDetailsModal'))
 
-    const saveNewConsultationBtn    = document.querySelector('#saveNewConsultationBtn')
-    const saveReviewConsultationBtn = document.querySelector('#saveReviewConsultationBtn')
+    const detailsBtn            = document.querySelector('.detailsBtn')
 
-    const addKnownClinicalInfoBtn   = newConsultationModal._element.querySelector('.addKnownClinicalInfoBtn')
-    const reviewAddKnownClinicalInfoBtn = reviewConsultationModal._element.querySelector('.reviewKnownClinicalInfoBtn')
-
-    const addVitalsignsBtn = document.querySelector('#addVitalsignsBtn')
-    const addReviewVitalsignsBtn = document.querySelector('#addReviewVitalsignsBtn')
-    
-    const addVitalsignsDiv = document.querySelector('.addVitalsignsDiv')
-    const addReviewVitalsignsDiv = document.querySelector('.addReviewVitalsignsDiv')
-
-    const newConsultationDiv = document.querySelector('#newConsultationDiv')
-    const reviewConsultationDiv = document.querySelector('#reviewConsultationDiv')
     const consultationReviewDiv = document.querySelector('#consultationReviewDiv')
+    
+    
 
-    const newInvestigationAndManagementDiv = document.querySelector('.newInvestigationAndManagmentDiv')
-    const reviewInvestigationAndManagementDiv = document.querySelector('.reviewInvestigationAndManagmentDiv')
-
-    //const diagnosisInput = document.querySelector('.selectedDiagnosis')
-    const newConsultationItemInput = newConsultationModal._element.querySelector('#item')
-    const reviewConsultationItemInput = reviewConsultationModal._element.querySelector('#item')
-
-
-    // Auto textarea adjustment
-    const textareaHeight = 100;
-    const textarea = document.getElementsByTagName("textarea");
-
-        for (let i = 0; i < textarea.length; i++) {
-        if (textarea[i].value == '') {
-            textarea[i].setAttribute("style", "height:" + textareaHeight + "px;overflow-y:hidden;");
-        } else {
-            textarea[i].setAttribute("style", "height:" + (textarea[i].scrollHeight) + "px;overflow-y:hidden;");
-        }
-        textarea[i].addEventListener("input", OnInput, false);
-        }
-
-    // ICD11settings
-    const mySettings = { apiServerUrl: "https://icd11restapi-developer-test.azurewebsites.net" }
-
-
-    // ICD11 callbacks
-    const myCallbacks = {
-        selectedEntityFunction: (selectedEntity) => {
-            document.querySelector('.selectedDiagnosis-' + selectedEntity.iNo).value += selectedEntity.code + '-' + selectedEntity.selectedText + '\r\n\n'
-            document.querySelector('.selectedDiagnosis-' + selectedEntity.iNo).dispatchEvent(new Event('input', { bubbles: true }))
-            ECT.Handler.clear(selectedEntity.iNo)
-        }
-    }
-
-    // ICD11 handler
-    ECT.Handler.configure(mySettings, myCallbacks)
-
-    // NEW CONSULTATION MODAL CODE 
-
-    // show new consultation modal
-    newConsultationBtn.addEventListener('click', function () {
-        displayItemsList(newInvestigationAndManagementDiv, items)
-        newConsultationModal.show()
+    medicationCanvasTable._element.addEventListener('shown.bs.offcanvas', function () {
+        
     })
 
-    // manipulating known clinical info on new consultation modal
-    addKnownClinicalInfoBtn.addEventListener('click', function () {
-        toggleAttributeLoop(querySelectAllTags(newConsultationModal._element.querySelector('.knownClinicalInfoDiv'), ['input, select, textarea']), 'disabled', '')
+    detailsBtn.addEventListener('click', function () {
 
-        addKnownClinicalInfoBtn.textContent === "Done" ? 
-        addKnownClinicalInfoBtn.innerHTML = `<i class="bi bi-arrow-up-circle"></i> Update` : 
-        addKnownClinicalInfoBtn.textContent = "Done"
-    }) 
-
-     // manipulating the vital signs div on new consultation modal
-     addVitalsignsBtn.addEventListener('click', function () {
-        addVitalsignsDiv.classList.toggle('d-none')
-    })
-   
-    // save new consultation
-    saveNewConsultationBtn.addEventListener('click', function () {
-        //console.log(getConsultationDivData(newConsultationDiv))
-
-        toggleAttributeLoop(querySelectAllTags(newConsultationDiv, ['input, select, textarea']), 'disabled')
-
-        saveNewConsultationBtn.innerHTML === '<i class="bi bi-pencil"></i> Edit' ? 
-        saveNewConsultationBtn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Save` : 
-        saveNewConsultationBtn.innerHTML = '<i class="bi bi-pencil"></i> Edit'
-
-
-        newInvestigationAndManagementDiv.classList.remove('d-none')
-    })
-
-
-    // tasks to run when closing new consultation modal
-    newConsultationModal._element.addEventListener('hidden.bs.modal', function() {
-        newInvestigationAndManagementDiv.classList.add('d-none')
-        saveNewConsultationBtn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Save`
-        removeAttributeLoop(querySelectAllTags(newConsultationDiv, ['input, select, textarea']), 'disabled')
-        clearDivValues(newConsultationDiv)
-    })
-
-
-    // REVIEW CONSULTATION MODAL CODE
-
-    // Open review consultation modal and returning a loop of all consultations for the given pattient
-    reviewConsultationBtn.addEventListener('click', function () {
         let iteration = 0
         consultationDetails.data.forEach(line => {
             iteration++
@@ -124,7 +27,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (iteration > 1) {
                 consultationReviewDiv.innerHTML += `
                 <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample">
-                    <span class="mx-2">Review</span>
+                    <span class="mx-2">Consultation ${iteration}</span>
                     <i class="bi bi-chevron-double-down text-primary"> </i>
                 </div>
                 <div class="collapse mb-2 reviewDiv" id="collapseExample${iteration}" style="">
@@ -187,8 +90,8 @@ window.addEventListener('DOMContentLoaded', function () {
                             <div class="row">
                                 <div class="col-xl-4 themed-grid-col col-xl-6">
                                     <div class="input-group mb-1">
-                                        <span class="input-group-text" id="complainLabel">Complain</span> 
-                                        <textarea class="form-control" name="complain" id="complain" cols="10" rows="3" readonly="readonly">${line.complain}</textarea>
+                                        <span class="input-group-text" id="presentingComplainLabel">Complain</span> 
+                                        <textarea class="form-control" name="presentingComplain" id="presentingComplain" cols="10" rows="3" readonly="readonly">${line.complain}</textarea>
                                     </div>
                                 </div>
                                 <div class="col-xl-4 themed-grid-col col-xl-6">
@@ -748,7 +651,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         </div>
                     </div>
                     <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample">
-                    <span class="mx-2">Close Review</span>
+                    <span class="mx-2">Close Consultation ${iteration}</span>
                     <i class="bi bi-chevron-double-up text-primary"></i>
                     </div>
                 </div>
@@ -756,7 +659,7 @@ window.addEventListener('DOMContentLoaded', function () {
             } else {
                 consultationReviewDiv.innerHTML += `
                 <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample">
-                    <span class="mx-2">Consultation</span>
+                    <span class="mx-2">Consultation ${iteration}</span>
                     <i class="bi bi-chevron-double-down text-primary"></i>
                 </div>
                 <div class="collapse mb-2 reviewDiv" id="collapseExample${iteration}" style="">
@@ -1355,7 +1258,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         </div>
                     </div>
                     <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview"           data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample">
-                    <span class="mx-2">Close Consultation</span>
+                    <span class="mx-2">Close Consultation ${iteration}</span>
                     <i class="bi bi-chevron-double-up text-primary"></i>
                     </div>
                 </div>
@@ -1363,188 +1266,7 @@ window.addEventListener('DOMContentLoaded', function () {
             } 
              
         })
-        reviewConsultationModal.show()
+
+        reviewDetailsModal.show()
     })
-
-    // manipulating known clinical info on review consultation modal
-    reviewAddKnownClinicalInfoBtn.addEventListener('click', function () {    
-        toggleAttributeLoop(querySelectAllTags(reviewConsultationModal._element.querySelector('.knownClinicalInfoDiv'), ['input, select, textarea']), 'disabled', '')
-
-        reviewAddKnownClinicalInfoBtn.textContent === "Done" ? 
-        reviewAddKnownClinicalInfoBtn.innerHTML = `<i class="bi bi-arrow-up-circle"></i> Update` :
-        reviewAddKnownClinicalInfoBtn.textContent = "Done"
-    })
-
-    // manipulating the vital signs div on review consultation modal
-    addReviewVitalsignsBtn.addEventListener('click', function () {
-        addReviewVitalsignsDiv.classList.toggle('d-none')
-    })
-
-    //save review consultation
-    saveReviewConsultationBtn.addEventListener('click', function () {
-        console.log(getConsultationDivData(reviewConsultationDiv))
-
-        toggleAttributeLoop(querySelectAllTags(reviewConsultationDiv, ['input, select, textarea']), 'disabled')
-
-        saveReviewConsultationBtn.innerHTML === '<i class="bi bi-pencil"></i> Edit' ? 
-        saveReviewConsultationBtn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Save` : 
-        saveReviewConsultationBtn.innerHTML = '<i class="bi bi-pencil"></i> Edit'
-
-        //displayItemsList(reviewInvestigationAndManagementDiv, items)
-        //console.log(reviewInvestigationAndManagementDiv)
-        reviewInvestigationAndManagementDiv.classList.remove('d-none')
-    })
-
-    // review consultation item input
-    reviewConsultationItemInput.addEventListener('keyup', function() {
-
-        let records = items.filter(d => d.name.toLocaleLowerCase().includes(reviewConsultationItemInput.value.toLocaleLowerCase()) ? d : '')
-        console.log(records)
-
-        displayItemsList(reviewInvestigationAndManagementDiv, records)
-        // get('/clients/list', {searchTerm :clientInput.value})
-        //         .then(response => response.json())
-        //         .then(response => displayItemsList(reviewInvestigationAndManagementDiv, items))
-    })
-
-    // review consultation loops
-    document.querySelector('#consultationReviewDiv').addEventListener('click', function (event) {
-        const deleteConsultationBtn                 = event.target.closest('#deleteConsultationBtn')
-        const updateInvestigationAndManagmentBtn    = event.target.closest('.updateInvestigationAndManagmentBtn')
-        const updateInvestigationAndManagmentDiv    = document.querySelectorAll('.updateInvestigationAndManagmentDiv')
-        const surgeryBtn                            = event.target.closest('#surgeryBtn')
-        const fileBtn                               = event.target.closest('#fileBtn')
-        const deliveryBtn                           = event.target.closest('#deliveryBtn')
-
-        if (deleteConsultationBtn) {
-            if (confirm('If you delete this consultation you cannot get it back! Are you sure you want to delete?')) {
-
-            }
-        }
-
-        if (updateInvestigationAndManagmentBtn) {
-            updateInvestigationAndManagmentDiv.forEach(div => {
-
-                if (div.getAttribute('data-id') === updateInvestigationAndManagmentBtn.getAttribute('data-id')) {
-                    div.classList.toggle('d-none')
-                    div.querySelector('#item').addEventListener('keyup', ()=> {
-                        let records = items.filter(d => d.name.toLocaleLowerCase().includes(div.querySelector('#item').value.toLocaleLowerCase()) ? d : '')
-                        displayItemsList(div, records)
-                        console.log(div)
-                        console.log(records)
-                    })
-                }
-                
-            })
-        }
-
-        if (surgeryBtn) {
-            surgeryModal.show()
-        }
-
-        if (fileBtn) {
-            fileModal.show()
-        }
-
-        if (deliveryBtn) {
-            deliveryModal.show()
-        }
-    })
-
-
-    // tasks to run when closing review consultation modal
-    reviewConsultationModal._element.addEventListener('hide.bs.modal', function(event) {
-        // if (!confirm('Have you saved? You will loose all unsaved data')) {
-        //     event.preventDefault()
-        //     return
-        // }
-        consultationReviewDiv.innerHTML = ''
-        reviewInvestigationAndManagementDiv.classList.add('d-none')
-        saveReviewConsultationBtn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Save`
-        removeAttributeLoop(querySelectAllTags(reviewConsultationDiv, ['input, select, textarea']), 'disabled')
-        clearDivValues(reviewConsultationDiv)
-        clearDivValues(reviewInvestigationAndManagementDiv)
-        reviewConsultationModal._element.querySelectorAll('#itemsList').forEach(list => clearItemsList(list))
-        document.querySelectorAll('#collapseReviewDiv, #collapseSpecialistConsultation').forEach(el => {
-            let collapseable = new Collapse(el, {toggle: false})
-            collapseable.hide()
-        })
-        
-    })
-
 })
-
-function OnInput(e) {
-  this.style.height = 0;
-  this.style.height = (this.scrollHeight) + "px";
-}
-
-function getConsultationFormData(modal) {
-    let data = {}
-    const fields = [
-        ...modal._element.getElementsByTagName('input'),
-        ...modal._element.getElementsByTagName('select'),
-        ...modal._element.getElementsByTagName('textarea')
-    ]
-
-    fields.forEach(select => {
-        select.hasAttribute('name') ?
-            data[select.name] = select.value : ''
-    })
-
-    return data
-}
-
-function getConsultationDivData(div) {
-    let data = {}
-    const fields = [
-        ...div.getElementsByTagName('input'),
-        ...div.getElementsByTagName('select'),
-        ...div.getElementsByTagName('textarea')
-    ]
-
-    fields.forEach(select => {
-        select.hasAttribute('name') ?
-            data[select.name] = select.value : ''
-    })
-
-    return data
-}
-
-function removeAttributeLoop(element, attribute, value) {
-    element.forEach(tag => {
-        tag.removeAttribute(attribute)
-    })
-}
-
-function toggleAttributeLoop(element, attribute, value) {
-    element.forEach(tag => {
-        tag.toggleAttribute(attribute)
-    })
-}
-
-function querySelectAllTags(div, ...tags){
-    return div.querySelectorAll(tags)
-}
-
-function displayItemsList(div, data) {
-    //const dataListId = div.querySelector('#itemsList')
-
-    data.forEach(line => {
-        const option = document.createElement("OPTION")
-        option.setAttribute('id', 'itemsOption')
-        option.setAttribute('value', line.name)
-        option.setAttribute('data-id', line.id)
-        option.setAttribute('name', line.name)
-
-        let previous = div.querySelectorAll('#itemsOption')
-            let elBox = []
-            previous.forEach(node => {
-               elBox.push(node.dataset.id)
-            })
-
-            div.querySelector('#item').setAttribute('list', 'itemsList')
-            div.querySelector('datalist').setAttribute('id', 'itemsList')
-            !elBox.includes(option.dataset.id) ? div.querySelector('#itemsList').appendChild(option) : ''
-    })
-}

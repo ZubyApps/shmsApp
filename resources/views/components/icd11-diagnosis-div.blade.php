@@ -1,1 +1,2 @@
-<div class="ctw-window" data-ctw-ino="1"></div>
+@props(['number' => '1'])
+<div class="ctw-window" data-ctw-ino="{{ $number }}"></div>

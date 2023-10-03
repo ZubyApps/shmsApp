@@ -13,6 +13,7 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/patients.js',
                 'resources/js/doctors.js',
+                'resources/js/nurses.js',
             ],
             refresh: true,
         }),

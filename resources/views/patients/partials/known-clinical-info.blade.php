@@ -17,7 +17,7 @@
 
     <x-form-div>
         <x-input-span>Known <br> Conditions</x-input-span>
-        <x-form-textarea name="knownConditions" class="knownConditions" cols="10" rows="2"
+        <x-form-textarea name="knownConditions" class="knownConditions" cols="auto" rows="auto"
             placeholder="eg: Diabetic, Hypertension, Atopy" value="Hypertensive" :disabled="$disabled">Hypertensive <br> Diabetic</x-form-textarea>
     </x-form-div>
     <x-input-error :messages="$errors->get('knownConditions')" class="mt-1" />

@@ -65,7 +65,8 @@
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('patients') ? 'active text-primary' : '' }}">Patients</a>
             <a href="/doctors"
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('doctors') ? 'active text-primary' : '' }}">Doctors</a>
-            <a class="nav-item nav-link link-body-emphasis" href="#">Nurses</a>
+            <a href="/nurses" 
+                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('nurses') ? 'active text-primary' : '' }}">Nurses</a>
             <a class="nav-item nav-link link-body-emphasis" href="#">Laboratory</a>
             <a class="nav-item nav-link link-body-emphasis" href="#">Pharmacy</a>
             <a class="nav-item nav-link link-body-emphasis" href="#">HMO Desk</a>

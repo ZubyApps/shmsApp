@@ -11,25 +11,17 @@
                             class="fw-bold">M</span>anagement <span class="fw-bold">S</span>ystem</p>
                     <div class="">
                         <a href="/patients" class="btn btn-outline-primary mx-1"><i class="bi bi-people"> Patients</i></a>
-                        <a href="/doctors" class="btn btn-outline-primary mx-1"><i class="bi bi-lungs-fill"
-                                aria-hidden="true">
-                                Doctors</i></a>
-                        <a href="/nurses" class="btn btn-outline-primary fw- mx-1"><i
-                                class="bi bi-thermometer-low">Nurses</i></a>
+                        <a href="/doctors" class="btn btn-outline-primary mx-1"><i class="bi bi-lungs-fill" aria-hidden="true">Doctors</i></a>
+                        <a href="/nurses" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-thermometer-low">Nurses</i></a>
                         <br>
-                        <a href="/laboratory" class="btn btn-outline-primary mx-1"><i class="bi bi-eyedropper"
-                                aria-hidden="true"> Laboratory</i></a>
-                        <a href="/pharmacy" class="btn btn-outline-primary fw- mx-1"><i
-                                class="bi bi-capsule">Pharmacy</i></a>
-                        <a href="/hmodesk" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-calendar2-plus">HMO
-                                Desk</i></a>
+                        <a href="/laboratory" class="btn btn-outline-primary mx-1"><i class="bi bi-eyedropper" aria-hidden="true"> Laboratory</i></a>
+                        <a href="/pharmacy" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-capsule">Pharmacy</i></a>
+                        <a href="/hmodesk" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-calendar2-plus">HMO Desk</i></a>
                         <br>
-                        <a href="/reception" class="btn btn-outline-primary fw- mx-1"><i
-                                class="bi bi-receipt">Billing</i></a>
+                        <a href="/reception" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-receipt">Billing</i></a>
                     </div>
                     <br>
-                    <p class="fs-5 mb-0"><a href="#" class="text-decoration-none text-black">We treat, God
-                            heals...</a></p>
+                    <p class="fs-5 mb-0"><a href="#" class="text-decoration-none text-black">We treat, God heals...</a></p>
                 </div>
             </div>
         </main>

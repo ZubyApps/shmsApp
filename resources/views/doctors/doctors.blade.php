@@ -13,7 +13,7 @@
         <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
             aria-labelledby="offcanvasWithBothOptionsLabel">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">List of Waiting Patients</h5>
+                <h5 class="offcanvas-title text-primary" id="offcanvasWithBothOptionsLabel">List of Waiting Patients</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body">
@@ -22,7 +22,7 @@
                     <table id="waitingListTable" class="table table-hover align-middle table-sm bg-primary">
                         <thead>
                             <tr>
-                                <th>Name</th>
+                                <th>Patient</th>
                                 <th>Age</th>
                                 <th>Sponsor</th>
                                 <th>Consult</th>
@@ -41,16 +41,7 @@
                                 <td>Axe Mansard HMO</td>
                                 <td><button class="btn btn-outline-primary newConsultationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
                             </tr>
-                            
                         </tbody>
-                        <tfoot class="fw-bolder text-primary">
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -62,14 +53,6 @@
                 <i class="bi bi-list-check"></i>
                 Waiting List
             </button>
-            <!-- <button type="button"  class="btn btn-primary text-white mx-2">
-                <i class="bi bi-plus-circle me-1"></i>
-                New Patient
-            </button>
-            <button type="button"  class="btn btn-primary text-white">
-                <i class="bi bi-plus-circle me-1"></i>
-                New Sponsor
-            </button> -->
         </div>
 
         <div>
@@ -121,8 +104,6 @@
                                     <td><button class="btn btn-outline-primary reviewConsultationBtn">Review</button></td>
                                 </tr>
                             </tbody>
-                            <tfoot class="text-primary">
-                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -143,17 +124,6 @@
                                 </tr>
                             </thead>
                             <tbody></tbody>
-                            <tfoot class="fw-bolder text-primary">
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -174,17 +144,6 @@
                                 </tr>
                             </thead>
                             <tbody></tbody>
-                            <tfoot class="fw-bolder text-primary">
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
                 </div> --}}

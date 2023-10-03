@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\NurseController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/patients', [PatientController::class, 'index'])->name('patients');
     Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors');
+    Route::get('/nurses', [NurseController::class, 'index'])->name('nurses');
 });
 
 require __DIR__.'/auth.php';

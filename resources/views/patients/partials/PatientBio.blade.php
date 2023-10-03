@@ -28,4 +28,8 @@
         <x-input-span>Ethnic Group</x-input-span>
         <x-form-input name="ethnicGroup" value="Yoruba" readonly />
     </x-form-div>
+    <x-form-div>
+        <x-input-span>Religion</x-input-span>
+        <x-form-input name="religion" value="Christian" readonly />
+    </x-form-div>
 </div>
