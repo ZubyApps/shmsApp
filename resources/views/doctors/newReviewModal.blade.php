@@ -12,12 +12,12 @@
                             <div class="mb-2 form-control">
                                 <x-form-label>Review Patient</x-form-label>
                                 <div class="row">
-                                    <div class="row addVitalsignsDiv d-none">
+                                    <div class="row addVitalsignsDiv d-none" data-div="review">
                                         <x-form-span class="fw-semibold">Vital Signs</x-form-span>
                                         @include('vitalsigns.vitalsigns', ['disabled' => true])
                                     </div>
                                     <div class="d-flex justify-content-center">
-                                        <button type="button" id="addVitalsignsBtn"
+                                        <button type="button" id="addVitalsignsBtn" data-btn="review"
                                             class="btn btn-primary">
                                             <i class="bi bi-plus-circle me-1"></i>
                                             vital signs

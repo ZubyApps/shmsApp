@@ -14,11 +14,11 @@
                         </div>
                         <div class="mb-2 form-control">
                             <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
-                            <div class="row knownClinicalInfoDiv">
+                            <div class="row knownClinicalInfoDiv" data-div="new">
                                 @include('patients.partials.known-clinical-info', ['disabled' => true])
                                 <div class="d-flex justify-content-center">
                                     <button type="button" id=""
-                                        class="btn bg-primary text-white addKnownClinicalInfoBtn">
+                                        class="btn bg-primary text-white updateKnownClinicalInfoBtn" data-btn="new">
                                         <i class="bi bi-arrow-up-circle"></i>
                                         Update
                                     </button>
@@ -70,25 +70,14 @@
                                                         <td>1.5m</td>
                                                     </tr>
                                                 </tbody>
-                                                <tfoot class="fw-bolder text-primary">
-                                                    <tr>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td></td>
-                                                    </tr>
-                                                </tfoot>
                                             </table>
                                         </div>
                                         <div class="row">
-                                            <div class="row addVitalsignsDiv d-none">
+                                            <div class="row addVitalsignsDiv d-none" data-div="new">
                                                 @include('vitalsigns.vitalsigns', ['disabled' => true])
                                             </div>
                                             <div class="d-flex justify-content-center">
-                                                <button type="button" id="addVitalsignsBtn"
+                                                <button type="button" id="addVitalsignsBtn" data-btn="new"
                                                     class="btn btn-primary">
                                                     <i class="bi bi-plus-circle me-1"></i>
                                                     add

@@ -17,12 +17,12 @@
                                     <x-form-input name="consultantSpecialist" value="" autocomplete="on" />
                                 </x-form-div>
                                 <div class="row mt-2">
-                                    <div class="row addVitalsignsDiv d-none">
+                                    <div class="row addVitalsignsDiv d-none" data-div="specialist">
                                         <x-form-span class="fw-semibold">Vital Signs</x-form-span>
                                         @include('vitalsigns.vitalsigns', ['disabled' => true])
                                     </div>
                                     <div class="d-flex justify-content-center">
-                                        <button type="button" id="addVitalsignsBtn" class="btn btn-primary">
+                                        <button type="button" id="addVitalsignsBtn" data-btn="specialist" class="btn btn-primary">
                                             <i class="bi bi-plus-circle me-1"></i>
                                             vital signs
                                         </button>

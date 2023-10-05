@@ -19,26 +19,27 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveNewConsultationBtn            = document.querySelector('#saveNewConsultationBtn')
     const saveReviewConsultationBtn         = document.querySelector('#saveReviewConsultationBtn')
     const saveSpecialistConsultationBtn     = document.querySelector('#saveSpecialistConsultationBtn')
-
-    const addKnownClinicalInfoBtn           = newConsultationModal._element.querySelector('.addKnownClinicalInfoBtn')
-    const reviewAddKnownClinicalInfoBtn     = reviewConsultationModal._element.querySelector('.reviewKnownClinicalInfoBtn')
-
+    
     const reviewPatientbtn                  = reviewConsultationModal._element.querySelector('#reviewPatientBtn')
     const specialistConsultationbtn         = reviewConsultationModal._element.querySelector('#specialistConsultationBtn')
-
+    
     const newConsultationDiv                = document.querySelector('#newConsultationDiv')
     const reviewConsultationDiv             = document.querySelector('#reviewConsultationDiv')
     const consultationReviewDiv             = document.querySelector('#consultationReviewDiv')
     const specialistConsultationDiv         = document.querySelector('#specialistConsultationDiv')
-
+    
     const newInvestigationAndManagementDiv  = document.querySelector('.newInvestigationAndManagmentDiv')
     const reviewInvestigationAndManagementDiv = document.querySelector('.reviewInvestigationAndManagmentDiv')
     const specialistConsultationInvestigationAndManagementDiv = document.querySelector('.specialistConsultationInvestigationAndManagmentDiv')
 
+    const ItemInput                         = document.querySelectorAll('#item')
+
     const investigationAndManagmentDiv      = document.querySelectorAll('.investigationAndManagementDiv')
-    console.log(investigationAndManagmentDiv)
-    const ItemInput = document.querySelectorAll('#item')
+    const knownClinicalInfoDiv              = document.querySelectorAll('.knownClinicalInfoDiv')
     const addInvestigationAndManagmentBtn   = document.querySelectorAll('#addInvestigationAndManagmentBtn')
+    const updateKnownClinicalInfoBtn        = document.querySelectorAll('.updateKnownClinicalInfoBtn')
+    const addVitalsignsDiv                  = document.querySelectorAll('.addVitalsignsDiv')
+    const addVitalsignsBtn                  = document.querySelectorAll('#addVitalsignsBtn')
 
 
     // Auto textarea adjustment
@@ -74,22 +75,35 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // show new consultation modal
     newConsultationBtn.addEventListener('click', function () {
-        //displayItemsList(newInvestigationAndManagementDiv, items)
         newConsultationModal.show()
     })
 
-    // manipulating known clinical info on new consultation modal
-    addKnownClinicalInfoBtn.addEventListener('click', function () {
-        toggleAttributeLoop(querySelectAllTags(newConsultationModal._element.querySelector('.knownClinicalInfoDiv'), ['input, select, textarea']), 'disabled', '')
+    // manipulating known clinical info div
+    updateKnownClinicalInfoBtn.forEach(updateBtn => {
+        updateBtn.addEventListener('click', function () {
+            knownClinicalInfoDiv.forEach(div => {
+                if (div.dataset.div === updateBtn.dataset.btn) {
+                    toggleAttributeLoop(querySelectAllTags(div, ['input, select, textarea']), 'disabled', '')
+                    updateBtn.textContent === "Done" ?
+                    updateBtn.innerHTML = `<i class="bi bi-arrow-up-circle"></i> Update` :
+                    updateBtn.textContent = "Done"
+                    console.log(getConsultationDivData(div))
+                }
+            })
+        })
+    })
 
-        addKnownClinicalInfoBtn.textContent === "Done" ? 
-        addKnownClinicalInfoBtn.innerHTML = `<i class="bi bi-arrow-up-circle"></i> Update` : 
-        addKnownClinicalInfoBtn.textContent = "Done"
-    }) 
-
-     // manipulating the vital signs div on new consultation modal
-     newConsultationModal._element.querySelector('#addVitalsignsBtn').addEventListener('click', function () {
-        newConsultationModal._element.querySelector('.addVitalsignsDiv').classList.toggle('d-none')
+     // manipulating all vital signs div
+    addVitalsignsBtn.forEach(addBtn => {
+        addBtn.addEventListener('click', () => {
+            console.log(addBtn)
+            addVitalsignsDiv.forEach(div => {
+                console.log(div)
+                if (div.dataset.div === addBtn.dataset.btn) {
+                    div.classList.toggle('d-none')
+                }
+            })
+        })
     })
    
     // save new consultation
@@ -1375,15 +1389,6 @@ window.addEventListener('DOMContentLoaded', function () {
              
         })
         reviewConsultationModal.show()
-    })
-
-    // manipulating known clinical info on review consultation modal
-    reviewAddKnownClinicalInfoBtn.addEventListener('click', function () {    
-        toggleAttributeLoop(querySelectAllTags(reviewConsultationModal._element.querySelector('.knownClinicalInfoDiv'), ['input, select, textarea']), 'disabled', '')
-
-        reviewAddKnownClinicalInfoBtn.textContent === "Done" ? 
-        reviewAddKnownClinicalInfoBtn.innerHTML = `<i class="bi bi-arrow-up-circle"></i> Update` :
-        reviewAddKnownClinicalInfoBtn.textContent = "Done"
     })
 
     // manipulating the vital signs div on new review modal
