@@ -8,6 +8,8 @@
 @include('doctors.surgeryModal', ['title' => 'New Surgery', 'isUpdate' => false, 'id' => 'surgeryModal'])
 @include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
 @include('doctors.deliveryModal', ['title' => 'New Delivery', 'isUpdate' => false, 'id' => 'deliveryModal'])
+@include('doctors.newReviewModal', ['title' => 'New Review', 'isUpdate' => false, 'id' => 'newReviewModal'])
+@include('doctors.specialistConsultationModal', ['title' => 'New Specialist Consultation', 'isUpdate' => false, 'id' => 'specialistConsultationModal'])
 
     <div class="container p-1 mt-5">
         <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
