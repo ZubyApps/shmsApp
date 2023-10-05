@@ -9,20 +9,13 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
-    {{-- <link rel="stylesheet" href="../../public/build/assets/font-awesome-4.7.0/css/font-awesome.min.css"> --}}
-    {{-- <link rel="stylesheet" href="resources\font-awesome-4.7.0"> --}}
-    
-    {{-- <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" /> --}}
 
     <!-- Scripts -->
     @vite(['resources/css/app.scss', 'resources/js/app.js'])
 </head>
 
 <body class="vh-100">
-
     <x-header />
-
     <div>
         @yield('content')
     </div>

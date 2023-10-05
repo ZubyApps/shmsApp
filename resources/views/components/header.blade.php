@@ -1,5 +1,5 @@
 @vite(['resources/css/header.scss', 'resources/js/app.js'])
-<div class="container">
+<div class="container bg-white">
     <header class="border-bottom lh-1 py-3">
         <div class="row flex-nowrap justify-content-between align-items-center">
             <div class="col-6 text-start">

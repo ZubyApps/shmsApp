@@ -97,7 +97,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="reviewInvestigationAndManagmentDiv d-none">
+                        <div class="reviewInvestigationAndManagmentDiv d-none investigationAndManagmentDiv" data-div="review">
                             <div class="mb-2 form-control">
                                 <x-form-span>Investigation & Management</x-form-span>
                                 <div class="row">
@@ -120,7 +120,7 @@
                                     </x-form-div>
                                 </div>
                                 <div class="d-flex justify-content-center">
-                                    <button type="button" id="addInvestigationAndManagmnentBtn"
+                                    <button type="button" id="addInvestigationAndManagmentBtn" data-btn="review"
                                         class="btn btn-primary">
                                         add
                                         <i class="bi bi-prescription"></i>

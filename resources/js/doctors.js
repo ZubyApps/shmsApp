@@ -35,9 +35,10 @@ window.addEventListener('DOMContentLoaded', function () {
     const reviewInvestigationAndManagementDiv = document.querySelector('.reviewInvestigationAndManagmentDiv')
     const specialistConsultationInvestigationAndManagementDiv = document.querySelector('.specialistConsultationInvestigationAndManagmentDiv')
 
-    //const diagnosisInput = document.querySelector('.selectedDiagnosis')
-    //const newConsultationItemInput = newConsultationModal._element.querySelector('#item')
+    const investigationAndManagmentDiv      = document.querySelectorAll('.investigationAndManagmentDiv')
+    console.log(investigationAndManagmentDiv)
     const ItemInput = document.querySelectorAll('#item')
+    const addInvestigationAndManagmentBtn   = document.querySelectorAll('#addInvestigationAndManagmentBtn')
 
 
     // Auto textarea adjustment
@@ -326,11 +327,11 @@ window.addEventListener('DOMContentLoaded', function () {
                             </div>
                             ${consultationDetails.data.length > iteration ? '' : 
                             `<div class="d-flex justify-content-center my-2">
-                                <button type="button" class="btn btn-primary updateInvestigationAndManagmentBtn" data-id="${iteration}">
+                                <button type="button" class="btn btn-primary updateInvestigationAndManagmentBtn" data-btn="${iteration}">
                                     Update Investigation & Managment
                                 </button>
                             </div> 
-                            <div class="updateInvestigationAndManagmentDiv mt-2 d-none" data-id="${iteration}">
+                            <div class="investigationAndManagmentDiv mt-2 d-none" data-div="${iteration}">
                                 <div class="mb-2 form-control">
                                     <span class="fw-semibold">Investigation & Management</span>
                                     <div class="row">
@@ -355,7 +356,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                         </div>
                                     </div>
                                     <div class="d-flex justify-content-center">
-                                        <button type="button" id="addInvestigationAndManagmnentBtn" class="btn btn-primary">
+                                        <button type="button" id="addInvestigationAndManagmentBtn" data-btn="${iteration}" class="btn btn-primary">
                                             add
                                         <i class="bi bi-prescription"></i>
                                         </button>
@@ -944,11 +945,11 @@ window.addEventListener('DOMContentLoaded', function () {
                             </div>`}
                             ${consultationDetails.data.length > iteration ? '' : 
                             `<div class="d-flex justify-content-center my-2">
-                                <button type="button" class="btn btn-primary updateInvestigationAndManagmentBtn" data-id="${iteration}">
+                                <button type="button" class="btn btn-primary updateInvestigationAndManagmentBtn" data-btn="${iteration}">
                                     Update Investigation & Managment
                                 </button>
                             </div> 
-                            <div class="updateInvestigationAndManagmentDiv d-none" data-id="${iteration}">
+                            <div class="investigationAndManagmentDiv d-none" data-div="${iteration}">
                                 <div class="mb-2 form-control">
                                     <span class="fw-semibold">Investigation & Management</span>
                                     <div class="row">
@@ -973,7 +974,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                         </div>
                                     </div>
                                     <div class="d-flex justify-content-center">
-                                        <button type="button" id="addInvestigationAndManagmnentBtn" class="btn btn-primary">
+                                        <button type="button" id="addInvestigationAndManagmentBtn" data-btn="${iteration}" class="btn btn-primary">
                                             add
                                         <i class="bi bi-prescription"></i>
                                         </button>
@@ -1449,7 +1450,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     // tasks to run when closing specialist consultation modal
-    specialistConsultationModal._element.addEventListener('hide.bs.modal', function () {
+    specialistConsultationModal._element.addEventListener('hide.bs.modal', function (event) {
         if (!confirm('Have you saved? You will loose all unsaved data')) {
             event.preventDefault()
             return
@@ -1470,11 +1471,22 @@ window.addEventListener('DOMContentLoaded', function () {
         getItemsFromInput(input, items)
     })
 
+    addInvestigationAndManagmentBtn.forEach(addBtn => {
+        addBtn.addEventListener('click', () => {
+            investigationAndManagmentDiv.forEach(div => {
+                if (addBtn.dataset.btn === div.dataset.div) {
+                    console.log(getConsultationDivData(div))
+                }
+            })
+        })
+    })
+
     // review consultation loops
     document.querySelector('#consultationReviewDiv').addEventListener('click', function (event) {
         const deleteConsultationBtn                 = event.target.closest('#deleteConsultationBtn')
         const updateInvestigationAndManagmentBtn    = event.target.closest('.updateInvestigationAndManagmentBtn')
-        const updateInvestigationAndManagmentDiv    = document.querySelectorAll('.updateInvestigationAndManagmentDiv')
+        const updateInvestigationAndManagmentDiv    = document.querySelectorAll('.investigationAndManagmentDiv')
+        const addInvestigationAndManagmentBtn       = event.target.closest('#addInvestigationAndManagmentBtn')
         const surgeryBtn                            = event.target.closest('#surgeryBtn')
         const fileBtn                               = event.target.closest('#fileBtn')
         const deliveryBtn                           = event.target.closest('#deliveryBtn')
@@ -1488,11 +1500,20 @@ window.addEventListener('DOMContentLoaded', function () {
         if (updateInvestigationAndManagmentBtn) {
             updateInvestigationAndManagmentDiv.forEach(div => {
 
-                if (div.getAttribute('data-id') === updateInvestigationAndManagmentBtn.getAttribute('data-id')) {
+                if (div.getAttribute('data-div') === updateInvestigationAndManagmentBtn.getAttribute('data-btn')) {
                     div.classList.toggle('d-none')
                     getItemsFromInput(div.querySelector('#item'), items)
                 }
                 
+            })
+        }
+
+        if (addInvestigationAndManagmentBtn) {
+            console.log('clicked')
+            updateInvestigationAndManagmentDiv.forEach(div => {
+                if (div.dataset.div === addInvestigationAndManagmentBtn.dataset.btn) {
+                console.log(getConsultationDivData(div))
+                }
             })
         }
 

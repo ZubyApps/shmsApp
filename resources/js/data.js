@@ -114,45 +114,45 @@ const consultationDetails = {
             "weight": "65kg",
             "activeUser": "Admin"
         },
-        {
-            "id": 113,
-            "date": "08-Jul-2023",
-            "name": "Naomi",
-            "bloodPressure": "125/70mmgh",
-            "temperature": "39.2",
-            "sugarLevel": "8.4mmlo",
-            "respiratoryRate": "15Studio pictures",
-            "pulseRate": 74,
-            "height": "1.2m",
-            "weight": "70kg",
-            "activeUser": "Admin"
-        },
-        {
-            "id": 112,
-            "date": "07-Jul-2023",
-            "name": "Casandra",
-            "bloodPressure": "130/90mmgh",
-            "temperature": "37.8",
-            "sugarLevel": "3.4mmlo",
-            "respiratoryRate": "32",
-            "pulseRate": 80,
-            "height": "1.35m",
-            "weight": "67kg",
-            "activeUser": "Admin"
-        },
-        {
-            "id": 111,
-            "date": "07-Jul-2023",
-            "name": "Daniel",
-            "bloodPressure": "150/100mmgh",
-            "temperature": "36.9",
-            "sugarLevel": "9.6mmlo",
-            "respiratoryRate": "28",
-            "pulseRate": 100,
-            "height": "1.4m",
-            "weight": "89kg",
-            "activeUser": "Admin"
-        }
+        // {
+        //     "id": 113,
+        //     "date": "08-Jul-2023",
+        //     "name": "Naomi",
+        //     "bloodPressure": "125/70mmgh",
+        //     "temperature": "39.2",
+        //     "sugarLevel": "8.4mmlo",
+        //     "respiratoryRate": "15Studio pictures",
+        //     "pulseRate": 74,
+        //     "height": "1.2m",
+        //     "weight": "70kg",
+        //     "activeUser": "Admin"
+        // },
+        // {
+        //     "id": 112,
+        //     "date": "07-Jul-2023",
+        //     "name": "Casandra",
+        //     "bloodPressure": "130/90mmgh",
+        //     "temperature": "37.8",
+        //     "sugarLevel": "3.4mmlo",
+        //     "respiratoryRate": "32",
+        //     "pulseRate": 80,
+        //     "height": "1.35m",
+        //     "weight": "67kg",
+        //     "activeUser": "Admin"
+        // },
+        // {
+        //     "id": 111,
+        //     "date": "07-Jul-2023",
+        //     "name": "Daniel",
+        //     "bloodPressure": "150/100mmgh",
+        //     "temperature": "36.9",
+        //     "sugarLevel": "9.6mmlo",
+        //     "respiratoryRate": "28",
+        //     "pulseRate": 100,
+        //     "height": "1.4m",
+        //     "weight": "89kg",
+        //     "activeUser": "Admin"
+        // }
     ],
 }
 
