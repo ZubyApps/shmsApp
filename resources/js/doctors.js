@@ -35,7 +35,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const reviewInvestigationAndManagementDiv = document.querySelector('.reviewInvestigationAndManagmentDiv')
     const specialistConsultationInvestigationAndManagementDiv = document.querySelector('.specialistConsultationInvestigationAndManagmentDiv')
 
-    const investigationAndManagmentDiv      = document.querySelectorAll('.investigationAndManagmentDiv')
+    const investigationAndManagmentDiv      = document.querySelectorAll('.investigationAndManagementDiv')
     console.log(investigationAndManagmentDiv)
     const ItemInput = document.querySelectorAll('#item')
     const addInvestigationAndManagmentBtn   = document.querySelectorAll('#addInvestigationAndManagmentBtn')
@@ -1577,10 +1577,7 @@ function OnInput(e) {
 
 function getItemsFromInput(input, data) {
     input.addEventListener('keyup', function() {
-        console.log('it is logging o')
         let records = data.filter(d => d.name.toLocaleLowerCase().includes(input.value.toLocaleLowerCase()) ? d : '')
-        console.log(records)
-        // console.log(input.value)
         displayItemsList(input.parentNode, records)
     })
 }
@@ -1650,6 +1647,5 @@ function displayItemsList(div, data) {
             div.querySelector('#item').setAttribute('list', 'itemsList')
             div.querySelector('datalist').setAttribute('id', 'itemsList')
             !optionsList.includes(option.dataset.id) ? div.querySelector('#itemsList').appendChild(option) : ''
-            console.log(optionsList)
         })
 }

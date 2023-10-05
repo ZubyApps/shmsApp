@@ -192,7 +192,7 @@
                                     </div>
                                 </div>
 
-                                <div class="newInvestigationAndManagmentDiv d-none investigationAndManagmentDiv" data-div="new">
+                                <div class="newInvestigationAndManagmentDiv d-none investigationAndManagementDiv" data-div="new">
                                     <div class="mb-2 form-control">
                                         <x-form-span>Investigation & Management</x-form-span>
                                         <div class="row">

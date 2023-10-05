@@ -110,7 +110,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="specialistConsultationInvestigationAndManagmentDiv d-none investigationAndManagmentDiv" data-div="specialist">
+                        <div class="specialistConsultationInvestigationAndManagmentDiv d-none investigationAndManagementDiv" data-div="specialist">
                             <div class="mb-2 form-control">
                                 <x-form-span>Investigation & Management</x-form-span>
                                 <div class="row">

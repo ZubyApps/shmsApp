@@ -97,7 +97,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="reviewInvestigationAndManagmentDiv d-none investigationAndManagmentDiv" data-div="review">
+                        <div class="reviewInvestigationAndManagmentDiv d-none investigationAndManagementDiv" data-div="review">
                             <div class="mb-2 form-control">
                                 <x-form-span>Investigation & Management</x-form-span>
                                 <div class="row">
