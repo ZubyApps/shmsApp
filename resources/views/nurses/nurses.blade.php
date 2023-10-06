@@ -3,10 +3,10 @@
 @section('content')
 @vite(['resources/js/nurses.js'])
 
-@include('nurses.reviewDetailsModal', ['title' => 'Consultation Details', 'isUpdate' => false, 'id' => 'reviewDetailsModal'])
+@include('nurses.reviewDetailsModal', ['title' => 'Treatment Details', 'isUpdate' => false, 'id' => 'reviewDetailsModal'])
 
 <div class="container p-1 mt-5">
-    <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
+    <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
         aria-labelledby="offcanvasWithBothOptionsLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title text-primary" id="offcanvasWithBothOptionsLabel">List of Upcoming Medications</h5>
@@ -32,6 +32,54 @@
                             <td>300mg</td>
                             <td>Nurse Patience</td>
                             <td>11:45pm</td>
+                            <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
+                            <tr>
+                                <th>name</th>
+                                <th>medication</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <td>Rita</td>
+                                <td>Cipro</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tr>
+                        <tr>
+                            <td>SH23/7865 Patrick Abiodun Aso</td>
+                            <td>Iv Flagyl</td>
+                            <td>250mg</td>
+                            <td>Nurse Maureen</td>
+                            <td>12:00am</td>
+                            <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td>SH23/7865 Patrick Abiodun Aso</td>
+                            <td>Iv Flagyl</td>
+                            <td>250mg</td>
+                            <td>Nurse Maureen</td>
+                            <td>12:00am</td>
+                            <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td>SH23/7865 Patrick Abiodun Aso</td>
+                            <td>Iv Flagyl</td>
+                            <td>250mg</td>
+                            <td>Nurse Maureen</td>
+                            <td>12:00am</td>
+                            <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td>SH23/7865 Patrick Abiodun Aso</td>
+                            <td>Iv Flagyl</td>
+                            <td>250mg</td>
+                            <td>Nurse Maureen</td>
+                            <td>12:00am</td>
                             <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
                         </tr>
                         <tr>

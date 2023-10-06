@@ -8,7 +8,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="">
-                        <div id="specialistConsultationDiv">
+                        <div id="consultationDiv" data-div="specialist">
                             <div class="mb-2 form-control">
                                 <x-form-label>Specialist Consultation</x-form-label>
                                 <x-form-div class="col-xl-12">
@@ -102,8 +102,8 @@
                                     </x-form-div>
                                 </div>
                                 <div class="d-flex justify-content-center">
-                                    <button type="button" id="saveSpecialistConsultationBtn"
-                                        class="btn bg-primary text-white">
+                                    <button type="button" id="saveSpecialistConsultationBtn" data-btn="specialist"
+                                        class="btn bg-primary text-white saveConsultationBtn">
                                         <i class="bi bi-check-circle me-1"></i>
                                         Save
                                     </button>

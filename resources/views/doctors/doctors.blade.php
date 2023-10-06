@@ -4,7 +4,7 @@
 @vite(['resources/js/doctors.js'])
 
 @include('doctors.newConsultationModal', ['title' => 'New Consultation', 'isUpdate' => false, 'id' => 'newConsultationModal'])
-@include('doctors.reviewConsultationModal', ['title' => 'Review Consultation', 'isUpdate' => false, 'id' => 'reviewConsultationModal'])
+@include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isUpdate' => false, 'id' => 'consultationReviewModal'])
 @include('doctors.surgeryModal', ['title' => 'New Surgery', 'isUpdate' => false, 'id' => 'surgeryModal'])
 @include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
 @include('doctors.deliveryModal', ['title' => 'New Delivery', 'isUpdate' => false, 'id' => 'deliveryModal'])

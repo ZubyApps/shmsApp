@@ -8,11 +8,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="">
-                        <div id="reviewConsultationDiv">
+                        <div id="consultationDiv" data-div="review">
                             <div class="mb-2 form-control">
                                 <x-form-label>Review Patient</x-form-label>
                                 <div class="row">
-                                    <div class="row addVitalsignsDiv d-none" data-div="review">
+                                    <div class="d-none row addVitalsignsDiv" data-div="review">
                                         <x-form-span class="fw-semibold">Vital Signs</x-form-span>
                                         @include('vitalsigns.vitalsigns', ['disabled' => true])
                                     </div>
@@ -89,8 +89,8 @@
                                     </x-form-div>
                                 </div>
                                 <div class="d-flex justify-content-center">
-                                    <button type="button" id="saveReviewConsultationBtn"
-                                        class="btn bg-primary text-white">
+                                    <button type="button" id="saveReviewConsultationBtn" data-btn="review"
+                                        class="btn bg-primary text-white saveConsultationBtn">
                                         <i class="bi bi-check-circle me-1"></i>
                                         Save
                                     </button>

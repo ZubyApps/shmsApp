@@ -166,7 +166,7 @@ $consultationDetails = [
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer px-2">    
+                <div class="modal-footer pe-4">    
                     <button type="button" id="reviewPatientBtn" class="btn btn-primary">
                         <i class="bi bi-plus-circle me-1"></i>
                         Review
