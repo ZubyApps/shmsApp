@@ -14,11 +14,10 @@
                         </div>
                         <div class="mb-2 form-control">
                             <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
-                            <div class="row knownClinicalInfoDiv" data-div="new">
+                            <div class="row" id="knownClinicalInfoDiv" data-div="new">
                                 @include('patients.partials.known-clinical-info', ['disabled' => true])
                                 <div class="d-flex justify-content-center">
-                                    <button type="button" id=""
-                                        class="btn bg-primary text-white updateKnownClinicalInfoBtn" data-btn="new">
+                                    <button type="button" id="updateKnownClinicalInfoBtn" class="btn bg-primary text-white" data-btn="new">
                                         <i class="bi bi-arrow-up-circle"></i>
                                         Update
                                     </button>
@@ -36,7 +35,6 @@
                                                 <tr>
                                                     <th>Temperature</th>
                                                     <th>Blood Pressure</th>
-                                                    <th>Sugar Level</th>
                                                     <th>Pulse Rate</th>
                                                     <th>Respiratory Rate</th>
                                                     <th>Weight</th>
@@ -47,7 +45,6 @@
                                                 <tr>
                                                     <td>37C</td>
                                                     <td>120/80mmgh</td>
-                                                    <td>8.8mmol</td>
                                                     <td>90</td>
                                                     <td>32</td>
                                                     <td>94kg</td>
@@ -56,7 +53,6 @@
                                                 <tr>
                                                     <td>37.1C</td>
                                                     <td>110/80mmgh</td>
-                                                    <td>8.5mmol</td>
                                                     <td>96</td>
                                                     <td>40</td>
                                                     <td>94kg</td>
@@ -66,7 +62,7 @@
                                         </table>
                                     </div>
                                     <div class="row">
-                                        <div class="row addVitalsignsDiv d-none" data-div="new">
+                                        <div class="row d-none" id="addVitalsignsDiv" data-div="new">
                                             @include('vitalsigns.vitalsigns', ['disabled' => true])
                                         </div>
                                         <div class="d-flex justify-content-center">
@@ -164,8 +160,8 @@
                                         </x-form-div>
                                     </div>
                                     <div class="d-flex justify-content-center">
-                                        <button type="button" id="saveNewConsultationBtn" data-btn="new"
-                                            class="btn bg-primary text-white saveConsultationBtn">
+                                        <button type="button" id="saveConsultationBtn" data-btn="new"
+                                            class="btn bg-primary text-white">
                                             <i class="bi bi-check-circle me-1"></i>
                                             Save
                                         </button>
@@ -173,8 +169,7 @@
                                 </div>
                             </div>
 
-                            <div class="newInvestigationAndManagmentDiv d-none investigationAndManagementDiv"
-                                data-div="new">
+                            <div class="d-none" id="investigationAndManagementDiv" data-div="new">
                                 <div class="mb-2 form-control">
                                     <x-form-span>Investigation & Management</x-form-span>
                                     <div class="row">

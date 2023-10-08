@@ -7,7 +7,6 @@
 @include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isUpdate' => false, 'id' => 'consultationReviewModal'])
 @include('doctors.surgeryModal', ['title' => 'New Surgery', 'isUpdate' => false, 'id' => 'surgeryModal'])
 @include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
-@include('doctors.deliveryModal', ['title' => 'New Delivery', 'isUpdate' => false, 'id' => 'deliveryModal'])
 @include('doctors.newReviewModal', ['title' => 'New Review', 'isUpdate' => false, 'id' => 'newReviewModal'])
 @include('doctors.specialistConsultationModal', ['title' => 'New Specialist Consultation', 'isUpdate' => false, 'id' => 'specialistConsultationModal'])
 
@@ -20,7 +19,6 @@
             </div>
             <div class="offcanvas-body">
                 <div class="py-4 ">
-
                     <table id="waitingListTable" class="table table-hover align-middle table-sm bg-primary">
                         <thead>
                             <tr>
@@ -35,7 +33,7 @@
                                 <td>SH21/4012 Joesphine Ene Odeh</td>
                                 <td>25</td>
                                 <td>Alex Odeh Family</td>
-                                <td><button class="btn btn-outline-primary newConsultationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
+                                <td><button class="btn btn-outline-primary" id="newConsultationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
                             </tr>
                             <tr>
                                 <td>SH23/7865 Patrick Abiodun Aso</td>
@@ -95,7 +93,7 @@
                                     <td>QC30-Malingering</td>
                                     <td>Axe Mansard HMO</td>
                                     <td>Out-patient</td>
-                                    <td><button class="btn btn-outline-primary reviewConsultationBtn">Review</button></td>
+                                    <td><button class="btn btn-outline-primary" id="reviewConsultationBtn">Review</button></td>
                                 </tr>
                                 <tr>
                                     <td>21/05/22</td>

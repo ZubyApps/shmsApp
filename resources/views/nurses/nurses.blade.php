@@ -3,7 +3,10 @@
 @section('content')
 @vite(['resources/js/nurses.js'])
 
-@include('nurses.reviewDetailsModal', ['title' => 'Treatment Details', 'isUpdate' => false, 'id' => 'reviewDetailsModal'])
+@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isUpdate' => false, 'id' => 'treatmentDetailsModal'])
+@include('nurses.deliveryNotesModal', ['title' => 'New Delivery Note', 'isUpdate' => false, 'id' => 'newDeliveryNoteModal'])
+@include('nurses.deliveryNotesModal', ['title' => 'Update Delivery Note', 'isUpdate' => true, 'id' => 'updateDeliveryNoteModal'])
+@include('nurses.chartMedicationModal', ['title' => 'Chart Medication', 'isUpdate' => false, 'id' => 'chartMedicationModal'])
 
 <div class="container p-1 mt-5">
     <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
@@ -18,74 +21,65 @@
                     <thead>
                         <tr>
                             <th>Patient</th>
+                            <th>Ward</th>
                             <th>Medication/Treatment</th>
-                            <th>Dose</th>
+                            <th>Prescription</th>
                             <th>Charted By</th>
                             <th>Time</th>
                             <th>Give</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>SH21/4012 Joesphine Ene Odeh</td>
+                        <tr class="fw-semibold table-danger">
+                            <td class="fw-semibold">SH21/4012 Joesphine Ene Odeh</td>
+                            <td>PW 2</td>
                             <td>Iv Cipro</td>
-                            <td>300mg</td>
+                            <td>300mg 12hrly 2/7</td>
                             <td>Nurse Patience</td>
                             <td>11:45pm</td>
                             <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
-                            <tr>
-                                <th>name</th>
-                                <th>medication</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                            <tr>
-                                <td>Rita</td>
-                                <td>Cipro</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
                         </tr>
-                        <tr>
+                        <tr class="fw-semibold table-warning">
                             <td>SH23/7865 Patrick Abiodun Aso</td>
+                            <td>Mw Bed 1</td>
                             <td>Iv Flagyl</td>
-                            <td>250mg</td>
+                            <td>250mg 8hrly 2/7</td>
                             <td>Nurse Maureen</td>
                             <td>12:00am</td>
                             <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
                         </tr>
                         <tr>
                             <td>SH23/7865 Patrick Abiodun Aso</td>
+                            <td>Mw Bed 1</td>
                             <td>Iv Flagyl</td>
-                            <td>250mg</td>
+                            <td>250mg 8hrly 2/7</td>
                             <td>Nurse Maureen</td>
                             <td>12:00am</td>
                             <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
                         </tr>
                         <tr>
                             <td>SH23/7865 Patrick Abiodun Aso</td>
+                            <td>Mw Bed 1</td>
                             <td>Iv Flagyl</td>
-                            <td>250mg</td>
+                            <td>250mg 8hrly 2/7</td>
                             <td>Nurse Maureen</td>
                             <td>12:00am</td>
                             <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
                         </tr>
                         <tr>
                             <td>SH23/7865 Patrick Abiodun Aso</td>
+                            <td>Mw Bed 1</td>
                             <td>Iv Flagyl</td>
-                            <td>250mg</td>
+                            <td>250mg 8hrly 2/7</td>
                             <td>Nurse Maureen</td>
                             <td>12:00am</td>
                             <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
                         </tr>
                         <tr>
                             <td>SH23/7865 Patrick Abiodun Aso</td>
+                            <td>Mw Bed 1</td>
                             <td>Iv Flagyl</td>
-                            <td>250mg</td>
+                            <td>250mg 8hrly 2/7</td>
                             <td>Nurse Maureen</td>
                             <td>12:00am</td>
                             <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>

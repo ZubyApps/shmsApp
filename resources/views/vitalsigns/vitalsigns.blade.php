@@ -12,10 +12,6 @@
     <x-form-input name="spO2" id="spO2" />
 </x-form-div>
 <x-form-div>
-    <x-input-span id="sugarLevelLabel">Sugar Level</x-input-span>
-    <x-form-input name="sugarLevel" id="sugarLevel" />
-</x-form-div>
-<x-form-div>
     <x-input-span id="pulseRateLabel">Pulse Rate</x-input-span>
     <x-form-input type="text" name="pulseRate" id="pulseRate" />
 </x-form-div>

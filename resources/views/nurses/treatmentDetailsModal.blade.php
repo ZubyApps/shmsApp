@@ -155,7 +155,7 @@ $consultationDetails = [
                                 @include('patients.partials.known-clinical-info', ['disabled' => true])
                             </div>
                         </div>
-                        <div id="consultationReviewDiv">
+                        <div id="treatmentDiv">
                         </div>
                     </div>
                 </div>

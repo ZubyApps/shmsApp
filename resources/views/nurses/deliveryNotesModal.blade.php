@@ -14,11 +14,11 @@
                             <x-form-input type="date" name="date" value="" />
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Time of Admission<x-required-span /></x-input-span>
+                            <x-input-span>Date of Admission<x-required-span /></x-input-span>
                             <x-form-input type="datetime-local" name="timeOfAdmission" />
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Time of Delivery</x-input-span>
+                            <x-input-span>Date of Delivery</x-input-span>
                             <x-form-input type="datetime-local" name="timeOfDelivery" />
                         </x-form-div>
                         <x-form-div>

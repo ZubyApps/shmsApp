@@ -1,17 +1,22 @@
 import { Offcanvas, Modal } from "bootstrap";
 import { consultationDetails, items } from "./data"
-import { clearDivValues, clearItemsList } from "./helpers"
+import { clearDivValues, clearItemsList, getOrdinal, getDivData} from "./helpers"
 import { InitialRegularConsultation, review } from "./dynamicHTMLfiles/treaments";
 
 
 window.addEventListener('DOMContentLoaded', function () {
     const medicationCanvasTable = new Offcanvas(document.getElementById('offcanvasWithBothOptions'))
 
-    const reviewDetailsModal    = new Modal(document.getElementById('reviewDetailsModal'))
+    const reviewDetailsModal        = new Modal(document.getElementById('treatmentDetailsModal'))
+    const newDeliveryNoteModal      = new Modal(document.getElementById('newDeliveryNoteModal'))
+    const updateDeliveryNoteModal   = new Modal(document.getElementById('updateDeliveryNoteModal'))
+    const chartMedicationModal      = new Modal(document.getElementById('chartMedicationModal'))
+    const saveMedicationChartBtn    = chartMedicationModal._element.querySelector('#saveMedicationChartBtn')
+    const medicationChartDiv        = chartMedicationModal._element.querySelector('#chartMedicationDiv')
 
-    const detailsBtn            = document.querySelector('.detailsBtn')
+    const detailsBtn                = document.querySelector('.detailsBtn')
 
-    const consultationReviewDiv = document.querySelector('#consultationReviewDiv')
+    const treatmentDiv              = document.querySelector('#treatmentDiv')
     
     
 
@@ -28,33 +33,125 @@ window.addEventListener('DOMContentLoaded', function () {
 
             if (iteration > 1) {
                 count++
-                consultationReviewDiv.innerHTML += review(iteration, stringToRoman, count, consultationDetails, line)
+                treatmentDiv.innerHTML += review(iteration, getOrdinal, count, consultationDetails, line)
             } else {
-                consultationReviewDiv.innerHTML += InitialRegularConsultation(iteration, stringToRoman, count, consultationDetails, line)
+                treatmentDiv.innerHTML += InitialRegularConsultation(iteration, consultationDetails, line)
             } 
              
+            //treatmentDiv.querySelector('#deliveryBtn').setAttribute('data-id', line.deliveryNote.id ?? '')
         })
+
 
         reviewDetailsModal.show()
     })
+
+    reviewDetailsModal._element.addEventListener('hide.bs.modal', function () {
+        treatmentDiv.innerHTML = ''
+    })
+
+    // review consultation loops
+    document.querySelector('#treatmentDiv').addEventListener('click', function (event) {
+        const addInvestigationBtn                   = event.target.closest('#addInvestigationBtn')
+        const investigationDiv                      = document.querySelectorAll('.investigationDiv')
+        const addVitalsignsDiv                      = document.querySelectorAll('#addVitalsignsDiv')
+        const addVitalsignsBtn                      = event.target.closest('#addVitalsignsBtn')
+        const saveInvestigationBtn                  = event.target.closest('#saveInvestigationBtn')
+        const chartMedicationBtn                    = event.target.closest('#chartMedicationBtn')
+        const newDeliveryNoteBtn                    = event.target.closest('#newDeliveryNoteBtn')
+        const updateDeliveryNoteBtn                 = event.target.closest('#updateDeliveryNoteBtn')
+
+        if (addInvestigationBtn) {
+            investigationDiv.forEach(div => {
+                if (div.dataset.div === addInvestigationBtn.dataset.btn) {
+                    div.classList.toggle('d-none')
+                    getItemsFromInput(div.querySelector('#item'), items)
+                }
+                
+            })
+        }
+
+        if (saveInvestigationBtn) {
+            investigationDiv.forEach(div => {
+                console.log(div.dataset.div, saveInvestigationBtn.dataset.btn)
+                if (div.dataset.div === saveInvestigationBtn.dataset.btn) {
+                console.log(getDivData(div))
+                clearDivValues(div)
+                }
+            })
+        }
+
+        if (chartMedicationBtn) {
+            chartMedicationModal.show()
+        }
+
+        if (newDeliveryNoteBtn) {
+            newDeliveryNoteModal.show()
+        }
+
+        if (updateDeliveryNoteBtn) {
+            updateDeliveryNoteModal.show()
+        }
+
+        if (addVitalsignsBtn) {
+                addVitalsignsDiv.forEach(div => {
+                    if (div.dataset.div === addVitalsignsBtn.dataset.btn) {
+                        if (div.classList.contains('d-none')){
+                            div.classList.remove('d-none')
+                        } else {
+                            console.log(getDivData(div))
+                            div.classList.add('d-none')
+                            clearDivValues(div)
+                        }
+                    }
+                })
+        }
+    })
+
+    saveMedicationChartBtn.addEventListener('click', function () {
+        console.log(getDivData(medicationChartDiv))
+        clearDivValues(medicationChartDiv)
+    }) 
 })
 
-function stringToRoman(num) { 
-    const values =  
-        [1000, 900, 500, 400, 100,  
-         90, 50, 40, 10, 9, 5, 4, 1]; 
-    const symbols =  
-        ['M', 'CM', 'D', 'CD', 'C',  
-         'XC', 'L', 'XL', 'X', 'IX',  
-         'V', 'IV', 'I']; 
-    let result = ''; 
-  
-    for (let i = 0; i < values.length; i++) { 
-        while (num >= values[i]) { 
-            result += symbols[i]; 
-            num -= values[i]; 
-        } 
-    } 
-  
-    return result; 
+function getItemsFromInput(input, data) {
+    input.addEventListener('keyup', function() {
+        let records = data.filter(d => d.name.toLocaleLowerCase().includes(input.value.toLocaleLowerCase()) ? d : '')
+        displayItemsList(input.parentNode, records)
+    })
 }
+
+function displayItemsList(div, data) {
+
+    data.forEach(line => {
+        const option = document.createElement("OPTION")
+        option.setAttribute('id', 'itemsOption')
+        option.setAttribute('value', line.name)
+        option.setAttribute('data-id', line.id)
+        option.setAttribute('name', line.name)
+
+        let previousItems = div.querySelectorAll('#itemsOption')
+            let optionsList = []
+            previousItems.forEach(node => {
+               optionsList.push(node.dataset.id)
+            })
+            div.querySelector('#item').setAttribute('list', 'itemsList')
+            div.querySelector('datalist').setAttribute('id', 'itemsList')
+            !optionsList.includes(option.dataset.id) ? div.querySelector('#itemsList').appendChild(option) : ''
+        })
+}
+
+// for (let name in line) {
+                    
+                //     if (typeof line[name] === 'object'){
+                //         for (let name1 in line[name]) {
+                //             //console.log(name1)
+                //             const nameInput = treatmentDiv.querySelector(`[name="${ name1 }"]`)
+                //             nameInput.value = line[name][name1]
+                //             console.log(line[name][name1])
+                //         }
+                //     } else {
+    
+                //         const nameInput = treatmentDiv.querySelector(`[name="${ name }"]`)
+                //         nameInput.value = line[name]
+                //     }
+                // }

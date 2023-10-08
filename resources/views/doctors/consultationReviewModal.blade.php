@@ -151,11 +151,10 @@ $consultationDetails = [
                         </div>
                         <div class="mb-2 form-control">
                             <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
-                            <div class="row knownClinicalInfoDiv" data-div="review">
+                            <div class="row" id="knownClinicalInfoDiv" data-div="review">
                                 @include('patients.partials.known-clinical-info', ['disabled' => true])
                                 <div class="d-flex justify-content-center">
-                                    <button type="button" id=""
-                                        class="btn bg-primary text-white updateKnownClinicalInfoBtn" data-btn="review">
+                                    <button type="button" class="btn bg-primary text-white" id="updateKnownClinicalInfoBtn" data-btn="review">
                                         <i class="bi bi-arrow-up-circle"></i>
                                         Update
                                     </button>

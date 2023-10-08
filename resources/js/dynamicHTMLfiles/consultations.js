@@ -1,7 +1,7 @@
-const review = (iteration, stringToRoman, count, consultationDetails, line) => {
+const review = (iteration, numberConverter, count, consultationDetails, line) => {
     return `
                 <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample">
-                    <span class="mx-2">Review ${stringToRoman(count)}</span>
+                    <span class="mx-2">${count + numberConverter(count)} Review</span>
                     <i class="bi bi-chevron-double-down text-primary"> </i>
                 </div>
                 <div class="collapse mb-2 reviewDiv" id="collapseExample${iteration}" style="">
@@ -279,10 +279,6 @@ const review = (iteration, stringToRoman, count, consultationDetails, line) => {
                                 </button>
                                 <button type="button" id="surgeryBtn" class="btn btn-outline-primary">
                                     Surgery 
-                                <i class="bi bi-pencil-square"></i>
-                                </button>
-                                <button type="button" id="deliveryBtn" class="btn btn-outline-primary">
-                                    Delivery
                                 <i class="bi bi-pencil-square"></i>
                                 </button>
                             </div>
@@ -632,14 +628,14 @@ const review = (iteration, stringToRoman, count, consultationDetails, line) => {
                         </div>
                     </div>
                     <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample">
-                    <span class="mx-2">Close Review ${stringToRoman(count)}</span>
+                    <span class="mx-2">Close ${count + numberConverter(count)} Review</span>
                     <i class="bi bi-chevron-double-up text-primary"></i>
                     </div>
                 </div>
                 `
 }
 
-const InitialRegularConsultation = (iteration, stringToRoman, count, consultationDetails, line) => {
+const InitialRegularConsultation = (iteration, consultationDetails, line) => {
     return `
     <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample">
         <span class="mx-2">Initial Consultation</span>
@@ -901,10 +897,6 @@ const InitialRegularConsultation = (iteration, stringToRoman, count, consultatio
                     </button>
                     <button type="button" id="surgeryBtn" class="btn btn-outline-primary">
                         Surgery 
-                    <i class="bi bi-pencil-square"></i>
-                    </button>
-                    <button type="button" id="deliveryBtn" class="btn btn-outline-primary">
-                        Delivery
                     <i class="bi bi-pencil-square"></i>
                     </button>
                 </div>

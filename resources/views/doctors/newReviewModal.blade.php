@@ -12,7 +12,7 @@
                             <div class="mb-2 form-control">
                                 <x-form-label>Review Patient</x-form-label>
                                 <div class="row">
-                                    <div class="d-none row addVitalsignsDiv" data-div="review">
+                                    <div class="d-none row" id="addVitalsignsDiv" data-div="review">
                                         <x-form-span class="fw-semibold">Vital Signs</x-form-span>
                                         @include('vitalsigns.vitalsigns', ['disabled' => true])
                                     </div>
@@ -89,15 +89,15 @@
                                     </x-form-div>
                                 </div>
                                 <div class="d-flex justify-content-center">
-                                    <button type="button" id="saveReviewConsultationBtn" data-btn="review"
-                                        class="btn bg-primary text-white saveConsultationBtn">
+                                    <button type="button" id="saveConsultationBtn" data-btn="review"
+                                        class="btn bg-primary text-white">
                                         <i class="bi bi-check-circle me-1"></i>
                                         Save
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <div class="reviewInvestigationAndManagmentDiv d-none investigationAndManagementDiv" data-div="review">
+                        <div class="d-none" id="investigationAndManagementDiv" data-div="review">
                             <div class="mb-2 form-control">
                                 <x-form-span>Investigation & Management</x-form-span>
                                 <div class="row">
