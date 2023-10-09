@@ -1,20 +1,20 @@
 const consultationDetails = {
     "data": [
-        // {
-        //     "id": 120,
-        //     "date": "10-Jul-2023",
-        //     "name": "Naomi",
-        //     "bloodPressure": "120/80mmgh",
-        //     "temperature": "37.6",
-        //     "sugarLevel": "5.0mmlo",
-        //     "respiratoryRate": "30",
-        //     "pulseRate": 95,
-        //     "height": "1.6m",
-        //     "weight": "102kg",
-        //     "activeUser": "Admin",
-        //     "selectedDiagnosis": "Malingering",
-        //     "deliveryNote": ""
-        // },
+        {
+            "id": 120,
+            "date": "10-Jul-2023",
+            "name": "Naomi",
+            "bloodPressure": "120/80mmgh",
+            "temperature": "37.6",
+            "sugarLevel": "5.0mmlo",
+            "respiratoryRate": "30",
+            "pulseRate": 95,
+            "height": "1.6m",
+            "weight": "102kg",
+            "activeUser": "Admin",
+            "selectedDiagnosis": "Malingering",
+            "deliveryNote": ""
+        },
         {
             "id": 119,
             "date": "08-Jul-2023",

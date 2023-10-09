@@ -74,10 +74,16 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                         <textarea class="form-control" name="historyOfPresentingComplain" id="historyOfPresentingComplain" cols="10" rows="3" readonly="readonly">${line.notes}</textarea>
                                     </div>
                                 </div> 
-                                <div class="col-xl-4 themed-grid-col col-xl-12">
+                                <div class="col-xl-4 themed-grid-col col-xl-6">
                                     <div class="input-group mb-1">
                                         <span class="input-group-text" id="examinationFindingsLabel"> Examination <br> Findings </span>                                                    
                                         <textarea class="form-control" type="text" name="examinationFindings" id="examinationFindings" cols="10" rows="3" readonly="readonly">${line.examinationFindings}</textarea>
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 themed-grid-col col-xl-6">
+                                    <div class="input-group mb-1">
+                                        <span class="input-group-text" id="diagnosisLabel"> Selected <br>ICD11 <br> Diagnosis </span>
+                                        <textarea class="form-control reviewSelectedDiagnosis" type="text" name="selectedDiagnosis" value="" readonly="readonly"></textarea>
                                     </div>
                                 </div>
                                 <div class="col-xl-4 themed-grid-col col-xl-6">

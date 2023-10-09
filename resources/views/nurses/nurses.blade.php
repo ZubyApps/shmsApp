@@ -30,7 +30,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="fw-semibold table-danger">
+                        <tr class="fw-semibold thisRow">
                             <td class="fw-semibold">SH21/4012 Joesphine Ene Odeh</td>
                             <td>PW 2</td>
                             <td>Iv Cipro</td>

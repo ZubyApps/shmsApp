@@ -14,15 +14,26 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveMedicationChartBtn    = chartMedicationModal._element.querySelector('#saveMedicationChartBtn')
     const medicationChartDiv        = chartMedicationModal._element.querySelector('#chartMedicationDiv')
 
+    const blinkTable                = document.querySelector('.thisRow')
+
     const detailsBtn                = document.querySelector('.detailsBtn')
 
     const treatmentDiv              = document.querySelector('#treatmentDiv')
     
+    var colourBlink;
     
-
     medicationCanvasTable._element.addEventListener('shown.bs.offcanvas', function () {
-        
+        colourBlink = setInterval(toggleClass, 500)
     })
+
+    medicationCanvasTable._element.addEventListener('hidden.bs.offcanvas', function () {
+        clearInterval(colourBlink)
+    })
+
+    function toggleClass () {
+        blinkTable.classList.toggle('table-danger')
+    }
+
 
     detailsBtn.addEventListener('click', function () {
 
@@ -52,13 +63,15 @@ window.addEventListener('DOMContentLoaded', function () {
     // review consultation loops
     document.querySelector('#treatmentDiv').addEventListener('click', function (event) {
         const addInvestigationBtn                   = event.target.closest('#addInvestigationBtn')
-        const investigationDiv                      = document.querySelectorAll('.investigationDiv')
-        const addVitalsignsDiv                      = document.querySelectorAll('#addVitalsignsDiv')
         const addVitalsignsBtn                      = event.target.closest('#addVitalsignsBtn')
         const saveInvestigationBtn                  = event.target.closest('#saveInvestigationBtn')
         const chartMedicationBtn                    = event.target.closest('#chartMedicationBtn')
         const newDeliveryNoteBtn                    = event.target.closest('#newDeliveryNoteBtn')
         const updateDeliveryNoteBtn                 = event.target.closest('#updateDeliveryNoteBtn')
+        const saveWardAndBedBtn                     = event.target.closest('#saveWardAndBedBtn')
+        const wardAndBedDiv                         = document.querySelectorAll('#wardAndBedDiv')
+        const addVitalsignsDiv                      = document.querySelectorAll('#addVitalsignsDiv')
+        const investigationDiv                      = document.querySelectorAll('.investigationDiv')
 
         if (addInvestigationBtn) {
             investigationDiv.forEach(div => {
@@ -72,7 +85,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (saveInvestigationBtn) {
             investigationDiv.forEach(div => {
-                console.log(div.dataset.div, saveInvestigationBtn.dataset.btn)
                 if (div.dataset.div === saveInvestigationBtn.dataset.btn) {
                 console.log(getDivData(div))
                 clearDivValues(div)
@@ -93,17 +105,26 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
         if (addVitalsignsBtn) {
-                addVitalsignsDiv.forEach(div => {
-                    if (div.dataset.div === addVitalsignsBtn.dataset.btn) {
-                        if (div.classList.contains('d-none')){
-                            div.classList.remove('d-none')
-                        } else {
-                            console.log(getDivData(div))
-                            div.classList.add('d-none')
-                            clearDivValues(div)
-                        }
+            addVitalsignsDiv.forEach(div => {
+                if (div.dataset.div === addVitalsignsBtn.dataset.btn) {
+                    if (div.classList.contains('d-none')){
+                        div.classList.remove('d-none')
+                    } else {
+                        console.log(getDivData(div))
+                        div.classList.add('d-none')
+                        clearDivValues(div)
                     }
-                })
+                }
+            })
+        }
+
+        if (saveWardAndBedBtn) {
+            wardAndBedDiv.forEach(div => {
+                if (div.dataset.div === saveWardAndBedBtn.dataset.btn) {
+                console.log(getDivData(div))
+                clearDivValues(div)
+                }
+            })
         }
     })
 
