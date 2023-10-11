@@ -15,7 +15,7 @@
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Diagnosis</x-input-span>
-                            <x-form-input name="diagnosis" value="Clevical fracture secondaryto RTA" />
+                            <x-form-input name="diagnosis" value="Clevical fracture secondary to RTA" />
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Medication<x-required-span /></x-input-span>
@@ -30,47 +30,25 @@
                             <x-form-input type="text" name="prescriptionBy" value="Dr Toby" />
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Date</x-input-span>
-                            <x-form-input type="datetime-local" name="date" value="2023-10-12 02:00" />
+                            <x-input-span>Sponsor Name</x-input-span>
+                            <x-form-input type="text" name="sponsorName" value="Axe Mansard" />
                         </x-form-div>
-                        <X-form-div class="py-4">
-                            <table class="table table-hover align-middle table-sm bg-primary">
-                                <thead>
-                                    <tr>
-                                        <th>Medication</th>
-                                        <th>Prescription</th>
-                                        <th>Date/Time</th>
-                                        <th>Charted By</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Pentazocine Inj</td>
-                                        <td>300mg 8hrly 2/7</td>
-                                        <td>08/10/2023</td>
-                                        <td>Nurse Aba</td>
-                                        <td><button class="btn btn-outline-primary deleteBtn"><i class="bi bi-trash"></i></button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </X-form-div>
-                        <div class="row" id="chartMedicationDiv">
+                        <div class="row" id="approveDiv">
                             <x-form-span class="mb-2 fw-semibold">Save the time intervals according to prescription</x-form-span>
                             <x-form-div class="col-xl-6">
-                                <x-input-span>Dose</x-input-span>
-                                <x-form-input name="dose" value="300mg 8hrly 2/7" readonly />
+                                <x-input-span>Bill</x-input-span>
+                                <x-form-input name="bill" value="6000" readonly />
                             </x-form-div>
                             <x-form-div class="col-xl-6">
-                                <x-input-span>Date/Time</x-input-span>
-                                <x-form-input type="datetime-local" name="dateTime" value="" />
+                                <x-input-span>HMO's Tariff</x-input-span>
+                                <x-form-input type="number" name="hmoTariff" value="" />
                             </x-form-div>
-                            <div class="d-flex justify-content-center mt-2">
+                            {{-- <div class="d-flex justify-content-center mt-2">
                                 <button type="button" id="saveMedicationChartBtn" data-btn="${iteration}"
                                     class="btn btn-primary">
                                     save
                                 </button>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>
@@ -80,10 +58,10 @@
                     <i class="bi bi-x-circle me-1"></i>
                     Close
                 </button>
-                {{-- <button type="button" id="{{ $isUpdate ? 'saveBtn' : 'createBtn' }}" class="btn bg-primary text-white">
+                <button type="button" id="approveBtn" class="btn btn-primary">
                     <i class="bi bi-check-circle me-1"></i>
-                    {{ $isUpdate ? 'Update' : 'Create' }}
-                </button> --}}
+                    Approve
+                </button>
             </div>
         </div>
     </div>

@@ -14,6 +14,7 @@ export default defineConfig({
                 'resources/js/patients.js',
                 'resources/js/doctors.js',
                 'resources/js/nurses.js',
+                'resources/js/hmo.js',
             ],
             refresh: true,
         }),

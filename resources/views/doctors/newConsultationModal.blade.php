@@ -142,7 +142,7 @@
                                         </x-form-div>
                                     </div>
                                     <div class="row my-2">
-                                        <x-form-div class="col-xl-6">
+                                        <x-form-div class="col-xl-4">
                                             <x-input-span id="admitLabel">Admit?</x-input-span>
                                             <select class="form-select form-select-md" name="admit">
                                                 <option value="">Select</option>
@@ -150,12 +150,28 @@
                                                 <option value="In-Patient">Yes</option>
                                             </select>
                                         </x-form-div>
-                                        <x-form-div class="col-xl-6">
+                                        <x-form-div class="col-xl-4">
                                             <x-input-span id="wardLabel">Ward</x-input-span>
                                             <select class="form-select form-select-md" name="ward">
                                                 <option value="">Select Ward</option>
-                                                <option value="Private Ward">Private Ward</option>
-                                                <option value="General Ward">General Ward</option>
+                                                <option value="FW">Female Ward</option>
+                                                <option value="MW">Male Ward</option>
+                                                <option value="PW 1">Private Ward 1</option>
+                                                <option value="PW 2">Private Ward 2</option>
+                                                <option value="PW 3">Private Ward 3</option>
+                                                <option value="PW 4">Private Ward 4</option>
+                                                <option value="PW 5">Private Ward 5</option>
+                                                <option value="PW 6">Private Ward 6</option>
+                                                <option value="Old Ward">Old Ward</option>
+                                            </select>
+                                        </x-form-div>
+                                        <x-form-div class="col-xl-4">
+                                            <x-input-span id="bedNumberLabel">Bed Number</x-input-span>
+                                            <select class="form-select form-select-md" name="bedNumber">
+                                                <option value="">Select Bed</option>
+                                                <option value="Bed 1">Bed 1</option>
+                                                <option value="Bed 2">Bed 2</option>
+                                                <option value="Bed 3">Bed 3</option>
                                             </select>
                                         </x-form-div>
                                     </div>

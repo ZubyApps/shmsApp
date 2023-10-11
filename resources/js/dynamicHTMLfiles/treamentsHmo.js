@@ -66,57 +66,6 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                     </div>
                                 </div>
                             </div>
-                            ${consultationDetails.data.length > iteration ? '' :
-                            `
-                            <div class="my-2 form-control" id="wardAndBedDiv" data-div="${iteration}">
-                                <span class="fw-bold text-primary">Update Patient's Admission Status</span>
-                                <div class="row mt-2">
-                                    <div class="col-xl-4 themed-grid-col col-xl-4">
-                                        <div class="input-group mb-1">
-                                        <span class="input-group-text" id="admitLabel">Status</span>
-                                        <select class="form-select form-select-md" name="status">
-                                            <option value="">Select</option>
-                                            <option value="Out-Patient">Out-Patient</option>
-                                            <option value="In-Patient">In-Patient</option>
-                                        </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 themed-grid-col col-xl-4">
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text" id="wardLabel">Ward</span>
-                                            <select class="form-select form-select-md" name="ward">
-                                                <option value="">Select Ward</option>
-                                                <option value="FW">Female Ward</option>
-                                                <option value="MW">Male Ward</option>
-                                                <option value="PW 1">Private Ward 1</option>
-                                                <option value="PW 2">Private Ward 2</option>
-                                                <option value="PW 3">Private Ward 3</option>
-                                                <option value="PW 4">Private Ward 4</option>
-                                                <option value="PW 5">Private Ward 5</option>
-                                                <option value="PW 6">Private Ward 6</option>
-                                                <option value="Old Ward">Old Ward</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 themed-grid-col col-xl-4">
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text" id="bedNumberLabel">Bed Number</span>
-                                            <select class="form-select form-select-md" name="bedNumber">
-                                                <option value="">Select Bed</option>
-                                                <option value="Bed 1">Bed 1</option>
-                                                <option value="Bed 2">Bed 2</option>
-                                                <option value="Bed 3">Bed 3</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-center mt-2">
-                                    <button type="button" id="saveWardAndBedBtn" data-btn="${iteration}" class="btn btn-primary">
-                                        save
-                                    </button>
-                                </div>
-                            </div>`
-                            }
                             <div class="my-2 form-control">
                                 <span class="fw-bold text-primary"> Investigations </span>
                                 <div class="row overflow-auto m-1">
@@ -145,45 +94,6 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                         </tbody>
                                     </table>
                                 </div>
-                                ${consultationDetails.data.length > iteration ? '' : 
-                                `<div class="investigationDiv d-none" data-div="${iteration}">
-                                    <div class="mb-2 form-control">
-                                        <span class="fw-semibold">Investigation</span>
-                                        <div class="row">
-                                            <div class="col-xl-4 themed-grid-col col-xl-6">
-                                                <div class="input-group mb-1">
-                                                    <span class="input-group-text" id="itemLabel">Requested By</span> 
-                                                    <input class="form-control" type="search" name="requestBy" id="requestedBy" placeholder="search" autocomplete="off">
-                                                    <datalist name="item" type="text" class="decoration-none"></datalist>
-                                                </div>
-                                            </div>
-                                            <div class="col-xl-4 themed-grid-col col-xl-6">
-                                                <div class="input-group mb-1">
-                                                    <span class="input-group-text" id="itemLabel">Test</span> 
-                                                    <input class="form-control" type="search" name="item" id="item" placeholder="search" autocomplete="off">
-                                                    <datalist name="item" type="text" class="decoration-none"></datalist>
-                                                </div>
-                                            </div>
-                                            <div class="col-xl-4 themed-grid-col col-xl-6">
-                                                <div class="input-group mb-1">
-                                                    <span class="input-group-text" id="testResultLabel">Result</span> 
-                                                    <input class="form-control" type="text" name="testResult" id="testResult" placeholder="Enter result">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex justify-content-center mt-2">
-                                            <button type="button" id="saveInvestigationBtn" data-btn="${iteration}" class="btn btn-primary">
-                                                save
-                                            <i class="bi bi-eyedropper"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-center my-2">
-                                    <button type="button" class="btn btn-primary" id="addInvestigationBtn" data-btn="${iteration}">
-                                        Add Test Done
-                                    </button>
-                                </div>`}
                             </div>
                             <div class="my-2 form-control">
                                 <span class="fw-bold text-primary"> Medication & Treatment </span>
@@ -205,9 +115,7 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                                 <td>N/S 500mls</td>
                                                 <td>500mls 12hrly x2</td>
                                                 <td>Dr Emma</td>
-                                                <td><button type="button" id="chartMedicationBtn" class="btn btn-outline-primary">
-                                                    Chart
-                                                </button></td>
+                                                <td><i class="btn btn-outline-none text-primary bi bi-check-circle 5" id="approvalBtn"></i></td>
                                                 <td>Complete</td>
                                             </tr>
                                             <tr>
@@ -215,9 +123,7 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                                 <td>N/S 500mls</td>
                                                 <td>500mls 12hrly x2</td>
                                                 <td>Dr Emma</td>
-                                                <td><button type="button" id="chartMedicationBtn" class="btn btn-outline-primary">
-                                                Chart
-                                                </button></td>
+                                                <td><i class="btn btn-outline-none text-primary bi bi-check-circle 6" id="approvalBtn"></i></td>
                                                 <td>Discontinued</td>
                                             </tr>
                                             <tr>
@@ -225,9 +131,7 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                                 <td>N/S 500mls</td>
                                                 <td>500mls 12hrly x2</td>
                                                 <td>Dr Emma</td>
-                                                <td><button type="button" id="chartMedicationBtn" class="btn btn-outline-primary">
-                                                Chart
-                                                </button></td>
+                                                <td><i class="btn btn-outline-none text-primary bi bi-check-circle 7" id="approvalBtn"></i></td>
                                                 <td>Incomplete</td>
                                             </tr>
                                             <tr>
@@ -235,9 +139,7 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                                 <td>N/S 500mls</td>
                                                 <td>500mls 12hrly x2</td>
                                                 <td>Dr Emma</td>
-                                                <td><button type="button" id="chartMedicationBtn" class="btn btn-outline-primary">
-                                                Chart
-                                                </button></td>
+                                                <td><i class="btn btn-outline-none text-primary bi bi-check-circle 8" id="approvalBtn"></i></td>
                                                 <td>None</td>
                                             </tr>
                                         </tbody>
@@ -249,12 +151,6 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                     <i class="bi bi-capsule"></i>
                                     Medication Chart
                                 </button>
-                                ${consultationDetails.data.length > iteration ? '' :
-                                `<button type="button" id="newDeliveryNoteBtn" class="btn btn-outline-primary">
-                                    Delivery Note
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>`
-                                }
                             </div>
                             <div class="mb-2 form-control">
                                 <span class="fw-bold text-primary">Vital Signs</span>                                            
@@ -293,63 +189,253 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                         </tbody>
                                     </table>
                                 </div>
-                                ${consultationDetails.data.length > iteration ? '' :
-                                `
-                                <div class="row d-none" id="addVitalsignsDiv" data-div="${iteration}">
-                                    <div class="col-xl-4 themed-grid-col">
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text" id="temperatureLabel">Temparature</span>    
-                                            <input class="form-control" name="temperature" id="temperature" autocomplete="">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 themed-grid-col">
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text" id="bloodPressureLabel">Blood Pressure</span>    
-                                            <input class="form-control" name="bloodPressure" id="bloodPressure" autocomplete="">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 themed-grid-col">
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text" id="spO2Label">SpO2</span>    
-                                            <input class="form-control" name="spO2" id="spO2" autocomplete="">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 themed-grid-col">
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text" id="pulseRateLabel">Pulse Rate</span>    
-                                            <input class="form-control" type="text" name="pulseRate" id="pulseRate" autocomplete="">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 themed-grid-col">
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text" id="respiratoryRateLabel"> Respiratory Rate</span>    
-                                            <input class="form-control" type="text" name="respiratoryRate" id="respiratoryRate" autocomplete="">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 themed-grid-col">
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text" id="weightLabel">Weight</span>    
-                                            <input class="form-control" type="text" name="weight" id="weight" autocomplete="">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 themed-grid-col">
-                                        <div class="input-group mb-1">
-                                            <span class="input-group-text" id="heightLabel">Height</span>    
-                                            <input class="form-control" type="text" name="height" id="height" autocomplete="">
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="d-flex justify-content-center">
-                                    <button type="button" id="addVitalsignsBtn" data-btn="${iteration}" class="btn btn-primary">
-                                        <i class="bi bi-plus-circle me-1"></i>
-                                        add
-                                    </button>
-                                </div>
-                                `}
                             </div>
                             <div class="extraInfoDiv">
                                 <div class="mb-2">
+                                    <div class="my-2 form-control">
+                                        <span class="fw-semibold fs-5 mb-2"> Surgery Details </span>
+                                        ${line.surgery === undefined ? '<div class="mb-2">No record</div>' : `
+                                        <div>
+                                            <div class="mb-2">
+                                                <span class="fw-bold text-primary"> Surgeon's Notes </span>
+                                                <div class="row">
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Date</span>
+                                                            <input class="form-control" type="text" name="date" value="" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Surgeon</span>
+                                                            <input class="form-control" name="surgeon" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                        <span class="input-group-text">Assitant Surgeon </span>
+                                                        <input class="form-control" name="assistantSurgeon" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                        <span class="input-group-text">Type of Aneasthesia</span>
+                                                        <input class="form-control" name="typeOfAneasthesia" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Aneasthetist</span>
+                                                            <input class="form-control" name="aneasthetist" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Scrub Nurse</span>
+                                                            <input class="form-control" name="scrubNurse" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Type of Operation</span>
+                                                            <input class="form-control" name="typeOfOperation" readonly>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xl-6 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Surgical Procedure</span>
+                                                            <textarea class="form-control" name="surgicalProcedure" readonly></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Surgeon's Notes</span>
+                                                            <textarea class="form-control" name="surgeonsNotes" readonly></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Aneasthetist's Notes</span>
+                                                            <textarea class="form-control" name="assistantSurgeon" readonly></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Post Operarion <br> Notes</span>
+                                                            <textarea class="form-control" name="assistantSurgeon" readonly></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="fw-bold text-primary"> Anesthesiologist's Notes </span>
+                                                <div class="row">
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Pre-assessment</span>
+                                                            <input class="form-control" name="pre-assessment" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Indication</span>
+                                                            <input class="form-control" name="indication" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Surgery</span>
+                                                            <input class="form-control" name="surgery" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Plan</span>
+                                                            <input class="form-control" name="plan" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Pre-med</span>
+                                                            <input class="form-control" name="pre-med" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Baseline</span>
+                                                            <input class="form-control" name="baseline" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Cannulation</span>
+                                                            <input class="form-control" name="cannulation" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Preloading</span>
+                                                            <input class="form-control" name="preloading" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Induction</span>
+                                                            <input class="form-control" name="induction" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Maintenance</span>
+                                                            <textarea class="form-control" name="maintenance" readonly></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Infusion</span>
+                                                            <input class="form-control" name="infusion" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Analgesics</span>
+                                                            <input class="form-control" name="analgesics" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Transfusion</span>
+                                                            <input class="form-control" name="transfusion" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Antibiotics</span>
+                                                            <input class="form-control" name="antibiotics" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">KOS</span>
+                                                            <input class="form-control" name="kos" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">EOS</span>
+                                                            <input class="form-control" name="eos" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">EBL</span>
+                                                            <input class="form-control" name="ebl" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Immediate Post-Op</span>
+                                                            <input class="form-control" name="immediatePostOp" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Tourniquet time</span>
+                                                            <input class="form-control" name="tourniquetTime" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Tourniquet out</span>
+                                                            <input class="form-control" name="tourniquetOut" readonly>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <span class="fw-semibold text-primary">Baby Details</span>
+                                                <div class="row">
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Baby out</span>
+                                                            <input class="form-control" name="babyOut" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Sex</span>
+                                                            <input class="form-control" name="sex" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Apgar Score</span>
+                                                            <input class="form-control" name="apgarScore" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Weight</span>
+                                                            <input class="form-control" name="weight" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Surgeon</span>
+                                                            <input class="form-control" name="surgeon" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-4 themed-grid-col">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text">Anaesthetist</span>
+                                                            <input class="form-control" name="anaesthetist" readonly>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>`
+                                        }
+                                    </div>
                                     <div class="my-2 form-control">
                                         <span class="fw-bold text-primary"> Delivery Note </span>
                                         ${line.deliveryNote === '' ? '<div class="mb-2">No record</div>' :
@@ -518,57 +604,6 @@ const InitialRegularConsultation = (iteration, consultationDetails, line) => {
                                 </div>
                             </div>
                         </div>
-                        ${consultationDetails.data.length > iteration ? '' :
-                        `
-                        <div class="my-2 form-control" id="wardAndBedDiv" data-div="${iteration}">
-                            <span class="fw-bold text-primary">Update Patient's Admission Status </span>
-                            <div class="row mt-2">
-                                <div class="col-xl-4 themed-grid-col col-xl-4">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="admitLabel">Status</span>
-                                        <select class="form-select form-select-md" name="status">
-                                            <option value="">Select</option>
-                                            <option value="Out-Patient">Out-Patient</option>
-                                            <option value="In-Patient">In-Patient</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-xl-4 themed-grid-col col-xl-6">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="wardTypeLabel"> Ward Type </span>
-                                        <select class="form-select form-select-md" name="ward">
-                                            <option value="">Select Ward</option>
-                                            <option value="Private Ward">Female Ward</option>
-                                            <option value="Private Ward">Male Ward</option>
-                                            <option value="General Ward">Private Ward 1</option>
-                                            <option value="General Ward">Private Ward 2</option>
-                                            <option value="General Ward">Private Ward 3</option>
-                                            <option value="General Ward">Private Ward 4</option>
-                                            <option value="General Ward">Private Ward 5</option>
-                                            <option value="General Ward">Private Ward 6</option>
-                                            <option value="General Ward">Old Ward</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-xl-4 themed-grid-col col-xl-6">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="bedNumberLabel"> Bed Number </span>
-                                        <select class="form-select form-select-md" name="bedNumber">
-                                            <option value="">Select Bed</option>
-                                            <option value="Private Ward">Bed 1</option>
-                                            <option value="General Ward">Bed 2</option>
-                                            <option value="General Ward">Bed 3</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-center mt-2">
-                                <button type="button" id="saveWardAndBedBtn" data-btn="${iteration}" class="btn btn-primary">
-                                    save
-                                </button>
-                            </div>
-                        </div>`
-                        }
                         <div class="my-2 form-control">
                             <span class="fw-bold text-primary"> Investigations </span>
                             <div class="row overflow-auto m-1">
@@ -597,38 +632,6 @@ const InitialRegularConsultation = (iteration, consultationDetails, line) => {
                                     </tbody>
                                 </table>
                             </div>
-                            ${consultationDetails.data.length > iteration ? '' : 
-                            `<div class="investigationDiv d-none" data-div="${iteration}">
-                                <div class="mb-2 form-control">
-                                    <span class="fw-semibold">Investigation</span>
-                                    <div class="row">
-                                        <div class="col-xl-4 themed-grid-col col-xl-6">
-                                            <div class="input-group mb-1">
-                                                <span class="input-group-text" id="itemLabel">Test</span> 
-                                                <input class="form-control" type="search" name="item" id="item" placeholder="search" autocomplete="off">
-                                                <datalist name="item" type="text" class="decoration-none"></datalist>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-4 themed-grid-col col-xl-6">
-                                            <div class="input-group mb-1">
-                                                <span class="input-group-text" id="testResultLabel">Result</span> 
-                                                <input class="form-control" type="text" name="testResult" id="testResult" placeholder="Enter result">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-center mt-2">
-                                        <button type="button" id="saveInvestigationBtn" data-btn="${iteration}" class="btn btn-primary">
-                                            save
-                                        <i class="bi bi-eyedropper"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-center my-2">
-                                <button type="button" class="btn btn-primary" id="addInvestigationBtn" data-btn="${iteration}">
-                                    Add Test Done
-                                </button>
-                            </div>`}
                         </div>
                         <div class="my-2 form-control">
                             <span class="fw-bold text-primary"> Medication & Treatment </span>
@@ -650,9 +653,7 @@ const InitialRegularConsultation = (iteration, consultationDetails, line) => {
                                             <td>N/S 500mls</td>
                                             <td>500mls 12hrly x2</td>
                                             <td>Dr Emma</td>
-                                            <td><button type="button" id="chartMedicationBtn" class="btn btn-outline-primary">
-                                                Chart
-                                            </button></td>
+                                            <td><i class="btn btn-outline-none text-primary bi bi-check-circle 1" id="approvalBtn"></i></td>
                                             <td>Complete</td>
                                         </tr>
                                         <tr>
@@ -660,9 +661,7 @@ const InitialRegularConsultation = (iteration, consultationDetails, line) => {
                                             <td>N/S 500mls</td>
                                             <td>500mls 12hrly x2</td>
                                             <td>Dr Emma</td>
-                                            <td><button type="button" id="chartMedicationBtn" class="btn btn-outline-primary">
-                                            Chart
-                                            </button></td>
+                                            <td><i class="btn btn-outline-none text-primary bi bi-check-circle 2" id="approvalBtn"></i></td>
                                             <td>Discontinued</td>
                                         </tr>
                                         <tr>
@@ -670,9 +669,7 @@ const InitialRegularConsultation = (iteration, consultationDetails, line) => {
                                             <td>N/S 500mls</td>
                                             <td>500mls 12hrly x2</td>
                                             <td>Dr Emma</td>
-                                            <td><button type="button" id="chartMedicationBtn" class="btn btn-outline-primary">
-                                            Chart
-                                            </button></td>
+                                            <td><i class="btn btn-outline-none text-primary bi bi-check-circle 3" id="approvalBtn"></i></td>
                                             <td>Incomplete</td>
                                         </tr>
                                         <tr>
@@ -680,9 +677,7 @@ const InitialRegularConsultation = (iteration, consultationDetails, line) => {
                                             <td>N/S 500mls</td>
                                             <td>500mls 12hrly x2</td>
                                             <td>Dr Emma</td>
-                                            <td><button type="button" id="chartMedicationBtn" class="btn btn-outline-primary">
-                                            Chart
-                                            </button></td>
+                                            <td><i class="btn btn-outline-none text-primary bi bi-check-circle 4" id="approvalBtn"></i></td>
                                             <td>None</td>
                                         </tr>
                                     </tbody>
@@ -692,14 +687,8 @@ const InitialRegularConsultation = (iteration, consultationDetails, line) => {
                         <div class="d-flex justify-content-start my-2 gap-2">
                             <button type="button" id="fileBtn" class="btn btn-outline-primary">
                                 <i class="bi bi-capsule"></i>
-                               Medication Chart
+                                Medication Chart
                             </button>
-                            ${consultationDetails.data.length > iteration ? '' :
-                            `<button type="button" id="deliveryBtn" class="btn btn-outline-primary">
-                                <i class="bi bi-pencil-square"></i>
-                                Delivery Note
-                            </button>`
-                            }
                         </div>
                         <div class="mb-2 form-control">
                             <span class="fw-bold text-primary">Vital Signs</span>                                            
@@ -794,6 +783,250 @@ const InitialRegularConsultation = (iteration, consultationDetails, line) => {
                         </div>
                         <div class="extraInfoDiv">
                             <div class="mb-2">
+                                <div class="my-2 form-control">
+                                    <span class="fw-semibold fs-5 mb-2"> Surgery Details </span>
+                                    ${line.surgery === undefined ? '<div class="mb-2">No record</div>' : `
+                                    <div>
+                                        <div class="mb-2">
+                                            <span class="fw-bold text-primary"> Surgeon's Notes </span>
+                                            <div class="row">
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Date</span>
+                                                        <input class="form-control" type="text" name="date" value="" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Surgeon</span>
+                                                        <input class="form-control" name="surgeon" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                    <span class="input-group-text">Assitant Surgeon </span>
+                                                    <input class="form-control" name="assistantSurgeon" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                    <span class="input-group-text">Type of Aneasthesia</span>
+                                                    <input class="form-control" name="typeOfAneasthesia" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Aneasthetist</span>
+                                                        <input class="form-control" name="aneasthetist" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Scrub Nurse</span>
+                                                        <input class="form-control" name="scrubNurse" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Type of Operation</span>
+                                                        <input class="form-control" name="typeOfOperation" readonly>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xl-6 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Surgical Procedure</span>
+                                                        <textarea class="form-control" name="surgicalProcedure" readonly></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Surgeon's Notes</span>
+                                                        <textarea class="form-control" name="surgeonsNotes" readonly></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Aneasthetist's Notes</span>
+                                                        <textarea class="form-control" name="assistantSurgeon" readonly></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Post Operarion <br> Notes</span>
+                                                        <textarea class="form-control" name="assistantSurgeon" readonly></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <span class="fw-bold text-primary"> Anesthesiologist's Notes </span>
+                                            <div class="row">
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Pre-assessment</span>
+                                                        <input class="form-control" name="pre-assessment" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Indication</span>
+                                                        <input class="form-control" name="indication" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Surgery</span>
+                                                        <input class="form-control" name="surgery" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Plan</span>
+                                                        <input class="form-control" name="plan" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Pre-med</span>
+                                                        <input class="form-control" name="pre-med" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Baseline</span>
+                                                        <input class="form-control" name="baseline" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Cannulation</span>
+                                                        <input class="form-control" name="cannulation" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Preloading</span>
+                                                        <input class="form-control" name="preloading" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Induction</span>
+                                                        <input class="form-control" name="induction" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Maintenance</span>
+                                                        <textarea class="form-control" name="maintenance" readonly></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Infusion</span>
+                                                        <input class="form-control" name="infusion" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Analgesics</span>
+                                                        <input class="form-control" name="analgesics" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Transfusion</span>
+                                                        <input class="form-control" name="transfusion" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Antibiotics</span>
+                                                        <input class="form-control" name="antibiotics" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">KOS</span>
+                                                        <input class="form-control" name="kos" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">EOS</span>
+                                                        <input class="form-control" name="eos" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">EBL</span>
+                                                        <input class="form-control" name="ebl" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Immediate Post-Op</span>
+                                                        <input class="form-control" name="immediatePostOp" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Tourniquet time</span>
+                                                        <input class="form-control" name="tourniquetTime" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Tourniquet out</span>
+                                                        <input class="form-control" name="tourniquetOut" readonly>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span class="fw-semibold text-primary">Baby Details</span>
+                                            <div class="row">
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Baby out</span>
+                                                        <input class="form-control" name="babyOut" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Sex</span>
+                                                        <input class="form-control" name="sex" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Apgar Score</span>
+                                                        <input class="form-control" name="apgarScore" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Weight</span>
+                                                        <input class="form-control" name="weight" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Surgeon</span>
+                                                        <input class="form-control" name="surgeon" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-4 themed-grid-col">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">Anaesthetist</span>
+                                                        <input class="form-control" name="anaesthetist" readonly>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>`
+                                    }
+                                </div>
                                 <div class="my-2 form-control">
                                     <span class="fw-bold text-primary"> Delivery Note </span>
                                     ${line.deliveryNote === '' ? '<div class="mb-2">No record</div>' :

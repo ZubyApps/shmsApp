@@ -33,13 +33,13 @@
                                 <td>SH21/4012 Joesphine Ene Odeh</td>
                                 <td>25</td>
                                 <td>Alex Odeh Family</td>
-                                <td><button class="btn btn-outline-primary" id="newConsultationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
+                                <td><i class="btn btn-outline-none text-primary bi bi-clipboard-plus" id="newConsultationBtn"></i></td>
                             </tr>
                             <tr>
                                 <td>SH23/7865 Patrick Abiodun Aso</td>
                                 <td>32</td>
                                 <td>Axe Mansard HMO</td>
-                                <td><button class="btn btn-outline-primary newConsultationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
+                                <td><span class="badge rounded-pill text-bg-light text-secondary p-2">Dr Toby</span></td>
                             </tr>
                         </tbody>
                     </table>

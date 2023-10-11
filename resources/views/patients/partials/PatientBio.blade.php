@@ -18,7 +18,7 @@
     </x-form-div>
     <x-form-div>
         <x-input-span id="maritalStatusLabel">Marital Status</x-input-span>
-        <x-form-input name="sex" class="Male" value="Male" readonly />
+        <x-form-input name="maritalStatus" class="Male" value="Single" readonly />
     </x-form-div>
     <x-form-div>
         <x-input-span>Phone Number</x-input-span>
@@ -31,5 +31,9 @@
     <x-form-div>
         <x-input-span>Religion</x-input-span>
         <x-form-input name="religion" value="Christian" readonly />
+    </x-form-div>
+    <x-form-div class="staffIdDiv">
+        <x-input-span>Staff ID/No.</x-input-span>
+        <x-form-input name="staffId" class="staffId" />
     </x-form-div>
 </div>

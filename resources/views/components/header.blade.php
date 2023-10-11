@@ -67,10 +67,14 @@
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('doctors') ? 'active text-primary' : '' }}">Doctors</a>
             <a href="/nurses" 
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('nurses') ? 'active text-primary' : '' }}">Nurses</a>
-            <a class="nav-item nav-link link-body-emphasis" href="#">Laboratory</a>
-            <a class="nav-item nav-link link-body-emphasis" href="#">Pharmacy</a>
-            <a class="nav-item nav-link link-body-emphasis" href="#">HMO Desk</a>
-            <a class="nav-item nav-link link-body-emphasis" href="#">Billing</a>
+            <a href="/lab"
+                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('lab') ? 'active text-primary' : '' }}">Laboratory</a>
+            <a href="/pharmacy"
+                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('pharmacy') ? 'active text-primary' : '' }}">Pharmacy</a>
+            <a href="hmo"
+                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('hmo') ? 'active text-primary' : '' }}">HMO</a>
+            <a href="billing"
+                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('billing') ? 'active text-primary' : '' }}">Billing</a>
             {{-- <a class="nav-item nav-link link-body-emphasis" href="#">Resources</a>
             <a class="nav-item nav-link link-body-emphasis" href="#">Admin</a>
             <a class="nav-item nav-link link-body-emphasis" href="#">Reports</a>

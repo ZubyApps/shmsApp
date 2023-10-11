@@ -100,16 +100,22 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                 </div>
                             </div>
                             <div class="row mt-2">
-                                <div class="col-xl-4 themed-grid-col col-xl-6">
+                                <div class="col-xl-4 themed-grid-col col-xl-4">
                                     <div class="input-group mb-1">
                                         <span class="input-group-text" id="admitLabel"> Patient Status </span>
-                                        <input class="form-control patientStatus" name="patientStatus" value="${line.status}" readonly="readonly">
+                                        <input class="form-control patientStatus" name="patientStatus" value="${line.status}" disabled>
                                     </div>
                                 </div>
-                                <div class="col-xl-4 themed-grid-col col-xl-6">
+                                <div class="col-xl-4 themed-grid-col col-xl-4">
                                     <div class="input-group mb-1">
                                         <span class="input-group-text" id="wardLabel"> Ward </span>
-                                        <input class="form-control ward" name="ward" value="${line.ward}">
+                                        <input class="form-control ward" name="ward" value="${line.ward}" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 themed-grid-col col-xl-4">
+                                    <div class="input-group mb-1">
+                                        <span class="input-group-text" id="bedLabel"> Bed </span>
+                                        <input class="form-control bed" name="bed" value="Bed 1" disabled>
                                     </div>
                                 </div>
                             </div>
@@ -743,16 +749,22 @@ const InitialRegularConsultation = (iteration, consultationDetails, line) => {
                     </div>
                 </div>
                 <div class="row mt-2">
-                    <div class="col-xl-4 themed-grid-col col-xl-6">
+                    <div class="col-xl-4 themed-grid-col col-xl-4">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="admitLabel"> Patient Status </span>
-                            <input class="form-control patientStatus" name="patientStatus" value="Out-Patient" readonly="readonly">
+                            <input class="form-control patientStatus" name="patientStatus" value="Out-Patient" disabled>
                         </div>
                     </div>
-                    <div class="col-xl-4 themed-grid-col col-xl-6">
+                    <div class="col-xl-4 themed-grid-col col-xl-4">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="wardLabel"> Ward </span>
-                            <input class="form-control ward" name="ward" value="Private Ward" readonly="readonly">
+                            <input class="form-control ward" name="ward" value="Private Ward" disabled>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 themed-grid-col col-xl-4">
+                        <div class="input-group mb-1">
+                            <span class="input-group-text" id="bedLabel"> Bed </span>
+                            <input class="form-control bed" name="bed" value="Bed 1" disabled>
                         </div>
                     </div>
                 </div>

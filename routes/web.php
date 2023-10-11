@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\HmoController;
 use App\Http\Controllers\NurseController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ProfileController;
@@ -34,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/patients', [PatientController::class, 'index'])->name('patients');
     Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors');
     Route::get('/nurses', [NurseController::class, 'index'])->name('nurses');
+    Route::get('/hmo', [HmoController::class, 'index'])->name('hmo');
 });
 
 require __DIR__.'/auth.php';

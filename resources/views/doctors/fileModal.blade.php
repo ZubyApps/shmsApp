@@ -7,7 +7,7 @@
             </div>
             <div class="modal-body">
                 <div class="mb-2">
-                    <x-form-label>Surgery Details</x-form-label>
+                    <x-form-label>Document Details</x-form-label>
                     <div class="allSponsorInputsDiv">
                         <div class="row">
                             <x-form-div class="col-xl-12">
@@ -15,7 +15,6 @@
                                 <x-form-input name="name" placeholder="eg: x-ray, ultrasound scan" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                {{-- <x-input-span>File<x-required-span /></x-input-span> --}}
                                 <x-form-input type="file" name="file" />
                             </x-form-div>
                         </div>
