@@ -28,7 +28,7 @@ const consultationDetails = {
             "weight": "88kg",
             "activeUser": "Admin",
             "selectedDiagnosis": "Gastro-enterities",
-            "complain": "Headache and weakness in the knees. But also, patient wants to talk for long. He wants to go on and on and on. I want to continue writing all these things till the line overflows",
+            "complain": "Headache and weakness in the knees. But also, patient wants to talk for long. He wants to go on and on and on. I want to continue writing all these things till the line overflows Headache and weakness in the knees. But also, patient wants to talk for long. He wants to go on and on and on. I want to continue writing all these things till the line overflows. Add more and more and more and more and more and more and more and more and many more texts",
             "examinationFindings": "Server yellowness in both eyes",
             "notes": "patient not improved after 24hrs of rocephine. I will continue",
             "physiciansPlan": "change to meropenim for the next 24hrs, and if no improvement, refer.",

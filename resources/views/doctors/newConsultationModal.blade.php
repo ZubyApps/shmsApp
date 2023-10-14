@@ -146,8 +146,9 @@
                                             <x-input-span id="admitLabel">Admit?</x-input-span>
                                             <select class="form-select form-select-md" name="admit">
                                                 <option value="">Select</option>
-                                                <option value="Out-Patient">No</option>
-                                                <option value="In-Patient">Yes</option>
+                                                <option value="out-patient">No</option>
+                                                <option value="in-patient">Yes</option>
+                                                <option value="observation">Observation</option>
                                             </select>
                                         </x-form-div>
                                         <x-form-div class="col-xl-4">

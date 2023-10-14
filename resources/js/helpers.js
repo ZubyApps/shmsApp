@@ -93,8 +93,15 @@ function textareaHeightAdjustment(setHeight, tag){
 }
 
 function OnInput(e){
-    let setHeight = 90
+    let setHeight = 100
     this.scrollHeight < setHeight || this.value === '' ? this.style.height = setHeight + "px" : this.style.height = this.scrollHeight + "px";
 }
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment}
+function dispatchEvent(tag, event) {
+    for (let i = 0; i < tag.length; i++) {
+        tag[i].dispatchEvent(new Event(event, { bubbles: true }))
+        console.log('outside')
+    }
+}
+
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent}

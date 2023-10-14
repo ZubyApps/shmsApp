@@ -2,7 +2,7 @@ import { Modal, Collapse } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
 import { consultationDetails, items } from "./data"
-import { clearDivValues, clearItemsList, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment } from "./helpers"
+import { clearDivValues, clearItemsList, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent } from "./helpers"
 import { review, InitialRegularConsultation } from "./dynamicHTMLfiles/consultations"
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -56,6 +56,8 @@ window.addEventListener('DOMContentLoaded', function () {
     // show new consultation modal
     newConsultationBtn.addEventListener('click', function () {
         newConsultationModal.show()
+        document.title = newConsultationModal._element.querySelector('.modal-title').textContent
+        console.log(newConsultationModal._element.querySelector('.modal-title').value)
     })
 
     // manipulating all known clinical info div
@@ -160,7 +162,15 @@ window.addEventListener('DOMContentLoaded', function () {
             } 
              
         })
+
+        let textareaEls = consultationReviewDiv.querySelectorAll("#resultEl")
+        
+        textareaEls.forEach(tArea => {
+            tArea.setAttribute("style", "height:" + (100) + "px;")
+        })
+
         consultationReviewModal.show()
+
     })
 
     // open review patient modal

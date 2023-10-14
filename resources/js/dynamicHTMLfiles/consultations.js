@@ -44,78 +44,71 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                             <td>1.5m</td>
                                         </tr>
                                     </tbody>
-                                    <tfoot class="fw-bolder text-primary">
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                         </div>
                         <div class="mb-2 form-control">
-                            <span class="fw-bold text-primary">Consultation Review</span>                                            
-                            <div class="row">
-                                <div class="col-xl-4 themed-grid-col col-xl-6">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="complainLabel">Complain</span> 
-                                        <textarea class="form-control" name="complain" id="complain" cols="10" rows="3" readonly="readonly">${line.complain}</textarea>
+                            <div class="form-control">
+                                <span class="fw-bold text-primary">Consultation Review</span>                                            
+                                <div class="row">
+                                    <div class="col-xl-4 themed-grid-col col-xl-6">
+                                        <div class="input-group mb-1">
+                                            <span class="input-group-text" id="complainLabel">Complain</span> 
+                                            <textarea class="form-control" name="complain" id="complain" cols="10" rows="3" readonly="readonly">${line.complain}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 themed-grid-col col-xl-6">
+                                        <div class="input-group mb-1">
+                                            <span class="input-group-text" id="historyOfPresentingComplainLabel">Physician's <br> Notes </span>
+                                            <textarea class="form-control" name="historyOfPresentingComplain" id="historyOfPresentingComplain" cols="10" rows="3" readonly="readonly">${line.notes}</textarea>
+                                        </div>
+                                    </div> 
+                                    <div class="col-xl-4 themed-grid-col col-xl-6">
+                                        <div class="input-group mb-1">
+                                            <span class="input-group-text" id="examinationFindingsLabel"> Examination <br> Findings </span>                                                    
+                                            <textarea class="form-control" type="text" name="examinationFindings" id="examinationFindings" cols="10" rows="3" readonly="readonly">${line.examinationFindings}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 themed-grid-col col-xl-6">
+                                        <div class="input-group mb-1">
+                                            <span class="input-group-text" id="diagnosisLabel"> Selected <br>ICD11 <br> Diagnosis </span>
+                                            <textarea class="form-control reviewSelectedDiagnosis" type="text" name="selectedDiagnosis" value="" readonly="readonly"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 themed-grid-col col-xl-6">
+                                        <div class="input-group mb-1">
+                                            <span class="input-group-text" id="diagnosisLabel"> Assessment </span>
+                                            <textarea class="form-control reviewSelectedDiagnosis" type="text" name="selectedDiagnosis" cols="10" rows="3" readonly="readonly">${line.selectedDiagnosis ?? 'nill'}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 themed-grid-col col-xl-6">
+                                        <div class="input-group mb-1">
+                                            <span class="input-group-text" id="physiciansPlanLabel"> Physicians Plan </span>
+                                            <textarea class="form-control" type="text" name="physiciansPlan" id="physiciansPlan" cols="10" rows="3" readonly="readonly">${line.plan}</textarea>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-xl-4 themed-grid-col col-xl-6">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="historyOfPresentingComplainLabel">Physician's <br> Notes </span>
-                                        <textarea class="form-control" name="historyOfPresentingComplain" id="historyOfPresentingComplain" cols="10" rows="3" readonly="readonly">${line.notes}</textarea>
+                                <div class="row mt-2">
+                                    <div class="col-xl-4 themed-grid-col col-xl-4">
+                                        <div class="input-group mb-1">
+                                            <span class="input-group-text" id="admitLabel"> Patient Status </span>
+                                            <input class="form-control patientStatus" name="patientStatus" value="${line.status}" disabled>
+                                        </div>
                                     </div>
-                                </div> 
-                                <div class="col-xl-4 themed-grid-col col-xl-6">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="examinationFindingsLabel"> Examination <br> Findings </span>                                                    
-                                        <textarea class="form-control" type="text" name="examinationFindings" id="examinationFindings" cols="10" rows="3" readonly="readonly">${line.examinationFindings}</textarea>
+                                    <div class="col-xl-4 themed-grid-col col-xl-4">
+                                        <div class="input-group mb-1">
+                                            <span class="input-group-text" id="wardLabel"> Ward </span>
+                                            <input class="form-control ward" name="ward" value="${line.ward}" disabled>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xl-4 themed-grid-col col-xl-6">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="diagnosisLabel"> Selected <br>ICD11 <br> Diagnosis </span>
-                                        <textarea class="form-control reviewSelectedDiagnosis" type="text" name="selectedDiagnosis" value="" readonly="readonly"></textarea>
+                                    <div class="col-xl-4 themed-grid-col col-xl-4">
+                                        <div class="input-group mb-1">
+                                            <span class="input-group-text" id="bedLabel"> Bed </span>
+                                            <input class="form-control bed" name="bed" value="Bed 1" disabled>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xl-4 themed-grid-col col-xl-6">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="diagnosisLabel"> Assessment </span>
-                                        <textarea class="form-control reviewSelectedDiagnosis" type="text" name="selectedDiagnosis" cols="10" rows="3" readonly="readonly">${line.selectedDiagnosis ?? 'nill'}</textarea>
-                                    </div>
-                                </div>
-                                <div class="col-xl-4 themed-grid-col col-xl-6">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="physiciansPlanLabel"> Physicians Plan </span>
-                                        <textarea class="form-control" type="text" name="physiciansPlan" id="physiciansPlan" cols="10" rows="3" readonly="readonly">${line.plan}</textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mt-2">
-                                <div class="col-xl-4 themed-grid-col col-xl-4">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="admitLabel"> Patient Status </span>
-                                        <input class="form-control patientStatus" name="patientStatus" value="${line.status}" disabled>
-                                    </div>
-                                </div>
-                                <div class="col-xl-4 themed-grid-col col-xl-4">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="wardLabel"> Ward </span>
-                                        <input class="form-control ward" name="ward" value="${line.ward}" disabled>
-                                    </div>
-                                </div>
-                                <div class="col-xl-4 themed-grid-col col-xl-4">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="bedLabel"> Bed </span>
-                                        <input class="form-control bed" name="bed" value="Bed 1" disabled>
+                                    <div class="d-flex justify-content-end my-2">
+                                        <span class="input-group-text">Dr Toby</span>
                                     </div>
                                 </div>
                             </div>
@@ -142,7 +135,9 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                                 <td>12/9/23 11:02pm</td>
                                                 <td>Dr Toby</td>
                                                 <td>Malaria Parasite</td>
-                                                <td>Pfall ++</td>
+                                                <td><textarea class="form-control" id="resultEl" readonly>Pfall ++
+                                                Pfall ++
+                                                </textarea></td>
                                                 <td><span class="position-relative"><a href="/transactions/11/receipts/15" target="blank" title="ABAGI Ernest_Nguevese.pdf">
                                                 <i class="bi bi-file-earmark-text download-receipt text-primary fs-4"></i></a></span></td>
                                                 <td><a role="button" class=""><i class="bi bi-upload"></i></td></a>
@@ -150,19 +145,6 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                                 <td>Onjefu</td>
                                             </tr>
                                         </tbody>
-                                        <tfoot class="fw-bolder text-primary">
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        </tfoot>
                                     </table>
                                 </div>
                             </div>
@@ -186,22 +168,8 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                                 <td>Dr Toby</td>
                                             </tr>
                                         </tbody>
-                                        <tfoot class="fw-bolder text-primary">
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        </tfoot>
                                     </table>
                                 </div>
-                            </div>
-                             <div class="d-flex justify-content-end my-2">
-                                <button type="button" id="deleteConsultationBtn" class="btn btn-outline-primary">
-                                    <i class="bi bi-trash"></i>
-                                    Delete
-                                </button>
                             </div>
                             ${consultationDetails.data.length > iteration ? '' : 
                             `<div class="d-flex justify-content-center my-2">
@@ -268,19 +236,9 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                                 <td>5% mls Syringe</td>
                                                 <td></td>
                                                 <td>4</td>
-                                                <td><button class="btn btn-outline-primary deleteBtn"><iclass="bi bi-trash"></i></button></td>
+                                                <td><button class="btn btn-outline-primary deleteBtn"><i class="bi bi-trash"></i></button></td>
                                             </tr>
                                         </tbody>
-                                        <tfoot class="fw-bolder text-primary">
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        </tfoot>
                                     </table>
                                 </div>
                             </div>`}
@@ -633,9 +591,13 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                         }
                                     </div>
                                 </div>
-                            </div>
-                            <div class="d-flex justify-content-end my-2">
-                                <span class="input-group-text">Dr Toby</span>
+                                ${consultationDetails.data.length > iteration ? '' : 
+                                `<div class="d-flex justify-content-end my-2">
+                                    <button type="button" id="deleteReviewConsultationBtn" class="btn btn-outline-primary">
+                                        <i class="bi bi-trash"></i>
+                                        Delete
+                                    </button>
+                                </div>`}
                             </div>
                         </div>
                     </div>
@@ -697,74 +659,79 @@ const InitialRegularConsultation = (iteration, consultationDetails, line) => {
                 </div>
             </div>
             <div class="mb-2 form-control">
-                <span class="fw-bold text-primary">Consultation</span>                                            
-                <div class="row">
-                    <div class="col-xl-4 themed-grid-col col-xl-6">
+                <div class="form-control">
+                    <span class="fw-bold text-primary">Consultation</span>                                            
+                    <div class="row">
+                        <div class="col-xl-4 themed-grid-col col-xl-6">
+                            <div class="input-group mb-1">
+                                <span class="input-group-text" id="presentingComplainLabel">Presenting <br>Complain</span> 
+                                <textarea class="form-control" name="presentingComplain" id="presentingComplain" cols="10" rows="3" readonly="readonly"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
-                            <span class="input-group-text" id="presentingComplainLabel">Presenting <br>Complain</span> 
-                            <textarea class="form-control" name="presentingComplain" id="presentingComplain" cols="10" rows="3" readonly="readonly"></textarea>
+                            <span class="input-group-text" id="historyOfPresentingComplainLabel">History of <br> Presenting <br> Complain </span>
+                            <textarea class="form-control" name="historyOfPresentingComplain" id="historyOfPresentingComplain" cols="10" rows="3" readonly="readonly"></textarea>
+                        </div>
+                    </div> 
+                        <div class="col-xl-4 themed-grid-col col-xl-6">
+                            <div class="input-group mb-1">
+                                <span class="input-group-text" id="medicalHistoryLabel"> Past Medical/ <br> Surgical History</span>                            
+                                <textarea class="form-control" name="medicalHistory" id="medicalHistory" cols="10" rows="3" readonly="readonly"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 themed-grid-col col-xl-6">
+                            <div class="input-group mb-1">
+                                <span class="input-group-text" id="obGyneHistoryLabel">Obstetrics/<br>Gynecological <br> History</span>
+                                <textarea class="form-control" type="text" name="obGyneHistory" id="obGyneHistory" cols="10" rows="3" readonly="readonly"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 themed-grid-col col-xl-6">
+                            <div class="input-group mb-1">
+                                <span class="input-group-text" id="examinationFindingsLabel"> Examination <br> Findings </span>                                                    
+                                <textarea class="form-control" type="text" name="examinationFindings" id="examinationFindings" cols="10" rows="3"readonly="readonly"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 themed-grid-col col-xl-6">
+                            <div class="input-group mb-1">
+                                <span class="input-group-text" id="diagnosisLabel"> Selected <br>ICD11 <br> Diagnosis </span>
+                                <textarea class="form-control reviewSelectedDiagnosis" type="text" name="selectedDiagnosis" cols="10" rows="3" readonly="readonly">${line.selectedDiagnosis ?? 'nill'}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 themed-grid-col col-xl-6">
+                            <div class="input-group mb-1">
+                                <span class="input-group-text" id="diagnosisLabel"> Addional <br> Diagnosis </span> 
+                                <textarea class="form-control additionalDiagnosis" type="text" name="additionalDiagnosis" cols="10" rows="3" readonly="readonly"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 themed-grid-col col-xl-6">
+                            <div class="input-group mb-1">
+                                <span class="input-group-text" id="physiciansPlanLabel"> Physicians Plan </span>
+                                <textarea class="form-control" type="text" name="physiciansPlan" id="physiciansPlan" cols="10" rows="3" readonly="readonly"></textarea>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-xl-4 themed-grid-col col-xl-6">
-                    <div class="input-group mb-1">
-                        <span class="input-group-text" id="historyOfPresentingComplainLabel">History of <br> Presenting <br> Complain </span>
-                        <textarea class="form-control" name="historyOfPresentingComplain" id="historyOfPresentingComplain" cols="10" rows="3" readonly="readonly"></textarea>
-                    </div>
-                </div> 
-                    <div class="col-xl-4 themed-grid-col col-xl-6">
-                        <div class="input-group mb-1">
-                            <span class="input-group-text" id="medicalHistoryLabel"> Past Medical/ <br> Surgical History</span>                            
-                            <textarea class="form-control" name="medicalHistory" id="medicalHistory" cols="10" rows="3" readonly="readonly"></textarea>
+                    <div class="row mt-2">
+                        <div class="col-xl-4 themed-grid-col col-xl-4">
+                            <div class="input-group mb-1">
+                                <span class="input-group-text" id="admitLabel"> Patient Status </span>
+                                <input class="form-control patientStatus" name="patientStatus" value="Out-Patient" disabled>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-xl-4 themed-grid-col col-xl-6">
-                        <div class="input-group mb-1">
-                            <span class="input-group-text" id="obGyneHistoryLabel">Obstetrics/<br>Gynecological <br> History</span>
-                            <textarea class="form-control" type="text" name="obGyneHistory" id="obGyneHistory" cols="10" rows="3" readonly="readonly"></textarea>
+                        <div class="col-xl-4 themed-grid-col col-xl-4">
+                            <div class="input-group mb-1">
+                                <span class="input-group-text" id="wardLabel"> Ward </span>
+                                <input class="form-control ward" name="ward" value="Private Ward" disabled>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-xl-4 themed-grid-col col-xl-6">
-                        <div class="input-group mb-1">
-                            <span class="input-group-text" id="examinationFindingsLabel"> Examination <br> Findings </span>                                                    
-                            <textarea class="form-control" type="text" name="examinationFindings" id="examinationFindings" cols="10" rows="3"readonly="readonly"></textarea>
+                        <div class="col-xl-4 themed-grid-col col-xl-4">
+                            <div class="input-group mb-1">
+                                <span class="input-group-text" id="bedLabel"> Bed </span>
+                                <input class="form-control bed" name="bed" value="Bed 1" disabled>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-xl-4 themed-grid-col col-xl-6">
-                        <div class="input-group mb-1">
-                            <span class="input-group-text" id="diagnosisLabel"> Selected <br>ICD11 <br> Diagnosis </span>
-                            <textarea class="form-control reviewSelectedDiagnosis" type="text" name="selectedDiagnosis" cols="10" rows="3" readonly="readonly">${line.selectedDiagnosis ?? 'nill'}</textarea>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 themed-grid-col col-xl-6">
-                        <div class="input-group mb-1">
-                            <span class="input-group-text" id="diagnosisLabel"> Addional <br> Diagnosis </span> 
-                            <textarea class="form-control additionalDiagnosis" type="text" name="additionalDiagnosis" cols="10" rows="3" readonly="readonly"></textarea>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 themed-grid-col col-xl-6">
-                        <div class="input-group mb-1">
-                            <span class="input-group-text" id="physiciansPlanLabel"> Physicians Plan </span>
-                            <textarea class="form-control" type="text" name="physiciansPlan" id="physiciansPlan" cols="10" rows="3" readonly="readonly"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-xl-4 themed-grid-col col-xl-4">
-                        <div class="input-group mb-1">
-                            <span class="input-group-text" id="admitLabel"> Patient Status </span>
-                            <input class="form-control patientStatus" name="patientStatus" value="Out-Patient" disabled>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 themed-grid-col col-xl-4">
-                        <div class="input-group mb-1">
-                            <span class="input-group-text" id="wardLabel"> Ward </span>
-                            <input class="form-control ward" name="ward" value="Private Ward" disabled>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 themed-grid-col col-xl-4">
-                        <div class="input-group mb-1">
-                            <span class="input-group-text" id="bedLabel"> Bed </span>
-                            <input class="form-control bed" name="bed" value="Bed 1" disabled>
+                        <div class="d-flex justify-content-end my-2">
+                            <span class="input-group-text">Dr Emannuel</span>
                         </div>
                     </div>
                 </div>
@@ -831,13 +798,6 @@ const InitialRegularConsultation = (iteration, consultationDetails, line) => {
                         </table>
                     </div>
                 </div>
-                ${consultationDetails.data.length > iteration ? '' : 
-                `<div class="d-flex justify-content-end my-2">
-                    <button type="button" id="deleteReviewConsultationBtn" class="btn btn-outline-primary">
-                        <i class="bi bi-trash"></i>
-                        Delete
-                    </button>
-                </div>`}
                 ${consultationDetails.data.length > iteration ? '' : 
                 `<div class="d-flex justify-content-center my-2">
                     <button type="button" class="btn btn-primary updateInvestigationAndManagmentBtn" data-btn="${iteration}">
@@ -1258,9 +1218,13 @@ const InitialRegularConsultation = (iteration, consultationDetails, line) => {
                             }
                         </div>
                     </div>
-                </div>
-                <div class="d-flex justify-content-end my-2">
-                    <span class="input-group-text">Dr Emannuel</span>
+                    ${consultationDetails.data.length > iteration ? '' : 
+                    `<div class="d-flex justify-content-end my-2">
+                        <button type="button" id="deleteReviewConsultationBtn" class="btn btn-outline-primary">
+                            <i class="bi bi-trash"></i>
+                            Delete
+                        </button>
+                    </div>`}
                 </div>
             </div>
         </div>

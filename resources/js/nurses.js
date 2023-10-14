@@ -1,7 +1,7 @@
 import { Offcanvas, Modal } from "bootstrap";
 import { consultationDetails, items } from "./data"
 import { clearDivValues, clearItemsList, getOrdinal, getDivData} from "./helpers"
-import { InitialRegularConsultation, review } from "./dynamicHTMLfiles/treaments";
+import { InitialRegularConsultation, review } from "./dynamicHTMLfiles/treamentsNurses";
 
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -11,6 +11,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const newDeliveryNoteModal      = new Modal(document.getElementById('newDeliveryNoteModal'))
     const updateDeliveryNoteModal   = new Modal(document.getElementById('updateDeliveryNoteModal'))
     const chartMedicationModal      = new Modal(document.getElementById('chartMedicationModal'))
+    
     const saveMedicationChartBtn    = chartMedicationModal._element.querySelector('#saveMedicationChartBtn')
     const medicationChartDiv        = chartMedicationModal._element.querySelector('#chartMedicationDiv')
 

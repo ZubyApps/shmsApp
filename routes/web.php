@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\BillingController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HmoController;
+use App\Http\Controllers\InvestigationsController;
 use App\Http\Controllers\NurseController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('home');
-})->middleware(['auth', 'verified'])->name('home');
+})->middleware(['auth', 'verified'])->name('Home');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -32,10 +35,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
-    Route::get('/patients', [PatientController::class, 'index'])->name('patients');
-    Route::get('/doctors', [DoctorController::class, 'index'])->name('doctors');
-    Route::get('/nurses', [NurseController::class, 'index'])->name('nurses');
-    Route::get('/hmo', [HmoController::class, 'index'])->name('hmo');
+    Route::get('/patients', [PatientController::class, 'index'])->name('Patients');
+    Route::get('/doctors', [DoctorController::class, 'index'])->name('Doctors');
+    Route::get('/nurses', [NurseController::class, 'index'])->name('Nurses');
+    Route::get('/investigations', [InvestigationsController::class, 'index'])->name('Investigations');
+    Route::get('/pharmacy', [PharmacyController::class, 'index'])->name('Pharmacy');
+    Route::get('/hmo', [HmoController::class, 'index'])->name('Hmo');
+    Route::get('/billing', [BillingController::class, 'index'])->name('Billing');
 });
 
 require __DIR__.'/auth.php';

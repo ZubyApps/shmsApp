@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Laboratory;
+use App\Models\Billing;
 use Illuminate\Http\Request;
 
-class LaboratoryController extends Controller
+class BillingController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return view('billing.billing');
     }
 
     /**
@@ -34,7 +34,7 @@ class LaboratoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Laboratory $laboratory)
+    public function show(Billing $billing)
     {
         //
     }
@@ -42,7 +42,7 @@ class LaboratoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Laboratory $laboratory)
+    public function edit(Billing $billing)
     {
         //
     }
@@ -50,7 +50,7 @@ class LaboratoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Laboratory $laboratory)
+    public function update(Request $request, Billing $billing)
     {
         //
     }
@@ -58,7 +58,7 @@ class LaboratoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Laboratory $laboratory)
+    public function destroy(Billing $billing)
     {
         //
     }

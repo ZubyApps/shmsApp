@@ -73,12 +73,13 @@ const review = (iteration, numberConverter, count, consultationDetails, line) =>
                                 <div class="row mt-2">
                                     <div class="col-xl-4 themed-grid-col col-xl-4">
                                         <div class="input-group mb-1">
-                                        <span class="input-group-text" id="admitLabel">Status</span>
-                                        <select class="form-select form-select-md" name="status">
-                                            <option value="">Select</option>
-                                            <option value="Out-Patient">Out-Patient</option>
-                                            <option value="In-Patient">In-Patient</option>
-                                        </select>
+                                            <span class="input-group-text" id="admitLabel">Admit?</span>
+                                            <select class="form-select form-select-md" name="status">
+                                                <option value="">Select</option>
+                                                <option value="out-Patient">No</option>
+                                                <option value="in-Patient">Yes</option>
+                                                <option value="observation">Observation</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 themed-grid-col col-xl-4">
@@ -525,11 +526,12 @@ const InitialRegularConsultation = (iteration, consultationDetails, line) => {
                             <div class="row mt-2">
                                 <div class="col-xl-4 themed-grid-col col-xl-4">
                                     <div class="input-group mb-1">
-                                        <span class="input-group-text" id="admitLabel">Status</span>
+                                        <span class="input-group-text" id="admitLabel">Admit?</span>
                                         <select class="form-select form-select-md" name="status">
                                             <option value="">Select</option>
-                                            <option value="Out-Patient">Out-Patient</option>
-                                            <option value="In-Patient">In-Patient</option>
+                                            <option value="out-Patient">No</option>
+                                            <option value="in-Patient">Yes</option>
+                                            <option value="observation">Observation</option>
                                         </select>
                                     </div>
                                 </div>

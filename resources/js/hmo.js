@@ -16,8 +16,11 @@ window.addEventListener('DOMContentLoaded', function () {
     const verifyPatientBtn          = document.querySelector('#verifyPatientBtn')
     const treatmentDetailsBtn       = document.querySelector('#treatmentDetailsBtn')
     const approvalBtn               = document.querySelector('#approvalBtn')
-    const approveBtn               = document.querySelector('#approveBtn')
-    const approveDiv               = document.querySelector('#approveDiv')
+    const approveBtn                = document.querySelector('#approveBtn')
+    const approveDiv                = document.querySelector('#approveDiv')
+
+    const treatmentDiv              = document.querySelector('#treatmentDiv')
+
 
     verifyBtn.addEventListener('click', function  () {
         verifyModal.show()
@@ -49,6 +52,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
         reviewDetailsModal.show()
+    })
+
+    reviewDetailsModal._element.addEventListener('hide.bs.modal', function () {
+        treatmentDiv.innerHTML = ''
     })
 
     approvalBtn.addEventListener('click', function () {

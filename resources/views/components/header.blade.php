@@ -62,19 +62,19 @@
     <div class="nav-scroller py-1 mb-3 border-bottom">
         <nav class="nav nav-underline justify-content-between fs-5 fw-semibold">
             <a href="/patients"
-                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('patients') ? 'active text-primary' : '' }}">Patients</a>
+                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Patients') ? 'active text-primary' : '' }}">Patients</a>
             <a href="/doctors"
-                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('doctors') ? 'active text-primary' : '' }}">Doctors</a>
+                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Doctors') ? 'active text-primary' : '' }}">Doctors</a>
             <a href="/nurses" 
-                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('nurses') ? 'active text-primary' : '' }}">Nurses</a>
-            <a href="/lab"
-                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('lab') ? 'active text-primary' : '' }}">Laboratory</a>
+                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Nurses') ? 'active text-primary' : '' }}">Nurses</a>
+            <a href="/investigations"
+                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Investigations') ? 'active text-primary' : '' }}">Investigations</a>
             <a href="/pharmacy"
-                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('pharmacy') ? 'active text-primary' : '' }}">Pharmacy</a>
-            <a href="hmo"
-                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('hmo') ? 'active text-primary' : '' }}">HMO</a>
-            <a href="billing"
-                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('billing') ? 'active text-primary' : '' }}">Billing</a>
+                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Pharmacy') ? 'active text-primary' : '' }}">Pharmacy</a>
+            <a href="/hmo"
+                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Hmo') ? 'active text-primary' : '' }}">HMO</a>
+            <a href="/billing"
+                class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Billing') ? 'active text-primary' : '' }}">Billing</a>
             {{-- <a class="nav-item nav-link link-body-emphasis" href="#">Resources</a>
             <a class="nav-item nav-link link-body-emphasis" href="#">Admin</a>
             <a class="nav-item nav-link link-body-emphasis" href="#">Reports</a>
