@@ -4,6 +4,7 @@
 @vite(['resources/js/doctors.js'])
 
 @include('doctors.newConsultationModal', ['title' => 'New Consultation', 'isUpdate' => false, 'id' => 'newConsultationModal'])
+@include('doctors.newAncConsultationModal', ['title' => 'New ANC Consultation', 'isUpdate' => false, 'id' => 'newAncConsultationModal'])
 @include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isUpdate' => false, 'id' => 'consultationReviewModal'])
 @include('doctors.surgeryModal', ['title' => 'New Surgery', 'isUpdate' => false, 'id' => 'surgeryModal'])
 @include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
@@ -33,13 +34,13 @@
                                 <td>SH21/4012 Joesphine Ene Odeh</td>
                                 <td>25</td>
                                 <td>Alex Odeh Family</td>
-                                <td><i class="btn btn-outline-none text-primary bi bi-clipboard-plus" id="newConsultationBtn"></i></td>
+                                <td><i class="btn btn-outline-none text-primary bi bi-clipboard-plus" id="newConsultationBtn" data-patientType="ANC"></i></td>
                             </tr>
                             <tr>
                                 <td>SH23/7865 Patrick Abiodun Aso</td>
                                 <td>32</td>
                                 <td>Axe Mansard HMO</td>
-                                <td><span class="badge rounded-pill text-bg-light text-secondary p-2">Dr Toby</span></td>
+                                <td><span class="badge rounded-pill text-bg-light text-secondary p-2" id="newConsultationBtn" data-patientType="Regular">Dr Toby</span></td>
                             </tr>
                         </tbody>
                     </table>

@@ -3,17 +3,18 @@ import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
 import { consultationDetails, items } from "./data"
 import { clearDivValues, clearItemsList, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent } from "./helpers"
-import { review, InitialRegularConsultation } from "./dynamicHTMLfiles/consultations"
+import { doctorsReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 
 window.addEventListener('DOMContentLoaded', function () {
     const newConsultationModal              = new Modal(document.getElementById('newConsultationModal'))
+    const newAncConsultationModal           = new Modal(document.getElementById('newAncConsultationModal'))
     const consultationReviewModal           = new Modal(document.getElementById('consultationReviewModal'))
     const surgeryModal                      = new Modal(document.getElementById('surgeryModal'))
     const fileModal                         = new Modal(document.getElementById('fileModal'))
     const newReviewModal                    = new Modal(document.getElementById('newReviewModal'))
     const specialistConsultationModal       = new Modal(document.getElementById('specialistConsultationModal'))
 
-    const newConsultationBtn                = document.querySelector('#newConsultationBtn')
+    const newConsultationBtn                = document.querySelectorAll('#newConsultationBtn')
     const consultationReviewBtn             = document.querySelector('#reviewConsultationBtn')
     const reviewPatientbtn                  = consultationReviewModal._element.querySelector('#reviewPatientBtn')
     const specialistConsultationbtn         = consultationReviewModal._element.querySelector('#specialistConsultationBtn')
@@ -54,10 +55,16 @@ window.addEventListener('DOMContentLoaded', function () {
     // NEW CONSULTATION MODAL CODE 
 
     // show new consultation modal
-    newConsultationBtn.addEventListener('click', function () {
-        newConsultationModal.show()
-        document.title = newConsultationModal._element.querySelector('.modal-title').textContent
-        console.log(newConsultationModal._element.querySelector('.modal-title').value)
+    newConsultationBtn.forEach(btn => {
+        btn.addEventListener('click', function () {
+            console.log(btn.dataset.patienttype)
+            if (btn.dataset.patienttype === 'ANC') {
+                newAncConsultationModal.show() 
+            } else {
+
+                newConsultationModal.show()
+            }
+        })
     })
 
     // manipulating all known clinical info div
@@ -153,20 +160,16 @@ window.addEventListener('DOMContentLoaded', function () {
         let count = 0
         consultationDetails.data.forEach(line => {
             iteration++
+            
+            iteration > 1 ? count++ : ''
 
-            if (iteration > 1) {
-                count++
-                consultationReviewDiv.innerHTML += review(iteration, getOrdinal, count, consultationDetails, line)
+            if (line.patientType === 'ANC') {
+                consultationReviewDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultationDetails, line)
             } else {
-                consultationReviewDiv.innerHTML += InitialRegularConsultation(iteration,consultationDetails, line)
-            } 
-             
-        })
 
-        let textareaEls = consultationReviewDiv.querySelectorAll("#resultEl")
-        
-        textareaEls.forEach(tArea => {
-            tArea.setAttribute("style", "height:" + (100) + "px;")
+                consultationReviewDiv.innerHTML += doctorsReviewDetails(iteration, getOrdinal, count, consultationDetails, line)
+            }
+             
         })
 
         consultationReviewModal.show()

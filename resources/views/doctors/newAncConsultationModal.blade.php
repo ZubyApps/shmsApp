@@ -63,7 +63,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="row d-none" id="addVitalsignsDiv" data-div="new">
-                                            @include('vitalsigns.vitalsigns', ['disabled' => false])
+                                            @include('vitalsigns.vitalsigns', ['disabled' => true])
                                         </div>
                                         <div class="d-flex justify-content-center">
                                             <button type="button" id="addVitalsignsBtn" data-btn="new"
@@ -83,25 +83,17 @@
                                             placeholder="if applicable..." />
                                     </x-form-div>
                                     <div class="row">
-                                        <x-form-div class="col-xl-12">
-                                            <x-input-span id="presentingComplainLabel">Presenting <br />
-                                                Complain</x-input-span>
-                                            <x-form-textarea name="presentingComplain" id="presentingComplain"
-                                                cols="10" rows="3"></x-form-textarea>
+                                        <x-form-div class="col-xl-3">
+                                            <x-input-span>LMP</x-input-span>
+                                            <x-form-input type="date" name="lmp" value="" />
                                         </x-form-div>
-                                        <x-form-div class="col-xl-6">
-                                            <x-input-span id="historyOfPresentingComplainLabel">History of <br />
-                                                Presenting
-                                                <br /> Complain</x-input-span>
-                                            <x-form-textarea name="historyOfPresentingComplain"
-                                                id="historyOfPresentingComplain" cols="10"
-                                                rows="3"></x-form-textarea>
+                                        <x-form-div class="col-xl-3">
+                                            <x-input-span>EDD</x-input-span>
+                                            <x-form-input type="date" name="edd" value="" />
                                         </x-form-div>
-                                        <x-form-div class="col-xl-6">
-                                            <x-input-span id="pastMedicalHistoryLabel">Past Medical/ <br /> Surgical
-                                                History</x-input-span>
-                                            <x-form-textarea name="pastMedicalHistory" id="pastMedicalHistory"
-                                                cols="10" rows="3"></x-form-textarea>
+                                        <x-form-div class="col-xl-3">
+                                            <x-input-span>EGA</x-input-span>
+                                            <x-form-input type="date" name="ega" value="" />
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="obGyneHistoryLabel">Obstetrics/<br />Gynecological
@@ -111,8 +103,29 @@
                                                 cols="10" rows="3"></x-form-textarea>
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
-                                            <x-input-span id="examinationFindingsLabel">Examination <br />
-                                                Findings</x-input-span>
+                                            <x-input-span id="presentingComplainLabel">Ultrasound <br />
+                                                Report</x-input-span>
+                                            <x-form-textarea name="presentingComplain" id="presentingComplain"
+                                                cols="10" rows="3"></x-form-textarea>
+                                        </x-form-div>
+                                        <x-form-div class="col-xl-6">
+                                            <x-input-span>Fetal <br> Heart Rate</x-input-span>
+                                            <x-form-input type="text" name="fetalHeartRate" value="" />
+                                        </x-form-div>
+                                        <x-form-div class="col-xl-6">
+                                            <x-input-span>Height <br> of Fondus</x-input-span>
+                                            <x-form-input type="text" name="fetalHeartRate" value="" />
+                                        </x-form-div>
+                                        <x-form-div class="col-xl-6">
+                                            <x-input-span id="pastMedicalHistoryLabel">Presentation <br /> And
+                                                Position</x-input-span>
+                                            <x-form-textarea name="pastMedicalHistory" id="pastMedicalHistory"
+                                                cols="10" rows="3"></x-form-textarea>
+                                        </x-form-div>
+                                        <x-form-div class="col-xl-6">
+                                            <x-input-span id="examinationFindingsLabel">Relation of <br>
+                                                Presenting <br>
+                                                 Part to Brim</x-input-span>
                                             <x-form-textarea type="text" name="examinationFindings"
                                                 id="examinationFindings" cols="10"
                                                 rows="3"></x-form-textarea>
@@ -129,19 +142,18 @@
                                                 class="selectedDiagnosis-1" style="height: 100px"></x-form-textarea>
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
-                                            <x-input-span id="diagnosisLabel">Addional <br />
-                                                Diagnosis</x-input-span>
+                                            <x-input-span id="diagnosisLabel">Remarks </x-input-span>
                                             <x-form-textarea type="text" name="additionalDiagnosis"
                                                 class="additionalDiagnosis" cols="10"
                                                 rows="3"></x-form-textarea>
                                         </x-form-div>
-                                        <x-form-div class="col-xl-12">
+                                        <x-form-div class="col-xl-6">
                                             <x-input-span id="physiciansPlanLabel">Physicians Plan</x-input-span>
                                             <x-form-textarea type="text" name="physiciansPlan" id="physiciansPlan"
                                                 cols="10" rows="3"></x-form-textarea>
                                         </x-form-div>
                                     </div>
-                                    <div class="row my-2">
+                                    {{-- <div class="row my-2">
                                         <x-form-div class="col-xl-4">
                                             <x-input-span id="admitLabel">Admit?</x-input-span>
                                             <select class="form-select form-select-md" name="admit">
@@ -175,7 +187,7 @@
                                                 <option value="Bed 3">Bed 3</option>
                                             </select>
                                         </x-form-div>
-                                    </div>
+                                    </div> --}}
                                     <div class="d-flex justify-content-center">
                                         <button type="button" id="saveConsultationBtn" data-btn="new"
                                             class="btn bg-primary text-white">

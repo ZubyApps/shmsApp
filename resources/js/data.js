@@ -1,6 +1,7 @@
 const consultationDetails = {
     "data": [
         {
+            "patientType": "regular",
             "id": 120,
             "date": "10-Jul-2023",
             "name": "Naomi",
@@ -16,6 +17,7 @@ const consultationDetails = {
             "deliveryNote": ""
         },
         {
+            "patientType": "regular",
             "id": 119,
             "date": "08-Jul-2023",
             "name": "Helen",
@@ -37,9 +39,9 @@ const consultationDetails = {
             "deliveryNote" : ""
         },
         {
-            // "id": 118,
+             "id": 118,
             // "date": "08-Jul-2023",
-            // "name": "Tabitha",
+            "patientType": "regular",
             // "bloodPressure": "90/60mmgh",
             // "temperature": "39.0",
             // "sugarLevel": "7.4mmlo",

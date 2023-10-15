@@ -10,9 +10,9 @@
                     <x-form-label>Patient's Overall Information</x-form-label>
                     <div class="row">
                         <x-form-div class="">
-                            <x-input-span id="cardTypeLabel">Card Type<x-required-span /></x-input-span>
-                            <select class="form-select form-select-md cardType" name="cardType"
-                                aria-label="card-type" name="cardType">
+                            <x-input-span id="patientTypeLabel">Patient Type<x-required-span /></x-input-span>
+                            <select class="form-select form-select-md patientType" name="patientType"
+                                aria-label="patientType" name="patientType">
                                 <option value="">Select card Type</option>
                                 <option {{ $isUpdate ? 'hidden' : '' }} value="Regular.New">Regular New</option>
                                 <option {{ $isUpdate ? 'hidden' : '' }} value="Regular.Old">Regular Old</option>
@@ -20,9 +20,9 @@
                                 <option class="ancOption" value="ANC">ANC</option>
                             </select>
                         </x-form-div>
-                        <x-input-error :messages="$errors->get('cardType')" class="mt-1" />
+                        <x-input-error :messages="$errors->get('patientType')" class="mt-1" />
                     </div>
-                    <div class="{{ !$isUpdate ? 'd-none' : '' }} allPatientInputsDiv">
+                    <div class="{{ !$isUpdate ? 'd-none' : '' }} allPatientInputsDiv form-control">
                         <div class="mb-2">
                             <x-form-span>Hospital Links</x-form-span>
                             <!-- first row -->

@@ -14,7 +14,7 @@
                                 <div class="row">
                                     <div class="d-none row" id="addVitalsignsDiv" data-div="review">
                                         <x-form-span class="fw-semibold">Vital Signs</x-form-span>
-                                        @include('vitalsigns.vitalsigns', ['disabled' => true])
+                                        @include('vitalsigns.vitalsigns', ['disabled' => false])
                                     </div>
                                     <div class="d-flex justify-content-center">
                                         <button type="button" id="addVitalsignsBtn" data-btn="review"
