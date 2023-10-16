@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HmoController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\NurseController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ResourcesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,6 +44,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/pharmacy', [PharmacyController::class, 'index'])->name('Pharmacy');
     Route::get('/hmo', [HmoController::class, 'index'])->name('Hmo');
     Route::get('/billing', [BillingController::class, 'index'])->name('Billing');
+    Route::get('/resources', [ResourcesController::class, 'index'])->name('Resources');
+    Route::get('/admin', [AdminController::class, 'index'])->name('Admin');
 });
 
 require __DIR__.'/auth.php';

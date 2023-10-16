@@ -19,8 +19,8 @@
                         <a href="/hmodesk" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-calendar2-plus-fill">HMO</i></a>
                         <br>
                         <a href="/billing" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-receipt">Billing</i></a>
+                        <a href="/resources" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-minecart-loaded">Resources</i></a>
                         <a href="/admin" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-person-fill">Admin</i></a>
-                        <a href="/reports" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-receipt">Reports</i></a>
                     </div>
                     <br>
                     <p class="fs-5 mb-0"><a href="#" class="text-decoration-none text-black">We treat, God heals...</a></p>
