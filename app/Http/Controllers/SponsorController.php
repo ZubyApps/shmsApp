@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Investigations;
+use App\Models\Sponsor;
 use Illuminate\Http\Request;
 
-class InvestigationsController extends Controller
+class SponsorController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('investigations.investigations');
+        //
     }
 
     /**
@@ -34,7 +34,7 @@ class InvestigationsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Investigations $investigations)
+    public function show(Sponsor $sponsor)
     {
         //
     }
@@ -42,7 +42,7 @@ class InvestigationsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Investigations $investigations)
+    public function edit(Sponsor $sponsor)
     {
         //
     }
@@ -50,7 +50,7 @@ class InvestigationsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Investigations $investigations)
+    public function update(Request $request, Sponsor $sponsor)
     {
         //
     }
@@ -58,7 +58,7 @@ class InvestigationsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Investigations $investigations)
+    public function destroy(Sponsor $sponsor)
     {
         //
     }

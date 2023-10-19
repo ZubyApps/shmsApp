@@ -22,14 +22,14 @@
               </div>
               <div class="col d-flex align-items-start">
                 <div class="icon-square text-body-emphasis d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-                  <i class="text-primary bi bi-piggy-bank-fill"></i>
+                  <i class="text-primary bi bi-gear"></i>
                 </div>
                 <div>
-                  <h3 class="fs-2 text-body-emphasis">Accounts</h3>
-                  <p>Create and Manage account settings. Evaluate account records and generate billing and payment reports</p>
-                  <a href="/accounts" class="btn btn-primary">
-                    Accounts
-                    <i class="bi bi-piggy-bank-fill"></i>
+                  <h3 class="fs-2 text-body-emphasis">Admin Stettings</h3>
+                  <p>Create and Manage Administrative settings. Like Sponsor settings, Billing Settings and other relvant settings</p>
+                  <a href="admin/settings" class="btn btn-primary">
+                    Settings
+                    <i class="bi bi-gear"></i>
                   </a>
                 </div>
               </div>

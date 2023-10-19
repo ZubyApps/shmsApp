@@ -16,8 +16,8 @@ window.addEventListener('DOMContentLoaded', function(){
     const newSponsorBtn                 = document.getElementById('newSponsor')
     const initiatePatientVisitBtn       = document.getElementById('initiate')
 
-    const cardTypeInput                 = document.querySelector('.cardType')
-    const cardTypeInputAncOption        = document.querySelector('.ancOption')
+    const patientTypeInput                 = document.querySelector('.patientType')
+    const patientTypeInputAncOption        = document.querySelector('.ancOption')
 
     const staffIdDiv                        = document.querySelector('.staffIdDiv')
     const sex                               = document.querySelector('.sex')
@@ -85,9 +85,9 @@ window.addEventListener('DOMContentLoaded', function(){
             if (sponsorCategoryInput.value === 'Self'){
                  sponsorNameDiv.classList.add('d-none')
                  sponsorNameInput.removeAttribute('name')
-                 cardTypeInputAncOption.removeAttribute('disabled')
+                 patientTypeInputAncOption.removeAttribute('disabled')
 
-                        if (cardTypeInput.value === 'ANC'){
+                        if (patientTypeInput.value === 'ANC'){
                             familyRegistrationBillInput.classList.add('d-none')
                             familyRegistrationBillInput.removeAttribute('name')
                         } else{
@@ -107,13 +107,13 @@ window.addEventListener('DOMContentLoaded', function(){
                             ancRegistrationBillInput.removeAttribute('name')
                             selfRegistrationBillInput.removeAttribute('name')
                             familyRegistrationBillInput.setAttribute('name', 'registerationBill')
-                            cardTypeInputAncOption.setAttribute('disabled', 'disabled')
-                            cardTypeInput.value === 'Register.Old' ? 
+                            patientTypeInputAncOption.setAttribute('disabled', 'disabled')
+                            patientTypeInput.value === 'Register.Old' ? 
                             familyRegistrationBillOption.setAttribute('disabled', 'disabled') : ''
                         }
                 sponsorNameDiv.classList.remove('d-none')
                 sponsorNameInput.setAttribute('name', 'sponsorName')
-                sponsorCategoryInput.value === 'Family' ? '' : cardTypeInputAncOption.removeAttribute('disabled')
+                sponsorCategoryInput.value === 'Family' ? '' : patientTypeInputAncOption.removeAttribute('disabled')
             }
         } else{
 
@@ -123,17 +123,17 @@ window.addEventListener('DOMContentLoaded', function(){
             ancRegistrationBillInput.removeAttribute('name')
             familyRegistrationBillInput.removeAttribute('name')
             selfRegistrationBillInput.removeAttribute('name') 
-            cardTypeInputAncOption.removeAttribute('disabled')
+            patientTypeInputAncOption.removeAttribute('disabled')
             staffIdDiv.classList.remove('d-none')
         }
 
     })
 
-    cardTypeInput.addEventListener('change', function(){
-        if (cardTypeInput.value) {
+    patientTypeInput.addEventListener('change', function(){
+        if (patientTypeInput.value) {
             allPatientInputsDiv.classList.remove('d-none')
 
-            switch (cardTypeInput.value) {
+            switch (patientTypeInput.value) {
                 case 'Regular.New': 
                     newCardNumber.setAttribute('name', 'cardNumber')
                     oldCardNumber.hasAttribute('name') ? oldCardNumber.removeAttribute('name') : ''

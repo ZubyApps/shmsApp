@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Hmo;
+use App\Models\Investigation;
 use Illuminate\Http\Request;
 
-class HmoController extends Controller
+class InvestigationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('hmo.hmodesk');
+        return view('investigations.investigations');
     }
 
     /**
@@ -34,7 +34,7 @@ class HmoController extends Controller
     /**
      * Display the specified resource.
      */
-    // public function show(Hmo $hmo)
+    // public function show(Investigation $investigations)
     // {
     //     //
     // }
@@ -42,7 +42,7 @@ class HmoController extends Controller
     // /**
     //  * Show the form for editing the specified resource.
     //  */
-    // public function edit(Hmo $hmo)
+    // public function edit(Investigation $investigations)
     // {
     //     //
     // }
@@ -50,7 +50,7 @@ class HmoController extends Controller
     // /**
     //  * Update the specified resource in storage.
     //  */
-    // public function update(Request $request, Hmo $hmo)
+    // public function update(Request $request, Investigation $investigations)
     // {
     //     //
     // }
@@ -58,7 +58,7 @@ class HmoController extends Controller
     // /**
     //  * Remove the specified resource from storage.
     //  */
-    // public function destroy(Hmo $hmo)
+    // public function destroy(Investigation $investigations)
     // {
     //     //
     // }

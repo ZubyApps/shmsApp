@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use DateTime;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
@@ -18,11 +20,23 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'remember_token' => Str::random(10),
+            'firstname' => 'Nzube',
+            'middlename' => 'Yonna',
+            'lastname' => 'Okoye',
+            'email' => 'zuby@example.com',
+            'address' => 'Flat 1 Behind Larazon Annex, Achusa',
+            'date_of_birth' => new DateTime('1983/03/05'),
+            'highest_qualification' => 'B.Tech',
+            'sex' => 'male',
+            'marital_status' => 'married',
+            'username' => 'Mr Nzube',
+            'phone_no' => '08035999029',
+            'state_of_origin' => 'Anambra',
+            'next_of_kin' => 'Stephanie Okoye',
+            'next_of_kin_rship' => 'wife',
+            'next_of_kin_phone' => '08103830241',
+            'date_of_employment' => new DateTime('2018/02/01'),
+            'password' => Hash::make('mylovelywife'), // password
         ];
     }
 

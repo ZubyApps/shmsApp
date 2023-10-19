@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Patient extends Model
+class Sponsor extends Model
 {
     use HasFactory;
 
@@ -14,8 +14,8 @@ class Patient extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function SponsorCategory()
+    public function sponsorCategory()
     {
-        return $this->belongsTo(Sponsor::class);
+        return $this->belongsTo(SponsorCategory::class);
     }
 }

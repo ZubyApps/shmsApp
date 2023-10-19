@@ -104,4 +104,30 @@ function dispatchEvent(tag, event) {
     }
 }
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent}
+function handleValidationErrors(errors, domElement) {
+    for (const name in errors) {
+
+        const element = domElement.querySelector(`[name="${ name }"]`)
+
+        element.classList.add('is-invalid')
+
+        const errorDiv = document.createElement('div')
+
+        errorDiv.classList.add('invalid-feedback')
+        errorDiv.textContent = errors[name][0]
+
+        element.parentNode.append(errorDiv)
+    }
+}
+
+function clearValidationErrors(domElement) {
+    domElement.querySelectorAll('.is-invalid').forEach(function (element) {
+        element.classList.remove('is-invalid')
+
+        element.parentNode.querySelectorAll('.invalid-feedback').forEach(function (e) {
+            e.remove()
+        })
+    })
+}
+
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors}

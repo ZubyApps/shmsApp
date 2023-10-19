@@ -46,6 +46,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/billing', [BillingController::class, 'index'])->name('Billing');
     Route::get('/resources', [ResourcesController::class, 'index'])->name('Resources');
     Route::get('/admin', [AdminController::class, 'index'])->name('Admin');
+    Route::get('/admin/settings', [AdminController::class, 'settings']);
+    Route::post('/admin/settings', [AdminController::class, 'createSponsor']);
 });
 
 require __DIR__.'/auth.php';

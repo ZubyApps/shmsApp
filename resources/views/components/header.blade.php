@@ -4,7 +4,7 @@
         <div class="row flex-nowrap justify-content-between align-items-center">
             <div class="col-6 text-start">
                 <a href="/" class="blog-header-logo text-decoration-none fs-1 text-black"><i
-                        class="bi bi-hospital text-primary"></i><span class="fw-bold pl-4"> S</span>andra <span
+                        class="bi bi-hospital text-primary"></i><span class="fw-bold pl-4"> E</span>xample <span
                         class="fw-bold pl-4">H</span>ospital</a>
             </div>
             <div class="col-6 d-flex justify-content-end align-items-center">
@@ -31,7 +31,7 @@
                         class="text-decoration-none d-flex align-items-center mt-2 btn btn-outline-primary"
                         id="userDropDownMenu" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-person-fill"></i>
-                        <span>{{ Auth::user()?->name }}</span>
+                        <span>{{ Auth::user()?->username }}</span>
                     </a>
                     <ul class="dropdown-menu p-0" aria-labelledby="userDropDownMenu" style="width: 1.5rem">
                         <li>

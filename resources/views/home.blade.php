@@ -6,8 +6,8 @@
         <main class="px-0">
             <div class="vh-50 p-5 mb-4 cover-image">
                 <div class="col-lg-6 px-0 display-4">
-                    <h1 class="fst-italic ">Welcome To <span class="fw-bold ">SHMS</span> </h1>
-                    <p class="fs-5"><span class="fw-bold">S</span>andra <span class="fw-bold">H</span>ospital <span
+                    <h1 class="fst-italic ">Welcome To <span class="fw-bold ">EHMS</span> </h1>
+                    <p class="fs-5"><span class="fw-bold">E</span>xample <span class="fw-bold">H</span>ospital <span
                             class="fw-bold">M</span>anagement <span class="fw-bold">S</span>ystem</p>
                     <div class="">
                         <a href="/patients" class="btn btn-outline-primary mx-1"><i class="bi bi-people-fill"> Patients</i></a>
@@ -23,7 +23,7 @@
                         <a href="/admin" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-person-fill">Admin</i></a>
                     </div>
                     <br>
-                    <p class="fs-5 mb-0"><a href="#" class="text-decoration-none text-black">We treat, God heals...</a></p>
+                    <p class="fs-5 mb-0"><a href="#" class="text-decoration-none text-black">The Hospital's Motto...</a></p>
                 </div>
             </div>
         </main>

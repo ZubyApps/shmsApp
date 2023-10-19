@@ -107,10 +107,10 @@
                                 <x-input-error :messages="$errors->get('middleName')" class="mt-1" />
 
                                 <x-form-div>
-                                    <x-input-span id="surnameLabel">Surname<x-required-span /></x-input-span>
-                                    <x-form-input name="surname" id="surname" />
+                                    <x-input-span id="lastnameLabel">Last name<x-required-span /></x-input-span>
+                                    <x-form-input name="lastName" id="lastname" />
                                 </x-form-div>
-                                <x-input-error :messages="$errors->get('surname')" class="mt-1" />
+                                <x-input-error :messages="$errors->get('lastName')" class="mt-1" />
                             </div>
                             <!-- second row -->
                             <div class="row">

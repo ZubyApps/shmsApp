@@ -18,6 +18,7 @@ export default defineConfig({
                 'resources/js/hmo.js',
                 'resources/js/pharmacy.js',
                 'resources/js/billing.js',
+                'resources/js/adminSettings.js',
             ],
             refresh: true,
         }),

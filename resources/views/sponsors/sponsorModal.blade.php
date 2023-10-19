@@ -53,8 +53,8 @@
                                     <option value="Paid">Paid</option>
                                 </select>
                             </x-form-div>
-                            <x-form-div class="col-xl-6">
-                                <x-input-span id="maritalStatusLabel">Bill Matrix %<x-required-span /></x-input-span>
+                            <x-form-div>
+                                <x-input-span id="billMatrixLabel">Bill Matrix %<x-required-span /></x-input-span>
                                 <select class="form-select form-select-md" name="billMatrix">
                                     <option value="">Select Value</option>
                                     <option value="100">100%</option>
