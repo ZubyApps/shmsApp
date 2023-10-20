@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('sponsors', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->integer('phone')->nullable();
+            $table->string('phone')->nullable();
             $table->string('email')->unique()->nullable();
             $table->string('registration_bill')->nullable();
             $table->foreignIdFor(SponsorCategory::class);

@@ -16,7 +16,7 @@ class SponsorCategory extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function sponsorCategory()
+    public function sponsors()
     {
         return $this->hasMany(Sponsor::class);
     }

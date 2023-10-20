@@ -106,9 +106,8 @@ function dispatchEvent(tag, event) {
 
 function handleValidationErrors(errors, domElement) {
     for (const name in errors) {
-
         const element = domElement.querySelector(`[name="${ name }"]`)
-
+        
         element.classList.add('is-invalid')
 
         const errorDiv = document.createElement('div')
@@ -130,4 +129,31 @@ function clearValidationErrors(domElement) {
     })
 }
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors}
+const getSelctedText = (selectEl) => {
+    return selectEl.options[selectEl.selectedIndex]
+}
+
+function displayList(dataListEl, data) {
+    dataListEl.innerHTML = ''
+    
+    data.forEach(line => {
+        const option = document.createElement("OPTION")
+        option.setAttribute('id', 'sponsorOption')
+        option.setAttribute('value', line.name)
+        option.setAttribute('data-id', line.id)
+        option.setAttribute('name', line.name)
+        dataListEl.appendChild(option)
+        })
+    }
+
+function getDatalistOptionId(inputEl, datalistEl) {    
+        const selectedOption = datalistEl.options.namedItem(inputEl.value)
+    
+        if (selectedOption) {
+            return selectedOption.getAttribute('data-id')
+        } else {
+            return ""
+        }
+    }
+
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId}

@@ -9,6 +9,8 @@ class Sponsor extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -17,5 +19,10 @@ class Sponsor extends Model
     public function sponsorCategory()
     {
         return $this->belongsTo(SponsorCategory::class);
+    }
+
+    public function patients()
+    {
+        return $this->hasMany(Patient::class);
     }
 }

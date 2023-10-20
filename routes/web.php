@@ -10,6 +10,8 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResourcesController;
+use App\Http\Controllers\SponsorCategoryController;
+use App\Http\Controllers\SponsorController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,6 +40,9 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/patients', [PatientController::class, 'index'])->name('Patients');
+    Route::post('/patients', [PatientController::class, 'store']);
+    Route::post('/sponsor', [SponsorController::class, 'store']);
+    Route::get('/sponsor/list/{sponsorCategory}', [SponsorController::class, 'list']);
     Route::get('/doctors', [DoctorController::class, 'index'])->name('Doctors');
     Route::get('/nurses', [NurseController::class, 'index'])->name('Nurses');
     Route::get('/investigations', [InvestigationsController::class, 'index'])->name('Investigations');
@@ -46,8 +51,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/billing', [BillingController::class, 'index'])->name('Billing');
     Route::get('/resources', [ResourcesController::class, 'index'])->name('Resources');
     Route::get('/admin', [AdminController::class, 'index'])->name('Admin');
-    Route::get('/admin/settings', [AdminController::class, 'settings']);
-    Route::post('/admin/settings', [AdminController::class, 'createSponsor']);
+    Route::get('/admin/settings', [AdminController::class, 'settings'])->name('Settings');
+    Route::post('/sponsor/category', [SponsorCategoryController::class, 'store']);
 });
 
 require __DIR__.'/auth.php';

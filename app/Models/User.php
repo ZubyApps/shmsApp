@@ -45,17 +45,17 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function sponsorCategory()
+    public function sponsorCategories()
     {
         return $this->hasMany(SponsorCategory::class);
     }
 
-    public function sponsor()
+    public function sponsors()
     {
         return $this->hasMany(Sponsor::class);
     }
 
-    public function patient()
+    public function patients()
     {
         return $this->hasMany(Patient::class);
     }

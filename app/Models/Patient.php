@@ -9,12 +9,14 @@ class Patient extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function SponsorCategory()
+    public function sponsor()
     {
         return $this->belongsTo(Sponsor::class);
     }

@@ -1,3 +1,5 @@
+@vite(['resources/js/modals/sponsorModal.js'])
+
 <div class="modal fade" id="{{ $id }}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -11,12 +13,13 @@
                     <div class="row">
                         <x-form-div class="my-2 col-xl-6">
                             <x-input-span>Category<x-required-span /></x-input-span>
-                            <select class="form-select form-select-md sponsorCategory1" name="category">
+                            <select class="form-select form-select-md" id="sponsorCategory1" name="category">
                                 <option value="">Select Category</option>
-                                <option value="family">Family</option>
-                                <option value="nhis">NHIS</option>
-                                <option value="hmo">HMO</option>
-                                <option value="Company/Org">Company/Organization</option>
+                                @foreach ($categories as $category )
+                                    {{-- @if (Str::lower($category->name) !== "self") --}}
+                                    <option value="{{ $category->id}}" name="{{ $category->name }}">{{ $category->name }}</option>
+                                    {{-- @endif --}}
+                                @endforeach
                             </select>
                         </x-form-div>
                     </div>
@@ -26,50 +29,22 @@
                         <div class="row">
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Name<x-required-span /></x-input-span>
-                                <x-form-input name="sponsorName" />
+                                <x-form-input name="name" />
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Phone No.<x-required-span /></x-input-span>
-                                <x-form-input name="phoneNumber" />
+                                <x-form-input name="phone" />
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Email</x-input-span>
                                 <x-form-input name="email" />
                             </x-form-div>
-                            <x-form-div class="col-xl-6">
-                                <x-input-span id="payClassLabel">Pay Class<x-required-span /></x-input-span>
-                                <select class="form-select form-select-md" name="payClass">
-                                    <option value="">Select Class</option>
-                                    <option value="Cash">Cash</option>
-                                    <option value="Credit">Credit</option>
-                                </select>
-                            </x-form-div>
-                            <x-form-div class="registrationBillDiv1 d-none col-xl-6">
-                                <x-input-span>Registration Bill<x-required-span /></x-input-span>
-                                <select class="form-select form-select-md familyRegistrationBill"
-                                    name="registrationBill">
+                            <x-form-div class="registrationBillDiv1 col-xl-6">
+                                <x-input-span>Registration Bill</x-input-span>
+                                <select class="form-select form-select-md familyRegistrationBill" >
                                     <option class="familyRegistrationBillOption" value="3500">3500</option>
-                                    <option value="1500">1500 - Upgrade</option>
-                                    <option value="Paid">Paid</option>
-                                </select>
-                            </x-form-div>
-                            <x-form-div>
-                                <x-input-span id="billMatrixLabel">Bill Matrix %<x-required-span /></x-input-span>
-                                <select class="form-select form-select-md" name="billMatrix">
-                                    <option value="">Select Value</option>
-                                    <option value="100">100%</option>
-                                    <option value="40">40%</option>
-                                    <option value="10">10%</option>
-                                    <option value="0">0%</option>
-                                </select>
-                            </x-form-div>
-                            <x-form-div class="col-xl-6">
-                                <x-input-span id="maritalStatusLabel">Balance
-                                    Required?<x-required-span /></x-input-span>
-                                <select class="form-select form-select-md" aria-label="balance-required"
-                                    name="balanceRequired">
-                                    <option value="Yes">Yes</option>
-                                    <option value="No">No</option>
+                                    <option value="1500">1500 (Upgrade)</option>
+                                    <option value="old">Old</option>
                                 </select>
                             </x-form-div>
                         </div>
@@ -81,7 +56,7 @@
                     <i class="bi bi-x-circle me-1"></i>
                     Close
                 </button>
-                <button type="button" id="{{ $isUpdate ? 'saveBtn' : 'createBtn' }}" class="btn bg-primary text-white">
+                <button type="button" id="{{ $isUpdate ? 'saveSponsorBtn' : 'createSponsorBtn' }}" class="btn btn-primary">
                     <i class="bi bi-check-circle me-1"></i>
                     {{ $isUpdate ? 'Update' : 'Create' }}
                 </button>

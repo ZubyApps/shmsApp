@@ -1,11 +1,12 @@
 import { Modal } from "bootstrap"
 import { MaskInput } from "maska"
+import { getDivData, clearDivValues, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId } from "./helpers"
+import http from "./http"
 
 
 window.addEventListener('DOMContentLoaded', function(){
     const newPatientModal           = new Modal(document.getElementById('newPatientModal'))
     const updatePatientModal        = new Modal(document.getElementById('updatePatientModal'))
-    const newSponsorModal           = new Modal(document.getElementById('newSponsorModal'))
     const initiatePatientModal      = new Modal(document.getElementById('initiatePatientModal'))
 
     const mask                      = new MaskInput(".newCardNumber", {tokens: {A: { pattern: /[A-Z]/, transform: (chr) => chr.toUpperCase() }}})
@@ -13,7 +14,6 @@ window.addEventListener('DOMContentLoaded', function(){
     const mask2                     = new MaskInput(".ancCardNumber")
 
     const newPatientBtn                 = document.getElementById('newPatient')
-    const newSponsorBtn                 = document.getElementById('newSponsor')
     const initiatePatientVisitBtn       = document.getElementById('initiate')
 
     const patientTypeInput                 = document.querySelector('.patientType')
@@ -22,22 +22,22 @@ window.addEventListener('DOMContentLoaded', function(){
     const staffIdDiv                        = document.querySelector('.staffIdDiv')
     const sex                               = document.querySelector('.sex')
 
-    const sponsorCategoryArray              = ['Self', 'Family']
+    const sponsorCategoryArray              = ['self', 'family']
     const sponsorCategoryInput              = document.querySelector('.sponsorCategory')
-    const sponsorCategoryInput1             = document.querySelector('.sponsorCategory1')
     const sponsorCategoryInputFamilyOption  = document.querySelector('.familyOption')
     const sponsorNameDiv                    = document.querySelector('.sponsorNameDiv')
     const sponsorNameInput                  = document.querySelector('.sponsorName')
 
     const registrationBillDiv               = document.querySelector('.registrationBillDiv')
-    const registrationBillDiv1              = document.querySelector('.registrationBillDiv1')
     const selfRegistrationBillInput         = document.querySelector('.selfRegistrationBill')
     const familyRegistrationBillInput       = document.querySelector('.familyRegistrationBill')
     const familyRegistrationBillOption      = document.querySelector('.familyRegistrationBillOption')
     const ancRegistrationBillInput          = document.querySelector('.ancRegistrationBill') 
 
     const allPatientInputsDiv               = document.querySelector('.allPatientInputsDiv')
-    const allSponsorInputsDiv               = document.querySelector('.allSponsorInputsDiv')
+
+    const newPatientSponsorInputEl          = document.querySelector('#sponsor')
+    const newPatientSponsorDatalistEl       = document.querySelector('#sponsorList')
 
     const newCardNumber                     = document.querySelector('.newCardNumber')
     const oldCardNumber                     = document.querySelector('.oldCardNumber')
@@ -50,44 +50,29 @@ window.addEventListener('DOMContentLoaded', function(){
         newPatientModal.show()
     })
 
-    newSponsorBtn.addEventListener('click', function() {
-        newSponsorModal.show()
-    })
-
     newPatientModal._element.addEventListener('hidden.bs.modal', function () {
         
     })
-
-    // updatePatientModal._element.addEventListener('show.bs.modal', function () {
-    //     allInputsDiv.classList.add('d-none')
-    // })
 
     initiatePatientVisitBtn.addEventListener('click', function() {
         initiatePatientModal.show()
     })
 
-    sponsorCategoryInput1.addEventListener('change', function () {
-        if (sponsorCategoryInput1.value){
-                sponsorCategoryInput1.value === 'family' ? 
-                registrationBillDiv1.classList.remove('d-none') : 
-                registrationBillDiv1.classList.add('d-none')
-                allSponsorInputsDiv.classList.remove('d-none')
-        }
-        else {allSponsorInputsDiv.classList.add('d-none') 
-        registrationBillDiv1.classList.add('d-none')}
-    })
-
     sponsorCategoryInput.addEventListener('change', function() {
-        if (sponsorCategoryArray.includes(sponsorCategoryInput.value)){             
-            registrationBillDiv.classList.remove('d-none')
+            if (sponsorCategoryInput.value) {
+                http.get(`/sponsor/list/${sponsorCategoryInput.value}`,).then((response) => {
+                    displayList(newPatientSponsorDatalistEl, response.data)
+                })
+            }
+
+        if (sponsorCategoryArray.includes(getSelctedText(sponsorCategoryInput).text.toLowerCase())){             
             staffIdDiv.classList.add('d-none')
 
-            if (sponsorCategoryInput.value === 'Self'){
-                 sponsorNameDiv.classList.add('d-none')
-                 sponsorNameInput.removeAttribute('name')
+            if (getSelctedText(sponsorCategoryInput).text.toLowerCase() === 'self'){
                  patientTypeInputAncOption.removeAttribute('disabled')
+                 registrationBillDiv.classList.remove('d-none')
 
-                        if (patientTypeInput.value === 'ANC'){
+                        if (getSelctedText(patientTypeInput).text.toLowerCase() === 'anc'){
                             familyRegistrationBillInput.classList.add('d-none')
                             familyRegistrationBillInput.removeAttribute('name')
                         } else{
@@ -100,7 +85,7 @@ window.addEventListener('DOMContentLoaded', function(){
                         }
                  
                 } else{
-                        if (sponsorCategoryInput.value === 'Family'){
+                        if (getSelctedText(sponsorCategoryInput).text.toLowerCase() === 'family'){
                             ancRegistrationBillInput.classList.add('d-none')
                             selfRegistrationBillInput.classList.add('d-none')
                             familyRegistrationBillInput.classList.remove('d-none')
@@ -110,13 +95,19 @@ window.addEventListener('DOMContentLoaded', function(){
                             patientTypeInputAncOption.setAttribute('disabled', 'disabled')
                             patientTypeInput.value === 'Register.Old' ? 
                             familyRegistrationBillOption.setAttribute('disabled', 'disabled') : ''
+                            staffIdDiv.classList.add('d-none')
+                            registrationBillDiv.classList.add('d-none')
                         }
-                sponsorNameDiv.classList.remove('d-none')
-                sponsorNameInput.setAttribute('name', 'sponsorName')
-                sponsorCategoryInput.value === 'Family' ? '' : patientTypeInputAncOption.removeAttribute('disabled')
-            }
+                    sponsorNameDiv.classList.remove('d-none')
+                    sponsorNameInput.setAttribute('name', 'sponsorName')
+                    getSelctedText(sponsorCategoryInput).text.toLowerCase() === 'family' ? '' : patientTypeInputAncOption.removeAttribute('disabled')
+                }
         } else{
 
+            // if (getSelctedText(patientTypeInput).text.toLowerCase() === 'anc'){
+            //     familyRegistrationBillInput.classList.add('d-none')
+            //     familyRegistrationBillInput.removeAttribute('name')
+            // } 
             sponsorNameDiv.classList.remove('d-none')
             sponsorNameInput.setAttribute('name', 'sponsorName')
             registrationBillDiv.classList.add('d-none')
@@ -145,7 +136,7 @@ window.addEventListener('DOMContentLoaded', function(){
                     ancCardNumber.value = ''
                     newCardNumber.classList.contains('d-none') ? newCardNumber.classList.remove('d-none'): ''
 
-                    if (sponsorCategoryInput.value === 'Family'){
+                    if (getSelctedText(sponsorCategoryInput).text.toLowerCase() === 'family'){
                         ancRegistrationBillInput.classList.add('d-none')
                         selfRegistrationBillInput.classList.add('d-none')
                         familyRegistrationBillInput.classList.remove('d-none')
@@ -177,13 +168,11 @@ window.addEventListener('DOMContentLoaded', function(){
                     
                     selfRegistrationBillInput.classList.add('d-none')
                     ancRegistrationBillInput.classList.add('d-none')
-                    familyRegistrationBillInput.classList.remove('d-none')
                     selfRegistrationBillInput.removeAttribute('name')
                     ancRegistrationBillInput.removeAttribute('name')
-                    familyRegistrationBillInput.setAttribute('name', 'registrationBill')
 
-                    if (sponsorCategoryInput.value === 'Self'){
-                        !registrationBillDiv.classList.contains('d-none') ? registrationBillDiv.classList.add('d-none') : ''
+                    if (getSelctedText(sponsorCategoryInput).text.toLowerCase() === 'self'){
+                         registrationBillDiv.classList.add('d-none')
                     }
 
                     if (sponsorCategoryInput.value === 'Family')
@@ -229,27 +218,25 @@ window.addEventListener('DOMContentLoaded', function(){
     })
 
     registerBtn.addEventListener('click', function () {
-        console.log(getPatientFormData(newPatientModal))
+        const sponsor = getDatalistOptionId(newPatientSponsorInputEl, newPatientSponsorDatalistEl)
+    
+        let data = {...getDivData(newPatientModal._element), sponsor }
+        console.log(data)
+
+        http.post('/patients', {...data}, {"html": newPatientModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                newPatientModal._element.hide()
+                clearDivValues(newPatientModal._element)
+            }
+        })
+        .catch((error) => {
+            alert(error.response.data.message)
+        })
     })
 
     saveBtn.addEventListener('click', function () {
-        console.log(getPatientFormData(updatePatientModal))
+        console.log(getDivData(updatePatientModal._element))
     })
 
 })
-
-function getPatientFormData(modal) {
-    let data     = {}
-    const fields = [
-        ...modal._element.getElementsByTagName('input'),
-        ...modal._element.getElementsByTagName('select'),
-        ...modal._element.getElementsByTagName('textarea')
-    ]
-
-    fields.forEach(select => {
-        select.hasAttribute('name') ?
-        data[select.name] = select.value : ''
-    })
-    
-    return data
-}

@@ -18,6 +18,7 @@ class SponsorCategoryFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => 1,
             'name' => 'Family',
             'description' => 'Sponsored by the family,usully identified by the name of the pserson representing the family',
             'pay_class' => PayClass::from('Cash'),

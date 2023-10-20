@@ -17,4 +17,4 @@ http.interceptors.response.use( (response) => {
     return Promise.reject(error)
 })
 
-export {http}
+export default http

@@ -12,6 +12,7 @@ export default defineConfig({
                 'resources/css/home.scss',
                 'resources/js/app.js',
                 'resources/js/patients.js',
+                'resources/js/modals/sponsorModal.js',
                 'resources/js/doctors.js',
                 'resources/js/nurses.js',
                 'resources/js/investigations.js',

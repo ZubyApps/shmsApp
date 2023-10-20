@@ -17,7 +17,12 @@ class SponsorFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => 1,
+            'name' => 'Nzube Okoye',
+            'phone' => '08035999029',
+            'email' => 'support@axamansard.com',
+            'registration_bill' => '3500',
+            'sponsor_category_id' => 1
         ];
     }
 }

@@ -2,7 +2,7 @@ import { Offcanvas, Modal } from "bootstrap";
 import { consultationDetails, items } from "./data"
 import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, clearValidationErrors} from "./helpers"
 import { InitialRegularConsultation, review } from "./dynamicHTMLfiles/treamentsPharmacy";
-import {http} from "./http";
+import http from "./http";
 
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -19,7 +19,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     createSponsorCategoryBtn.addEventListener('click', function () {
-        http.post('/admin/settings', getDivData(newSponsorCatgegoryModal._element), {"html": newSponsorCatgegoryModal._element})
+        http.post('/sponsor/category', getDivData(newSponsorCatgegoryModal._element), {"html": newSponsorCatgegoryModal._element})
             .then((response) => {
                 if (response.status >= 200 || response.status <= 300){
                     newSponsorCatgegoryModal.hide()
@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch((error) => {
-                
+                alert(error.response.data.message)
             })
     })
 

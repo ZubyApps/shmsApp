@@ -17,18 +17,18 @@ return new class extends Migration
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
             $table->string('card_no')->unique();
-            $table->string(PatientType::class);
-            $table->string('patient_sponsor_id');
+            $table->string('patient_type');
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name');
             $table->date('date_of_birth');
             $table->string('sex');
             $table->string('marital_status')->nullable();
-            $table->string('phone_no');
+            $table->string('phone')->unique();
             $table->string('address')->nullable();
             $table->string('state_of_residence');
             $table->string('email')->unique()->nullable();
+            $table->string('staff_id')->nullable();
             $table->string('nationality')->nullable();
             $table->string('state_of_origin')->nullable();
             $table->string('occupation')->nullable();
