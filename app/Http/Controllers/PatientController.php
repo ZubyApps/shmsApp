@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class PatientController extends Controller
 {
-    public function __construct(private readonly SponsorCategory $sponsorCategory)
+    public function __construct(private readonly SponsorCategoryController $sponsorCategoryController)
     {
         
     }
@@ -20,7 +20,7 @@ class PatientController extends Controller
     public function index()
     {
         return view('patients.patients', 
-        ['categories' =>$this->sponsorCategory->all('id', 'name')]
+        ['categories' =>$this->sponsorCategoryController->showAll(['id', 'name'])]
     );
     }
 

@@ -65,11 +65,17 @@ class SponsorCategoryController extends Controller
         return $sponsorCategory;
     }
 
+    public function showAll(array $columns)
+    {
+        return SponsorCategory::all([$columns]);   
+    }
+
     /**
      * Display all the resource.
      */
-    public function showAll(SponsorCategory $sponsorCategory, Request $request)
+    public function load(SponsorCategory $sponsorCategory, Request $request)
     {
+        // var_dump($request);
         $params = $this->requestService->getDataTableQueryParameters($request);
 
         $orderBy  =  'created_at';
@@ -91,6 +97,13 @@ class SponsorCategoryController extends Controller
         
         $query = $sponsorCategory->orderBy($orderBy, $orderDir)->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
+        if (! empty($params->searchTerm)) {
+            // var_dump($params->searchTerm);
+            $query= $sponsorCategory->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            ->orderBy($orderBy, $orderDir)->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+
         return response()->json([
             'data' => array_map($transformer, (array)$query->getIterator()),
             'draw' => $params->draw,
@@ -101,11 +114,6 @@ class SponsorCategoryController extends Controller
         //return new SponsorCategoryCollection($query);
 
        
-    }
-
-    public function show( SponsorCategory $sponsorCategory)
-    {
-        
     }
     
 
@@ -152,7 +160,7 @@ class SponsorCategoryController extends Controller
      */
     public function destroy(SponsorCategory $sponsorCategory)
     {
-        //
+        return $sponsorCategory->destroy($sponsorCategory->id);
     }
 }
 

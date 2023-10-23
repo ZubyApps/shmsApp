@@ -52,10 +52,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('Admin');
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('Settings');
 
-    Route::post('/sponsor/category', [SponsorCategoryController::class, 'store']);
-    Route::get('/sponsor/category/{sponsorCategory}', [SponsorCategoryController::class, 'edit']);
-    Route::get('/sponsor/load', [SponsorCategoryController::class, 'showAll']);
-    Route::post('/sponsor/category/{sponsorCategory}', [SponsorCategoryController::class, 'update']);
+    Route::prefix('sponsorcategory')->group(function () {
+        Route::post('', [SponsorCategoryController::class, 'store']);
+        Route::get('/load', [SponsorCategoryController::class, 'load']);
+        Route::get('/{sponsorCategory}', [SponsorCategoryController::class, 'edit']);
+        Route::delete('/{sponsorCategory}', [SponsorCategoryController::class, 'destroy']);
+        Route::post('/{sponsorCategory}', [SponsorCategoryController::class, 'update']);
+    })->name('Sponsor Category');
+    
 });
 
 require __DIR__.'/auth.php';
