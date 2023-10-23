@@ -98,7 +98,6 @@ class SponsorCategoryController extends Controller
         $query = $sponsorCategory->orderBy($orderBy, $orderDir)->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
         if (! empty($params->searchTerm)) {
-            // var_dump($params->searchTerm);
             $query= $sponsorCategory->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
             ->orderBy($orderBy, $orderDir)->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
