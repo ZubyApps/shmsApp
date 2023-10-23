@@ -44,7 +44,7 @@ class PatientController extends Controller
             "card_no"               => $request->cardNumber,
             "date_of_birth"         => $request->dateOfBirth,
             "email"                 => $request->email,
-            "ethinic_group"         => $request->ethnicGroup,
+            "ethnic_group"         => $request->ethnicGroup,
             "first_name"            => $request->firstName,
             "genotype"              => $request->genotype,
             "known_conditions"      => $request->knownConditions,

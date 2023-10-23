@@ -33,7 +33,7 @@ return new class extends Migration
             $table->string('state_of_origin')->nullable();
             $table->string('occupation')->nullable();
             $table->string('religion')->nullable();
-            $table->string('ethinic_group')->nullable();
+            $table->string('ethnic_group')->nullable();
             $table->string('next_of_kin')->nullable();
             $table->string('next_of_kin_rship')->nullable();
             $table->string('next_of_kin_phone')->nullable();

@@ -7,7 +7,7 @@
             </div>
             <div class="modal-body">
                 <div class="mb-2">
-                    <x-form-label>Chart Medication</x-form-label>
+                    <x-form-label>{{ $isUpdate ? 'Update': 'Fill' }} Information</x-form-label>
                     <div class="row">
                         <x-form-div class="col-xl-6">
                             <x-input-span>Name</x-input-span>
@@ -64,7 +64,7 @@
                     <i class="bi bi-x-circle me-1"></i>
                     Close
                 </button>
-                <button type="button" id="{{ $isUpdate ? 'createSponsorCategory' : 'createSponsorCategory' }}Btn" class="btn btn-primary">
+                <button type="button" id="{{ $isUpdate ? 'saveSponsorCategory' : 'createSponsorCategory' }}Btn" class="btn btn-primary">
                     <i class="bi bi-check-circle me-1"></i>
                     {{ $isUpdate ? 'Save' : 'Create' }}
                 </button>

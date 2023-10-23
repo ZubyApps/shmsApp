@@ -38,7 +38,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-
     Route::get('/patients', [PatientController::class, 'index'])->name('Patients');
     Route::post('/patients', [PatientController::class, 'store']);
     Route::post('/sponsor', [SponsorController::class, 'store']);
@@ -52,7 +51,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/resources', [ResourcesController::class, 'index'])->name('Resources');
     Route::get('/admin', [AdminController::class, 'index'])->name('Admin');
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('Settings');
+
     Route::post('/sponsor/category', [SponsorCategoryController::class, 'store']);
+    Route::get('/sponsor/category/{sponsorCategory}', [SponsorCategoryController::class, 'edit']);
+    Route::get('/sponsor/load', [SponsorCategoryController::class, 'showAll']);
+    Route::post('/sponsor/category/{sponsorCategory}', [SponsorCategoryController::class, 'update']);
 });
 
 require __DIR__.'/auth.php';

@@ -100,7 +100,6 @@ function OnInput(e){
 function dispatchEvent(tag, event) {
     for (let i = 0; i < tag.length; i++) {
         tag[i].dispatchEvent(new Event(event, { bubbles: true }))
-        console.log('outside')
     }
 }
 
@@ -156,4 +155,15 @@ function getDatalistOptionId(inputEl, datalistEl) {
         }
     }
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId}
+function openModals(modal, button, {id, createdAt, ...data}) {
+    for (let name in data) {
+        const nameInput = modal._element.querySelector(`[name="${ name }"]`)
+        
+        nameInput.value = data[name]
+    }
+    
+    button.setAttribute('data-id', id)
+    modal.show()
+}
+    
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals}

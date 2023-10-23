@@ -1,3 +1,3 @@
 @props(['isUpdate' => false])
 
-<input {{  $isUpdate ? 'readonly'  : ''  }} {{ $attributes->merge(["class" => "form-control"]) }} autocomplete />
+<input {{  $isUpdate ? 'readonly'  : ''  }} {{ $attributes->merge(["class" => "form-control"]) }} />

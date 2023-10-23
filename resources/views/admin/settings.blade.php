@@ -64,52 +64,21 @@
             </div>
             <div class="offcanvas2-body">
                 <div class="p-2 ">
-                    <table id="waitingListTable" class="table table-hover table-striped align-middle table-sm">
+                    <table id="" class="table table-hover table-striped align-middle table-sm">
                         <thead>
                             <tr>
-                                <th>Patient</th>
-                                <th>Sponsor</th>
-                                <th>Diagnosis</th>
-                                <th>Med/Treatment</th>
-                                <th>Prescription</th>
-                                <th>Qty</th>
-                                <th>Bill</th>
+                                <th>Name</th>
+                                <th>Descrption</th>
+                                <th>Consultation Fee</th>
+                                <th>Pay Class</th>
+                                <th>Approval</th>
+                                <th>Bill Matrix</th>
+                                <th>Bal Required</th>
+                                <th>Created At</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>SH21/4012 Joesphine Ene Odeh</td>
-                                <td>Avon HMO</td>
-                                <td>QR14-Gastrosnteritis</td>
-                                <td>N/S 500mls</td>
-                                <td>500mls 12hrly 3/7</td>
-                                <td>6 Infusion(s)</td>
-                                <td>6600</td>
-                                <td><i class="btn btn-outline-none text-primary bi bi-check-circle" id="approvalBtn"></i></td>
-                            </tr>
-                            <tr>
-                                <td>SH21/4012 Obaje Dickson</td>
-                                <td>Liberty Blue HMO</td>
-                                <td>PTR4C-Malaria unspecified</td>
-                                <td>ACT (Armatem Soft Gel)</td>
-                                <td>480/80mg bd 3/7</td>
-                                <td>1 pack(s)</td>
-                                <td>1500</td>
-                                <td><i class="btn btn-outline-none text-primary bi bi-check-circle"></i></td>
-                            </tr>
-                            <tr>
-                                <td>SH21/4012 Michael Okonkwo</td>
-                                <td>Health Partners HMO</td>
-                                <td>QR14-Sepsis Unspecified</td>
-                                <td>Inj Ceftiraxone (unbranded)</td>
-                                <td>1g 12hrly 2/7</td>
-                                <td>4 Vials(s)</td>
-                                <td>4800</td>
-                                <td><i class="btn btn-outline-none text-primary bi bi-check-circle"></i></td>
-                            </tr>
-                           
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -165,29 +134,21 @@
                     </div>
 
                     <div class="py-4">
-                        <table id="yourPatientsTable" class="table table-hover align-middle table-sm">
+                        <table id="sponsorCategoryTable" class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Patient</th>
-                                    <th>Sponsor</th>
-                                    <th>Actions</th>
+                                    <th>Name</th>
+                                    <th>Descrption</th>
+                                    <th>Consultation</th>
+                                    <th>Pay Class</th>
+                                    <th>Approval</th>
+                                    <th>Bill Matrix</th>
+                                    <th>Pay Bal?</th>
+                                    <th>Created</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>20/09/23</td>
-                                    <td>SH23/7865 Patrick Abiodun Aso</td>
-                                    <td>Axe Mansard HMO</td>
-                                    <td><button class="btn btn-outline-primary" id="verifyBtn">Verify</button></td>
-                                </tr>
-                                <tr>
-                                    <td>21/05/22</td>
-                                    <td>SH21/4012 Josephine Ene Ode</td>
-                                    <td>Hygia HMO</td>
-                                    <td><button class="btn btn-outline-primary">Verify</button></td>
-                                </tr>
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Patient;
 use App\Models\Sponsor;
 use App\Models\SponsorCategory;
 use App\Models\User;
@@ -19,6 +20,7 @@ class DatabaseSeeder extends Seeder
          User::factory(1)->create();
          SponsorCategory::factory(1)->create();
          Sponsor::factory(1)->create();
+         Patient::factory(5)->create();
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',

@@ -20,7 +20,7 @@ class SponsorCategoryFactory extends Factory
         return [
             'user_id' => 1,
             'name' => 'Family',
-            'description' => 'Sponsored by the family,usully identified by the name of the pserson representing the family',
+            'description' => 'Sponsored by the family',
             'pay_class' => PayClass::from('Cash'),
             'approval'  => filter_var('false', FILTER_VALIDATE_BOOL),
             'bill_matrix' => '40',
