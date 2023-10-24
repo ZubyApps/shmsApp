@@ -20,7 +20,7 @@ class PatientController extends Controller
     public function index()
     {
         return view('patients.patients', 
-        ['categories' =>$this->sponsorCategoryController->showAll(['id', 'name'])]
+        ['categories' =>$this->sponsorCategoryController->showAll('id', 'name')]
     );
     }
 

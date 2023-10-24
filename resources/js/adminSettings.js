@@ -78,11 +78,11 @@ window.addEventListener('DOMContentLoaded', function () {
                     if (response.status >= 200 || response.status <= 300) {
                         openModals(updateSponsorCatgegoryModal, saveSponsorCategoryBtn, response.data.data)
                     }
+                    editBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {
                     alert(error.response.data.data.message)
                 })
-            editBtn.removeAttribute('disabled')
         }
 
         if (deleteBtn){
@@ -94,11 +94,11 @@ window.addEventListener('DOMContentLoaded', function () {
                         if (response.status >= 200 || response.status <= 300){
                             sponsorCategoryTable.draw()
                         }
+                        deleteBtn.removeAttribute('disabled')
                     })
                     .catch((error) => {
                         alert(error)
                     })
-                deleteBtn.removeAttribute('disabled')
             }
             
         }
@@ -117,11 +117,11 @@ window.addEventListener('DOMContentLoaded', function () {
                     clearDivValues(newSponsorCatgegoryModal._element)
                     sponsorCategoryTable.draw()
                 }
+            createSponsorCategoryBtn.removeAttribute('disabled')
         })
         .catch((error) => {
             alert(error.response.data.message)
         })
-        createSponsorCategoryBtn.removeAttribute('disabled')
 
     })
         
@@ -135,11 +135,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 updateSponsorCatgegoryModal.hide()
                 sponsorCategoryTable.draw()
             }
+            saveSponsorCategoryBtn.removeAttribute('disabled')
         })
         .catch((error) => {
             alert(error.response.data.message)
         })
-        saveSponsorCategoryBtn.removeAttribute('disabled')
     })
 
     newSponsorCatgegoryModal._element.addEventListener('hidden.bs.modal', function () {
