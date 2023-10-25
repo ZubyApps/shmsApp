@@ -2,19 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Enum\PayClass;
 use App\Http\Requests\StoreSponsorCategoryRequest;
 use App\Http\Requests\UpdateSponsorCategoryRequest;
-use App\Http\Resources\SponsorCategoryCollection;
 use App\Http\Resources\SponsorCategoryResource;
 use App\Models\SponsorCategory;
 use App\Services\DatatablesService;
-use App\Services\RequestService;
 use App\Services\SponsorCategoryService;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-
-use function Pest\Laravel\json;
 
 class SponsorCategoryController extends Controller
 {
@@ -35,9 +29,20 @@ class SponsorCategoryController extends Controller
         return $sponsorCategory;
     }
 
+    /**
+     * Display all the resource by requested columns.
+     */
     public function showAll(string ...$columns)
     {
         return SponsorCategory::all($columns);   
+    }
+
+    /**
+     * Display all the resource's relationship by the id given.
+     */
+    public function list(Request $request, SponsorCategory $sponsorCategory)
+    {   
+        return $sponsorCategory->sponsors()->orderBy('name')->get(['id', 'name'])->toJson();
     }
 
     /**
@@ -80,25 +85,3 @@ class SponsorCategoryController extends Controller
         return $sponsorCategory->destroy($sponsorCategory->id);
     }
 }
-
-
-// $transformer = function (SponsorCategory $sponsorCategory) {
-        //     return [
-        //         'id'                => $sponsorCategory->id,
-        //         'name'              => $sponsorCategory->name,
-        //         'description'       => $sponsorCategory->description,
-        //         'consultationFee'   => $sponsorCategory->consultation_fee,
-        //         'payClass'          => $sponsorCategory->pay_class,
-        //         'approval'          => $sponsorCategory->approval === 0 ? 'false' : 'true',
-        //         'billMatrix'        => $sponsorCategory->bill_matrix,
-        //         'balanceRequired'   => $sponsorCategory->balance_required === 0 ? 'false' : 'true',
-        //         'createdAt'         => Carbon::parse($sponsorCategory->created_at)->format('d/m/Y')
-        //     ];
-        //  };
-
-         // return response()->json([
-        //     'data' => array_map($transformer, (array)$query->getIterator()),
-        //     'draw' => $params->draw,
-        //     'recordsTotal' => $sponsorCategory::count(),
-        //     'recordsFiltered' => $totalSponsors
-        // ]);

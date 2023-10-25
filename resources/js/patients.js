@@ -1,242 +1,367 @@
 import { Modal } from "bootstrap"
 import { MaskInput } from "maska"
-import { getDivData, clearDivValues, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId } from "./helpers"
+import { getDivData, clearDivValues, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals } from "./helpers"
 import http from "./http"
+import jQuery from "jquery";
+import jszip from 'jszip';
+import pdfmake from 'pdfmake';
+import DataTable from 'datatables.net-bs5';
+import 'datatables.net-buttons-bs5';
+import 'datatables.net-buttons/js/buttons.colVis.mjs';
+import 'datatables.net-buttons/js/buttons.html5.mjs';
+import 'datatables.net-buttons/js/buttons.print.mjs';
+import 'datatables.net-fixedcolumns-bs5';
+import 'datatables.net-fixedheader-bs5';
+import 'datatables.net-select-bs5';
+import 'datatables.net-staterestore-bs5';
 
 
 window.addEventListener('DOMContentLoaded', function(){
+    const newSponsorModal           = new Modal(document.getElementById('newSponsorModal'))
+    const updateSponsorModal        = new Modal(document.getElementById('updateSponsorModal'))
+
     const newPatientModal           = new Modal(document.getElementById('newPatientModal'))
     const updatePatientModal        = new Modal(document.getElementById('updatePatientModal'))
+
     const initiatePatientModal      = new Modal(document.getElementById('initiatePatientModal'))
 
-    const mask                      = new MaskInput(".newCardNumber", {tokens: {A: { pattern: /[A-Z]/, transform: (chr) => chr.toUpperCase() }}})
-    const mask1                     = new MaskInput(".oldCardNumber", {tokens: {A: { pattern: /[A-Z]/, transform: (chr) => chr.toUpperCase() }}})
-    const mask2                     = new MaskInput(".ancCardNumber")
+    const newSponsorBtn             = document.getElementById('newSponsor')
+    const createSponsorBtn          = document.querySelector('#createSponsorBtn')
+    const saveSponsorBtn            = document.querySelector('#saveSponsorBtn')
 
-    const newPatientBtn                 = document.getElementById('newPatient')
-    const initiatePatientVisitBtn       = document.getElementById('initiate')
+    const newPatientBtn             = document.getElementById('newPatient')
+    const registerPatientBtn        = document.querySelector('#registerPatientBtn')
+    const savePatientBtn            = document.querySelector('#savePatientBtn')
 
-    const patientTypeInput                 = document.querySelector('.patientType')
-    const patientTypeInputAncOption        = document.querySelector('.ancOption')
+    const newPatientSponsorInputEl          = document.querySelector('#newPatientSponsor')
+    const updatePatientSponsorInputEl       = document.querySelector('#updatePatientSponsor')
 
-    const staffIdDiv                        = document.querySelector('.staffIdDiv')
-    const sex                               = document.querySelector('.sex')
+    const newPatientSponsorDatalistEl       = document.querySelector('#newSponsorList')
+    const updatePatientSponsorDatalistEl    = document.querySelector('#updateSponsorList')
 
-    const sponsorCategoryArray              = ['self', 'family']
-    const sponsorCategoryInput              = document.querySelector('.sponsorCategory')
-    const sponsorCategoryInputFamilyOption  = document.querySelector('.familyOption')
-    const sponsorNameDiv                    = document.querySelector('.sponsorNameDiv')
-    const sponsorNameInput                  = document.querySelector('.sponsorName')
+    const confirmVisitBtn                   = document.querySelector('.confirmVisitBtn')
 
-    const registrationBillDiv               = document.querySelector('.registrationBillDiv')
-    const selfRegistrationBillInput         = document.querySelector('.selfRegistrationBill')
-    const familyRegistrationBillInput       = document.querySelector('.familyRegistrationBill')
-    const familyRegistrationBillOption      = document.querySelector('.familyRegistrationBillOption')
-    const ancRegistrationBillInput          = document.querySelector('.ancRegistrationBill') 
-
-    const allPatientInputsDiv               = document.querySelector('.allPatientInputsDiv')
-
-    const newPatientSponsorInputEl          = document.querySelector('#sponsor')
-    const newPatientSponsorDatalistEl       = document.querySelector('#sponsorList')
-
-    const newCardNumber                     = document.querySelector('.newCardNumber')
-    const oldCardNumber                     = document.querySelector('.oldCardNumber')
-    const ancCardNumber                     = document.querySelector('.ancCardNumber')
-
-    const registerBtn                       = document.querySelector('#registerBtn')
-    const saveBtn                           = document.querySelector('#saveBtn')
+    newSponsorBtn.addEventListener('click', function() {
+        newSponsorModal.show()
+    })
 
     newPatientBtn.addEventListener('click', function() {
+
         newPatientModal.show()
+    })
+
+    updatePatientModal._element.addEventListener('show.bs.modal', function () {
+        
+    })
+
+
+    const initiatePatientVisitBtn   = document.getElementById('initiate')
+
+    const sponsorTable = new DataTable('#sponsorsTable', {
+        serverSide: true,
+        ajax:  '/sponsors/load',
+        orderMulti: true,
+        search:true,
+        columns: [
+            {data: "name"},
+            {data: "phone"},
+            {data: "email"},
+            {data: "category"},
+            {data: row => () =>{
+                if (row.approval == 'false'){
+                    return 'No'
+                } else {
+                    return 'Yes'
+                }
+                }},
+            {data: "registrationBill"},
+            {data: "createdAt"},
+            {
+                sortable: false,
+                data: row => function () {
+                    if (row.count < 1) {
+                        return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary updateBtn" data-id="${ row.id }">
+                            <i class="bi bi-pencil-fill"></i>
+                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn" data-id="${ row.id }">
+                            <i class="bi bi-trash3-fill"></i>
+                        </button>
+                        </div>
+                    `
+                    } else {
+                        return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary updateBtn" data-id="${ row.id }">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        </div>
+                    `
+                    }
+                }}
+        ]
+    })
+
+
+    document.querySelector('#sponsorsTable').addEventListener('click', function (event) {
+        const editBtn    = event.target.closest('.updateBtn')
+        const deleteBtn  = event.target.closest('.deleteBtn')
+
+        if (editBtn) {
+            editBtn.setAttribute('disabled', 'disabled')
+            const sponsorId = editBtn.getAttribute('data-id')
+            http.get(`/sponsors/${ sponsorId }`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openModals(updateSponsorModal, saveSponsorBtn, response.data.data)
+                    }
+                    editBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    alert(error.response.data.data.message)
+                })
+        }
+
+        if (deleteBtn){
+            deleteBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Sponsor?')) {
+                const sponsorId = deleteBtn.getAttribute('data-id')
+                http.delete(`/sponsors/${sponsorId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            sponsorTable.draw()
+                        }
+                        deleteBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                    })
+            }
+            
+        }
+    })
+
+    createSponsorBtn.addEventListener('click', function () {
+        createSponsorBtn.setAttribute('disabled', 'disabled')
+        http.post('/sponsors', getDivData(newSponsorModal._element), {"html": newSponsorModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                newSponsorModal.hide()
+                clearDivValues(newSponsorModal._element)
+                sponsorTable.draw()
+            }
+            createSponsorBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            createSponsorBtn.removeAttribute('disabled')
+            alert(error.response.data.data.message)
+        })
+    })
+
+    saveSponsorBtn.addEventListener('click', function (event) {
+        const sponsorCategoryId = event.currentTarget.getAttribute('data-id')
+        saveSponsorBtn.setAttribute('disabled', 'disabled')
+        http.post(`/sponsors/${sponsorCategoryId}`, getDivData(updateSponsorModal._element), {"html": updateSponsorModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                updateSponsorModal.hide()
+                sponsorTable.draw()
+            }
+            saveSponsorBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            saveSponsorBtn.removeAttribute('disabled')
+            alert(error.response.data.message)
+        })
+    })
+
+    const allPatientsTable = new DataTable('#allPatientsTable', {
+        serverSide: true,
+        ajax:  '/patients/load',
+        orderMulti: true,
+        search:true,
+        columns: [
+            {data: "card"},
+            {data: "name"},
+            {data: "phone"},
+            {data: "sex"},
+            {data: "dob"},
+            {data: "sponsor"},
+            {data: "category"},
+            {data: "createdAt"},
+            {
+                sortable: false,
+                data: row => function () {
+                    if (row.count < 1) {
+                        return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary initiateVisitBtn" data-id="${ row.id }">
+                            <i class="bi bi-send-plus-fill"></i>
+                            </button>
+                            <button class="ms-1 btn btn-outline-primary updateBtn" data-id="${ row.id }">
+                            <i class="bi bi-pencil-fill"></i>
+                            </button>
+                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn" data-id="${ row.id }">
+                            <i class="bi bi-trash3-fill"></i>
+                            </button>
+                        </div>
+                    `
+                    } else {
+                        return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary updateBtn" data-id="${ row.id }">
+                            <i class="bi bi-pencil-fill"></i>
+                            </button>
+                        </div>
+                    `
+                    }
+                }}
+        ]
+    })
+
+    document.querySelector('#allPatientsTable').addEventListener('click', function (event) {
+        const editBtn    = event.target.closest('.updateBtn')
+        const deleteBtn  = event.target.closest('.deleteBtn')
+        const initiateVisitBtn  = event.target.closest('.initiateVisitBtn')
+
+        if (editBtn) {
+            editBtn.setAttribute('disabled', 'disabled')
+            const patientId = editBtn.getAttribute('data-id')
+            http.get(`/patients/${ patientId }`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openPatientModal(updatePatientModal, savePatientBtn, response.data.data)
+                    }
+                    editBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    console.log(error)
+                    //alert(error.response.data.message)
+                })
+        }
+
+        if (initiateVisitBtn) {
+            initiateVisitBtn.setAttribute('disabled', 'disabled')
+            const patientId = initiateVisitBtn.getAttribute('data-id')
+            http.get(`/patients/initiate/${patientId}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openPatientModal(initiatePatientModal, confirmVisitBtn, response.data.data)
+                        }
+                    })
+                    initiatePatientModal.show()
+        }
+
+        if (deleteBtn){
+            deleteBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Patient?')) {
+                const id = deleteBtn.getAttribute('data-id')
+                http.delete(`/patients/${id}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            allPatientsTable.draw()
+                        }
+                        deleteBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                    })
+            }
+            
+        }
+    })
+
+    registerPatientBtn.addEventListener('click', function () {
+        const sponsor = getPatientSponsorDatalistOptionId(newPatientModal, newPatientSponsorInputEl, newPatientSponsorDatalistEl)
+    
+        let data = {...getDivData(newPatientModal._element), sponsor }
+
+        http.post('/patients', {...data}, {"html": newPatientModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                newPatientModal.hide()
+                clearDivValues(newPatientModal._element)
+                allPatientsTable.draw()
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+            alert(error.response.data.message)
+        })
+    })
+
+    savePatientBtn.addEventListener('click', function (event) {
+        const patient = event.currentTarget.getAttribute('data-id')
+        saveSponsorBtn.setAttribute('disabled', 'disabled')
+        let sponsor = getPatientSponsorDatalistOptionId(updatePatientModal, updatePatientSponsorInputEl, updatePatientSponsorDatalistEl)
+        let data = {...getDivData(updatePatientModal._element), sponsor }
+        console.log(data)
+
+        http.post(`/patients/${patient}`, {...data}, {"html": updateSponsorModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                updatePatientModal.hide()
+                allPatientsTable.draw()
+            }
+            savePatientBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            savePatientBtn.removeAttribute('disabled')
+            alert(error.response.data.message)
+        })
+    })
+    
+    newSponsorModal._element.addEventListener('hidden.bs.modal', function () {
+        clearValidationErrors(newSponsorModal._element)
+        createSponsorBtn.removeAttribute('disabled')
+    })
+
+    updateSponsorModal._element.addEventListener('hidden.bs.modal', function () {
+        clearValidationErrors(newSponsorModal._element)
+        saveSponsorBtn.removeAttribute('disabled')
     })
 
     newPatientModal._element.addEventListener('hidden.bs.modal', function () {
         
     })
 
-    initiatePatientVisitBtn.addEventListener('click', function() {
-        initiatePatientModal.show()
-    })
+    // initiatePatientVisitBtn.addEventListener('click', function() {
+    //     
+    // })
 
-    sponsorCategoryInput.addEventListener('change', function() {
-            if (sponsorCategoryInput.value) {
-                http.get(`/sponsor/list/${sponsorCategoryInput.value}`,).then((response) => {
-                    displayList(newPatientSponsorDatalistEl, response.data)
-                })
-            }
-
-        if (sponsorCategoryArray.includes(getSelctedText(sponsorCategoryInput).text.toLowerCase())){             
-            staffIdDiv.classList.add('d-none')
-
-            if (getSelctedText(sponsorCategoryInput).text.toLowerCase() === 'self'){
-                 patientTypeInputAncOption.removeAttribute('disabled')
-                 registrationBillDiv.classList.remove('d-none')
-
-                        if (getSelctedText(patientTypeInput).text.toLowerCase() === 'anc'){
-                            familyRegistrationBillInput.classList.add('d-none')
-                            familyRegistrationBillInput.removeAttribute('name')
-                        } else{
-                            ancRegistrationBillInput.classList.add('d-none')
-                            familyRegistrationBillInput.classList.add('d-none')
-                            selfRegistrationBillInput.classList.remove('d-none')
-                            ancRegistrationBillInput.removeAttribute('name')
-                            familyRegistrationBillInput.removeAttribute('name')
-                            selfRegistrationBillInput.setAttribute('name', 'registerationBill')
-                        }
-                 
-                } else{
-                        if (getSelctedText(sponsorCategoryInput).text.toLowerCase() === 'family'){
-                            ancRegistrationBillInput.classList.add('d-none')
-                            selfRegistrationBillInput.classList.add('d-none')
-                            familyRegistrationBillInput.classList.remove('d-none')
-                            ancRegistrationBillInput.removeAttribute('name')
-                            selfRegistrationBillInput.removeAttribute('name')
-                            familyRegistrationBillInput.setAttribute('name', 'registerationBill')
-                            patientTypeInputAncOption.setAttribute('disabled', 'disabled')
-                            patientTypeInput.value === 'Register.Old' ? 
-                            familyRegistrationBillOption.setAttribute('disabled', 'disabled') : ''
-                            staffIdDiv.classList.add('d-none')
-                            registrationBillDiv.classList.add('d-none')
-                        }
-                    sponsorNameDiv.classList.remove('d-none')
-                    sponsorNameInput.setAttribute('name', 'sponsorName')
-                    getSelctedText(sponsorCategoryInput).text.toLowerCase() === 'family' ? '' : patientTypeInputAncOption.removeAttribute('disabled')
-                }
-        } else{
-
-            // if (getSelctedText(patientTypeInput).text.toLowerCase() === 'anc'){
-            //     familyRegistrationBillInput.classList.add('d-none')
-            //     familyRegistrationBillInput.removeAttribute('name')
-            // } 
-            sponsorNameDiv.classList.remove('d-none')
-            sponsorNameInput.setAttribute('name', 'sponsorName')
-            registrationBillDiv.classList.add('d-none')
-            ancRegistrationBillInput.removeAttribute('name')
-            familyRegistrationBillInput.removeAttribute('name')
-            selfRegistrationBillInput.removeAttribute('name') 
-            patientTypeInputAncOption.removeAttribute('disabled')
-            staffIdDiv.classList.remove('d-none')
-        }
-
-    })
-
-    patientTypeInput.addEventListener('change', function(){
-        if (patientTypeInput.value) {
-            allPatientInputsDiv.classList.remove('d-none')
-
-            switch (patientTypeInput.value) {
-                case 'Regular.New': 
-                    newCardNumber.setAttribute('name', 'cardNumber')
-                    oldCardNumber.hasAttribute('name') ? oldCardNumber.removeAttribute('name') : ''
-                    ancCardNumber.hasAttribute('name') ? ancCardNumber.removeAttribute('name') : ''
-
-                    !oldCardNumber.classList.contains('d-none') ? oldCardNumber.classList.add('d-none') : ''
-                    oldCardNumber.value = ''
-                    !ancCardNumber.classList.contains('d-none') ? ancCardNumber.classList.add('d-none') : ''
-                    ancCardNumber.value = ''
-                    newCardNumber.classList.contains('d-none') ? newCardNumber.classList.remove('d-none'): ''
-
-                    if (getSelctedText(sponsorCategoryInput).text.toLowerCase() === 'family'){
-                        ancRegistrationBillInput.classList.add('d-none')
-                        selfRegistrationBillInput.classList.add('d-none')
-                        familyRegistrationBillInput.classList.remove('d-none')
-                        selfRegistrationBillInput.removeAttribute('name')
-                        ancRegistrationBillInput.removeAttribute('name')
-                        familyRegistrationBillInput.setAttribute('name', 'registrationBill')
-                    } else {
-                        ancRegistrationBillInput.classList.add('d-none')
-                        familyRegistrationBillInput.classList.add('d-none') 
-                        selfRegistrationBillInput.classList.remove('d-none')
-                        ancRegistrationBillInput.removeAttribute('name')
-                        familyRegistrationBillInput.removeAttribute('name')
-                        selfRegistrationBillInput.setAttribute('name', 'registrationBill')
-                        sponsorCategoryInputFamilyOption.removeAttribute('disabled')
-                    }
-                    familyRegistrationBillOption.removeAttribute('disabled', 'disabled')
-                    sex.removeAttribute('disabled')
-                    break;
-                case 'Regular.Old':
-                    oldCardNumber.setAttribute('name', 'cardNumber')
-                    newCardNumber.hasAttribute('name') ? newCardNumber.removeAttribute('name') : ''
-                    ancCardNumber.hasAttribute('name') ? ancCardNumber.removeAttribute('name') : ''
-
-                    !newCardNumber.classList.contains('d-none') ? newCardNumber.classList.add('d-none')  : ''
-                    newCardNumber.value = ''
-                    !ancCardNumber.classList.contains('d-none') ? ancCardNumber.classList.add('d-none') : ''
-                    ancCardNumber.value = ''
-                    oldCardNumber.classList.contains('d-none') ? oldCardNumber.classList.remove('d-none'): ''
-                    
-                    selfRegistrationBillInput.classList.add('d-none')
-                    ancRegistrationBillInput.classList.add('d-none')
-                    selfRegistrationBillInput.removeAttribute('name')
-                    ancRegistrationBillInput.removeAttribute('name')
-
-                    if (getSelctedText(sponsorCategoryInput).text.toLowerCase() === 'self'){
-                         registrationBillDiv.classList.add('d-none')
-                    }
-
-                    if (sponsorCategoryInput.value === 'Family')
-                    {
-                        familyRegistrationBillOption.setAttribute('disabled', 'disabled')
-                    } 
-
-                    sponsorCategoryInputFamilyOption.removeAttribute('disabled')
-                    sex.removeAttribute('disabled')
-                    break;
-                case 'ANC': 
-                    ancCardNumber.setAttribute('name', 'cardNumber')
-                    newCardNumber.hasAttribute('name') ? newCardNumber.removeAttribute('name') : ''
-                    oldCardNumber.hasAttribute('name') ? oldCardNumber.removeAttribute('name') : ''
-
-                    !newCardNumber.classList.contains('d-none') ? newCardNumber.classList.add('d-none'): ''
-                    newCardNumber.value = ''
-                    !oldCardNumber.classList.contains('d-none') ? oldCardNumber.classList.add('d-none'): ''
-                    oldCardNumber.value = ''
-                    ancCardNumber.classList.contains('d-none') ? ancCardNumber.classList.remove('d-none'):''
-
-                    selfRegistrationBillInput.classList.add('d-none')
-                    familyRegistrationBillInput.classList.add('d-none')
-                    ancRegistrationBillInput.classList.remove('d-none')
-                    selfRegistrationBillInput.removeAttribute('name')
-                    familyRegistrationBillInput.removeAttribute('name')
-                    ancRegistrationBillInput.setAttribute('name', 'registrationBill')
-                    sponsorCategoryInputFamilyOption.setAttribute('disabled', 'disabled')
-                    sex.setAttribute('disabled', 'disabled')
-                    sex.value = 'Female'
-                    break;
-                default: ''
-                    break;
-            }
-        } else{
-            familyRegistrationBillOption.removeAttribute('disabled', 'disabled')
-            allPatientInputsDiv.classList.add('d-none')
-            newCardNumber.value = ''
-            oldCardNumber.value = ''
-            ancCardNumber.value = ''
-
-        }
-    })
-
-    registerBtn.addEventListener('click', function () {
-        const sponsor = getDatalistOptionId(newPatientSponsorInputEl, newPatientSponsorDatalistEl)
-    
-        let data = {...getDivData(newPatientModal._element), sponsor }
-        console.log(data)
-
-        http.post('/patients', {...data}, {"html": newPatientModal._element})
-        .then((response) => {
-            if (response.status >= 200 || response.status <= 300){
-                newPatientModal._element.hide()
-                clearDivValues(newPatientModal._element)
-            }
-        })
-        .catch((error) => {
-            alert(error.response.data.message)
-        })
-    })
-
-    saveBtn.addEventListener('click', function () {
-        console.log(getDivData(updatePatientModal._element))
-    })
 
 })
+
+function openPatientModal(modal, button, {id, sponsorId, sponsorCategoryId, ...data}) {
+    for (let name in data) {
+        const nameInput = modal._element.querySelector(`[name="${ name }"]`)
+        
+        nameInput.value = data[name]
+    }
+
+    if (modal._element.id === 'updatePatientModal'){    
+        modal._element.querySelector('#updatePatientSponsor').setAttribute('data-id', sponsorId)
+        const dataListEl = modal._element.querySelector('#updateSponsorList')
+
+        http.get(`/sponsorcategory/list_sponsors/${sponsorCategoryId}`).then((response) => {
+            displayList(dataListEl, 'sponsorOption', response.data)
+        })
+    }
+
+    button.setAttribute('data-id', id)
+    modal.show()
+}
+
+function getPatientSponsorDatalistOptionId(modal, inputEl, datalistEl) {  
+    //console.log(inputEl)  
+    // if (modal._element.id === 'updatePatientModal'){
+    //     return modal._element.querySelector('#updatePatientSponsor').dataset.id
+    // }
+    const selectedOption = datalistEl.options.namedItem(inputEl.value)
+    
+        if (selectedOption) {
+            return selectedOption.getAttribute('data-id')
+        } else {
+            return ""
+        }
+    }

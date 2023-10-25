@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreSponsorRequest;
+use App\Http\Requests\UpdateSponsorRequest;
+use App\Http\Resources\SponsorResource;
 use App\Models\Sponsor;
-use App\Models\SponsorCategory;
+use App\Services\DatatablesService;
+use App\Services\SponsorService;
 use Illuminate\Http\Request;
 
 class SponsorController extends Controller
 {
-    public function __construct(private readonly SponsorCategory $sponsorCategory)
+    public function __construct(
+        private readonly DatatablesService $datatablesService, 
+        private readonly SponsorService $sponsorService)
     {
         
     }
@@ -31,32 +37,22 @@ class SponsorController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreSponsorRequest $request)
     {
-        $request->validate([
-            'name' => ['required', 'unique:'.Sponsor::class],
-            'phone' => ['required', 'digits:11', 'unique:'.Sponsor::class],
-            'email' => ['nullable', 'email', 'unique:'.Sponsor::class],
-            'registrationBill' => ['nullable', 'numeric'],
-            'category' => ['required']
-        ]);
-
-        $category = SponsorCategory::findOrFail($request->category);
-
-        $sponsor = $request->user()->sponsors()->create([
-            'name'                  => $request->name,
-            'phone'                 => $request->phone,
-            'email'                 => $request->email,
-            'registration_bill'     => $request->registerBill,
-            'sponsor_category_id'   => $category->id
-        ]);
+        $sponsor = $this->sponsorService->create($request, $request->user());
 
         return $sponsor->load('sponsorCategory');
     }
 
-    public function list(Request $request, SponsorCategory $sponsorCategory)
-    {   
-        return $sponsorCategory->sponsors()->get(['id', 'name'])->toJson();
+    public function load(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sponsorCategories = $this->sponsorService->getPaginatedSponsors($params);
+       
+        $loadTransformer = $this->sponsorService->getLoadTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $sponsorCategories, $params);  
     }
 
     /**
@@ -72,15 +68,15 @@ class SponsorController extends Controller
      */
     public function edit(Sponsor $sponsor)
     {
-        //
+        return new SponsorResource($sponsor);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Sponsor $sponsor)
+    public function update(UpdateSponsorRequest $request, Sponsor $sponsor)
     {
-        //
+        return $this->sponsorService->update($request, $sponsor, $request->user());
     }
 
     /**
@@ -88,6 +84,6 @@ class SponsorController extends Controller
      */
     public function destroy(Sponsor $sponsor)
     {
-        //
+        return $sponsor->destroy($sponsor->id);
     }
 }

@@ -44,7 +44,7 @@ class StorePatientRequest extends FormRequest
             "nextOfKinPhone"    => ['required', 'digits:11'],
             "nextOfKinRship"    => ['required'],
             "occupation"        => ['nullable'],
-            "phone"             => ['required', 'digits:11'],
+            "phone"             => ['sometimes','required', 'digits:11'],
             "registrationBill"  => ['nullable'],
             "religion"          => ['nullable'],
             "sex"               => ['required'],

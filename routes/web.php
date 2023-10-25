@@ -37,11 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::get('/patients', [PatientController::class, 'index'])->name('Patients');
-    Route::post('/patients', [PatientController::class, 'store']);
-    Route::post('/sponsor', [SponsorController::class, 'store']);
-    Route::get('/sponsor/list/{sponsorCategory}', [SponsorController::class, 'list']);
+    
     Route::get('/doctors', [DoctorController::class, 'index'])->name('Doctors');
     Route::get('/nurses', [NurseController::class, 'index'])->name('Nurses');
     Route::get('/investigations', [InvestigationsController::class, 'index'])->name('Investigations');
@@ -55,10 +51,28 @@ Route::middleware('auth')->group(function () {
     Route::prefix('sponsorcategory')->group(function () {
         Route::post('', [SponsorCategoryController::class, 'store']);
         Route::get('/load', [SponsorCategoryController::class, 'load']);
+        Route::get('/list_sponsors/{sponsorCategory}', [SponsorCategoryController::class, 'list']);
         Route::get('/{sponsorCategory}', [SponsorCategoryController::class, 'edit']);
         Route::delete('/{sponsorCategory}', [SponsorCategoryController::class, 'destroy']);
         Route::post('/{sponsorCategory}', [SponsorCategoryController::class, 'update']);
     })->name('Sponsor Category');
+
+    Route::prefix('sponsors')->group(function (){
+        Route::post('', [SponsorController::class, 'store']);
+        Route::get('/load', [SponsorController::class, 'load']);
+        Route::get('/{sponsor}', [SponsorController::class, 'edit']);
+        Route::delete('/{sponsor}', [SponsorController::class, 'destroy']);
+        Route::post('/{sponsor}', [SponsorController::class, 'update']);
+    })->name('Sponsors');
+
+    Route::prefix('patients')->group(function () {
+        Route::get('', [PatientController::class, 'index'])->name('Patients');
+        Route::post('', [PatientController::class, 'store']);
+        Route::get('/load', [PatientController::class, 'load']);
+        Route::get('/{patient}', [PatientController::class, 'edit']);
+        Route::delete('/{patient}', [PatientController::class, 'destroy']);
+        Route::post('/{patient}', [PatientController::class, 'update']);
+    })->name('Patients');
     
 });
 

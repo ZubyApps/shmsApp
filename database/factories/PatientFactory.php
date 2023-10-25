@@ -39,7 +39,7 @@ class PatientFactory extends Factory
             "phone"                 => $this->faker->phoneNumber(),
             "registration_bill"     => '2000',
             "religion"              => $this->faker->word(),
-            "sex"                   => 'Christian',
+            "sex"                   => $this->faker->word(),
             "sponsor_id"            => '1',
             "staff_Id"              => '',
             "state_of_origin"       => 'Anambra',

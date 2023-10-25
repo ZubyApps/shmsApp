@@ -4,7 +4,7 @@
         <div class="row flex-nowrap justify-content-between align-items-center">
             <div class="col-6 text-start">
                 <a href="/" class="blog-header-logo text-decoration-none fs-1 text-black"><i
-                        class="bi bi-hospital text-primary"></i><span class="fw-bold pl-4"> E</span>xample <span
+                        class="bi bi-hospital text-primary"></i><span class="fw-bold pl-4"> S</span>andra <span
                         class="fw-bold pl-4">H</span>ospital</a>
             </div>
             <div class="col-6 d-flex justify-content-end align-items-center">

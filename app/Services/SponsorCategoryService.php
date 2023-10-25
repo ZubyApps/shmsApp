@@ -13,11 +13,8 @@ use Illuminate\Http\Request;
 
 class SponsorCategoryService
 {
-    private $loadTransformer;
-
     public function __construct(private readonly SponsorCategory $sponsorCategory)
     {
-        $this->loadTransformer;
     }
 
     public function create(Request $data, User $user): SponsorCategory
@@ -69,9 +66,9 @@ class SponsorCategoryService
        
     }
 
-    public function getLoadTransformer()
+    public function getLoadTransformer(): callable
     {
-       return $this->loadTransformer = function (SponsorCategory $sponsorCategory) {
+       return  function (SponsorCategory $sponsorCategory) {
             return [
                 'id'                => $sponsorCategory->id,
                 'name'              => $sponsorCategory->name,
@@ -81,7 +78,8 @@ class SponsorCategoryService
                 'approval'          => $sponsorCategory->approval === 0 ? 'false' : 'true',
                 'billMatrix'        => $sponsorCategory->bill_matrix,
                 'balanceRequired'   => $sponsorCategory->balance_required === 0 ? 'false' : 'true',
-                'createdAt'         => Carbon::parse($sponsorCategory->created_at)->format('d/m/Y')
+                'createdAt'         => Carbon::parse($sponsorCategory->created_at)->format('d/m/Y'),
+                'count'             => $sponsorCategory->sponsors()->count()
             ];
          };
     }

@@ -14,11 +14,13 @@
                         <x-form-div class="my-2 col-xl-6">
                             <x-input-span>Category<x-required-span /></x-input-span>
                             <select class="form-select form-select-md" id="sponsorCategory1" name="category">
-                                <option value="">Select Category</option>
+                                <option value="">Select Category</option>   
                                 @foreach ($categories as $category )
-                                    {{-- @if (Str::lower($category->name) !== "self") --}}
+                                    @if (Str::lower($category->name) == "self")
+                                    <option disabled value="{{ $category->id}}" name="{{ $category->name }}">{{ $category->name }}</option>
+                                    @else
                                     <option value="{{ $category->id}}" name="{{ $category->name }}">{{ $category->name }}</option>
-                                    {{-- @endif --}}
+                                    @endif
                                 @endforeach
                             </select>
                         </x-form-div>
@@ -41,10 +43,12 @@
                             </x-form-div>
                             <x-form-div class="registrationBillDiv1 col-xl-6">
                                 <x-input-span>Registration Bill</x-input-span>
-                                <select class="form-select form-select-md familyRegistrationBill" >
+                                <select class="form-select form-select-md familyRegistrationBill" name="{{ $isUpdate ? 'registerationBill' : '' }}">
                                     <option class="familyRegistrationBillOption" value="3500">3500</option>
                                     <option value="1500">1500 (Upgrade)</option>
                                     <option value="old">Old</option>
+                                    <option class="{{ !$isUpdate ? 'd-none' : ''  }}" value="">N/A</option>
+                                    
                                 </select>
                             </x-form-div>
                         </div>

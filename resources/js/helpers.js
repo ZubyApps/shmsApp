@@ -132,21 +132,24 @@ const getSelctedText = (selectEl) => {
     return selectEl.options[selectEl.selectedIndex]
 }
 
-function displayList(dataListEl, data) {
+function displayList(dataListEl, optionsId, data) {
+    
     dataListEl.innerHTML = ''
+    
     
     data.forEach(line => {
         const option = document.createElement("OPTION")
-        option.setAttribute('id', 'sponsorOption')
+        option.setAttribute('id', optionsId)
         option.setAttribute('value', line.name)
         option.setAttribute('data-id', line.id)
         option.setAttribute('name', line.name)
         dataListEl.appendChild(option)
-        })
+    })
+
     }
 
-function getDatalistOptionId(inputEl, datalistEl) {    
-        const selectedOption = datalistEl.options.namedItem(inputEl.value)
+function getDatalistOptionId(modal, inputEl, datalistEl) {    
+    const selectedOption = datalistEl.options.namedItem(inputEl.value)
     
         if (selectedOption) {
             return selectedOption.getAttribute('data-id')
@@ -155,7 +158,7 @@ function getDatalistOptionId(inputEl, datalistEl) {
         }
     }
 
-function openModals(modal, button, {id, createdAt, ...data}) {
+function openModals(modal, button, {id, ...data}) {
     for (let name in data) {
         const nameInput = modal._element.querySelector(`[name="${ name }"]`)
         

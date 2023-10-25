@@ -19,7 +19,7 @@ $patientName = 'Mohammed Hassan Suleiman';
                     <i class="bi bi-x-circle me-1"></i>
                     No
                 </button>
-                <button type="button" class="btn bg-primary text-white initiate-patient-btn">
+                <button type="button" class="btn bg-primary text-white confirmVisitBtn">
                     <i class="bi bi-check-circle me-1"></i>
                     Yes
                 </button>

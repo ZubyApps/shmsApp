@@ -4,6 +4,8 @@
     <option value="Husband">Husband</option>
     <option value="Daughter">Daughter</option>
     <option value="Son">Son</option>
+    <option value="Son">Mother</option>
+    <option value="Son">Father</option>
     <option value="Sister">Sister</option>
     <option value="Brother">Brother</option>
     <option value="Auntie">Auntie</option>

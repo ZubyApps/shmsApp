@@ -17,8 +17,8 @@ import 'datatables.net-staterestore-bs5';
 
 
 window.addEventListener('DOMContentLoaded', function () {
-    const newSponsorCatgegoryModal          = new Modal(document.getElementById('newSponsorCategoryModal'))
-    const updateSponsorCatgegoryModal       = new Modal(document.getElementById('updateSponsorCategoryModal'))
+    const newSponsorCategoryModal          = new Modal(document.getElementById('newSponsorCategoryModal'))
+    const updateSponsorCategoryModal       = new Modal(document.getElementById('updateSponsorCategoryModal'))
 
     const addSponsorCategoryBtn             = document.querySelector('#addSponsnorCategoryBtn')
 
@@ -54,15 +54,27 @@ window.addEventListener('DOMContentLoaded', function () {
             {data: "createdAt"},
             {
                 sortable: false,
-                data: row => `
-                <div class="d-flex flex-">
-                    <button class=" btn btn-outline-primary updateBtn" data-id="${ row.id }">
-                    <i class="bi bi-pencil-fill"></i>
-                    <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn" data-id="${ row.id }">
-                    <i class="bi bi-trash3-fill"></i>
-                </button>
-                </div>
-            `}
+                data: row => function () {
+                    if (row.count < 1) {
+                        return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary updateBtn" data-id="${ row.id }">
+                            <i class="bi bi-pencil-fill"></i>
+                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn" data-id="${ row.id }">
+                            <i class="bi bi-trash3-fill"></i>
+                        </button>
+                        </div>
+                    `
+                    } else {
+                        return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary updateBtn" data-id="${ row.id }">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        </div>
+                    `
+                    }
+                }}
         ]
     });
 
@@ -76,7 +88,7 @@ window.addEventListener('DOMContentLoaded', function () {
             http.get(`/sponsorcategory/${ sponsorCategoryId }`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
-                        openModals(updateSponsorCatgegoryModal, saveSponsorCategoryBtn, response.data.data)
+                        openModals(updateSponsorCategoryModal, saveSponsorCategoryBtn, response.data.data)
                     }
                     editBtn.removeAttribute('disabled')
                 })
@@ -105,16 +117,16 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     addSponsorCategoryBtn.addEventListener('click', function () {
-        newSponsorCatgegoryModal.show()
+        newSponsorCategoryModal.show()
     })
 
     createSponsorCategoryBtn.addEventListener('click', function () {
         createSponsorCategoryBtn.setAttribute('disabled', 'disabled')
-        http.post('/sponsorcategory', getDivData(newSponsorCatgegoryModal._element), {"html": newSponsorCatgegoryModal._element})
+        http.post('/sponsorcategory', getDivData(newSponsorCategoryModal._element), {"html": newSponsorCategoryModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
-                    newSponsorCatgegoryModal.hide()
-                    clearDivValues(newSponsorCatgegoryModal._element)
+                    newSponsorCategoryModal.hide()
+                    clearDivValues(newSponsorCategoryModal._element)
                     sponsorCategoryTable.draw()
                 }
             createSponsorCategoryBtn.removeAttribute('disabled')
@@ -129,10 +141,10 @@ window.addEventListener('DOMContentLoaded', function () {
     saveSponsorCategoryBtn.addEventListener('click', function (event) {
         const sponsorCategoryId = event.currentTarget.getAttribute('data-id')
         saveSponsorCategoryBtn.setAttribute('disabled', 'disabled')
-        http.post(`/sponsorcategory/${sponsorCategoryId}`, getDivData(updateSponsorCatgegoryModal._element), {"html": updateSponsorCatgegoryModal._element})
+        http.post(`/sponsorcategory/${sponsorCategoryId}`, getDivData(updateSponsorCategoryModal._element), {"html": updateSponsorCategoryModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
-                updateSponsorCatgegoryModal.hide()
+                updateSponsorCategoryModal.hide()
                 sponsorCategoryTable.draw()
             }
             saveSponsorCategoryBtn.removeAttribute('disabled')
@@ -142,8 +154,8 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    newSponsorCatgegoryModal._element.addEventListener('hidden.bs.modal', function () {
-        clearValidationErrors(newSponsorCatgegoryModal._element)
+    newSponsorCategoryModal._element.addEventListener('hidden.bs.modal', function () {
+        clearValidationErrors(newSponsorCategoryModal._element)
         sponsorCategoryTable.draw()
     })
 })

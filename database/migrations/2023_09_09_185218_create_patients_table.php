@@ -24,7 +24,7 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->string('sex');
             $table->string('marital_status')->nullable();
-            $table->string('phone')->unique();
+            $table->string('phone')->unique()->nullable();
             $table->string('address')->nullable();
             $table->string('state_of_residence');
             $table->string('email')->unique()->nullable();

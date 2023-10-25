@@ -1,3 +1,4 @@
+@vite(['resources/js/modals/patientModal.js'])
 <div class="container">
     <div class="modal fade " id="{{ $id }}" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
@@ -15,7 +16,7 @@
                                 <option value="">Select card Type</option>
                                 <option {{ $isUpdate ? 'hidden' : '' }} value="Regular.New">Regular New</option>
                                 <option {{ $isUpdate ? 'hidden' : '' }} value="Regular.Old">Regular Old</option>
-                                <option {{ !$isUpdate ? 'hidden' : '' }} value="Regular">Regualar</option>
+                                <option {{ !$isUpdate ? 'hidden' : '' }} value="Regular">Regular</option>
                                 <option class="ancOption" value="ANC">ANC</option>
                             </select>
                         </x-form-div>
@@ -28,7 +29,7 @@
                             <div class="row">
                                 <x-form-div>
                                     <x-input-span id="sponsorCategoryLabel">Sponsor Category<x-required-span /></x-input-span>
-                                    <select class="form-select form-select-md sponsorCategory" :value="old('sponsorCategory')" name="sponsorCategory">
+                                    <select class="form-select form-select-md" name="sponsorCategory" id="{{ $isUpdate ? 'updateSponsorCategory' : 'newSponsorCategory' }}">
                                         <option value="">Select Category</option>
                                         @foreach ($categories as $category )
                                         <option @if (Str::lower($category->name) === "family") {!! 'class="familyOption"' !!} @endif value="{{ $category->id}}" name="{{ $category->name }}">{{ $category->name }}</option>
@@ -45,14 +46,13 @@
                                         aria-label="cardNumber" aria-describedby="basic-addon1" :isUpdate="$isUpdate" :value="old('cardNumber')"/>
                                     <x-form-input type="text" class="{{ $isUpdate ? 'd-none' : '' }} ancCardNumber" data-maska="ANC{{ date('y') }}/####" 
                                         aria-label="cardNumber" aria-describedby="basic-addon1" :isUpdate="$isUpdate"  :value="old('cardNumber')"/>
-                                    <input type="text" aria-label="cardNumber" aria-describedby="basic-addon1" class="form-control" {!! $isUpdate ? 'disabled name="cardNumber" value="SH23/0024"'  : 'hidden' !!}>
+                                    <input type="text" aria-label="cardNumber" aria-describedby="basic-addon1" class="form-control" {!! $isUpdate ? 'name="cardNumber" disabled'  : 'hidden' !!}>
                                 </x-form-div>
                                 <x-input-error :messages="$errors->get('cardNumber')" class="mt-1" />
 
                                 <x-form-div class="registrationBillDiv d-none">
                                     <x-input-span id="registrationBillLabel">Registration Bill<x-required-span /></x-input-span>
-                                    <select class="form-select form-select-md selfRegistrationBill"
-                                        aria-label="registrationBill" :value="old('registrationBill')">
+                                    <select class="form-select form-select-md selfRegistrationBill" aria-label="registrationBill">
                                         <option value="2000">2000</option>
                                     </select>
                                     <select class="form-select form-select-md ancRegistrationBill d-none"
@@ -64,16 +64,14 @@
 
                                 <x-form-div class="sponsorNameDiv">
                                     <x-input-span id="sponsorNameLabel">Sponsor<x-required-span /></x-input-span>
-                                    <x-form-input type="search" name="sponsor" class="sponsorName" id="sponsor" placeholder="Search..." list="sponsorList" :value="old('sponsor')"/>
-                                    <datalist name="sponsor" type="text" class="decoration-none bg-white" id="sponsorList">
-                                        {{-- <option id="sponsorOption" value="Police NHIS" data-id="13" name="Police NHIS"></option> --}}
-                                    </datalist>
+                                    <x-form-input type="search" name="sponsor" class="sponsorName categorySponsor" id="{{ $isUpdate ? 'updatePatientSponsor' : 'newPatientSponsor' }}" placeholder="Search..." list="{{ $isUpdate ? 'updateSponsorList' : 'newSponsorList' }}"/>
+                                    <datalist name="sponsor" type="text" class="decoration-none bg-white sponsorList" id="{{ $isUpdate ? 'updateSponsorList' : 'newSponsorList' }}"></datalist>
                                 </x-form-div>
                                 <x-input-error :messages="$errors->get('sponsorName')" class="mt-1" />
 
                                 <x-form-div class="staffIdDiv">
                                     <x-input-span>Staff ID/No.</x-input-span>
-                                    <x-form-input name="staffId" class="staffId" :value="old('staffId')"/>
+                                    <x-form-input name="staffId" class="staffId" value=""/>
                                 </x-form-div>
                                 <x-input-error :messages="$errors->get('staffId')" class="mt-1" />
                                     
@@ -122,7 +120,7 @@
                                 <x-form-div>
                                     <x-input-span id="maritalStatusLabel">Marital Status<x-required-span /></x-input-span>
                                     <select class="form-select form-select-md" aria-label="marital-status"
-                                        name="maritalStatus" :value="old('maritalStatus')">
+                                        name="maritalStatus">
                                         <option value="">Select</option>
                                         <option value="Single">Single</option>
                                         <option value="Married">Married</option>
@@ -159,13 +157,13 @@
                             <!-- first row -->
                             <div class="row">
                                 <x-form-div>
-                                    <x-input-span>Email<x-required-span /></x-input-span>
+                                    <x-input-span>Email</x-input-span>
                                     <x-form-input type="email" name="email" id="email" :value="old('email')" placeholder="akpan12@gmail.com" />
                                 </x-form-div>
                                 <x-input-error :messages="$errors->get('email')" class="mt-1" />
 
                                 <x-form-div>
-                                    <x-input-span >Nationality<x-required-span /></x-input-span>
+                                    <x-input-span >Nationality</x-input-span>
                                     <x-form-input name="nationality"  :value="old('nationality')" placeholder="eg. Nigerian" />
                                 </x-form-div>
                                 <x-input-error :messages="$errors->get('nationality')" class="mt-1" />
@@ -179,7 +177,7 @@
                             <!-- second row -->
                             <div class="row">
                                 <x-form-div>
-                                    <x-input-span >Occupation<x-required-span /></x-input-span>
+                                    <x-input-span >Occupation</x-input-span>
                                     <x-form-input name="occupation" :value="old('occupation')"/>
                                 </x-form-div>
                                 <x-input-error :messages="$errors->get('occupation')" class="mt-1" />
@@ -234,7 +232,7 @@
                         <i class="bi bi-x-circle me-1"></i>
                         Close
                     </button>
-                    <button type="button" id="{{ $isUpdate ? 'saveBtn' : 'registerBtn' }}" class="btn bg-primary text-white">
+                    <button type="button" id="{{ $isUpdate ? 'savePatientBtn' : 'registerPatientBtn' }}" class="btn bg-primary text-white">
                         <i class="bi bi-check-circle me-1"></i>
                         {{ $isUpdate ? 'Update' : 'Register' }}
                     </button>

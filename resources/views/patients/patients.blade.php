@@ -13,21 +13,6 @@
 @include('patients.initiatePatientModal', ['title' => "Initiate Patient's Visit", 'id' => 'initiatePatientModal'])
 
 <div class="container mt-5">
-    <div class="text-start mb-4">
-        <button type="button" id="newPatient" class="btn btn-primary text-white">
-            <i class="bi bi-plus-circle me-1"></i>
-            New Patient
-        </button>
-        <button type="button" id="newSponsor" class="btn btn-primary text-white mx-2">
-            <i class="bi bi-plus-circle me-1"></i>
-            New Sponsor
-        </button>
-        <button type="button" id="initiate" class="btn btn-primary text-white">
-            <i class="bi bi-plus-circle me-1"></i>
-            Initiate
-        </button>
-    </div>
-
     <div>
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -44,67 +29,59 @@
         </nav>
         <div class="tab-content" id="nav-tabContent">
             <!-- patients table -->
-            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab"
-                tabindex="0">
-                <div class="py-4">
-                    <table id="allPatientsTable"
-                        class="table table-hover align-middle table-sm">
+            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
+                <div class="text-start py-3">
+                    <button type="button" id="newPatient" class="btn btn-primary text-white">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Patient
+                    </button>
+                    {{-- <button type="button" id="initiate" class="btn btn-primary text-white">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Initiate
+                    </button> --}}
+                </div>
+                <div class="py-2">
+                    <table id="allPatientsTable" class="table table-hover align-middle table-sm">
                         <thead>
                             <tr>
-                                <th>Name</th>
+                                <th>Card</th>
+                                <th>Patient Name</th>
                                 <th>Phone</th>
                                 <th>Sex</th>
                                 <th>DOB</th>
-                                <th>Sponsor Cat</th>
                                 <th>Sponsor</th>
-                                <th>Status</th>
+                                <th>Category</th>
+                                <th>Created</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
-                        <tfoot class="fw-bolder text-primary">
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             </div>
             <!-- sponsors table -->
-            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
-                <div class="py-4 ">
-                    <table id="sponsorsTable"
-                        class="table table-hover align-middle table-sm">
+            <div class="tab-pane fade active" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+                <div class="text-start py-3">
+                    <button type="button" id="newSponsor" class="btn btn-primary text-white">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Sponsor
+                    </button>
+                </div>
+                <div class="py-2 ">
+                    <table id="sponsorsTable" class="table table-hover align-middle table-sm">
                         <thead>
                             <tr>
                                 <th>Sponsor Name</th>
-                                <th>Payment Category</th>
-                                <th>Sponsor Category</th>
-                                <th>Payment Matrix</th>
-                                <th>Balance Required?</th>
+                                <th> <i class="bi bi-telephone-outbound-fill text-primary"></i></th>
+                                <th> <i class="bi bi-envelope-at-fill text-primary"></i> </th>
+                                <th>Category</th>
+                                <th>Approval</th>
                                 <th>Registration Bill</th>
+                                <th>Created</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
-                        <tfoot class="fw-bolder text-primary">
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             </div>

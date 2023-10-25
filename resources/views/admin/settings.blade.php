@@ -9,101 +9,7 @@
 @include('admin.modals.sponsorCategoryModal', ['title' => 'New Sponsor Category', 'isUpdate' => false, 'id' => 'newSponsorCategoryModal'])
 @include('admin.modals.sponsorCategoryModal', ['title' => 'Edit Sponsor Category', 'isUpdate' => true, 'id' => 'updateSponsorCategoryModal'])
 
-    <div class="container p-1 mt-5 bg-white">
-        <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
-            aria-labelledby="offcanvasWithBothOptionsLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title text-primary" id="offcanvasWithBothOptionsLabel">List of Waiting Patients</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <div class="py-4 ">
-                    <table id="waitingListTable" class="table table-hover align-middle table-sm">
-                        <thead>
-                            <tr>
-                                <th>Patient</th>
-                                <th>Sponsor</th>
-                                <th>Status</th>
-                                <th>Remove</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>SH21/4012 Joesphine Ene Odeh</td>
-                                <td>Avon HMO</td>
-                                <td><span class="badge rounded-pill text-bg-secondary p-2">Waiting</span></td>
-                                <td><i class="btn btn-outline-none text-primary bi bi-x-circle"></i></td>
-                            </tr>
-                            <tr>
-                                <td>SH23/7865 Patrick Abiodun Aso</td>
-                                <td>Axe Mansard HMO</td>
-                                <td><span class="badge rounded-pill text-bg-light p-2">Dr Toby</span></td>
-                                <td>
-                                    {{-- <i class="btn btn-outline-none text-primary bi bi-x-circle"></i> --}}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>SH21/4012 John Okoro</td>
-                                <td>Avon HMO</td>
-                                <td><span class="badge rounded-pill text-bg-light p-2">Dr Bisoye</span></td>
-                                <td>
-                                    {{-- <i class="btn btn-outline-none text-primary bi bi-x-circle"></i> --}}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions2"
-            aria-labelledby="offcanvasWithBothOptions2Label">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title text-primary" id="offcanvasWithBothOptions2Label2">Medication/Treatment List for Approval</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas2-body">
-                <div class="p-2 ">
-                    <table id="" class="table table-hover table-striped align-middle table-sm">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Descrption</th>
-                                <th>Consultation Fee</th>
-                                <th>Pay Class</th>
-                                <th>Approval</th>
-                                <th>Bill Matrix</th>
-                                <th>Bal Required</th>
-                                <th>Created At</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        {{-- <div class="text-start mb-4">
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas"
-                data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
-                <i class="bi bi-list-check"></i>
-                Waiting List
-            </button>
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas"
-                data-bs-target="#offcanvasWithBothOptions2" aria-controls="offcanvasWithBothOptions2">
-                <i class="bi bi-list-check"></i>
-                Medication/Treatment Approval List
-            </button>
-        </div> --}}
-        {{-- <div class="text-start mb-4">
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas2"
-                data-bs-target="#offcanvasWithBothOptions2" aria-controls="offcanvasWithBothOptions2">
-                <i class="bi bi-list-check"></i>
-                Medication/Treatment Approval List
-            </button>
-        </div> --}}
-
+    <div class="container mt-5 bg-white">
         <div>
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -121,7 +27,7 @@
                         type="button" role="tab" aria-controls="nav-reports" aria-selected="false">Reports</button>
                 </div>
             </nav>
-            <div class="tab-content" id="nav-tabContent">
+            <div class="tab-content px-2" id="nav-tabContent">
                 <!-- patients table -->
                 <div class="tab-pane fade show active" id="nav-verifyPatients" role="tabpanel"
                     aria-labelledby="nav-verifyPatients-tab" tabindex="0">
@@ -133,7 +39,7 @@
                         </button>
                     </div>
 
-                    <div class="py-4">
+                    <div class="py-2">
                         <table id="sponsorCategoryTable" class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
