@@ -24,10 +24,10 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->string('sex');
             $table->string('marital_status')->nullable();
-            $table->string('phone')->unique()->nullable();
+            $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->string('state_of_residence');
-            $table->string('email')->unique()->nullable();
+            $table->string('email')->nullable();
             $table->string('staff_id')->nullable();
             $table->string('nationality')->nullable();
             $table->string('state_of_origin')->nullable();

@@ -325,14 +325,20 @@ window.addEventListener('DOMContentLoaded', function(){
     })
 
     newPatientModal._element.addEventListener('hidden.bs.modal', function () {
-        
+        clearValidationErrors(newPatientModal._element)
+        registerPatientBtn.removeAttribute('disabled')
+    })
+
+    updatePatientModal._element.addEventListener('hidden.bs.modal', function () {
+        clearValidationErrors(updatePatientModal._element)
+        savePatientBtn.removeAttribute('disabled')
     })
 })
 
 function openPatientModal(modal, button, {id, sponsorId, sponsorCategoryId, ...data}) {
  
     for (let name in data) {
-        const nameInput = modal._element.querySelector(`[id="${ name }"]`)
+        const nameInput = modal._element.querySelector(`[name="${ name }"]`)
 
         nameInput.value = data[name]
     }

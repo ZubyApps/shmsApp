@@ -34,29 +34,29 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'firstName' => ['required', 'string', 'max:255'],
-            'middleName' => ['string', 'max:255'],
-            'lastName' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
-            'phone_no' => ['required', 'numeric', 'max:11', 'unique:'.User::class],
-            'phone_no' => ['required', 'numeric', 'min:11', 'unique:'.User::class],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'address' => ['string', 'max:255'],
-            'highestQualification' => ['required','string', 'max:255'],
-            'dateOfBirth' => ['required', 'date'],
-            'sex' => ['required', 'string', 'max:255'],
-            'maritalStatus' => ['required','string', 'max:255'],
-            'stateOfOrigin' => ['required', 'string', 'max:255'],
-            'nextOfKin' => ['required', 'string', 'max:255'],
-            'nextOfKinPhone' => ['required', 'numeric', 'max:11'],
-            'nextOfKinPhone' => ['required', 'numeric', 'min:11'],
-            'nextOfKinRship' => ['required', 'string'],
-            'dateOfEmployment' => ['required', 'nullable', 'date'],
-            'dateOfExit' => ['nullable','date'],
-            'department' => ['nullable', 'string'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'firstName'             => ['required', 'string', 'max:255'],
+            'middleName'            => ['string', 'max:255'],
+            'lastName'              => ['required', 'string', 'max:255'],
+            'username'              => ['required', 'string', 'max:255', 'unique:' . User::class],
+            'phone_no'              => ['required', 'numeric', 'max:11', 'unique:' . User::class],
+            'phone_no'              => ['required', 'numeric', 'min:11', 'unique:' . User::class],
+            'email'                 => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
+            'address'               => ['string', 'max:255'],
+            'highestQualification'  => ['required', 'string', 'max:255'],
+            'dateOfBirth'           => ['required', 'date'],
+            'sex'                   => ['required', 'string', 'max:255'],
+            'maritalStatus'         => ['required', 'string', 'max:255'],
+            'stateOfOrigin'         => ['required', 'string', 'max:255'],
+            'nextOfKin'             => ['required', 'string', 'max:255'],
+            'nextOfKinPhone'        => ['required', 'numeric', 'max:11'],
+            'nextOfKinPhone'        => ['required', 'numeric', 'min:11'],
+            'nextOfKinRship'        => ['required', 'string'],
+            'dateOfEmployment'      => ['required', 'nullable', 'date'],
+            'dateOfExit'            => ['nullable', 'date'],
+            'department'            => ['nullable', 'string'],
+            'password'              => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-        
+
         $user = User::create([
             'firstname'             => $request->firstName,
             'middlename'            => $request->middleName,
@@ -77,7 +77,7 @@ class RegisteredUserController extends Controller
             'date_of_exit'          => new DateTime($request->dateOfExit),
             'password'              => Hash::make($request->password),
         ]);
-    
+
         event(new Registered($user));
 
         Auth::login($user);

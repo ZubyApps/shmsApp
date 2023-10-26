@@ -1,6 +1,6 @@
 import { Modal } from "bootstrap"
 import http from "../http"
-import { getDivData, clearDivValues, clearValidationErrors, getSelctedText } from "../helpers"
+import { getSelctedText } from "../helpers"
 
 
 window.addEventListener('DOMContentLoaded', function(){
@@ -23,7 +23,9 @@ window.addEventListener('DOMContentLoaded', function(){
                  
             allSponsorInputsDiv.classList.remove('d-none')
         }
-        else {allSponsorInputsDiv.classList.add('d-none') 
-        registrationBillDiv1.classList.add('d-none')}
+        else {
+            allSponsorInputsDiv.classList.add('d-none') 
+            registrationBillDiv1.classList.add('d-none')
+        }
     })
 })
