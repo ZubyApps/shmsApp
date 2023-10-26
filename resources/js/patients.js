@@ -235,8 +235,7 @@ window.addEventListener('DOMContentLoaded', function(){
                     editBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {
-                    console.log(error)
-                    //alert(error.response.data.message)
+                    editBtn.removeAttribute('disabled')
                 })
         }
 
@@ -250,7 +249,7 @@ window.addEventListener('DOMContentLoaded', function(){
                         }
                         initiateVisitBtn.removeAttribute('disabled')
                     })
-                    //initiatePatientModal.show()
+                    
         }
 
         if (deleteBtn){
@@ -266,6 +265,7 @@ window.addEventListener('DOMContentLoaded', function(){
                     })
                     .catch((error) => {
                         alert(error)
+                        deleteBtn.removeAttribute('disabled')
                     })
             }
             
@@ -274,7 +274,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
     registerPatientBtn.addEventListener('click', function () {
         const sponsor = getPatientSponsorDatalistOptionId(newPatientModal, newPatientSponsorInputEl, newPatientSponsorDatalistEl)
-    
+        registerPatientBtn.setAttribute('disabled', 'disabled')
         let data = {...getDivData(newPatientModal._element), sponsor }
 
         http.post('/patients', {...data}, {"html": newPatientModal._element})
@@ -284,10 +284,12 @@ window.addEventListener('DOMContentLoaded', function(){
                 clearDivValues(newPatientModal._element)
                 allPatientsTable.draw()
             }
+            registerPatientBtn.removeAttribute('disabled')
         })
         .catch((error) => {
             console.log(error)
             alert(error.response.data.message)
+            registerPatientBtn.removeAttribute('disabled')
         })
     })
 
@@ -325,12 +327,6 @@ window.addEventListener('DOMContentLoaded', function(){
     newPatientModal._element.addEventListener('hidden.bs.modal', function () {
         
     })
-
-    // initiatePatientVisitBtn.addEventListener('click', function() {
-    //     
-    // })
-
-
 })
 
 function openPatientModal(modal, button, {id, sponsorId, sponsorCategoryId, ...data}) {

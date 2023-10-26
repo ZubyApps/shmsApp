@@ -24,7 +24,6 @@ class SponsorCategoryResource extends JsonResource
             'approval'          => $this->approval === 0 ? 'false' : 'true',
             'billMatrix'        => $this->bill_matrix,
             'balanceRequired'   => $this->balance_required === 0 ? 'false' : 'true',
-            'createdAt'         => Carbon::parse($this->created_at)->format('d/m/Y')
         ];
     }
 }

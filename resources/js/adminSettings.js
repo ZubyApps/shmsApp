@@ -93,7 +93,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     editBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {
-                    alert(error.response.data.data.message)
+                    alert(error)
                 })
         }
 
@@ -133,6 +133,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
         .catch((error) => {
             alert(error.response.data.message)
+            createSponsorCategoryBtn.removeAttribute('disabled')
         })
 
     })
@@ -151,6 +152,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
         .catch((error) => {
             alert(error.response.data.message)
+            saveSponsorCategoryBtn.removeAttribute('disabled')
         })
     })
 
