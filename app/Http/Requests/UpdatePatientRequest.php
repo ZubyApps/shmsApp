@@ -29,7 +29,6 @@ class UpdatePatientRequest extends FormRequest
                 "address"           => ['nullable', 'max:500'],
                 "bloodGroup"        => ['nullable'],
                 "dateOfBirth"       => ['required'],
-                "email"             => ['nullable', 'unique:'.Patient::class],
                 "ethnicGroup"       => ['nullable'],
                 "firstName"         => ['required'],
                 "genotype"          => ['nullable'],

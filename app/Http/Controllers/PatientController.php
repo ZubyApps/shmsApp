@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Requests\UpdatePatientRequest;
+use App\Http\Resources\InitiateVisitResource;
 use App\Http\Resources\PatientResource;
 use App\Models\Patient;
 use App\Services\DatatablesService;
@@ -109,6 +110,11 @@ class PatientController extends Controller
     public function update(UpdatePatientRequest $request, Patient $patient)
     {
         return $this->patientService->update($request, $patient, $request->user());
+    }
+
+    public function initiateVisit(Patient $patient)
+    {
+        return new InitiateVisitResource($patient);
     }
 
     /**

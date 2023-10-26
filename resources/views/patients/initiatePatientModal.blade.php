@@ -10,9 +10,11 @@ $patientName = 'Mohammed Hassan Suleiman';
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="input-group-text mb-2 px-2 fw-semibold" style="white-space: wrap;"> 
-                       <p class="mb-1"> Intiate <a href="#" class="text-primary text-decoration-none">{{ $cardNumber . ' ' . $patientName }}'s</a> visit?</p>  
-                </div>
+                <x-form-div class="col-xl-12">
+                    <x-input-span>Initiate</x-input-span>
+                    <x-form-input name="patientIds" class="" value=""/>
+                    <x-input-span>visit?</x-input-span>
+                </x-form-div>
             </div>
             <div class="modal-footer px-5">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">

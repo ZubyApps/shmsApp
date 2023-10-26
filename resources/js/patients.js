@@ -248,8 +248,9 @@ window.addEventListener('DOMContentLoaded', function(){
                     if (response.status >= 200 || response.status <= 300) {
                         openPatientModal(initiatePatientModal, confirmVisitBtn, response.data.data)
                         }
+                        initiateVisitBtn.removeAttribute('disabled')
                     })
-                    initiatePatientModal.show()
+                    //initiatePatientModal.show()
         }
 
         if (deleteBtn){
@@ -333,9 +334,10 @@ window.addEventListener('DOMContentLoaded', function(){
 })
 
 function openPatientModal(modal, button, {id, sponsorId, sponsorCategoryId, ...data}) {
+ 
     for (let name in data) {
-        const nameInput = modal._element.querySelector(`[name="${ name }"]`)
-        
+        const nameInput = modal._element.querySelector(`[id="${ name }"]`)
+
         nameInput.value = data[name]
     }
 

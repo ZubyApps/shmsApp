@@ -72,6 +72,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/{patient}', [PatientController::class, 'edit']);
         Route::delete('/{patient}', [PatientController::class, 'destroy']);
         Route::post('/{patient}', [PatientController::class, 'update']);
+        Route::get('/initiate/{patient}', [PatientController::class, 'initiateVisit']);
+        Route::post('/initiate/{patient}', [PatientController::class, 'confirmVisit']);
     })->name('Patients');
     
 });
