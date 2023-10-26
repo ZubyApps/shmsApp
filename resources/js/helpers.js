@@ -160,7 +160,7 @@ function getDatalistOptionId(modal, inputEl, datalistEl) {
 
 function openModals(modal, button, {id, ...data}) {
     for (let name in data) {
-        console.log(name)
+
         const nameInput = modal._element.querySelector(`[name="${ name }"]`)
         
         nameInput.value = data[name]
