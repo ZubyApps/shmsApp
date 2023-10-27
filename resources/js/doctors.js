@@ -333,7 +333,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                 </button>
                             </div>`
                         } else {
-                            `
+                            return `
                             <div class="d-flex flex-">
                                 <button class=" btn btn-outline-primary consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
                                     ${row.doctor}
@@ -363,6 +363,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         } else{
                             openModals(newConsultationModal, newConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                         }
+                        waitingListTable.draw()
                     }
                     consultBtn.removeAttribute('disabled')
                 })
