@@ -5,7 +5,7 @@ import { consultationDetails, items } from "./data"
 import { clearDivValues, clearItemsList, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, openModals } from "./helpers"
 import { doctorsReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
-import jQuery from "jquery";
+import jQuery, { error } from "jquery";
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
@@ -126,15 +126,27 @@ window.addEventListener('DOMContentLoaded', function () {
         saveBtn.addEventListener('click', function () {
             consultationDiv.forEach(div => {
                 if (div.dataset.div === saveBtn.dataset.btn) {
-                    console.log(getDivData(div))
+                    const visitId = saveBtn.getAttribute('data-id')
 
-                    toggleAttributeLoop(querySelectAllTags(div, ['input, select, textarea']), 'disabled')
+                    let data = {...getDivData(div), visitId}
+                    console.log(data)
+                    http.post('/consultation', {...data}, {"html": div})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            toggleAttributeLoop(querySelectAllTags(div, ['input, select, textarea']), 'disabled')
                     
-                    saveBtn.innerHTML === '<i class="bi bi-pencil"></i> Edit' ? 
-                    saveBtn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Save` : 
-                    saveBtn.innerHTML = '<i class="bi bi-pencil"></i> Edit'
+                            saveBtn.innerHTML === '<i class="bi bi-pencil"></i> Edit' ? 
+                            saveBtn.innerHTML = `<i class="bi bi-check-circle me-1"></i> Save` : 
+                            saveBtn.innerHTML = '<i class="bi bi-pencil"></i> Edit'
 
-                    div.parentElement.querySelector('#investigationAndManagementDiv').classList.remove('d-none')
+                            div.parentElement.querySelector('#investigationAndManagementDiv').classList.remove('d-none')
+                            waitingListTable.draw()
+                        }
+                        saveBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                    })
                 }
             })
         })
@@ -353,7 +365,6 @@ window.addEventListener('DOMContentLoaded', function () {
             const visitId       = consultBtn.getAttribute('data-id')
             const patientId     = consultBtn.getAttribute('data-patientId')
             const patientType   = consultBtn.getAttribute('data-patientType')
-            console.log(visitId, patientId, patientType)
 
             http.post(`/visits/consult/${ visitId }`, {patientId, patientType})
                 .then((response) => {

@@ -14,10 +14,10 @@
                         </div>
                         <div class="mb-2 form-control">
                             <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
-                            <div class="row" id="knownClinicalInfoDiv" data-div="new">
+                            <div class="row" id="knownClinicalInfoDiv" data-div="anc">
                                 @include('patients.partials.known-clinical-info', ['disabled' => true])
                                 <div class="d-flex justify-content-center">
-                                    <button type="button" id="updateKnownClinicalInfoBtn" class="btn bg-primary text-white" data-btn="new">
+                                    <button type="button" id="updateKnownClinicalInfoBtn" class="btn bg-primary text-white" data-btn="anc">
                                         <i class="bi bi-arrow-up-circle"></i>
                                         Update
                                     </button>
@@ -25,7 +25,6 @@
                             </div>
                         </div>
                         <div class="card card-body">
-                            <div id="consultationDiv" data-div="new">
                                 <div class="mb-2 form-control">
                                     <x-form-span>Vital Signs</x-form-span>
                                     <div class="row overflow-auto m-1">
@@ -62,11 +61,11 @@
                                         </table>
                                     </div>
                                     <div class="row">
-                                        <div class="row d-none" id="addVitalsignsDiv" data-div="new">
+                                        <div class="row d-none" id="addVitalsignsDiv" data-div="anc">
                                             @include('vitalsigns.vitalsigns', ['disabled' => true])
                                         </div>
                                         <div class="d-flex justify-content-center">
-                                            <button type="button" id="addVitalsignsBtn" data-btn="new"
+                                            <button type="button" id="addVitalsignsBtn" data-btn="anc"
                                                 class="btn btn-primary">
                                                 <i class="bi bi-plus-circle me-1"></i>
                                                 add
@@ -74,7 +73,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="mb-2 form-control">
+                            <div class="consultationParentDiv">
+                                <div class="mb-2 form-control " id="consultationDiv" data-div="anc">
                                     <x-form-label>Consultation</x-form-label>
                                     <x-form-div class="col-xl-12">
                                         <x-input-span id="specialistDesignationLabel">Consultant Specialist<br />
@@ -132,9 +132,9 @@
                                         </x-form-div>
                                         <x-form-div class="col-xl-12">
                                             <x-input-span>Search <br />for ICD11 Diagnosis</x-input-span>
-                                            <x-icd11-diagnosis-input :number="1" />
+                                            <x-icd11-diagnosis-input :number="4" />
                                         </x-form-div>
-                                        <x-icd11-diagnosis-div :number="1" />
+                                        <x-icd11-diagnosis-div :number="4" />
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="diagnosisLabel">Selected <br />ICD11 <br />
                                                 Diagnosis</x-input-span>
@@ -153,7 +153,7 @@
                                                 cols="10" rows="3"></x-form-textarea>
                                         </x-form-div>
                                     </div>
-                                    {{-- <div class="row my-2">
+                                    <div class="row my-2">
                                         <x-form-div class="col-xl-4">
                                             <x-input-span id="admitLabel">Admit?</x-input-span>
                                             <select class="form-select form-select-md" name="admit">
@@ -187,90 +187,60 @@
                                                 <option value="Bed 3">Bed 3</option>
                                             </select>
                                         </x-form-div>
-                                    </div> --}}
+                                    </div>
                                     <div class="d-flex justify-content-center">
-                                        <button type="button" id="saveConsultationBtn" data-btn="new"
+                                        <button type="button" id="saveConsultationBtn" data-btn="anc"
                                             class="btn bg-primary text-white">
                                             <i class="bi bi-check-circle me-1"></i>
                                             Save
                                         </button>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="d-none" id="investigationAndManagementDiv" data-div="new">
-                                <div class="mb-2 form-control">
-                                    <x-form-span>Investigation & Management</x-form-span>
-                                    <div class="row">
-                                        <x-form-div class="col-xl-6">
-                                            <x-input-span id="itemLabel">Item</x-input-span>
-                                            <x-form-input type="search" name="item" id="item"
-                                                placeholder="search" />
-                                            <datalist name="item" type="text"
-                                                class="decoration-none"></datalist>
-                                        </x-form-div>
-                                        <x-form-div class="col-xl-6">
-                                            <x-input-span id="prescriptionLabel">Prescription</x-input-span>
-                                            <x-form-input type="text" name="prescription" id="prescription"
-                                                placeholder="eg: 5mg BD x5" />
-                                        </x-form-div>
-                                        <x-form-div class="col-xl-6">
-                                            <x-input-span id="quantityLabel">Quantity</x-input-span>
-                                            <x-form-input type="number" name="quantity" id="quantity" placeholder="" />
-                                        </x-form-div>
+                                <div class="d-none" id="investigationAndManagementDiv" data-div="anc">
+                                    <div class="mb-2 form-control">
+                                        <x-form-span>Investigation & Management</x-form-span>
+                                        <div class="row">
+                                            <x-form-div class="col-xl-6">
+                                                <x-input-span id="itemLabel">Item</x-input-span>
+                                                <x-form-input type="search" name="item" id="item"
+                                                    placeholder="search" />
+                                                <datalist name="item" type="text"
+                                                    class="decoration-none"></datalist>
+                                            </x-form-div>
+                                            <x-form-div class="col-xl-6">
+                                                <x-input-span id="prescriptionLabel">Prescription</x-input-span>
+                                                <x-form-input type="text" name="prescription" id="prescription"
+                                                    placeholder="eg: 5mg BD x5" />
+                                            </x-form-div>
+                                            <x-form-div class="col-xl-6">
+                                                <x-input-span id="quantityLabel">Quantity</x-input-span>
+                                                <x-form-input type="number" name="quantity" id="quantity" placeholder="" />
+                                            </x-form-div>
+                                        </div>
+                                        <div class="d-flex justify-content-center">
+                                            <button type="button" id="addInvestigationAndManagmentBtn" data-btn="anc"
+                                                class="btn btn-primary">
+                                                add
+                                                <i class="bi bi-prescription"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="d-flex justify-content-center">
-                                        <button type="button" id="addInvestigationAndManagmentBtn" data-btn="new"
-                                            class="btn btn-primary">
-                                            add
-                                            <i class="bi bi-prescription"></i>
-                                        </button>
+                                    <div class="mb-2 form-control">
+                                        <table id="prescriptionTable"
+                                            class="table table-hover align-middle table-sm bg-primary">
+                                            <thead>
+                                                <tr>
+                                                    <th>S/N</th>
+                                                    <th>Billed at</th>
+                                                    <th>Item</th>
+                                                    <th>Prescription</th>
+                                                    <th>Qty</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
                                     </div>
-                                </div>
-                                <div class="mb-2 form-control">
-                                    <table id="prescriptionTable"
-                                        class="table table-hover align-middle table-sm bg-primary">
-                                        <thead>
-                                            <tr>
-                                                <th>S/N</th>
-                                                <th>Billed at</th>
-                                                <th>Item</th>
-                                                <th>Prescription</th>
-                                                <th>Qty</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>12/09/2023 11:02pm</td>
-                                                <td>N/S 500mls</td>
-                                                <td>500mls 12hrly x2</td>
-                                                <td></td>
-                                                <td><button class="btn btn-outline-primary deleteBtn"><i
-                                                            class="bi bi-trash"></i></button></td>
-                                            </tr>
-                                            <tr>
-                                                <td>2</td>
-                                                <td>12/09/2023 11:15pm</td>
-                                                <td>5% mls Syringe</td>
-                                                <td></td>
-                                                <td>4</td>
-                                                <td><button class="btn btn-outline-primary deleteBtn"><i
-                                                            class="bi bi-trash"></i></button></td>
-                                            </tr>
-                                        </tbody>
-                                        <tfoot class="fw-bolder text-primary">
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
                                 </div>
                             </div>
                         </div>

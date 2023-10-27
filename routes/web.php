@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HmoController;
 use App\Http\Controllers\InvestigationsController;
@@ -82,6 +83,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/load', [VisitController::class, 'load']);
         Route::post('/consult/{visit}', [VisitController::class, 'consult']);
     })->name('Visits');
+
+    Route::prefix('consultation')->group(function () {
+        Route::post('', [ConsultationController::class, 'store']);
+    });
     
 });
 

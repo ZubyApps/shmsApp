@@ -29,7 +29,6 @@ class VisitService
        $visit->update([
                 "patient_type"          => $data->patientType,
         ]);
-
         return $visit;
     }
 
@@ -40,18 +39,17 @@ class VisitService
 
         if (! empty($params->searchTerm)) {
             return $this->visit
+                        ->Where('status', false)
                         ->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        // ->orWhere('middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        // ->orWhere('phone', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        // ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return $this->visit
+                    ->where('status', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
@@ -76,9 +74,11 @@ class VisitService
          };
     }
 
-    public function initiateConsultation(Visit $visit, User $user) {
+    public function initiateConsultation(Visit $visit, User $user) 
+    {
         $visit->update([
             'doctor'    =>  $user->username
         ]);
+        return response()->json(["id" => $visit->id]);
     }
 }

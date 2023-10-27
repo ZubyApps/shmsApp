@@ -33,8 +33,8 @@
                                             placeholder="if applicable..." />
                                     </x-form-div>
                                     <x-form-div class="col-xl-6">
-                                        <x-input-span id="complainLabel">Complain</x-input-span>
-                                        <x-form-textarea name="complain" id="complain" cols="10"
+                                        <x-input-span id="complaintLabel">Complaint</x-input-span>
+                                        <x-form-textarea name="complaint" id="complaint" cols="10"
                                             rows="3"></x-form-textarea>
                                     </x-form-div>
                                     <x-form-div class="col-xl-6">
