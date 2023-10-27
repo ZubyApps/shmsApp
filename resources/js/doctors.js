@@ -335,7 +335,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         } else {
                             return `
                             <div class="d-flex flex-">
-                                <button class=" btn btn-white consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
+                                <button class=" btn btn-white text-primary consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
                                     ${row.doctor}
                                 </button>
                             </div>`
