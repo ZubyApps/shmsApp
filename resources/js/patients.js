@@ -2,7 +2,7 @@ import { Modal } from "bootstrap"
 import { MaskInput } from "maska"
 import { getDivData, clearDivValues, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals } from "./helpers"
 import http from "./http"
-import jQuery from "jquery";
+import jQuery, { error } from "jquery";
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
@@ -82,9 +82,9 @@ window.addEventListener('DOMContentLoaded', function(){
                     if (row.count < 1) {
                         return `
                         <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary updateBtn" data-id="${ row.id }">
+                            <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
                             <i class="bi bi-pencil-fill"></i>
-                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn" data-id="${ row.id }">
+                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
                             <i class="bi bi-trash3-fill"></i>
                         </button>
                         </div>
@@ -148,6 +148,8 @@ window.addEventListener('DOMContentLoaded', function(){
             if (response.status >= 200 || response.status <= 300){
                 newSponsorModal.hide()
                 clearDivValues(newSponsorModal._element)
+                newSponsorModal._element.querySelector('.allSponsorInputsDiv').classList.add('d-none')
+                newSponsorModal._element.querySelector('.registrationBillDiv1').classList.add('d-none')
                 sponsorTable.draw()
             }
             createSponsorBtn.removeAttribute('disabled')
@@ -185,7 +187,7 @@ window.addEventListener('DOMContentLoaded', function(){
             {data: "name"},
             {data: "phone"},
             {data: "sex"},
-            {data: "dob"},
+            {data: "age"},
             {data: "sponsor"},
             {data: "category"},
             {data: "createdAt"},
@@ -195,13 +197,13 @@ window.addEventListener('DOMContentLoaded', function(){
                     if (row.count < 1) {
                         return `
                         <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary initiateVisitBtn" data-id="${ row.id }">
-                            <i class="bi bi-send-plus-fill"></i>
+                            <button class=" btn btn-outline-primary initiateVisitBtn tooltip-test" title="initiate visit" data-id="${ row.id }">
+                            <i class="bi bi-arrow-up-right-square-fill"></i>
                             </button>
-                            <button class="ms-1 btn btn-outline-primary updateBtn" data-id="${ row.id }">
+                            <button class="ms-1 btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
                             <i class="bi bi-pencil-fill"></i>
                             </button>
-                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn" data-id="${ row.id }">
+                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
                             <i class="bi bi-trash3-fill"></i>
                             </button>
                         </div>
@@ -220,22 +222,22 @@ window.addEventListener('DOMContentLoaded', function(){
     })
 
     document.querySelector('#allPatientsTable').addEventListener('click', function (event) {
-        const editBtn    = event.target.closest('.updateBtn')
+        const updateBtn    = event.target.closest('.updateBtn')
         const deleteBtn  = event.target.closest('.deleteBtn')
         const initiateVisitBtn  = event.target.closest('.initiateVisitBtn')
 
-        if (editBtn) {
-            editBtn.setAttribute('disabled', 'disabled')
-            const patientId = editBtn.getAttribute('data-id')
+        if (updateBtn) {
+            updateBtn.setAttribute('disabled', 'disabled')
+            const patientId = updateBtn.getAttribute('data-id')
             http.get(`/patients/${ patientId }`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         openPatientModal(updatePatientModal, savePatientBtn, response.data.data)
                     }
-                    editBtn.removeAttribute('disabled')
+                    updateBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {
-                    editBtn.removeAttribute('disabled')
+                    updateBtn.removeAttribute('disabled')
                 })
         }
 
@@ -282,12 +284,13 @@ window.addEventListener('DOMContentLoaded', function(){
             if (response.status >= 200 || response.status <= 300){
                 newPatientModal.hide()
                 clearDivValues(newPatientModal._element)
+                newPatientModal._element.querySelector('.allPatientInputsDiv').classList.add('d-none')
+                newPatientModal._element.querySelector('.familyRegistrationBillOption')
                 allPatientsTable.draw()
             }
             registerPatientBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            console.log(error)
             alert(error.response.data.message)
             registerPatientBtn.removeAttribute('disabled')
         })
@@ -296,9 +299,9 @@ window.addEventListener('DOMContentLoaded', function(){
     savePatientBtn.addEventListener('click', function (event) {
         const patient = event.currentTarget.getAttribute('data-id')
         saveSponsorBtn.setAttribute('disabled', 'disabled')
+
         let sponsor = getPatientSponsorDatalistOptionId(updatePatientModal, updatePatientSponsorInputEl, updatePatientSponsorDatalistEl)
         let data = {...getDivData(updatePatientModal._element), sponsor }
-        console.log(data)
 
         http.post(`/patients/${patient}`, {...data}, {"html": updateSponsorModal._element})
         .then((response) => {
@@ -311,6 +314,23 @@ window.addEventListener('DOMContentLoaded', function(){
         .catch((error) => {
             savePatientBtn.removeAttribute('disabled')
             alert(error.response.data.message)
+        })
+    })
+
+    confirmVisitBtn.addEventListener('click', function () {
+
+        confirmVisitBtn.setAttribute('disabled', 'disabled')
+        const patientId = confirmVisitBtn.getAttribute('data-id')
+
+        http.post('/visits', {patientId})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                initiatePatientModal.hide()
+                allPatientsTable.draw()
+            }
+            confirmVisitBtn.removeAttribute('disabled')
+        }).catch((error) => {
+            confirmVisitBtn.removeAttribute('disabled')
         })
     })
     

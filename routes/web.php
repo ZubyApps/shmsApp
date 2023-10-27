@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\SponsorCategoryController;
 use App\Http\Controllers\SponsorController;
+use App\Http\Controllers\VisitController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -75,6 +76,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/initiate/{patient}', [PatientController::class, 'initiateVisit']);
         Route::post('/initiate/{patient}', [PatientController::class, 'confirmVisit']);
     })->name('Patients');
+
+    Route::prefix('visits')->group(function () {
+        Route::post('', [VisitController::class, 'store']);
+        Route::get('/load', [VisitController::class, 'load']);
+    })->name('Visits');
     
 });
 

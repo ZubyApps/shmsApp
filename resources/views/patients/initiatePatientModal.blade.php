@@ -12,7 +12,7 @@ $patientName = 'Mohammed Hassan Suleiman';
             <div class="modal-body">
                 <x-form-div class="col-xl-12">
                     <x-input-span>Initiate</x-input-span>
-                    <x-form-input name="patientIds" class="" value="" readonly/>
+                    <x-form-input name="patientId" class="" value="" readonly/>
                     <x-input-span>visit?</x-input-span>
                 </x-form-div>
             </div>

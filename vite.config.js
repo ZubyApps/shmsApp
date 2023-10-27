@@ -6,7 +6,6 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.scss',
-                'resources/css/app.css',
                 'resources/css/login.scss',
                 'resources/css/header.scss',
                 'resources/css/home.scss',
@@ -21,6 +20,7 @@ export default defineConfig({
                 'resources/js/pharmacy.js',
                 'resources/js/billing.js',
                 'resources/js/adminSettings.js',
+                'resources/js/visits.js',
             ],
             refresh: true,
         }),

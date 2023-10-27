@@ -15,7 +15,8 @@ class InitiateVisitResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'patientIds' => $this->card_no . ' ' . $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name."'s"
+            'id'            => $this->id,
+            'patientId'    => $this->card_no . ' ' . $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name."'s"
         ];
     }
 }

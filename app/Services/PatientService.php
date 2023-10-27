@@ -114,11 +114,11 @@ class PatientService
                 'name'              => $patient->first_name.' '. $patient->middle_name.' '.$patient->last_name,
                 'phone'             => $patient->phone,
                 'sex'               => $patient->sex,
-                'dob'               => Carbon::createFromFormat('d/m/Y', Carbon::parse($patient->date_of_birth)->format('d/m/Y'))->age.'yrs',
+                'age'               => (new Carbon($patient->date_of_birth))->age.'yrs',
                 'sponsor'           => $patient->sponsor->name,
                 'category'          => $patient->sponsor->sponsorCategory->name,
-                'createdAt'         => Carbon::parse($patient->created_at)->format('d/m/Y'),
-                'count'             => 0//$patient->visits()->count()
+                'createdAt'         => (new Carbon($patient->created_at))->format('d/m/Y'),
+                'count'             => $patient->visits()->count()
             ];
          };
     }

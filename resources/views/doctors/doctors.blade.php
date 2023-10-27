@@ -24,32 +24,22 @@
                         <thead>
                             <tr>
                                 <th>Patient</th>
+                                <th>Sex</th>
                                 <th>Age</th>
                                 <th>Sponsor</th>
-                                <th>Consult</th>
+                                <th>Came</th>
+                                <th>action</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>SH21/4012 Joesphine Ene Odeh</td>
-                                <td>25</td>
-                                <td>Alex Odeh Family</td>
-                                <td><i class="btn btn-outline-none text-primary bi bi-clipboard-plus" id="newConsultationBtn" data-patientType="ANC"></i></td>
-                            </tr>
-                            <tr>
-                                <td>SH23/7865 Patrick Abiodun Aso</td>
-                                <td>32</td>
-                                <td>Axe Mansard HMO</td>
-                                <td><span class="badge rounded-pill text-bg-light text-secondary p-2" id="newConsultationBtn" data-patientType="Regular">Dr Toby</span></td>
-                            </tr>
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
         </div>
+        {{-- @include('visits.waitingList') --}}
 
         <div class="text-start mb-4">
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas"
+            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingListBtn"
                 data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
                 <i class="bi bi-list-check"></i>
                 Waiting List

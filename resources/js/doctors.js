@@ -2,8 +2,21 @@ import { Modal, Collapse } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
 import { consultationDetails, items } from "./data"
-import { clearDivValues, clearItemsList, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent } from "./helpers"
+import { clearDivValues, clearItemsList, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, openModals } from "./helpers"
 import { doctorsReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
+import http from "./http";
+import jQuery from "jquery";
+import jszip from 'jszip';
+import pdfmake from 'pdfmake';
+import DataTable from 'datatables.net-bs5';
+import 'datatables.net-buttons-bs5';
+import 'datatables.net-buttons/js/buttons.colVis.mjs';
+import 'datatables.net-buttons/js/buttons.html5.mjs';
+import 'datatables.net-buttons/js/buttons.print.mjs';
+import 'datatables.net-fixedcolumns-bs5';
+import 'datatables.net-fixedheader-bs5';
+import 'datatables.net-select-bs5';
+import 'datatables.net-staterestore-bs5';
 
 window.addEventListener('DOMContentLoaded', function () {
     const newConsultationModal              = new Modal(document.getElementById('newConsultationModal'))
@@ -32,6 +45,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const addVitalsignsBtn                  = document.querySelectorAll('#addVitalsignsBtn')
     const consultationDiv                   = document.querySelectorAll('#consultationDiv')
     const saveConsultationBtn               = document.querySelectorAll('#saveConsultationBtn')
+
+    const waitingListBtn                    = document.querySelector('#waitingListBtn')
 
     // Auto textarea adjustment
     const textareaHeight = 90;
@@ -65,6 +80,10 @@ window.addEventListener('DOMContentLoaded', function () {
                 newConsultationModal.show()
             }
         })
+    })
+
+    waitingListBtn.addEventListener('click', function () {
+        waitingListTable.draw()
     })
 
     // manipulating all known clinical info div
@@ -290,7 +309,86 @@ window.addEventListener('DOMContentLoaded', function () {
         })
         
     })
+
+    const waitingListTable = new DataTable('#waitingListTable', {
+        serverSide: true,
+        ajax:  '/visits/load',
+        orderMulti: true,
+        search:true,
+        columns: [
+            {data: "patient"},
+            {data: "sex"},
+            {data: "age"},
+            {data: "sponsor"},
+            {data: "came"},
+            {data: row => function () {
+                    if (row.doctor === ''){
+                        return `
+                            <div class="d-flex flex-">
+                                <button class=" btn btn-outline-primary consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
+                                    <i class="bi bi-clipboard2-plus-fill"></i>
+                                </button>
+                                <button class="ms-1 btn btn-outline-primary removeBtn tooltip-test" title="update" data-id="${ row.id }">
+                                <i class="bi bi-x-circle-fill"></i>
+                                </button>
+                            </div>`
+                        } else {
+                            row.doctor
+                        }
+            }},
+        ]
+    });
+
+    document.querySelector('#waitingListTable').addEventListener('click', function (event) {
+        const consultBtn    = event.target.closest('.consultBtn')
+        const removeBtn  = event.target.closest('.removeBtn')
+
+        if (consultBtn) {
+            consultBtn.setAttribute('disabled', 'disabled')
+            const visitId       = consultBtn.getAttribute('data-id')
+            const patientId     = consultBtn.getAttribute('data-patientId')
+            const patientType   = consultBtn.getAttribute('data-patientType')
+            console.log(visitId, patientId, patientType)
+
+            http.post(`/visits/consult/${ visitId }`, {patientId, patientType})
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        if (patientType === 'ANC'){
+                            openModals(newAncConsultationModal, '', response.data)
+                        } else{
+                            openModals(newAncConsultationModal, '', response.data)
+                        }
+                    }
+                    consultBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    alert(error)
+                })
+        }
+
+        if (removeBtn){
+            removeBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Category?')) {
+                const sponsorCategoryId = removeBtn.getAttribute('data-id')
+                http.delete(`/sponsorcategory/${sponsorCategoryId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            waitingListTable.draw()
+                        }
+                        removeBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                    })
+            }
+            
+        }
+    })
+
+
 })
+
+
 
 function getItemsFromInput(input, data) {
     input.addEventListener('keyup', function() {

@@ -1,6 +1,6 @@
 import { Modal } from "bootstrap"
 import { MaskInput } from "maska"
-import { getDivData, clearDivValues, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId } from "../helpers"
+import { getDivData, clearDivValues, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, handleValidationErrors } from "../helpers"
 import http from "../http"
 
 
@@ -38,6 +38,9 @@ window.addEventListener('DOMContentLoaded', function(){
     const oldCardNumber                     = document.querySelector('.oldCardNumber')
     const ancCardNumber                     = document.querySelector('.ancCardNumber')
 
+    const phone                             = document.querySelector('#phone')
+    const nextOfKinPhone                    = document.querySelector('#nextOfKinPhone')
+
     updateSponsorCategoryInput.addEventListener('change', function() {
         if (updateSponsorCategoryInput.value) {
             console.log('firedupdate')
@@ -47,7 +50,17 @@ window.addEventListener('DOMContentLoaded', function(){
             })
         }
     })
-        
+    
+    nextOfKinPhone.addEventListener('input', function () {
+        console.log('ran')
+        if (phone.value === nextOfKinPhone.value) {
+            const message = {"nextOfKinPhone": ["This number must be different from Patient's phone number"]}
+                            
+            handleValidationErrors(message, allPatientInputsDiv)
+        } else {
+            clearValidationErrors(allPatientInputsDiv)
+        }
+    })
 
     newSponsorCategoryInput.addEventListener('change', function() {
             if (newSponsorCategoryInput.value) {
@@ -196,7 +209,7 @@ window.addEventListener('DOMContentLoaded', function(){
                     break;
             }
         } else{
-            familyRegistrationBillOption.removeAttribute('disabled', 'disabled')
+            familyRegistrationBillOption.removeAttribute('disabled')
             allPatientInputsDiv.classList.add('d-none')
             newCardNumber.value = ''
             oldCardNumber.value = ''
@@ -204,4 +217,6 @@ window.addEventListener('DOMContentLoaded', function(){
 
         }
     })
+
+
 })

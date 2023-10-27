@@ -165,7 +165,7 @@
 
                                 <x-form-div>
                                     <x-input-span >Religion</x-input-span>
-                                    <x-form-input name="religion" :value="old('religion')"/>
+                                    <x-form-input name="religion" />
                                 </x-form-div>
 
                                 <x-form-div>
@@ -179,18 +179,18 @@
                             <!-- first row -->
                             <div class="row">
                                 <x-form-div>
-                                    <x-input-span >Full Name</x-input-span>
-                                    <x-form-input name="nextOfKin" />
+                                    <x-input-span >Full Name<x-required-span /></x-input-span>
+                                    <x-form-input name="nextOfKin" id="nextOfKin"/>
                                 </x-form-div>
 
                                 <x-form-div>
-                                    <x-input-span >Phone Number</x-input-span>
-                                    <x-form-input type="tel" name="nextOfKinPhone"/>
+                                    <x-input-span >Phone Number<x-required-span /></x-input-span>
+                                    <x-form-input type="tel" name="nextOfKinPhone" id="nextOfKinPhone"/>
                                 </x-form-div>
 
                                 <x-form-div>
-                                    <x-input-span >Relationship</x-input-span>
-                                    <x-select-nok name="nextOfKinRship" :value="old('nextOfKinRship')"></x-select-nok>
+                                    <x-input-span >Relationship<x-required-span /></x-input-span>
+                                    <x-select-nok name="nextOfKinRship"></x-select-nok>
                                 </x-form-div>
                             </div>
                         </div>

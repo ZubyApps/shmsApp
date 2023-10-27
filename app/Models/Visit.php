@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Patient extends Model
+class Visit extends Model
 {
     use HasFactory;
 
@@ -16,13 +16,8 @@ class Patient extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function sponsor()
+    public function patient()
     {
-        return $this->belongsTo(Sponsor::class);
-    }
-
-    public function visits()
-    {
-        return $this->hasMany(Visit::class);
+        return $this->belongsTo(Patient::class);
     }
 }

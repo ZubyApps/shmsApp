@@ -78,7 +78,7 @@ class SponsorCategoryService
                 'approval'          => $sponsorCategory->approval === 0 ? 'false' : 'true',
                 'billMatrix'        => $sponsorCategory->bill_matrix,
                 'balanceRequired'   => $sponsorCategory->balance_required === 0 ? 'false' : 'true',
-                'createdAt'         => Carbon::parse($sponsorCategory->created_at)->format('d/m/Y'),
+                'createdAt'         => (new Carbon($sponsorCategory->created_at))->format('d/m/Y'),
                 'count'             => $sponsorCategory->sponsors()->count()
             ];
          };

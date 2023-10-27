@@ -104,7 +104,9 @@ function dispatchEvent(tag, event) {
 }
 
 function handleValidationErrors(errors, domElement) {
+    console.log(errors)
     for (const name in errors) {
+        console.log(name)
         const element = domElement.querySelector(`[name="${ name }"]`)
         
         element.classList.add('is-invalid')

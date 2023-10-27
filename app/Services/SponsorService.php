@@ -22,7 +22,7 @@ class SponsorService
             'name'                  => $data->name,
             'phone'                 => $data->phone,
             'email'                 => $data->email,
-            'registration_bill'     => $data->registerBill,
+            'registration_bill'     => $data->registrationBill,
             'sponsor_category_id'   => $data->category
         ]);
     }
@@ -76,7 +76,7 @@ class SponsorService
                 'category'          => $sponsor->sponsorCategory->name,
                 'approval'          => $sponsor->sponsorCategory->approval === 0 ? 'false' : 'true',
                 'registrationBill'  => $sponsor->registration_bill,
-                'createdAt'         => Carbon::parse($sponsor->created_at)->format('d/m/Y'),
+                'createdAt'         => (new Carbon($sponsor->created_at))->format('d/m/Y'),
                 'count'             => $sponsor->patients()->count()
             ];
          };
