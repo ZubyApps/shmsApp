@@ -80,6 +80,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('visits')->group(function () {
         Route::post('', [VisitController::class, 'store']);
         Route::get('/load', [VisitController::class, 'load']);
+        Route::get('/consult/{visit}', [VisitController::class, 'consult']);
     })->name('Visits');
     
 });

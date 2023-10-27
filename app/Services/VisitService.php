@@ -73,4 +73,10 @@ class VisitService
             ];
          };
     }
+
+    public function initiateConsultation(Visit $visit, User $user) {
+        $visit->update([
+            'doctor'    =>  $user->firstname
+        ]);
+    }
 }

@@ -328,12 +328,17 @@ window.addEventListener('DOMContentLoaded', function () {
                                 <button class=" btn btn-outline-primary consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
                                     <i class="bi bi-clipboard2-plus-fill"></i>
                                 </button>
-                                <button class="ms-1 btn btn-outline-primary removeBtn tooltip-test" title="update" data-id="${ row.id }">
+                                <button class="ms-1 btn btn-outline-primary removeBtn tooltip-test" title="remove" data-id="${ row.id }">
                                 <i class="bi bi-x-circle-fill"></i>
                                 </button>
                             </div>`
                         } else {
-                            row.doctor
+                            `
+                            <div class="d-flex flex-">
+                                <button class=" btn btn-outline-primary consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
+                                    ${row.doctor}
+                                </button>
+                            </div>`
                         }
             }},
         ]
@@ -356,7 +361,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         if (patientType === 'ANC'){
                             openModals(newAncConsultationModal, '', response.data)
                         } else{
-                            openModals(newAncConsultationModal, '', response.data)
+                            openModals(newConsultationModal, '', response.data)
                         }
                     }
                     consultBtn.removeAttribute('disabled')

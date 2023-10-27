@@ -58,9 +58,9 @@ class VisitController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Visit $visit)
+    public function consult(Visit $visit, Request $request)
     {
-        //
+        return $this->visitService->initiateConsultation($visit, $request->user());
     }
 
     /**
