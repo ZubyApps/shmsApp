@@ -359,9 +359,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         if (patientType === 'ANC'){
-                            openModals(newAncConsultationModal, '', response.data)
+                            openModals(newAncConsultationModal, newAncConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                         } else{
-                            openModals(newConsultationModal, '', response.data)
+                            openModals(newConsultationModal, newConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                         }
                     }
                     consultBtn.removeAttribute('disabled')
