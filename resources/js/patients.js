@@ -197,7 +197,7 @@ window.addEventListener('DOMContentLoaded', function(){
                     if (row.count < 1) {
                         return `
                         <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary initiateVisitBtn tooltip-test" title="initiate visit" data-id="${ row.id }">
+                            <button class=" btn btn-outline-primary initiateVisitBtn tooltip-test" ${row.active > 0 ? 'hidden' : ''} title="initiate visit" data-id="${ row.id }">
                             <i class="bi bi-arrow-up-right-square-fill"></i>
                             </button>
                             <button class="ms-1 btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
@@ -211,12 +211,15 @@ window.addEventListener('DOMContentLoaded', function(){
                     } else {
                         return `
                         <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary updateBtn" data-id="${ row.id }">
-                            <i class="bi bi-pencil-fill"></i>
+                            <button class=" btn btn-outline-primary initiateVisitBtn tooltip-test" ${row.active > 0 ? 'hidden' : ''} title="initiate visit" data-id="${ row.id }">
+                                <i class="bi bi-arrow-up-right-square-fill"></i>
+                            </button>
+                            <button class="ms-1 btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
+                                <i class="bi bi-pencil-fill"></i>
                             </button>
                         </div>
                     `
-                    }
+                    } 
                 }}
         ]
     })

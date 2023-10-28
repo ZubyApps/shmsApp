@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
+use App\Http\Resources\PatientBioResource;
 use App\Models\Patient;
 use App\Models\User;
 use App\Models\Visit;
@@ -19,15 +20,21 @@ class VisitService
 
     public function create(Request $data, User $user): Visit
     {
+        $patient = Patient::findOrFail($data->patientId);
+
+        $patient->update([
+            "is_active" => true
+        ]); 
+
         return $user->visits()->create([
-                "patient_id"          => $data->patientId,
+                "patient_id" => $data->patientId,
         ]);
     }
 
     public function update(Request $data, Visit $visit, User $user): Visit
     {
        $visit->update([
-                "patient_type"          => $data->patientType,
+                "patient_type"   => $data->patientType,
         ]);
         return $visit;
     }
@@ -74,11 +81,14 @@ class VisitService
          };
     }
 
-    public function initiateConsultation(Visit $visit, User $user) 
+    public function initiateConsultation(Visit $visit, Request $request) 
     {
         $visit->update([
-            'doctor'    =>  $user->username
+            'doctor'    =>  $request->user()->username
         ]);
-        return response()->json(["id" => $visit->id]);
+
+        $patient = Patient::findOrFail($request->patientId);
+
+        return response()->json(new PatientBioResource([$patient, $visit]));
     }
 }

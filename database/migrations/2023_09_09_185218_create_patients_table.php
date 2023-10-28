@@ -39,7 +39,7 @@ return new class extends Migration
             $table->string('next_of_kin_phone')->nullable();
             $table->string('blood_group')->nullable();
             $table->string('genotype')->nullable();
-            $table->string('known_conditions')->nullable();
+            $table->text('known_conditions')->nullable();
             $table->string('registration_bill')->nullable();
             $table->boolean('is_active')->default(false);
             $table->foreignIdFor(Sponsor::class);

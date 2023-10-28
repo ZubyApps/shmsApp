@@ -60,7 +60,7 @@ class VisitController extends Controller
      */
     public function consult(Visit $visit, Request $request)
     {
-        return $this->visitService->initiateConsultation($visit, $request->user());
+        return $this->visitService->initiateConsultation($visit, $request);
     }
 
     /**

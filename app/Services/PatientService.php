@@ -21,7 +21,7 @@ class PatientService
         return $user->patients()->create([
                 "patient_type"          => $data->patientType,
                 "address"               => $data->address,
-                "blood_group"           => $data->bloodgroup,
+                "blood_group"           => $data->bloodGroup,
                 "card_no"               => $data->cardNumber,
                 "date_of_birth"         => $data->dateOfBirth,
                 "email"                 => $data->email,
@@ -53,7 +53,7 @@ class PatientService
        $patient->update([
                 "patient_type"          => $data->patientType,
                 "address"               => $data->address,
-                "blood_group"           => $data->bloodgroup,
+                "blood_group"           => $data->bloodGroup,
                 "date_of_birth"         => $data->dateOfBirth,
                 "email"                 => $data->email,
                 "ethnic_group"          => $data->ethnicGroup,
@@ -79,6 +79,16 @@ class PatientService
 
         ]);
 
+        return $patient;
+    }
+
+    public function updateKnownClinicalInfo(Request $data, Patient $patient, User $user): Patient
+    {
+        $patient->update([
+                "blood_group"           => $data->bloodGroup,
+                "genotype"              => $data->genotype,
+                "known_conditions"      => $data->knownConditions,
+            ]);
         return $patient;
     }
 
@@ -118,6 +128,7 @@ class PatientService
                 'sponsor'           => $patient->sponsor->name,
                 'category'          => $patient->sponsor->sponsorCategory->name,
                 'createdAt'         => (new Carbon($patient->created_at))->format('d/m/Y'),
+                'active'            => $patient->is_active,
                 'count'             => $patient->visits()->count()
             ];
          };

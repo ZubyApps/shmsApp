@@ -93,7 +93,7 @@ function textareaHeightAdjustment(setHeight, tag){
 }
 
 function OnInput(e){
-    let setHeight = 100
+    let setHeight = 65
     this.scrollHeight < setHeight || this.value === '' ? this.style.height = setHeight + "px" : this.style.height = this.scrollHeight + "px";
 }
 

@@ -82,6 +82,19 @@ class PatientController extends Controller
     public function update(UpdatePatientRequest $request, Patient $patient)
     {
         return $this->patientService->update($request, $patient, $request->user());
+    
+    }
+
+    public function updateKnownclinicalInfo(Request $request, Patient $patient)
+    {
+        $patientResponse = $this->patientService->updateKnownClinicalInfo($request, $patient, $request->user());
+
+        return $patientResponse->only(
+            [
+                'id',
+                'blood_group' , 
+                'genotype', 
+                'known_conditions']);
     }
 
     public function initiateVisit(Patient $patient)

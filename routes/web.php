@@ -76,6 +76,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/{patient}', [PatientController::class, 'update']);
         Route::get('/initiate/{patient}', [PatientController::class, 'initiateVisit']);
         Route::post('/initiate/{patient}', [PatientController::class, 'confirmVisit']);
+        Route::patch('/knownclinicalinfo/{patient}', [PatientController::class, 'updateKnownClinicalInfo']);
     })->name('Patients');
 
     Route::prefix('visits')->group(function () {

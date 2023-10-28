@@ -14,77 +14,64 @@
                         </div>
                         <div class="mb-2 form-control">
                             <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
-                            <div class="row" id="knownClinicalInfoDiv" data-div="new">
-                                @include('patients.partials.known-clinical-info', ['disabled' => true])
-                                <div class="d-flex justify-content-center">
-                                    <button type="button" id="updateKnownClinicalInfoBtn" class="btn bg-primary text-white" data-btn="new">
-                                        <i class="bi bi-arrow-up-circle"></i>
-                                        Update
-                                    </button>
-                                </div>
+                            <div id="knownClinicalInfoDiv" data-div="new">
+                                <x-toast-successful class="col-xl-12"  id="knownClinicalInfoToast"></x-toast-successful>
+                                <div class="row">
+                                    @include('patients.partials.known-clinical-info', ['disabled' => true])
+                                    <div class="d-flex justify-content-center">
+                                        <button type="button" id="updateKnownClinicalInfoBtn"
+                                            class="btn bg-primary text-white" data-btn="new">
+                                            {{-- <i class="bi bi-arrow-up-circle"></i> --}}
+                                            Update
+                                        </button>
+                                    </div>
+                                </div>                              
+                               
                             </div>
                         </div>
                         <div class="card card-body">
-                            
-                                <div class="mb-2 form-control">
-                                    <x-form-span>Vital Signs</x-form-span>
-                                    <div class="row overflow-auto m-1">
-                                        <table id="prescriptionTable"
-                                            class="table table-hover align-middle table-sm bg-primary">
-                                            <thead>
-                                                <tr>
-                                                    <th>Temperature</th>
-                                                    <th>Blood Pressure</th>
-                                                    <th>Pulse Rate</th>
-                                                    <th>Respiratory Rate</th>
-                                                    <th>Weight</th>
-                                                    <th>Height</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>37C</td>
-                                                    <td>120/80mmgh</td>
-                                                    <td>90</td>
-                                                    <td>32</td>
-                                                    <td>94kg</td>
-                                                    <td>1.5m</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>37.1C</td>
-                                                    <td>110/80mmgh</td>
-                                                    <td>96</td>
-                                                    <td>40</td>
-                                                    <td>94kg</td>
-                                                    <td>1.5m</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                            <div class="mb-2 form-control">
+                                <x-form-span>Vital Signs</x-form-span>
+                                <div class="row overflow-auto m-1">
+                                    <table id="prescriptionTable"
+                                        class="table table-hover align-middle table-sm bg-primary">
+                                        <thead>
+                                            <tr>
+                                                <th>Temperature</th>
+                                                <th>Blood Pressure</th>
+                                                <th>Pulse Rate</th>
+                                                <th>Respiratory Rate</th>
+                                                <th>Weight</th>
+                                                <th>Height</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class="row d-none" id="addVitalsignsDiv" data-div="new">
+                                        @include('vitalsigns.vitalsigns', ['disabled' => false])
                                     </div>
-                                    <div class="row">
-                                        <div class="row d-none" id="addVitalsignsDiv" data-div="new">
-                                            @include('vitalsigns.vitalsigns', ['disabled' => false])
-                                        </div>
-                                        <div class="d-flex justify-content-center">
-                                            <button type="button" id="addVitalsignsBtn" data-btn="new"
-                                                class="btn btn-primary">
-                                                <i class="bi bi-plus-circle me-1"></i>
-                                                add
-                                            </button>
-                                        </div>
+                                    <div class="d-flex justify-content-center">
+                                        <button type="button" id="addVitalsignsBtn" data-btn="new"
+                                            class="btn btn-primary">
+                                            <i class="bi bi-plus-circle me-1"></i>
+                                            add
+                                        </button>
                                     </div>
                                 </div>
+                            </div>
                             <div class="consultationParentDiv">
                                 <div class="mb-2 form-control" id="consultationDiv" data-div="new">
                                     <x-form-label>Consultation</x-form-label>
-                                    <x-form-div class="col-xl-12">
-                                        <x-input-span id="specialistDesignationLabel">Consultant Specialist<br />
-                                            Name & Designation </x-input-span>
-                                        <x-form-input name="consultantSpecialist" value=""
-                                            placeholder="if applicable..." />
-                                    </x-form-div>
                                     <div class="row">
-                                        <x-form-div class="col-xl-12">
+                                        <x-form-div class="col-xl-6">
+                                            <x-input-span id="specialistDesignationLabel">Consultant Specialist<br />
+                                                Name & Designation </x-input-span>
+                                            <x-form-input name="consultantSpecialist" value=""
+                                                placeholder="if applicable..." />
+                                        </x-form-div>
+                                        <x-form-div class="col-xl-6">
                                             <x-input-span id="presentingComplainLabel">Presenting <br />
                                                 Complain</x-input-span>
                                             <x-form-textarea name="presentingComplain" id="presentingComplain"
@@ -92,8 +79,7 @@
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="historyOfPresentingComplainLabel">History of <br />
-                                                Presenting
-                                                <br /> Complain</x-input-span>
+                                                Presenting Complain</x-input-span>
                                             <x-form-textarea name="historyOfPresentingComplain"
                                                 id="historyOfPresentingComplain" cols="10"
                                                 rows="3"></x-form-textarea>
@@ -105,9 +91,7 @@
                                                 cols="10" rows="3"></x-form-textarea>
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
-                                            <x-input-span id="obGyneHistoryLabel">Obstetrics/<br />Gynecological
-                                                <br />
-                                                History</x-input-span>
+                                            <x-input-span id="obGyneHistoryLabel">Obstetrics/<br />Gynecological History</x-input-span>
                                             <x-form-textarea type="text" name="obGyneHistory" id="obGyneHistory"
                                                 cols="10" rows="3"></x-form-textarea>
                                         </x-form-div>
@@ -124,19 +108,19 @@
                                         </x-form-div>
                                         <x-icd11-diagnosis-div :number="1" />
                                         <x-form-div class="col-xl-6">
-                                            <x-input-span id="diagnosisLabel">Selected <br />ICD11 <br />
-                                                Diagnosis</x-input-span>
+                                            <x-input-span id="diagnosisLabel">Selected <br />ICD11 Diagnosis</x-input-span>
                                             <x-form-textarea type="text" name="selectedDiagnosis"
-                                                class="selectedDiagnosis-1" style="height: 100px"></x-form-textarea>
+                                                class="selectedDiagnosis-1" style="height: 100px"
+                                                readonly></x-form-textarea>
                                         </x-form-div>
-                                        <x-form-div class="col-xl-6">
+                                        {{-- <x-form-div class="col-xl-6">
                                             <x-input-span id="diagnosisLabel">Addional <br />
                                                 Diagnosis</x-input-span>
                                             <x-form-textarea type="text" name="additionalDiagnosis"
                                                 class="additionalDiagnosis" cols="10"
                                                 rows="3"></x-form-textarea>
-                                        </x-form-div>
-                                        <x-form-div class="col-xl-12">
+                                        </x-form-div> --}}
+                                        <x-form-div class="col-xl-6">
                                             <x-input-span id="physiciansPlanLabel">Physicians Plan</x-input-span>
                                             <x-form-textarea type="text" name="physiciansPlan" id="physiciansPlan"
                                                 cols="10" rows="3"></x-form-textarea>
@@ -184,6 +168,7 @@
                                             Save
                                         </button>
                                     </div>
+                                    <x-toast-successful  id="saveConsultationToast"></x-toast-successful>
                                 </div>
                                 <div class="d-none" id="investigationAndManagementDiv" data-div="new">
                                     <div class="mb-2 form-control">
@@ -203,12 +188,13 @@
                                             </x-form-div>
                                             <x-form-div class="col-xl-6">
                                                 <x-input-span id="quantityLabel">Quantity</x-input-span>
-                                                <x-form-input type="number" name="quantity" id="quantity" placeholder="" />
+                                                <x-form-input type="number" name="quantity" id="quantity"
+                                                    placeholder="" />
                                             </x-form-div>
                                         </div>
                                         <div class="d-flex justify-content-center">
-                                            <button type="button" id="addInvestigationAndManagmentBtn" data-btn="new"
-                                                class="btn btn-primary">
+                                            <button type="button" id="addInvestigationAndManagmentBtn"
+                                                data-btn="new" class="btn btn-primary">
                                                 add
                                                 <i class="bi bi-prescription"></i>
                                             </button>
