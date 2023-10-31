@@ -49,13 +49,11 @@
         <div>
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <button class="nav-link active" id="nav-yourPatients-tab" data-bs-toggle="tab"
-                        data-bs-target="#nav-yourPatients" type="button" role="tab" aria-controls="nav-yourPatients"
-                        aria-selected="true">Your Patients Consultations</button>
+                    <button class="nav-link active" id="nav-allPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-allPatients" 
+                    type="button" role="tab" aria-controls="nav-allPatients"  aria-selected="true">All Patients Consultations</button>
 
-                    <button class="nav-link" id="nav-allPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-allPatients"
-                        type="button" role="tab" aria-controls="nav-allPatients" aria-selected="false">All Patients
-                        Consultations</button>
+                    <button class="nav-link" id="nav-yourPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-yourPatients"
+                        type="button" role="tab" aria-controls="nav-yourPatients" aria-selected="false">Your Patients Consultations</button>
 
                     {{-- <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
                         type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Sponsors</button> --}}
@@ -63,51 +61,32 @@
             </nav>
             <div class="tab-content" id="nav-tabContent">
                 <!-- patients table -->
-                <div class="tab-pane fade show active" id="nav-yourPatients" role="tabpanel"
-                    aria-labelledby="nav-yourPatients-tab" tabindex="0">
+                <div class="tab-pane fade show active" id="nav-allPatients" aria-labelledby="nav-allPatients-tab" role="tabpanel"  tabindex="0">
                     <div class="py-4">
-                        <table id="yourPatientsTable" class="table table-hover align-middle table-sm">
+                        <table id="allPatientsVisitTable"  class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
+                                    <th>Came</th>
                                     <th>Patient</th>
+                                    <th>Doctor</th>
                                     <th>Diagnosis</th>
                                     <th>Sponsor</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>20/09/23</td>
-                                    <td>SH23/7865 Patrick Abiodun Aso</td>
-                                    <td>QC30-Malingering</td>
-                                    <td>Axe Mansard HMO</td>
-                                    <td>Out-patient</td>
-                                    <td><button class="btn btn-outline-primary" id="reviewConsultationBtn">Review</button></td>
-                                </tr>
-                                <tr>
-                                    <td>21/05/22</td>
-                                    <td>SH21/4012 Josephine Ene Ode</td>
-                                    <td>QC30-Malingering</td>
-                                    <td>Self</td>
-                                    <td>In-patient</td>
-                                    <td><button class="btn btn-outline-primary reviewConsultationBtn">Review</button></td>
-                                </tr>
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>
                 <!-- active table -->
-                <div class="tab-pane fade" id="nav-allPatients" role="tabpanel" aria-labelledby="nav-allPatients-tab"
-                    tabindex="0">
+                <div class="tab-pane fade" id="nav-yourPatients" role="tabpanel" aria-labelledby="nav-yourPatients-tab" tabindex="0">
                     <div class="py-4">
-                        <table id="allPatientsTable" class="table table-hover table-sm">
+                        <table id="yourPatientsVisitTable" class="table table-hover table-sm">
                             <thead>
                                 <tr>
                                     <th>Date</th>
                                     <th>Patient</th>
-                                    <th>Doctor</th>
                                     <th>Diagnosis</th>
                                     <th>Sponsor</th>
                                     <th>Status</th>

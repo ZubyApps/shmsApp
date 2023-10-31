@@ -81,12 +81,15 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('visits')->group(function () {
         Route::post('', [VisitController::class, 'store']);
-        Route::get('/load', [VisitController::class, 'load']);
+        Route::get('/load/waiting', [VisitController::class, 'loadWaitingTable']);
         Route::post('/consult/{visit}', [VisitController::class, 'consult']);
+        Route::get('/load/consulted', [VisitController::class, 'loadVisitsTable']);
+        Route::delete('/{visit}', [VisitController::class, 'destroy']);
     })->name('Visits');
-
+    
     Route::prefix('consultation')->group(function () {
         Route::post('', [ConsultationController::class, 'store']);
+        Route::get('/consultations/{visit}', [ConsultationController::class, 'loadConsultations']);
     });
     
 });

@@ -1,9 +1,9 @@
 import { Modal, Collapse, Toast } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-import { consultationDetails, items } from "./data"
+// import { consultationDetails, items } from "./data"
 import { clearDivValues, clearItemsList, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, clearValidationErrors } from "./helpers"
-import { doctorsReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
+import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
 import jQuery, { error } from "jquery";
 import jszip from 'jszip';
@@ -66,6 +66,98 @@ window.addEventListener('DOMContentLoaded', function () {
     // ICD11 handler
     ECT.Handler.configure(mySettings, myCallbacks)
 
+    //All visits and consultations that are active
+
+    const allPatientsVisitTable = new DataTable('#allPatientsVisitTable', {
+        serverSide: true,
+        ajax:  '/visits/load/consulted',
+        orderMulti: true,
+        search:true,
+        columns: [
+            {data: "came"},
+            {data: "patient"},
+            {data: "doctor"},
+            {data: "diagnosis"},
+            {data: "sponsor"},
+            {data: "status"},
+            {
+                sortable: false,
+                data: row =>  `
+                <div class="d-flex flex-">
+                <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">Review</button>
+                </div>
+                `
+                       
+            },
+        ]
+    });
+    
+    document.querySelector('#allPatientsVisitTable').addEventListener('click', function (event) {
+        const consultationReviewBtn    = event.target.closest('.consultationReviewBtn')
+        //const removeBtn  = event.target.closest('.removeBtn')
+
+        if (consultationReviewBtn) {
+            consultationReviewBtn.setAttribute('disabled', 'disabled')
+            const visitId       = consultationReviewBtn.getAttribute('data-id')
+            const patientId     = consultationReviewBtn.getAttribute('data-patientId')
+            const patientType   = consultationReviewBtn.getAttribute('data-patientType')
+
+            http.get(`/consultation/consultations/${visitId}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        let iteration = 0
+                        let count = 0
+
+                        const consultations = response.data.consultations.data
+                        const patientBio = response.data.bio
+
+                        openModals(consultationReviewModal, consultationReviewDiv, patientBio)
+
+                        consultations.forEach(line => {
+                            iteration++
+                            
+                            iteration > 1 ? count++ : ''
+                
+                            if (patientType === 'ANC') {
+                                consultationReviewDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultations, line)
+                            } else {
+                
+                                consultationReviewDiv.innerHTML += regularReviewDetails(iteration, getOrdinal, count, consultations, line)
+                            }
+                             
+                        })
+
+                        
+                
+                        consultationReviewModal.show()
+                    }
+                    consultationReviewBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    consultationReviewBtn.removeAttribute('disabled')
+                    alert(error)
+                })
+        }
+
+        // if (removeBtn){
+        //     removeBtn.setAttribute('disabled', 'disabled')
+        //     if (confirm('Are you sure you want to delete this Visit?')) {
+        //         const visitId = removeBtn.getAttribute('data-id')
+        //         http.delete(`/visits/${visitId}`)
+        //             .then((response) => {
+        //                 if (response.status >= 200 || response.status <= 300){
+        //                     waitingListTable.draw()
+        //                 }
+        //                 removeBtn.removeAttribute('disabled')
+        //             })
+        //             .catch((error) => {
+        //                 alert(error)
+        //             })
+        //     }
+            
+        // }
+    })
+
     // NEW CONSULTATION MODAL CODE 
 
     // show new consultation modal
@@ -90,7 +182,7 @@ window.addEventListener('DOMContentLoaded', function () {
         updateBtn.addEventListener('click', function () {
             knownClinicalInfoDiv.forEach(div => {
                 if (div.dataset.div === updateBtn.dataset.btn) {
-
+                    console.log(div)
                     toggleAttributeLoop(querySelectAllTags(div, ['input, select, textarea']), 'disabled', '')
 
                     updateBtn.textContent === "Done" ? updateBtn.innerHTML = `<i class="bi bi-arrow-up-circle"></i>Update` : updateBtn.textContent = "Done"
@@ -115,13 +207,7 @@ window.addEventListener('DOMContentLoaded', function () {
         addBtn.addEventListener('click', () => {
             addVitalsignsDiv.forEach(div => {
                 if (div.dataset.div === addBtn.dataset.btn) {
-                    if (div.classList.contains('d-none')){
-                        div.classList.remove('d-none')
-                    } else {
-                        console.log(getDivData(div))
-                        div.classList.add('d-none')
-                        clearDivValues(div)
-                    }
+                   console.log(getDivData(div))
                 }
             })
         })
@@ -152,6 +238,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             new Toast(div.querySelector('#saveConsultationToast')).show()
                             
                             waitingListTable.draw()
+                            allPatientsVisitTable.draw()
                         }
                     })
                     .catch((error) => {
@@ -193,28 +280,6 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     // REVIEW CONSULTATION MODAL CODE
-
-    // Open review consultation modal and returning a loop of all consultations for the given pattient
-    consultationReviewBtn.addEventListener('click', function () {
-        let iteration = 0
-        let count = 0
-        consultationDetails.data.forEach(line => {
-            iteration++
-            
-            iteration > 1 ? count++ : ''
-
-            if (line.patientType === 'ANC') {
-                consultationReviewDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultationDetails, line)
-            } else {
-
-                consultationReviewDiv.innerHTML += doctorsReviewDetails(iteration, getOrdinal, count, consultationDetails, line)
-            }
-             
-        })
-
-        consultationReviewModal.show()
-
-    })
 
     // open review patient modal
     reviewPatientbtn.addEventListener('click', function () {
@@ -276,6 +341,14 @@ window.addEventListener('DOMContentLoaded', function () {
         const surgeryBtn                            = event.target.closest('#surgeryBtn')
         const fileBtn                               = event.target.closest('#fileBtn')
         const deliveryBtn                           = event.target.closest('#deliveryBtn')
+        const collapseBtn                           = event.target.closest('.collapseBtn')
+
+        if (collapseBtn) {
+            const goto = () => {
+                location.href = collapseBtn.getAttribute('data-goto')
+            }
+            setTimeout(goto, 300)
+        }
 
         if (deleteConsultationBtn) {
             if (confirm('If you delete this consultation you cannot get it back! Are you sure you want to delete?')) {
@@ -333,7 +406,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const waitingListTable = new DataTable('#waitingListTable', {
         serverSide: true,
-        ajax:  '/visits/load',
+        ajax:  '/visits/load/waiting',
         orderMulti: true,
         search:true,
         columns: [
@@ -343,25 +416,37 @@ window.addEventListener('DOMContentLoaded', function () {
             {data: "sponsor"},
             {data: "came"},
             {data: row => function () {
-                    if (row.doctor === ''){
+                if (row.doctor === ''){
+                    return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
+                                <i class="bi bi-clipboard2-plus-fill"></i>
+                            </button>
+                            <button class="ms-1 btn btn-outline-primary removeBtn tooltip-test" title="remove" data-id="${ row.id }">
+                            <i class="bi bi-x-circle-fill"></i>
+                            </button>
+                        </div>`
+                    } else {
                         return `
-                            <div class="d-flex flex-">
-                                <button class=" btn btn-outline-primary consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
-                                    <i class="bi bi-clipboard2-plus-fill"></i>
-                                </button>
-                                <button class="ms-1 btn btn-outline-primary removeBtn tooltip-test" title="remove" data-id="${ row.id }">
-                                <i class="bi bi-x-circle-fill"></i>
-                                </button>
-                            </div>`
-                        } else {
-                            return `
-                            <div class="d-flex flex-">
-                                <button class=" btn btn-white text-primary consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
-                                    ${row.doctor}
-                                </button>
-                            </div>`
-                        }
-            }},
+                        <div class="dropdown">
+                            <a class="text-primary tooltip-test text-decoration-none" title="doctor" data-bs-toggle="dropdown" href="" >
+                                ${row.doctor}
+                            </a>
+                                <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item consultBtn text-primary tooltip-test" title="consult"  href="#" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
+                                        <i class="bi bi-clipboard2-plus-fill"></i> Consult
+                                    </a>
+                                    <a class="dropdown-item removeBtn text-primary tooltip-test" title="remove" href="#" data-id="${ row.id }">
+                                        <i class="bi bi-x-circle-fill"></i> Remove
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        `
+                    }
+                }
+            },
         ]
     });
 
@@ -395,9 +480,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (removeBtn){
             removeBtn.setAttribute('disabled', 'disabled')
-            if (confirm('Are you sure you want to delete this Category?')) {
-                const sponsorCategoryId = removeBtn.getAttribute('data-id')
-                http.delete(`/sponsorcategory/${sponsorCategoryId}`)
+            if (confirm('Are you sure you want to delete this Visit?')) {
+                const visitId = removeBtn.getAttribute('data-id')
+                http.delete(`/visits/${visitId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
                             waitingListTable.draw()
@@ -411,8 +496,6 @@ window.addEventListener('DOMContentLoaded', function () {
             
         }
     })
-
-
 })
 
 
@@ -455,6 +538,11 @@ function openModals(modal, button, {id, visitId, ...data}) {
     modal._element.querySelector('#updateKnownClinicalInfoBtn').setAttribute('data-id', id)
     modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
 
-    button.setAttribute('data-id', visitId)
-    modal.show()
+    
+    if (modal._element.id == 'consultationReviewModal') {
+        ''
+    } else {
+        button.setAttribute('data-id', visitId)
+        modal.show()
+    }
 }

@@ -1,6 +1,5 @@
 <div class="container">
-    <div class="modal fade" id="{{ $id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-        data-bs-keyboard="false">
+    <div class="modal fade" id="{{ $id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header">
@@ -26,7 +25,6 @@
                                         </button>
                                     </div>
                                 </div>                              
-                               
                             </div>
                         </div>
                         <div class="card card-body">
@@ -49,7 +47,7 @@
                                     </table>
                                 </div>
                                 <div class="row">
-                                    <div class="row d-none" id="addVitalsignsDiv" data-div="new">
+                                    <div class="row" id="addVitalsignsDiv" data-div="new">
                                         @include('vitalsigns.vitalsigns', ['disabled' => false])
                                     </div>
                                     <div class="d-flex justify-content-center">
@@ -92,7 +90,7 @@
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="obGyneHistoryLabel">Obstetrics/<br />Gynecological History</x-input-span>
-                                            <x-form-textarea type="text" name="obGyneHistory" id="obGyneHistory"
+                                            <x-form-textarea type="text" name="obGynHistory" id="obGynHistory"
                                                 cols="10" rows="3"></x-form-textarea>
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
@@ -111,7 +109,7 @@
                                             <x-input-span id="diagnosisLabel">Selected <br />ICD11 Diagnosis</x-input-span>
                                             <x-form-textarea type="text" name="selectedDiagnosis"
                                                 class="selectedDiagnosis-1" style="height: 100px"
-                                                readonly></x-form-textarea>
+                                                ></x-form-textarea>
                                         </x-form-div>
                                         {{-- <x-form-div class="col-xl-6">
                                             <x-input-span id="diagnosisLabel">Addional <br />
@@ -131,9 +129,9 @@
                                             <x-input-span id="admitLabel">Admit?</x-input-span>
                                             <select class="form-select form-select-md" name="admit">
                                                 <option value="">Select</option>
-                                                <option value="outpatient">No</option>
-                                                <option value="inpatient">Yes</option>
-                                                <option value="observation">Observation</option>
+                                                <option value="Outpatient">No</option>
+                                                <option value="Inpatient">Yes</option>
+                                                <option value="Observation">Observation</option>
                                             </select>
                                         </x-form-div>
                                         <x-form-div class="col-xl-4">

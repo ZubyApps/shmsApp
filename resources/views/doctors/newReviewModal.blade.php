@@ -12,7 +12,7 @@
                             <div class="mb-2 form-control">
                                 <x-form-label>Review Patient</x-form-label>
                                 <div class="row">
-                                    <div class="d-none row" id="addVitalsignsDiv" data-div="review">
+                                    <div class="row" id="addVitalsignsDiv" data-div="review">
                                         <x-form-span class="fw-semibold">Vital Signs</x-form-span>
                                         @include('vitalsigns.vitalsigns', ['disabled' => false])
                                     </div>
@@ -53,7 +53,7 @@
                                     </x-form-div>
                                     <x-icd11-diagnosis-div :number="2" />
                                     <x-form-div class="col-xl-6">
-                                        <x-input-span id="diagnosisLabel">Updated <br />ICD11 <br />
+                                        <x-input-span id="diagnosisLabel">Updated <br />ICD11
                                             Diagnosis</x-input-span>
                                         <x-form-textarea type="text" name="selectedDiagnosis"
                                             class="selectedDiagnosis-2" style="height: 100px"></x-form-textarea>

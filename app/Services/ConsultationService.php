@@ -8,6 +8,7 @@ use App\DataObjects\DataTableQueryParams;
 use App\Models\Patient;
 use App\Models\User;
 use App\Models\Consultation;
+use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,8 +28,7 @@ class ConsultationService
                 "med_surg_history"  => $data->pastMedicalHistory,
                 "specialist"        => $data->consultantSpecialist,
                 "exam_findings"     => $data->examinationFindings,
-                "obgyn_history"     => $data->obyGyneHistory,
-                "obgyn_history"     => $data->obyGyneHistory,
+                "obgyn_history"     => $data->obyGynHistory,
                 "icd11_diagnosis"   => $data->selectedDiagnosis,
                 "ad_diagnosis"      => $data->additionalDiagnosis,
                 "admission_status"  => $data->admit,
@@ -49,7 +49,7 @@ class ConsultationService
             ]);  
 
             $consultation->visit()->update([
-                'status'    => true,
+                'consulted'    => true,
             ]);
             
         return $consultation;
@@ -63,8 +63,7 @@ class ConsultationService
                 "med_surg_history"  => $data->pastMedicalHistory,
                 "specialist"        => $data->consultantSpecialist,
                 "exam_findings"     => $data->examinationFindings,
-                "obgyn_history"     => $data->obyGyneHistory,
-                "obgyn_history"     => $data->obyGyneHistory,
+                "obgyn_history"     => $data->obyGynHistory,
                 "icd11_diagnosis"   => $data->selectedDiagnosis,
                 "ad_diagnosis"      => $data->additionalDiagnosis,
                 "admission_status"  => $data->admit,
@@ -86,42 +85,22 @@ class ConsultationService
         return $consultation;
     }
 
-    public function getPaginatedPatients(DataTableQueryParams $params)
-    {
-        $orderBy    = 'created_at';
-        $orderDir   =  'asc';
-
-        if (! empty($params->searchTerm)) {
-            return $this->consultation
-                        ->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        return $this->consultation
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-
-       
-    }
-
     public function getLoadTransformer(): callable
     {
        return  function (Consultation $consultation) {
             return [
                 'id'                => $consultation->id,
-                'patientId'         => $consultation->patient->id,
-                'patient'           => $consultation->patient->card_no.' ' .$consultation->patient->first_name.' '. $consultation->patient->middle_name.' '.$consultation->patient->last_name,
-                'sex'               => $consultation->patient->sex,
-                'age'               => (new Carbon($consultation->patient->date_of_birth))->age.'yrs',
-                'sponsor'           => $consultation->patient->sponsor->name,
-                'came'              => (new Carbon($consultation->created_at))->diffForHumans(),
-                'doctor'            => $consultation->doctor ?? '',
-                'patientType'       => $consultation->patient->patient_type,
-                'status'            => $consultation->status
+                'visitId'           => $consultation->visit->id,
+                'patientId'         => $consultation->visit->patient->id,
+                'came'              => (new Carbon($consultation->visit->created_at))->format('d/m/Y g:ia'),
+                'patient'           => $consultation->visit->patient->card_no.' ' .$consultation->visit->patient->first_name.' '. $consultation->visit->patient->middle_name.' '.$consultation->visit->patient->last_name,
+                'doctor'            => $consultation->user->name,
+                'diagnosis'         => $consultation->selectedDiagnosis,
+                'sponsor'           => $consultation->visit->patient->sponsor->name,
+                'status'            => $consultation->admissions_status,
+                // 'age'               => (new Carbon($consultation->patient->date_of_birth))->age.'yrs',
+                // 'patientType'       => $consultation->patient->patient_type,
+                // 'status'            => $consultation->status
             ];
          };
     }
@@ -132,5 +111,14 @@ class ConsultationService
             'doctor'    =>  $user->username
         ]);
         return response()->json(["id" => $consultation->id]);
+    }
+
+    public function getConsultations(Request $request, Visit $visit)
+    {
+        return $this->consultation
+                    ->where('visit_id', $visit->id)
+                    ->orderBy('created_at', 'asc')
+                    ->get();
+       
     }
 }

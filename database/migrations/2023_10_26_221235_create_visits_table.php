@@ -17,8 +17,10 @@ return new class extends Migration
             $table->id();
             $table->boolean('verification_status')->default(false);
             $table->string('verification_code')->nullable();
-            $table->boolean('status')->default(false);
+            $table->boolean('consulted')->default(false);
+            $table->boolean('closed')->default(false);
             $table->string('doctor')->nullable();
+            $table->dateTime('vital_signs')->nullable();
             $table->foreignIdFor(Patient::class);
             $table->foreignIdFor(User::class);
             $table->timestamps();

@@ -44,13 +44,24 @@ class VisitController extends Controller
         return $visit->load('patient');
     }
 
-    public function load(Request $request)
+    public function loadWaitingTable(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $sponsorCategories = $this->visitService->getPaginatedPatients($params);
+        $sponsorCategories = $this->visitService->getPaginatedWaitingVisits($params);
        
-        $loadTransformer = $this->visitService->getLoadTransformer();
+        $loadTransformer = $this->visitService->getWaitingListTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $sponsorCategories, $params);  
+    }
+
+    public function loadVisitsTable(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sponsorCategories = $this->visitService->getPaginatedConsultedVisits($params);
+       
+        $loadTransformer = $this->visitService->getConsultedVisitsTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsorCategories, $params);  
     }
@@ -84,6 +95,11 @@ class VisitController extends Controller
      */
     public function destroy(Visit $visit)
     {
-        return $visit->destroy($visit->id);
+        $visit->destroy($visit->id);
+
+       return $visit->patient()->update([
+            'is_active' => false
+        ]);
+        
     }
 }

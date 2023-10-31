@@ -6,10 +6,12 @@ namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
 use App\Http\Resources\PatientBioResource;
+use App\Models\Consultation;
 use App\Models\Patient;
 use App\Models\User;
 use App\Models\Visit;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class VisitService
@@ -39,14 +41,14 @@ class VisitService
         return $visit;
     }
 
-    public function getPaginatedPatients(DataTableQueryParams $params)
+    public function getPaginatedWaitingVisits(DataTableQueryParams $params)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
 
         if (! empty($params->searchTerm)) {
             return $this->visit
-                        ->Where('status', false)
+                        ->Where('consulted', false)
                         ->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -56,14 +58,14 @@ class VisitService
         }
 
         return $this->visit
-                    ->where('status', false)
+                    ->where('consulted', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        
     }
 
-    public function getLoadTransformer(): callable
+    public function getWaitingListTransformer(): callable
     {
        return  function (Visit $visit) {
             return [
@@ -87,8 +89,53 @@ class VisitService
             'doctor'    =>  $request->user()->username
         ]);
 
-        $patient = Patient::findOrFail($request->patientId);
+        //$patient = Patient::findOrFail($request->patientId);
 
-        return response()->json(new PatientBioResource([$patient, $visit]));
+        return response()->json(new PatientBioResource($visit));
+    }
+
+    public function getPaginatedConsultedVisits(DataTableQueryParams $params)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'asc';
+
+        if (! empty($params->searchTerm)) {
+            return $this->visit
+                    ->where('consulted', true)
+                    ->where(function (Builder $query) use($params) {
+                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    })
+                    
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return $this->visit
+                    ->where('consulted', true)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+
+       
+    }
+
+    public function getConsultedVisitsTransformer(): callable
+    {
+       return  function (Visit $visit) {
+            return [
+                'id'                => $visit->id,
+                'patientId'         => $visit->patient->id,
+                'came'              => (new Carbon($visit->created_at))->format('d/m/Y g:ia'),
+                'patient'           => $visit->patient->card_no.' ' .$visit->patient->first_name.' '. $visit->patient->middle_name.' '.$visit->patient->last_name,
+                'doctor'            => $visit->doctor,
+                'diagnosis'         => Consultation::where('visit_id', $visit->id)->first()?->icd11_diagnosis,
+                'sponsor'           => $visit->patient->sponsor->name,
+                'status'            => Consultation::where('visit_id', $visit->id)->first()?->admission_status,
+                'patientType'       => $visit->patient->patient_type,
+                //'status'            => $visit->status
+            ];
+         };
     }
 }

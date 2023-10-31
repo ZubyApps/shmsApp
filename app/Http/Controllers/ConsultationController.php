@@ -5,8 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Consultation;
 use App\Http\Requests\StoreConsultationRequest;
 use App\Http\Requests\UpdateConsultationRequest;
+use App\Http\Resources\ConsultationReviewCollection;
+use App\Http\Resources\PatientBioResource;
+use App\Models\Visit;
 use App\Services\ConsultationService;
 use App\Services\DatatablesService;
+use Illuminate\Http\Request;
 
 class ConsultationController extends Controller
 {
@@ -43,6 +47,13 @@ class ConsultationController extends Controller
         return $consultation->load('visit');
     }
 
+    public function loadConsultations(Request $request, Visit $visit)
+    {
+        $consultations = $this->consultationService->getConsultations($request, $visit);
+
+        return ["consultations" => new ConsultationReviewCollection($consultations), "bio" => new PatientBioResource($visit)];
+    }
+    
     /**
      * Display the specified resource.
      */

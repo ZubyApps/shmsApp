@@ -10,7 +10,7 @@
     </x-form-div>
     <x-form-div class="">
         <x-input-span>Age</x-input-span>
-        <x-form-input name="age" class="age" value="49" readonly />
+        <x-form-input name="age" class="age" value="" readonly />
     </x-form-div>
     <x-form-div class="">
         <x-input-span>Sex</x-input-span>
@@ -18,7 +18,7 @@
     </x-form-div>
     <x-form-div>
         <x-input-span id="maritalStatusLabel">Marital Status</x-input-span>
-        <x-form-input name="maritalStatus" class="Male" value="Single" readonly />
+        <x-form-input name="maritalStatus" class="Male" value="" readonly />
     </x-form-div>
     <x-form-div>
         <x-input-span>Phone Number</x-input-span>
@@ -26,7 +26,7 @@
     </x-form-div>
     <x-form-div>
         <x-input-span>Ethnic Group</x-input-span>
-        <x-form-input name="ethnicGroup" value="Yoruba" readonly />
+        <x-form-input name="ethnicGroup" value="" readonly />
     </x-form-div>
     <x-form-div>
         <x-input-span>Religion</x-input-span>

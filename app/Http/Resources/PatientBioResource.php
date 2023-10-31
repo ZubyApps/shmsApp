@@ -15,22 +15,21 @@ class PatientBioResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        //var_dump($this[1]->id); exit;
         return [
-            "id"            => $this[0]->id,
-            "visitId"       => $this[1]->id,
-            "patientId"     => $this[0]->card_no . ' ' . $this[0]->first_name . ' ' . $this[0]->middle_name . ' ' . $this[0]->last_name,
-            "sponsorName"   => $this[0]->sponsor->name,
-            "age"           => (new Carbon($this[0]->date_of_birth))->age,
-            "sex"           => $this[0]->sex,
-            "maritalStatus" => $this[0]->marital_status,
-            "phone"         => $this[0]->phone,
-            "ethnicGroup"   => $this[0]->ethnic_group,
-            "religion"      => $this[0]->religion,
-            "staffId"       => $this[0]->staff_id,
-            "bloodGroup"    => $this[0]->blood_group,
-            "genotype"      => $this[0]->genotype,
-            "knownConditions"=> $this[0]->known_conditions
+            "id"            => $this->patient->id,
+            "visitId"       => $this->id,
+            "patientId"     => $this->patient->card_no . ' ' . $this->patient->first_name . ' ' . $this->patient->middle_name . ' ' . $this->patient->last_name,
+            "sponsorName"   => $this->patient->sponsor->name,
+            "age"           => (new Carbon($this->patient->date_of_birth))->age,
+            "sex"           => $this->patient->sex,
+            "maritalStatus" => $this->patient->marital_status,
+            "phone"         => $this->patient->phone,
+            "ethnicGroup"   => $this->patient->ethnic_group,
+            "religion"      => $this->patient->religion,
+            "staffId"       => $this->patient->staff_id,
+            "bloodGroup"    => $this->patient->blood_group,
+            "genotype"      => $this->patient->genotype,
+            "knownConditions"=> $this->patient->known_conditions
         ];
     }
 }

@@ -1,22 +1,22 @@
 import { deliveryNote, surgeryNote, vitalsignsTable, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment } from "./partialHTMLS"
 
-const doctorsReviewDetails = (iteration, numberConverter, count, consultationDetails, line) => {
+const regularReviewDetails = (iteration, numberConverter, count, consultations, line) => {
 
     return `
-                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample">
+                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
                     <span class="mx-2">${iteration > 1 ? count + numberConverter(count) + ' Review' : 'Initial Consultation'}</span>
                     <i class="bi bi-chevron-double-down text-primary"> </i>
                 </div>
                 <div class="collapse mb-2 reviewDiv" id="collapseExample${iteration}" style="">
                     <div class="card card-body">
-                        ${vitalsignsTable(line)}
-                        <div class="mb-2 form-control">
+                        
+                        <div class="mb-2 form-control" id="goto${iteration}">
                             ${iteration > 1 ? review(line): consultation(line)}
-                            ${investigations(line.id)}
+                            ${investigations(line)}
                             ${medicationAndTreatment(line)}
-                            ${consultationDetails.data.length > iteration ? '' : updateInvestigationAndManagement(iteration)
+                            ${consultations.length > iteration ? '' : updateInvestigationAndManagement(iteration, line)
                             }
-                            <div class="d-flex justify-content-start my-3 gap-2">
+                            <div class="d-flex justify-content-start my-3 gap-2" id="goto${iteration}">
                                 <button type="button" id="fileBtn" class="btn btn-outline-primary">
                                 File
                                 <i class="bi bi-file-earmark-medical"></i>
@@ -46,7 +46,7 @@ const doctorsReviewDetails = (iteration, numberConverter, count, consultationDet
                                         }
                                     </div>
                                 </div>
-                                ${consultationDetails.data.length > iteration ? '' : 
+                                ${consultations.length > iteration ? '' : 
                                 `<div class="d-flex justify-content-end my-2">
                                     <button type="button" id="deleteReviewConsultationBtn" class="btn btn-outline-primary">
                                         <i class="bi bi-trash"></i>
@@ -67,20 +67,20 @@ const doctorsReviewDetails = (iteration, numberConverter, count, consultationDet
 const AncPatientReviewDetails = (iteration, numberConverter, count, consultationDetails, line) => {
 
     return `
-                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample">
+                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
                     <span class="mx-2">${iteration > 1 ? count + numberConverter(count) + ' Review' : 'Initial Consultation'}</span>
                     <i class="bi bi-chevron-double-down text-primary"> </i>
                 </div>
                 <div class="collapse mb-2 reviewDiv" id="collapseExample${iteration}" style="">
                     <div class="card card-body">
-                        ${vitalsignsTable(line)}
+                        
                         <div class="mb-2 form-control">
                             ${AncConsultation(line, iteration)}
                             ${investigations(line.id)}
                             ${medicationAndTreatment(line)}
-                            ${consultationDetails.data.length > iteration ? '' : updateInvestigationAndManagement(iteration)}
-                            <div class="extraInfoDiv">
-                                ${consultationDetails.data.length > iteration ? '' : 
+                            ${consultations.length > iteration ? '' : updateInvestigationAndManagement(iteration)}
+                            <div class="extraInfoDiv" id="goto${iteration}">
+                                ${consultations.length > iteration ? '' : 
                                 `<div class="d-flex justify-content-end my-2">
                                     <button type="button" id="deleteReviewConsultationBtn" class="btn btn-outline-primary">
                                         <i class="bi bi-trash"></i>
@@ -287,7 +287,7 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, consultation
 //                         </table>
 //                     </div>
 //                 </div>
-//                 ${consultationDetails.data.length > iteration ? '' : 
+//                 ${consultations.length > iteration ? '' : 
 //                 `<div class="d-flex justify-content-center my-2">
 //                     <button type="button" class="btn btn-primary updateInvestigationAndManagmentBtn" data-btn="${iteration}">
 //                         Update Investigation & Managment
@@ -707,7 +707,7 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, consultation
 //                             }
 //                         </div>
 //                     </div>
-//                     ${consultationDetails.data.length > iteration ? '' : 
+//                     ${consultations.length > iteration ? '' : 
 //                     `<div class="d-flex justify-content-end my-2">
 //                         <button type="button" id="deleteReviewConsultationBtn" class="btn btn-outline-primary">
 //                             <i class="bi bi-trash"></i>
@@ -725,4 +725,4 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, consultation
 //     `
 // }
 
-export{doctorsReviewDetails, AncPatientReviewDetails}
+export{regularReviewDetails, AncPatientReviewDetails}
