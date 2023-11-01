@@ -29,17 +29,21 @@
                         <div class="card card-body">
                             <div class="mb-2 form-control">
                                 <x-form-span>Vital Signs</x-form-span>
-                                <div class="row overflow-auto m-1">
-                                    <table id="prescriptionTable"
+                                <div class="row overflow-auto my-3">
+                                    <table id="vitalSignsNewConsultation"
                                         class="table table-hover align-middle table-sm bg-primary">
                                         <thead>
                                             <tr>
-                                                <th>Temperature</th>
-                                                <th>Blood Pressure</th>
-                                                <th>Pulse Rate</th>
-                                                <th>Respiratory Rate</th>
+                                                <th>Done</th>
+                                                <th>Temp</th>
+                                                <th>BP</th>
+                                                <th>Resp Rate</th>
+                                                <th>SpO2</th>
+                                                <th>Pulse</th>
                                                 <th>Weight</th>
                                                 <th>Height</th>
+                                                <th>By</th>
+                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>
@@ -48,6 +52,7 @@
                                 <div class="row">
                                     <div class="row" id="addVitalsignsDiv" data-div="new">
                                         @include('vitalsigns.vitalsigns', ['disabled' => false])
+                                        <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                     </div>
                                     <div class="d-flex justify-content-center">
                                         <button type="button" id="addVitalsignsBtn" data-btn="new"

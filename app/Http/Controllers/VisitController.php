@@ -48,22 +48,22 @@ class VisitController extends Controller
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $sponsorCategories = $this->visitService->getPaginatedWaitingVisits($params);
+        $visits = $this->visitService->getPaginatedWaitingVisits($params);
        
         $loadTransformer = $this->visitService->getWaitingListTransformer();
 
-        return $this->datatablesService->datatableResponse($loadTransformer, $sponsorCategories, $params);  
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 
     public function loadVisitsTable(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $sponsorCategories = $this->visitService->getPaginatedConsultedVisits($params);
+        $visits = $this->visitService->getPaginatedConsultedVisits($params);
        
         $loadTransformer = $this->visitService->getConsultedVisitsTransformer();
 
-        return $this->datatablesService->datatableResponse($loadTransformer, $sponsorCategories, $params);  
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 
     /**

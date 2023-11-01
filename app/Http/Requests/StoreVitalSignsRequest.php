@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Visit;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreVitalSignsRequest extends FormRequest
@@ -11,7 +12,7 @@ class StoreVitalSignsRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,7 @@ class StoreVitalSignsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'visitId' => ['required', 'numeric', 'exists:'.Visit::class.',id'],
         ];
     }
 }

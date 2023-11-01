@@ -25,4 +25,9 @@ class Visit extends Model
     {
         return $this->hasMany(Consultation::class);
     }
+
+    public function vitalSigns() 
+    {
+        return $this->hasMany(VitalSigns::class);
+    }
 }

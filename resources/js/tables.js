@@ -1,4 +1,4 @@
-import jQuery, { error } from "jquery";
+import jQuery from "jquery";
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
@@ -85,4 +85,42 @@ const getWaitingTable = (tableId) => {
     });
 }
 
-export {getAllPatientsVisitTable, getWaitingTable}
+const getVitalSignsTableByVisit = (tableId, visitId, modal) => {
+    const vitalSignsByVisit =  new DataTable(tableId, {
+        serverSide: true,
+        ajax:  {url: '/vitalsigns/load/visit_vitalsigns', data: {
+            'visitId': visitId,
+        }},
+        orderMulti: true,
+        search:true,
+        columns: [
+            {data: "created_at"},
+            {data: "temperature"},
+            {data: "bloodPressure"},
+            {data: "respiratoryRate"},
+            {data: "spO2"},
+            {data: "pulseRate"},
+            {data: "weight"},
+            {data: "height"},
+            {data: "by"},
+            {
+                sortable: false,
+                data: row =>  `
+                <div class="d-flex flex-">
+                    <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+                `      
+            },
+        ]
+    });
+
+    modal._element.addEventListener('hidden.bs.modal', function () {
+        vitalSignsByVisit.destroy()
+    })
+
+    return vitalSignsByVisit
+}
+
+export {getAllPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit}

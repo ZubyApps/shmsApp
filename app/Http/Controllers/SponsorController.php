@@ -48,11 +48,11 @@ class SponsorController extends Controller
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $sponsorCategories = $this->sponsorService->getPaginatedSponsors($params);
+        $sponsors = $this->sponsorService->getPaginatedSponsors($params);
        
         $loadTransformer = $this->sponsorService->getLoadTransformer();
 
-        return $this->datatablesService->datatableResponse($loadTransformer, $sponsorCategories, $params);  
+        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 
     /**

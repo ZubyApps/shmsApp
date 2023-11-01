@@ -14,6 +14,7 @@ use App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\SponsorCategoryController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\VisitController;
+use App\Http\Controllers\VitalSignsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -90,6 +91,12 @@ Route::middleware('auth')->group(function () {
     Route::prefix('consultation')->group(function () {
         Route::post('', [ConsultationController::class, 'store']);
         Route::get('/consultations/{visit}', [ConsultationController::class, 'loadConsultations']);
+    });
+
+    Route::prefix('vitalsigns')->group(function () {
+        Route::post('', [VitalSignsController::class, 'store']);
+        Route::get('/load/visit_vitalsigns', [VitalSignsController::class, 'loadVitalSignsTableByVisit']);
+        Route::delete('/{vitalSigns}', [VitalSignsController::class, 'destroy']);
     });
     
 });

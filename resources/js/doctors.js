@@ -5,8 +5,9 @@ import { consultationDetails, items } from "./data"
 import { clearDivValues, clearItemsList, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, clearValidationErrors } from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
-import { getAllPatientsVisitTable, getWaitingTable } from "./tables"
-import jQuery, { error } from "jquery";
+import { getAllPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit } from "./tables"
+import jQuery from "jquery";
+import $ from 'jquery';
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
@@ -18,6 +19,7 @@ import 'datatables.net-fixedcolumns-bs5';
 import 'datatables.net-fixedheader-bs5';
 import 'datatables.net-select-bs5';
 import 'datatables.net-staterestore-bs5';
+import { vitalsignsTable } from "./dynamicHTMLfiles/partialHTMLS"
 
 window.addEventListener('DOMContentLoaded', function () {
     const newConsultationModal              = new Modal(document.getElementById('newConsultationModal'))
@@ -122,6 +124,55 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     }) 
 
+    document.querySelector('#waitingTable').addEventListener('click', function (event) {
+        const consultBtn    = event.target.closest('.consultBtn')
+        const removeBtn  = event.target.closest('.removeBtn')
+
+        if (consultBtn) {
+            consultBtn.setAttribute('disabled', 'disabled')
+            const visitId       = consultBtn.getAttribute('data-id')
+            const patientType   = consultBtn.getAttribute('data-patientType')
+
+            http.post(`/visits/consult/${ visitId }`, {patientType})
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        if (patientType === 'ANC'){
+                            openModals(newAncConsultationModal, newAncConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
+                            const vitalSigsnByVisitTable = getVitalSignsTableByVisit('#vitalSignsNewConsultation', visitId, newAncConsultationModal)
+                        } else{
+                            openModals(newConsultationModal, newConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
+                            const vitalSigsnByVisitTable = getVitalSignsTableByVisit('#vitalSignsNewConsultation', visitId, newConsultationModal)
+                        }
+                        waitingTable.draw()
+                    }
+                    consultBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    consultBtn.removeAttribute('disabled')
+                    alert(error)
+                    console.log(error)
+                })
+        }
+
+        if (removeBtn){
+            removeBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Visit?')) {
+                const visitId = removeBtn.getAttribute('data-id')
+                http.delete(`/visits/${visitId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            waitingTable.draw()
+                        }
+                        removeBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                    })
+            }
+            
+        }
+    })
+
     // Show waiting table
     waitingBtn.addEventListener('click', function () {
         waitingTable.draw()
@@ -133,16 +184,18 @@ window.addEventListener('DOMContentLoaded', function () {
         updateBtn.addEventListener('click', function () {
             knownClinicalInfoDiv.forEach(div => {
                 if (div.dataset.div === updateBtn.dataset.btn) {
-                    console.log(div)
+    
                     toggleAttributeLoop(querySelectAllTags(div, ['input, select, textarea']), 'disabled', '')
-
+                    
                     updateBtn.textContent === "Done" ? updateBtn.innerHTML = `Update` : updateBtn.textContent = "Done"
 
                     if (updateBtn.textContent === 'Update'){
                         const patient = updateBtn.dataset.id
                         http.patch(`/patients/knownclinicalinfo/${patient}`, {...getDivData(div)}, {"html": div})
                         .then((response) => {
-                            new Toast(div.querySelector('#knownClinicalInfoToast')).show()
+                            if (response.status >= 200 || response.status <= 300){
+                                new Toast(div.querySelector('#knownClinicalInfoToast')).show()
+                            }
                         })
                         .catch((error) => {
                             console.log(error)
@@ -158,10 +211,55 @@ window.addEventListener('DOMContentLoaded', function () {
         addBtn.addEventListener('click', () => {
             addVitalsignsDiv.forEach(div => {
                 if (div.dataset.div === addBtn.dataset.btn) {
-                   console.log(getDivData(div))
+                    addBtn.setAttribute('disabled', 'disabled')
+                    const visitId = addBtn.getAttribute('data-id')
+
+                    let data = {...getDivData(div), visitId}
+
+                    http.post('/vitalsigns', {...data}, {"html": div})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            new Toast(div.querySelector('#vitalSignsToast')).show()
+                            clearDivValues(div)
+                        }
+                        if ($.fn.DataTable.isDataTable( '#vitalSignsNewConsultation' )){
+                                console.log('its a table')
+                            $('#vitalSignsNewConsultation').dataTable().fnDraw()
+                        }
+                        addBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        addBtn.removeAttribute('disabled')
+                    })                   
                 }
             })
         })
+    })
+
+    document.querySelector('#vitalSignsNewConsultation').addEventListener('click', function (event) {
+        const deleteBtn  = event.target.closest('.deleteBtn')
+
+        if (deleteBtn){
+            deleteBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this record?')) {
+                const id = deleteBtn.getAttribute('data-id')
+                http.delete(`/vitalsigns/${id}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            if ($.fn.DataTable.isDataTable( '#vitalSignsNewConsultation' )){
+                            $('#vitalSignsNewConsultation').dataTable().fnDraw()
+                        }
+                        }
+                        deleteBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                        deleteBtn.removeAttribute('disabled')
+                    })
+            }
+            
+        }
     })
 
     // getting data from all consultation divs
@@ -399,52 +497,6 @@ window.addEventListener('DOMContentLoaded', function () {
         })
         
     })
-
-    document.querySelector('#waitingTable').addEventListener('click', function (event) {
-        const consultBtn    = event.target.closest('.consultBtn')
-        const removeBtn  = event.target.closest('.removeBtn')
-
-        if (consultBtn) {
-            consultBtn.setAttribute('disabled', 'disabled')
-            const visitId       = consultBtn.getAttribute('data-id')
-            const patientType   = consultBtn.getAttribute('data-patientType')
-
-            http.post(`/visits/consult/${ visitId }`, {patientType})
-                .then((response) => {
-                    if (response.status >= 200 || response.status <= 300) {
-                        if (patientType === 'ANC'){
-                            openModals(newAncConsultationModal, newAncConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
-                        } else{
-                            openModals(newConsultationModal, newConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
-                        }
-                        waitingTable.draw()
-                    }
-                    consultBtn.removeAttribute('disabled')
-                })
-                .catch((error) => {
-                    consultBtn.removeAttribute('disabled')
-                    alert(error)
-                })
-        }
-
-        if (removeBtn){
-            removeBtn.setAttribute('disabled', 'disabled')
-            if (confirm('Are you sure you want to delete this Visit?')) {
-                const visitId = removeBtn.getAttribute('data-id')
-                http.delete(`/visits/${visitId}`)
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300){
-                            waitingTable.draw()
-                        }
-                        removeBtn.removeAttribute('disabled')
-                    })
-                    .catch((error) => {
-                        alert(error)
-                    })
-            }
-            
-        }
-    })
 })
 
 
@@ -478,9 +530,7 @@ function displayItemsList(div, data) {
 
 function openModals(modal, button, {id, visitId, ...data}) {
     for (let name in data) {
-        console.log(data[name])
         const nameInput = modal._element.querySelector(`[name="${ name }"]`)
-        
         nameInput.value = data[name]
     }
 

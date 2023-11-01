@@ -38,6 +38,7 @@ return new class extends Migration
             $table->string('admission_status');
             $table->string('ward')->nullable();
             $table->string('bed_no')->nullable();
+            $table->boolean('specialist_consultation')->default(false)->nullable();
             $table->foreignIdFor(Visit::class);
             $table->foreignIdFor(User::class);
             $table->timestamps();

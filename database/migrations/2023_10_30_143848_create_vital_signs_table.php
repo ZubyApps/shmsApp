@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use App\Models\Visit;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,11 +18,12 @@ return new class extends Migration
             $table->string('temperature')->nullable();
             $table->string('blood_pressure')->nullable();
             $table->string('respiratory_rate')->nullable();
+            $table->string('spO2')->nullable();
             $table->string('pulse_rate')->nullable();
-            $table->string('sugar-level')->nullable();
             $table->string('weight')->nullable();
             $table->string('height')->nullable();
             $table->foreignIdFor(Visit::class);
+            $table->foreignIdFor(User::class);
             $table->timestamps();
         });
     }
