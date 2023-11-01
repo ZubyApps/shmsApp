@@ -624,10 +624,16 @@ const consultation = (line) => {
 }
 
 const AncConsultation = (line, iteration) => {
-    return  `1
+    return  `
             <div class="form-control">
                 <span class="fw-bold text-primary">Consultation ${iteration > 1 ? ' Review' : ''}</span>                                            
-                <div class="row">
+                <div class="row mt-1">
+                    <div class="col-xl-4 themed-grid-col col-xl-12">
+                        <div class="input-group mb-1">
+                            <span class="input-group-text" id="specialistDesignationLabel"> Consultant Specialist<br>Name &amp; Designation</span>
+                            <input class="form-control" name="consultantSpecialist" value="${line.consultantSpecialist}">
+                        </div>
+                    </div>
                     <div class="col-xl-4 themed-grid-col col-xl-4">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="lmpLabel">LMP</span> 
@@ -673,32 +679,32 @@ const AncConsultation = (line, iteration) => {
                     <div class="col-xl-4 themed-grid-col col-xl-4">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="presentationAndPositionLabel">Presentation <br/> And Position</span> 
-                            <input class="form-control" name="presentationAndPosition" id="presentationAndPosition" value="${line.presentationAndPosition}" readonly="readonly"/>
+                            <input class="form-control" name="presentationAndPosition" id="presentationAndPosition" value="${line.presentationPosition}" readonly="readonly"/>
                         </div>
                     </div>
-                    <div class="col-xl-4 themed-grid-col col-xl-4">
+                    <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="relationOfPresentingPartToBrimLabel">Relation <br/> of Presenting <br> Part to Brim</span> 
                             <input class="form-control" name="relationOfPresentingPartToBrim" id="relationOfPresentingPartToBrim"  value="${line.relationOfPresentingPartToBrim}" readonly="readonly"/>
                         </div>
                     </div>
                     
-                    <div class="col-xl-4 themed-grid-col col-xl-4">
+                    <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="diagnosisLabel"> Selected <br>ICD11 <br> Diagnosis </span>
                             <textarea class="form-control reviewSelectedDiagnosis" type="text" name="selectedDiagnosis" cols="10" rows="3" readonly="readonly">${line.selectedDiagnosis ?? 'nill'}</textarea>
                         </div>
                     </div>
-                    <div class="col-xl-4 themed-grid-col col-xl-4">
+                    <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="diagnosisLabel"> Physician's Notes </span> 
                             <textarea class="form-control additionalDiagnosis" type="text" name="additionalDiagnosis" cols="10" rows="3" readonly="readonly">${line.notes}</textarea>
                         </div>
                     </div>
-                    <div class="col-xl-4 themed-grid-col col-xl-4">
+                    <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="remarksLabel"> Remarks </span>
-                            <textarea class="form-control" type="text" name="remarks" id="remarks" cols="10" rows="3" readonly="readonly"></textarea>
+                            <textarea class="form-control" type="text" name="remarks" id="remarks" cols="10" rows="3" readonly="readonly">${line.remarks}</textarea>
                         </div>
                     </div>
                 </div>

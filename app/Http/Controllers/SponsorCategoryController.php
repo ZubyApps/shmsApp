@@ -34,7 +34,7 @@ class SponsorCategoryController extends Controller
      */
     public function showAll(string ...$columns)
     {
-        return SponsorCategory::all($columns);   
+        return SponsorCategory::all($columns)->load('sponsors');
     }
 
     /**

@@ -208,7 +208,7 @@
                         <i class="bi bi-x-circle me-1"></i>
                         Close
                     </button>
-                    <button type="button" id="{{ $isUpdate ? 'savePatientBtn' : 'registerPatientBtn' }}" class="btn bg-primary text-white">
+                    <button type="button" id="{{ $isUpdate ? 'savePatientBtn' : 'registerPatientBtn' }}" class="btn btn-primary">
                         <i class="bi bi-check-circle me-1"></i>
                         {{ $isUpdate ? 'Update' : 'Register' }}
                     </button>

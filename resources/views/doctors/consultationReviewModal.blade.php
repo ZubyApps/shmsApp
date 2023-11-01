@@ -13,21 +13,20 @@
                         </div>
                         <div class="mb-2 form-control">
                             <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
-                            <div id="knownClinicalInfoDiv" data-div="review">
+                            <div id="knownClinicalInfoDiv" data-div="conReview">
                                 <x-toast-successful class="col-xl-12"  id="knownClinicalInfoToast"></x-toast-successful>
                                 <div class="row">
                                     @include('patients.partials.known-clinical-info', ['disabled' => true])
                                     <div class="d-flex justify-content-center">
                                         <button type="button" id="updateKnownClinicalInfoBtn"
-                                            class="btn bg-primary text-white" data-btn="review">
-                                            {{-- <i class="bi bi-arrow-up-circle"></i> --}}
+                                            class="btn bg-primary text-white" data-btn="conReview">
                                             Update
                                         </button>
                                     </div>
                                 </div>   
                             </div>
                         </div>
-                        <div class="mb-2 form-control">
+                        {{-- <div class="mb-2 form-control">
                             <x-form-span>Vital Signs</x-form-span>
                             <div class="row overflow-auto m-1">
                                 <table id="prescriptionTable"
@@ -57,7 +56,7 @@
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                         <div id="consultationReviewDiv">
                         </div>
                     </div>

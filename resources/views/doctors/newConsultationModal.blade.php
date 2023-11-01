@@ -20,7 +20,6 @@
                                     <div class="d-flex justify-content-center">
                                         <button type="button" id="updateKnownClinicalInfoBtn"
                                             class="btn bg-primary text-white" data-btn="new">
-                                            {{-- <i class="bi bi-arrow-up-circle"></i> --}}
                                             Update
                                         </button>
                                     </div>
@@ -120,7 +119,7 @@
                                         </x-form-div> --}}
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="physiciansPlanLabel">Physicians Plan</x-input-span>
-                                            <x-form-textarea type="text" name="physiciansPlan" id="physiciansPlan"
+                                            <x-form-textarea type="text" name="plan" id="physiciansPlan"
                                                 cols="10" rows="3"></x-form-textarea>
                                         </x-form-div>
                                     </div>
@@ -162,13 +161,12 @@
                                     <div class="d-flex justify-content-center">
                                         <button type="button" id="saveConsultationBtn" data-btn="new"
                                             class="btn bg-primary text-white">
-                                            <i class="bi bi-check-circle me-1"></i>
                                             Save
                                         </button>
                                     </div>
                                     <x-toast-successful  id="saveConsultationToast"></x-toast-successful>
                                 </div>
-                                <div class="d-none" id="investigationAndManagementDiv" data-div="new">
+                                <div class="d-none investigationAndManagementDiv" id="investigationAndManagementDivNew" data-div="new">
                                     <div class="mb-2 form-control">
                                         <x-form-span>Investigation & Management</x-form-span>
                                         <div class="row">

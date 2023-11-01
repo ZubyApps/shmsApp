@@ -16,7 +16,7 @@
                             <select class="form-select form-select-md" id="sponsorCategory1" name="category">
                                 <option value="">Select Category</option>   
                                 @foreach ($categories as $category )
-                                    @if (Str::lower($category->name) == "self")
+                                    @if (Str::lower($category->name) == "self" && $category->sponsors()->count() > 0)
                                     <option disabled value="{{ $category->id}}" name="{{ $category->name }}">{{ $category->name }}</option>
                                     @else
                                     <option value="{{ $category->id}}" name="{{ $category->name }}">{{ $category->name }}</option>

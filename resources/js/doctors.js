@@ -1,10 +1,11 @@
 import { Modal, Collapse, Toast } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-// import { consultationDetails, items } from "./data"
+import { consultationDetails, items } from "./data"
 import { clearDivValues, clearItemsList, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, clearValidationErrors } from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
+import { getAllPatientsVisitTable, getWaitingTable } from "./tables"
 import jQuery, { error } from "jquery";
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
@@ -28,7 +29,6 @@ window.addEventListener('DOMContentLoaded', function () {
     const specialistConsultationModal       = new Modal(document.getElementById('specialistConsultationModal'))    
 
     const newConsultationBtn                = document.querySelectorAll('#newConsultationBtn')
-    const consultationReviewBtn             = document.querySelector('#reviewConsultationBtn')
     const reviewPatientbtn                  = consultationReviewModal._element.querySelector('#reviewPatientBtn')
     const specialistConsultationbtn         = consultationReviewModal._element.querySelector('#specialistConsultationBtn')
     
@@ -45,7 +45,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const consultationDiv                   = document.querySelectorAll('#consultationDiv')
     const saveConsultationBtn               = document.querySelectorAll('#saveConsultationBtn')
 
-    const waitingListBtn                    = document.querySelector('#waitingListBtn')
+    const waitingBtn                    = document.querySelector('#waitingBtn')
 
     // Auto textarea adjustment
     const textareaHeight = 65;
@@ -66,41 +66,24 @@ window.addEventListener('DOMContentLoaded', function () {
     // ICD11 handler
     ECT.Handler.configure(mySettings, myCallbacks)
 
-    //All visits and consultations that are active
-
-    const allPatientsVisitTable = new DataTable('#allPatientsVisitTable', {
-        serverSide: true,
-        ajax:  '/visits/load/consulted',
-        orderMulti: true,
-        search:true,
-        columns: [
-            {data: "came"},
-            {data: "patient"},
-            {data: "doctor"},
-            {data: "diagnosis"},
-            {data: "sponsor"},
-            {data: "status"},
-            {
-                sortable: false,
-                data: row =>  `
-                <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">Review</button>
-                </div>
-                `
-                       
-            },
-        ]
-    });
+    //visit Table and consultations that are active
+    const allPatientsVisitTable = getAllPatientsVisitTable('#allPatientsVisitTable')
+    const waitingTable = getWaitingTable('#waitingTable')
     
     document.querySelector('#allPatientsVisitTable').addEventListener('click', function (event) {
         const consultationReviewBtn    = event.target.closest('.consultationReviewBtn')
-        //const removeBtn  = event.target.closest('.removeBtn')
 
         if (consultationReviewBtn) {
             consultationReviewBtn.setAttribute('disabled', 'disabled')
             const visitId       = consultationReviewBtn.getAttribute('data-id')
-            const patientId     = consultationReviewBtn.getAttribute('data-patientId')
             const patientType   = consultationReviewBtn.getAttribute('data-patientType')
+            reviewPatientbtn.setAttribute('data-id', visitId)
+            reviewPatientbtn.setAttribute('data-patientType', patientType)
+            newReviewModal._element.querySelector('#saveConsultationBtn').setAttribute('data-id', visitId)
+            
+            specialistConsultationbtn.setAttribute('data-id', visitId)
+            specialistConsultationbtn.setAttribute('data-patientType', patientType)
+            specialistConsultationModal._element.querySelector('#saveConsultationBtn').setAttribute('data-patientType', patientType)
 
             http.get(`/consultation/consultations/${visitId}`)
                 .then((response) => {
@@ -127,8 +110,6 @@ window.addEventListener('DOMContentLoaded', function () {
                              
                         })
 
-                        
-                
                         consultationReviewModal.show()
                     }
                     consultationReviewBtn.removeAttribute('disabled')
@@ -136,45 +117,15 @@ window.addEventListener('DOMContentLoaded', function () {
                 .catch((error) => {
                     consultationReviewBtn.removeAttribute('disabled')
                     alert(error)
+                    console.log(error)
                 })
         }
+    }) 
 
-        // if (removeBtn){
-        //     removeBtn.setAttribute('disabled', 'disabled')
-        //     if (confirm('Are you sure you want to delete this Visit?')) {
-        //         const visitId = removeBtn.getAttribute('data-id')
-        //         http.delete(`/visits/${visitId}`)
-        //             .then((response) => {
-        //                 if (response.status >= 200 || response.status <= 300){
-        //                     waitingListTable.draw()
-        //                 }
-        //                 removeBtn.removeAttribute('disabled')
-        //             })
-        //             .catch((error) => {
-        //                 alert(error)
-        //             })
-        //     }
-            
-        // }
-    })
-
-    // NEW CONSULTATION MODAL CODE 
-
-    // show new consultation modal
-    newConsultationBtn.forEach(btn => {
-        btn.addEventListener('click', function () {
-            console.log(btn.dataset.patienttype)
-            if (btn.dataset.patienttype === 'ANC') {
-                newAncConsultationModal.show() 
-            } else {
-
-                newConsultationModal.show()
-            }
-        })
-    })
-
-    waitingListBtn.addEventListener('click', function () {
-        waitingListTable.draw()
+    // Show waiting table
+    waitingBtn.addEventListener('click', function () {
+        waitingTable.draw()
+        allPatientsVisitTable.draw()
     })
 
     // manipulating all known clinical info div
@@ -185,7 +136,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     console.log(div)
                     toggleAttributeLoop(querySelectAllTags(div, ['input, select, textarea']), 'disabled', '')
 
-                    updateBtn.textContent === "Done" ? updateBtn.innerHTML = `<i class="bi bi-arrow-up-circle"></i>Update` : updateBtn.textContent = "Done"
+                    updateBtn.textContent === "Done" ? updateBtn.innerHTML = `Update` : updateBtn.textContent = "Done"
 
                     if (updateBtn.textContent === 'Update'){
                         const patient = updateBtn.dataset.id
@@ -220,7 +171,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 if (div.dataset.div === saveBtn.dataset.btn) {
                     const visitId = saveBtn.getAttribute('data-id')
 
-                    const investigationDiv = div.parentElement.querySelector('#investigationAndManagementDiv')
+                    const investigationDiv = div.parentElement.querySelector('.investigationAndManagementDiv')
 
                     saveBtn.setAttribute('disabled', 'disabled')
                     let data = {...getDivData(div), visitId}
@@ -231,15 +182,15 @@ window.addEventListener('DOMContentLoaded', function () {
                             toggleAttributeLoop(querySelectAllTags(div, ['input, select, textarea']), 'disabled')
                     
                             saveBtn.textContent === 'Saved' ? saveBtn.textContent = `Save` : saveBtn.textContent = 'Saved'
-
                             investigationDiv.classList.remove('d-none')
                             location.href = '#'+investigationDiv.id
 
                             new Toast(div.querySelector('#saveConsultationToast')).show()
                             
-                            waitingListTable.draw()
+                            waitingTable.draw()
                             allPatientsVisitTable.draw()
                         }
+
                     })
                     .catch((error) => {
                         alert(error)
@@ -265,25 +216,48 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // tasks to run when closing new consultation modal
     newConsultationModal._element.addEventListener('hide.bs.modal', function(event) {
-        clearDivValues(newConsultationModal._element.querySelector('#investigationAndManagementDiv'))
+        clearDivValues(newConsultationModal._element.querySelector('.investigationAndManagementDiv'))
         clearDivValues(newConsultationModal._element.querySelector('#consultationDiv'))
         clearValidationErrors(newConsultationModal._element.querySelector('#consultationDiv'))
-        newConsultationModal._element.querySelector('#saveConsultationBtn').innerHTML = `<i class="bi bi-check-circle me-1"></i> Save`
-        newConsultationModal._element.querySelector('#investigationAndManagementDiv').classList.add('d-none')
+        newConsultationModal._element.querySelector('#saveConsultationBtn').innerHTML = `Save`
+        newConsultationModal._element.querySelector('#saveConsultationBtn').removeAttribute('disabled')
+        newConsultationModal._element.querySelector('.investigationAndManagementDiv').classList.add('d-none')
         newConsultationModal._element.querySelectorAll('#itemsList').forEach(list => clearItemsList(list))
 
         removeAttributeLoop(querySelectAllTags(newConsultationModal._element.querySelector('#consultationDiv'), ['input, select, textarea']), 'disabled')
         for (let t = 0; t < newConsultationModal._element.querySelector('#consultationDiv').getElementsByTagName("textarea").length; t++){
             newConsultationModal._element.querySelector('#consultationDiv').getElementsByTagName("textarea")[t].setAttribute("style", "height:" + textareaHeight + "px;overflow-y:hidden;")
         }
-        waitingListTable.draw()
+        waitingTable.draw()
     })
 
     // REVIEW CONSULTATION MODAL CODE
 
     // open review patient modal
     reviewPatientbtn.addEventListener('click', function () {
-        newReviewModal.show()
+        reviewPatientbtn.setAttribute('disabled', 'disabled')
+            const visitId       = reviewPatientbtn.getAttribute('data-id')
+            //const patientId     = reviewPatientbtn.getAttribute('data-patientId')
+            const patientType   = reviewPatientbtn.getAttribute('data-patientType')
+    
+            http.post(`/visits/consult/${ visitId }`, {patientType})
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        if (patientType === 'ANC'){
+                            openModals(newAncConsultationModal, newAncConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
+                        } else{
+                            openModals(newReviewModal, newReviewModal._element.querySelector('#saveConsultationBtn'), response.data)
+                        }
+                        allPatientsVisitTable.draw()
+                    }
+                    reviewPatientbtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    reviewPatientbtn.removeAttribute('disabled')
+                    alert(error)
+                })
+        consultationReviewModal.hide()
+        // newReviewModal.show()
     })
 
     // tasks to run when closing new review modal 
@@ -292,10 +266,11 @@ window.addEventListener('DOMContentLoaded', function () {
             event.preventDefault()
             return
         }
-        clearDivValues(newReviewModal._element.querySelector('#investigationAndManagementDiv'))
+        clearDivValues(newReviewModal._element.querySelector('.investigationAndManagementDiv'))
         clearDivValues(newReviewModal._element.querySelector('#consultationDiv'))
-        newReviewModal._element.querySelector('#saveConsultationBtn').innerHTML = `<i class="bi bi-check-circle me-1"></i> Save`
-        newReviewModal._element.querySelector('#investigationAndManagementDiv').classList.add('d-none')
+        newReviewModal._element.querySelector('#saveConsultationBtn').innerHTML = `Save`
+        newReviewModal._element.querySelector('#saveConsultationBtn').removeAttribute('disabled')
+        newReviewModal._element.querySelector('.investigationAndManagementDiv').classList.add('d-none')
         newReviewModal._element.querySelectorAll('#itemsList').forEach(list => clearItemsList(list))
 
         removeAttributeLoop(querySelectAllTags(newReviewModal._element.querySelector('#consultationDiv'), ['input, select, textarea']), 'disabled')
@@ -306,6 +281,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // open specialist consultation modal
     specialistConsultationbtn.addEventListener('click', function () {
+        consultationReviewModal.hide()
         specialistConsultationModal.show()
     })
 
@@ -315,15 +291,35 @@ window.addEventListener('DOMContentLoaded', function () {
             event.preventDefault()
             return
         }
-        clearDivValues(specialistConsultationModal._element.querySelector('#investigationAndManagementDiv'))
+        clearDivValues(specialistConsultationModal._element.querySelector('.investigationAndManagementDiv'))
         clearDivValues(specialistConsultationModal._element.querySelector('#consultationDiv'))
-        specialistConsultationModal._element.querySelector('#saveConsultationBtn').innerHTML = `<i class="bi bi-check-circle me-1"></i> Save`
-        specialistConsultationModal._element.querySelector('#investigationAndManagementDiv').classList.add('d-none')
+        specialistConsultationModal._element.querySelector('#saveConsultationBtn').innerHTML = `Save`
+        specialistConsultationModal._element.querySelector('#saveConsultationBtn').removeAttribute('disabled')
+        specialistConsultationModal._element.querySelector('.investigationAndManagementDiv').classList.add('d-none')
         specialistConsultationModal._element.querySelectorAll('#itemsList').forEach(list => clearItemsList(list))
 
         removeAttributeLoop(querySelectAllTags(specialistConsultationModal._element.querySelector('#consultationDiv'), ['input, select, textarea']), 'disabled')
         for (let t = 0; t < specialistConsultationModal._element.querySelector('#consultationDiv').getElementsByTagName("textarea").length; t++){
             specialistConsultationModal._element.querySelector('#consultationDiv').getElementsByTagName("textarea")[t].setAttribute("style", "height:" + textareaHeight + "px;overflow-y:hidden;")
+        }
+    })
+
+    // tasks to run when closing Anc consultation modal consultation modal
+    newAncConsultationModal._element.addEventListener('hide.bs.modal', function (event) {
+        if (!confirm('Have you saved? You will loose all unsaved data')) {
+            event.preventDefault()
+            return
+        }
+        clearDivValues(newAncConsultationModal._element.querySelector('.investigationAndManagementDiv'))
+        clearDivValues(newAncConsultationModal._element.querySelector('#consultationDiv'))
+        newAncConsultationModal._element.querySelector('#saveConsultationBtn').innerHTML = `Save`
+        newAncConsultationModal._element.querySelector('#saveConsultationBtn').removeAttribute('disabled')
+        newAncConsultationModal._element.querySelector('.investigationAndManagementDiv').classList.add('d-none')
+        newAncConsultationModal._element.querySelectorAll('#itemsList').forEach(list => clearItemsList(list))
+
+        removeAttributeLoop(querySelectAllTags(newAncConsultationModal._element.querySelector('#consultationDiv'), ['input, select, textarea']), 'disabled')
+        for (let t = 0; t < newAncConsultationModal._element.querySelector('#consultationDiv').getElementsByTagName("textarea").length; t++){
+            newAncConsultationModal._element.querySelector('#consultationDiv').getElementsByTagName("textarea")[t].setAttribute("style", "height:" + textareaHeight + "px;overflow-y:hidden;")
         }
     })
 
@@ -404,63 +400,16 @@ window.addEventListener('DOMContentLoaded', function () {
         
     })
 
-    const waitingListTable = new DataTable('#waitingListTable', {
-        serverSide: true,
-        ajax:  '/visits/load/waiting',
-        orderMulti: true,
-        search:true,
-        columns: [
-            {data: "patient"},
-            {data: "sex"},
-            {data: "age"},
-            {data: "sponsor"},
-            {data: "came"},
-            {data: row => function () {
-                if (row.doctor === ''){
-                    return `
-                        <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
-                                <i class="bi bi-clipboard2-plus-fill"></i>
-                            </button>
-                            <button class="ms-1 btn btn-outline-primary removeBtn tooltip-test" title="remove" data-id="${ row.id }">
-                            <i class="bi bi-x-circle-fill"></i>
-                            </button>
-                        </div>`
-                    } else {
-                        return `
-                        <div class="dropdown">
-                            <a class="text-primary tooltip-test text-decoration-none" title="doctor" data-bs-toggle="dropdown" href="" >
-                                ${row.doctor}
-                            </a>
-                                <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item consultBtn text-primary tooltip-test" title="consult"  href="#" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
-                                        <i class="bi bi-clipboard2-plus-fill"></i> Consult
-                                    </a>
-                                    <a class="dropdown-item removeBtn text-primary tooltip-test" title="remove" href="#" data-id="${ row.id }">
-                                        <i class="bi bi-x-circle-fill"></i> Remove
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        `
-                    }
-                }
-            },
-        ]
-    });
-
-    document.querySelector('#waitingListTable').addEventListener('click', function (event) {
+    document.querySelector('#waitingTable').addEventListener('click', function (event) {
         const consultBtn    = event.target.closest('.consultBtn')
         const removeBtn  = event.target.closest('.removeBtn')
 
         if (consultBtn) {
             consultBtn.setAttribute('disabled', 'disabled')
             const visitId       = consultBtn.getAttribute('data-id')
-            const patientId     = consultBtn.getAttribute('data-patientId')
             const patientType   = consultBtn.getAttribute('data-patientType')
 
-            http.post(`/visits/consult/${ visitId }`, {patientId, patientType})
+            http.post(`/visits/consult/${ visitId }`, {patientType})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         if (patientType === 'ANC'){
@@ -468,7 +417,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         } else{
                             openModals(newConsultationModal, newConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                         }
-                        waitingListTable.draw()
+                        waitingTable.draw()
                     }
                     consultBtn.removeAttribute('disabled')
                 })
@@ -485,7 +434,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.delete(`/visits/${visitId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
-                            waitingListTable.draw()
+                            waitingTable.draw()
                         }
                         removeBtn.removeAttribute('disabled')
                     })
@@ -529,19 +478,19 @@ function displayItemsList(div, data) {
 
 function openModals(modal, button, {id, visitId, ...data}) {
     for (let name in data) {
-
+        console.log(data[name])
         const nameInput = modal._element.querySelector(`[name="${ name }"]`)
         
         nameInput.value = data[name]
     }
-    
-    modal._element.querySelector('#updateKnownClinicalInfoBtn').setAttribute('data-id', id)
-    modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
 
+    modal._element.querySelector('#updateKnownClinicalInfoBtn').setAttribute('data-id', id)
+
+    if (modal._element.id == 'newConsultationModal') {
+        modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
+    }
     
-    if (modal._element.id == 'consultationReviewModal') {
-        ''
-    } else {
+    if (modal._element.id !== 'consultationReviewModal') {
         button.setAttribute('data-id', visitId)
         modal.show()
     }

@@ -28,7 +28,7 @@ class ConsultationService
                 "med_surg_history"  => $data->pastMedicalHistory,
                 "specialist"        => $data->consultantSpecialist,
                 "exam_findings"     => $data->examinationFindings,
-                "obgyn_history"     => $data->obyGynHistory,
+                "obgyn_history"     => $data->obGynHistory,
                 "icd11_diagnosis"   => $data->selectedDiagnosis,
                 "ad_diagnosis"      => $data->additionalDiagnosis,
                 "admission_status"  => $data->admit,
@@ -45,7 +45,7 @@ class ConsultationService
                 "ultrasound_report" => $data->ultrasoundReport,
                 "p_position"        => $data->presentationPosition,
                 "ho_fundus"         => $data->heightOfFundus,
-                "roppt_brim"        => $data->ropPartToBrim,
+                "roppt_brim"        => $data->relationOfPresentingPartToBrim,
             ]);  
 
             $consultation->visit()->update([

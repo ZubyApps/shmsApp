@@ -15,6 +15,7 @@
                         <div class="mb-2 form-control">
                             <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
                             <div class="row" id="knownClinicalInfoDiv" data-div="anc">
+                                <x-toast-successful class="col-xl-12"  id="knownClinicalInfoToast"></x-toast-successful>
                                 @include('patients.partials.known-clinical-info', ['disabled' => true])
                                 <div class="d-flex justify-content-center">
                                     <button type="button" id="updateKnownClinicalInfoBtn" class="btn bg-primary text-white" data-btn="anc">
@@ -93,19 +94,17 @@
                                         </x-form-div>
                                         <x-form-div class="col-xl-3">
                                             <x-input-span>EGA</x-input-span>
-                                            <x-form-input type="date" name="ega" value="" />
+                                            <x-form-input name="ega" value="" />
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
-                                            <x-input-span id="obGyneHistoryLabel">Obstetrics/<br />Gynecological
-                                                <br />
-                                                History</x-input-span>
-                                            <x-form-textarea type="text" name="obGyneHistory" id="obGyneHistory"
+                                            <x-input-span id="obGyneHistoryLabel">Obstetrics/<br />Gynecological History</x-input-span>
+                                            <x-form-textarea type="text" name="obGynHistory" id="obGynHistory"
                                                 cols="10" rows="3"></x-form-textarea>
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="presentingComplainLabel">Ultrasound <br />
                                                 Report</x-input-span>
-                                            <x-form-textarea name="presentingComplain" id="presentingComplain"
+                                            <x-form-textarea name="ultrasoundReport" id="presentingComplain"
                                                 cols="10" rows="3"></x-form-textarea>
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
@@ -114,7 +113,7 @@
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span>Height <br> of Fondus</x-input-span>
-                                            <x-form-input type="text" name="fetalHeartRate" value="" />
+                                            <x-form-input type="text" name="heighOfFundus" value="" />
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="pastMedicalHistoryLabel">Presentation <br /> And
@@ -124,10 +123,9 @@
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="examinationFindingsLabel">Relation of <br>
-                                                Presenting <br>
-                                                 Part to Brim</x-input-span>
-                                            <x-form-textarea type="text" name="examinationFindings"
-                                                id="examinationFindings" cols="10"
+                                                Presenting Part to Brim</x-input-span>
+                                            <x-form-textarea type="text" name="relationOfPresentingPartToBrim"
+                                                id="relationOfPresentingPartToBrim" cols="10"
                                                 rows="3"></x-form-textarea>
                                         </x-form-div>
                                         <x-form-div class="col-xl-12">
@@ -136,10 +134,10 @@
                                         </x-form-div>
                                         <x-icd11-diagnosis-div :number="4" />
                                         <x-form-div class="col-xl-6">
-                                            <x-input-span id="diagnosisLabel">Selected <br />ICD11 <br />
+                                            <x-input-span id="diagnosisLabel">Selected <br />ICD11
                                                 Diagnosis</x-input-span>
                                             <x-form-textarea type="text" name="selectedDiagnosis"
-                                                class="selectedDiagnosis-1" style="height: 100px"></x-form-textarea>
+                                                class="selectedDiagnosis-4"></x-form-textarea>
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="diagnosisLabel">Remarks </x-input-span>
@@ -149,7 +147,7 @@
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="physiciansPlanLabel">Physicians Plan</x-input-span>
-                                            <x-form-textarea type="text" name="physiciansPlan" id="physiciansPlan"
+                                            <x-form-textarea type="text" name="plan" id="plan"
                                                 cols="10" rows="3"></x-form-textarea>
                                         </x-form-div>
                                     </div>
@@ -158,9 +156,9 @@
                                             <x-input-span id="admitLabel">Admit?</x-input-span>
                                             <select class="form-select form-select-md" name="admit">
                                                 <option value="">Select</option>
-                                                <option value="out-patient">No</option>
-                                                <option value="in-patient">Yes</option>
-                                                <option value="observation">Observation</option>
+                                                <option value="Outpatient">No</option>
+                                                <option value="Inpatient">Yes</option>
+                                                <option value="Observation">Observation</option>
                                             </select>
                                         </x-form-div>
                                         <x-form-div class="col-xl-4">
@@ -195,8 +193,9 @@
                                             Save
                                         </button>
                                     </div>
+                                    <x-toast-successful  id="saveConsultationToast"></x-toast-successful>
                                 </div>
-                                <div class="d-none" id="investigationAndManagementDiv" data-div="anc">
+                                <div class="d-none investigationAndManagementDiv" id="investigationAndManagementDivAnc" data-div="anc">
                                     <div class="mb-2 form-control">
                                         <x-form-span>Investigation & Management</x-form-span>
                                         <div class="row">

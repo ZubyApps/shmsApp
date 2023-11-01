@@ -89,15 +89,13 @@ class VisitService
             'doctor'    =>  $request->user()->username
         ]);
 
-        //$patient = Patient::findOrFail($request->patientId);
-
         return response()->json(new PatientBioResource($visit));
     }
 
     public function getPaginatedConsultedVisits(DataTableQueryParams $params)
     {
         $orderBy    = 'created_at';
-        $orderDir   =  'asc';
+        $orderDir   =  'desc';
 
         if (! empty($params->searchTerm)) {
             return $this->visit
@@ -126,15 +124,14 @@ class VisitService
        return  function (Visit $visit) {
             return [
                 'id'                => $visit->id,
-                'patientId'         => $visit->patient->id,
                 'came'              => (new Carbon($visit->created_at))->format('d/m/Y g:ia'),
                 'patient'           => $visit->patient->card_no.' ' .$visit->patient->first_name.' '. $visit->patient->middle_name.' '.$visit->patient->last_name,
                 'doctor'            => $visit->doctor,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->first()?->icd11_diagnosis,
+                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->icd11_diagnosis,
                 'sponsor'           => $visit->patient->sponsor->name,
-                'status'            => Consultation::where('visit_id', $visit->id)->first()?->admission_status,
+                'status'            => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->admission_status,
                 'patientType'       => $visit->patient->patient_type,
-                //'status'            => $visit->status
+
             ];
          };
     }

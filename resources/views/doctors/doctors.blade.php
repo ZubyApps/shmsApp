@@ -20,7 +20,7 @@
             </div>
             <div class="offcanvas-body">
                 <div class="py-4 ">
-                    <table id="waitingListTable" class="table table-hover align-middle table-sm bg-primary">
+                    <table id="waitingTable" class="table table-hover align-middle table-sm bg-primary">
                         <thead>
                             <tr>
                                 <th>Patient</th>
@@ -39,7 +39,7 @@
         {{-- @include('visits.waitingList') --}}
 
         <div class="text-start mb-4">
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingListBtn"
+            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn"
                 data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
                 <i class="bi bi-list-check"></i>
                 Waiting List

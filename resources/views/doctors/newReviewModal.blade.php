@@ -11,7 +11,25 @@
                         <div id="consultationDiv" data-div="review">
                             <div class="mb-2 form-control">
                                 <x-form-label>Review Patient</x-form-label>
-                                <div class="row">
+                                <div class="mb-2 form-control">
+                                    @include('patients.partials.patientBio')
+                                </div>
+                                <div class="mb-2 form-control">
+                                    <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
+                                    <div id="knownClinicalInfoDiv" data-div="review">
+                                        <x-toast-successful class="col-xl-12"  id="knownClinicalInfoToast"></x-toast-successful>
+                                        <div class="row">
+                                            @include('patients.partials.known-clinical-info', ['disabled' => true])
+                                            <div class="d-flex justify-content-center">
+                                                <button type="button" id="updateKnownClinicalInfoBtn"
+                                                    class="btn bg-primary text-white" data-btn="review">
+                                                    Update
+                                                </button>
+                                            </div>
+                                        </div>                              
+                                    </div>
+                                </div>
+                                {{-- <div class="row">
                                     <div class="row" id="addVitalsignsDiv" data-div="review">
                                         <x-form-span class="fw-semibold">Vital Signs</x-form-span>
                                         @include('vitalsigns.vitalsigns', ['disabled' => false])
@@ -23,7 +41,7 @@
                                             vital signs
                                         </button>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <x-form-span class="fw-semibold fs-5">Consultation Review</x-form-span>
                                 <div class="row">
                                     <x-form-div class="col-xl-12">
@@ -75,9 +93,9 @@
                                         <x-input-span id="admitLabel">Admit?</x-input-span>
                                         <select class="form-select form-select-md" name="admit">
                                             <option value="">Select</option>
-                                            <option value="out-patient">No</option>
-                                            <option value="in-patient">Yes</option>
-                                            <option value="observation">Observation</option>
+                                            <option value="Outpatient">No</option>
+                                            <option value="Inpatient">Yes</option>
+                                            <option value="Observation">Observation</option>
                                         </select>
                                     </x-form-div>
                                     <x-form-div class="col-xl-4">
@@ -108,13 +126,13 @@
                                 <div class="d-flex justify-content-center">
                                     <button type="button" id="saveConsultationBtn" data-btn="review"
                                         class="btn bg-primary text-white">
-                                        <i class="bi bi-check-circle me-1"></i>
                                         Save
                                     </button>
                                 </div>
+                                <x-toast-successful  id="saveConsultationToast"></x-toast-successful>
                             </div>
                         </div>
-                        <div class="d-none" id="investigationAndManagementDiv" data-div="review">
+                        <div class="d-none investigationAndManagementDiv" id="investigationAndManagementDivReview"  data-div="review">
                             <div class="mb-2 form-control">
                                 <x-form-span>Investigation & Management</x-form-span>
                                 <div class="row">

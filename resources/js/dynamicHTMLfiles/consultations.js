@@ -11,12 +11,12 @@ const regularReviewDetails = (iteration, numberConverter, count, consultations, 
                     <div class="card card-body">
                         
                         <div class="mb-2 form-control" id="goto${iteration}">
-                            ${iteration > 1 ? review(line): consultation(line)}
+                            ${iteration < 2 || line.specialist !== '' ? consultation(line) :  review(line)}
                             ${investigations(line)}
                             ${medicationAndTreatment(line)}
                             ${consultations.length > iteration ? '' : updateInvestigationAndManagement(iteration, line)
                             }
-                            <div class="d-flex justify-content-start my-3 gap-2" id="goto${iteration}">
+                            <div class="d-flex justify-content-start my-3 gap-2" >
                                 <button type="button" id="fileBtn" class="btn btn-outline-primary">
                                 File
                                 <i class="bi bi-file-earmark-medical"></i>
@@ -64,22 +64,22 @@ const regularReviewDetails = (iteration, numberConverter, count, consultations, 
                 `
 }
 
-const AncPatientReviewDetails = (iteration, numberConverter, count, consultationDetails, line) => {
+const AncPatientReviewDetails = (iteration, numberConverter, count, consultations, line) => {
 
     return `
-                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
+                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
                     <span class="mx-2">${iteration > 1 ? count + numberConverter(count) + ' Review' : 'Initial Consultation'}</span>
                     <i class="bi bi-chevron-double-down text-primary"> </i>
                 </div>
                 <div class="collapse mb-2 reviewDiv" id="collapseExample${iteration}" style="">
                     <div class="card card-body">
                         
-                        <div class="mb-2 form-control">
+                        <div class="mb-2 form-control" id="goto${iteration}">
                             ${AncConsultation(line, iteration)}
-                            ${investigations(line.id)}
+                            ${investigations(line)}
                             ${medicationAndTreatment(line)}
-                            ${consultations.length > iteration ? '' : updateInvestigationAndManagement(iteration)}
-                            <div class="extraInfoDiv" id="goto${iteration}">
+                            ${consultations.length > iteration ? '' : updateInvestigationAndManagement(iteration, line)}
+                            <div class="extraInfoDiv" >
                                 ${consultations.length > iteration ? '' : 
                                 `<div class="d-flex justify-content-end my-2">
                                     <button type="button" id="deleteReviewConsultationBtn" class="btn btn-outline-primary">
