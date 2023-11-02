@@ -11,7 +11,7 @@ const regularReviewDetails = (iteration, numberConverter, count, consultations, 
                     <div class="card card-body">
                         
                         <div class="mb-2 form-control" id="goto${iteration}">
-                            ${iteration < 2 || line.specialist !== '' ? consultation(line) :  review(line)}
+                            ${iteration < 2 ? consultation(line) :  review(line)}
                             ${investigations(line)}
                             ${medicationAndTreatment(line)}
                             ${consultations.length > iteration ? '' : updateInvestigationAndManagement(iteration, line)
@@ -106,47 +106,28 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, consultation
 //     </div>
 //     <div class="collapse mb-2 reviewDiv" id="collapseExample${iteration}" style="">
 //         <div class="card card-body">
-//             <div class="mb-2 form-control">
-//                 <span class="fw-bold text-primary">Vital Signs</span>                                            
-//                 <div class="row overflow-auto m-1">
-//                     <table id="prescriptionTable" class="table table-hover align-middle table-sm bg-primary">
-//                         <thead>
-//                             <tr>
-//                                 <th>Date</th>
-//                                 <th>Temperature</th>
-//                                 <th>Blood Pressure</th>
-//                                 <th>Sugar Level</th>
-//                                 <th>Pulse Rate</th>
-//                                 <th>Respiratory Rate</th>
-//                                 <th>Weight</th>
-//                                 <th>Height</th>
-//                             </tr>
-//                         </thead>
-//                         <tbody>
-//                             <tr>
-//                                 <td>${line.id}</td>
-//                                 <td>${line.temperature}</td>
-//                                 <td>120/80mmgh</td>
-//                                 <td>8.8mmol</td>
-//                                 <td>90</td>
-//                                 <td>32</td>
-//                                 <td>94kg</td>
-//                                 <td>1.5m</td>
-//                             </tr>
-//                             <tr>
-//                                 <td>10-Jul-2023</td>
-//                                 <td>37.1C</td>
-//                                 <td>110/80mmgh</td>
-//                                 <td>8.5mmol</td>
-//                                 <td>96</td>
-//                                 <td>40</td>
-//                                 <td>94kg</td>
-//                                 <td>1.5m</td>
-//                             </tr>
-//                         </tbody>
-//                     </table>
-//                 </div>
-//             </div>
+            // <div class="mb-2 form-control">
+            //     <span class="fw-bold text-primary">Vital Signs</span>                                            
+            //     <div class="row overflow-auto m-1">
+            //         <table id="prescriptionTable" class="table table-hover align-middle table-sm bg-primary">
+            //             <thead>
+            //                 <tr>
+            //                     <th>Done</th>
+            //                     <th>Temp</th>
+            //                     <th>BP</th>
+            //                     <th>Resp Rate</th>
+            //                     <th>SpO2</th>
+            //                     <th>Pulse</th>
+            //                     <th>Weight</th>
+            //                     <th>Height</th>
+            //                     <th>By</th>
+            //                     <th></th>
+            //                 </tr>
+            //             </thead>
+            //             <tbody></tbody>
+            //         </table>
+            //     </div>
+            // </div>
 //             <div class="mb-2 form-control">
 //                 <div class="form-control">
 //                     <span class="fw-bold text-primary">Consultation</span>                                            

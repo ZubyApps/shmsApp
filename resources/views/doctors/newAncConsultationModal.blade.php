@@ -28,41 +28,28 @@
                         <div class="card card-body">
                                 <div class="mb-2 form-control">
                                     <x-form-span>Vital Signs</x-form-span>
-                                    <div class="row overflow-auto m-1">
-                                        <table id="prescriptionTable"
+                                    <div class="row overflow-auto my-3">
+                                        <table id="vitalSignsTable"
                                             class="table table-hover align-middle table-sm bg-primary">
                                             <thead>
                                                 <tr>
-                                                    <th>Temperature</th>
-                                                    <th>Blood Pressure</th>
-                                                    <th>Pulse Rate</th>
-                                                    <th>Respiratory Rate</th>
+                                                    <th>Done</th>
+                                                    <th>Temp</th>
+                                                    <th>BP</th>
+                                                    <th>Resp Rate</th>
+                                                    <th>SpO2</th>
+                                                    <th>Pulse</th>
                                                     <th>Weight</th>
                                                     <th>Height</th>
+                                                    <th>By</th>
+                                                    <th></th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>37C</td>
-                                                    <td>120/80mmgh</td>
-                                                    <td>90</td>
-                                                    <td>32</td>
-                                                    <td>94kg</td>
-                                                    <td>1.5m</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>37.1C</td>
-                                                    <td>110/80mmgh</td>
-                                                    <td>96</td>
-                                                    <td>40</td>
-                                                    <td>94kg</td>
-                                                    <td>1.5m</td>
-                                                </tr>
-                                            </tbody>
+                                            <tbody></tbody>
                                         </table>
                                     </div>
                                     <div class="row">
-                                        <div class="row d-none" id="addVitalsignsDiv" data-div="anc">
+                                        <div class="row" id="addVitalsignsDiv" data-div="anc">
                                             @include('vitalsigns.vitalsigns', ['disabled' => true])
                                         </div>
                                         <div class="d-flex justify-content-center">

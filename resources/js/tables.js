@@ -23,7 +23,7 @@ const getAllPatientsVisitTable = (tableId) => {
             {data: "doctor"},
             {data: "diagnosis"},
             {data: "sponsor"},
-            {data: "status"},
+            {data: "admissionStatus"},
             {
                 sortable: false,
                 data: row =>  `
@@ -107,7 +107,7 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal) => {
                 sortable: false,
                 data: row =>  `
                 <div class="d-flex flex-">
-                    <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
+                    <button type="submit" class="ms-1 btn btn-outline-primary ${modal._element.id == 'consultationReviewModal' ? 'd-none' : ''} deleteBtn tooltip-test" title="delete" data-id="${ row.id}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>
                 </div>

@@ -3,13 +3,13 @@
 @section('content')
 @vite(['resources/js/doctors.js'])
 
-@include('doctors.newConsultationModal', ['title' => 'New Consultation', 'isUpdate' => false, 'id' => 'newConsultationModal'])
+@include('doctors.consultationModal', ['title' => 'New Consultation', 'isSpecialist' => false, 'id' => 'newConsultationModal'])
 @include('doctors.newAncConsultationModal', ['title' => 'New ANC Consultation', 'isUpdate' => false, 'id' => 'newAncConsultationModal'])
 @include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isUpdate' => false, 'id' => 'consultationReviewModal'])
 @include('doctors.surgeryModal', ['title' => 'New Surgery', 'isUpdate' => false, 'id' => 'surgeryModal'])
 @include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
 @include('doctors.newReviewModal', ['title' => 'New Review', 'isUpdate' => false, 'id' => 'newReviewModal'])
-@include('doctors.specialistConsultationModal', ['title' => 'New Specialist Consultation', 'isUpdate' => false, 'id' => 'specialistConsultationModal'])
+@include('doctors.consultationModal', ['title' => 'New Specialist Consultation', 'isSpecialist' => true, 'id' => 'specialistConsultationModal'])
 
     <div class="container p-1 mt-5">
         <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
@@ -28,7 +28,7 @@
                                 <th>Age</th>
                                 <th>Sponsor</th>
                                 <th>Came</th>
-                                <th>action</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -66,10 +66,10 @@
                         <table id="allPatientsVisitTable"  class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
-                                    <th>Came</th>
+                                    <th>Seen</th>
                                     <th>Patient</th>
                                     <th>Doctor</th>
-                                    <th>Diagnosis</th>
+                                    <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
                                     <th>Status</th>
                                     <th>Actions</th>

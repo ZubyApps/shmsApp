@@ -48,7 +48,7 @@ class VisitService
 
         if (! empty($params->searchTerm)) {
             return $this->visit
-                        ->Where('consulted', false)
+                        ->Where('consulted', null)
                         ->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -58,7 +58,7 @@ class VisitService
         }
 
         return $this->visit
-                    ->where('consulted', false)
+                    ->where('consulted', null)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
@@ -76,7 +76,7 @@ class VisitService
                 'age'               => (new Carbon($visit->patient->date_of_birth))->age.'yrs',
                 'sponsor'           => $visit->patient->sponsor->name,
                 'came'              => (new Carbon($visit->created_at))->diffForHumans(),
-                'doctor'            => $visit->doctor ?? '',
+                'doctor'            => $visit->doctor->username ?? '',
                 'patientType'       => $visit->patient->patient_type,
                 'status'            => $visit->status
             ];
@@ -86,7 +86,7 @@ class VisitService
     public function initiateConsultation(Visit $visit, Request $request) 
     {
         $visit->update([
-            'doctor'    =>  $request->user()->username
+            'doctor_id'    =>  $request->user()->id
         ]);
 
         return response()->json(new PatientBioResource($visit));
@@ -99,7 +99,7 @@ class VisitService
 
         if (! empty($params->searchTerm)) {
             return $this->visit
-                    ->where('consulted', true)
+                    ->where('consulted', '!=', null)
                     ->where(function (Builder $query) use($params) {
                         $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -112,11 +112,9 @@ class VisitService
         }
 
         return $this->visit
-                    ->where('consulted', true)
+                    ->where('consulted', '!=', null)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-
-       
     }
 
     public function getConsultedVisitsTransformer(): callable
@@ -124,12 +122,12 @@ class VisitService
        return  function (Visit $visit) {
             return [
                 'id'                => $visit->id,
-                'came'              => (new Carbon($visit->created_at))->format('d/m/Y g:ia'),
+                'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->card_no.' ' .$visit->patient->first_name.' '. $visit->patient->middle_name.' '.$visit->patient->last_name,
-                'doctor'            => $visit->doctor,
+                'doctor'            => $visit->doctor->username,
                 'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->icd11_diagnosis,
                 'sponsor'           => $visit->patient->sponsor->name,
-                'status'            => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->admission_status,
+                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->admission_status,
                 'patientType'       => $visit->patient->patient_type,
 
             ];

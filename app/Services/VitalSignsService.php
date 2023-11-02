@@ -84,7 +84,7 @@ class VitalSignsService
                 'pulseRate'         => $vitalSigns->pulse_rate,
                 'weight'            => $vitalSigns->weight,
                 'height'            => $vitalSigns->height,
-                'created_at'        => (new Carbon($vitalSigns->created_at))->format('d/m/Y g:ia'),
+                'created_at'        => (new Carbon($vitalSigns->created_at))->format('d/m/y g:ia'),
                 'by'                => $vitalSigns->user->username,
             ];
          };

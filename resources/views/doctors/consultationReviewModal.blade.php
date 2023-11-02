@@ -8,55 +8,62 @@
                 </div>
                 <div class="modal-body">
                     <div class="">
-                        <div class="mb-2 form-control">
-                            @include('patients.partials.patientBio')
-                        </div>
-                        <div class="mb-2 form-control">
-                            <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
-                            <div id="knownClinicalInfoDiv" data-div="conReview">
-                                <x-toast-successful class="col-xl-12"  id="knownClinicalInfoToast"></x-toast-successful>
-                                <div class="row">
-                                    @include('patients.partials.known-clinical-info', ['disabled' => true])
+                        <div class="card card-body">
+                            <div class="mb-2 form-control">
+                                @include('patients.partials.patientBio')
+                            </div>
+                            <div class="mb-2 form-control">
+                                <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
+                                <div id="knownClinicalInfoDiv" data-div="conReview">
+                                    <x-toast-successful class="col-xl-12"  id="knownClinicalInfoToast"></x-toast-successful>
+                                    <div class="row">
+                                        @include('patients.partials.known-clinical-info', ['disabled' => true])
+                                        <div class="d-flex justify-content-center">
+                                            <button type="button" id="updateKnownClinicalInfoBtn"
+                                                class="btn bg-primary text-white" data-btn="conReview">
+                                                Update
+                                            </button>
+                                        </div>
+                                    </div>   
+                                </div>
+                            </div>
+                            <div class="mb-2 form-control">
+                                <x-form-span>Vital Signs</x-form-span>
+                                <div class="row overflow-auto my-3">
+                                    <table id="vitalSignsConsultationReview"
+                                        class="table table-hover align-middle table-sm bg-primary">
+                                        <thead>
+                                            <tr>
+                                                <th>Done</th>
+                                                <th>Temp</th>
+                                                <th>BP</th>
+                                                <th>Resp Rate</th>
+                                                <th>SpO2</th>
+                                                <th>Pulse</th>
+                                                <th>Weight</th>
+                                                <th>Height</th>
+                                                <th>By</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                                <div class="row d-none">
+                                    <div class="row" id="addVitalsignsDiv" data-div="conReview">
+                                        @include('vitalsigns.vitalsigns', ['disabled' => false])
+                                        <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
+                                    </div>
                                     <div class="d-flex justify-content-center">
-                                        <button type="button" id="updateKnownClinicalInfoBtn"
-                                            class="btn bg-primary text-white" data-btn="conReview">
-                                            Update
+                                        <button type="button" id="addVitalsignsBtn" data-btn="conReview"
+                                            class="btn btn-primary">
+                                            <i class="bi bi-plus-circle me-1"></i>
+                                            add
                                         </button>
                                     </div>
-                                </div>   
+                                </div>
                             </div>
                         </div>
-                        {{-- <div class="mb-2 form-control">
-                            <x-form-span>Vital Signs</x-form-span>
-                            <div class="row overflow-auto m-1">
-                                <table id="prescriptionTable"
-                                    class="table table-hover align-middle table-sm bg-primary">
-                                    <thead>
-                                        <tr>
-                                            <th>Temperature</th>
-                                            <th>Blood Pressure</th>
-                                            <th>Pulse Rate</th>
-                                            <th>Respiratory Rate</th>
-                                            <th>Weight</th>
-                                            <th>Height</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                            <div class="row">
-                                <div class="row d-none" id="addVitalsignsDiv" >
-                                    @include('vitalsigns.vitalsigns', ['disabled' => false])
-                                </div>
-                                <div class="d-flex justify-content-center d-none">
-                                    <button type="button" id="addVitalsignsBtn" 
-                                        class="btn btn-primary">
-                                        <i class="bi bi-plus-circle me-1"></i>
-                                        add
-                                    </button>
-                                </div>
-                            </div>
-                        </div> --}}
                         <div id="consultationReviewDiv">
                         </div>
                     </div>

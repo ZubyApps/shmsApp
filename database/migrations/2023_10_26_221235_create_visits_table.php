@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->boolean('verification_status')->default(false);
             $table->string('verification_code')->nullable();
-            $table->boolean('consulted')->default(false);
+            $table->dateTime('consulted')->nullable();
             $table->boolean('closed')->default(false);
-            $table->string('doctor')->nullable();
+            $table->foreignIdFor(User::class, 'doctor_id')->nullable();
             $table->dateTime('vital_signs')->nullable();
             $table->foreignIdFor(Patient::class);
             $table->foreignIdFor(User::class);
