@@ -89,4 +89,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Resource::class);
     }
+
+    public function addResources() 
+    {
+        return $this->hasMany(AddResource::class);
+    }
+
+    public function dispenseResources() 
+    {
+        return $this->hasMany(DispenseResource::class);
+    }
+
+    public function resourceSuppliers() 
+    {
+        return $this->hasMany(ResourceSupplier::class);
+    }
 }

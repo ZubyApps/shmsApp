@@ -8,4 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class ResourceSupplier extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
+
+    public function addResources() 
+    {
+        return $this->hasMany(AddResource::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
