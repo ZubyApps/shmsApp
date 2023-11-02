@@ -1,0 +1,38 @@
+<?php
+
+use App\Models\ResourceSubCategory;
+use App\Models\User;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('resources', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->integer('reorder_level')->default(0);
+            $table->integer('selling_price')->default(0);
+            $table->integer('cost_price')->default(0);
+            $table->string('unit_description')->nullable();
+            $table->date('expiry_date')->nullable();
+            $table->integer('stock_level')->nullable();
+            $table->foreignIdFor(ResourceSubCategory::class);
+            $table->foreignIdFor(User::class);
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('resources');
+    }
+};

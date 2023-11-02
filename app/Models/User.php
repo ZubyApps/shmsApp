@@ -74,4 +74,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(VitalSigns::class);
     }
+
+    public function resourceCategories() 
+    {
+        return $this->hasMany(ResourceCategory::class);
+    }
+
+    public function resourceSubCategories() 
+    {
+        return $this->hasMany(ResourceSubCategory::class);
+    }
+
+    public function resources() 
+    {
+        return $this->hasMany(Resource::class);
+    }
 }

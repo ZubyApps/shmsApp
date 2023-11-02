@@ -30,7 +30,7 @@
                             <div class="mb-2 form-control">
                                 <x-form-span>Vital Signs</x-form-span>
                                 <div class="row overflow-auto my-3">
-                                    <table id="vitalSignsTable"
+                                    <table id="vitalSignsTableNewCon"
                                         class="table table-hover align-middle table-sm bg-primary">
                                         <thead>
                                             <tr>
@@ -50,9 +50,9 @@
                                     </table>
                                 </div>
                                 <div class="row">
-                                    <div class="row" id="addVitalsignsDiv" {!! $isSpecialist ? 'data-btn="specialist"' : 'data-btn="new"' !!}>
-                                        @include('vitalsigns.vitalsigns', ['disabled' => false])
+                                    <div class="row" id="addVitalsignsDiv" {!! $isSpecialist ? 'data-div="specialist"' : 'data-div="new"' !!}>
                                         <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
+                                        @include('vitalsigns.vitalsigns', ['disabled' => false])
                                     </div>
                                     <div class="d-flex justify-content-center">
                                         <button type="button" id="addVitalsignsBtn" {!! $isSpecialist ? 'data-btn="specialist"' : 'data-btn="new"' !!}
@@ -65,7 +65,7 @@
                             </div>
                             @endif
                             <div class="consultationParentDiv">
-                                <div class="mb-2 form-control" id="consultationDiv" {!! $isSpecialist ? 'data-btn="specialist"' : 'data-btn="new"' !!}>
+                                <div class="mb-2 form-control" id="consultationDiv" {!! $isSpecialist ? 'data-div="specialist"' : 'data-div="new"' !!}>
                                     <x-form-label>Consultation</x-form-label>
                                     <div class="row">
                                         <x-form-div class="col-xl-6">
@@ -188,7 +188,7 @@
                                     </div>
                                     <x-toast-successful  id="saveConsultationToast"></x-toast-successful>
                                 </div>
-                                <div class="d-none investigationAndManagementDiv" id="investigationAndManagementDivNew" {!! $isSpecialist ? 'data-btn="specialist"' : 'data-btn="new"' !!}>
+                                <div class="d-none investigationAndManagementDiv" id="investigationAndManagementDivNew" {!! $isSpecialist ? 'data-div="specialist"' : 'data-div="new"' !!}>
                                     <div class="mb-2 form-control">
                                         <x-form-span>Investigation & Management</x-form-span>
                                         <div class="row">

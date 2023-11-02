@@ -137,11 +137,13 @@ window.addEventListener('DOMContentLoaded', function () {
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         if (patientType === 'ANC'){
+                            console.log(visitId)
                             openModals(newAncConsultationModal, newAncConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
-                            const vitalSigsnByVisitTable = getVitalSignsTableByVisit('#vitalSignsTable', visitId, newAncConsultationModal)
+                            const vitalSigsnByVisitTable = getVitalSignsTableByVisit('#vitalSignsTableAncCon', visitId, newAncConsultationModal)
                         } else{
+                            console.log(visitId)
                             openModals(newConsultationModal, newConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
-                            const vitalSigsnByVisitTable = getVitalSignsTableByVisit('#vitalSignsTable', visitId, newConsultationModal)
+                            const vitalSigsnByVisitTable = getVitalSignsTableByVisit('#vitalSignsTableNewCon', visitId, newConsultationModal)
                         }
                         waitingTable.draw()
                     }
@@ -222,9 +224,13 @@ window.addEventListener('DOMContentLoaded', function () {
                             new Toast(div.querySelector('#vitalSignsToast')).show()
                             clearDivValues(div)
                         }
-                        if ($.fn.DataTable.isDataTable( '#vitalSignsTable' )){
+                        if ($.fn.DataTable.isDataTable( '#vitalSignsTableNewCon' )){
                                 console.log('its a table')
-                            $('#vitalSignsTable').dataTable().fnDraw()
+                            $('#vitalSignsTableNewCon').dataTable().fnDraw()
+                        }
+                        if ($.fn.DataTable.isDataTable( '#vitalSignsTableAncCon' )){
+                                console.log('its a table')
+                            $('#vitalSignsTableAncCon').dataTable().fnDraw()
                         }
                         addBtn.removeAttribute('disabled')
                     })
@@ -237,7 +243,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelector('#vitalSignsTable').addEventListener('click', function (event) {
+    document.querySelector('#vitalSignsTableNewCon').addEventListener('click', function (event) {
         const deleteBtn  = event.target.closest('.deleteBtn')
 
         if (deleteBtn){
@@ -248,7 +254,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
                             if ($.fn.DataTable.isDataTable( '#vitalSignsTable' )){
-                            $('#vitalSignsTable').dataTable().fnDraw()
+                            $('#vitalSignsTableNewCon').dataTable().fnDraw()
                         }
                         }
                         deleteBtn.removeAttribute('disabled')
@@ -556,7 +562,7 @@ function openModals(modal, button, {id, visitId, ...data}) {
 
     modal._element.querySelector('#updateKnownClinicalInfoBtn').setAttribute('data-id', id)
 
-    if (modal._element.id == 'newConsultationModal') {
+    if (modal._element.id == 'newConsultationModal' || modal._element.id == 'newAncConsultationModal') {
         modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
     }
     

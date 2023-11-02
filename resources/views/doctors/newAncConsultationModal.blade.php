@@ -29,7 +29,7 @@
                                 <div class="mb-2 form-control">
                                     <x-form-span>Vital Signs</x-form-span>
                                     <div class="row overflow-auto my-3">
-                                        <table id="vitalSignsTable"
+                                        <table id="vitalSignsTableAncCon"
                                             class="table table-hover align-middle table-sm bg-primary">
                                             <thead>
                                                 <tr>
@@ -50,6 +50,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="row" id="addVitalsignsDiv" data-div="anc">
+                                            <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                             @include('vitalsigns.vitalsigns', ['disabled' => true])
                                         </div>
                                         <div class="d-flex justify-content-center">
