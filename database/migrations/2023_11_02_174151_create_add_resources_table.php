@@ -18,7 +18,10 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Resource::class);
             $table->integer('quantity');
-            $table->dateTime('expiry_date');
+            $table->string('unit_purchase');
+            $table->integer('purchase_price');
+            $table->integer('selling_price');
+            $table->dateTime('expiry_date')->nullable();
             $table->foreignIdFor(ResourceSupplier::class)->nullable();
             $table->foreignIdFor(User::class);
             $table->timestamps();

@@ -75,7 +75,7 @@ class VisitService
                 'sex'               => $visit->patient->sex,
                 'age'               => (new Carbon($visit->patient->date_of_birth))->age.'yrs',
                 'sponsor'           => $visit->patient->sponsor->name,
-                'came'              => (new Carbon($visit->created_at))->diffForHumans(),
+                'came'              => (new Carbon($visit->created_at))->diffForHumans(['parts' => 2, 'short' => true]),
                 'doctor'            => $visit->doctor->username ?? '',
                 'patientType'       => $visit->patient->patient_type,
                 'status'            => $visit->status

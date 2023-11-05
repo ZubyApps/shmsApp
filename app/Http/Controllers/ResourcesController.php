@@ -4,15 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\Resources;
 use Illuminate\Http\Request;
+use App\Services\DatatablesService;
+use App\Http\Controllers\ResourceCategoryController;
 
 class ResourcesController extends Controller
 {
+    public function __construct(
+        private readonly ResourceCategoryController $resourceCategoryController, 
+        private readonly DatatablesService $datatablesService, 
+        // private readonly PatientService $patientService
+        )
+    {
+        
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('resources.resources');
+        return view('resources.resources',  ['categories' =>$this->resourceCategoryController->showAll('id', 'name')]);
     }
 
     /**

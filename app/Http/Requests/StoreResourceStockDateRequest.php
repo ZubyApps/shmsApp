@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\ResourceSubCategory;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateResourceRequest extends FormRequest
+class StoreResourceStockDateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +22,8 @@ class UpdateResourceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'                  => ['required'],
-            'resourceSubCategory'   => ['required', 'numeric', 'exists:'.ResourceSubCategory::class.',id'],
+            'description'   => ['required'],
+            'date'          => ['required', 'date'],
         ];
     }
 }

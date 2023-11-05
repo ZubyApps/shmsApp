@@ -5,15 +5,38 @@ namespace App\Http\Controllers;
 use App\Models\ResourceCategory;
 use App\Http\Requests\StoreResourceCategoryRequest;
 use App\Http\Requests\UpdateResourceCategoryRequest;
+use App\Http\Resources\ResourceCategoryResource;
+use App\Services\DatatablesService;
+use App\Services\ResourceCategoryService;
+use Illuminate\Http\Request;
 
 class ResourceCategoryController extends Controller
 {
+    public function __construct(
+        private readonly DatatablesService $datatablesService, 
+        private readonly ResourceCategoryService $resourceCategoryService)
+    {
+        
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         //
+    }
+
+    public function showAll(string ...$columns)
+    {
+        return ResourceCategory::all($columns)->load('resourceSubCategories');
+    }
+
+    /**
+     * Display all the resource's relationship by the id given.
+     */
+    public function list(Request $request, ResourceCategory $resourceCategory)
+    {   
+        return $resourceCategory->resourceSubCategories()->orderBy('name')->get(['id', 'name'])->toJson();
     }
 
     /**
@@ -29,7 +52,20 @@ class ResourceCategoryController extends Controller
      */
     public function store(StoreResourceCategoryRequest $request)
     {
-        //
+        $resourceCategory = $this->resourceCategoryService->create($request, $request->user());
+
+        return $resourceCategory->load('user');
+    }
+
+    public function load(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sponsors = $this->resourceCategoryService->getPaginatedResourceCategories($params);
+       
+        $loadTransformer = $this->resourceCategoryService->getLoadTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 
     /**
@@ -45,7 +81,7 @@ class ResourceCategoryController extends Controller
      */
     public function edit(ResourceCategory $resourceCategory)
     {
-        //
+        return new ResourceCategoryResource($resourceCategory);
     }
 
     /**
@@ -53,7 +89,7 @@ class ResourceCategoryController extends Controller
      */
     public function update(UpdateResourceCategoryRequest $request, ResourceCategory $resourceCategory)
     {
-        //
+        return $this->resourceCategoryService->update($request, $resourceCategory, $request->user());
     }
 
     /**
@@ -61,6 +97,6 @@ class ResourceCategoryController extends Controller
      */
     public function destroy(ResourceCategory $resourceCategory)
     {
-        //
+        return $resourceCategory->destroy($resourceCategory->id);
     }
 }

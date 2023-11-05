@@ -35,18 +35,14 @@
                         <i class="bi bi-plus-circle me-1"></i>
                         Patient
                     </button>
-                    {{-- <button type="button" id="initiate" class="btn btn-primary text-white">
-                        <i class="bi bi-plus-circle me-1"></i>
-                        Initiate
-                    </button> --}}
                 </div>
                 <div class="py-2">
-                    <table id="allPatientsTable" class="table table-hover align-middle table-sm">
+                    <table id="allPatientsTable" class="table table-hover align-middle table-striped table-sm">
                         <thead>
                             <tr>
                                 <th>Card</th>
                                 <th>Patient Name</th>
-                                <th>Phone</th>
+                                <th><i class="bi bi-telephone-outbound-fill text-primary"></th>
                                 <th>Sex</th>
                                 <th>DOB</th>
                                 <th>Sponsor</th>

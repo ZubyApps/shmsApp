@@ -43,7 +43,6 @@ window.addEventListener('DOMContentLoaded', function(){
 
     updateSponsorCategoryInput.addEventListener('change', function() {
         if (updateSponsorCategoryInput.value) {
-            console.log('firedupdate')
             http.get(`/sponsorcategory/list_sponsors/${updateSponsorCategoryInput.value}`).then((response) => {
                     displayList(updatePatientSponsorDatalistEl, 'sponsorOption' ,response.data)
 
@@ -52,7 +51,6 @@ window.addEventListener('DOMContentLoaded', function(){
     })
     
     nextOfKinPhone.addEventListener('input', function () {
-        console.log('ran')
         if (phone.value === nextOfKinPhone.value) {
             const message = {"nextOfKinPhone": ["This number must be different from Patient's phone number"]}
                             
@@ -64,7 +62,6 @@ window.addEventListener('DOMContentLoaded', function(){
 
     newSponsorCategoryInput.addEventListener('change', function() {
             if (newSponsorCategoryInput.value) {
-                console.log('fired')
                 http.get(`/sponsorcategory/list_sponsors/${newSponsorCategoryInput.value}`).then((response) => {
                         displayList(newPatientSponsorDatalistEl, 'sponsorOption' ,response.data)
 

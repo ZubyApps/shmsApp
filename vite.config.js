@@ -21,6 +21,7 @@ export default defineConfig({
                 'resources/js/billing.js',
                 'resources/js/adminSettings.js',
                 'resources/js/visits.js',
+                'resources/js/recources.js',
             ],
             refresh: true,
         }),

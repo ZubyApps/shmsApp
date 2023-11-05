@@ -44,12 +44,8 @@ class SponsorService
 
     public function getPaginatedSponsors(DataTableQueryParams $params)
     {
-        //$orderByParam  =  $params->orderBy === 'created' ? 'created_at' : $params->orderBy;
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-
-        // $orderBy  = in_array($orderByParam, ['created_at', 'name', 'category']) ? $params->orderBy : 'created_at';
-        // $orderDir = strtolower($params->orderDir) === 'asc' ? 'asc' : 'desc';
 
         if (! empty($params->searchTerm)) {
             return $this->sponsor

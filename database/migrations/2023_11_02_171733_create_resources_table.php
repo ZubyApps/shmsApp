@@ -16,12 +16,14 @@ return new class extends Migration
         Schema::create('resources', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('flag')->nullable();
             $table->integer('reorder_level')->default(0);
+            $table->integer('purchase_price')->default(0);
             $table->integer('selling_price')->default(0);
-            $table->integer('cost_price')->default(0);
             $table->string('unit_description')->nullable();
             $table->date('expiry_date')->nullable();
             $table->integer('stock_level')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->foreignIdFor(ResourceSubCategory::class);
             $table->foreignIdFor(User::class);
             $table->timestamps();

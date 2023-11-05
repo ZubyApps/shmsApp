@@ -10,7 +10,11 @@ use App\Http\Controllers\NurseController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ResourceCategoryController;
+use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\ResourcesController;
+use App\Http\Controllers\ResourceStockDateController;
+use App\Http\Controllers\ResourceSubCategoryController;
 use App\Http\Controllers\SponsorCategoryController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\VisitController;
@@ -47,7 +51,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/pharmacy', [PharmacyController::class, 'index'])->name('Pharmacy');
     Route::get('/hmo', [HmoController::class, 'index'])->name('Hmo');
     Route::get('/billing', [BillingController::class, 'index'])->name('Billing');
-    Route::get('/resources', [ResourcesController::class, 'index'])->name('Resources');
     Route::get('/admin', [AdminController::class, 'index'])->name('Admin');
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('Settings');
 
@@ -98,6 +101,41 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/visit_vitalsigns', [VitalSignsController::class, 'loadVitalSignsTableByVisit']);
         Route::delete('/{vitalSigns}', [VitalSignsController::class, 'destroy']);
     });
+
+    Route::prefix('resourcestockdate')->group(function (){
+        Route::post('', [ResourceStockDateController::class, 'store']);
+        Route::get('/load', [ResourceStockDateController::class, 'load']);
+        Route::get('/{resourceStockDate}', [ResourceStockDateController::class, 'edit']);
+        Route::delete('/{resourceStockDate}', [ResourceStockDateController::class, 'destroy']);
+        Route::post('/{resourceStockDate}', [ResourceStockDateController::class, 'update']);
+    })->name('Stock Date');
+
+    Route::prefix('resourcecategory')->group(function (){
+        Route::post('', [ResourceCategoryController::class, 'store']);
+        Route::get('/load', [ResourceCategoryController::class, 'load']);
+        Route::get('/list_subcategories/{resourceCategory}', [ResourceCategoryController::class, 'list']);
+        Route::get('/{resourceCategory}', [ResourceCategoryController::class, 'edit']);
+        Route::delete('/{resourceCategory}', [ResourceCategoryController::class, 'destroy']);
+        Route::post('/{resourceCategory}', [ResourceCategoryController::class, 'update']);
+    })->name('Resource Category');
+
+    Route::prefix('resourcesubcategory')->group(function (){
+        Route::post('', [ResourceSubCategoryController::class, 'store']);
+        Route::get('/load', [ResourceSubCategoryController::class, 'load']);
+        Route::get('/{resourceSubCategory}', [ResourceSubCategoryController::class, 'edit']);
+        Route::delete('/{resourceSubCategory}', [ResourceSubCategoryController::class, 'destroy']);
+        Route::post('/{resourceSubCategory}', [ResourceSubCategoryController::class, 'update']);
+    })->name('Resource SubCategory');
+
+    Route::prefix('resources')->group(function (){
+        Route::get('', [ResourceController::class, 'index'])->name('Resources');
+        Route::post('', [ResourceController::class, 'store']);
+        Route::get('/load', [ResourceController::class, 'load']);
+        Route::get('/{resource}', [ResourceController::class, 'edit']);
+        Route::delete('/{resource}', [ResourceController::class, 'destroy']);
+        Route::post('/{resource}', [ResourceController::class, 'update']);
+        Route::post('toggle/{resource}', [ResourceController::class, 'toggleIsActive']);
+    })->name('Resource');
     
 });
 

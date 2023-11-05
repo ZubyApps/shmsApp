@@ -151,6 +151,7 @@ function displayList(dataListEl, optionsId, data) {
     }
 
 function getDatalistOptionId(modal, inputEl, datalistEl) {    
+    console.log(inputEl.value, datalistEl.options)
     const selectedOption = datalistEl.options.namedItem(inputEl.value)
     
         if (selectedOption) {

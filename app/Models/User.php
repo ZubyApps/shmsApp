@@ -104,4 +104,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(ResourceSupplier::class);
     }
+
+    public function resourceStockDates() 
+    {
+        return $this->hasMany(ResourceStockDate::class);
+    }
 }

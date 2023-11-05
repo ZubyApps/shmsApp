@@ -12,13 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('resource_suppliers', function (Blueprint $table) {
+        Schema::create('resource_stock_dates', function (Blueprint $table) {
             $table->id();
-            $table->string('company');
-            $table->string('person')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('email')->nullable();
-            $table->string('address')->nullable();
+            $table->dateTime('date');
+            $table->string('description');
             $table->foreignIdFor(User::class);
             $table->timestamps();
         });
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('resource_suppliers');
+        Schema::dropIfExists('resource_stock_dates');
     }
 };

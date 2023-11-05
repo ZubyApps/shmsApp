@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\ResourceCategory;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateResourceSubCategoryRequest extends FormRequest
@@ -11,7 +12,7 @@ class UpdateResourceSubCategoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,9 @@ class UpdateResourceSubCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name'              => ['required'],
+            'description'       => ['required'],
+            'resourceCategory'  => ['required', 'numeric', 'exists:'.ResourceCategory::class.',id']
         ];
     }
 }
