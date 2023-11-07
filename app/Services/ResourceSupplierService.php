@@ -5,18 +5,18 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
-use App\Models\ResourceCategory;
+use App\Models\ResourceSupplier;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class ResourceCategoryService
+class ResourceSupplierService
 {
-    public function __construct(private readonly ResourceCategory $resourceCategory)
+    public function __construct(private readonly ResourceSupplier $resourceSupplier)
     {
     }
 
-    public function create(Request $data, User $user): ResourceCategory
+    public function create(Request $data, User $user): ResourceSupplier
     {
         return $user->resourceCategories()->create([
             'name'          => $data->name,
@@ -24,30 +24,30 @@ class ResourceCategoryService
         ]);
     }
 
-    public function update(Request $data, ResourceCategory $resourceCategory, User $user): ResourceCategory
+    public function update(Request $data, ResourceSupplier $resourceSupplier, User $user): ResourceSupplier
     {
-       $resourceCategory->update([
+       $resourceSupplier->update([
             'name'          => $data->name,
             'description'   => $data->description,
 
         ]);
 
-        return $resourceCategory;
+        return $resourceSupplier;
     }
 
-    public function getPaginatedResourceCategories(DataTableQueryParams $params)
+    public function getPaginatedResourceSupplierStocks(DataTableQueryParams $params)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
 
         if (! empty($params->searchTerm)) {
-            return $this->resourceCategory
+            return $this->resourceSupplier
                         ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->resourceCategory
+        return $this->resourceSupplier
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
@@ -56,14 +56,14 @@ class ResourceCategoryService
 
     public function getLoadTransformer(): callable
     {
-       return  function (ResourceCategory $resourceCategory) {
+       return  function (ResourceSupplier $resourceSupplier) {
             return [
-                'id'                => $resourceCategory->id,
-                'name'              => $resourceCategory->name,
-                'description'       => $resourceCategory->description,
-                'createdBy'         => $resourceCategory->user->username,
-                'createdAt'         => (new Carbon($resourceCategory->created_at))->format('d/m/y g:ia'),
-                'count'             => $resourceCategory->resourceSubCategories()->count(),
+                'id'                => $resourceSupplier->id,
+                'name'              => $resourceSupplier->name,
+                'description'       => $resourceSupplier->description,
+                'createdBy'         => $resourceSupplier->user->username,
+                'createdAt'         => (new Carbon($resourceSupplier->created_at))->format('d/m/y g:ia'),
+                'count'             => $resourceSupplier->resourceSubCategories()->count(),
             ];
          };
     }

@@ -10,17 +10,16 @@
                     <div class="form-control mb-2">
                         <div class="row">
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="subCategoryLabel">Resource<x-required-span /></x-input-span>
-                                <x-form-input type="search" name="resource" class="resourceName resource" id="{{ $isUpdate ? 'updateResource' : 'newResource' }}" placeholder="Search..." list="{{ $isUpdate ? 'updateResourceList' : 'newResourceList' }}"/>
-                                <datalist name="resource" type="text" class="decoration-none bg-white subCategoryList" id="{{ $isUpdate ? 'updateResourceList' : 'newResourceList' }}"></datalist>
+                                <x-input-span id="resourceLabel">Resource<x-required-span /></x-input-span>
+                                <x-form-input type="text" class="resource" name="resource" value="" readonly/>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="reOrderLabel">Quantity</x-input-span>
-                                <x-form-input type="number" name="qty" value="" />
+                                <x-form-input type="number" name="quantity" value="" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="reOrderLabel">Unit of Purchase</x-input-span>
-                                <x-form-input type="number" name="qty" value="" />
+                                <x-form-input type="string" name="unitPurchase" value="" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="purchasePriceLabel">Purchase Price</x-input-span>
@@ -36,7 +35,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="subCategoryLabel">Supplier<x-required-span /></x-input-span>
-                                <x-form-input type="search" name="supplier" class="supplierName supplier" id="{{ $isUpdate ? 'updateSupplier' : 'newSupplier' }}" placeholder="Search..." list="{{ $isUpdate ? 'updateSupplierList' : 'newSupplierList' }}"/>
+                                <x-form-input type="search" name="supplier" class="supplierName supplier" id="{{ $isUpdate ? 'updateSupplierInput' : 'newSupplierInput' }}" placeholder="Search..." list="{{ $isUpdate ? 'updateSupplierList' : 'newSupplierList' }}"/>
                                 <datalist name="supplier" type="text" class="decoration-none bg-white supplierList" id="{{ $isUpdate ? 'updateSupplierList' : 'newSupplierList' }}"></datalist>
                             </x-form-div>
                         </div>
@@ -48,7 +47,7 @@
                     <i class="bi bi-x-circle me-1"></i>
                     Close
                 </button>
-                <button type="button" id="{{ $isUpdate ? 'saveResource' : 'createResource' }}Btn" class="btn btn-primary">
+                <button type="button" id="{{ $isUpdate ? 'saveAddResourceStock' : 'createAddResourceStock' }}Btn" class="btn btn-primary">
                     <i class="bi bi-check-circle me-1"></i>
                     {{ $isUpdate ? 'Save' : 'Create' }}
                 </button>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddResourceController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ConsultationController;
@@ -131,12 +132,21 @@ Route::middleware('auth')->group(function () {
         Route::get('', [ResourceController::class, 'index'])->name('Resources');
         Route::post('', [ResourceController::class, 'store']);
         Route::get('/load', [ResourceController::class, 'load']);
+        Route::get('/list_resources/{resource}', [ResourceController::class, 'list']);
         Route::get('/{resource}', [ResourceController::class, 'edit']);
+        Route::get('/addstock/{resource}', [ResourceController::class, 'edit'])->name('Addstock');
         Route::delete('/{resource}', [ResourceController::class, 'destroy']);
         Route::post('/{resource}', [ResourceController::class, 'update']);
         Route::post('toggle/{resource}', [ResourceController::class, 'toggleIsActive']);
-    })->name('Resource');
+    })->name('Resources');
     
+    Route::prefix('addresourcestock')->group(function (){
+        Route::post('', [AddResourceController::class, 'store']);
+        Route::get('/load', [AddResourceController::class, 'load']);
+        Route::get('/{addResource}', [AddResourceController::class, 'edit']);
+        Route::delete('/{addResource}', [AddResourceController::class, 'destroy']);
+        Route::post('/{addResource}', [AddResourceController::class, 'update']);
+    })->name('AddStock');
 });
 
 require __DIR__.'/auth.php';

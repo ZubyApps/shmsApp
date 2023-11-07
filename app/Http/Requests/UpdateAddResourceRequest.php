@@ -11,7 +11,7 @@ class UpdateAddResourceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class UpdateAddResourceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'purchasePrice' => ['required', 'numeric'],
+            'sellingPrice'  => ['required', 'numeric'],
+            'unitPurchase'  => ['required', 'string'],
+            'qty'           => ['required', 'numeric'],
+            'resource'      => ['required', 'numeric', 'exists:'.Resource::class.',id'],
         ];
     }
 }

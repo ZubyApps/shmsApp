@@ -9,7 +9,7 @@
 @include('resources.modals.resourceModal', ['title' => 'New Resource', 'isUpdate' => false, 'id' => 'newResourceModal'])
 @include('resources.modals.resourceModal', ['title' => 'Update Resource', 'isUpdate' => true, 'id' => 'updateResourceModal'])
 
-@include('resources.modals.AddresourceStockModal', ['title' => 'New Resource Stock', 'isUpdate' => false, 'id' => 'newAddResourceStockModal'])
+@include('resources.modals.AddresourceStockModal', ['title' => 'Add Resource Stock', 'isUpdate' => false, 'id' => 'newAddResourceStockModal'])
 @include('resources.modals.AddresourceStockModal', ['title' => 'Update Resource Stock', 'isUpdate' => true, 'id' => 'updateAddResourceStockModal'])
 
     <div class="container mt-5 bg-white">
@@ -95,14 +95,7 @@
                 <!-- addResourceStock table -->
                 <div class="tab-pane fade active" id="nav-addResourceStock" role="tabpanel" aria-labelledby="nav-addResourceStock-tab"
                     tabindex="0">
-
-                    <div class="text-start my-4">
-                        <button class="btn btn-primary" type="button" id="addResourceStockBtn">
-                            <i class="bi bi-plus-circle"></i>
-                            Resource Stock
-                        </button>
-                    </div>
-                    <div class="container">
+                    <div class="container mt-4">
                         <table id="addResourceStockTable" class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>

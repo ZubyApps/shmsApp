@@ -15,17 +15,14 @@ window.addEventListener('DOMContentLoaded', function () {
     const updateResourceModal                   = new Modal(document.getElementById('updateResourceModal'))
     
     const newAddResourceStockModal              = new Modal(document.getElementById('newAddResourceStockModal'))
-    const updateAddResourceStockModal           = new Modal(document.getElementById('updateAddResourceStockModal'))
 
     const addResourceSubCategoryBtn             = document.querySelector('#addResourceSubCategoryBtn')
     const addResourceBtn                        = document.querySelector('#addResourceBtn')
-    const addResourceStockBtn                   = document.querySelector('#addResourceStockBtn')
 
     const createResourceSubCategoryBtn          = document.querySelector('#createResourceSubCategoryBtn')
     const saveResourceSubCategoryBtn            = document.querySelector('#saveResourceSubCategoryBtn')
     
-    const createAddResourceStockBtn             = document.querySelector('#createResourceSubCategoryBtn')
-    const saveAddResourceStockBtn               = document.querySelector('#saveResourceSubCategoryBtn')
+    const createAddResourceStockBtn             = document.querySelector('#createAddResourceStockBtn')
 
     const createResourceBtn                     = document.querySelector('#createResourceBtn')
     const saveResourceBtn                       = document.querySelector('#saveResourceBtn')
@@ -33,8 +30,14 @@ window.addEventListener('DOMContentLoaded', function () {
     const newResourceCategoryInput              = document.querySelector('#newResourceCategory')
     const updateResourceCategoryInput           = document.querySelector('#updateResourceCategory')
 
+    const newSupplierInput                      = document.querySelector('#newSupplierInput')
+    const updateSupplierInput                   = document.querySelector('#updateSupplierInput')
+    
     const newResourceSubCategoryDatalistEl      = document.querySelector('#newSubCategoryList')
     const updateResourceSubCategoryDatalistEl   = document.querySelector('#updateSubCategoryList')
+    
+    const newSupplierDatalistEl                 = document.querySelector('#newSupplierList')
+    const updateSupplierDatalistEl              = document.querySelector('#updateSuppllierList')
 
     const newResourceSubCategoryInputEl         = document.querySelector('#newResourceSubCategory')
     const updateResourceSubCategoryInputEl      = document.querySelector('#updateResourceSubCategory')
@@ -182,7 +185,7 @@ window.addEventListener('DOMContentLoaded', function () {
         orderMulti: true,
         search:true,
         fixedHeader: true,
-        // lengthMenu:[20, 40, 80, 200],
+        lengthMenu:[20, 40, 80, 200],
         dom: 'l<"my-1 text-center "B>frtip',
         buttons: [
             {
@@ -232,11 +235,11 @@ window.addEventListener('DOMContentLoaded', function () {
                          return `
                         <div class="d-flex flex-">
                             <div>
-                                <a class="btn toggleActiveStatusBtn"  href="#" data-id="${ row.id }">
-                                ${!row.isActive ? '<i class="bi bi-x-square-fill text-danger  tooltip-test" title="activate"></i>' : '<i class="bi bi-check-square-fill text-primary  tooltip-test" title="activate"></i>'}
+                                <a class="btn btn-outline-${!row.isActive ? 'danger' : 'primary'} toggleActiveStatusBtn"  href="#" data-id="${ row.id }">
+                                ${!row.isActive ? '<i class="bi bi-x-square-fill  tooltip-test" title="activate"></i>' : '<i class="bi bi-check-square-fill tooltip-test" title="activate"></i>'}
                                 </a>
                             </div>
-                            <div class="dropdown">
+                            <div class="dropdown ms-1">
                                 <a class="text-primary tooltip-test text-decoration-none" title="options" data-bs-toggle="dropdown" href="" >
                                 <i class="bi bi-gear fs-4" role="button"></i>
                                 </a>
@@ -246,10 +249,10 @@ window.addEventListener('DOMContentLoaded', function () {
                                             <i class="bi bi-plus-square text-primary"></i> Add stock
                                         </a>
                                         <a class="dropdown-item updateBtn tooltip-test" title="remove" href="#" data-id="${ row.id }">
-                                        <i class="bi bi-pencil-fill text-primary"></i> update
+                                        <i class="bi bi-pencil-fill text-primary"></i> Edit
                                         </a>
                                         <a class="dropdown-item deleteBtn tooltip-test" title="delete" href="#" data-id="${ row.id }">
-                                            <i class="bi bi-x-circle-fill text-primary"></i> Remove
+                                            <i class="bi bi-x-circle-fill text-primary"></i> Delete
                                         </a>
                                     </li>
                                 </ul>
@@ -260,17 +263,17 @@ window.addEventListener('DOMContentLoaded', function () {
                         return `
                         <div class="d-flex flex-">
                             <div>
-                                    <a class="btn toggleActiveStatusBtn"  href="#" data-id="${ row.id }">
-                                    ${!row.isActive ? '<i class="bi bi-x-square-fill text-danger tooltip-test fs-4" title="activate"></i>' : '<i class="bi bi-check-square-fill text-primary tooltip-test fs-4" title="activate"></i>'}
+                                    <a class="btn btn-outline-${!row.isActive ? 'danger' : 'primary'} toggleActiveStatusBtn"  href="#" data-id="${ row.id }">
+                                    ${!row.isActive ? '<i class="bi bi-x-square-fill tooltip-test fs-4" title="activate"></i>' : '<i class="bi bi-check-square-fill tooltip-test" title="activate"></i>'}
                                     </a>
                                 </div>
-                                <div class="dropdown">
+                                <div class="dropdown ms-1">
                                 <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="options" data-bs-toggle="dropdown" href="" >
-                                <i class="bi bi-gear fs-6" role="button"></i>
+                                <i class="bi bi-gear fs-4" role="button"></i>
                                 </a>
                                     <ul class="dropdown-menu">
                                     <li>
-                                        <a class="dropdown-item addStockBtn tooltip-test" title="remove" href="#" data-id="${ row.id }">
+                                        <a class="dropdown-item addStockBtn tooltip-test" title="Add stock" href="#" data-id="${ row.id }">
                                             <i class="bi bi-plus-square text-primary"></i> Add stock
                                         </a>
                                         <a class="dropdown-item updateBtn tooltip-test" title="update" href="#" data-id="${ row.id }">
@@ -290,8 +293,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelector('#resourceTable').addEventListener('click', function (event) {
         const editBtn                   = event.target.closest('.updateBtn')
-        const toggleActiveStatusBtn  = event.target.closest('.toggleActiveStatusBtn')
+        const toggleActiveStatusBtn     = event.target.closest('.toggleActiveStatusBtn')
         const deleteBtn                 = event.target.closest('.deleteBtn')
+        const addStockBtn               = event.target.closest('.addStockBtn')
 
         if (editBtn) {
             editBtn.setAttribute('disabled', 'disabled')
@@ -302,6 +306,21 @@ window.addEventListener('DOMContentLoaded', function () {
                         openResourceModal(updateResourceModal, saveResourceBtn, response.data.data)
                     }
                     editBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    alert(error)
+                })
+        }
+
+        if (addStockBtn) {
+            addStockBtn.setAttribute('disabled', 'disabled')
+            const resourceId = addStockBtn.getAttribute('data-id')
+            http.get(`/resources/addstock/${ resourceId }`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openResourceModal(newAddResourceStockModal, createAddResourceStockBtn, response.data.data)
+                    }
+                    addStockBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {
                     alert(error)
@@ -391,7 +410,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const addResourceStockTable = new DataTable('#addResourceStockTable', {
         serverSide: true,
-        ajax:  '/resourcesubcategory/load',
+        ajax:  '/addresourcestock/load',
         orderMulti: true,
         search:true,
         columns: [
@@ -406,59 +425,29 @@ window.addEventListener('DOMContentLoaded', function () {
             {
                 sortable: false,
                 data: row => () => {
-                    if (row.count < 1) {
-                         return `
+                        return `
                             <div class="d-flex flex-">
-                                <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </button>
                                 <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
                                     <i class="bi bi-trash3-fill"></i>
                                 </button>
                             </div>
                         `
-                    } else {
-                        return `
-                            <div class="d-flex flex-">
-                                <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </button>
-                            </div>
-                        `
-                    }
-                           
                 } 
-                    }
+            }
         ]
     });
 
     document.querySelector('#addResourceStockTable').addEventListener('click', function (event) {
-        const editBtn    = event.target.closest('.updateBtn')
         const deleteBtn  = event.target.closest('.deleteBtn')
-
-        if (editBtn) {
-            editBtn.setAttribute('disabled', 'disabled')
-            const addResourceStockId = editBtn.getAttribute('data-id')
-            http.get(`/addresourcestock/${ addResourceStockId }`)
-                .then((response) => {
-                    if (response.status >= 200 || response.status <= 300) {
-                        openModals(updateResourceSubCategoryModal, saveResourceSubCategoryBtn, response.data.data)
-                    }
-                    editBtn.removeAttribute('disabled')
-                })
-                .catch((error) => {
-                    alert(error)
-                })
-        }
 
         if (deleteBtn){
             deleteBtn.setAttribute('disabled', 'disabled')
-            if (confirm('Are you sure you want to delete this Resource SubCategory?')) {
+            if (confirm('Are you sure you want to delete this stock record?')) {
                 const addResourceStockId = deleteBtn.getAttribute('data-id')
                 http.delete(`/addresourcestock/${addResourceStockId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
-                            addResourceStockIdTable.draw()
+                            addResourceStockTable.draw()
                         }
                         deleteBtn.removeAttribute('disabled')
                     })
@@ -469,13 +458,12 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    addResourceStockBtn.addEventListener('click', function () {
-        newAddResourceStockModal.show()
-    })
-
-    createAddResourceStockBtn.addEventListener('click', function () {
+    createAddResourceStockBtn.addEventListener('click', function (event) {
+        const resourceId = event.currentTarget.getAttribute('data-id')
         createAddResourceStockBtn.setAttribute('disabled', 'disabled')
-        http.post('/addresourcestock', getDivData(newAddResourceStockModal._element), {"html": newAddResourceStockModal._element})
+        let data = {...getDivData(newAddResourceStockModal._element), resourceId}
+
+        http.post('/addresourcestock', {...data}, {"html": newAddResourceStockModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                     newAddResourceStockModal.hide()
@@ -491,23 +479,24 @@ window.addEventListener('DOMContentLoaded', function () {
 
     })
 
-    saveAddResourceStockBtn.addEventListener('click', function (event) {
-        const addResourceStockId = event.currentTarget.getAttribute('data-id')
-        saveAddResourceStockBtn.setAttribute('disabled', 'disabled')
-        http.post(`/addresourcestock/${addResourceStockId}`, getDivData(updateAddResourceStockModal._element), {"html": updateAddResourceStockModal._element})
-        .then((response) => {
-            if (response.status >= 200 || response.status <= 300){
-                updateAddResourceStockModal.hide()
-                addResourceStockTable.draw()
-            }
-            saveAddResourceStockBtn.removeAttribute('disabled')
-        })
-        .catch((error) => {
-            alert(error)
-            saveAddResourceStockBtn.removeAttribute('disabled')
-        })
-    })
+        newSupplierInput.addEventListener('input', function() {
+            console.log(newSupplierInput.value)
+        if (newSupplierInput.value) {
+            http.get(`/resourcecategory/list_subcategories/${newSupplierInput.value}`).then((response) => {
+                    displayList(newSupplierDatalistEl, 'resourceOption' ,response.data)
 
+                })
+            }
+        })
+
+    updateSupplierInput.addEventListener('change', function() {
+        if (updateSupplierInput.value) {
+            http.get(`/resourcecategory/list_subcategories/${updateSupplierInput.value}`).then((response) => {
+                    displayList(updateSupplierDatalistEl, 'resourceOption' ,response.data)
+
+            })
+        }
+    })
 
     newResourceSubCategoryModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(newResourceSubCategoryModal._element)
@@ -517,6 +506,11 @@ window.addEventListener('DOMContentLoaded', function () {
     newResourceModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(newResourceModal._element)
         resourceTable.draw()
+    })
+
+    newAddResourceStockModal._element.addEventListener('hidden.bs.modal', function () {
+        clearValidationErrors(newAddResourceStockModal._element)
+        addResourceStockTable.draw()
     })
 
 })

@@ -15,6 +15,12 @@ class ResourceResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        if ($request->routeIs('Addstock')) {
+            return [
+                'id'       => $this->id,
+                'resource' => $this->name,
+            ];
+        }
         return [
                 'id'                    => $this->id,
                 'name'                  => $this->name,
@@ -28,7 +34,6 @@ class ResourceResource extends JsonResource
                 'sellingPrice'          => $this->selling_price,
                 'reOrder'               => $this->reorder_level,
                 'expiryDate'            => (new Carbon($this->expiry_date))->format('Y-m-d'),
-                // 'stockLevel'            => $this->stock_level,
         ];
     }
 }

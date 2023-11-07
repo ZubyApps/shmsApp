@@ -280,7 +280,9 @@ window.addEventListener('DOMContentLoaded', function () {
         orderMulti: true,
         search:true,
         columns: [
-            {data: "name"},
+            {data:row => () => {
+                return `<span class="text-primary"> ${row.name}</span>`
+            }},
             {data: "description"},
             {data: "createdBy"},
             {data: "createdAt"},

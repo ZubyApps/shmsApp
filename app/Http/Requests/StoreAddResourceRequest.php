@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Resource;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreAddResourceRequest extends FormRequest
@@ -11,7 +12,7 @@ class StoreAddResourceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,11 @@ class StoreAddResourceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'purchasePrice' => ['required', 'numeric'],
+            'sellingPrice'  => ['required', 'numeric'],
+            'unitPurchase'  => ['required', 'string'],
+            'quantity'      => ['required', 'numeric'],
+            'resourceId'    => ['required', 'numeric', 'exists:'.Resource::class.',id'],
         ];
     }
 }
