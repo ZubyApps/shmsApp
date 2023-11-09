@@ -7,21 +7,27 @@
             </div>
             <div class="modal-body">
                 <div class="mb-2">
-                    {{-- <x-form-label>Verify HMO Patient</x-form-label> --}}
-                    <div class="patientInfoDiv form-control mb-2">
-                        <x-form-span>Create new Resource stock date</x-form-span>
+                    <div class="form-control mb-2">
                         <div class="row">
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="dateLabel">Date</x-input-span>
-                                <x-form-input type="datetime-local" class="date" name="date" value="" />
+                                <x-input-span id="resourceLabel">Company<x-required-span /></x-input-span>
+                                <x-form-input type="text" class="company" name="company"/>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="descriptionLabel">Description</x-input-span>
-                                <x-form-input name="description" value="" />
+                                <x-input-span id="reOrderLabel">Contact Person</x-input-span>
+                                <x-form-input type="text" name="person"/>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="participantsLabel">Participants</x-input-span>
-                                <x-form-input name="participants" value="" />
+                                <x-input-span id="purchasePriceLabel">Phone</x-input-span>
+                                <x-form-input type="number" name="phone" value="" />
+                            </x-form-div>
+                            <x-form-div class="col-xl-12">
+                                <x-input-span id="sellingPriceLabel">Email</x-input-span>
+                                <x-form-input type="email" name="email" value="" />
+                            </x-form-div>
+                            <x-form-div class="col-xl-12">
+                                <x-input-span id="expiryDateLabel">Address</x-input-span>
+                                <x-form-input type="text" name="address" value="" />
                             </x-form-div>
                         </div>
                     </div>
@@ -32,7 +38,7 @@
                     <i class="bi bi-x-circle me-1"></i>
                     Close
                 </button>
-                <button type="button" id="{{ $isUpdate ? 'saveResourceStockDate' : 'createResourceStockDate' }}Btn" class="btn btn-primary">
+                <button type="button" id="{{ $isUpdate ? 'saveResourceSupplier' : 'createResourceSupplier' }}Btn" class="btn btn-primary">
                     <i class="bi bi-check-circle me-1"></i>
                     {{ $isUpdate ? 'Save' : 'Create' }}
                 </button>

@@ -14,10 +14,14 @@ window.addEventListener('DOMContentLoaded', function () {
     const newResourceModal                      = new Modal(document.getElementById('newResourceModal'))
     const updateResourceModal                   = new Modal(document.getElementById('updateResourceModal'))
     
+    const newResourceSupplierModal              = new Modal(document.getElementById('newResourceSupplierModal'))
+    const updateResourceSupplierModal           = new Modal(document.getElementById('updateResourceSupplierModal'))
+
     const newAddResourceStockModal              = new Modal(document.getElementById('newAddResourceStockModal'))
 
     const addResourceSubCategoryBtn             = document.querySelector('#addResourceSubCategoryBtn')
     const addResourceBtn                        = document.querySelector('#addResourceBtn')
+    const addResourceSupplierBtn                = document.querySelector('#addResourceSupplierBtn')
 
     const createResourceSubCategoryBtn          = document.querySelector('#createResourceSubCategoryBtn')
     const saveResourceSubCategoryBtn            = document.querySelector('#saveResourceSubCategoryBtn')
@@ -26,6 +30,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const createResourceBtn                     = document.querySelector('#createResourceBtn')
     const saveResourceBtn                       = document.querySelector('#saveResourceBtn')
+
+    const createResourceSupplierBtn             = document.querySelector('#createResourceSupplierBtn')
+    const saveResourceSupplierBtn               = document.querySelector('#saveResourceSupplierBtn')
 
     const newResourceCategoryInput              = document.querySelector('#newResourceCategory')
     const updateResourceCategoryInput           = document.querySelector('#updateResourceCategory')
@@ -195,8 +202,8 @@ window.addEventListener('DOMContentLoaded', function () {
             }
         ],
         rowCallback: (row, data) => {
-            if ( data.isActive) {
-                row.classList.add('fw-semibold')
+            if ( !data.isActive) {
+                row.classList.add('table-danger')
             }
 
             return row
@@ -213,6 +220,7 @@ window.addEventListener('DOMContentLoaded', function () {
             {data: "purchasePrice"},
             {data: "sellingPrice"},
             {data: "reOrder"},
+            {data: "stock"},
             {
                 visible: false,
                 data: "expiryDate"
@@ -240,7 +248,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                 </a>
                             </div>
                             <div class="dropdown ms-1">
-                                <a class="text-primary tooltip-test text-decoration-none" title="options" data-bs-toggle="dropdown" href="" >
+                                <a class="text-${!row.isActive ? 'danger' : 'primary'} tooltip-test text-decoration-none" title="options" data-bs-toggle="dropdown" href="" >
                                 <i class="bi bi-gear fs-4" role="button"></i>
                                 </a>
                                     <ul class="dropdown-menu">
@@ -300,6 +308,8 @@ window.addEventListener('DOMContentLoaded', function () {
         if (editBtn) {
             editBtn.setAttribute('disabled', 'disabled')
             const resourceId = editBtn.getAttribute('data-id')
+            let date = new Date().toISOString().split('T')[0]
+            updateResourceModal._element.querySelector('[name="expiryDate"]').setAttribute('min', date)
             http.get(`/resources/${ resourceId }`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
@@ -363,6 +373,8 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     addResourceBtn.addEventListener('click', function () {
+        let date = new Date().toISOString().split('T')[0]
+        newResourceModal._element.querySelector('[name="expiryDate"]').setAttribute('min', date)
         newResourceModal.show()
     })
 
@@ -448,6 +460,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
                             addResourceStockTable.draw()
+                            resourceTable.draw()
                         }
                         deleteBtn.removeAttribute('disabled')
                     })
@@ -460,15 +473,18 @@ window.addEventListener('DOMContentLoaded', function () {
 
     createAddResourceStockBtn.addEventListener('click', function (event) {
         const resourceId = event.currentTarget.getAttribute('data-id')
+        const resourceSupplierId = getDatalistOptionId(newAddResourceStockModal, newSupplierInput, newSupplierDatalistEl)
+        console.log(resourceSupplierId)
         createAddResourceStockBtn.setAttribute('disabled', 'disabled')
-        let data = {...getDivData(newAddResourceStockModal._element), resourceId}
+        let data = {...getDivData(newAddResourceStockModal._element), resourceId, resourceSupplierId}
 
         http.post('/addresourcestock', {...data}, {"html": newAddResourceStockModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                     newAddResourceStockModal.hide()
-                    clearDivValues(newResourceSubCategoryModal._element)
+                    clearDivValues(newAddResourceStockModal._element)
                     addResourceStockTable.draw()
+                    resourceTable.draw()
                 }
             createAddResourceStockBtn.removeAttribute('disabled')
         })
@@ -479,23 +495,131 @@ window.addEventListener('DOMContentLoaded', function () {
 
     })
 
-        newSupplierInput.addEventListener('input', function() {
-            console.log(newSupplierInput.value)
+    newSupplierInput.addEventListener('keyup', function() {
         if (newSupplierInput.value) {
-            http.get(`/resourcecategory/list_subcategories/${newSupplierInput.value}`).then((response) => {
-                    displayList(newSupplierDatalistEl, 'resourceOption' ,response.data)
-
-                })
-            }
-        })
-
-    updateSupplierInput.addEventListener('change', function() {
-        if (updateSupplierInput.value) {
-            http.get(`/resourcecategory/list_subcategories/${updateSupplierInput.value}`).then((response) => {
-                    displayList(updateSupplierDatalistEl, 'resourceOption' ,response.data)
-
+            http.get(`/resourcesupplier/list`, {params: {supplier: newSupplierInput.value}}).then((response) => {
+                displayList(newSupplierDatalistEl, 'supplierOption', response.data)
             })
         }
+    })
+    
+    updateSupplierInput.addEventListener('keyup', function() {
+        console.log(newSupplierInput.value)
+        if (updateSupplierInput.value) {
+            http.get(`/resourcesupplier/list/${updateSupplierInput.value}`).then((response) => {
+                    displayList(updateSupplierDatalistEl, 'supplierOption', response.data)
+            })
+        }
+    })
+
+    addResourceSupplierBtn.addEventListener('click', function () {
+        newResourceSupplierModal.show()
+    })
+
+    const resourceSupplierTable = new DataTable('#resourceSupplierTable', {
+        serverSide: true,
+        ajax:  '/resourcesupplier/load',
+        orderMulti: true,
+        search:true,
+        columns: [
+            {data: "company"},
+            {data: "person"},
+            {data: "phone"},
+            {data: "email"},
+            {data: "address"},
+            {data: "createdBy"},
+            {data: "createdAt"},
+            {
+                sortable: false,
+                data: row => () => {
+                        return `
+                            <div class="d-flex flex-">
+                                <button class=" btn btn-outline-primary editBtn tooltip-test" title="update" data-id="${ row.id }">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </button>
+                                <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </div>
+                        `
+                } 
+            }
+        ]
+    });
+
+    document.querySelector('#resourceSupplierTable').addEventListener('click', function (event) {
+        const editBtn  = event.target.closest('.editBtn')
+        const deleteBtn  = event.target.closest('.deleteBtn')
+
+        if (editBtn) {
+            editBtn.setAttribute('disabled', 'disabled')
+            const resourceSupplierId = editBtn.getAttribute('data-id')
+            http.get(`/resourcesupplier/${ resourceSupplierId }`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openResourceModal(updateResourceSupplierModal, saveResourceSupplierBtn, response.data.data)
+                    }
+                    editBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    alert(error)
+                })
+        }
+
+        if (deleteBtn){
+            deleteBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Supplier?')) {
+                const addResourceStockId = deleteBtn.getAttribute('data-id')
+                http.delete(`/resourcesupplier/${addResourceStockId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            resourceSupplierTable.draw()
+                            resourceTable.draw()
+                        }
+                        deleteBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                    })
+            }
+        }
+    })
+
+    createResourceSupplierBtn.addEventListener('click', function (event) {
+        createResourceSupplierBtn.setAttribute('disabled', 'disabled')
+
+        http.post('/resourcesupplier', {...getDivData(newResourceSupplierModal._element)}, {"html": newResourceSupplierModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                    newResourceSupplierModal.hide()
+                    clearDivValues(newResourceSupplierModal._element)
+                    resourceSupplierTable.draw()
+                }
+            createResourceSupplierBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            alert(error.response.data.message)
+            createResourceSupplierBtn.removeAttribute('disabled')
+        })
+
+    })
+
+    saveResourceSupplierBtn.addEventListener('click', function (event) {
+        const resourceSupplierId = event.currentTarget.getAttribute('data-id')
+        saveResourceSupplierBtn.setAttribute('disabled', 'disabled')
+
+        http.post(`/resourcesupplier/${resourceSupplierId}`, {...getDivData(updateResourceSupplierModal._element)}, {"html": updateResourceSupplierModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                updateResourceSupplierModal.hide()
+                resourceSupplierTable.draw()
+            }
+            saveResourceSupplierBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            alert(error)
+            saveResourceSupplierBtn.removeAttribute('disabled')
+        })
     })
 
     newResourceSubCategoryModal._element.addEventListener('hidden.bs.modal', function () {
@@ -509,8 +633,15 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     newAddResourceStockModal._element.addEventListener('hidden.bs.modal', function () {
+        clearDivValues(newAddResourceStockModal._element)
         clearValidationErrors(newAddResourceStockModal._element)
         addResourceStockTable.draw()
+    })
+
+    newResourceSupplierModal._element.addEventListener('hidden.bs.modal', function () {
+        clearDivValues(newResourceSupplierModal._element)
+        clearValidationErrors(newResourceSupplierModal._element)
+        resourceSupplierTable.draw()
     })
 
 })

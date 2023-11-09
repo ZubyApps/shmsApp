@@ -16,10 +16,12 @@ use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\ResourceStockDateController;
 use App\Http\Controllers\ResourceSubCategoryController;
+use App\Http\Controllers\ResourceSupplierController;
 use App\Http\Controllers\SponsorCategoryController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VitalSignsController;
+use App\Models\AddResource;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -107,6 +109,7 @@ Route::middleware('auth')->group(function () {
         Route::post('', [ResourceStockDateController::class, 'store']);
         Route::get('/load', [ResourceStockDateController::class, 'load']);
         Route::get('/{resourceStockDate}', [ResourceStockDateController::class, 'edit']);
+        Route::post('/resetstock/{resourceStockDate}', [ResourceStockDateController::class, 'processReset']);
         Route::delete('/{resourceStockDate}', [ResourceStockDateController::class, 'destroy']);
         Route::post('/{resourceStockDate}', [ResourceStockDateController::class, 'update']);
     })->name('Stock Date');
@@ -147,6 +150,15 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{addResource}', [AddResourceController::class, 'destroy']);
         Route::post('/{addResource}', [AddResourceController::class, 'update']);
     })->name('AddStock');
+
+    Route::prefix('resourcesupplier')->group(function (){
+        Route::post('', [ResourceSupplierController::class, 'store']);
+        Route::get('/load', [ResourceSupplierController::class, 'load']);
+        Route::get('/list', [ResourceSupplierController::class, 'list']);
+        Route::get('/{resourceSupplier}', [ResourceSupplierController::class, 'edit']);
+        Route::delete('/{resourceSupplier}', [ResourceSupplierController::class, 'destroy']);
+        Route::post('/{resourceSupplier}', [ResourceSupplierController::class, 'update']);
+    })->name('Resource Supplier');
 });
 
 require __DIR__.'/auth.php';

@@ -16,6 +16,11 @@ class ResourceSupplier extends Model
         return $this->hasMany(AddResource::class);
     }
 
+    public function resources() 
+    {
+        return $this->hasMany(Resource::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

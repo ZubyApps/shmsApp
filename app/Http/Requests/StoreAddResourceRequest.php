@@ -3,7 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Models\Resource;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class StoreAddResourceRequest extends FormRequest
 {
@@ -20,13 +22,14 @@ class StoreAddResourceRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
             'purchasePrice' => ['required', 'numeric'],
             'sellingPrice'  => ['required', 'numeric'],
             'unitPurchase'  => ['required', 'string'],
             'quantity'      => ['required', 'numeric'],
+            'expiryDate'    => ['nullable', 'date', 'after_or_equal:'.date('d-m-Y')],
             'resourceId'    => ['required', 'numeric', 'exists:'.Resource::class.',id'],
         ];
     }

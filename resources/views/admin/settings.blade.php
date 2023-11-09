@@ -65,7 +65,7 @@
                 <div class="tab-pane fade active" id="nav-resourceStockDate" role="tabpanel" aria-labelledby="nav-resourceStockDate-tab"
                     tabindex="0">
                     
-                    <div class="text-start my-4">
+                    <div class="text-start gx-5 my-4">
                         <button class="btn btn-primary" type="button" id="addResourceStockDateBtn">
                             <i class="bi bi-plus-circle"></i>
                             Date
@@ -76,8 +76,9 @@
                         <table id="resourceStockDateTable" class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>Description</th>
                                     <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Participants</th>
                                     <th>Created By</th>
                                     <th>Created At</th>
                                     <th>Actions</th>

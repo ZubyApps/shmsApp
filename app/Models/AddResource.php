@@ -16,9 +16,9 @@ class AddResource extends Model
         return $this->belongsTo(Resource::class);
     }
 
-    public function supplier()
+    public function resourceSupplier()
     {
-        return $this->belongsTo(supplier::class);
+        return $this->belongsTo(ResourceSupplier::class);
     }
 
     public function user()

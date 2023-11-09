@@ -10,7 +10,7 @@
                     <div class="form-control mb-2">
                         <div class="row">
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="nameLabel">Name</x-input-span>
+                                <x-input-span id="nameLabel">Name<x-required-span /></x-input-span>
                                 <x-form-input type="text" class="name" name="name" value="" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
@@ -44,8 +44,20 @@
                                 <x-form-input type="number" name="sellingPrice" value="" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="unitLabel">Unit Description</x-input-span>
-                                <x-form-input type="text" name="unit" value="" />
+                                <x-input-span id="unitLabel">Unit Description<x-required-span /></x-input-span>
+                                <select class="form-select form-select-md" name="unitDescription">
+                                    <option value="">Select</option>
+                                    <option value="Cards(s)">Card(s)</option>
+                                    <option value="Tab(s)">Tab(s)</option>
+                                    <option value="Capsule(s)">Capsule(s)</option>
+                                    <option value="Ample(s)">Ample(s)</option>
+                                    <option value="Vial(s)">Vial(s)</option>
+                                    <option value="Bottle(s)">Bottle(s)</option>
+                                    <option value="Packs">Pack(s)</option>
+                                    <option value="Infusion(s)">Infusion(s)</option>
+                                    <option value="Box(es)">Box(es)</option>
+                                    <option value="Piece(s)">Piece(s)</option>
+                                </select>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="expiryDateLabel">Expiry Date</x-input-span>

@@ -25,8 +25,8 @@ class ResourceService
             'purchase_price'            => $data->purchasePrice,
             'selling_price'             => $data->sellingPrice,
             'reorder_level'             => $data->reOrder,
-            'unit_description'          => $data->unit,
-            'expiry_date'               => $data->expiryDate,
+            'unit_description'          => $data->unitDescription,
+            'expiry_date'               => new Carbon($data->expiryDate),
             // 'stock_level'               => $data->stockLevel,
         ]);
     }
@@ -40,8 +40,8 @@ class ResourceService
             'purchase_price'            => $data->purchasePrice,
             'selling_price'             => $data->sellingPrice,
             'reorder_level'             => $data->reOrder,
-            'unit_description'          => $data->unit,
-            'expiry_date'               => $data->expiryDate,
+            'unit_description'          => $data->unitDescription,
+            'expiry_date'               => new Carbon($data->expiryDate),
             // 'stock_level'               => $data->stockLevel,
         ]);
 
@@ -82,11 +82,12 @@ class ResourceService
                 'purchasePrice'     => $resource->purchase_price,
                 'sellingPrice'      => $resource->selling_price,
                 'reOrder'           => $resource->reorder_level,
-                'isActive'           => $resource->is_active,
+                'stock'             => $resource->stock_level,
+                'isActive'          => $resource->is_active,
                 'expiryDate'        => $resource->expiry_date ? (new Carbon($resource->expiry_date))->format('d/m/y') : 'N/A',
                 'expired'           => $resource->expiry_date ? $this->dataDifferenceInDays($resource->expiry_date) : 'N/A',
                 'createdBy'         => $resource->user->username,
-                'createdAt'         => (new Carbon($resource->created_at))->format('d/m/y'),
+                'createdAt'         => $resource->created_at->format('d/m/y'),
                 'count'             => 0//$resource->resources()->count(),
             ];
          };
@@ -104,10 +105,6 @@ class ResourceService
                 if ($days > 0 && $days < 90){
                     return 'Soon';
                     }
-                
-                // if ($days > 0 && $days <= 30){
-                //     return 'Very soon';
-                //     }
 
                if ($days <= 0){
                 return 'Yes';

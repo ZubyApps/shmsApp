@@ -85,6 +85,9 @@ class AddResourceController extends Controller
      */
     public function destroy(AddResource $addResource)
     {
-        //
+        $addResource->resource()->update([
+            'stock_level' => $addResource->resource->stock_level - $addResource->quantity
+        ]);
+        return $addResource->destroy($addResource->id);
     }
 }

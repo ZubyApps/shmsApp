@@ -10,7 +10,7 @@
                     <x-form-label>{{ $isUpdate ? 'Update': 'Fill' }} Information</x-form-label>
                     <div class="row">
                         <x-form-div class="col-xl-6">
-                            <x-input-span>Name</x-input-span>
+                            <x-input-span>Name<x-required-span /></x-input-span>
                             <x-form-input name="name" value="" />
                         </x-form-div>
                         <x-form-div class="col-xl-6">

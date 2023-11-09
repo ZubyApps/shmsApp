@@ -18,17 +18,23 @@ class ResourceSupplierService
 
     public function create(Request $data, User $user): ResourceSupplier
     {
-        return $user->resourceCategories()->create([
-            'name'          => $data->name,
-            'description'   => $data->description,
+        return $user->resourceSuppliers()->create([
+            'company'   => $data->company,
+            'person'    => $data->person,
+            'phone'     => $data->phone,
+            'email'     => $data->email,
+            'address'   => $data->address,
         ]);
     }
 
     public function update(Request $data, ResourceSupplier $resourceSupplier, User $user): ResourceSupplier
     {
        $resourceSupplier->update([
-            'name'          => $data->name,
-            'description'   => $data->description,
+            'company'   => $data->company,
+            'person'    => $data->person,
+            'phone'     => $data->phone,
+            'email'     => $data->email,
+            'address'   => $data->address,
 
         ]);
 
@@ -59,12 +65,26 @@ class ResourceSupplierService
        return  function (ResourceSupplier $resourceSupplier) {
             return [
                 'id'                => $resourceSupplier->id,
-                'name'              => $resourceSupplier->name,
-                'description'       => $resourceSupplier->description,
+                'company'           => $resourceSupplier->company,
+                'person'            => $resourceSupplier->person,
+                'phone'             => $resourceSupplier->phone,
+                'email'             => $resourceSupplier->email,
+                'address'           => $resourceSupplier->address,
                 'createdBy'         => $resourceSupplier->user->username,
                 'createdAt'         => (new Carbon($resourceSupplier->created_at))->format('d/m/y g:ia'),
-                'count'             => $resourceSupplier->resourceSubCategories()->count(),
+                'count'             => $resourceSupplier->resources()->count(),
             ];
          };
+    }
+
+    public function getSupplierList(Request $data)
+    {
+        if (! empty($data->supplier)) {
+            return $this->resourceSupplier
+                        ->where('company', 'LIKE', '%' . addcslashes($data->supplier, '%_') . '%' )
+                        ->orderBy('company', 'desc')
+                        ->select('id', 'company as name')
+                        ->get();
+        }
     }
 }

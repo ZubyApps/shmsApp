@@ -30,4 +30,9 @@ class Resource extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function resourceSupplier()
+    {
+        return $this->belongsTo(ResourceSupplier::class);
+    }
 }

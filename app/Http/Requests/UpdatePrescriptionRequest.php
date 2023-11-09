@@ -2,19 +2,16 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Resource;
-use App\Models\ResourceSubCategory;
-use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreResourceRequest extends FormRequest
+class UpdatePrescriptionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -25,9 +22,7 @@ class StoreResourceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'                  => ['required', 'unique:'.Resource::class],
-            'expiryDate'            => ['nullable', 'date', 'after_or_equal:'.date('d-m-Y')],
-            'resourceSubCategory'   => ['required', 'numeric', 'exists:'.ResourceSubCategory::class.',id'],
+            //
         ];
     }
 }

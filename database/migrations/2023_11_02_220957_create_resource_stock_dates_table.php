@@ -16,6 +16,8 @@ return new class extends Migration
             $table->id();
             $table->dateTime('date');
             $table->string('description');
+            $table->string('participants');
+            $table->boolean('reset')->default(false);
             $table->foreignIdFor(User::class);
             $table->timestamps();
         });

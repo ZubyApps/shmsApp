@@ -19,16 +19,18 @@ class ResourceStockDateService
     public function create(Request $data, User $user): ResourceStockDate
     {
         return $user->resourceStockDates()->create([
-            'description'          => $data->description,
-            'date'                 => $data->date,
+            'date'          => new Carbon($data->date),
+            'description'   => $data->description,
+            'participants'  => $data->participants,
         ]);
     }
 
     public function update(Request $data, ResourceStockDate $resourceStockDate, User $user): ResourceStockDate
     {
        $resourceStockDate->update([
+            'date'          => new Carbon($data->date),
             'description'   => $data->description,
-            'date'          => $data->date,
+            'participants'  => $data->participants,
 
         ]);
 
@@ -61,8 +63,10 @@ class ResourceStockDateService
                 'id'                => $resourceStockDate->id,
                 'date'              => (new Carbon($resourceStockDate->date))->format('d/m/y g:ia'),
                 'description'       => $resourceStockDate->description,
+                'participants'      => $resourceStockDate->participants,
+                'reset'             => $resourceStockDate->reset,
                 'createdBy'         => $resourceStockDate->user->username,
-                'createdAt'         => (new Carbon($resourceStockDate->created_at))->format('d/m/y g:ia'),
+                'createdAt'         => $resourceStockDate->created_at->format('d/m/y g:ia'),
             ];
          };
     }

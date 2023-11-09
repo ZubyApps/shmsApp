@@ -75,6 +75,18 @@ class ResourceController extends Controller
         return new ResourceResource($resource);
     }
 
+    public function resetStock()
+    {
+        $resetStock = Resource::all();
+
+        foreach ($resetStock as $stock) {
+            $stock->stock_level = null;
+            $stock->save();
+        }
+
+        return $stock->stock_level;
+    }
+
     /**
      * Update the specified resource in storage.
      */

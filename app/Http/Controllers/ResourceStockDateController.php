@@ -9,12 +9,15 @@ use App\Http\Resources\ResourceStockDateResource;
 use App\Services\DatatablesService;
 use App\Services\ResourceStockDateService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ResourceStockDateController extends Controller
 {
     public function __construct(
         private readonly DatatablesService $datatablesService, 
-        private readonly ResourceStockDateService $resourceStockDateService)
+        private readonly ResourceStockDateService $resourceStockDateService,
+        private readonly ResourceController $resourceController
+        )
     {
         
     }
@@ -54,6 +57,17 @@ class ResourceStockDateController extends Controller
 
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
+
+    public function processReset(ResourceStockDate $resourceStockDate)
+    {
+        DB::transaction(function () use($resourceStockDate) {
+            $this->resourceController->resetStock();
+
+            return $resourceStockDate->update(['reset' => true]);
+        });
+        
+    }
+
 
     /**
      * Display the specified resource.

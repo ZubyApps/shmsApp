@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use App\Models\ResourceSubCategory;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class UpdateResourceRequest extends FormRequest
 {
@@ -20,10 +22,11 @@ class UpdateResourceRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
-            'name'                  => ['required'],
+            'name'                  => ['required', Rule::unique('resources','name')->ignore($request->name, 'name')],
+            'expiryDate'            => ['nullable', 'date', 'after_or_equal:'.date('d-m-Y')],
             'resourceSubCategory'   => ['required', 'numeric', 'exists:'.ResourceSubCategory::class.',id'],
         ];
     }

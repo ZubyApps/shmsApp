@@ -18,31 +18,34 @@ class AddResourceStockService
 
     public function create(Request $data, User $user): AddResource
     {
-        return $user->addResources()->create([
+        $addedStock = $user->addResources()->create([
             'resource_id'           => $data->resourceId,
             'quantity'              => $data->quantity,
             'unit_purchase'         => $data->unitPurchase,
             'purchase_price'        => $data->purchasePrice,
             'selling_price'         => $data->sellingPrice,
-            'expiry_date'           => $data->expiryDate,
-            'resource_supplier_id'  => $data->supplier,
-        ]);
-    }
-
-    public function update(Request $data, AddResource $addResource, User $user): AddResource
-    {
-       $addResource->update([
-            'resource_id'           => $data->resource,
-            'quantity'              => $data->qty,
-            'unit_purchase'         => $data->unitPurchase,
-            'purchase_price'        => $data->purchasePrice,
-            'selling_price'         => $data->sellingPrice,
-            'expiry_date'           => $data->expiryDate,
-            'resource_supplier_id'  => $data->supplier,
-
+            'expiry_date'           => $data->expiryDate ? new Carbon($data->expiryDate) : null,
+            'resource_supplier_id'  => $data->resourceSupplierId,
         ]);
 
-        return $addResource;
+        if ($data->expiryDate){
+            $addedStock->resource()->update([
+                    'stock_level'       => $addedStock->resource->stock_level + $data->quantity,
+                    'unit_description'  => $data->unitPurchase, 
+                    'purchase_price'    => $data->purchasePrice, 
+                    'selling_price'     => $data->sellingPrice, 
+                    'expiry_date'       => new Carbon($data->expiryDate), 
+                ]);
+                return $addedStock;
+            }
+        
+        $addedStock->resource()->update([
+            'stock_level'       => $addedStock->resource->stock_level + $data->quantity,
+            'unit_description'  => $data->unitPurchase, 
+            'purchase_price'    => $data->purchasePrice, 
+            'selling_price'     => $data->sellingPrice, 
+        ]);
+        return $addedStock;
     }
 
     public function getPaginatedAddResourceStocks(DataTableQueryParams $params)
@@ -74,7 +77,7 @@ class AddResourceStockService
                 'purchasePrice'     => $addResource->purchase_price,
                 'sellingPrice'      => $addResource->selling_price,
                 'expiryDate'        => (new Carbon($addResource->expiry_date))->format('d/m/y'),
-                'supplier'          => $addResource->resource_supplier,
+                'supplier'          => $addResource->resourceSupplier->company,
                 'createdBy'         => $addResource->user->username,
                 'createdAt'         => (new Carbon($addResource->created_at))->format('d/m/y'),
                 // 'count'             => $addResource->resourceSubCategories()->count(),

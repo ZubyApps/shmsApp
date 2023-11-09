@@ -11,7 +11,7 @@ class StoreResourceSupplierRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class StoreResourceSupplierRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'company'   => ['required'],
+            'phone'     => ['nullable', 'numeric', 'digits:11']
         ];
     }
 }

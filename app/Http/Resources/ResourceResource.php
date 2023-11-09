@@ -29,7 +29,7 @@ class ResourceResource extends JsonResource
                 'resourceCategoryId'    => $this->resourceSubCategory->resourceCategory->id,
                 'resourceSubCategory'   => $this->resourceSubCategory->name,
                 'resourceSubCategoryId' => $this->resourceSubCategory->id,
-                'unit'                  => $this->unit_description,
+                'unitDescription'       => $this->unit_description,
                 'purchasePrice'         => $this->purchase_price,
                 'sellingPrice'          => $this->selling_price,
                 'reOrder'               => $this->reorder_level,
