@@ -123,4 +123,38 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal) => {
     return vitalSignsByVisit
 }
 
-export {getAllPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit}
+const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
+    const prescriptionTable =  new DataTable(tableId, {
+        serverSide: true,
+        ajax:  {url: '/prescription/load/initial', data: {
+            'conId': conId,
+        }},
+        orderMulti: true,
+        search:true,
+        columns: [
+            {data: "prescribed"},
+            {data: "resource"},
+            {data: "prescription"},
+            {data: "quantity"},
+            {data: "by"},
+            {
+                sortable: false,
+                data: row =>  `
+                <div class="d-flex flex-">
+                    <button type="submit" class="ms-1 btn btn-outline-primary ${modal.id == 'consultationReviewModal' ? 'd-none' : ''} deleteBtn tooltip-test" title="delete" data-id="${ row.id}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+                `      
+            },
+        ]
+    });
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        prescriptionTable.destroy()
+    })
+
+    return prescriptionTable
+}
+
+export {getAllPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation}

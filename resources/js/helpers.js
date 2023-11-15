@@ -133,7 +133,7 @@ const getSelctedText = (selectEl) => {
 }
 
 function displayList(dataListEl, optionsId, data) {
-    
+    console.log(dataListEl)
     dataListEl.innerHTML = ''
     
     

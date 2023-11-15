@@ -30,8 +30,7 @@
                             <div class="mb-2 form-control">
                                 <x-form-span>Vital Signs</x-form-span>
                                 <div class="row overflow-auto my-3">
-                                    <table id="vitalSignsTableNewCon"
-                                        class="table table-hover align-middle table-sm bg-primary">
+                                    <table id="vitalSignsTableNewCon" class="table table-hover align-middle table-sm">
                                         <thead>
                                             <tr>
                                                 <th>Done</th>
@@ -51,8 +50,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="row" id="addVitalsignsDiv" {!! $isSpecialist ? 'data-div="specialist"' : 'data-div="new"' !!}>
-                                        <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                         @include('vitalsigns.vitalsigns', ['disabled' => false])
+                                        <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                     </div>
                                     <div class="d-flex justify-content-center">
                                         <button type="button" id="addVitalsignsBtn" {!! $isSpecialist ? 'data-btn="specialist"' : 'data-btn="new"' !!}
@@ -173,7 +172,7 @@
                                         </x-form-div>
                                     </div>
                                     @if ($isSpecialist)
-                                    <div class="row">
+                                    <div class="row d-none">
                                         <x-form-div class="col-xl-12">
                                             <x-input-span id="specialistLabel">Specialist Consultation Confirmation</x-input-span>
                                             <x-form-input type="text" name="specialConsultation" id="specialConsultation" value="1" />
@@ -182,22 +181,20 @@
                                     @endif
                                     <div class="d-flex justify-content-center">
                                         <button type="button" id="saveConsultationBtn" {!! $isSpecialist ? 'data-btn="specialist"' : 'data-btn="new"' !!}
-                                            class="btn bg-primary text-white">
+                                            class="btn btn-primary">
                                             Save
                                         </button>
                                     </div>
                                     <x-toast-successful  id="saveConsultationToast"></x-toast-successful>
                                 </div>
-                                <div class="d-none investigationAndManagementDiv" id="investigationAndManagementDivNew" {!! $isSpecialist ? 'data-div="specialist"' : 'data-div="new"' !!}>
+                                <div class="d-none investigationAndManagementDiv" id="investigationAndManagementDiv{{ $isSpecialist ? 'Specialist' : 'New' }}" {!! $isSpecialist ? 'data-div="specialist"' : 'data-div="new"' !!}>
                                     <div class="mb-2 form-control">
                                         <x-form-span>Investigation & Management</x-form-span>
                                         <div class="row">
                                             <x-form-div class="col-xl-6">
-                                                <x-input-span id="itemLabel">Item</x-input-span>
-                                                <x-form-input type="search" name="item" id="item"
-                                                    placeholder="search" />
-                                                <datalist name="item" type="text"
-                                                    class="decoration-none"></datalist>
+                                                <x-input-span id="resourceLabel">Medical Resource</x-input-span>
+                                                <input class="form-control" type="search" name="resource" id="resource" {!! $isSpecialist ? 'data-input="specialist"' : 'data-input="new"' !!} placeholder="search" list="resourceList"/>
+                                                <datalist name="resource" type="text" class="decoration-none" id="resourceList"></datalist>
                                             </x-form-div>
                                             <x-form-div class="col-xl-6">
                                                 <x-input-span id="prescriptionLabel">Prescription</x-input-span>
@@ -209,26 +206,30 @@
                                                 <x-form-input type="number" name="quantity" id="quantity"
                                                     placeholder="" />
                                             </x-form-div>
+                                            <x-form-div class="col-xl-6">
+                                                <x-input-span id="noteLabel">Note</x-input-span>
+                                                <x-form-input type="text" name="note" id="instruction"/>
+                                            </x-form-div>
                                         </div>
                                         <div class="d-flex justify-content-center">
-                                            <button type="button" id="addInvestigationAndManagmentBtn"
+                                            <button type="button" id="addInvestigationAndManagementBtn"
                                             {!! $isSpecialist ? 'data-btn="specialist"' : 'data-btn="new"' !!} class="btn btn-primary">
                                                 add
                                                 <i class="bi bi-prescription"></i>
                                             </button>
                                         </div>
+                                        <x-toast-successful  id="saveInvestigationAndManagementToast"></x-toast-successful>
                                     </div>
                                     <div class="mb-2 form-control">
-                                        <table id="prescriptionTable"
-                                            class="table table-hover align-middle table-sm bg-primary">
+                                        <table id="prescriptionTable" class="table table-hover align-middle table-sm prescriptionTable">
                                             <thead>
                                                 <tr>
-                                                    <th>S/N</th>
-                                                    <th>Billed at</th>
-                                                    <th>Item</th>
+                                                    <th>Prescribed</th>
+                                                    <th>Resource</th>
                                                     <th>Prescription</th>
                                                     <th>Qty</th>
-                                                    <th>Actions</th>
+                                                    <th>By</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>

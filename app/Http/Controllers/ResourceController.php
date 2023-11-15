@@ -31,9 +31,14 @@ class ResourceController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function list(Request $request)
     {
-        //
+        $resources = $this->resourceService->getFormattedList($request);
+
+        $listTransformer = $this->resourceService->listTransformer();
+
+        return array_map($listTransformer, (array)$resources->getIterator());
+
     }
 
     /**
@@ -84,7 +89,7 @@ class ResourceController extends Controller
             $stock->save();
         }
 
-        return $stock->stock_level;
+        return response();
     }
 
     /**

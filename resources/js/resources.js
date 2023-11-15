@@ -504,7 +504,6 @@ window.addEventListener('DOMContentLoaded', function () {
     })
     
     updateSupplierInput.addEventListener('keyup', function() {
-        console.log(newSupplierInput.value)
         if (updateSupplierInput.value) {
             http.get(`/resourcesupplier/list/${updateSupplierInput.value}`).then((response) => {
                     displayList(updateSupplierDatalistEl, 'supplierOption', response.data)

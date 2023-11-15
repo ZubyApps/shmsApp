@@ -2,23 +2,23 @@ import { Modal, Collapse, Toast } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
 import { consultationDetails, items } from "./data"
-import { clearDivValues, clearItemsList, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, clearValidationErrors } from "./helpers"
+import { clearDivValues, clearItemsList, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, getDatalistOptionId, clearValidationErrors, displayList } from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
-import { getAllPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit } from "./tables"
+import { getAllPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation } from "./tables/doctorstables"
 import jQuery from "jquery";
 import $ from 'jquery';
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import 'datatables.net-buttons-bs5';
-import 'datatables.net-buttons/js/buttons.colVis.mjs';
-import 'datatables.net-buttons/js/buttons.html5.mjs';
-import 'datatables.net-buttons/js/buttons.print.mjs';
-import 'datatables.net-fixedcolumns-bs5';
-import 'datatables.net-fixedheader-bs5';
-import 'datatables.net-select-bs5';
-import 'datatables.net-staterestore-bs5';
+// import 'datatables.net-buttons-bs5';
+// import 'datatables.net-buttons/js/buttons.colVis.mjs';
+// import 'datatables.net-buttons/js/buttons.html5.mjs';
+// import 'datatables.net-buttons/js/buttons.print.mjs';
+// import 'datatables.net-fixedcolumns-bs5';
+// import 'datatables.net-fixedheader-bs5';
+// import 'datatables.net-select-bs5';
+// import 'datatables.net-staterestore-bs5';
 
 window.addEventListener('DOMContentLoaded', function () {
     const newConsultationModal              = new Modal(document.getElementById('newConsultationModal'))
@@ -34,11 +34,11 @@ window.addEventListener('DOMContentLoaded', function () {
     
     const consultationReviewDiv             = document.querySelector('#consultationReviewDiv')
 
-    const ItemInput                         = document.querySelectorAll('#item')
+    const resourceInput                     = document.querySelectorAll('#resource')
 
-    const investigationAndManagmentDiv      = document.querySelectorAll('#investigationAndManagementDiv')
+    const investigationAndManagmentDiv      = document.querySelectorAll('.investigationAndManagementDiv')
     const knownClinicalInfoDiv              = document.querySelectorAll('#knownClinicalInfoDiv')
-    const addInvestigationAndManagmentBtn   = document.querySelectorAll('#addInvestigationAndManagmentBtn')
+    const addInvestigationAndManagmentBtn   = document.querySelectorAll('#addInvestigationAndManagementBtn')
     const updateKnownClinicalInfoBtn        = document.querySelectorAll('#updateKnownClinicalInfoBtn')
     const addVitalsignsDiv                  = document.querySelectorAll('#addVitalsignsDiv')
     const addVitalsignsBtn                  = document.querySelectorAll('#addVitalsignsBtn')
@@ -141,7 +141,6 @@ window.addEventListener('DOMContentLoaded', function () {
                             openModals(newAncConsultationModal, newAncConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                             const vitalSigsnByVisitTable = getVitalSignsTableByVisit('#vitalSignsTableAncCon', visitId, newAncConsultationModal)
                         } else{
-                            console.log(visitId)
                             openModals(newConsultationModal, newConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                             const vitalSigsnByVisitTable = getVitalSignsTableByVisit('#vitalSignsTableNewCon', visitId, newConsultationModal)
                         }
@@ -184,7 +183,6 @@ window.addEventListener('DOMContentLoaded', function () {
     // manipulating all known clinical info div
     updateKnownClinicalInfoBtn.forEach(updateBtn => {
         updateBtn.addEventListener('click', function () {
-            console.log('clicked')
             knownClinicalInfoDiv.forEach(div => {
                 console.log(updateBtn.dataset.btn, div.dataset.div)
                 if (div.dataset.div === updateBtn.dataset.btn) {
@@ -225,11 +223,9 @@ window.addEventListener('DOMContentLoaded', function () {
                             clearDivValues(div)
                         }
                         if ($.fn.DataTable.isDataTable( '#vitalSignsTableNewCon' )){
-                                console.log('its a table')
                             $('#vitalSignsTableNewCon').dataTable().fnDraw()
                         }
                         if ($.fn.DataTable.isDataTable( '#vitalSignsTableAncCon' )){
-                                console.log('its a table')
                             $('#vitalSignsTableAncCon').dataTable().fnDraw()
                         }
                         addBtn.removeAttribute('disabled')
@@ -275,6 +271,10 @@ window.addEventListener('DOMContentLoaded', function () {
                 if (div.dataset.div === saveBtn.dataset.btn) {
                     const visitId = saveBtn.getAttribute('data-id')
                     const investigationDiv = div.parentElement.querySelector('.investigationAndManagementDiv')
+                    const investigationBtn = div.parentElement.querySelector('#addInvestigationAndManagementBtn')
+                    const modal = div.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
+                    console.log(investigationDiv.querySelector('.prescriptionTable'))
+                    const tableId = '#'+investigationDiv.querySelector('.prescriptionTable').id
 
                     saveBtn.setAttribute('disabled', 'disabled')
                     let data = {...getDivData(div), visitId}
@@ -288,8 +288,11 @@ window.addEventListener('DOMContentLoaded', function () {
                             investigationDiv.classList.remove('d-none')
                             location.href = '#'+investigationDiv.id
 
-                            new Toast(div.querySelector('#saveConsultationToast')).show()
+                            investigationBtn.setAttribute('data-conId', response.data.id)
+                            investigationBtn.setAttribute('data-visitId', visitId)
                             
+                            new Toast(div.querySelector('#saveConsultationToast')).show()
+                            getPrescriptionTableByConsultation(tableId, response.data.id, modal)
                             waitingTable.draw()
                             allPatientsVisitTable.draw()
                         }
@@ -308,9 +311,33 @@ window.addEventListener('DOMContentLoaded', function () {
     addInvestigationAndManagmentBtn.forEach(addBtn => {
         addBtn.addEventListener('click', () => {
             investigationAndManagmentDiv.forEach(div => {
+                
                 if (addBtn.dataset.btn === div.dataset.div) {
-                    console.log(getDivData(div))
-                    clearDivValues(div)
+                    addBtn.setAttribute('disabled', 'disabled')
+
+                    const resourceId = getDatalistOptionId(div, div.querySelector('#resource'), div.querySelector('#resourceList'))
+                    const conId = addBtn.dataset.conid
+                    const visitId = addBtn.dataset.visitid
+                    const divPrescriptionTableId = '#'+div.querySelector('.prescriptionTable').id
+                    
+                    let data = {...getDivData(div), resourceId, conId, visitId}
+
+                    http.post('prescription', {...data}, {"html": div})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            new Toast(div.querySelector('#saveInvestigationAndManagementToast')).show()
+                            clearDivValues(div)
+                            clearValidationErrors(div)
+                        }
+                        if ($.fn.DataTable.isDataTable( divPrescriptionTableId )){
+                            $(divPrescriptionTableId).dataTable().fnDraw()
+                        }
+                        addBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        addBtn.removeAttribute('disabled')
+                    }) 
                 }
             })
         })
@@ -448,8 +475,21 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     // All consultation item inputs
-    ItemInput.forEach(input => {
-        getItemsFromInput(input, items)
+    resourceInput.forEach(input => {
+        input.addEventListener('keydown', function () {
+            investigationAndManagmentDiv.forEach(div => {
+                if (input.dataset.input === div.dataset.div) {
+                     if (!input.value) {
+                        div.querySelector('#resourceList').innerHTML = ''
+                    }
+                    if (input.value.length > 1) {
+                        http.get(`/resources/list`, {params: {resource: input.value}}).then((response) => {
+                            displayResourceList(div, response.data)
+                        })
+                    }
+                }
+            })
+        })        
     })
 
     // review consultation loops
@@ -528,29 +568,27 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
 function getItemsFromInput(input, data) {
-    input.addEventListener('keyup', function() {
+    input.addEventListener('keypress', function() {
         let records = data.filter(d => d.name.toLocaleLowerCase().includes(input.value.toLocaleLowerCase()) ? d : '')
-        displayItemsList(input.parentNode, records)
+        //displayItemsList(input.parentNode, records)
     })
 }
 
-function displayItemsList(div, data) {
+function displayResourceList(div, data) {
 
     data.forEach(line => {
         const option = document.createElement("OPTION")
-        option.setAttribute('id', 'itemsOption')
+        option.setAttribute('id', 'resourceOption')
         option.setAttribute('value', line.name)
         option.setAttribute('data-id', line.id)
         option.setAttribute('name', line.name)
 
-        let previousItems = div.querySelectorAll('#itemsOption')
+        let previousItems = div.querySelectorAll('#resourceOption')
             let optionsList = []
             previousItems.forEach(node => {
                optionsList.push(node.dataset.id)
             })
-            div.querySelector('#item').setAttribute('list', 'itemsList')
-            div.querySelector('datalist').setAttribute('id', 'itemsList')
-            !optionsList.includes(option.dataset.id) ? div.querySelector('#itemsList').appendChild(option) : ''
+            !optionsList.includes(option.dataset.id) ? div.querySelector('#resourceList').appendChild(option) : ''
         })
 }
 

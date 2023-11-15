@@ -176,7 +176,7 @@
                                     </div>
                                     <div class="d-flex justify-content-center">
                                         <button type="button" id="saveConsultationBtn" data-btn="anc"
-                                            class="btn bg-primary text-white">
+                                            class="btn btn-primary">
                                             <i class="bi bi-check-circle me-1"></i>
                                             Save
                                         </button>
@@ -189,10 +189,9 @@
                                         <div class="row">
                                             <x-form-div class="col-xl-6">
                                                 <x-input-span id="itemLabel">Item</x-input-span>
-                                                <x-form-input type="search" name="item" id="item"
+                                                <x-form-input type="search" name="resource" id="resource" data-input="anc" list="ancResourceList"
                                                     placeholder="search" />
-                                                <datalist name="item" type="text"
-                                                    class="decoration-none"></datalist>
+                                                <datalist name="item" type="text" class="decoration-none" id="ancResourceList"></datalist>
                                             </x-form-div>
                                             <x-form-div class="col-xl-6">
                                                 <x-input-span id="prescriptionLabel">Prescription</x-input-span>

@@ -50,7 +50,7 @@ class ResourceService
 
     public function getPaginatedResources(DataTableQueryParams $params)
     {
-        $orderBy    = 'created_at';
+        $orderBy    = 'name';
         $orderDir   =  'desc';
 
         if (! empty($params->searchTerm)) {
@@ -109,6 +109,30 @@ class ResourceService
                if ($days <= 0){
                 return 'Yes';
                     }
+        
+    }
+
+    public function getFormattedList($data)
+    {
+        if (! empty($data->resource)){
+            return $this->resource
+                        ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
+                        ->where('expiry_date', '>', new Carbon())
+                        ->where('is_active', true)
+                        ->orderBy('name', 'asc')
+                        ->get();
+        }
+           
+    }
+
+    public function listTransformer()
+    {
+        return function (Resource $resource){
+            return [
+                'id' => $resource->id,
+                'name'  => $resource->name.($resource->flag ? ' - '.$resource->flag : '').($resource->expiry_date && $resource->expiry_date < (new Carbon())->addMonths(3) ? ' - expiring soon - '.$resource->expiry_date : '' )
+            ];
+        };
         
     }
 }

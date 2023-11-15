@@ -10,6 +10,7 @@ use App\Http\Controllers\InvestigationsController;
 use App\Http\Controllers\NurseController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PharmacyController;
+use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResourceCategoryController;
 use App\Http\Controllers\ResourceController;
@@ -135,7 +136,7 @@ Route::middleware('auth')->group(function () {
         Route::get('', [ResourceController::class, 'index'])->name('Resources');
         Route::post('', [ResourceController::class, 'store']);
         Route::get('/load', [ResourceController::class, 'load']);
-        Route::get('/list_resources/{resource}', [ResourceController::class, 'list']);
+        Route::get('/list', [ResourceController::class, 'list']);
         Route::get('/{resource}', [ResourceController::class, 'edit']);
         Route::get('/addstock/{resource}', [ResourceController::class, 'edit'])->name('Addstock');
         Route::delete('/{resource}', [ResourceController::class, 'destroy']);
@@ -159,6 +160,18 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{resourceSupplier}', [ResourceSupplierController::class, 'destroy']);
         Route::post('/{resourceSupplier}', [ResourceSupplierController::class, 'update']);
     })->name('Resource Supplier');
+
+    Route::prefix('prescription')->group(function (){
+        Route::get('', [PrescriptionController::class, 'index'])->name('Prescription');
+        Route::post('', [PrescriptionController::class, 'store']);
+        Route::get('/load/initial', [PrescriptionController::class, 'loadInitialTable']);
+        Route::get('/list', [PrescriptionController::class, 'list']);
+        Route::get('/{resource}', [PrescriptionController::class, 'edit']);
+        Route::get('/addstock/{resource}', [PrescriptionController::class, 'edit'])->name('Addstock');
+        Route::delete('/{resource}', [PrescriptionController::class, 'destroy']);
+        Route::post('/{resource}', [PrescriptionController::class, 'update']);
+        Route::post('toggle/{resource}', [PrescriptionController::class, 'toggleIsActive']);
+    })->name('Prescription');
 });
 
 require __DIR__.'/auth.php';

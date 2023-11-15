@@ -5,9 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Prescription;
 use App\Http\Requests\StorePrescriptionRequest;
 use App\Http\Requests\UpdatePrescriptionRequest;
+use App\Services\DatatablesService;
+use App\Services\PrescriptionService;
+use Illuminate\Http\Request;
 
 class PrescriptionController extends Controller
 {
+    public function __construct(
+        private readonly DatatablesService $datatablesService,
+        private readonly PrescriptionService $prescriptionService
+    )
+    {
+        
+    }
     /**
      * Display a listing of the resource.
      */
@@ -29,7 +39,20 @@ class PrescriptionController extends Controller
      */
     public function store(StorePrescriptionRequest $request)
     {
-        //
+        $prescription = $this->prescriptionService->createFromDoctors($request, $request->user());
+
+        return $prescription->load('consultation');
+    }
+
+    public function loadInitialTable(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sponsors = $this->prescriptionService->getPaginatedInitialPrescriptions($params, $request);
+       
+        $loadTransformer = $this->prescriptionService->getInitialLoadTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 
     /**

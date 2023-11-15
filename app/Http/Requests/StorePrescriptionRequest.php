@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Consultation;
+use App\Models\Resource;
+use App\Models\Visit;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePrescriptionRequest extends FormRequest
@@ -11,7 +14,7 @@ class StorePrescriptionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +25,10 @@ class StorePrescriptionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'resourceId'              => ['required', 'numeric', 'exists:'.Resource::class.',id'],
+            'conId'                   => ['required', 'numeric', 'exists:'.Consultation::class.',id'],
+            'visitId'                 => ['required', 'numeric', 'exists:'.Visit::class.',id'],
+            'prescription'            => ['required', 'string'],
         ];
     }
 }

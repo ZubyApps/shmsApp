@@ -39,7 +39,7 @@ class PatientFactory extends Factory
             "phone"                 => '08103830241',
             "registration_bill"     => '2000',
             "religion"              => 'Christianity',
-            "sex"                   => 'female',
+            "sex"                   => 'Female',
             "sponsor_id"            => '1',
             "staff_Id"              => '',
             "state_of_origin"       => 'Cross River',

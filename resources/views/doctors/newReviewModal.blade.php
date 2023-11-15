@@ -125,7 +125,7 @@
                                 </div>
                                 <div class="d-flex justify-content-center">
                                     <button type="button" id="saveConsultationBtn" data-btn="review"
-                                        class="btn bg-primary text-white">
+                                        class="btn btn-primary text-white">
                                         Save
                                     </button>
                                 </div>
@@ -137,11 +137,10 @@
                                 <x-form-span>Investigation & Management</x-form-span>
                                 <div class="row">
                                     <x-form-div class="col-xl-6">
-                                        <x-input-span id="itemsLabel">Item</x-input-span>
-                                        <x-form-input type="search" name="item" id="item" placeholder="search"
-                                            list="itemsList" />
+                                        <x-input-span id="itemsLabel">Medical Resource</x-input-span>
+                                        <x-form-input type="search" name="resource" id="resource" placeholder="search" list="reviewResourceList" />
                                         <datalist name="item" type="text" class="decoration-none"
-                                            id="itemsList"></datalist>
+                                            id="reviewResourceList"></datalist>
                                     </x-form-div>
                                     <x-form-div class="col-xl-6">
                                         <x-input-span id="prescriptionLabel">Prescription</x-input-span>

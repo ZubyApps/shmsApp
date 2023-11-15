@@ -77,7 +77,7 @@ class AddResourceStockService
                 'purchasePrice'     => $addResource->purchase_price,
                 'sellingPrice'      => $addResource->selling_price,
                 'expiryDate'        => (new Carbon($addResource->expiry_date))->format('d/m/y'),
-                'supplier'          => $addResource->resourceSupplier->company,
+                'supplier'          => $addResource->resourceSupplier?->company,
                 'createdBy'         => $addResource->user->username,
                 'createdAt'         => (new Carbon($addResource->created_at))->format('d/m/y'),
                 // 'count'             => $addResource->resourceSubCategories()->count(),
