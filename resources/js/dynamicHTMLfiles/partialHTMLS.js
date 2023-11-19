@@ -315,7 +315,7 @@ const vitalsignsTable = (line) => {
                 <div class="mb-2 form-control">
                 <span class="fw-bold text-primary">Vital Signs</span>                                            
                 <div class="row overflow-auto m-1">
-                    <table id="prescriptionTable${line.visitId}" class="table table-hover align-middle table-sm bg-primary">
+                    <table id="prescriptionTable${line.visitId}" class="table table-hover align-middle table-sm">
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -359,76 +359,68 @@ const files = (line) => {
         </table>`
 }
 
-const updateInvestigationAndManagement = (iteration, line) => {
-    return `
-                <div class="d-flex justify-content-center my-2">
-                    <button type="button" class="btn btn-primary updateInvestigationAndManagmentBtn" data-btn="${iteration}">
-                        Update Investigation & Managment
-                    </button>
-                </div> 
-                <div class="investigationAndManagmentDiv mt-2 d-none" data-div="${iteration}">
+const updateInvestigationAndManagement = (consultations, iteration, line) => {
+    return ` 
+                <div class="investigationAndManagmentDiv mt-2 active" data-div="${iteration}">
                     <div class="mb-2 form-control">
                         <span class="fw-semibold">Investigation & Management</span>
-                        <div class="row">
-                            <div class="col-xl-4 themed-grid-col col-xl-6">
-                                <div class="input-group mb-1">
-                                    <span class="input-group-text" id="itemLabel">Item</span> 
-                                    <input class="form-control" type="search" name="item" id="item" placeholder="search" autocomplete="">
-                                    <datalist name="item" type="text" class="decoration-none"></datalist>
+                        ${consultations.length > iteration ? '': `
+                        <div class="my-2">
+                            <div class="row">
+                                <div class="col-xl-4 themed-grid-col col-xl-6">
+                                    <div class="input-group mb-1">
+                                        <span class="input-group-text" id="resourceLabel">Medical Resource</span> 
+                                        <input class="form-control resource" type="search" name="resource" id="resource" data-input="${iteration}" placeholder="search" autocomplete="" list="resourceList${iteration}">
+                                        <datalist name="resource" class="datalistEl"  type="text" id="resourceList${iteration}"></datalist>
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 themed-grid-col col-xl-6" id="pres">
+                                    <div class="input-group mb-1">
+                                        <span class="input-group-text" id="prescriptionLabel">Prescription</span> 
+                                        <input class="form-control" type="text" name="prescription" id="prescription" placeholder="eg: 5mg BD x5" autocomplete="">
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 themed-grid-col col-xl-6" id="qty">
+                                    <div class="input-group mb-1">
+                                        <span class="input-group-text" id="quantityLabel"> Quantity</span> 
+                                        <input class="form-control" type="number" name="quantity" id="quantity" placeholder="" autocomplete="">
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 themed-grid-col col-xl-6">
+                                    <div class="input-group mb-1">
+                                        <span class="input-group-text" id="notesLabel">Note</span> 
+                                        <input class="form-control" name="note" id="notes" placeholder="" autocomplete="">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-xl-4 themed-grid-col col-xl-6">
-                                <div class="input-group mb-1">
-                                    <span class="input-group-text" id="prescriptionLabel">Prescription/Instruction </span> 
-                                    <input class="form-control" type="text" name="prescription" id="prescription" placeholder="eg: 5mg BD x5" autocomplete="">
-                                </div>
+                            <div class="d-flex justify-content-center">
+                                <button type="button" id="addInvestigationAndManagmentBtn" data-conid="${line.id}" data-visitid="${line.visitId}" data-btn="${iteration}" class="btn btn-primary">
+                                    add
+                                <i class="bi bi-prescription"></i>
+                                </button>
                             </div>
-                            <div class="col-xl-4 themed-grid-col col-xl-6">
-                                <div class="input-group mb-1">
-                                    <span class="input-group-text" id="quantityLabel"> Quantity</span> 
-                                    <input class="form-control" type="number" name="quantity" id="quantity" placeholder="" autocomplete="">
-                                </div>
+                            <div class="toast align-items-center shadow-none border-0" id="saveUpdateInvestigationAndManagementToast" role="alert" aria-live="assertive" aria-atomic="true">
+                                <div class="toast-body">
+                                    <h6 class="text-primary">Successful</h6>
+                                </div>  
                             </div>
+                        </div>`}
+                        <div class="mb-2 form-control active">
+                            <table id="prescriptionTable${iteration}" data-id="${line.id}" class="table table-hover align-middle table-sm bg-primary prescriptionTable">
+                                <thead>
+                                    <tr>
+                                        <th>Prescribed</th>
+                                        <th>Resource</th>
+                                        <th>Prescription</th>
+                                        <th>Qty</th>
+                                        <th>Note</th>
+                                        <th>By</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
-                        <div class="d-flex justify-content-center">
-                            <button type="button" id="addInvestigationAndManagmentBtn" data-id="${line.id}" data-btn="${iteration}" class="btn btn-primary">
-                                add
-                            <i class="bi bi-prescription"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="mb-2 form-control">
-                        <table id="prescriptionTable${line.id}" class="table table-hover align-middle table-sm bg-primary">
-                            <thead>
-                                <tr>
-                                    <th>S/N</th>
-                                    <th>Prescribed</th>
-                                    <th>Item</th>
-                                    <th>Prescription</th>
-                                    <th>Qty</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>12/09/2023 11:02pm</td>
-                                    <td>N/S 500mls</td>
-                                    <td>500mls 12hrly x2</td>
-                                    <td></td>
-                                    <td><button class="btn btn-outline-primary deleteBtn"><i
-                                                class="bi bi-trash"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>12/09/2023 11:15pm</td>
-                                    <td>5% mls Syringe</td>
-                                    <td></td>
-                                    <td>4</td>
-                                    <td><button class="btn btn-outline-primary deleteBtn"><i class="bi bi-trash"></i></button></td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                 </div>`
 }
@@ -474,9 +466,9 @@ const investigations = (line) => {
         `
 }
 
-const review = (line) => {
+const review = (count, line) => {
     return `<div class="form-control">
-                <span class="fw-bold text-primary">Consultation Review</span>                                            
+                <span class="fw-bold text-primary">Consultation Review ${count}</span>                                            
                 <div class="row">
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
@@ -630,7 +622,7 @@ const AncConsultation = (line, iteration) => {
                 <div class="row mt-1">
                     <div class="col-xl-4 themed-grid-col col-xl-12">
                         <div class="input-group mb-1">
-                            <span class="input-group-text" id="specialistDesignationLabel"> Consultant Specialist<br>Name &amp; Designation</span>
+                            <span class="input-group-text" id="specialistDesignationLabel"> Consultant (Name&Designation)</span>
                             <input class="form-control" name="consultantSpecialist" value="${line.consultantSpecialist}">
                         </div>
                     </div>
@@ -652,59 +644,64 @@ const AncConsultation = (line, iteration) => {
                             <input class="form-control" name="ega" id="ega"value="${line.ega}" readonly="readonly"/>
                         </div>
                     </div>
-                    <div class="col-xl-4 themed-grid-col col-xl-6">
-                        <div class="input-group mb-1">
-                            <span class="input-group-text" id="obGynHistoryLabel">Obstetrics/<br>Gynecological History</span>
-                            <textarea class="form-control" type="text" name="obGynHistory" id="obGynHistory" cols="10" rows="3" value="${line.obGynHistory}" readonly="readonly"></textarea>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 themed-grid-col col-xl-6">
-                        <div class="input-group mb-1">
-                            <span class="input-group-text" id="ultrasoundReportLabel"> Ultrasound Report </span>                                                    
-                            <textarea class="form-control" type="text" name="ultrasoundReport" id="ultrasoundReport" cols="10" rows="3" value="${line.ultrasoundReport}" readonly="readonly"></textarea>
-                        </div>
-                    </div>
                     <div class="col-xl-4 themed-grid-col col-xl-4">
                         <div class="input-group mb-1">
-                            <span class="input-group-text" id="fetalHeartRateLabel">Fetal <br/> Heart Rate</span> 
+                            <span class="input-group-text" id="fetalHeartRateLabel">Fetal Heart Rate</span> 
                             <input class="form-control" name="fetalHeartRate" id="fetalHeartRate" value="${line.fetalHeartRate}" readonly="readonly"/>
                         </div>
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-4">
                         <div class="input-group mb-1">
-                            <span class="input-group-text" id="heightOfFondusLabel">Height <br/> of Fondus</span> 
-                            <input class="form-control" name="heightOfFondus" id="heightOfFondus" value="${line.heightOfFundus}" readonly="readonly"/>
+                            <span class="input-group-text" id="heightOfFondusLabel">Height of Fundus</span> 
+                            <input class="form-control" name="heightOfFundus" id="heightOfFundus" value="${line.heightOfFundus}" readonly="readonly"/>
                         </div>
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-4">
                         <div class="input-group mb-1">
-                            <span class="input-group-text" id="presentationAndPositionLabel">Presentation <br/> And Position</span> 
-                            <input class="form-control" name="presentationAndPosition" id="presentationAndPosition" value="${line.presentationPosition}" readonly="readonly"/>
+                            <span class="input-group-text" id="presentationAndPositionLabel">Presentation&Position</span> 
+                            <input class="form-control" name="presentationAndPosition" id="presentationAndPosition" value="${line.presentationAndPosition}" readonly="readonly"/>
                         </div>
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
-                            <span class="input-group-text" id="relationOfPresentingPartToBrimLabel">Relation <br/> of Presenting <br> Part to Brim</span> 
+                            <span class="input-group-text" id="relationOfPresentingPartToBrimLabel">Relation of Presenting <br> Part to Brim</span> 
                             <input class="form-control" name="relationOfPresentingPartToBrim" id="relationOfPresentingPartToBrim"  value="${line.relationOfPresentingPartToBrim}" readonly="readonly"/>
                         </div>
                     </div>
-                    
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
-                            <span class="input-group-text" id="diagnosisLabel"> Selected <br>ICD11 <br> Diagnosis </span>
-                            <textarea class="form-control reviewSelectedDiagnosis" type="text" name="selectedDiagnosis" cols="10" rows="3" readonly="readonly">${line.selectedDiagnosis ?? 'nill'}</textarea>
+                            <span class="input-group-text" id="obGynHistoryLabel">Obstetrics/<br>Gynecological History</span>
+                            <textarea class="form-control" type="text" name="obGynHistory" id="obGynHistory" cols="10" rows="2" value="" readonly="readonly">${line.obGynHistory}</textarea>
                         </div>
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
+                            <span class="input-group-text" id="ultrasoundReportLabel"> Ultrasound Report </span>                                                    
+                            <textarea class="form-control" type="text" name="ultrasoundReport" id="ultrasoundReport" cols="10" rows="2" value="" readonly="readonly">${line.ultrasoundReport}</textarea>
+                        </div>
+                    </div>                    
+                    <div class="col-xl-4 themed-grid-col col-xl-6">
+                        <div class="input-group mb-1">
+                            <span class="input-group-text" id="selectedDiagnosisLabel"> Selected ICD11 <br> Diagnosis </span>
+                            <textarea class="form-control selectedDiagnosis" type="text" name="selectedDiagnosis" cols="10" rows="2" readonly="readonly">${line.selectedDiagnosis}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 themed-grid-col col-xl-12">
+                        <div class="input-group mb-1">
                             <span class="input-group-text" id="diagnosisLabel"> Physician's Notes </span> 
-                            <textarea class="form-control additionalDiagnosis" type="text" name="additionalDiagnosis" cols="10" rows="3" readonly="readonly">${line.notes}</textarea>
+                            <textarea class="form-control notes" type="text" name="notes" cols="10" rows="2" readonly="readonly">${line.notes}</textarea>
                         </div>
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="remarksLabel"> Remarks </span>
-                            <textarea class="form-control" type="text" name="remarks" id="remarks" cols="10" rows="3" readonly="readonly">${line.remarks}</textarea>
+                            <textarea class="form-control" type="text" name="remarks" id="remarks" cols="10" rows="2" readonly="readonly">${line.remarks}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 themed-grid-col col-xl-6">
+                        <div class="input-group mb-1">
+                            <span class="input-group-text" id="physiciansPlanLabel"> Physicians Plan </span>
+                            <textarea class="form-control" type="text" name="physiciansPlan" id="physiciansPlan" cols="10" rows="2" readonly="readonly">${line.plan}</textarea>
                         </div>
                     </div>
                 </div>

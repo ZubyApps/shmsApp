@@ -1,7 +1,4 @@
-<?php
-$cardNumber = 'SH23/0960';
-$patientName = 'Mohammed Hassan Suleiman';
-?>
+
 <div class="modal fade modal-md" id="initiatePatientModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -12,7 +9,7 @@ $patientName = 'Mohammed Hassan Suleiman';
             <div class="modal-body">
                 <x-form-div class="col-xl-12">
                     <x-input-span>Initiate</x-input-span>
-                    <x-form-input name="patientId" class="" value="" readonly/>
+                    <x-form-input name="patientId" readonly/>
                     <x-input-span>visit?</x-input-span>
                 </x-form-div>
             </div>
@@ -21,7 +18,7 @@ $patientName = 'Mohammed Hassan Suleiman';
                     <i class="bi bi-x-circle me-1"></i>
                     No
                 </button>
-                <button type="button" class="btn bg-primary text-white confirmVisitBtn">
+                <button type="button" class="btn btn-primary confirmVisitBtn">
                     <i class="bi bi-check-circle me-1"></i>
                     Yes
                 </button>

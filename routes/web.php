@@ -98,6 +98,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('consultation')->group(function () {
         Route::post('', [ConsultationController::class, 'store']);
         Route::get('/consultations/{visit}', [ConsultationController::class, 'loadConsultations']);
+        Route::delete('/{consultation}', [ConsultationController::class, 'destroy']);
     });
 
     Route::prefix('vitalsigns')->group(function () {
@@ -166,11 +167,9 @@ Route::middleware('auth')->group(function () {
         Route::post('', [PrescriptionController::class, 'store']);
         Route::get('/load/initial', [PrescriptionController::class, 'loadInitialTable']);
         Route::get('/list', [PrescriptionController::class, 'list']);
-        Route::get('/{resource}', [PrescriptionController::class, 'edit']);
-        Route::get('/addstock/{resource}', [PrescriptionController::class, 'edit'])->name('Addstock');
-        Route::delete('/{resource}', [PrescriptionController::class, 'destroy']);
-        Route::post('/{resource}', [PrescriptionController::class, 'update']);
-        Route::post('toggle/{resource}', [PrescriptionController::class, 'toggleIsActive']);
+        Route::get('/{prescription}', [PrescriptionController::class, 'edit']);
+        Route::delete('/{prescription}', [PrescriptionController::class, 'destroy']);
+        Route::post('/{prescription}', [PrescriptionController::class, 'update']);
     })->name('Prescription');
 });
 

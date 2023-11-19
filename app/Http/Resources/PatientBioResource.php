@@ -20,7 +20,7 @@ class PatientBioResource extends JsonResource
             "visitId"       => $this->id,
             "patientId"     => $this->patient->card_no . ' ' . $this->patient->first_name . ' ' . $this->patient->middle_name . ' ' . $this->patient->last_name,
             "sponsorName"   => $this->patient->sponsor->name,
-            "age"           => (new Carbon($this->patient->date_of_birth))->age,
+            "age"           => str_replace(['a', 'g', 'o'], '', (new Carbon($this->patient->date_of_birth))->diffForHumans(['other' => null, 'parts' => 2, 'short' => true]), ),
             "sex"           => $this->patient->sex,
             "maritalStatus" => $this->patient->marital_status,
             "phone"         => $this->patient->phone,

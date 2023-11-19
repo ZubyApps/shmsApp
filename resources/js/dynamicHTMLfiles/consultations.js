@@ -11,11 +11,10 @@ const regularReviewDetails = (iteration, numberConverter, count, consultations, 
                     <div class="card card-body">
                         
                         <div class="mb-2 form-control" id="goto${iteration}">
-                            ${iteration < 2 ? consultation(line) :  review(line)}
-                            ${investigations(line)}
-                            ${medicationAndTreatment(line)}
-                            ${consultations.length > iteration ? '' : updateInvestigationAndManagement(iteration, line)
-                            }
+                            ${iteration < 2 ? consultation(line) :  review(count, line)}
+                            
+                            ${updateInvestigationAndManagement(consultations, iteration, line)}
+                            
                             <div class="d-flex justify-content-start my-3 gap-2" >
                                 <button type="button" id="fileBtn" class="btn btn-outline-primary">
                                 File
@@ -48,7 +47,7 @@ const regularReviewDetails = (iteration, numberConverter, count, consultations, 
                                 </div>
                                 ${consultations.length > iteration ? '' : 
                                 `<div class="d-flex justify-content-end my-2">
-                                    <button type="button" id="deleteReviewConsultationBtn" class="btn btn-outline-primary">
+                                    <button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" class="btn btn-outline-primary">
                                         <i class="bi bi-trash"></i>
                                         Delete
                                     </button>
@@ -78,7 +77,7 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, consultation
                             ${AncConsultation(line, iteration)}
                             ${investigations(line)}
                             ${medicationAndTreatment(line)}
-                            ${consultations.length > iteration ? '' : updateInvestigationAndManagement(iteration, line)}
+                            ${updateInvestigationAndManagement(consultations, iteration, line)}
                             <div class="extraInfoDiv" >
                                 ${consultations.length > iteration ? '' : 
                                 `<div class="d-flex justify-content-end my-2">
@@ -98,7 +97,9 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, consultation
                 `
 }
 
-// const InitialRegularConsultation = (iteration, consultationDetails, line) => {
+// ${investigations(line)}
+//${medicationAndTreatment(line)}
+//const InitialRegularConsultation = (iteration, consultationDetails, line) => {
 //     return `
 //     <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample">
 //         <span class="mx-2">Initial Consultation</span>

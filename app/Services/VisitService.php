@@ -73,7 +73,7 @@ class VisitService
                 'patientId'         => $visit->patient->id,
                 'patient'           => $visit->patient->card_no.' ' .$visit->patient->first_name.' '. $visit->patient->middle_name.' '.$visit->patient->last_name,
                 'sex'               => $visit->patient->sex,
-                'age'               => (new Carbon($visit->patient->date_of_birth))->age.'yrs',
+                'age'               => str_replace(['a', 'g', 'o'], '', (new Carbon($visit->patient->date_of_birth))->diffForHumans(['other' => null, 'parts' => 1, 'short' => true]), ),
                 'sponsor'           => $visit->patient->sponsor->name,
                 'came'              => (new Carbon($visit->created_at))->diffForHumans(['parts' => 2, 'short' => true]),
                 'doctor'            => $visit->doctor->username ?? '',

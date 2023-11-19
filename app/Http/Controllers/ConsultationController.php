@@ -83,6 +83,6 @@ class ConsultationController extends Controller
      */
     public function destroy(Consultation $consultation)
     {
-        //
+        return $consultation->destroy($consultation->id);
     }
 }

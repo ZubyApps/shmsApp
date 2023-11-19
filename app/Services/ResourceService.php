@@ -26,7 +26,7 @@ class ResourceService
             'selling_price'             => $data->sellingPrice,
             'reorder_level'             => $data->reOrder,
             'unit_description'          => $data->unitDescription,
-            'expiry_date'               => new Carbon($data->expiryDate),
+            'expiry_date'               => $data->expiryDate ? new Carbon($data->expiryDate) : '',
             // 'stock_level'               => $data->stockLevel,
         ]);
     }
@@ -51,7 +51,7 @@ class ResourceService
     public function getPaginatedResources(DataTableQueryParams $params)
     {
         $orderBy    = 'name';
-        $orderDir   =  'desc';
+        $orderDir   =  'asc';
 
         if (! empty($params->searchTerm)) {
             return $this->resource
@@ -129,8 +129,9 @@ class ResourceService
     {
         return function (Resource $resource){
             return [
-                'id' => $resource->id,
-                'name'  => $resource->name.($resource->flag ? ' - '.$resource->flag : '').($resource->expiry_date && $resource->expiry_date < (new Carbon())->addMonths(3) ? ' - expiring soon - '.$resource->expiry_date : '' )
+                'id'        => $resource->id,
+                'name'      => $resource->name.($resource->flag ? ' - '.$resource->flag : '').($resource->expiry_date && $resource->expiry_date < (new Carbon())->addMonths(3) ? ' - expiring soon - '.$resource->expiry_date : '' ),
+                'category'  => $resource->resourceSubCategory->resourceCategory->name
             ];
         };
         

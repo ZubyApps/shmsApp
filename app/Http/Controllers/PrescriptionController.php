@@ -84,6 +84,6 @@ class PrescriptionController extends Controller
      */
     public function destroy(Prescription $prescription)
     {
-        //
+        return $prescription->destroy($prescription->id);
     }
 }

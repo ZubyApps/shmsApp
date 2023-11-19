@@ -1,51 +1,41 @@
 import { Modal, Collapse, Toast } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-import { consultationDetails, items } from "./data"
-import { clearDivValues, clearItemsList, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, getDatalistOptionId, clearValidationErrors, displayList } from "./helpers"
+import { clearDivValues, clearItemsList, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
 import { getAllPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation } from "./tables/doctorstables"
 import jQuery from "jquery";
 import $ from 'jquery';
-import jszip from 'jszip';
+import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-// import 'datatables.net-buttons-bs5';
-// import 'datatables.net-buttons/js/buttons.colVis.mjs';
-// import 'datatables.net-buttons/js/buttons.html5.mjs';
-// import 'datatables.net-buttons/js/buttons.print.mjs';
-// import 'datatables.net-fixedcolumns-bs5';
-// import 'datatables.net-fixedheader-bs5';
-// import 'datatables.net-select-bs5';
-// import 'datatables.net-staterestore-bs5';
 
 window.addEventListener('DOMContentLoaded', function () {
     const newConsultationModal              = new Modal(document.getElementById('newConsultationModal'))
-    const newAncConsultationModal           = new Modal(document.getElementById('newAncConsultationModal'))
+    const ancConsultationModal           = new Modal(document.getElementById('ancConsultationModal'))
+    const ancReviewModal                    = new Modal(document.getElementById('ancReviewModal'))
     const consultationReviewModal           = new Modal(document.getElementById('consultationReviewModal'))
     const surgeryModal                      = new Modal(document.getElementById('surgeryModal'))
     const fileModal                         = new Modal(document.getElementById('fileModal'))
     const newReviewModal                    = new Modal(document.getElementById('newReviewModal'))
     const specialistConsultationModal       = new Modal(document.getElementById('specialistConsultationModal'))    
-
-    const reviewPatientbtn                  = consultationReviewModal._element.querySelector('#reviewPatientBtn')
-    const specialistConsultationbtn         = consultationReviewModal._element.querySelector('#specialistConsultationBtn')
     
     const consultationReviewDiv             = document.querySelector('#consultationReviewDiv')
-
-    const resourceInput                     = document.querySelectorAll('#resource')
-
     const investigationAndManagmentDiv      = document.querySelectorAll('.investigationAndManagementDiv')
     const knownClinicalInfoDiv              = document.querySelectorAll('#knownClinicalInfoDiv')
-    const addInvestigationAndManagmentBtn   = document.querySelectorAll('#addInvestigationAndManagementBtn')
-    const updateKnownClinicalInfoBtn        = document.querySelectorAll('#updateKnownClinicalInfoBtn')
     const addVitalsignsDiv                  = document.querySelectorAll('#addVitalsignsDiv')
-    const addVitalsignsBtn                  = document.querySelectorAll('#addVitalsignsBtn')
     const consultationDiv                   = document.querySelectorAll('#consultationDiv')
+    
+    const reviewPatientbtn                  = consultationReviewModal._element.querySelector('#reviewPatientBtn')
+    const addInvestigationAndManagmentBtn   = document.querySelectorAll('#addInvestigationAndManagementBtn')
+    const specialistConsultationbtn         = consultationReviewModal._element.querySelector('#specialistConsultationBtn')
+    const updateKnownClinicalInfoBtn        = document.querySelectorAll('#updateKnownClinicalInfoBtn')
+    const addVitalsignsBtn                  = document.querySelectorAll('#addVitalsignsBtn')
     const saveConsultationBtn               = document.querySelectorAll('#saveConsultationBtn')
-
-    const waitingBtn                    = document.querySelector('#waitingBtn')
+    const waitingBtn                        = document.querySelector('#waitingBtn')
+    
+    const resourceInput                     = document.querySelectorAll('#resource')
 
     // Auto textarea adjustment
     const textareaHeight = 65;
@@ -137,12 +127,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         if (patientType === 'ANC'){
-                            console.log(visitId)
-                            openModals(newAncConsultationModal, newAncConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
-                            const vitalSigsnByVisitTable = getVitalSignsTableByVisit('#vitalSignsTableAncCon', visitId, newAncConsultationModal)
+                            openModals(ancConsultationModal, ancConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
+                            getVitalSignsTableByVisit('#vitalSignsTableAnc', visitId, ancConsultationModal)
                         } else{
                             openModals(newConsultationModal, newConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
-                            const vitalSigsnByVisitTable = getVitalSignsTableByVisit('#vitalSignsTableNewCon', visitId, newConsultationModal)
+                            getVitalSignsTableByVisit('#vitalSignsTableNew', visitId, newConsultationModal)
                         }
                         waitingTable.draw()
                     }
@@ -194,7 +183,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         http.patch(`/patients/knownclinicalinfo/${patient}`, {...getDivData(div)}, {"html": div})
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300){
-                                new Toast(div.querySelector('#knownClinicalInfoToast')).show()
+                                new Toast(div.querySelector('#knownClinicalInfoToast'), {delay:2000}).show()
                             }
                         })
                         .catch((error) => {
@@ -213,20 +202,17 @@ window.addEventListener('DOMContentLoaded', function () {
                 if (div.dataset.div === addBtn.dataset.btn) {
                     addBtn.setAttribute('disabled', 'disabled')
                     const visitId = addBtn.getAttribute('data-id')
-
+                    const tableId = div.parentNode.parentNode.querySelector('.vitalsTable').id
                     let data = {...getDivData(div), visitId}
 
                     http.post('/vitalsigns', {...data}, {"html": div})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
-                            new Toast(div.querySelector('#vitalSignsToast')).show()
+                            new Toast(div.querySelector('#vitalSignsToast'), {delay:2000}).show()
                             clearDivValues(div)
                         }
-                        if ($.fn.DataTable.isDataTable( '#vitalSignsTableNewCon' )){
-                            $('#vitalSignsTableNewCon').dataTable().fnDraw()
-                        }
-                        if ($.fn.DataTable.isDataTable( '#vitalSignsTableAncCon' )){
-                            $('#vitalSignsTableAncCon').dataTable().fnDraw()
+                        if ($.fn.DataTable.isDataTable( '#'+tableId )){
+                            $('#'+tableId).dataTable().fnDraw()
                         }
                         addBtn.removeAttribute('disabled')
                     })
@@ -239,44 +225,72 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelector('#vitalSignsTableNewCon').addEventListener('click', function (event) {
-        const deleteBtn  = event.target.closest('.deleteBtn')
-
-        if (deleteBtn){
-            deleteBtn.setAttribute('disabled', 'disabled')
-            if (confirm('Are you sure you want to delete this record?')) {
-                const id = deleteBtn.getAttribute('data-id')
-                http.delete(`/vitalsigns/${id}`)
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300){
-                            if ($.fn.DataTable.isDataTable( '#vitalSignsTable' )){
-                            $('#vitalSignsTableNewCon').dataTable().fnDraw()
-                        }
-                        }
-                        deleteBtn.removeAttribute('disabled')
-                    })
-                    .catch((error) => {
-                        alert(error)
-                        deleteBtn.removeAttribute('disabled')
-                    })
+    document.querySelectorAll('#vitalSignsTableNew, #vitalSignsTableSpecialist, #vitalSignsTableAnc, #vitalSignsTableAncReview, #vitalSignsTableReview').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const deleteBtn  = event.target.closest('.deleteBtn')
+    
+            if (deleteBtn){
+                deleteBtn.setAttribute('disabled', 'disabled')
+                if (confirm('Are you sure you want to delete this record?')) {
+                    const id = deleteBtn.getAttribute('data-id')
+                    http.delete(`/vitalsigns/${id}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300){
+                                if ($.fn.DataTable.isDataTable( '#'+table.id )){
+                                $('#'+table.id).dataTable().fnDraw()
+                            }
+                            }
+                            deleteBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {
+                            alert(error)
+                            deleteBtn.removeAttribute('disabled')
+                        })
+                }
+                
             }
-            
-        }
+        })
+    })
+
+    document.querySelectorAll('#prescriptionTablenew, #prescriptionTablespecialist, #prescriptionTableanc, #prescriptionTableancReview').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const deleteBtn  = event.target.closest('.deleteBtn')
+    
+            if (deleteBtn){
+                deleteBtn.setAttribute('disabled', 'disabled')
+                if (confirm('Are you sure you want to delete this prescription?')) {
+                    const id = deleteBtn.getAttribute('data-id')
+                    http.delete(`/prescription/${id}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300){
+                                if ($.fn.DataTable.isDataTable('#'+table.id)){
+                                $('#'+table.id).dataTable().fnDraw()
+                            }
+                            }
+                            deleteBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {
+                            alert(error)
+                            deleteBtn.removeAttribute('disabled')
+                        })
+                }
+                
+            }
+        })
     })
 
     // getting data from all consultation divs
     saveConsultationBtn.forEach(saveBtn => {
         saveBtn.addEventListener('click', function () {
             consultationDiv.forEach(div => {
-                if (div.dataset.div === saveBtn.dataset.btn) {
+                if (saveBtn.dataset.btn === div.dataset.div) {
                     const visitId = saveBtn.getAttribute('data-id')
                     const investigationDiv = div.parentElement.querySelector('.investigationAndManagementDiv')
                     const investigationBtn = div.parentElement.querySelector('#addInvestigationAndManagementBtn')
                     const modal = div.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
-                    console.log(investigationDiv.querySelector('.prescriptionTable'))
-                    const tableId = '#'+investigationDiv.querySelector('.prescriptionTable').id
-
+                    console.log(div.parentElement)
                     saveBtn.setAttribute('disabled', 'disabled')
+                    const tableId = investigationDiv.querySelector('.prescriptionTable').id
                     let data = {...getDivData(div), visitId}
 
                     http.post('/consultation', {...data}, {"html": div})
@@ -291,12 +305,11 @@ window.addEventListener('DOMContentLoaded', function () {
                             investigationBtn.setAttribute('data-conId', response.data.id)
                             investigationBtn.setAttribute('data-visitId', visitId)
                             
-                            new Toast(div.querySelector('#saveConsultationToast')).show()
+                            new Toast(div.querySelector('#saveConsultationToast'), {delay:2000}).show()
                             getPrescriptionTableByConsultation(tableId, response.data.id, modal)
                             waitingTable.draw()
                             allPatientsVisitTable.draw()
                         }
-
                     })
                     .catch((error) => {
                         alert(error)
@@ -307,6 +320,35 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
+     // All consultation resource inputs
+     resourceInput.forEach(input => {
+        input.addEventListener('input', function () {
+            investigationAndManagmentDiv.forEach(div => {
+                if (input.dataset.input === div.dataset.div) {
+                    const datalistEl = div.querySelector(`#resourceList${div.dataset.div}`)
+                     if (input.value < 2) {
+                        datalistEl.innerHTML = ''
+                    }
+                    if (input.value.length > 2) {
+                        http.get(`/resources/list`, {params: {resource: input.value}}).then((response) => {
+                            displayResourceList(datalistEl, response.data)
+                        })
+                    }
+                    const selectedOption = datalistEl.options.namedItem(input.value)
+                    if (selectedOption){
+                        if (selectedOption.getAttribute('data-cat') == 'Medication'){
+                            div.querySelector('#qty').classList.add('d-none')
+                            div.querySelector('#pres').classList.remove('d-none')
+                        } else {
+                            div.querySelector('#qty').classList.remove('d-none')
+                            div.querySelector('#pres').classList.add('d-none')
+                    }
+                    }
+                }
+            })
+        })        
+    })
+
     //adding investigation and management on all divs
     addInvestigationAndManagmentBtn.forEach(addBtn => {
         addBtn.addEventListener('click', () => {
@@ -314,18 +356,17 @@ window.addEventListener('DOMContentLoaded', function () {
                 
                 if (addBtn.dataset.btn === div.dataset.div) {
                     addBtn.setAttribute('disabled', 'disabled')
-
-                    const resourceId = getDatalistOptionId(div, div.querySelector('#resource'), div.querySelector('#resourceList'))
+                    const resourceValues = getSelectedResourceValues(div, div.querySelector('.resource'), div.querySelector(`#resourceList${div.dataset.div}`))
                     const conId = addBtn.dataset.conid
                     const visitId = addBtn.dataset.visitid
                     const divPrescriptionTableId = '#'+div.querySelector('.prescriptionTable').id
                     
-                    let data = {...getDivData(div), resourceId, conId, visitId}
+                    let data = {...getDivData(div), ...resourceValues, conId, visitId}
 
                     http.post('prescription', {...data}, {"html": div})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
-                            new Toast(div.querySelector('#saveInvestigationAndManagementToast')).show()
+                            new Toast(div.querySelector('#saveInvestigationAndManagementToast'), {delay:2000}).show()
                             clearDivValues(div)
                             clearValidationErrors(div)
                         }
@@ -343,25 +384,6 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-
-    // tasks to run when closing new consultation modal
-    newConsultationModal._element.addEventListener('hide.bs.modal', function(event) {
-        clearDivValues(newConsultationModal._element.querySelector('.investigationAndManagementDiv'))
-        clearDivValues(newConsultationModal._element.querySelector('#consultationDiv'))
-        clearValidationErrors(newConsultationModal._element.querySelector('#consultationDiv'))
-        newConsultationModal._element.querySelector('#saveConsultationBtn').innerHTML = `Save`
-        newConsultationModal._element.querySelector('#updateKnownClinicalInfoBtn').innerHTML = `Update`
-        newConsultationModal._element.querySelector('#saveConsultationBtn').removeAttribute('disabled')
-        newConsultationModal._element.querySelector('.investigationAndManagementDiv').classList.add('d-none')
-        newConsultationModal._element.querySelectorAll('#itemsList').forEach(list => clearItemsList(list))
-
-        removeAttributeLoop(querySelectAllTags(newConsultationModal._element.querySelector('#consultationDiv'), ['input, select, textarea']), 'disabled')
-        for (let t = 0; t < newConsultationModal._element.querySelector('#consultationDiv').getElementsByTagName("textarea").length; t++){
-            newConsultationModal._element.querySelector('#consultationDiv').getElementsByTagName("textarea")[t].setAttribute("style", "height:" + textareaHeight + "px;overflow-y:hidden;")
-        }
-        waitingTable.draw()
-    })
-
     // REVIEW CONSULTATION MODAL CODE
 
     // open review patient modal
@@ -374,7 +396,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         if (patientType === 'ANC'){
-                            openModals(newAncConsultationModal, newAncConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
+                            openModals(ancConsultationModal, ancConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                         } else{
                             openModals(newReviewModal, newReviewModal._element.querySelector('#saveConsultationBtn'), response.data)
                         }
@@ -389,26 +411,6 @@ window.addEventListener('DOMContentLoaded', function () {
         consultationReviewModal.hide()
     })
 
-    // tasks to run when closing new review modal 
-    newReviewModal._element.addEventListener('hide.bs.modal', function (event) {
-        if (!confirm('Have you saved? You will loose all unsaved data')) {
-            event.preventDefault()
-            return
-        }
-        clearDivValues(newReviewModal._element.querySelector('.investigationAndManagementDiv'))
-        clearDivValues(newReviewModal._element.querySelector('#consultationDiv'))
-        newReviewModal._element.querySelector('#saveConsultationBtn').innerHTML = `Save`
-        newReviewModal._element.querySelector('#updateKnownClinicalInfoBtn').innerHTML = `Update`
-        newReviewModal._element.querySelector('#saveConsultationBtn').removeAttribute('disabled')
-        newReviewModal._element.querySelector('.investigationAndManagementDiv').classList.add('d-none')
-        newReviewModal._element.querySelectorAll('#itemsList').forEach(list => clearItemsList(list))
-
-        removeAttributeLoop(querySelectAllTags(newReviewModal._element.querySelector('#consultationDiv'), ['input, select, textarea']), 'disabled')
-        for (let t = 0; t < newReviewModal._element.querySelector('#consultationDiv').getElementsByTagName("textarea").length; t++){
-            newReviewModal._element.querySelector('#consultationDiv').getElementsByTagName("textarea")[t].setAttribute("style", "height:" + textareaHeight + "px;overflow-y:hidden;")
-        }
-    })
-
     // open specialist consultation modal
     specialistConsultationbtn.addEventListener('click', function () {
         specialistConsultationbtn.setAttribute('disabled', 'disabled')
@@ -419,7 +421,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         if (patientType === 'ANC'){
-                            openModals(newAncConsultationModal, newAncConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
+                            openModals(ancConsultationModal, ancConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                         } else{
                             openModals(specialistConsultationModal, specialistConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                         }
@@ -434,106 +436,155 @@ window.addEventListener('DOMContentLoaded', function () {
         consultationReviewModal.hide()
     })
 
+     // tasks to run when closing new consultation modal
+     newConsultationModal._element.addEventListener('hide.bs.modal', function(event) {
+        doctorsModalClosingTasks(event, newConsultationModal, textareaHeight)
+     })
+
+    // tasks to run when closing new review modal 
+    newReviewModal._element.addEventListener('hide.bs.modal', function (event) {
+        doctorsModalClosingTasks(event, newReviewModal, textareaHeight)
+    })
+
     // tasks to run when closing specialist consultation modal
     specialistConsultationModal._element.addEventListener('hide.bs.modal', function (event) {
-        if (!confirm('Have you saved? You will loose all unsaved data')) {
-            event.preventDefault()
-            return
-        }
-        clearDivValues(specialistConsultationModal._element.querySelector('.investigationAndManagementDiv'))
-        clearDivValues(specialistConsultationModal._element.querySelector('#consultationDiv'))
-        specialistConsultationModal._element.querySelector('#saveConsultationBtn').innerHTML = `Save`
-        specialistConsultationModal._element.querySelector('#updateKnownClinicalInfoBtn').innerHTML = `Update`
-        specialistConsultationModal._element.querySelector('#saveConsultationBtn').removeAttribute('disabled')
-        specialistConsultationModal._element.querySelector('.investigationAndManagementDiv').classList.add('d-none')
-        specialistConsultationModal._element.querySelectorAll('#itemsList').forEach(list => clearItemsList(list))
-
-        removeAttributeLoop(querySelectAllTags(specialistConsultationModal._element.querySelector('#consultationDiv'), ['input, select, textarea']), 'disabled')
-        for (let t = 0; t < specialistConsultationModal._element.querySelector('#consultationDiv').getElementsByTagName("textarea").length; t++){
-            specialistConsultationModal._element.querySelector('#consultationDiv').getElementsByTagName("textarea")[t].setAttribute("style", "height:" + textareaHeight + "px;overflow-y:hidden;")
-        }
+        doctorsModalClosingTasks(event, specialistConsultationModal, textareaHeight)
     })
 
     // tasks to run when closing Anc consultation modal consultation modal
-    newAncConsultationModal._element.addEventListener('hide.bs.modal', function (event) {
-        if (!confirm('Have you saved? You will loose all unsaved data')) {
-            event.preventDefault()
-            return
-        }
-        clearDivValues(newAncConsultationModal._element.querySelector('.investigationAndManagementDiv'))
-        clearDivValues(newAncConsultationModal._element.querySelector('#consultationDiv'))
-        newAncConsultationModal._element.querySelector('#saveConsultationBtn').innerHTML = `Save`
-        newAncConsultationModal._element.querySelector('#updateKnownClinicalInfoBtn').innerHTML = `Update`
-        newAncConsultationModal._element.querySelector('#saveConsultationBtn').removeAttribute('disabled')
-        newAncConsultationModal._element.querySelector('.investigationAndManagementDiv').classList.add('d-none')
-        newAncConsultationModal._element.querySelectorAll('#itemsList').forEach(list => clearItemsList(list))
-
-        removeAttributeLoop(querySelectAllTags(newAncConsultationModal._element.querySelector('#consultationDiv'), ['input, select, textarea']), 'disabled')
-        for (let t = 0; t < newAncConsultationModal._element.querySelector('#consultationDiv').getElementsByTagName("textarea").length; t++){
-            newAncConsultationModal._element.querySelector('#consultationDiv').getElementsByTagName("textarea")[t].setAttribute("style", "height:" + textareaHeight + "px;overflow-y:hidden;")
-        }
-    })
-
-    // All consultation item inputs
-    resourceInput.forEach(input => {
-        input.addEventListener('keydown', function () {
-            investigationAndManagmentDiv.forEach(div => {
-                if (input.dataset.input === div.dataset.div) {
-                     if (!input.value) {
-                        div.querySelector('#resourceList').innerHTML = ''
-                    }
-                    if (input.value.length > 1) {
-                        http.get(`/resources/list`, {params: {resource: input.value}}).then((response) => {
-                            displayResourceList(div, response.data)
-                        })
-                    }
-                }
-            })
-        })        
+    ancConsultationModal._element.addEventListener('hide.bs.modal', function (event) {
+        doctorsModalClosingTasks(event, ancConsultationModal, textareaHeight)
     })
 
     // review consultation loops
     document.querySelector('#consultationReviewDiv').addEventListener('click', function (event) {
-        const deleteConsultationBtn                 = event.target.closest('#deleteConsultationBtn')
-        const updateInvestigationAndManagmentBtn    = event.target.closest('.updateInvestigationAndManagmentBtn')
+        const deleteConsultationBtn                 = event.target.closest('#deleteReviewConsultationBtn')
         const updateInvestigationAndManagmentDiv    = document.querySelectorAll('.investigationAndManagmentDiv')
         const addInvestigationAndManagmentBtn       = event.target.closest('#addInvestigationAndManagmentBtn')
         const surgeryBtn                            = event.target.closest('#surgeryBtn')
         const fileBtn                               = event.target.closest('#fileBtn')
         const deliveryBtn                           = event.target.closest('#deliveryBtn')
         const collapseBtn                           = event.target.closest('.collapseBtn')
+        const deleteBtn                             = event.target.closest('.deleteBtn')
+        const resourceInput                         = consultationReviewDiv.querySelector('.resource')
 
         if (collapseBtn) {
+            const gotoDiv = document.querySelector(collapseBtn.getAttribute('data-goto'))
+            const tableId = gotoDiv.querySelector('.prescriptionTable').id
+            const conId   = gotoDiv.querySelector('.prescriptionTable').dataset.id
+
+            if ($.fn.DataTable.isDataTable( '#'+tableId )){
+                $('#'+tableId).dataTable().fnDestroy()
+            }
+
             const goto = () => {
-                location.href = collapseBtn.getAttribute('data-goto')
+                location.href = collapseBtn.getAttribute('data-goto'),
+                getPrescriptionTableByConsultation(tableId, conId, consultationReviewModal._element)
             }
             setTimeout(goto, 300)
         }
 
-        if (deleteConsultationBtn) {
-            if (confirm('If you delete this consultation you cannot get it back! Are you sure you want to delete?')) {
+        if (deleteBtn){
+            const id = deleteBtn.getAttribute('data-id')
+            const tableId = deleteBtn.getAttribute('data-table')
+            
+            if (confirm('Are you sure you want to delete this prescription?')) {
+                deleteBtn.setAttribute('disabled', 'disabled')
+                http.delete(`/prescription/${id}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            if ($.fn.DataTable.isDataTable('#'+tableId)){
+                            $('#'+tableId).dataTable().fnDraw()
+                        }
+                        }
+                        deleteBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                        deleteBtn.removeAttribute('disabled')
+                    })
+            }
+            
+        }
 
+        resourceInput.addEventListener('input', function () {
+            updateInvestigationAndManagmentDiv.forEach(div => {
+                if (resourceInput.dataset.input === div.dataset.div) {
+                    const datalistEl = div.querySelector(`#resourceList${div.dataset.div}`)
+
+                     if (resourceInput.value < 2) {
+                        datalistEl.innerHTML = ''
+                    }
+                    if (resourceInput.value.length > 2) {
+                        http.get(`/resources/list`, {params: {resource: resourceInput.value}}).then((response) => {
+                            displayResourceList(datalistEl, response.data)
+                        })
+                    }
+                    const selectedOption = datalistEl.options.namedItem(resourceInput.value)
+                    if (selectedOption){
+                        if (selectedOption.getAttribute('data-cat') == 'Medication'){
+                            div.querySelector('#qty').classList.add('d-none')
+                            div.querySelector('#pres').classList.remove('d-none')
+                        } else {
+                            div.querySelector('#qty').classList.remove('d-none')
+                            div.querySelector('#pres').classList.add('d-none')
+                    }
+                    }
+                }
+            })
+        })
+
+        if (deleteConsultationBtn) {
+            deleteConsultationBtn.setAttribute('disabled', 'disabled')
+                if (confirm('If you delete this consultation you cannot get it back! Are you sure you want to delete?')) {
+                    const id = deleteConsultationBtn.getAttribute('data-id')
+                    http.delete(`/consultation/${id}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300){
+                                
+                                consultationReviewModal.hide()
+                            }
+                            deleteConsultationBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {
+                            alert(error)
+                            deleteConsultationBtn.removeAttribute('disabled')
+                        })
             }
         }
 
-        if (updateInvestigationAndManagmentBtn) {
-            updateInvestigationAndManagmentDiv.forEach(div => {
-
-                if (div.dataset.div === updateInvestigationAndManagmentBtn.dataset.btn) {
-                    div.classList.toggle('d-none')
-                    getItemsFromInput(div.querySelector('#item'), items)
-                }
-                
-            })
-        }
-
         if (addInvestigationAndManagmentBtn) {
-            updateInvestigationAndManagmentDiv.forEach(div => {
-                if (div.dataset.div === addInvestigationAndManagmentBtn.dataset.btn) {
-                console.log(getDivData(div))
-                clearDivValues(div)
-                }
-            })
+                updateInvestigationAndManagmentDiv.forEach(div => {
+                    
+                    if (addInvestigationAndManagmentBtn.dataset.btn === div.dataset.div) {
+                        addInvestigationAndManagmentBtn.setAttribute('disabled', 'disabled')
+
+                        const resourceValues = getSelectedResourceValues(div, div.querySelector('.resource'), div.querySelector(`#resourceList${div.dataset.div}`))
+                        const conId = addInvestigationAndManagmentBtn.dataset.conid
+                        const visitId = addInvestigationAndManagmentBtn.dataset.visitid
+                        const divPrescriptionTableId = '#'+div.querySelector('.prescriptionTable').id
+
+                        let data = {...getDivData(div), ...resourceValues, conId, visitId}
+    
+                        http.post('prescription', {...data}, {"html": div})
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                new Toast(div.querySelector('#saveUpdateInvestigationAndManagementToast'), {delay:2000}).show()
+                                clearDivValues(div)
+                                clearValidationErrors(div)
+                            }
+                            if ($.fn.DataTable.isDataTable( divPrescriptionTableId )){
+                                $(divPrescriptionTableId).dataTable().fnDraw()
+                            }
+                            addInvestigationAndManagmentBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                            addInvestigationAndManagmentBtn.removeAttribute('disabled')
+                        }) 
+                    }
+                })
+            
         }
 
         if (surgeryBtn) {
@@ -551,30 +602,18 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // tasks to run when closing review consultation modal
     consultationReviewModal._element.addEventListener('hide.bs.modal', function(event) {
-        if (!confirm('Have you saved? You will loose all unsaved data')) {
-            event.preventDefault()
-            return
-        }
         consultationReviewDiv.innerHTML = ''
         
         document.querySelectorAll('#collapseReviewDiv').forEach(el => {
             let collapseable = new Collapse(el, {toggle: false})
             collapseable.hide()
         })
-        
+        allPatientsVisitTable.draw()
     })
 })
 
 
-
-function getItemsFromInput(input, data) {
-    input.addEventListener('keypress', function() {
-        let records = data.filter(d => d.name.toLocaleLowerCase().includes(input.value.toLocaleLowerCase()) ? d : '')
-        //displayItemsList(input.parentNode, records)
-    })
-}
-
-function displayResourceList(div, data) {
+function displayResourceList(datalistEl, data) {
 
     data.forEach(line => {
         const option = document.createElement("OPTION")
@@ -582,14 +621,10 @@ function displayResourceList(div, data) {
         option.setAttribute('value', line.name)
         option.setAttribute('data-id', line.id)
         option.setAttribute('name', line.name)
+        option.setAttribute('data-cat', line.category)
 
-        let previousItems = div.querySelectorAll('#resourceOption')
-            let optionsList = []
-            previousItems.forEach(node => {
-               optionsList.push(node.dataset.id)
-            })
-            !optionsList.includes(option.dataset.id) ? div.querySelector('#resourceList').appendChild(option) : ''
-        })
+        !datalistEl.options.namedItem(line.name) ? datalistEl.appendChild(option) : ''
+    })
 }
 
 function openModals(modal, button, {id, visitId, ...data}) {
@@ -600,7 +635,7 @@ function openModals(modal, button, {id, visitId, ...data}) {
 
     modal._element.querySelector('#updateKnownClinicalInfoBtn').setAttribute('data-id', id)
 
-    if (modal._element.id == 'newConsultationModal' || modal._element.id == 'newAncConsultationModal') {
+    if (modal._element.id == 'newConsultationModal' || modal._element.id == 'ancConsultationModal') {
         modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
     }
     
@@ -609,3 +644,16 @@ function openModals(modal, button, {id, visitId, ...data}) {
         modal.show()
     }
 }
+
+function getSelectedResourceValues(modal, inputEl, datalistEl) {  
+    const selectedOption = datalistEl.options.namedItem(inputEl.value)
+    
+        if (selectedOption) {
+            return {
+                resource : selectedOption.getAttribute('data-id'),
+                resourceCategory : selectedOption.getAttribute('data-cat'),              
+        }
+        } else {
+            return ""
+        }
+    }

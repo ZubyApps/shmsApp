@@ -4,12 +4,17 @@
 @vite(['resources/js/doctors.js'])
 
 @include('doctors.consultationModal', ['title' => 'New Consultation', 'isSpecialist' => false, 'id' => 'newConsultationModal'])
-@include('doctors.newAncConsultationModal', ['title' => 'New ANC Consultation', 'isUpdate' => false, 'id' => 'newAncConsultationModal'])
-@include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isUpdate' => false, 'id' => 'consultationReviewModal'])
+@include('doctors.consultationModal', ['title' => 'New Specialist Consultation', 'isSpecialist' => true, 'id' => 'specialistConsultationModal'])
+
+@include('doctors.ancConsultationModal', ['title' => 'New ANC Consultation', 'isReview' => false, 'id' => 'ancConsultationModal'])
+@include('doctors.ancConsultationModal', ['title' => 'New ANC Review', 'isReview' => true, 'id' => 'ancReviewModal'])
+
+@include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isAnc' => false, 'id' => 'consultationReviewModal'])
+@include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isAnc' => true, 'id' => 'ancConsultationReviewModal'])
+
 @include('doctors.surgeryModal', ['title' => 'New Surgery', 'isUpdate' => false, 'id' => 'surgeryModal'])
 @include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
 @include('doctors.newReviewModal', ['title' => 'New Review', 'isUpdate' => false, 'id' => 'newReviewModal'])
-@include('doctors.consultationModal', ['title' => 'New Specialist Consultation', 'isSpecialist' => true, 'id' => 'specialistConsultationModal'])
 
     <div class="container p-1 mt-5">
         <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"

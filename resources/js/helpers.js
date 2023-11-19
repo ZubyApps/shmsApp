@@ -133,7 +133,6 @@ const getSelctedText = (selectEl) => {
 }
 
 function displayList(dataListEl, optionsId, data) {
-    console.log(dataListEl)
     dataListEl.innerHTML = ''
     
     
@@ -169,5 +168,23 @@ function openModals(modal, button, {id, ...data}) {
     button.setAttribute('data-id', id)
     modal.show()
 }
+
+function doctorsModalClosingTasks(event, modal, textareaHeight){
+    if (!confirm('Have you saved? You will loose all unsaved data')) {
+        event.preventDefault()
+        return
+    }
+    clearDivValues(modal._element.querySelector('.investigationAndManagementDiv'))
+    clearDivValues(modal._element.querySelector('#consultationDiv'))
+    clearValidationErrors(modal._element.querySelector('#consultationDiv'))
+    modal._element.querySelector('#updateKnownClinicalInfoBtn').innerHTML = `Update`
+    modal._element.querySelector('#saveConsultationBtn').removeAttribute('disabled')
+    modal._element.querySelector('.investigationAndManagementDiv').classList.add('d-none')
+    modal._element.querySelectorAll('.resourceList').forEach(list => clearItemsList(list))
+    removeAttributeLoop(querySelectAllTags(modal._element.querySelector('#consultationDiv'), ['input, select, textarea']), 'disabled')
+    for (let t = 0; t < modal._element.querySelector('#consultationDiv').getElementsByTagName("textarea").length; t++){
+        modal._element.querySelector('#consultationDiv').getElementsByTagName("textarea")[t].setAttribute("style", "height:" + textareaHeight + "px;overflow-y:hidden;")
+    }
+}
     
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals}
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks }

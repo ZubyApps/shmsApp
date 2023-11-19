@@ -124,7 +124,7 @@ class PatientService
                 'name'              => $patient->first_name.' '. $patient->middle_name.' '.$patient->last_name,
                 'phone'             => $patient->phone,
                 'sex'               => $patient->sex,
-                'age'               => (new Carbon($patient->date_of_birth))->age.'yrs',
+                'age'               => str_replace(['a', 'g', 'o'], '', (new Carbon($patient->date_of_birth))->diffForHumans(['other' => null, 'parts' => 2, 'short' => true]), ),
                 'sponsor'           => $patient->sponsor->name,
                 'category'          => $patient->sponsor->sponsorCategory->name,
                 'createdAt'         => (new Carbon($patient->created_at))->format('d/m/Y'),
@@ -133,4 +133,11 @@ class PatientService
             ];
          };
     }
+
+    // public function ageConverter($date)
+    // {
+    //     match((new Carbon($date))->age){
+    //         0 
+    //     };
+    // }
 }

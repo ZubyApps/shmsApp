@@ -22,9 +22,33 @@ class DatabaseSeeder extends Seeder
          Sponsor::factory(1)->create();
          Patient::factory(1)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        \App\Models\ResourceCategory::create([
+            'name' => 'Medication',
+            'description' => 'Pills, Injectables, Topicals, Drops',
+            'user_id'   => 1
+        ]);
+        \App\Models\ResourceCategory::create([
+            'name' => 'Labortory',
+            'description' => 'Chemistry, Microbiology, Imagings',
+            'user_id'   => 1
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Pills',
+            'description' => 'Tablets, Capsules, Suppositories, Dispersables',
+            'user_id'   => 1,
+            'resource_category_id'   => 1
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Injectables',
+            'description' => 'Infusions, Injections',
+            'user_id'   => 1,
+            'resource_category_id'   => 1
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Microbiology',
+            'description' => 'Microbiological Tests',
+            'user_id'   => 1,
+            'resource_category_id'   => 2
+        ]);
     }
 }

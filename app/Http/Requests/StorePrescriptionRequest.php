@@ -25,10 +25,11 @@ class StorePrescriptionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'resourceId'              => ['required', 'numeric', 'exists:'.Resource::class.',id'],
-            'conId'                   => ['required', 'numeric', 'exists:'.Consultation::class.',id'],
-            'visitId'                 => ['required', 'numeric', 'exists:'.Visit::class.',id'],
-            'prescription'            => ['required', 'string'],
+            'resource'      => ['required', 'numeric', 'exists:'.Resource::class.',id'],
+            'conId'         => ['required', 'numeric', 'exists:'.Consultation::class.',id'],
+            'visitId'       => ['required', 'numeric', 'exists:'.Visit::class.',id'],
+            'prescription'  => ['required_if:resourceCategory,Medication'],
+            'quantity'      => ['required_unless:resourceCategory,Medication'],
         ];
     }
 }

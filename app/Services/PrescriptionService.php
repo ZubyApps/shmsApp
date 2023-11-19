@@ -19,20 +19,21 @@ class PrescriptionService
 
     public function createFromDoctors(Request $data, User $user): Prescription
     {
-        $bill = 0;
-        if ($data->qty){
+        $bill = null;
+        if ($data->quantity){
             $resource = $this->resource->find($data->resource);
             $bill = $resource->selling_price * $data->quantity;
         }
 
         return $user->prescriptions()->create([
-            'resource_id'        => $data->resourceId,
+            'resource_id'        => $data->resource,
             'prescription'       => $data->prescription,
             'consultation_id'    => $data->conId,
             'visit_id'           => $data->visitId,
             'qty_billed'         => $data->quantity,
             'bill'               => $bill,
-            'bill_date'          => new Carbon(),
+            'bill_date'          => $bill ? new Carbon() : null,
+            'note'               => $data->note
         ]);
     }
 
@@ -85,6 +86,7 @@ class PrescriptionService
                 'prescription'      => $prescription->prescription,
                 'quantity'          => $prescription->qty_billed,
                 'by'                => $prescription->user->username,
+                'note'              => $prescription->note
                 // 'count'             => 0//$prescription->prescriptions()->count(),
             ];
          };

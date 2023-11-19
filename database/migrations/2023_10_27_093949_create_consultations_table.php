@@ -29,6 +29,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->text('roppt_brim')->nullable();
             $table->text('ultrasound_report')->nullable();
+            $table->text('remarks')->nullable();
             $table->string('p_position')->nullable();
             $table->string('ho_fundus')->nullable();
             $table->dateTime('lmp')->nullable();

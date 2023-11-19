@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,30 +15,30 @@ class ConsultationReviewResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        //return parent::toArray($request);
         return [
+            "id"                            => $this->id,
             "visitId"                       => $this->visit_id,
             "presentingComplain"            => $this->p_complain ?? '',
             "historyOfPresentingComplain"   => $this->hop_complain ?? '',
             "pastMedicalHistory"            => $this->med_surg_history ?? '',
             "consultantSpecialist"          => $this->specialist ?? '',
             "examinationFindings"           => $this->exam_findings ?? '',
-            "obyGynHistory"                 => $this->obgyn_history ?? '',
+            "obGynHistory"                  => $this->obgyn_history ?? '',
             "selectedDiagnosis"             => $this->icd11_diagnosis ?? '',
             "additionalDiagnosis"           => $this->ad_diagnosis ?? '',
             "status"                        => $this->admission_status ?? '',
             "ward"                          => $this->ward ?? '',
             "bedNumber"                     => $this->bed_no ?? '',
-            "lmp"                           => $this->lmp ?? '',
-            "edd"                           => $this->edd ?? '',
+            "lmp"                           => $this->lmp ? Carbon::parse($this->lmp)->format('d/M/Y') : '',
+            "edd"                           => $this->edd ? Carbon::parse($this->edd)->format('d/M/Y') : '',
             "ega"                           => $this->ega ?? '',
             "fetalHeartRate"                => $this->fh_rate ?? '',
             "assessment"                    => $this->assessment ?? '',
-            "notes"                          => $this->notes ?? '',
+            "notes"                         => $this->notes ?? '',
             "plan"                          => $this->phys_plan ?? '',
             "complaint"                     => $this->complaint ?? '',
             "ultrasoundReport"              => $this->ultrasound_report ?? '',
-            "presentationPosition"          => $this->p_position ?? '',
+            "presentationAndPosition"       => $this->p_position ?? '',
             "heightOfFundus"                => $this->ho_fundus ?? '',
             "relationOfPresentingPartToBrim"=> $this->roppt_brim ?? '',
             "remarks"                       => $this->remarks ?? '',

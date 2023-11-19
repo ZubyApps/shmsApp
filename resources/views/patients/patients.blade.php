@@ -44,7 +44,7 @@
                                 <th>Patient Name</th>
                                 <th><i class="bi bi-telephone-outbound-fill text-primary"></th>
                                 <th>Sex</th>
-                                <th>DOB</th>
+                                <th>Age</th>
                                 <th>Sponsor</th>
                                 <th>Category</th>
                                 <th>Created</th>

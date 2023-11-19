@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Visit;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class StoreConsultationRequest extends FormRequest
 {

@@ -18,8 +18,8 @@ return new class extends Migration
         Schema::create('prescriptions', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Resource::class);
-            $table->text('prescription');
-            $table->text('instruction')->nullable();
+            $table->text('prescription')->nullable();
+            $table->text('note')->nullable();
             $table->string('qty_billed')->nullable();
             $table->string('bill')->nullable();
             $table->dateTime('bill_date')->nullable();

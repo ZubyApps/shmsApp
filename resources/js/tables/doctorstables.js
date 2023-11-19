@@ -23,7 +23,11 @@ const getAllPatientsVisitTable = (tableId) => {
             {data: "doctor"},
             {data: "diagnosis"},
             {data: "sponsor"},
-            {data: "admissionStatus"},
+            {data: row => () => {
+                return row.admissionStatus == 'Inpatient' ? 
+                `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
+                `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
+            } },
             {
                 sortable: false,
                 data: row =>  `
@@ -124,7 +128,8 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal) => {
 }
 
 const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
-    const prescriptionTable =  new DataTable(tableId, {
+    console.log(tableId, conId)
+    const prescriptionTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/prescription/load/initial', data: {
             'conId': conId,
@@ -136,12 +141,13 @@ const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
             {data: "resource"},
             {data: "prescription"},
             {data: "quantity"},
+            {data: "note"},
             {data: "by"},
             {
                 sortable: false,
                 data: row =>  `
                 <div class="d-flex flex-">
-                    <button type="submit" class="ms-1 btn btn-outline-primary ${modal.id == 'consultationReviewModal' ? 'd-none' : ''} deleteBtn tooltip-test" title="delete" data-id="${ row.id}">
+                    <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>
                 </div>
