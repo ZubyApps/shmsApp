@@ -25,9 +25,12 @@ return new class extends Migration
             $table->dateTime('bill_date')->nullable();
             $table->string('qty_dispensed')->nullable();
             $table->dateTime('dispense_date')->nullable();
-            $table->string('result')->nullable();
             $table->boolean('approved')->default(false);
+            $table->foreignIdFor(User::class, 'hmo_id')->nullable();
+            $table->string('result')->nullable();
+            $table->dateTime('result_date')->nullable();
             $table->string('paid')->nullable();
+            $table->foreignIdFor(User::class, 'lab_id')->nullable();
             $table->foreignIdFor(Consultation::class);
             $table->foreignIdFor(Visit::class);
             $table->foreignIdFor(User::class);

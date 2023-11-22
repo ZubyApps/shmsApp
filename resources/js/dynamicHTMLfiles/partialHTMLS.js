@@ -315,7 +315,7 @@ const vitalsignsTable = (line) => {
                 <div class="mb-2 form-control">
                 <span class="fw-bold text-primary">Vital Signs</span>                                            
                 <div class="row overflow-auto m-1">
-                    <table id="prescriptionTable${line.visitId}" class="table table-hover align-middle table-sm">
+                    <table id="vitalsignsTable${line.visitId}" class="table table-hover align-middle table-sm">
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -359,12 +359,34 @@ const files = (line) => {
         </table>`
 }
 
-const updateInvestigationAndManagement = (consultations, iteration, line) => {
+const updateInvestigationAndManagement = (length, iteration, line) => {
     return ` 
                 <div class="investigationAndManagmentDiv mt-2 active" data-div="${iteration}">
-                    <div class="mb-2 form-control">
-                        <span class="fw-semibold">Investigation & Management</span>
-                        ${consultations.length > iteration ? '': `
+                    <div class="d-flex justify-content-center">
+                        <button type="button" id="updateResourceListBtn" data-conid="${line.id}" data-visitid="${line.visitId}" data-btn="${iteration}" class="btn btn-primary">
+                            Update Resources
+                            <i class="bi bi-prescription"></i>
+                        </button>
+                    </div>
+                    <div class="my-2 form-control resourceDiv d-none">
+                        <span class="fw-semibold">Resource Items</span>
+                        <div class="mb-2 form-control active">
+                            <table id="prescriptionTable${line.id}" data-id="${line.id}" class="table table-hover align-middle table-sm prescriptionTable">
+                                <thead>
+                                    <tr>
+                                        <th>Added</th>
+                                        <th>Resource</th>
+                                        <th>Prescription</th>
+                                        <th>Qty</th>
+                                        <th>Note</th>
+                                        <th>By</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        ${length > iteration ? '': `
                         <div class="my-2">
                             <div class="row">
                                 <div class="col-xl-4 themed-grid-col col-xl-6">
@@ -405,22 +427,6 @@ const updateInvestigationAndManagement = (consultations, iteration, line) => {
                                 </div>  
                             </div>
                         </div>`}
-                        <div class="mb-2 form-control active">
-                            <table id="prescriptionTable${iteration}" data-id="${line.id}" class="table table-hover align-middle table-sm bg-primary prescriptionTable">
-                                <thead>
-                                    <tr>
-                                        <th>Prescribed</th>
-                                        <th>Resource</th>
-                                        <th>Prescription</th>
-                                        <th>Qty</th>
-                                        <th>Note</th>
-                                        <th>By</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
                     </div>
                 </div>`
 }
@@ -430,36 +436,21 @@ const investigations = (line) => {
                 <div class="my-2 form-control">
                     <span class="fw-bold text-primary"> Investigations </span>
                     <div class="row overflow-auto m-1">
-                        <table id="investigationTable${line.id}" class="table table-hover align-middle table-sm bg-primary">
+                        <table id="investigationTable${line.id}" data-id="${line.id}" class="table table-hover align-middle table-sm investigationTable">
                             <thead>
                                 <tr>
                                     <th>Type</th>
                                     <th>Requested</th>
-                                    <th>Physician</th>
-                                    <th>Test/Investigation</th>
+                                    <th>Investigation</th>
+                                    <th>Dr</th>
                                     <th>Result</th>
+                                    <th>Sent</th>
+                                    <th>Staff</th>
                                     <th>Doc</th>
                                     <th>Upload</th>
-                                    <th>Date</th>
-                                    <th>Staff</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Lab</td>
-                                    <td>12/9/23 11:02pm</td>
-                                    <td>Dr Toby</td>
-                                    <td>Malaria Parasite</td>
-                                    <td><textarea class="form-control" id="resultEl" readonly>Pfall ++
-                                    Pfall ++
-                                    </textarea></td>
-                                    <td><span class="position-relative"><a href="/transactions/11/receipts/15" target="blank" title="ABAGI Ernest_Nguevese.pdf">
-                                    <i class="bi bi-file-earmark-text download-receipt text-primary fs-4"></i></a></span></td>
-                                    <td><a role="button" class=""><i class="bi bi-upload"></i></td></a>
-                                    <td>12/09/23</td>
-                                    <td>Onjefu</td>
-                                </tr>
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>
@@ -472,32 +463,38 @@ const review = (count, line) => {
                 <div class="row">
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
+                            <span class="input-group-text" id="specialistDesignationLabel"> Consultant Specialist<br>Name & Designation</span>
+                            <input class="form-control" name="consultantSpecialist" value="${line.consultantSpecialist}" ${line.consultantSpecialist ? 'readonly' : 'disabled'}>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 themed-grid-col col-xl-6">
+                        <div class="input-group mb-1">
                             <span class="input-group-text" id="complainLabel">Complain</span> 
-                            <textarea class="form-control" name="complaint" id="complaint" cols="10" rows="3" readonly="readonly">${line.complaint}</textarea>
+                            <textarea class="form-control" name="complaint" id="complaint" cols="10" rows="2" readonly="readonly">${line.complaint}</textarea>
                         </div>
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="examinationFindingsLabel"> Examination <br> Findings </span>                                                    
-                            <textarea class="form-control" type="text" name="examinationFindings" id="examinationFindings" cols="10" rows="3" readonly="readonly">${line.examinationFindings}</textarea>
+                            <textarea class="form-control" type="text" name="examinationFindings" id="examinationFindings" cols="10" rows="2" readonly="readonly">${line.examinationFindings}</textarea>
                         </div>
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
-                            <span class="input-group-text" id="diagnosisLabel"> Selected <br>ICD11 <br> Diagnosis </span>
+                            <span class="input-group-text" id="diagnosisLabel"> Selected <br>ICD11 Diagnosis </span>
                             <textarea class="form-control reviewSelectedDiagnosis" type="text" name="selectedDiagnosis" value="" readonly="readonly">${line.selectedDiagnosis}</textarea>
                         </div>
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="diagnosisLabel"> Assessment </span>
-                            <textarea class="form-control reviewSelectedDiagnosis" type="text" name="selectedDiagnosis" cols="10" rows="3" readonly="readonly">${line.assessment}</textarea>
+                            <textarea class="form-control reviewSelectedDiagnosis" type="text" name="selectedDiagnosis" cols="10" rows="2" readonly="readonly">${line.assessment}</textarea>
                         </div>
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="physiciansPlanLabel"> Physicians Plan </span>
-                            <textarea class="form-control" type="text" name="physiciansPlan" id="physiciansPlan" cols="10" rows="3" readonly="readonly">${line.plan}</textarea>
+                            <textarea class="form-control" type="text" name="physiciansPlan" id="physiciansPlan" cols="10" rows="2" readonly="readonly">${line.plan}</textarea>
                         </div>
                     </div>
                 </div>
@@ -536,7 +533,7 @@ const consultation = (line) => {
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="specialistDesignationLabel"> Consultant Specialist<br>Name &amp; Designation</span>
-                            <input class="form-control" name="consultantSpecialist" value="${line.consultantSpecialist}">
+                            <input class="form-control" name="consultantSpecialist" value="${line.consultantSpecialist}" ${line.consultantSpecialist ? 'readonly' : 'disabled'}>
                         </div>
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-6">
@@ -560,7 +557,7 @@ const consultation = (line) => {
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="obGynHistoryLabel">Obstetrics/<br>Gynecological History</span>
-                            <textarea class="form-control" type="text" name="obGynHistory" id="obGynHistory" cols="10" rows="2" readonly="readonly">${line.obyGynHistory}</textarea>
+                            <textarea class="form-control" type="text" name="obGynHistory" id="obGynHistory" cols="10" rows="2" readonly="readonly">${line.obGynHistory}</textarea>
                         </div>
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-6">
@@ -615,15 +612,15 @@ const consultation = (line) => {
         `
 }
 
-const AncConsultation = (line, iteration) => {
+const AncConsultation = (line, iteration, count) => {
     return  `
             <div class="form-control">
-                <span class="fw-bold text-primary">Consultation ${iteration > 1 ? ' Review' : ''}</span>                                            
+                <span class="fw-bold text-primary">Consultation ${iteration > 1 ? ' Review '+count : ''}</span>                                            
                 <div class="row mt-1">
                     <div class="col-xl-4 themed-grid-col col-xl-12">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="specialistDesignationLabel"> Consultant (Name&Designation)</span>
-                            <input class="form-control" name="consultantSpecialist" value="${line.consultantSpecialist}">
+                            <input class="form-control" name="consultantSpecialist" value="${line.consultantSpecialist}" ${line.consultantSpecialist ? 'readonly' : 'disabled'}>
                         </div>
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-4">
@@ -737,23 +734,18 @@ const medicationAndTreatment = (line) => {
             <div class="my-2 form-control">
                 <span class="fw-bold text-primary"> Medication & Treatment </span>
                 <div class="row overflow-auto m-1">
-                    <table id="prescriptionTable${line.id}" class="table table-hover align-middle table-sm bg-primary">
+                    <table id="treatmentTable${line.id}" data-id="${line.id}" class="table table-hover align-middle table-sm treatmentTable">
                         <thead>
                             <tr>
+                                <th>Category</th>
                                 <th>Prescribed</th>
-                                <th>Treatment/Medication</th>
-                                <th>Dosaage</th>
-                                <th>Physician</th>
+                                <th>Dr</th>
+                                <th>Treatment</th>
+                                <th>Prescription</th>
+                                <th>Billed</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>12/09/2023 11:02pm</td>
-                                <td>N/S 500mls</td>
-                                <td>500mls 12hrly x2</td>
-                                <td>Dr Toby</td>
-                            </tr>
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -761,3 +753,6 @@ const medicationAndTreatment = (line) => {
 }
 
 export {surgeryNote, deliveryNote, vitalsignsTable, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment}
+
+{/* <td><span class="position-relative"><a href="/transactions/11/receipts/15" target="blank" title="ABAGI Ernest_Nguevese.pdf"> *
+                                    <i class="bi bi-file-earmark-text download-receipt text-primary fs-4"></i></a></span></td> */}

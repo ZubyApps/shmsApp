@@ -150,12 +150,12 @@
                                                 <input class="form-control resource" type="search" name="resource" id="resource" {!! $isSpecialist ? 'data-input="specialist"' : 'data-input="new"' !!} placeholder="search" list="resourceList{{ $isSpecialist ? 'specialist' : 'new' }}"/>
                                                 <datalist name="resource" type="text" class="decoration-none resourceList" id="resourceList{{ $isSpecialist ? 'specialist' : 'new' }}"></datalist>
                                             </x-form-div>
-                                            <x-form-div class="col-xl-6" id="pres">
+                                            <x-form-div class="col-xl-6 pres" id="pres">
                                                 <x-input-span id="prescriptionLabel">Prescription</x-input-span>
                                                 <x-form-input type="text" name="prescription" id="prescription"
                                                     placeholder="eg: 5mg BD x5" />
                                             </x-form-div>
-                                            <x-form-div class="col-xl-6" id="qty">
+                                            <x-form-div class="col-xl-6 qty" id="qty">
                                                 <x-input-span id="quantityLabel">Quantity</x-input-span>
                                                 <x-form-input type="number" name="quantity" id="quantity"
                                                     placeholder="" value=""/>

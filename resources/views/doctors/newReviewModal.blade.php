@@ -140,12 +140,12 @@
                                             <x-form-input class="resource" type="search" name="resource" id="resource" placeholder="search" data-input="review" list="resourceListreview" />
                                             <datalist name="resource" type="text" class="decoration-none resourceList" id="resourceListreview"></datalist>
                                         </x-form-div>
-                                        <x-form-div class="col-xl-6" id="pres">
+                                        <x-form-div class="col-xl-6 pres" id="pres">
                                             <x-input-span id="prescriptionLabel">Prescription</x-input-span>
                                             <x-form-input type="text" name="prescription" id="prescription"
                                                 placeholder="eg: 5mg BD x5" />
                                         </x-form-div>
-                                        <x-form-div class="col-xl-6" id="qty">
+                                        <x-form-div class="col-xl-6 qty" id="qty">
                                             <x-input-span id="quantityLabel">Quantity</x-input-span>
                                             <x-form-input type="number" name="quantity" id="quantity"
                                                 placeholder="" />
@@ -156,7 +156,7 @@
                                         </x-form-div>
                                     </div>
                                     <div class="d-flex justify-content-center">
-                                        <button type="button" id="addInvestigationAndManagmentBtn" data-btn="review"
+                                        <button type="button" id="addInvestigationAndManagementBtn" data-btn="review"
                                             class="btn btn-primary">
                                             add
                                             <i class="bi bi-prescription"></i>

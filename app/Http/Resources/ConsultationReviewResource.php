@@ -43,6 +43,7 @@ class ConsultationReviewResource extends JsonResource
             "relationOfPresentingPartToBrim"=> $this->roppt_brim ?? '',
             "remarks"                       => $this->remarks ?? '',
             "doctor"                        => $this->user->username ?? '',
+            "specialistFlag"                => $this->specialist_consultation ?? ''
         ];
     }
 }

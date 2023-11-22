@@ -69,6 +69,10 @@
                     </div>
                 </div>
                 <div class="modal-footer pe-4">    
+                    <button type="button" id="reviewAncPatientBtn" class="btn btn-primary me-auto d-none">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Anc Review
+                    </button>
                     <button type="button" id="reviewPatientBtn" class="btn btn-primary">
                         <i class="bi bi-plus-circle me-1"></i>
                         Review

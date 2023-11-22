@@ -37,23 +37,6 @@ class PrescriptionService
         ]);
     }
 
-    // public function update(Request $data, Prescription $prescription, User $user): Prescription
-    // {
-    //    $prescription->update([
-    //         'name'                      => $data->name,
-    //         'flag'                      => $data->flag,
-    //         'prescription_sub_category_id'  => $data->prescriptionSubCategory,
-    //         'purchase_price'            => $data->purchasePrice,
-    //         'selling_price'             => $data->sellingPrice,
-    //         'reorder_level'             => $data->reOrder,
-    //         'unit_description'          => $data->unitDescription,
-    //         'expiry_date'               => new Carbon($data->expiryDate),
-    //         // 'stock_level'               => $data->stockLevel,
-    //     ]);
-
-    //     return $prescription;
-    // }
-
     public function getPaginatedInitialPrescriptions(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
@@ -62,8 +45,8 @@ class PrescriptionService
         if (! empty($params->searchTerm)) {
             return $this->prescription
                         ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('prescriptionSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('prescriptionSubCategory.prescriptionCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('prescription.resource.rescurceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        // ->orWhereRelation('prescriptionSubCategory.prescriptionCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -133,5 +116,64 @@ class PrescriptionService
             ];
         };
         
+    }
+
+    public function getPaginatedLabRequests(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+
+        return $this->prescription
+                    ->where('consultation_id', $data->conId)
+                    ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'Laboratory')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
+    public function getLabTransformer(): callable
+    {
+       return  function (Prescription $prescription) {
+            return [
+                'id'                => $prescription->id,
+                'type'              => $prescription->resource->resourceSubCategory->name,
+                'requested'         => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
+                'resource'          => $prescription->resource->name,
+                'dr'                => $prescription->user->username,
+                'result'            => $prescription->result,
+                'sent'              => $prescription->result_date ?? '',
+                'staff'             => $prescription->lab->name ?? '',
+                'doc'               => $prescription->doc ?? '',
+
+                // 'count'             => 0//$prescription->prescriptions()->count(),
+            ];
+         };
+    }
+
+    public function getPaginatedTreatmentRequests(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+
+        return $this->prescription
+                    ->where('consultation_id', $data->conId)
+                    ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'Medication')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
+    public function getTreatmentTransformer(): callable
+    {
+       return  function (Prescription $prescription) {
+            return [
+                'id'                => $prescription->id,
+                'dr'                => $prescription->user->username,
+                'category'          => $prescription->resource->resourceSubCategory->name,
+                'resource'          => $prescription->resource->name,
+                'prescription'      => $prescription->prescription,
+                'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
+                'billed'            => $prescription->bill_date ? (new Carbon($prescription->bill_date))->format('d/m/y g:ia') : '',
+                // 'count'             => 0//$prescription->prescriptions()->count(),
+            ];
+         };
     }
 }

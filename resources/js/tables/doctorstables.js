@@ -128,7 +128,6 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal) => {
 }
 
 const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
-    console.log(tableId, conId)
     const prescriptionTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/prescription/load/initial', data: {
@@ -163,4 +162,80 @@ const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
     return prescriptionTable
 }
 
-export {getAllPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation}
+const getLabTableByConsultation = (tableId, conId, modal) => {
+    const investigationTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  {url: '/prescription/load/lab', data: {
+            'conId': conId,
+        }},
+        paging: true,
+        lengthChange: false,
+        searching: false,
+        orderMulti: false,
+        columns: [
+            {data: "type"},
+            {data: "requested"},
+            {data: "resource"},
+            {data: "dr"},
+            {data: "result"},
+            {data: "sent"},
+            {data: "staff"},
+            {data: "doc"},
+            {
+                sortable: false,
+                data: row =>  `
+                <div class="d-flex flex-">
+                    <button type="submit" class="ms-1 btn btn-outline-primary uploadDocBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
+                    <i class="bi bi-upload"></i>
+                    </button>
+                </div>
+                `      
+            },
+        ]
+    });
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        investigationTable.destroy()
+    })
+
+    return investigationTable
+}
+
+const getTreatmentTableByConsultation = (tableId, conId, modal) => {
+    const treatmentTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  {url: '/prescription/load/treatment', data: {
+            'conId': conId,
+        }},
+        paging: true,
+        lengthChange: false,
+        searching: false,
+        orderMulti: false,
+        columns: [
+            {data: "category"},
+            {data: "prescribed"},
+            {data: "dr"},
+            {data: "resource"},
+            {data: "prescription"},
+            {data: "billed"},
+            // {
+            //     sortable: false,
+            //     data: row =>  `
+            //     <div class="d-flex flex-">
+            //         <button type="submit" class="ms-1 btn btn-outline-primary uploadDocBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
+            //         <i class="bi bi-upload"></i>
+            //         </button>
+            //     </div>
+            //     `      
+            // },
+        ]
+    });
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        treatmentTable.destroy()
+    })
+
+    return treatmentTable
+}
+
+export {getAllPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation}

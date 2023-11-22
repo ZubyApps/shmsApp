@@ -14,11 +14,11 @@
                         </div>
                         <div class="mb-2 form-control">
                             <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
-                            <div class="row" id="knownClinicalInfoDiv" data-div="anc">
-                                <x-toast-successful class="col-xl-12"  id="knownClinicalInfoToast"></x-toast-successful>
+                            <x-toast-successful class="col-xl-12"  id="knownClinicalInfoToast"></x-toast-successful>
+                            <div class="row" id="knownClinicalInfoDiv" {!! $isReview ? 'data-div="ancReview"' : 'data-div="anc"' !!}>
                                 @include('patients.partials.known-clinical-info', ['disabled' => true])
                                 <div class="d-flex justify-content-center">
-                                    <button type="button" id="updateKnownClinicalInfoBtn" class="btn bg-primary text-white" data-btn="anc">
+                                    <button type="button" id="updateKnownClinicalInfoBtn" class="btn bg-primary text-white" {!! $isReview ? 'data-btn="ancReview"' : 'data-btn="anc"' !!}>
                                         <i class="bi bi-arrow-up-circle"></i>
                                         Update
                                     </button>
@@ -49,8 +49,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="row" id="addVitalsignsDiv" {!! $isReview ? 'data-div="ancReview"' : 'data-div="anc"' !!}>
-                                        <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                         @include('vitalsigns.vitalsigns', ['disabled' => true])
+                                        <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                     </div>
                                     <div class="d-flex justify-content-center">
                                         <button type="button" id="addVitalsignsBtn" {!! $isReview ? 'data-btn="ancReview"' : 'data-btn="anc"' !!}
@@ -164,16 +164,16 @@
                                         <div class="row">
                                             <x-form-div class="col-xl-6">
                                                 <x-input-span id="resourceLabel">Medical Resources</x-input-span>
-                                                <x-form-input class="resource" type="search" name="resource" id="resource" data-input="anc" list="resourceListanc"
+                                                <input class="form-control resource" type="search" name="resource" id="resource" {!! $isReview ? 'data-input="ancReview"' : 'data-input="anc"' !!} list="resourceList{{ $isReview ? 'ancReview' : 'anc' }}"
                                                     placeholder="search" />
-                                                <datalist name="resource" type="text" class="decoration-none resourceList" id="resourceListanc"></datalist>
+                                                <datalist name="resource" type="text" class="decoration-none resourceList" id="resourceList{{ $isReview ? 'ancReview' : 'anc' }}"></datalist>
                                             </x-form-div>
-                                            <x-form-div class="col-xl-6" id="pres">
+                                            <x-form-div class="col-xl-6 pres" id="pres">
                                                 <x-input-span id="prescriptionLabel">Prescription</x-input-span>
                                                 <x-form-input type="text" name="prescription" id="prescription"
                                                     placeholder="eg: 5mg BD x5" />
                                             </x-form-div>
-                                            <x-form-div class="col-xl-6" id="qty">
+                                            <x-form-div class="col-xl-6 qty" id="qty">
                                                 <x-input-span id="quantityLabel">Quantity</x-input-span>
                                                 <x-form-input type="number" name="quantity" id="quantity" placeholder="" />
                                             </x-form-div>
@@ -183,7 +183,7 @@
                                             </x-form-div>
                                         </div>
                                         <div class="d-flex justify-content-center">
-                                            <button type="button" id="addInvestigationAndManagementBtn" data-btn="anc"
+                                            <button type="button" id="addInvestigationAndManagementBtn" {!! $isReview ? 'data-btn="ancReview"' : 'data-btn="anc"' !!}
                                                 class="btn btn-primary">
                                                 add
                                                 <i class="bi bi-prescription"></i>

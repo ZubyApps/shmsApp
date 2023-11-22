@@ -166,6 +166,8 @@ Route::middleware('auth')->group(function () {
         Route::get('', [PrescriptionController::class, 'index'])->name('Prescription');
         Route::post('', [PrescriptionController::class, 'store']);
         Route::get('/load/initial', [PrescriptionController::class, 'loadInitialTable']);
+        Route::get('/load/lab', [PrescriptionController::class, 'loadLabTable']);
+        Route::get('/load/treatment', [PrescriptionController::class, 'loadTreatmentTable']);
         Route::get('/list', [PrescriptionController::class, 'list']);
         Route::get('/{prescription}', [PrescriptionController::class, 'edit']);
         Route::delete('/{prescription}', [PrescriptionController::class, 'destroy']);
