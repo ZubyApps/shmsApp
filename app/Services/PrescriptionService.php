@@ -112,7 +112,7 @@ class PrescriptionService
         return function (Prescription $prescription){
             return [
                 'id' => $prescription->id,
-                'name'  => $prescription->name.($prescription->flag ? ' '.$prescription->flag : '').($prescription->expiry_date && $prescription->expiry_date < (new Carbon())->addMonths(3) ? ' expiring soon - '.$prescription->expiry_date : '' )
+                'name'  => $prescription->name.($prescription->flag ? ' '.$prescription->flag : '').($prescription->expiry_date && $prescription->expiry_date < (new Carbon())->addMonths(3) ? ' expiring soon - '.(new Carbon($prescription->expiry_date))->format('d/M/y') : '' )
             ];
         };
         
@@ -170,8 +170,8 @@ class PrescriptionService
                 'category'          => $prescription->resource->resourceSubCategory->name,
                 'resource'          => $prescription->resource->name,
                 'prescription'      => $prescription->prescription,
-                'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
-                'billed'            => $prescription->bill_date ? (new Carbon($prescription->bill_date))->format('d/m/y g:ia') : '',
+                'prescribed'        => (new Carbon($prescription->created_at))->format('d/M/y g:ia'),
+                'billed'            => $prescription->bill_date ? (new Carbon($prescription->bill_date))->format('d/M/y g:ia') : '',
                 // 'count'             => 0//$prescription->prescriptions()->count(),
             ];
          };

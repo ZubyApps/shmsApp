@@ -20,7 +20,7 @@ class DatatablesService
         return new DataTableQueryParams(
             (int) $params['start'],
             (int) $params['length'],
-            $orderBy,
+            $orderBy ?? '',
             $orderDir,
             (string)$params['search']['value'],
             (int) $params['draw']

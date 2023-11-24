@@ -317,6 +317,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             
                             investigationBtn.setAttribute('data-conId', response.data.id)
                             investigationBtn.setAttribute('data-visitId', visitId)
+                            window.history.replaceState({}, document.title, "/" + "doctors" )
                             
                             new Toast(div.querySelector('#saveConsultationToast'), {delay:2000}).show()
                             getPrescriptionTableByConsultation(tableId, response.data.id, modal)
@@ -521,8 +522,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
             const goto = () => {
                 location.href = collapseBtn.getAttribute('data-goto')
+                window.history.replaceState({}, document.title, "/" + "doctors" )
                 getLabTableByConsultation(investigationTableId, conId, consultationReviewModal._element)
-                getTreatmentTableByConsultation(treatmentTableId, conId, consultationReviewModal._element)  
+                getTreatmentTableByConsultation(treatmentTableId, conId, consultationReviewModal._element)
             }
             setTimeout(goto, 300)
         }

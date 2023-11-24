@@ -439,10 +439,9 @@ const investigations = (line) => {
                         <table id="investigationTable${line.id}" data-id="${line.id}" class="table table-hover align-middle table-sm investigationTable">
                             <thead>
                                 <tr>
-                                    <th>Type</th>
                                     <th>Requested</th>
                                     <th>Investigation</th>
-                                    <th>Dr</th>
+                                    <th>By</th>
                                     <th>Result</th>
                                     <th>Sent</th>
                                     <th>Staff</th>
@@ -732,16 +731,16 @@ const AncConsultation = (line, iteration, count) => {
 const medicationAndTreatment = (line) => {
     return `
             <div class="my-2 form-control">
-                <span class="fw-bold text-primary"> Medication & Treatment </span>
+                <span class="fw-bold text-primary">Treatment & Medication</span>
                 <div class="row overflow-auto m-1">
-                    <table id="treatmentTable${line.id}" data-id="${line.id}" class="table table-hover align-middle table-sm treatmentTable">
+                    <table id="treatmentTable${line.id}" data-id="${line.id}" class="table table-hover table-sm treatmentTable">
                         <thead>
                             <tr>
-                                <th>Category</th>
-                                <th>Prescribed</th>
-                                <th>Dr</th>
-                                <th>Treatment</th>
+                                <th></th>
+                                <th>Treatment/Medication</th>
                                 <th>Prescription</th>
+                                <th>Dr</th>
+                                <th>Prescribed</th>
                                 <th>Billed</th>
                             </tr>
                         </thead>

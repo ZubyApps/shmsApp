@@ -64,7 +64,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="consultationReviewDiv">
+                        <div id="consultationReviewDiv" data-bs-spy="scroll" tabindex="0" data-bs-smooth-scroll="true">
                         </div>
                     </div>
                 </div>

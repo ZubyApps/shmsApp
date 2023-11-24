@@ -2,15 +2,18 @@ import { Offcanvas, Modal } from "bootstrap";
 import { consultationDetails, items } from "./data"
 import { clearDivValues, clearItemsList, getOrdinal, getDivData} from "./helpers"
 import { InitialRegularConsultation, review } from "./dynamicHTMLfiles/treamentsNurses";
+import { getWaitingTable } from "./tables/nursesTables";
 
 
 window.addEventListener('DOMContentLoaded', function () {
-    const medicationCanvasTable = new Offcanvas(document.getElementById('offcanvasWithBothOptions'))
+    const medicationCanvasTable     = new Offcanvas(document.getElementById('offcanvasWithBothOptions'))
 
     const reviewDetailsModal        = new Modal(document.getElementById('treatmentDetailsModal'))
     const newDeliveryNoteModal      = new Modal(document.getElementById('newDeliveryNoteModal'))
     const updateDeliveryNoteModal   = new Modal(document.getElementById('updateDeliveryNoteModal'))
     const chartMedicationModal      = new Modal(document.getElementById('chartMedicationModal'))
+
+    const waitingBtn                = document.querySelector('#waitingBtn')
     
     const saveMedicationChartBtn    = chartMedicationModal._element.querySelector('#saveMedicationChartBtn')
     const medicationChartDiv        = chartMedicationModal._element.querySelector('#chartMedicationDiv')
@@ -35,27 +38,34 @@ window.addEventListener('DOMContentLoaded', function () {
         blinkTable.classList.toggle('table-danger')
     }
 
+    // const allPatientsTable = getAllPatientsVisitTable('#allPatientsTable')
+    const waitingTable = getWaitingTable('#waitingTable')
 
-    detailsBtn.addEventListener('click', function () {
-
-        let iteration   = 0
-        let count       = 0
-        consultationDetails.data.forEach(line => {
-            iteration++
-
-            if (iteration > 1) {
-                count++
-                treatmentDiv.innerHTML += review(iteration, getOrdinal, count, consultationDetails, line)
-            } else {
-                treatmentDiv.innerHTML += InitialRegularConsultation(iteration, consultationDetails, line)
-            } 
-             
-            //treatmentDiv.querySelector('#deliveryBtn').setAttribute('data-id', line.deliveryNote.id ?? '')
-        })
-
-
-        reviewDetailsModal.show()
+    waitingBtn.addEventListener('click', function () {
+        waitingTable.draw()
+        // allPatientsTable.draw()
     })
+
+    // detailsBtn.addEventListener('click', function () {
+
+    //     let iteration   = 0
+    //     let count       = 0
+    //     consultationDetails.data.forEach(line => {
+    //         iteration++
+
+    //         if (iteration > 1) {
+    //             count++
+    //             treatmentDiv.innerHTML += review(iteration, getOrdinal, count, consultationDetails, line)
+    //         } else {
+    //             treatmentDiv.innerHTML += InitialRegularConsultation(iteration, consultationDetails, line)
+    //         } 
+             
+    //         //treatmentDiv.querySelector('#deliveryBtn').setAttribute('data-id', line.deliveryNote.id ?? '')
+    //     })
+
+
+    //     reviewDetailsModal.show()
+    // })
 
     reviewDetailsModal._element.addEventListener('hide.bs.modal', function () {
         treatmentDiv.innerHTML = ''
@@ -161,19 +171,3 @@ function displayItemsList(div, data) {
             !optionsList.includes(option.dataset.id) ? div.querySelector('#itemsList').appendChild(option) : ''
         })
 }
-
-// for (let name in line) {
-                    
-                //     if (typeof line[name] === 'object'){
-                //         for (let name1 in line[name]) {
-                //             //console.log(name1)
-                //             const nameInput = treatmentDiv.querySelector(`[name="${ name1 }"]`)
-                //             nameInput.value = line[name][name1]
-                //             console.log(line[name][name1])
-                //         }
-                //     } else {
-    
-                //         const nameInput = treatmentDiv.querySelector(`[name="${ name }"]`)
-                //         nameInput.value = line[name]
-                //     }
-                // }

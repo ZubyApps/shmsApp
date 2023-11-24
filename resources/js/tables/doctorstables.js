@@ -1,5 +1,5 @@
 import jQuery from "jquery";
-import jszip from 'jszip';
+import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 import 'datatables.net-buttons-bs5';
@@ -173,7 +173,7 @@ const getLabTableByConsultation = (tableId, conId, modal) => {
         searching: false,
         orderMulti: false,
         columns: [
-            {data: "type"},
+            // {data: "type"},
             {data: "requested"},
             {data: "resource"},
             {data: "dr"},
@@ -212,11 +212,12 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
         searching: false,
         orderMulti: false,
         columns: [
-            {data: "category"},
-            {data: "prescribed"},
-            {data: "dr"},
+            {data: row => `<i role="button" class="btn btn-outline-primary bi bi-prescription2"></i>`},
+            // {data: "category"},
             {data: "resource"},
             {data: "prescription"},
+            {data: "dr"},
+            {data: "prescribed"},
             {data: "billed"},
             // {
             //     sortable: false,
@@ -231,9 +232,64 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
         ]
     });
 
+    function format(d) {
+        // `d` is the original data object for the row
+        // console.log(d)
+         let things = [ {
+            by: "Dr Toby",
+            prescribed: "21/11/23 10:47pm",
+            prescription: "100mg BD x7/7"    
+        }, {
+            by: "Mr Nzube",
+            prescribed: "22/11/23 8:21pm",
+            prescription: "500mg BD x3/7"    
+        }
+         ]
+        return (
+           `<table class="table align-middle table-sm">
+           <thead >
+               <tr class="fw-semibold">
+                   <td> </td>
+                   <td class="text-primary">Charted</td>
+                   <td class="text-primary">By</td>
+                   <td class="text-primary">Given</td>
+                   <td class="text-primary">Nurse</td>
+                   <td class="text-primary">Prescription</td>
+                   <td class="text-primary">Dose</td>
+               </tr>
+           </thead>
+           <tbody>
+          <tr>
+                <td> </td>
+                <td>${d.prescribed}</td>
+                <td>${d.dr}</td>
+                <td>${d.prescribed}</td>
+                <td>${d.dr}</td>
+                <td>${d.prescription}</td>
+                <td>300mg</td>
+            </tr>
+           
+           </tbody>`
+        );
+    }
+
     modal.addEventListener('hidden.bs.modal', function () {
         treatmentTable.destroy()
     })
+
+    treatmentTable.on('click', 'tr', function (e) {
+        let tr = e.target.closest('tr');
+        let row = treatmentTable.row(tr);
+     
+        if (row.child.isShown()) {
+            // This row is already open - close it
+            row.child.hide();
+        }
+        else {
+            // Open this row
+            row.child(format(row.data())).show();
+        }
+    });
 
     return treatmentTable
 }
