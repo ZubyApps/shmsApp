@@ -17,6 +17,9 @@ const getAllPatientsVisitTable = (tableId) => {
         ajax:  '/visits/load/consulted',
         orderMulti: true,
         search:true,
+        language: {
+            emptyTable: "No patient"
+        },
         columns: [
             {data: "came"},
             {data: "patient"},
@@ -46,12 +49,28 @@ const getWaitingTable = (tableId) => {
         ajax:  '/visits/load/waiting',
         orderMulti: true,
         search:true,
+        language: {
+            emptyTable: 'No patient is waiting'
+        },
         columns: [
             {data: "patient"},
             {data: "sex"},
             {data: "age"},
             {data: "sponsor"},
             {data: "came"},
+            {data: row => function () {
+                if (row.vitalSigns.length > 0){
+                    return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary border-0 vitalSignsBtn tooltip-test" title="Vitals Signs Added" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
+                            <i class="bi bi-check-circle-fill"></i>
+                            </button>
+                        </div>`
+                    } else {
+                        return ``
+                    }
+                }
+            },
             {data: row => function () {
                 if (row.doctor === ''){
                     return `
@@ -97,6 +116,9 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal) => {
         }},
         orderMulti: true,
         search:true,
+        language: {
+            emptyTable: 'No vital sign recorded'
+        },
         columns: [
             {data: "created_at"},
             {data: "temperature"},
@@ -135,6 +157,9 @@ const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
         }},
         orderMulti: true,
         search:true,
+        language: {
+            emptyTable: 'No resource has been added'
+        },
         columns: [
             {data: "prescribed"},
             {data: "resource"},
@@ -162,7 +187,7 @@ const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
     return prescriptionTable
 }
 
-const getLabTableByConsultation = (tableId, conId, modal) => {
+const getLabTableByConsultation = (tableId, conId, modal, viewer) => {
     const investigationTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/prescription/load/lab', data: {
@@ -172,6 +197,9 @@ const getLabTableByConsultation = (tableId, conId, modal) => {
         lengthChange: false,
         searching: false,
         orderMulti: false,
+        language: {
+            emptyTable: 'No lab investigation requested'
+        },
         columns: [
             // {data: "type"},
             {data: "requested"},
@@ -180,11 +208,10 @@ const getLabTableByConsultation = (tableId, conId, modal) => {
             {data: "result"},
             {data: "sent"},
             {data: "staff"},
-            {data: "doc"},
             {
                 sortable: false,
                 data: row =>  `
-                <div class="d-flex flex-">
+                <div class="d-flex flex- ${viewer == 'nurse' ? 'd-none' : ''}">
                     <button type="submit" class="ms-1 btn btn-outline-primary uploadDocBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
                     <i class="bi bi-upload"></i>
                     </button>
@@ -211,62 +238,47 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
         lengthChange: false,
         searching: false,
         orderMulti: false,
+        language: {
+            emptyTable: 'No medication or treatment prescribed'
+        },
+        rowCallback: (row, data) => {
+            row.classList.add('fw-semibold')
+        return row
+        },
         columns: [
-            {data: row => `<i role="button" class="btn btn-outline-primary bi bi-prescription2"></i>`},
-            // {data: "category"},
+            {data: row => `<i role="button" class="text-primary display-4 bi bi-prescription2"></i>`},
             {data: "resource"},
             {data: "prescription"},
             {data: "dr"},
             {data: "prescribed"},
             {data: "billed"},
-            // {
-            //     sortable: false,
-            //     data: row =>  `
-            //     <div class="d-flex flex-">
-            //         <button type="submit" class="ms-1 btn btn-outline-primary uploadDocBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
-            //         <i class="bi bi-upload"></i>
-            //         </button>
-            //     </div>
-            //     `      
-            // },
         ]
     });
 
     function format(d) {
         // `d` is the original data object for the row
-        // console.log(d)
-         let things = [ {
-            by: "Dr Toby",
-            prescribed: "21/11/23 10:47pm",
-            prescription: "100mg BD x7/7"    
-        }, {
-            by: "Mr Nzube",
-            prescribed: "22/11/23 8:21pm",
-            prescription: "500mg BD x3/7"    
-        }
-         ]
         return (
            `<table class="table align-middle table-sm">
            <thead >
-               <tr class="fw-semibold">
+               <tr class="">
                    <td> </td>
-                   <td class="text-primary">Charted</td>
-                   <td class="text-primary">By</td>
-                   <td class="text-primary">Given</td>
-                   <td class="text-primary">Nurse</td>
-                   <td class="text-primary">Prescription</td>
-                   <td class="text-primary">Dose</td>
+                   <td class="text-secondary">Charted</td>
+                   <td class="text-secondary">By</td>
+                   <td class="text-secondary">Given</td>
+                   <td class="text-secondary">Nurse</td>
+                   <td class="text-secondary">Prescription</td>
+                   <td class="text-secondary">Dose</td>
                </tr>
            </thead>
            <tbody>
           <tr>
                 <td> </td>
-                <td>${d.prescribed}</td>
-                <td>${d.dr}</td>
-                <td>${d.prescribed}</td>
-                <td>${d.dr}</td>
-                <td>${d.prescription}</td>
-                <td>300mg</td>
+                <td class="text-secondary">${d.prescribed}</td>
+                <td class="text-secondary">${d.dr}</td>
+                <td class="text-secondary">${d.prescribed}</td>
+                <td class="text-secondary">${d.dr}</td>
+                <td class="text-secondary">${d.prescription}</td>
+                <td class="text-secondary">300mg</td>
             </tr>
            
            </tbody>`
@@ -290,6 +302,15 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
             row.child(format(row.data())).show();
         }
     });
+
+    treatmentTable.on('draw', function() {
+        console.log('reached')
+        treatmentTable.rows().every(function () {
+            let tr = $(this.node())
+            let row = this.row(tr);
+            this.child(format(row.data())).show()
+        })
+    })
 
     return treatmentTable
 }

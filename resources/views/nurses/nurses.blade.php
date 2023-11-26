@@ -89,10 +89,10 @@
             </div>
         </div>
     </div>
-    <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions1"
-            aria-labelledby="offcanvasWithBothOptionsLabel">
+    <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas"
+            aria-labelledby="waitingListOffcanvasLabel">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title text-primary" id="offcanvasWithBothOptionsLabel">List of Waiting Patients</h5>
+                <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body">
@@ -126,7 +126,7 @@
             Medication/Treatment Table
         </button>
         <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn"
-        data-bs-target="#offcanvasWithBothOptions1" aria-controls="offcanvasWithBothOptions1">
+        data-bs-target="#waitingListOffcanvas" aria-controls="waitingListOffcanvas">
         <i class="bi bi-list-check"></i>
         Waiting List
     </button>

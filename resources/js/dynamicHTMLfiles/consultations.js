@@ -1,6 +1,6 @@
-import { deliveryNote, surgeryNote, vitalsignsTable, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment } from "./partialHTMLS"
+import { deliveryNote, surgeryNote, vitalsignsTable, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses} from "./partialHTMLS"
 
-const regularReviewDetails = (iteration, numberConverter, count, length, line) => {
+const regularReviewDetails = (iteration, numberConverter, count, length, line, viewer) => {
 
     return `
                 <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
@@ -12,47 +12,53 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line) =
                         
                         <div class="mb-2 form-control" id="goto${iteration}">
                             ${iteration < 2 || line.specialistFlag ? consultation(line) :  review(count, line)}
-                            ${investigations(line)}
-                            ${medicationAndTreatment(line)}
-                            ${updateInvestigationAndManagement(length, iteration, line)}
+                            ${investigations(line, viewer)}
+                            ${viewer == '' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
+                            ${!viewer ? updateInvestigationAndManagement(length, iteration, line) : ''}
                             
                             <div class="d-flex justify-content-start my-3 gap-2" >
+                                ${!viewer ? `
                                 <button type="button" id="fileBtn" class="btn btn-outline-primary">
-                                File
-                                <i class="bi bi-file-earmark-medical"></i>
+                                    File
+                                    <i class="bi bi-file-earmark-medical"></i>
                                 </button>
                                 <button type="button" id="surgeryBtn" class="btn btn-outline-primary">
                                     Surgery 
-                                <i class="bi bi-pencil-square"></i>
-                                </button>
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>` : ''}
+                                ${length == iteration && viewer == 'nurse' ? `
+                                <button type="button" id="deliveryBtn" class="btn btn-outline-primary">
+                                    Delivery Note
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>` : ''}
                             </div>
                             <div class="extraInfoDiv">
+                                ${!viewer ? `
                                 <div class="my-2 form-control">
                                     <span class="fw-bold text-primary"> Other Documents </span>
                                     <div class="row overflow-auto m-1">
-                                        ${ line.file === undefined ? '<td>No files</td>' : files(line.file)
-                                        }
+                                        ${ line.file === undefined ? '<td>No files</td>' : files(line.file)}
                                     </div>
                                 </div>
                                 <div class="my-2 form-control">
                                     <span class="fw-semibold fs-5 mb-2"> Surgery Details </span>
-                                    ${line.surgery === undefined ? '<div class="mb-2">No record</div>' : surgeryNote(line.surgery)
-                                    }
-                                </div>
+                                    ${line.surgery === undefined ? '<div class="mb-2">No record</div>' : surgeryNote(line.surgery)}
+                                </div>` : ''}
+                                ${viewer == 'nurse' ? `
                                 <div class="mb-2">
                                     <div class="my-2 form-control">
                                         <span class="fw-bold text-primary"> Delivery Note </span>
                                         ${line.deliveryNote === undefined ? '<div class="mb-2">No record</div>' : deliveryNote(line.deliveryNote)
                                         }
                                     </div>
-                                </div>
-                                ${length > iteration ? '' : 
+                                </div>` : ''}
+                                ${length == iteration && viewer == '' ? 
                                 `<div class="d-flex justify-content-end my-2">
                                     <button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" class="btn btn-outline-primary">
                                         <i class="bi bi-trash"></i>
                                         Delete
                                     </button>
-                                </div>`}
+                                </div>` : ''}
                             </div>
                         </div>
                     </div>
@@ -64,7 +70,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line) =
                 `
 }
 
-const AncPatientReviewDetails = (iteration, numberConverter, count, length, line) => {
+const AncPatientReviewDetails = (iteration, numberConverter, count, length, line, viewer) => {
 
     return `
                 <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">

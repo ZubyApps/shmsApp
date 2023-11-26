@@ -91,7 +91,8 @@ Route::middleware('auth')->group(function () {
         Route::post('', [VisitController::class, 'store']);
         Route::get('/load/waiting', [VisitController::class, 'loadWaitingTable']);
         Route::post('/consult/{visit}', [VisitController::class, 'consult']);
-        Route::get('/load/consulted', [VisitController::class, 'loadVisitsTable']);
+        Route::get('/load/consulted', [VisitController::class, 'loadVisits']);
+        Route::get('/load/consulted/nurses', [VisitController::class, 'loadVisitsNurses']);
         Route::delete('/{visit}', [VisitController::class, 'destroy']);
     })->name('Visits');
     

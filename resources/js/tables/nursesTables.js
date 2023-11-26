@@ -1,4 +1,5 @@
 import jQuery from "jquery";
+import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
@@ -7,9 +8,12 @@ import DataTable from 'datatables.net-bs5';
 const getAllPatientsVisitTable = (tableId) => {
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  '/visits/load/consulted',
+        ajax:  '/visits/load/consulted/nurses',
         orderMulti: true,
         search:true,
+        language: {
+            emptyTable: 'No patient record'
+        },
         columns: [
             {data: "came"},
             {data: "patient"},
@@ -25,7 +29,7 @@ const getAllPatientsVisitTable = (tableId) => {
                 sortable: false,
                 data: row =>  `
                 <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Details</button>
+                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Details</button>
                 </div>
                 `      
             },
@@ -39,6 +43,9 @@ const getWaitingTable = (tableId) => {
         ajax:  '/visits/load/waiting',
         orderMulti: true,
         search:true,
+        language: {
+            emptyTable: 'No patient is waiting'
+        },
         columns: [
             {data: "patient"},
             {data: "sex"},
@@ -79,5 +86,88 @@ const getWaitingTable = (tableId) => {
     });
 }
 
+const getNurseTreatmentByConsultation = (tableId, conId, modal) => {
+    const treatmentTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  {url: '/prescription/load/treatment', data: {
+            'conId': conId,
+        }},
+        paging: true,
+        lengthChange: false,
+        searching: false,
+        orderMulti: false,
+        language: {
+            emptyTable: 'No medication or treatment prescribed'
+        },
+        rowCallback: (row, data) => {
+                row.classList.add('fw-semibold')
+            return row
+        },
+        columns: [
+            {data: "resource"},
+            {data: "prescription"},
+            {data: "dr"},
+            {data: "prescribed"},
+            {
+                sortable: false,
+                data: row =>  `
+                <div class="d-flex flex-">
+                    <button type="button" id="chartMedicationBtn" class="btn btn-outline-primary chatMedicationBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
+                        Chart
+                    </button>
+                </div>
+                `      
+            },
+        ]
+    });
 
-export {getWaitingTable, getAllPatientsVisitTable}
+    function format(d) {
+        // `d` is the original data object for the row
+        return (
+           `<table class="table align-middle table-sm">
+           <thead >
+               <tr class="fw-semibold fs-italics">
+                   <td> </td>
+                   <td class="text-secondary">Charted</td>
+                   <td class="text-secondary">By</td>
+                   <td class="text-secondary">Given</td>
+                   <td class="text-secondary">Nurse</td>
+                   <td class="text-secondary">Prescription</td>
+                   <td class="text-secondary">Dose</td>
+               </tr>
+           </thead>
+           <tbody>
+          <tr>
+                <td> </td>
+                <td class="text-secondary">${d.prescribed}</td>
+                <td class="text-secondary">${d.dr}</td>
+                <td class="text-secondary">${d.prescribed}</td>
+                <td class="text-secondary">${d.dr}</td>
+                <td class="text-secondary">${d.prescription}</td>
+                <td class="text-secondary">300mg</td>
+            </tr>
+           
+           </tbody>`
+        );
+    }
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        treatmentTable.destroy()
+    })
+
+
+    treatmentTable.on('draw', function() {
+        console.log('reached')
+        treatmentTable.rows().every(function () {
+            let tr = $(this.node())
+            let row = this.row(tr);
+            this.child(format(row.data())).show()
+        })
+    })
+    
+
+    return treatmentTable
+}
+
+
+export {getWaitingTable, getAllPatientsVisitTable, getNurseTreatmentByConsultation}

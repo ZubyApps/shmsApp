@@ -445,7 +445,6 @@ const investigations = (line) => {
                                     <th>Result</th>
                                     <th>Sent</th>
                                     <th>Staff</th>
-                                    <th>Doc</th>
                                     <th>Upload</th>
                                 </tr>
                             </thead>
@@ -584,7 +583,7 @@ const consultation = (line) => {
                         </div>
                     </div>
                 </div>
-                <div class="row mt-2">
+                <div class="row mt-2 admissionStatus">
                     <div class="col-xl-4 themed-grid-col col-xl-4">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="admitLabel"> Patient Status </span>
@@ -737,7 +736,7 @@ const medicationAndTreatment = (line) => {
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Treatment/Medication</th>
+                                <th>Treatment</th>
                                 <th>Prescription</th>
                                 <th>Dr</th>
                                 <th>Prescribed</th>
@@ -751,7 +750,29 @@ const medicationAndTreatment = (line) => {
         `
 }
 
-export {surgeryNote, deliveryNote, vitalsignsTable, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment}
+const medicationAndTreatmentNurses = (line) => {
+    return `
+            <div class="my-2 form-control">
+                <span class="fw-bold text-primary">Treatment & Medication</span>
+                <div class="row overflow-auto m-1">
+                    <table id="nurseTreatmentTable${line.id}" data-id="${line.id}" class="table table-hover table-sm nurseTreatmentTable">
+                        <thead>
+                            <tr>
+                                <th>Treatment</th>
+                                <th>Prescription</th>
+                                <th>Dr</th>
+                                <th>Prescribed</th>
+                                <th>Create</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        `
+}
+
+export {surgeryNote, deliveryNote, vitalsignsTable, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses}
 
 {/* <td><span class="position-relative"><a href="/transactions/11/receipts/15" target="blank" title="ABAGI Ernest_Nguevese.pdf"> *
                                     <i class="bi bi-file-earmark-text download-receipt text-primary fs-4"></i></a></span></td> */}

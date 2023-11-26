@@ -1,4 +1,4 @@
-import { Modal, Collapse, Toast } from "bootstrap"
+import { Modal, Collapse, Toast, Offcanvas } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
 import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks} from "./helpers"
@@ -12,8 +12,9 @@ import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 
 window.addEventListener('DOMContentLoaded', function () {
+    const waitingListOffcanvas              = new Offcanvas(document.getElementById('waitingListOffcanvas'))
     const newConsultationModal              = new Modal(document.getElementById('newConsultationModal'))
-    const ancConsultationModal           = new Modal(document.getElementById('ancConsultationModal'))
+    const ancConsultationModal              = new Modal(document.getElementById('ancConsultationModal'))
     const ancReviewModal                    = new Modal(document.getElementById('ancReviewModal'))
     const consultationReviewModal           = new Modal(document.getElementById('consultationReviewModal'))
     const surgeryModal                      = new Modal(document.getElementById('surgeryModal'))
@@ -107,9 +108,9 @@ window.addEventListener('DOMContentLoaded', function () {
                             iteration > 1 ? count++ : ''
                 
                             if (patientType === 'ANC') {
-                                consultationReviewDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultations.length, line)
+                                consultationReviewDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultations.length, line, '')
                             } else {
-                                consultationReviewDiv.innerHTML += regularReviewDetails(iteration, getOrdinal, count, consultations.length, line)
+                                consultationReviewDiv.innerHTML += regularReviewDetails(iteration, getOrdinal, count, consultations.length, line, '')
                             }
                         })
 
@@ -147,6 +148,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             getVitalSignsTableByVisit('#vitalSignsTableNew', visitId, newConsultationModal)
                         }
                         waitingTable.draw()
+                        waitingListOffcanvas.hide()
                     }
                     consultBtn.removeAttribute('disabled')
                 })
@@ -186,7 +188,7 @@ window.addEventListener('DOMContentLoaded', function () {
     updateKnownClinicalInfoBtn.forEach(updateBtn => {
         updateBtn.addEventListener('click', function () {
             knownClinicalInfoDiv.forEach(div => {
-                console.log(updateBtn.dataset.btn, div.dataset.div)
+                
                 if (div.dataset.div === updateBtn.dataset.btn) {
                     toggleAttributeLoop(querySelectAllTags(div, ['input, select, textarea']), 'disabled', '')
                     

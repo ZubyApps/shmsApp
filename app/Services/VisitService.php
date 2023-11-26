@@ -156,6 +156,7 @@ class VisitService
 
         return $this->visit
                     ->where('consulted', '!=', null)
+                    ->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Medication')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }

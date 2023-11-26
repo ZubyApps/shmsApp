@@ -55,13 +55,13 @@ class VisitController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 
-    public function loadVisitsTable(Request $request)
+    public function loadVisits(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $visits = $this->visitService->getPaginatedConsultedVisitsNurses($params);
+        $visits = $this->visitService->getPaginatedConsultedVisits($params);
        
-        $loadTransformer = $this->visitService->getConsultedVisitsNursesTransformer();
+        $loadTransformer = $this->visitService->getConsultedVisitsTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
@@ -70,9 +70,9 @@ class VisitController extends Controller
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $visits = $this->visitService->getPaginatedConsultedVisits($params);
+        $visits = $this->visitService->getPaginatedConsultedVisitsNurses($params);
        
-        $loadTransformer = $this->visitService->getConsultedVisitsTransformer();
+        $loadTransformer = $this->visitService->getConsultedVisitsNursesTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }

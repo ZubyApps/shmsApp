@@ -10,17 +10,17 @@
 @include('doctors.ancConsultationModal', ['title' => 'New ANC Review', 'isReview' => true, 'id' => 'ancReviewModal'])
 
 @include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isAnc' => false, 'id' => 'consultationReviewModal'])
-@include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isAnc' => true, 'id' => 'ancConsultationReviewModal'])
+{{-- @include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isAnc' => true, 'id' => 'ancConsultationReviewModal']) --}}
 
 @include('doctors.surgeryModal', ['title' => 'New Surgery', 'isUpdate' => false, 'id' => 'surgeryModal'])
 @include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
 @include('doctors.newReviewModal', ['title' => 'New Review', 'isUpdate' => false, 'id' => 'newReviewModal'])
 
     <div class="container p-1 mt-5">
-        <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
-            aria-labelledby="offcanvasWithBothOptionsLabel">
+        <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas"
+            aria-labelledby="waitingListOffcanvasLabel">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title text-primary" id="offcanvasWithBothOptionsLabel">List of Waiting Patients</h5>
+                <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body">
@@ -33,6 +33,7 @@
                                 <th>Age</th>
                                 <th>Sponsor</th>
                                 <th>Came</th>
+                                <th>Vitals</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -45,7 +46,7 @@
 
         <div class="text-start mb-4">
             <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn"
-                data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
+                data-bs-target="#waitingListOffcanvas" aria-controls="waitingListOffcanvas">
                 <i class="bi bi-list-check"></i>
                 Waiting List
             </button>
