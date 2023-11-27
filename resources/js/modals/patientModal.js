@@ -102,12 +102,12 @@ window.addEventListener('DOMContentLoaded', function(){
                             registrationBillDiv.classList.add('d-none')
                         }
                     sponsorNameDiv.classList.remove('d-none')
-                    sponsorNameInput.setAttribute('name', 'sponsorName')
+                    // sponsorNameInput.setAttribute('name', 'sponsorName')
                     getSelctedText(newSponsorCategoryInput).text.toLowerCase() === 'family' ? '' : patientTypeInputAncOption.removeAttribute('disabled')
                 }
         } else{
             sponsorNameDiv.classList.remove('d-none')
-            sponsorNameInput.setAttribute('name', 'sponsorName')
+            // sponsorNameInput.setAttribute('name', 'sponsorName')
             registrationBillDiv.classList.add('d-none')
             ancRegistrationBillInput.removeAttribute('name')
             familyRegistrationBillInput.removeAttribute('name')
@@ -125,14 +125,15 @@ window.addEventListener('DOMContentLoaded', function(){
             switch (patientTypeInput.value) {
                 case 'Regular.New': 
                     newCardNumber.setAttribute('name', 'cardNumber')
+                    newCardNumber.setAttribute('id', 'cardNumber')
                     oldCardNumber.hasAttribute('name') ? oldCardNumber.removeAttribute('name') : ''
                     ancCardNumber.hasAttribute('name') ? ancCardNumber.removeAttribute('name') : ''
 
-                    !oldCardNumber.classList.contains('d-none') ? oldCardNumber.classList.add('d-none') : ''
+                    oldCardNumber.classList.add('d-none')
                     oldCardNumber.value = ''
-                    !ancCardNumber.classList.contains('d-none') ? ancCardNumber.classList.add('d-none') : ''
+                    ancCardNumber.classList.add('d-none')
                     ancCardNumber.value = ''
-                    newCardNumber.classList.contains('d-none') ? newCardNumber.classList.remove('d-none'): ''
+                    newCardNumber.classList.remove('d-none')
 
                     if (getSelctedText(newSponsorCategoryInput).text.toLowerCase() === 'family'){
                         ancRegistrationBillInput.classList.add('d-none')
@@ -155,8 +156,11 @@ window.addEventListener('DOMContentLoaded', function(){
                     break;
                 case 'Regular.Old':
                     oldCardNumber.setAttribute('name', 'cardNumber')
-                    newCardNumber.hasAttribute('name') ? newCardNumber.removeAttribute('name') : ''
-                    ancCardNumber.hasAttribute('name') ? ancCardNumber.removeAttribute('name') : ''
+                    oldCardNumber.setAttribute('id', 'cardNumber')
+                    newCardNumber.removeAttribute('name')
+                    newCardNumber.removeAttribute('id')
+                    ancCardNumber.removeAttribute('name')
+                    ancCardNumber.removeAttribute('id')
 
                     !newCardNumber.classList.contains('d-none') ? newCardNumber.classList.add('d-none')  : ''
                     newCardNumber.value = ''
@@ -183,14 +187,16 @@ window.addEventListener('DOMContentLoaded', function(){
                     break;
                 case 'ANC': 
                     ancCardNumber.setAttribute('name', 'cardNumber')
-                    newCardNumber.hasAttribute('name') ? newCardNumber.removeAttribute('name') : ''
-                    oldCardNumber.hasAttribute('name') ? oldCardNumber.removeAttribute('name') : ''
+                    newCardNumber.removeAttribute('name')
+                    newCardNumber.removeAttribute('id')
+                    oldCardNumber.removeAttribute('name')
+                    oldCardNumber.removeAttribute('id')
 
-                    !newCardNumber.classList.contains('d-none') ? newCardNumber.classList.add('d-none'): ''
+                    newCardNumber.classList.add('d-none')
                     newCardNumber.value = ''
-                    !oldCardNumber.classList.contains('d-none') ? oldCardNumber.classList.add('d-none'): ''
+                    oldCardNumber.classList.add('d-none')
                     oldCardNumber.value = ''
-                    ancCardNumber.classList.contains('d-none') ? ancCardNumber.classList.remove('d-none'):''
+                    ancCardNumber.classList.remove('d-none')
 
                     selfRegistrationBillInput.classList.add('d-none')
                     familyRegistrationBillInput.classList.add('d-none')

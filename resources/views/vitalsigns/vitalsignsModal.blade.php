@@ -1,6 +1,6 @@
 <div class="container">
     <div class="modal fade " id="{{ $id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fs-4 text-primary">{{ $title }}</h5>
@@ -9,18 +9,21 @@
                 <div class="modal-body">
                     <div class="">
                         <div class="mb-2 form-control">
-                            @include('patients.partials.patientBio')
-                        </div>
-                        <div class="mb-2 form-control">
-                            <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
-                            <div class="row knownClinicalInfoDiv">
-                                @include('patients.partials.known-clinical-info', ['disabled' => true])
+                            <div class="row">
+                                <x-form-div class="col-xl-6">
+                                    <x-input-span>Patient</x-input-span>
+                                    <x-form-input name="patient" value="" id="patient"/>
+                                </x-form-div>
+                                <x-form-div class="col-xl-6">
+                                    <x-input-span>Sponsor</x-input-span>
+                                    <x-form-input name="sponsor" value="" id="sponsor"/>
+                                </x-form-div>
                             </div>
                         </div>
                         <div class="mb-2 form-control vitalsDiv">
                             <x-form-span>Vital Signs</x-form-span>
                             <div class="row overflow-auto my-3">
-                                <table id="vitalSignsTableNurses" class="table table-hover align-middle table-sm vitalsTable">
+                                <table id="vitalSignsTable" class="table table-hover align-middle table-sm vitalsTable">
                                     <thead>
                                         <tr>
                                             <th>Done</th>
@@ -39,12 +42,12 @@
                                 </table>
                             </div>
                             <div class="row">
-                                <div class="row" id="addVitalsignsDiv"  data-div="nurses">
+                                <div class="row" id="addVitalsignsDiv"  data-div="waiting">
                                     @include('vitalsigns.vitalsigns', ['disabled' => false])
                                     <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                 </div>
                                 <div class="d-flex justify-content-center">
-                                    <button type="button" id="addVitalsignsBtn"  data-btn="nurses"
+                                    <button type="button" id="addVitalsignsBtn"  data-btn="waiting"
                                         class="btn btn-primary">
                                         <i class="bi bi-plus-circle me-1"></i>
                                         add
@@ -61,10 +64,6 @@
                         <i class="bi bi-x-circle me-1"></i>
                         Close
                     </button>
-                    {{-- <button type="button" id="saveBtn" class="btn bg-primary text-white">
-                        <i class="bi bi-check-circle me-1"></i>
-                        Save
-                    </button> --}}
                 </div>
             </div>
         </div>

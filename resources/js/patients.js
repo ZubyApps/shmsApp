@@ -54,9 +54,6 @@ window.addEventListener('DOMContentLoaded', function(){
         
     })
 
-
-    const initiatePatientVisitBtn   = document.getElementById('initiate')
-
     const sponsorTable = new DataTable('#sponsorsTable', {
         serverSide: true,
         ajax:  '/sponsors/load',

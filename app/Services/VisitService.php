@@ -173,6 +173,7 @@ class VisitService
                 'sponsor'           => $visit->patient->sponsor->name,
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->admission_status,
                 'patientType'       => $visit->patient->patient_type,
+                'vitalSigns'        => $visit->vitalSigns
 
             ];
          };

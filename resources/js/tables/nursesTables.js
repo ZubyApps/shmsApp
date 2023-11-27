@@ -20,6 +20,32 @@ const getAllPatientsVisitTable = (tableId) => {
             {data: "doctor"},
             {data: "diagnosis"},
             {data: "sponsor"},
+            {data: row => function () {
+                if (row.vitalSigns.length < 1){
+                    return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                            <i class="bi bi-plus-square-dotted"></i>
+                            </button>
+                        </div>`
+                    } else {
+                        return `
+                        <div class="dropdown">
+                            <a class="text-black tooltip-test text-decoration-none" title="vital signs" data-bs-toggle="dropdown" href="" >
+                            <i class="btn btn-outline-primary bi bi-check-circle-fill">${row.vitalSigns.length}</i>
+                            </a>
+                                <ul class="dropdown-menu">
+                                <li>
+                                    <a role="button" class="dropdown-item vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                                    <i class="bi bi-plus-square-dotted text-primary"></i> Add
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        `
+                    }
+                }
+            },
             {data: row => () => {
                 return row.admissionStatus == 'Inpatient' ? 
                 `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
@@ -57,23 +83,20 @@ const getWaitingTable = (tableId) => {
                 if (row.vitalSigns.length < 1){
                     return `
                         <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
+                            <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
                             <i class="bi bi-plus-square-dotted"></i>
                             </button>
                         </div>`
                     } else {
                         return `
                         <div class="dropdown">
-                            <a class="text-black tooltip-test text-decoration-none" title="doctor" data-bs-toggle="dropdown" href="" >
-                            <i class="btn btn-outline-primary bi bi-check-circle-fill"></i>
+                            <a class="text-black tooltip-test text-decoration-none" title="vital signs" data-bs-toggle="dropdown" href="" >
+                            <i class="btn btn-outline-primary bi bi-check-circle-fill">${row.vitalSigns.length}</i>
                             </a>
                                 <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item vitalSignsBtn tooltip-test" title="Add Vitals Signs"  href="#" data-id="${ row.id }">
+                                    <a role="button" class="dropdown-item vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
                                     <i class="bi bi-plus-square-dotted text-primary"></i> Add
-                                    </a>
-                                    <a class="dropdown-item deleteBtn tooltip-test" title="remove" href="#" data-id="${ row.id } data-vitalSigns"${row.vitalSigns ?? ''}">
-                                        <i class="bi bi-x-circle-fill text-primary"></i> Delete
                                     </a>
                                 </li>
                             </ul>
@@ -112,7 +135,7 @@ const getNurseTreatmentByConsultation = (tableId, conId, modal) => {
                 sortable: false,
                 data: row =>  `
                 <div class="d-flex flex-">
-                    <button type="button" id="chartMedicationBtn" class="btn btn-outline-primary chatMedicationBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
+                    <button type="button" id="chartMedicationBtn" class="btn btn-outline-primary chatMedicationBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}", data-resource="${row.resource}" data-prescription="${row.prescription}" data-prescribedBy="${row.dr}" data-resource="${row.prescribed}">
                         Chart
                     </button>
                 </div>

@@ -11,30 +11,30 @@
                     <div class="row">
                         <x-form-div>
                             <x-input-span>Patient</x-input-span>
-                            <x-form-input name="patientsIds" value="SH23/7865 Patrick Abiodun Aso" />
+                            <x-form-input name="patient" value="" id="patient"/>
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Diagnosis</x-input-span>
-                            <x-form-input name="diagnosis" value="Clevical fracture secondaryto RTA" />
+                            <x-input-span>Sponsor</x-input-span>
+                            <x-form-input name="sponsor" value="" id="sponsor"/>
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Medication<x-required-span /></x-input-span>
-                            <x-form-input type="text" name="medication" value="Pentazocine Inj" />
+                            <x-input-span>Treatment<x-required-span /></x-input-span>
+                            <x-form-input type="text" name="treatment" value="" id="resource" />
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Prescription</x-input-span>
-                            <x-form-input name="prescription" value="300mg 8hrly 2/7" />
+                            <x-form-input name="prescription" value="" />
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Prescribed By<x-required-span /></x-input-span>
                             <x-form-input type="text" name="prescriptionBy" value="Dr Toby" />
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Date</x-input-span>
-                            <x-form-input type="datetime-local" name="date" value="2023-10-12 02:00" />
+                            <x-input-span>Prescribed</x-input-span>
+                            <x-form-input type="datetime-local" name="prescribed" value="" id="prescribed" />
                         </x-form-div>
                         <X-form-div class="py-4">
-                            <table class="table table-hover align-middle table-sm bg-primary">
+                            <table id="medicationChart" class="table table-hover align-middle table-sm bg-primary">
                                 <thead>
                                     <tr>
                                         <th>Medication</th>

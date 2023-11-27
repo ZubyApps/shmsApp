@@ -104,9 +104,12 @@ function dispatchEvent(tag, event) {
 }
 
 function handleValidationErrors(errors, domElement) {
+    let elementId = []
     for (const name in errors) {
         const element = domElement.querySelector(`[name="${ name }"]`)
         
+        elementId.push(element.id)
+
         element.classList.add('is-invalid')
 
         const errorDiv = document.createElement('div')
@@ -116,6 +119,8 @@ function handleValidationErrors(errors, domElement) {
 
         element.parentNode.append(errorDiv)
     }
+    location.href = '#'+elementId[0]
+    console.log(elementId)
 }
 
 function clearValidationErrors(domElement) {

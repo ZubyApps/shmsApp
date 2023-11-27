@@ -16,6 +16,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const newDeliveryNoteModal      = new Modal(document.getElementById('newDeliveryNoteModal'))
     const updateDeliveryNoteModal   = new Modal(document.getElementById('updateDeliveryNoteModal'))
     const chartMedicationModal      = new Modal(document.getElementById('chartMedicationModal'))
+    const vitalsignsModal           = new Modal(document.getElementById('vitalsignsModal'))
 
     const addVitalsignsDiv          = document.querySelectorAll('#addVitalsignsDiv')
     const medicationChartDiv        = chartMedicationModal._element.querySelector('#chartMedicationDiv')
@@ -55,6 +56,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelector('#allPatientsTable').addEventListener('click', function (event) {
         const consultationDetailsBtn    = event.target.closest('.consultationDetailsBtn')
+        const vitalsignsBtn             = event.target.closest('.vitalSignsBtn')
 
         if (consultationDetailsBtn) {
             consultationDetailsBtn.setAttribute('disabled', 'disabled')
@@ -72,6 +74,10 @@ window.addEventListener('DOMContentLoaded', function () {
                 const patientBio = response.data.bio
 
                 openNurseModals(reviewDetailsModal, treatmentDiv, patientBio)
+
+                chartMedicationModal._element.querySelector('#patient').value = patientBio.patientId
+                chartMedicationModal._element.querySelector('#sponsor').value = patientBio.sponsorName
+
                 const viewer = 'nurse'
                 consultations.forEach(line => {
                     iteration++
@@ -96,12 +102,46 @@ window.addEventListener('DOMContentLoaded', function () {
                 alert(error)
                 console.log(error)
             })
-        }  
+        }
+        
+        if (vitalsignsBtn) {
+            const tableId = '#'+vitalsignsModal._element.querySelector('.vitalsTable').id
+            const visitId = vitalsignsBtn.getAttribute('data-id')
+            vitalsignsModal._element.querySelector('#patient').value = vitalsignsBtn.getAttribute('data-patient')
+            vitalsignsModal._element.querySelector('#sponsor').value = vitalsignsBtn.getAttribute('data-sponsor')
+            vitalsignsModal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
+
+            getVitalSignsTableByVisit(tableId, visitId, vitalsignsModal)
+            vitalsignsModal.show()
+        }
 
     })
 
+    document.querySelector('#waitingTable').addEventListener('click', function (event) {
+        const vitalsignsBtn = event.target.closest('.vitalSignsBtn')
+        if (vitalsignsBtn) {
+            const tableId = '#'+vitalsignsModal._element.querySelector('.vitalsTable').id
+            const visitId = vitalsignsBtn.getAttribute('data-id')
+            vitalsignsModal._element.querySelector('#patient').value = vitalsignsBtn.getAttribute('data-patient')
+            vitalsignsModal._element.querySelector('#sponsor').value = vitalsignsBtn.getAttribute('data-sponsor')
+            vitalsignsModal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
+
+            getVitalSignsTableByVisit(tableId, visitId, vitalsignsModal)
+            vitalsignsModal.show()
+        }
+    })
+
+    document.querySelector('.nurseTreatmentTable').addEventListener('click', function (event) {
+        console.log(event)
+    })    
+
     reviewDetailsModal._element.addEventListener('hide.bs.modal', function () {
         treatmentDiv.innerHTML = ''
+    })
+
+    vitalsignsModal._element.addEventListener('hide.bs.modal', function() {
+        waitingTable.draw()
+        allPatientsTable.draw()
     })
 
      // manipulating all vital signs div
@@ -134,7 +174,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelectorAll('#vitalSignsTableNurses').forEach(table => {
+    document.querySelectorAll('#vitalSignsTableNurses, #vitalSignsTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const deleteBtn  = event.target.closest('.deleteBtn')
     

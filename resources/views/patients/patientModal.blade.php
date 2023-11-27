@@ -99,7 +99,7 @@
 
                                 <x-form-div>
                                     <x-input-span id="dateOfBirthLabel">Sex<x-required-span /></x-input-span>
-                                    <select class="form-select form-select-md sex" aria-label="sex" name="sex">
+                                    <select class="form-select form-select-md sex" aria-label="sex" name="sex" id="sex">
                                         <option value="">Select</option>
                                         <option value="Female">Female</option>
                                         <option value="Male">Male</option>
@@ -109,7 +109,7 @@
                                 <x-form-div>
                                     <x-input-span id="maritalStatusLabel">Marital Status<x-required-span /></x-input-span>
                                     <select class="form-select form-select-md" aria-label="marital-status"
-                                        name="maritalStatus">
+                                        name="maritalStatus" id="maritalStatus">
                                         <option value="">Select</option>
                                         <option value="Single">Single</option>
                                         <option value="Married">Married</option>
@@ -133,7 +133,7 @@
 
                                 <x-form-div>
                                     <x-input-span>State Residence<x-required-span /></x-input-span>
-                                    <x-select-states name="stateResidence" />
+                                    <x-select-states name="stateResidence" id="stateResidence"/>
                                 </x-form-div>
                             </div>
                         </div>
@@ -190,7 +190,7 @@
 
                                 <x-form-div>
                                     <x-input-span >Relationship<x-required-span /></x-input-span>
-                                    <x-select-nok name="nextOfKinRship"></x-select-nok>
+                                    <x-select-nok name="nextOfKinRship" id="nextOfKinRship"></x-select-nok>
                                 </x-form-div>
                             </div>
                         </div>

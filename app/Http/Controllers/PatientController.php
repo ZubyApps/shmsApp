@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Requests\UpdatePatientRequest;
-use App\Http\Resources\InitiateVisitResource;
+use App\Http\Resources\PatientIdResource;
 use App\Http\Resources\PatientResource;
 use App\Models\Patient;
 use App\Services\DatatablesService;
@@ -99,7 +99,7 @@ class PatientController extends Controller
 
     public function initiateVisit(Patient $patient)
     {
-        return new InitiateVisitResource($patient);
+        return new PatientIdResource($patient);
     }
 
     /**

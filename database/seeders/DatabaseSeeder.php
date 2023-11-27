@@ -32,6 +32,11 @@ class DatabaseSeeder extends Seeder
             'description' => 'Chemistry, Microbiology, Imagings',
             'user_id'   => 1
         ]);
+        \App\Models\ResourceCategory::create([
+            'name' => 'Medical Service',
+            'description' => 'Consultations, Procedures, Operations, Dressings',
+            'user_id'   => 1
+        ]);
         \App\Models\ResourceSubCategory::create([
             'name' => 'Pills',
             'description' => 'Tablets, Capsules, Suppositories, Dispersables',
@@ -49,6 +54,18 @@ class DatabaseSeeder extends Seeder
             'description' => 'Microbiological Tests',
             'user_id'   => 1,
             'resource_category_id'   => 2
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Imaging',
+            'description' => 'X-rays, Ultrasounds, MRIs, CTScans, Other Scans',
+            'user_id'   => 1,
+            'resource_category_id'   => 2
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Consultations',
+            'description' => 'Gp Consultations & Reviews, Specialist Consultation & Reviews ',
+            'user_id'   => 1,
+            'resource_category_id'   => 3
         ]);
     }
 }

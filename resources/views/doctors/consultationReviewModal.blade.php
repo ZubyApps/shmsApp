@@ -37,9 +37,9 @@
                                                 <th>Done</th>
                                                 <th>Temp</th>
                                                 <th>BP</th>
+                                                <th>Pulse</th>
                                                 <th>Resp Rate</th>
                                                 <th>SpO2</th>
-                                                <th>Pulse</th>
                                                 <th>Weight</th>
                                                 <th>Height</th>
                                                 <th>By</th>

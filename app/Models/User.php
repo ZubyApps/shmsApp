@@ -114,4 +114,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Prescription::class);
     }
+
+    public function medicationCharts() 
+    {
+        return $this->hasMany(MedicationChart::class);
+    }
 }

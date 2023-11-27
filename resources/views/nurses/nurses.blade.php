@@ -7,6 +7,7 @@
 @include('nurses.deliveryNotesModal', ['title' => 'New Delivery Note', 'isUpdate' => false, 'id' => 'newDeliveryNoteModal'])
 @include('nurses.deliveryNotesModal', ['title' => 'Update Delivery Note', 'isUpdate' => true, 'id' => 'updateDeliveryNoteModal'])
 @include('nurses.chartMedicationModal', ['title' => 'Chart Medication', 'isUpdate' => false, 'id' => 'chartMedicationModal'])
+@include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isUpdate' => false, 'id' => 'vitalsignsModal'])
 
 <div class="container p-1 mt-5">
     <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
@@ -156,6 +157,7 @@
                                 <th>Doctor</th>
                                 <th>Current Diagnosis</th>
                                 <th>Sponsor</th>
+                                <th>Vitals</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>

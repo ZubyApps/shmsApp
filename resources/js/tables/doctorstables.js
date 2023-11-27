@@ -117,15 +117,15 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal) => {
         orderMulti: true,
         search:true,
         language: {
-            emptyTable: 'No vital sign recorded'
+            emptyTable: 'No vital sign has been recorded'
         },
         columns: [
             {data: "created_at"},
             {data: "temperature"},
             {data: "bloodPressure"},
+            {data: "pulseRate"},
             {data: "respiratoryRate"},
             {data: "spO2"},
-            {data: "pulseRate"},
             {data: "weight"},
             {data: "height"},
             {data: "by"},
