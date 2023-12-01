@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Patient;
+use App\Models\Sponsor;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -21,7 +22,9 @@ return new class extends Migration
             $table->boolean('closed')->default(false);
             $table->foreignIdFor(User::class, 'doctor_id')->nullable();
             $table->dateTime('vital_signs')->nullable();
+            $table->boolean('status')->default(false);
             $table->foreignIdFor(Patient::class);
+            $table->foreignIdFor(Sponsor::class);
             $table->foreignIdFor(User::class);
             $table->timestamps();
         });

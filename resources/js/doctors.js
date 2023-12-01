@@ -12,7 +12,7 @@ import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 
 window.addEventListener('DOMContentLoaded', function () {
-    const waitingListOffcanvas              = new Offcanvas(document.getElementById('waitingListOffcanvas'))
+    const waitingListOffcanvas              = new Offcanvas(document.getElementById('waitingListOffcanvas1'))
     const newConsultationModal              = new Modal(document.getElementById('newConsultationModal'))
     const ancConsultationModal              = new Modal(document.getElementById('ancConsultationModal'))
     const ancReviewModal                    = new Modal(document.getElementById('ancReviewModal'))
@@ -181,8 +181,17 @@ window.addEventListener('DOMContentLoaded', function () {
     // Show waiting table
     waitingBtn.addEventListener('click', function () {
         waitingTable.draw()
-        allPatientsVisitTable.draw()
     })
+
+    // waitingListOffcanvas._element.addEventListener('show.bs.collapse', function(){ 
+    //     console.log('worked1')
+    //  allPatientsVisitTable.draw() 
+    // })
+
+    waitingListOffcanvas._element.addEventListener('hide.bs.collapse', event => {
+        console.log(event)
+        // allPatientsVisitTable.draw()
+      })
 
     // manipulating all known clinical info div
     updateKnownClinicalInfoBtn.forEach(updateBtn => {
@@ -540,8 +549,9 @@ window.addEventListener('DOMContentLoaded', function () {
             if ($.fn.DataTable.isDataTable( '#'+tableId )){
                 $('#'+tableId).dataTable().fnDestroy()
             }
-
             getPrescriptionTableByConsultation(tableId, conId, consultationReviewModal._element)
+            location.href = div.getAttribute('data-goto')
+            window.history.replaceState({}, document.title, "/" + "doctors" )
         }
 
         if (deleteBtn){

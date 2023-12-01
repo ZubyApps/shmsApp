@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\MedicationChart;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateMedicationChartRequest extends FormRequest
@@ -11,7 +12,7 @@ class UpdateMedicationChartRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,9 @@ class UpdateMedicationChartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 'medicationChartid'     => ['required', 'numeric', 'exists:'.MedicationChart::class.',id'],
+            'doseGiven'             => ['required'],
+            'unit'                  => ['required'],
         ];
     }
 }

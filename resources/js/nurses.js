@@ -1,34 +1,34 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
-import { consultationDetails, items } from "./data"
-import { clearDivValues, clearItemsList, getOrdinal, getDivData} from "./helpers"
+import { clearDivValues, clearValidationErrors, getOrdinal, getDivData} from "./helpers"
 import $ from 'jquery';
-// import { InitialRegularConsultation, review } from "./dynamicHTMLfiles/treamentsNurses";
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
-import { getWaitingTable, getAllPatientsVisitTable, getNurseTreatmentByConsultation} from "./tables/nursesTables";
+import { getWaitingTable, getAllPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription} from "./tables/nursesTables";
 import { getVitalSignsTableByVisit, getLabTableByConsultation} from "./tables/doctorstables";
-
 
 window.addEventListener('DOMContentLoaded', function () {
     const medicationCanvasTable     = new Offcanvas(document.getElementById('offcanvasWithBothOptions'))
+    const waitingListCanvasTable    = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
 
     const reviewDetailsModal        = new Modal(document.getElementById('treatmentDetailsModal'))
     const newDeliveryNoteModal      = new Modal(document.getElementById('newDeliveryNoteModal'))
     const updateDeliveryNoteModal   = new Modal(document.getElementById('updateDeliveryNoteModal'))
     const chartMedicationModal      = new Modal(document.getElementById('chartMedicationModal'))
     const vitalsignsModal           = new Modal(document.getElementById('vitalsignsModal'))
+    const giveMedicationModal       = new Modal(document.getElementById('giveMedicationModal'))
 
     const addVitalsignsDiv          = document.querySelectorAll('#addVitalsignsDiv')
     const medicationChartDiv        = chartMedicationModal._element.querySelector('#chartMedicationDiv')
+    const medicationChartTable      = chartMedicationModal._element.querySelector('#medicationChartTable')
+    const giveMedicationDiv         = giveMedicationModal._element.querySelector('#giveMedicationDiv')
     
     const waitingBtn                = document.querySelector('#waitingBtn')
     const addVitalsignsBtn          = document.querySelectorAll('#addVitalsignsBtn')
     const saveMedicationChartBtn    = chartMedicationModal._element.querySelector('#saveMedicationChartBtn')
+    const saveGivenMedicationBtn    = giveMedicationModal._element.querySelector('.saveGivenMedicationBtn')
     
 
     const blinkTable                = document.querySelector('.thisRow')
-
-    const detailsBtn                = document.querySelector('.detailsBtn')
 
     const treatmentDiv              = document.querySelector('#treatmentDiv')
     
@@ -51,6 +51,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
     waitingBtn.addEventListener('click', function () {
         waitingTable.draw()
+    })
+
+    waitingListCanvasTable._element.addEventListener('hide.bs.offcanvas', function() {
         allPatientsTable.draw()
     })
 
@@ -131,9 +134,9 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    document.querySelector('.nurseTreatmentTable').addEventListener('click', function (event) {
-        console.log(event)
-    })    
+    // document.querySelector('.nurseTreatmentTable').addEventListener('click', function (event) {
+    //     console.log(event)
+    // })
 
     reviewDetailsModal._element.addEventListener('hide.bs.modal', function () {
         treatmentDiv.innerHTML = ''
@@ -141,7 +144,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
     vitalsignsModal._element.addEventListener('hide.bs.modal', function() {
         waitingTable.draw()
-        allPatientsTable.draw()
     })
 
      // manipulating all vital signs div
@@ -177,7 +179,7 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#vitalSignsTableNurses, #vitalSignsTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const deleteBtn  = event.target.closest('.deleteBtn')
-    
+            
             if (deleteBtn){
                 deleteBtn.setAttribute('disabled', 'disabled')
                 if (confirm('Are you sure you want to delete this record?')) {
@@ -186,8 +188,39 @@ window.addEventListener('DOMContentLoaded', function () {
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300){
                                 if ($.fn.DataTable.isDataTable( '#'+table.id )){
-                                $('#'+table.id).dataTable().fnDraw()
+                                    $('#'+table.id).dataTable().fnDraw()
                             }
+                            }
+                            deleteBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {
+                            alert(error)
+                            deleteBtn.removeAttribute('disabled')
+                        })
+                }
+                
+            }
+        })
+    })
+    
+    document.querySelectorAll('#medicationChartTable').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const deleteBtn  = event.target.closest('.deleteBtn')
+            
+            if (deleteBtn){
+                deleteBtn.setAttribute('disabled', 'disabled')
+                const treatmentTableId = saveMedicationChartBtn.getAttribute('data-table')
+                if (confirm('Are you sure you want to delete this record?')) {
+                    const id = deleteBtn.getAttribute('data-id')
+                    http.delete(`/medicationchart/${id}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300){
+                                if ($.fn.DataTable.isDataTable( '#'+table.id )){
+                                    $('#'+table.id).dataTable().fnDraw()
+                                }
+                                if ($.fn.DataTable.isDataTable( '#'+treatmentTableId )){
+                                    $('#'+treatmentTableId).dataTable().fnDraw()
+                                }
                             }
                             deleteBtn.removeAttribute('disabled')
                         })
@@ -204,16 +237,12 @@ window.addEventListener('DOMContentLoaded', function () {
     // review consultation loops
     document.querySelector('#treatmentDiv').addEventListener('click', function (event) {
         const collapseBtn                           = event.target.closest('.collapseBtn')
-        const addInvestigationBtn                   = event.target.closest('#addInvestigationBtn')
-        // const addVitalsignsBtn                      = event.target.closest('#addVitalsignsBtn')
-        const saveInvestigationBtn                  = event.target.closest('#saveInvestigationBtn')
+        const giveMedicationBtn                     = event.target.closest('#giveMedicationBtn')
         const chartMedicationBtn                    = event.target.closest('#chartMedicationBtn')
         const newDeliveryNoteBtn                    = event.target.closest('#newDeliveryNoteBtn')
         const updateDeliveryNoteBtn                 = event.target.closest('#updateDeliveryNoteBtn')
         const saveWardAndBedBtn                     = event.target.closest('#saveWardAndBedBtn')
         const wardAndBedDiv                         = document.querySelectorAll('#wardAndBedDiv')
-        const addVitalsignsDiv                      = document.querySelectorAll('#addVitalsignsDiv')
-        const investigationDiv                      = document.querySelectorAll('.investigationDiv')
 
         if (collapseBtn) {
             const gotoDiv = document.querySelector(collapseBtn.getAttribute('data-goto'))
@@ -221,6 +250,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const treatmentTableId      = gotoDiv.querySelector('.nurseTreatmentTable').id
             const conId                 = gotoDiv.querySelector('.investigationTable').dataset.id
             const viewer                = 'nurse'
+
             if ($.fn.DataTable.isDataTable( '#'+investigationTableId )){
                 $('#'+investigationTableId).dataTable().fnDestroy()
             }
@@ -237,27 +267,29 @@ window.addEventListener('DOMContentLoaded', function () {
             setTimeout(goto, 300)
         }
 
-        if (addInvestigationBtn) {
-            investigationDiv.forEach(div => {
-                if (div.dataset.div === addInvestigationBtn.dataset.btn) {
-                    div.classList.toggle('d-none')
-                    getItemsFromInput(div.querySelector('#item'), items)
-                }
-                
-            })
-        }
-
-        if (saveInvestigationBtn) {
-            investigationDiv.forEach(div => {
-                if (div.dataset.div === saveInvestigationBtn.dataset.btn) {
-                console.log(getDivData(div))
-                clearDivValues(div)
-                }
-            })
-        }
-
         if (chartMedicationBtn) {
+            const prescriptionId    = chartMedicationBtn.getAttribute('data-id')
+            const tableId           = chartMedicationBtn.getAttribute('data-table')
+            const conId             = chartMedicationBtn.getAttribute('data-consultation')
+            const visitId           = chartMedicationBtn.getAttribute('data-visit')
+            chartMedicationModal._element.querySelector('#treatment').value = chartMedicationBtn.getAttribute('data-resource')
+            chartMedicationModal._element.querySelector('#prescription').value = chartMedicationBtn.getAttribute('data-prescription')
+            chartMedicationModal._element.querySelector('#prescribedBy').value = chartMedicationBtn.getAttribute('data-prescribedBy')
+            chartMedicationModal._element.querySelector('#prescribed').value = chartMedicationBtn.getAttribute('data-prescribed')
+            saveMedicationChartBtn.setAttribute('data-id', prescriptionId)
+            saveMedicationChartBtn.setAttribute('data-table', tableId)
+            saveMedicationChartBtn.setAttribute('data-consultation', conId)
+            saveMedicationChartBtn.setAttribute('data-visit', visitId)
+            
+            getMedicationChartByPrescription(medicationChartTable.id, prescriptionId, chartMedicationModal._element)
+
             chartMedicationModal.show()
+        }
+
+        if (giveMedicationBtn) {
+            saveGivenMedicationBtn.setAttribute('data-id', giveMedicationBtn.getAttribute('data-id'))
+            saveGivenMedicationBtn.setAttribute('data-table', giveMedicationBtn.getAttribute('data-table'))
+            giveMedicationModal.show()
         }
 
         if (newDeliveryNoteBtn) {
@@ -268,63 +300,96 @@ window.addEventListener('DOMContentLoaded', function () {
             updateDeliveryNoteModal.show()
         }
 
-        // if (addVitalsignsBtn) {
-        //     console.log(addVitalsignsBtn)
-        //     addVitalsignsDiv.forEach(div => {
-        //         if (div.dataset.div === addVitalsignsBtn.dataset.btn) {
-        //             if (div.classList.contains('d-none')){
-        //                 div.classList.remove('d-none')
-        //             } else {
-        //                 console.log(getDivData(div))
-        //                 div.classList.add('d-none')
-        //                 clearDivValues(div)
-        //             }
-        //         }
-        //     })
-        // }
-
         if (saveWardAndBedBtn) {
             wardAndBedDiv.forEach(div => {
                 if (div.dataset.div === saveWardAndBedBtn.dataset.btn) {
-                console.log(getDivData(div))
-                clearDivValues(div)
+                    saveWardAndBedBtn.setAttribute('disabled', 'disabled')
+                    const conId = saveWardAndBedBtn.dataset.id
+
+                    http.post(`consultation/${conId}`, {...getDivData(div)}, {"html": div})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            new Toast(div.querySelector('#saveUpdateAdmissionStatusToast'), {delay:2000}).show()
+                            clearDivValues(div)
+                            clearValidationErrors(div)
+                        }
+                        saveWardAndBedBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        saveWardAndBedBtn.removeAttribute('disabled')
+                    })
                 }
             })
         }
     })
 
     saveMedicationChartBtn.addEventListener('click', function () {
-        console.log(getDivData(medicationChartDiv))
-        clearDivValues(medicationChartDiv)
-    }) 
-})
+        const prescriptionId = saveMedicationChartBtn.getAttribute('data-id')
+        const treatmentTableId = saveMedicationChartBtn.getAttribute('data-table')
+        const conId = saveMedicationChartBtn.getAttribute('data-consultation')
+        const visitId = saveMedicationChartBtn.getAttribute('data-visit')
 
-function getItemsFromInput(input, data) {
-    input.addEventListener('keyup', function() {
-        let records = data.filter(d => d.name.toLocaleLowerCase().includes(input.value.toLocaleLowerCase()) ? d : '')
-        displayItemsList(input.parentNode, records)
-    })
-}
+        saveMedicationChartBtn.setAttribute('disabled', 'disabled')
 
-function displayItemsList(div, data) {
+        let data = {...getDivData(medicationChartDiv), prescriptionId, conId, visitId}
 
-    data.forEach(line => {
-        const option = document.createElement("OPTION")
-        option.setAttribute('id', 'itemsOption')
-        option.setAttribute('value', line.name)
-        option.setAttribute('data-id', line.id)
-        option.setAttribute('name', line.name)
+        http.post('/medicationchart', {...data}, {"html": medicationChartDiv})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) {
+                new Toast(medicationChartDiv.querySelector('#saveMedicationChartToast'), {delay:2000}).show()
 
-        let previousItems = div.querySelectorAll('#itemsOption')
-            let optionsList = []
-            previousItems.forEach(node => {
-               optionsList.push(node.dataset.id)
-            })
-            div.querySelector('#item').setAttribute('list', 'itemsList')
-            div.querySelector('datalist').setAttribute('id', 'itemsList')
-            !optionsList.includes(option.dataset.id) ? div.querySelector('#itemsList').appendChild(option) : ''
+                clearDivValues(medicationChartDiv)
+                clearValidationErrors(medicationChartDiv)
+
+                if ($.fn.DataTable.isDataTable( '#'+medicationChartTable.id )){
+                    $('#'+medicationChartTable.id).dataTable().fnDraw()
+                }
+
+                if ($.fn.DataTable.isDataTable( '#'+treatmentTableId )){
+                    $('#'+treatmentTableId).dataTable().fnDraw()
+                }
+                
+            }
+            saveMedicationChartBtn.removeAttribute('disabled')
         })
-}
+        .catch((error) => {
+            console.log(error)
+            saveMedicationChartBtn.removeAttribute('disabled')
+        })
+    })
+
+    saveGivenMedicationBtn.addEventListener('click', function() {
+        const medicationChartId = saveGivenMedicationBtn.getAttribute('data-id')
+        const treatmentTableId = saveGivenMedicationBtn.getAttribute('data-table')
+        saveGivenMedicationBtn.setAttribute('disabled', 'disabled')
+        
+        let data = {...getDivData(giveMedicationDiv), medicationChartId}
+
+        http.patch(`/medicationchart/${medicationChartId}`, {...data}, {"html": giveMedicationDiv})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) {
+
+                clearDivValues(giveMedicationDiv)
+                clearValidationErrors(giveMedicationDiv)
+
+                if ($.fn.DataTable.isDataTable( '#'+treatmentTableId )){
+                    $('#'+treatmentTableId).dataTable().fnDraw()
+                }
+            }
+            saveGivenMedicationBtn.removeAttribute('disabled')
+            giveMedicationModal.hide()
+        })
+        .catch((error) => {
+            console.log(error)
+            saveGivenMedicationBtn.removeAttribute('disabled')
+        })
+    })
+
+    reviewDetailsModal._element.addEventListener('hidden.bs.modal', function() {
+        allPatientsTable.draw()
+    })
+})
 
 function openNurseModals(modal, button, {id,visitId, ...data}) {
     for (let name in data) {
@@ -335,7 +400,4 @@ function openNurseModals(modal, button, {id,visitId, ...data}) {
     }
     
     modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
-
-    // button.setAttribute('data-id', id)
-    // modal.show()
 }

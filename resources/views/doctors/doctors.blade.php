@@ -17,7 +17,7 @@
 @include('doctors.newReviewModal', ['title' => 'New Review', 'isUpdate' => false, 'id' => 'newReviewModal'])
 
     <div class="container p-1 mt-5">
-        <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas"
+        <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas1"
             aria-labelledby="waitingListOffcanvasLabel">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>
@@ -46,7 +46,7 @@
 
         <div class="text-start mb-4">
             <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn"
-                data-bs-target="#waitingListOffcanvas" aria-controls="waitingListOffcanvas">
+                data-bs-target="#waitingListOffcanvas1" aria-controls="waitingListOffcanvas">
                 <i class="bi bi-list-check"></i>
                 Waiting List
             </button>

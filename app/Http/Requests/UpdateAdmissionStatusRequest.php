@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Visit;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Request;
 
-class StoreConsultationRequest extends FormRequest
+class UpdateAdmissionStatusRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +22,6 @@ class StoreConsultationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'visitId'           => ['required', 'numeric', 'exists:'.Visit::class.',id'],
-            'selectedDiagnosis' => ['required'],
             'admit'             => ['required'],
             'ward'              => ['required_if:admit,Inpatient,admit,Observation,'],
             'bedNumber'         => ['required_if:admit,=,Inpatient,admit,=,Observation'],

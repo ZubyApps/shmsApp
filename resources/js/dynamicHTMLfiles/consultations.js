@@ -1,4 +1,4 @@
-import { deliveryNote, surgeryNote, vitalsignsTable, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses} from "./partialHTMLS"
+import { deliveryNote, surgeryNote, updateAdmissionStatus, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses} from "./partialHTMLS"
 
 const regularReviewDetails = (iteration, numberConverter, count, length, line, viewer) => {
 
@@ -12,6 +12,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                         
                         <div class="mb-2 form-control" id="goto${iteration}">
                             ${iteration < 2 || line.specialistFlag ? consultation(line) :  review(count, line)}
+                            ${ viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}
                             ${investigations(line, viewer)}
                             ${viewer == '' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
                             ${!viewer ? updateInvestigationAndManagement(length, iteration, line) : ''}
@@ -82,8 +83,9 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
                         
                         <div class="mb-2 form-control" id="goto${iteration}">
                             ${AncConsultation(line, iteration, count)}
+                            ${ viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}
                             ${investigations(line)}
-                            ${medicationAndTreatment(line)}
+                            ${viewer == '' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
                             ${updateInvestigationAndManagement(length, iteration, line)}
                             <div class="extraInfoDiv" >
                                 ${length > iteration ? '' : 

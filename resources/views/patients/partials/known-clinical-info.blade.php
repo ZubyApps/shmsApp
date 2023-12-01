@@ -1,5 +1,5 @@
     <x-form-div>
-        <x-input-span>Blood Group<x-required-span /></x-input-span>
+        <x-input-span>Blood Group</x-input-span>
         <x-select-bloodgroup name="bloodGroup" :disabled="$disabled"/>
     </x-form-div>
 

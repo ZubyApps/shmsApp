@@ -7,6 +7,7 @@ use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HmoController;
 use App\Http\Controllers\InvestigationsController;
+use App\Http\Controllers\MedicationChartController;
 use App\Http\Controllers\NurseController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PharmacyController;
@@ -98,6 +99,7 @@ Route::middleware('auth')->group(function () {
     
     Route::prefix('consultation')->group(function () {
         Route::post('', [ConsultationController::class, 'store']);
+        Route::post('/{consultation}', [ConsultationController::class, 'updateAdmissionStatus']);
         Route::get('/consultations/{visit}', [ConsultationController::class, 'loadConsultations']);
         Route::delete('/{consultation}', [ConsultationController::class, 'destroy']);
     });
@@ -174,6 +176,18 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{prescription}', [PrescriptionController::class, 'destroy']);
         Route::post('/{prescription}', [PrescriptionController::class, 'update']);
     })->name('Prescription');
+
+    Route::prefix('medicationchart')->group(function (){
+        Route::get('', [MedicationChartController::class, 'index'])->name('MedicationChart');
+        Route::post('', [MedicationChartController::class, 'store']);
+        Route::get('/load/chart', [MedicationChartController::class, 'loadMedicationChartByPrescription']);
+        Route::get('/load/lab', [MedicationChartController::class, 'loadLabTable']);
+        Route::get('/load/treatment', [MedicationChartController::class, 'loadTreatmentTable']);
+        Route::get('/list', [MedicationChartController::class, 'list']);
+        Route::get('/{medicationChart}', [MedicationChartController::class, 'edit']);
+        Route::delete('/{medicationChart}', [MedicationChartController::class, 'destroy']);
+        Route::patch('/{medicationChart}', [MedicationChartController::class, 'update']);
+    })->name('MedicationChart');
 });
 
 require __DIR__.'/auth.php';

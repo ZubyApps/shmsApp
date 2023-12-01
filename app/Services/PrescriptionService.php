@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
+use App\Models\MedicationChart;
 use App\Models\Prescription;
 use App\Models\Resource;
 use App\Models\User;
@@ -165,14 +166,25 @@ class PrescriptionService
     {
        return  function (Prescription $prescription) {
             return [
-                'id'                => $prescription->id,
-                'dr'                => $prescription->user->username,
-                'category'          => $prescription->resource->resourceSubCategory->name,
-                'resource'          => $prescription->resource->name,
-                'prescription'      => $prescription->prescription,
-                'prescribed'        => (new Carbon($prescription->created_at))->format('d/M/y g:ia'),
-                'billed'            => $prescription->bill_date ? (new Carbon($prescription->bill_date))->format('d/M/y g:ia') : '',
-                // 'count'             => 0//$prescription->prescriptions()->count(),
+                'id'                    => $prescription->id,
+                'prescribedBy'          => $prescription->user->username,
+                'resource'              => $prescription->resource->name,
+                'prescription'          => $prescription->prescription,
+                'prescribed'            => (new Carbon($prescription->created_at))->format('D/m/y g:ia'),
+                'prescribedFormatted'   => (new Carbon($prescription->created_at))->format('Y-m-d\TH:i'),
+                'billed'                => $prescription->bill_date ? (new Carbon($prescription->bill_date))->format('d/m/y g:ia') : '',
+                'conId'                 => $prescription->consultation->id,
+                'visitId'               => $prescription->visit->id,
+                'chart'                 => $prescription->medicationCharts->map(fn(MedicationChart $medicationChart)=> [
+                    'id'                => $medicationChart->id ?? '',
+                    'chartedAt'         => (new Carbon($medicationChart->created_at))->format('D/m/y g:ia') ?? '',
+                    'chartedBy'         => $medicationChart->user->username ?? '',
+                    'dosePrescribed'    => $medicationChart->dose_prescribed ?? '',
+                    'scheduledTime'     => (new Carbon($medicationChart->scheduled_time))->format('g:ia D dS') ?? '',
+                    'givenDose'         => $medicationChart->dose_given ?? '',
+                    'timeGiven'         => $medicationChart->time_given ? (new Carbon($medicationChart->time_given))->format('g:ia D dS') : '',
+                    'givenBy'           => $medicationChart->givenBy->username ?? '',
+                ]),
             ];
          };
     }

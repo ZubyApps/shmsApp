@@ -30,4 +30,9 @@ class Prescription extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function medicationCharts() 
+    {
+        return $this->hasMany(MedicationChart::class);
+    }
 }

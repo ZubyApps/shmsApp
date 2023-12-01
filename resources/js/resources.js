@@ -243,7 +243,7 @@ window.addEventListener('DOMContentLoaded', function () {
                          return `
                         <div class="d-flex flex-">
                             <div>
-                                <a class="btn btn-outline-${!row.isActive ? 'danger' : 'primary'} toggleActiveStatusBtn"  href="#" data-id="${ row.id }">
+                                <a class="btn btn-outline-${!row.isActive ? 'danger' : 'primary'} toggleActiveStatusBtn" data-id="${ row.id }">
                                 ${!row.isActive ? '<i class="bi bi-x-square-fill  tooltip-test" title="activate"></i>' : '<i class="bi bi-check-square-fill tooltip-test" title="activate"></i>'}
                                 </a>
                             </div>
@@ -253,13 +253,13 @@ window.addEventListener('DOMContentLoaded', function () {
                                 </a>
                                     <ul class="dropdown-menu">
                                     <li>
-                                        <a class="dropdown-item addStockBtn tooltip-test" title="remove" href="#" data-id="${ row.id }">
+                                        <a class="dropdown-item addStockBtn tooltip-test" title="remove" data-id="${ row.id }">
                                             <i class="bi bi-plus-square text-primary"></i> Add stock
                                         </a>
-                                        <a class="dropdown-item updateBtn tooltip-test" title="remove" href="#" data-id="${ row.id }">
+                                        <a class="dropdown-item updateBtn tooltip-test" title="remove"  data-id="${ row.id }">
                                         <i class="bi bi-pencil-fill text-primary"></i> Edit
                                         </a>
-                                        <a class="dropdown-item deleteBtn tooltip-test" title="delete" href="#" data-id="${ row.id }">
+                                        <a class="dropdown-item deleteBtn tooltip-test" title="delete"  data-id="${ row.id }">
                                             <i class="bi bi-x-circle-fill text-primary"></i> Delete
                                         </a>
                                     </li>
@@ -271,20 +271,20 @@ window.addEventListener('DOMContentLoaded', function () {
                         return `
                         <div class="d-flex flex-">
                             <div>
-                                    <a class="btn btn-outline-${!row.isActive ? 'danger' : 'primary'} toggleActiveStatusBtn"  href="#" data-id="${ row.id }">
+                                    <a class="btn btn-outline-${!row.isActive ? 'danger' : 'primary'} toggleActiveStatusBtn" data-id="${ row.id }">
                                     ${!row.isActive ? '<i class="bi bi-x-square-fill tooltip-test fs-4" title="activate"></i>' : '<i class="bi bi-check-square-fill tooltip-test" title="activate"></i>'}
                                     </a>
                                 </div>
                                 <div class="dropdown ms-1">
-                                <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="options" data-bs-toggle="dropdown" href="" >
+                                <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="options" data-bs-toggle="dropdown"  >
                                 <i class="bi bi-gear fs-4" role="button"></i>
                                 </a>
                                     <ul class="dropdown-menu">
                                     <li>
-                                        <a class="dropdown-item addStockBtn tooltip-test" title="Add stock" href="#" data-id="${ row.id }">
+                                        <a class="dropdown-item addStockBtn tooltip-test" title="Add stock" data-id="${ row.id }">
                                             <i class="bi bi-plus-square text-primary"></i> Add stock
                                         </a>
-                                        <a class="dropdown-item updateBtn tooltip-test" title="update" href="#" data-id="${ row.id }">
+                                        <a class="dropdown-item updateBtn tooltip-test" title="update" data-id="${ row.id }">
                                         <i class="bi bi-pencil-fill text-primary"></i> Update
                                         </a>
                                     </li>

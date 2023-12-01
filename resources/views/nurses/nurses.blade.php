@@ -8,6 +8,7 @@
 @include('nurses.deliveryNotesModal', ['title' => 'Update Delivery Note', 'isUpdate' => true, 'id' => 'updateDeliveryNoteModal'])
 @include('nurses.chartMedicationModal', ['title' => 'Chart Medication', 'isUpdate' => false, 'id' => 'chartMedicationModal'])
 @include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isUpdate' => false, 'id' => 'vitalsignsModal'])
+@include('nurses.giveMedicationModal')
 
 <div class="container p-1 mt-5">
     <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
@@ -90,8 +91,8 @@
             </div>
         </div>
     </div>
-    <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas"
-            aria-labelledby="waitingListOffcanvasLabel">
+    <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2"
+            aria-labelledby="waitingListOffcanvasLabel" aria-expanded="false">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -127,7 +128,7 @@
             Medication/Treatment Table
         </button>
         <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn"
-        data-bs-target="#waitingListOffcanvas" aria-controls="waitingListOffcanvas">
+        data-bs-target="#waitingListOffcanvas2" aria-controls="waitingListOffcanvas2">
         <i class="bi bi-list-check"></i>
         Waiting List
     </button>

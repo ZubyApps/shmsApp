@@ -18,7 +18,7 @@ class PatientFactory extends Factory
     public function definition(): array
     {
         return [
-            "patient_type"          => 'regular',
+            "patient_type"          => 'Regular',
             "address"               => 'Flat 1, behind Larazon Annex, Achusa',
             "blood_group"           => 'O+',
             "card_no"               => 'SH23/0001',

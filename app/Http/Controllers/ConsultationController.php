@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Consultation;
 use App\Http\Requests\StoreConsultationRequest;
+use App\Http\Requests\UpdateAdmissionStatusRequest;
 use App\Http\Requests\UpdateConsultationRequest;
 use App\Http\Resources\ConsultationReviewCollection;
 use App\Http\Resources\PatientBioResource;
@@ -52,6 +53,11 @@ class ConsultationController extends Controller
         $consultations = $this->consultationService->getConsultations($request, $visit);
 
         return ["consultations" => new ConsultationReviewCollection($consultations), "bio" => new PatientBioResource($visit)];
+    }
+
+    public function updateAdmissionStatus(UpdateAdmissionStatusRequest $request, Consultation $consultation)
+    {
+        return $this->consultationService->updateAdmissionStatus($consultation, $request, $request->user());
     }
     
     /**

@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             'user_id'   => 1
         ]);
         \App\Models\ResourceCategory::create([
-            'name' => 'Labortory',
+            'name' => 'Laboratory',
             'description' => 'Chemistry, Microbiology, Imagings',
             'user_id'   => 1
         ]);

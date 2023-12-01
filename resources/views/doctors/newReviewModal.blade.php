@@ -93,7 +93,7 @@
                                     <x-icd11-diagnosis-div :number="2" />
                                     <x-form-div class="col-xl-6">
                                         <x-input-span id="diagnosisLabel">Updated <br />ICD11
-                                            Diagnosis</x-input-span>
+                                            Diagnosis<x-required-span /></x-input-span>
                                         <x-form-textarea type="text" name="selectedDiagnosis"
                                             class="selectedDiagnosis-2" style="height: 100px"></x-form-textarea>
                                     </x-form-div>

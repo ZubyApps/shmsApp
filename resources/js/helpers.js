@@ -120,7 +120,7 @@ function handleValidationErrors(errors, domElement) {
         element.parentNode.append(errorDiv)
     }
     location.href = '#'+elementId[0]
-    console.log(elementId)
+    window.history.replaceState({}, document.title, "/" + document.title.toLowerCase() )
 }
 
 function clearValidationErrors(domElement) {

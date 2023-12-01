@@ -96,7 +96,7 @@
                                         </x-form-div>
                                         @if ($isSpecialist) <x-icd11-diagnosis-div :number="3" /> @else <x-icd11-diagnosis-div :number="1" /> @endif
                                         <x-form-div class="col-xl-6">
-                                            <x-input-span id="diagnosisLabel">Selected <br />ICD11 Diagnosis</x-input-span>
+                                            <x-input-span id="diagnosisLabel">Selected <br />ICD11 Diagnosis<x-required-span /></x-input-span>
                                             <x-form-textarea type="text" name="selectedDiagnosis" class="selectedDiagnosis-{{ $isSpecialist ? '3' : '1' }}" style="height: 100px"></x-form-textarea>
                                         </x-form-div>
                                         {{-- <x-form-div class="col-xl-6">
@@ -113,7 +113,7 @@
                                     </div>
                                     <div class="row my-2">
                                         <x-form-div class="col-xl-4">
-                                            <x-input-span id="admitLabel">Admit?</x-input-span>
+                                            <x-input-span id="admitLabel">Admit?<x-required-span /></x-input-span>
                                             <x-select-admit name="admit" :disabled="false"></x-select-admit>
                                         </x-form-div>
                                         <x-form-div class="col-xl-4">
@@ -146,17 +146,17 @@
                                         <x-form-span>Investigation & Management</x-form-span>
                                         <div class="row">
                                             <x-form-div class="col-xl-6">
-                                                <x-input-span id="resourceLabel">Medical Resource</x-input-span>
+                                                <x-input-span id="resourceLabel">Medical Resource<x-required-span /></x-input-span>
                                                 <input class="form-control resource" type="search" name="resource" id="resource" {!! $isSpecialist ? 'data-input="specialist"' : 'data-input="new"' !!} placeholder="search" list="resourceList{{ $isSpecialist ? 'specialist' : 'new' }}"/>
                                                 <datalist name="resource" type="text" class="decoration-none resourceList" id="resourceList{{ $isSpecialist ? 'specialist' : 'new' }}"></datalist>
                                             </x-form-div>
                                             <x-form-div class="col-xl-6 pres" id="pres">
-                                                <x-input-span id="prescriptionLabel">Prescription</x-input-span>
+                                                <x-input-span id="prescriptionLabel">Prescription<x-required-span /></x-input-span>
                                                 <x-form-input type="text" name="prescription" id="prescription"
                                                     placeholder="eg: 5mg BD x5" />
                                             </x-form-div>
                                             <x-form-div class="col-xl-6 qty" id="qty">
-                                                <x-input-span id="quantityLabel">Quantity</x-input-span>
+                                                <x-input-span id="quantityLabel">Quantity<x-required-span /></x-input-span>
                                                 <x-form-input type="number" name="quantity" id="quantity"
                                                     placeholder="" value=""/>
                                             </x-form-div>

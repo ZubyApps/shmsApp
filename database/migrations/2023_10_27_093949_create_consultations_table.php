@@ -41,6 +41,7 @@ return new class extends Migration
             $table->string('bed_no')->nullable();
             $table->boolean('specialist_consultation')->default(false)->nullable();
             $table->foreignIdFor(Visit::class);
+            $table->foreignIdFor(User::class, 'updated_by')->nullable();
             $table->foreignIdFor(User::class);
             $table->timestamps();
         });

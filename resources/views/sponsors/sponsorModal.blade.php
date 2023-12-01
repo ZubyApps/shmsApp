@@ -34,7 +34,7 @@
                                 <x-form-input name="name" />
                             </x-form-div>
                             <x-form-div class="col-xl-6">
-                                <x-input-span>Phone No.<x-required-span /></x-input-span>
+                                <x-input-span>Phone No.</x-input-span>
                                 <x-form-input name="phone" />
                             </x-form-div>
                             <x-form-div class="col-xl-6">

@@ -16,13 +16,23 @@ class MedicationChart extends Model
         return $this->belongsTo(Prescription::class);
     }
 
+    public function consultation()
+    {
+        return $this->belongsTo(Consultation::class);
+    }
+
+    public function visit()
+    {
+        return $this->belongsTo(Visit::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function giver()
+    public function givenBy()
     {
-        return $this->belongsTo(User::class, 'giver_id');
+        return $this->belongsTo(User::class, 'given_by');
     }
 }

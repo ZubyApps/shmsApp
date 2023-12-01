@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('result')->nullable();
             $table->dateTime('result_date')->nullable();
             $table->string('paid')->nullable();
+            $table->string('prescription_status')->nullable();
             $table->foreignIdFor(User::class, 'lab_id')->nullable();
             $table->foreignIdFor(Consultation::class);
             $table->foreignIdFor(Visit::class);

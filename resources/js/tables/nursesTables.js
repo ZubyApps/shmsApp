@@ -21,7 +21,7 @@ const getAllPatientsVisitTable = (tableId) => {
             {data: "diagnosis"},
             {data: "sponsor"},
             {data: row => function () {
-                if (row.vitalSigns.length < 1){
+                if (row.vitalSigns < 1){
                     return `
                         <div class="d-flex flex-">
                             <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
@@ -32,7 +32,7 @@ const getAllPatientsVisitTable = (tableId) => {
                         return `
                         <div class="dropdown">
                             <a class="text-black tooltip-test text-decoration-none" title="vital signs" data-bs-toggle="dropdown" href="" >
-                            <i class="btn btn-outline-primary bi bi-check-circle-fill">${row.vitalSigns.length}</i>
+                            <i class="btn btn-outline-primary bi bi-check-circle-fill">${row.vitalSigns}</i>
                             </a>
                                 <ul class="dropdown-menu">
                                 <li>
@@ -80,7 +80,7 @@ const getWaitingTable = (tableId) => {
             {data: "came"},
             {data: "doctor"},
             {data: row => function () {
-                if (row.vitalSigns.length < 1){
+                if (row.vitalSigns < 1){
                     return `
                         <div class="d-flex flex-">
                             <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
@@ -91,7 +91,7 @@ const getWaitingTable = (tableId) => {
                         return `
                         <div class="dropdown">
                             <a class="text-black tooltip-test text-decoration-none" title="vital signs" data-bs-toggle="dropdown" href="" >
-                            <i class="btn btn-outline-primary bi bi-check-circle-fill">${row.vitalSigns.length}</i>
+                            <i class="btn btn-outline-primary bi bi-check-circle-fill">${row.vitalSigns}</i>
                             </a>
                                 <ul class="dropdown-menu">
                                 <li>
@@ -129,13 +129,13 @@ const getNurseTreatmentByConsultation = (tableId, conId, modal) => {
         columns: [
             {data: "resource"},
             {data: "prescription"},
-            {data: "dr"},
+            {data: "prescribedBy"},
             {data: "prescribed"},
             {
                 sortable: false,
                 data: row =>  `
                 <div class="d-flex flex-">
-                    <button type="button" id="chartMedicationBtn" class="btn btn-outline-primary chatMedicationBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}", data-resource="${row.resource}" data-prescription="${row.prescription}" data-prescribedBy="${row.dr}" data-resource="${row.prescribed}">
+                    <button type="button" id="chartMedicationBtn" class="btn btn-outline-primary chatMedicationBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}", data-resource="${row.resource}" data-prescription="${row.prescription}" data-prescribedBy="${row.prescribedBy}" data-prescribed="${row.prescribedFormatted}" data-consultation="${row.conId}" data-visit="${row.visitId}">
                         Chart
                     </button>
                 </div>
@@ -144,47 +144,72 @@ const getNurseTreatmentByConsultation = (tableId, conId, modal) => {
         ]
     });
 
-    function format(d) {
+    function format(data, tableId) {
         // `d` is the original data object for the row
-        return (
-           `<table class="table align-middle table-sm">
-           <thead >
-               <tr class="fw-semibold fs-italics">
-                   <td> </td>
-                   <td class="text-secondary">Charted</td>
-                   <td class="text-secondary">By</td>
-                   <td class="text-secondary">Given</td>
-                   <td class="text-secondary">Nurse</td>
-                   <td class="text-secondary">Prescription</td>
-                   <td class="text-secondary">Dose</td>
-               </tr>
-           </thead>
-           <tbody>
-          <tr>
-                <td> </td>
-                <td class="text-secondary">${d.prescribed}</td>
-                <td class="text-secondary">${d.dr}</td>
-                <td class="text-secondary">${d.prescribed}</td>
-                <td class="text-secondary">${d.dr}</td>
-                <td class="text-secondary">${d.prescription}</td>
-                <td class="text-secondary">300mg</td>
-            </tr>
-           
-           </tbody>`
-        );
+        const chart = data.chart
+
+                if (chart.length > 0) {
+                    let child = `<table class="table align-middle table-sm">
+                                            <thead >
+                                                <tr class="fw-semibold fs-italics">
+                                                    <td> </td>
+                                                    <td class="text-secondary">Charted At</td>
+                                                    <td class="text-secondary">Charted By</td>
+                                                    <td class="text-secondary">Dose</td>
+                                                    <td class="text-secondary">Schedule Time</td>
+                                                    <td class="text-secondary">Dose Given</td>
+                                                    <td class="text-secondary">Time Given</td>
+                                                    <td class="text-secondary">Given By</td>
+                                                    <td class="text-secondary">Action</td>
+                                                </tr>
+                                            </thead>
+                                        <tbody>`
+                            
+                                chart.forEach(line => {
+                                    child += `<tr>
+                                                <td> </td>
+                                                <td class="text-secondary">${line.chartedAt}</td>                
+                                                <td class="text-secondary">${line.chartedBy}</td>                
+                                                <td class="text-secondary">${line.dosePrescribed}</td>
+                                                <td class="text-secondary">${line.scheduledTime}</td>
+                                                <td class="text-secondary">${line.givenDose}</td>
+                                                <td class="text-secondary">${line.timeGiven}</td>
+                                                <td class="text-secondary">${line.givenBy}</td>
+                                                <td class="text-secondary"><div class="d-flex flex-">
+                                                <button type="button" id="giveMedicationBtn" class="btn btn-primary giveMedicationBtn tooltip-test" title="give medication" data-id="${line.id}" data-table="${tableId}">
+                                                    Give
+                                                </button>
+                                            </div></td>
+                                            </tr>   
+                                    `
+                                })
+                        child += ` </tbody>
+                        </table>`
+                    return (child);
+                } else {
+                   let noChild = `
+                   <table class="table align-middle table-sm">
+                        <tr>
+                            <td align="center" colspan="8" class="text-secondary">
+                                This treatment/medication has not been charted
+                            </td>
+                        </tr>
+                    </table>
+                   `
+                   return (noChild)
+                }
     }
 
     modal.addEventListener('hidden.bs.modal', function () {
         treatmentTable.destroy()
     })
 
-
     treatmentTable.on('draw', function() {
-        console.log('reached')
+        const tableId = treatmentTable.table().container().id.split('_')[0]
         treatmentTable.rows().every(function () {
             let tr = $(this.node())
             let row = this.row(tr);
-            this.child(format(row.data())).show()
+            this.child(format(row.data(), tableId)).show()
         })
     })
     
@@ -192,5 +217,42 @@ const getNurseTreatmentByConsultation = (tableId, conId, modal) => {
     return treatmentTable
 }
 
+const getMedicationChartByPrescription = (tableId, prescriptionId, modal) => {
+    const medicationChartTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  {url: '/medicationchart/load/chart', data: {
+            'prescriptionId': prescriptionId,
+        }},
+        lengthChange: false,
+        searching: false,
+        orderMulti: false,
+        language: {
+            emptyTable: 'No medication has been charted'
+        },
+        columns: [
+            {data: "dose"},
+            {data: "scheduledTime"},
+            {data: "chartedBy"},
+            {data: "chartedAt"},
+            {
+                sortable: false,
+                data: row =>  `
+                <div class="d-flex flex-">
+                    <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+                `      
+            },
+        ]
+    });
 
-export {getWaitingTable, getAllPatientsVisitTable, getNurseTreatmentByConsultation}
+    modal.addEventListener('hidden.bs.modal', function () {
+        medicationChartTable.destroy()
+    })
+
+    return medicationChartTable
+}
+
+
+export {getWaitingTable, getAllPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription}

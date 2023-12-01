@@ -59,7 +59,7 @@ const getWaitingTable = (tableId) => {
             {data: "sponsor"},
             {data: "came"},
             {data: row => function () {
-                if (row.vitalSigns.length > 0){
+                if (row.vitalSigns > 0){
                     return `
                         <div class="d-flex flex-">
                             <button class=" btn btn-outline-primary border-0 vitalSignsBtn tooltip-test" title="Vitals Signs Added" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
@@ -201,7 +201,6 @@ const getLabTableByConsultation = (tableId, conId, modal, viewer) => {
             emptyTable: 'No lab investigation requested'
         },
         columns: [
-            // {data: "type"},
             {data: "requested"},
             {data: "resource"},
             {data: "dr"},
@@ -246,44 +245,64 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
         return row
         },
         columns: [
-            {data: row => `<i role="button" class="text-primary display-4 bi bi-prescription2"></i>`},
+            {data: row => `<i role="button" class="text-primary fs-5 bi bi-prescription2"></i>`},
             {data: "resource"},
             {data: "prescription"},
-            {data: "dr"},
+            {data: "prescribedBy"},
             {data: "prescribed"},
             {data: "billed"},
         ]
     });
 
-    function format(d) {
-        // `d` is the original data object for the row
-        return (
-           `<table class="table align-middle table-sm">
-           <thead >
-               <tr class="">
-                   <td> </td>
-                   <td class="text-secondary">Charted</td>
-                   <td class="text-secondary">By</td>
-                   <td class="text-secondary">Given</td>
-                   <td class="text-secondary">Nurse</td>
-                   <td class="text-secondary">Prescription</td>
-                   <td class="text-secondary">Dose</td>
-               </tr>
-           </thead>
-           <tbody>
-          <tr>
-                <td> </td>
-                <td class="text-secondary">${d.prescribed}</td>
-                <td class="text-secondary">${d.dr}</td>
-                <td class="text-secondary">${d.prescribed}</td>
-                <td class="text-secondary">${d.dr}</td>
-                <td class="text-secondary">${d.prescription}</td>
-                <td class="text-secondary">300mg</td>
-            </tr>
-           
-           </tbody>`
-        );
-    }
+    function format(data) {
+        const chart = data.chart
+                if (chart.length > 0) {
+                    let child = `<table class="table align-middle table-sm">
+                                            <thead >
+                                                <tr class="fw-semibold fs-italics">
+                                                    <td> </td>
+                                                    <td> </td>
+                                                    <td class="text-secondary">Charted At</td>
+                                                    <td class="text-secondary">Charted By</td>
+                                                    <td class="text-secondary">Dose</td>
+                                                    <td class="text-secondary">Dose Time</td>
+                                                    <td class="text-secondary">Dose Given</td>
+                                                    <td class="text-secondary">Time Given</td>
+                                                    <td class="text-secondary">Given By</td>
+                                                </tr>
+                                            </thead>
+                                        <tbody>`
+                            
+                                chart.forEach(line => {
+                                    child += `<tr>
+                                                <td> </td>
+                                                <td> </td>
+                                                <td class="text-secondary">${line.chartedAt}</td>                
+                                                <td class="text-secondary">${line.chartedBy}</td>                
+                                                <td class="text-secondary">${line.dosePrescribed}</td>
+                                                <td class="text-secondary">${line.scheduledTime}</td>
+                                                <td class="text-secondary">${line.givenDose}</td>
+                                                <td class="text-secondary">${line.timeGiven}</td>
+                                                <td class="text-secondary">${line.givenBy}</td>
+                                            </tr>   
+                                    `
+                                })
+                        child += ` </tbody>
+                        </table>`
+                    return (child);
+                } else {
+                   let noChild = `
+                   <table class="table align-middle table-sm">
+                        <tr>
+                            <td align="center" colspan="8" class="text-secondary">
+                                This treatment/medication has not been charted
+                            </td>
+                        </tr>
+                    </table>
+                   `
+                   return (noChild)
+                }
+            }
 
     modal.addEventListener('hidden.bs.modal', function () {
         treatmentTable.destroy()
@@ -294,23 +313,13 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
         let row = treatmentTable.row(tr);
      
         if (row.child.isShown()) {
-            // This row is already open - close it
             row.child.hide();
+            treatmentTable.draw()
         }
         else {
-            // Open this row
             row.child(format(row.data())).show();
         }
     });
-
-    treatmentTable.on('draw', function() {
-        console.log('reached')
-        treatmentTable.rows().every(function () {
-            let tr = $(this.node())
-            let row = this.row(tr);
-            this.child(format(row.data())).show()
-        })
-    })
 
     return treatmentTable
 }

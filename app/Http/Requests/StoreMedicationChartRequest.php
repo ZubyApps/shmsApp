@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Prescription;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreMedicationChartRequest extends FormRequest
@@ -11,7 +12,7 @@ class StoreMedicationChartRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,13 @@ class StoreMedicationChartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'prescriptionId'    => ['required', 'numeric', 'exists:'.Prescription::class.',id'],
+            'conId'             => ['required', 'numeric', 'exists:'.Prescription::class.',id'],
+            'visitId'           => ['required', 'numeric', 'exists:'.Prescription::class.',id'],
+            'dose'              => ['required'],
+            'days'              => ['required', 'numeric', 'min:1'],
+            'unit'              => ['required'],
+            'frequency'         => ['required']
         ];
     }
 }

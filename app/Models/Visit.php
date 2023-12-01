@@ -26,6 +26,11 @@ class Visit extends Model
         return $this->belongsTo(Patient::class);
     }
 
+    public function sponsor()
+    {
+        return $this->belongsTo(Sponsor::class);
+    }
+
     public function consultations() 
     {
         return $this->hasMany(Consultation::class);
@@ -34,5 +39,15 @@ class Visit extends Model
     public function vitalSigns() 
     {
         return $this->hasMany(VitalSigns::class);
+    }
+
+    public function prescriptions() 
+    {
+        return $this->hasMany(Prescription::class);
+    }
+
+    public function medicationCharts() 
+    {
+        return $this->hasMany(MedicationChart::class);
     }
 }

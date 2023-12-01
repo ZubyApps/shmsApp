@@ -21,6 +21,11 @@ class Consultation extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function updatedBy() 
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
     public function prescriptions() 
     {
         return $this->hasMany(Prescription::class);
