@@ -130,6 +130,7 @@ class VisitService
                 'doctor'            => $visit->doctor->username,
                 'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->icd11_diagnosis,
                 'sponsor'           => $visit->sponsor->name,
+                'vitalSigns'        => $visit->vitalSigns->count(),
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->admission_status,
                 'patientType'       => $visit->patient->patient_type,
 

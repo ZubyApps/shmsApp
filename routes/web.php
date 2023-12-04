@@ -107,6 +107,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('vitalsigns')->group(function () {
         Route::post('', [VitalSignsController::class, 'store']);
         Route::get('/load/visit_vitalsigns', [VitalSignsController::class, 'loadVitalSignsTableByVisit']);
+        Route::get('/load/visit_vitalsigns_chart', [VitalSignsController::class, 'loadVitalSignsChartByVisit']);
         Route::delete('/{vitalSigns}', [VitalSignsController::class, 'destroy']);
     });
 

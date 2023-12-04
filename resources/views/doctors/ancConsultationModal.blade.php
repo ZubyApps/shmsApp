@@ -40,6 +40,7 @@
                                                 <th>SpO2</th>
                                                 <th>Weight</th>
                                                 <th>Height</th>
+                                                <th>BMI</th>
                                                 <th>By</th>
                                                 <th></th>
                                             </tr>
@@ -49,7 +50,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="row" id="addVitalsignsDiv" {!! $isReview ? 'data-div="ancReview"' : 'data-div="anc"' !!}>
-                                        @include('vitalsigns.vitalsigns', ['disabled' => true])
+                                        @include('vitalsigns.vitalsigns', ['sf' =>  $isReview ? 'AncReview' : 'Anc' ])
                                         <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                     </div>
                                     <div class="d-flex justify-content-center">
@@ -72,15 +73,15 @@
                                         </x-form-div>
                                         <x-form-div class="col-xl-4">
                                             <x-input-span>LMP</x-input-span>
-                                            <x-form-input type="date" name="lmp"/>
+                                            <x-form-input type="date" name="lmp" id="lmp" data-lmp="anc{{ $isReview ? 'Review' : '' }}" />
                                         </x-form-div>
                                         <x-form-div class="col-xl-4">
                                             <x-input-span>EDD</x-input-span>
-                                            <x-form-input type="date" name="edd"/>
+                                            <x-form-input type="date" name="edd" id="edd" readonly/>
                                         </x-form-div>
                                         <x-form-div class="col-xl-4">
                                             <x-input-span>EGA</x-input-span>
-                                            <x-form-input name="ega"/>
+                                            <x-form-input name="ega" id="ega" readonly/>
                                         </x-form-div>
                                         <x-form-div class="col-xl-4">
                                             <x-input-span>Fetal Heart Rate</x-input-span>

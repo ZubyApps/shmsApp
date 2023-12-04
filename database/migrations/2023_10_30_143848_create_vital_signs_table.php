@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('pulse_rate')->nullable();
             $table->string('weight')->nullable();
             $table->string('height')->nullable();
+            $table->string('bmi')->nullable();
             $table->foreignIdFor(Visit::class);
             $table->foreignIdFor(User::class);
             $table->timestamps();

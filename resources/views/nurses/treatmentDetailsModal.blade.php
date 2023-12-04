@@ -31,6 +31,7 @@
                                             <th>SpO2</th>
                                             <th>Weight</th>
                                             <th>Height</th>
+                                            <th>BMI</th>
                                             <th>By</th>
                                             <th></th>
                                         </tr>
@@ -40,7 +41,7 @@
                             </div>
                             <div class="row">
                                 <div class="row" id="addVitalsignsDiv"  data-div="nurses">
-                                    @include('vitalsigns.vitalsigns', ['disabled' => false])
+                                    @include('vitalsigns.vitalsigns', ['sf' => 'nurseDetails'])
                                     <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                 </div>
                                 <div class="d-flex justify-content-center">

@@ -18,8 +18,8 @@ class DatatablesService
         $orderDir = $params['order'][0]['dir'];
 
         return new DataTableQueryParams(
-            (int) $params['start'],
-            (int) $params['length'],
+            (int) $params['start'] ?? 1,
+            (int) $params['length'] ?? 1,
             $orderBy ?? '',
             $orderDir,
             (string)$params['search']['value'],

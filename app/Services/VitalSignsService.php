@@ -31,6 +31,7 @@ class VitalSignsService
                 "pulse_rate"        => $data->pulseRate,
                 "weight"            => $data->weight,
                 "height"            => $data->height,
+                "bmi"               => $data->bmi,
         ]);
     }
 
@@ -45,6 +46,7 @@ class VitalSignsService
                 "pulse_rate"        => $data->pulseRate,
                 "weight"            => $data->weight,
                 "height"            => $data->height,
+                "bmi"               => $data->bmi,
         ]);
         return $vitalSigns;
     }
@@ -70,6 +72,14 @@ class VitalSignsService
        
     }
 
+    public function getVitalSignsChartData($data)
+    {
+        return $this->vitalSigns
+                    ->Where('visit_id', $data->visitId)
+                    ->orderBy('created_at', 'asc')
+                    ->get();
+    }
+
     public function getVitalSignsTransformer(): callable
     {
        return  function (VitalSigns $vitalSigns) {
@@ -82,6 +92,7 @@ class VitalSignsService
                 'pulseRate'         => $vitalSigns->pulse_rate,
                 'weight'            => $vitalSigns->weight,
                 'height'            => $vitalSigns->height,
+                'bmi'            => $vitalSigns->bmi,
                 'created_at'        => (new Carbon($vitalSigns->created_at))->format('d/m/y g:ia'),
                 'by'                => $vitalSigns->user->username,
             ];

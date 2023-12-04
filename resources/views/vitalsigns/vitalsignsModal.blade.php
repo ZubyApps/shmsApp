@@ -34,6 +34,7 @@
                                             <th>SpO2</th>
                                             <th>Weight</th>
                                             <th>Height</th>
+                                            <th>BMI</th>
                                             <th>By</th>
                                             <th></th>
                                         </tr>
@@ -41,9 +42,9 @@
                                     <tbody></tbody>
                                 </table>
                             </div>
-                            <div class="row">
+                            <div class="row {{ $isDoctor ? 'd-none' : '' }}">
                                 <div class="row" id="addVitalsignsDiv"  data-div="waiting">
-                                    @include('vitalsigns.vitalsigns', ['disabled' => false])
+                                    @include('vitalsigns.vitalsigns', ['sf' => 'nurses'])
                                     <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                 </div>
                                 <div class="d-flex justify-content-center">
@@ -55,7 +56,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="treatmentDiv">
+                        <div class="overflow-auto {{ !$isDoctor ? 'd-none' : '' }}">
+                            <div class="chart-container" style="position: relative; height:60vh; width:80vw">
+                                <canvas id="vitalsignsChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -30,19 +30,11 @@ const getAllPatientsVisitTable = (tableId) => {
                         </div>`
                     } else {
                         return `
-                        <div class="dropdown">
-                            <a class="text-black tooltip-test text-decoration-none" title="vital signs" data-bs-toggle="dropdown" href="" >
-                            <i class="btn btn-outline-primary bi bi-check-circle-fill">${row.vitalSigns}</i>
-                            </a>
-                                <ul class="dropdown-menu">
-                                <li>
-                                    <a role="button" class="dropdown-item vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                                    <i class="bi bi-plus-square-dotted text-primary"></i> Add
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                            <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
+                            </button>
+                        </div>`
                     }
                 }
             },
@@ -256,3 +248,18 @@ const getMedicationChartByPrescription = (tableId, prescriptionId, modal) => {
 
 
 export {getWaitingTable, getAllPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription}
+
+
+                        // <div class="dropdown">
+                        //     <a class="text-black tooltip-test text-decoration-none" title="vital signs" data-bs-toggle="dropdown" href="" >
+                        //     <i class="btn btn-outline-primary bi bi-check-circle-fill">${row.vitalSigns}</i>
+                        //     </a>
+                        //         <ul class="dropdown-menu">
+                        //         <li>
+                        //             <a role="button" class="dropdown-item vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                        //             <i class="bi bi-plus-square-dotted text-primary"></i> Add
+                        //             </a>
+                        //         </li>
+                        //     </ul>
+                        // </div>
+                        

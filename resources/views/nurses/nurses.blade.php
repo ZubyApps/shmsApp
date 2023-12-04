@@ -7,7 +7,7 @@
 @include('nurses.deliveryNotesModal', ['title' => 'New Delivery Note', 'isUpdate' => false, 'id' => 'newDeliveryNoteModal'])
 @include('nurses.deliveryNotesModal', ['title' => 'Update Delivery Note', 'isUpdate' => true, 'id' => 'updateDeliveryNoteModal'])
 @include('nurses.chartMedicationModal', ['title' => 'Chart Medication', 'isUpdate' => false, 'id' => 'chartMedicationModal'])
-@include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isUpdate' => false, 'id' => 'vitalsignsModal'])
+@include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isDoctor' => false, 'id' => 'vitalsignsModal', ])
 @include('nurses.giveMedicationModal')
 
 <div class="container p-1 mt-5">

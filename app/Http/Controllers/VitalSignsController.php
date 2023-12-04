@@ -62,6 +62,16 @@ class VitalSignsController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $vitalSigns, $params);  
     }
 
+    public function loadVitalSignsChartByVisit(Request $request)
+    {
+        $vitalSigns = $this->vitalSignsService->getVitalSignsChartData($request);
+        $loadTransformer = $this->vitalSignsService->getVitalSignsTransformer();
+
+        $outGoing = array_map($loadTransformer, (array)$vitalSigns->getIterator());
+
+        return response()->json($outGoing);
+    }
+
     /**
      * Show the form for editing the specified resource.
      */

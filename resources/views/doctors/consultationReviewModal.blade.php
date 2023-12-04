@@ -42,6 +42,7 @@
                                                 <th>SpO2</th>
                                                 <th>Weight</th>
                                                 <th>Height</th>
+                                                <th>BMI</th>
                                                 <th>By</th>
                                                 <th></th>
                                             </tr>
@@ -51,7 +52,7 @@
                                 </div>
                                 <div class="row d-none">
                                     <div class="row" id="addVitalsignsDiv" data-div="conReview">
-                                        @include('vitalsigns.vitalsigns', ['disabled' => false])
+                                        @include('vitalsigns.vitalsigns', ['sf' => 'conReview'])
                                         <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                     </div>
                                     <div class="d-flex justify-content-center">
@@ -60,6 +61,11 @@
                                             <i class="bi bi-plus-circle me-1"></i>
                                             add
                                         </button>
+                                    </div>
+                                </div>
+                                <div class="overflow-auto">
+                                    <div class="chart-container" style="position: relative; height:60vh; width:100vw">
+                                        <canvas id="vitalsignsChart"></canvas>
                                     </div>
                                 </div>
                             </div>

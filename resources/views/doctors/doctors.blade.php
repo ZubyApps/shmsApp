@@ -10,7 +10,7 @@
 @include('doctors.ancConsultationModal', ['title' => 'New ANC Review', 'isReview' => true, 'id' => 'ancReviewModal'])
 
 @include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isAnc' => false, 'id' => 'consultationReviewModal'])
-{{-- @include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isAnc' => true, 'id' => 'ancConsultationReviewModal']) --}}
+@include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isDoctor' => true, 'id' => 'vitalsignsModal'])
 
 @include('doctors.surgeryModal', ['title' => 'New Surgery', 'isUpdate' => false, 'id' => 'surgeryModal'])
 @include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
@@ -77,6 +77,7 @@
                                     <th>Doctor</th>
                                     <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
+                                    <th>Vitals</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>

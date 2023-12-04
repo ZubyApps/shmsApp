@@ -174,7 +174,7 @@ function openModals(modal, button, {id, ...data}) {
     modal.show()
 }
 
-function doctorsModalClosingTasks(event, modal, textareaHeight){
+function doctorsModalClosingTasks(event, modal, textareaHeight, table){
     if (!confirm('Have you saved? You will loose all unsaved data')) {
         event.preventDefault()
         return
@@ -190,6 +190,19 @@ function doctorsModalClosingTasks(event, modal, textareaHeight){
     for (let t = 0; t < modal._element.querySelector('#consultationDiv').getElementsByTagName("textarea").length; t++){
         modal._element.querySelector('#consultationDiv').getElementsByTagName("textarea")[t].setAttribute("style", "height:" + textareaHeight + "px;overflow-y:hidden;")
     }
+    
+    table.draw()
+}
+
+function addDays(date, days) {
+    const dateCopy = new Date(date);
+    dateCopy.setDate(date.getDate() + days);
+    return dateCopy;
+}
+
+function getWeeksDiff(today, lmp) {
+    const weeksCoverter = 1000 * 60 * 60 * 24 * 7;
+    return Math.round(Math.abs(today.getTime() - lmp.getTime())/weeksCoverter);
 }
     
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks }    
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff }    
