@@ -3,12 +3,12 @@ import { clearDivValues, clearValidationErrors, getOrdinal, getDivData } from ".
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
-import { getWaitingTable, getAllPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription } from "./tables/nursesTables";
+import { getWaitingTable, getAllPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable } from "./tables/nursesTables";
 import { getVitalSignsTableByVisit, getLabTableByConsultation } from "./tables/doctorsTables";
 
 window.addEventListener('DOMContentLoaded', function () {
-    const medicationCanvasTable = new Offcanvas(document.getElementById('offcanvasWithBothOptions'))
-    const waitingListCanvasTable = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
+    const upcomingMedicationsCanvas = new Offcanvas(document.getElementById('upcomingMedicationsoffcanvas'))
+    const waitingListCanvas = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
 
     const reviewDetailsModal = new Modal(document.getElementById('treatmentDetailsModal'))
     const newDeliveryNoteModal = new Modal(document.getElementById('newDeliveryNoteModal'))
@@ -26,7 +26,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const addVitalsignsBtn = document.querySelectorAll('#addVitalsignsBtn')
     const saveMedicationChartBtn = chartMedicationModal._element.querySelector('#saveMedicationChartBtn')
     const saveGivenMedicationBtn = giveMedicationModal._element.querySelector('.saveGivenMedicationBtn')
-
+    const treatmentDiv = document.querySelector('#treatmentDiv')
+    
     const heightEl                 = document.querySelectorAll('#height') 
 
     heightEl.forEach(heightInput => {
@@ -42,31 +43,35 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const blinkTable = document.querySelector('.thisRow')
 
-    const treatmentDiv = document.querySelector('#treatmentDiv')
 
     var colourBlink;
 
-    medicationCanvasTable._element.addEventListener('shown.bs.offcanvas', function () {
-        colourBlink = setInterval(toggleClass, 500)
-    })
+    // medicationCanvasTable._element.addEventListener('shown.bs.offcanvas', function () {
+    //     colourBlink = setInterval(toggleClass, 500)
+    // })
 
-    medicationCanvasTable._element.addEventListener('hidden.bs.offcanvas', function () {
-        clearInterval(colourBlink)
-    })
+    // medicationCanvasTable._element.addEventListener('hidden.bs.offcanvas', function () {
+    //     clearInterval(colourBlink)
+    // })
 
-    function toggleClass() {
-        blinkTable.classList.toggle('table-danger')
-    }
+    // function toggleClass() {
+    //     blinkTable.classList.toggle('table-danger')
+    // }
 
-    const allPatientsTable = getAllPatientsVisitTable('#allPatientsTable')
-    const waitingTable = getWaitingTable('#waitingTable')
+    const allPatientsTable = getAllPatientsVisitTable('allPatientsTable')
+    const waitingTable = getWaitingTable('waitingTable')
+    const upcomingMedicationsTable = getUpcomingMedicationsTable('upcomingMedicationsTable', upcomingMedicationsCanvas._element, 'offcanvas')
 
     waitingBtn.addEventListener('click', function () {
         waitingTable.draw()
     })
 
-    waitingListCanvasTable._element.addEventListener('hide.bs.offcanvas', function () {
+    waitingListCanvas._element.addEventListener('hide.bs.offcanvas', function () {
         allPatientsTable.draw()
+    })
+
+    upcomingMedicationsCanvas._element.addEventListener('show.bs.offcanvas', function () {
+        upcomingMedicationsTable.draw()
     })
 
     document.querySelector('#allPatientsTable').addEventListener('click', function (event) {
@@ -241,9 +246,21 @@ window.addEventListener('DOMContentLoaded', function () {
                             deleteBtn.removeAttribute('disabled')
                         })
                 }
-
             }
         })
+    })
+
+    document.querySelector('#upcomingMedicationsTable').addEventListener('click', function (event) {
+        const giveMedicationBtn = event.target.closest('#giveMedicationBtn')
+        if (giveMedicationBtn) {
+            saveGivenMedicationBtn.setAttribute('data-id', giveMedicationBtn.getAttribute('data-id'))
+            saveGivenMedicationBtn.setAttribute('data-table', giveMedicationBtn.getAttribute('data-table'))
+            giveMedicationModal._element.querySelector('#patient').value = giveMedicationBtn.getAttribute('data-patient')
+            giveMedicationModal._element.querySelector('#treatment').value = giveMedicationBtn.getAttribute('data-treatment')
+            giveMedicationModal._element.querySelector('#prescription').value = giveMedicationBtn.getAttribute('data-prescription')
+            giveMedicationModal._element.querySelector('#dose').value = giveMedicationBtn.getAttribute('data-dose')
+            giveMedicationModal.show()
+        }
     })
 
     // review consultation loops
@@ -255,6 +272,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const updateDeliveryNoteBtn = event.target.closest('#updateDeliveryNoteBtn')
         const saveWardAndBedBtn = event.target.closest('#saveWardAndBedBtn')
         const wardAndBedDiv = document.querySelectorAll('#wardAndBedDiv')
+        const deleteGivenBtn = event.target.closest('#deleteGivenBtn')
 
         if (collapseBtn) {
             const gotoDiv = document.querySelector(collapseBtn.getAttribute('data-goto'))
@@ -301,7 +319,35 @@ window.addEventListener('DOMContentLoaded', function () {
         if (giveMedicationBtn) {
             saveGivenMedicationBtn.setAttribute('data-id', giveMedicationBtn.getAttribute('data-id'))
             saveGivenMedicationBtn.setAttribute('data-table', giveMedicationBtn.getAttribute('data-table'))
+            giveMedicationModal._element.querySelector('#patient').value = giveMedicationBtn.getAttribute('data-patient')
+            giveMedicationModal._element.querySelector('#treatment').value = giveMedicationBtn.getAttribute('data-treatment')
+            giveMedicationModal._element.querySelector('#prescription').value = giveMedicationBtn.getAttribute('data-prescription')
+            giveMedicationModal._element.querySelector('#dose').value = giveMedicationBtn.getAttribute('data-dose')
             giveMedicationModal.show()
+        }
+
+        if (deleteGivenBtn){
+            deleteGivenBtn.setAttribute('disabled', 'disabled')
+            const treatmentTableId = deleteGivenBtn.getAttribute('data-table')
+            if (confirm('Are you sure you want to delete this Information?')) {
+                const id = deleteGivenBtn.getAttribute('data-id')
+                http.patch(`/medicationchart/removegiven/${id}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            // if ($.fn.DataTable.isDataTable('#' + table.id)) {
+                            //     $('#' + table.id).dataTable().fnDraw()
+                            // }
+                            if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {
+                                $('#' + treatmentTableId).dataTable().fnDraw()
+                            }
+                        }
+                        deleteGivenBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                        deleteGivenBtn.removeAttribute('disabled')
+                    })
+            }
         }
 
         if (newDeliveryNoteBtn) {

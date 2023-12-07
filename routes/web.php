@@ -92,7 +92,10 @@ Route::middleware('auth')->group(function () {
         Route::post('', [VisitController::class, 'store']);
         Route::get('/load/waiting', [VisitController::class, 'loadWaitingTable']);
         Route::post('/consult/{visit}', [VisitController::class, 'consult']);
-        Route::get('/load/consulted', [VisitController::class, 'loadVisits']);
+        Route::get('/load/consulted/regular', [VisitController::class, 'loadAllRegularVisits']);
+        Route::get('/load/consulted/regular/user', [VisitController::class, 'loadUserRegularVisits']);
+        Route::get('/load/consulted/anc', [VisitController::class, 'loadAllAncVisits']);
+        Route::get('/load/consulted/anc/user', [VisitController::class, 'loadUserAncVisits']);
         Route::get('/load/consulted/nurses', [VisitController::class, 'loadVisitsNurses']);
         Route::delete('/{visit}', [VisitController::class, 'destroy']);
     })->name('Visits');
@@ -182,12 +185,13 @@ Route::middleware('auth')->group(function () {
         Route::get('', [MedicationChartController::class, 'index'])->name('MedicationChart');
         Route::post('', [MedicationChartController::class, 'store']);
         Route::get('/load/chart', [MedicationChartController::class, 'loadMedicationChartByPrescription']);
-        Route::get('/load/lab', [MedicationChartController::class, 'loadLabTable']);
+        Route::get('/load/upcoming', [MedicationChartController::class, 'loadUpcomingMedications']);
         Route::get('/load/treatment', [MedicationChartController::class, 'loadTreatmentTable']);
         Route::get('/list', [MedicationChartController::class, 'list']);
         Route::get('/{medicationChart}', [MedicationChartController::class, 'edit']);
         Route::delete('/{medicationChart}', [MedicationChartController::class, 'destroy']);
-        Route::patch('/{medicationChart}', [MedicationChartController::class, 'update']);
+        Route::patch('/removegiven/{medicationChart}', [MedicationChartController::class, 'removeGivenData']);
+        Route::patch('/{medicationChart}', [MedicationChartController::class, 'saveGivenData']);
     })->name('MedicationChart');
 });
 

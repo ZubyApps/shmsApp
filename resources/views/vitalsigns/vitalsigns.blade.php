@@ -2,7 +2,7 @@
 <div class="row" id="{{ $sf }}">
     <x-form-div>
         <x-input-span id="temperatureLabel">Temparature</x-input-span>
-        <x-form-input name="temperature" id="temperature" data-maska="##.#C"/>
+        <x-form-input name="temperature" id="temperature" data-maska="##.#°C"/>
     </x-form-div>
     <x-form-div>
         <x-input-span id="bloodPressureLabel">Blood Pressure</x-input-span>
@@ -29,7 +29,7 @@
         <x-form-input type="text" name="height" id="height" class="height" data-id="{{ $sf }}"/>
     </x-form-div>
     <x-form-div>
-        <x-input-span id="bmiLabel">BMI</x-input-span>
+        <x-input-span id="bmiLabel">BMI (Healthy range: 18.5-24.9)</x-input-span>
         <x-form-input type="text" name="bmi" id="bmi" value="" class="bmi"/>
     </x-form-div>
 </div>

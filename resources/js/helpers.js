@@ -202,7 +202,12 @@ function addDays(date, days) {
 
 function getWeeksDiff(today, lmp) {
     const weeksCoverter = 1000 * 60 * 60 * 24 * 7;
-    return Math.round(Math.abs(today.getTime() - lmp.getTime())/weeksCoverter);
+    return (Math.abs(today.getTime() - lmp.getTime())/weeksCoverter).toFixed(1);
+}
+
+function getWeeksModulus(today, lmp) {
+    const daysCoverter = 1000 * 60 * 60 * 24;
+    return Math.round(Math.abs(today.getTime() - lmp.getTime())/daysCoverter);
 }
     
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff }    
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus }    

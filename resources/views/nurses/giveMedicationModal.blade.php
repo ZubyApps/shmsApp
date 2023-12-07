@@ -1,5 +1,5 @@
 
-<div class="modal fade modal-md" id="giveMedicationModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade modal-lg" id="giveMedicationModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -7,6 +7,26 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="mb-2 form-control">
+                    <div class="row">
+                        <x-form-div class="col-xl-6">
+                            <x-input-span>Patient</x-input-span>
+                            <x-form-input name="patient" value="" id="patient"/>
+                        </x-form-div>
+                        <x-form-div class="col-xl-6">
+                            <x-input-span>Treatment</x-input-span>
+                            <x-form-input name="treatmemt" value="" id="treatment"/>
+                        </x-form-div>
+                        <x-form-div class="col-xl-6">
+                            <x-input-span>Prescription</x-input-span>
+                            <x-form-input name="prescription" value="" id="prescription"/>
+                        </x-form-div>
+                        <x-form-div class="col-xl-6">
+                            <x-input-span>Dose</x-input-span>
+                            <x-form-input name="Dose" value="" id="dose"/>
+                        </x-form-div>
+                    </div>
+                </div>
                 <div class="mb-2 form-control" id="giveMedicationDiv">
                     <x-form-div class="col-xl-12">
                         <x-input-span>Dose Given</x-input-span>
@@ -24,6 +44,10 @@
                             <option value="tab">tab</option>
                             <option value="cap">cap</option>
                         </select>
+                    </x-form-div>
+                    <x-form-div class="col-xl-12">
+                        <x-input-span>Notes</x-input-span>
+                        <x-form-input name="note" id="note"/>
                     </x-form-div>
                 </div>
             </div>

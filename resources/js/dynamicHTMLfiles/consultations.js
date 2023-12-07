@@ -86,7 +86,7 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
                             ${ viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}
                             ${investigations(line)}
                             ${viewer == '' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
-                            ${updateInvestigationAndManagement(length, iteration, line)}
+                            ${!viewer ? updateInvestigationAndManagement(length, iteration, line) : ''}
                             <div class="extraInfoDiv" >
                                 ${length > iteration ? '' : 
                                 `<div class="d-flex justify-content-end my-2">

@@ -1,10 +1,10 @@
 import { Modal, Collapse, Toast, Offcanvas } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, addDays, getWeeksDiff} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
-import { getAllPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation} from "./tables/doctorsTables"
+import { getAllRegularPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation, getAllAncPatientsVisitTable, getUserRegularPatientsVisitTable, getUserAncPatientsVisitTable} from "./tables/doctorstables"
 import { getVitalsignsChartByVisit } from "./charts/vitalsignsCharts"
 import jQuery from "jquery";
 import $ from 'jquery';
@@ -48,7 +48,6 @@ window.addEventListener('DOMContentLoaded', function () {
     heightEl.forEach(heightInput => {
         heightInput.addEventListener('input',  function (e){
             const div = heightInput.parentElement.parentElement.parentElement
-            console.log(heightInput.dataset.id, div.id)
             if (heightInput.dataset.id == div.id){
                 div.querySelector('#bmi').value = (div.querySelector('#weight').value.split('k')[0]/div.querySelector('#height').value.split('m')[0]**2).toFixed(2)
             }
@@ -62,7 +61,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     if (lmp.value){
                         const lmpDate = new Date(lmp.value) 
                         div.querySelector('#edd').value = addDays(lmpDate, 280).toISOString().split('T')[0]
-                        div.querySelector('#ega').value = getWeeksDiff(new Date(), lmpDate) + ' Weeks'
+                        div.querySelector('#ega').value = String(getWeeksDiff(new Date(), lmpDate)).split('.')[0] + 'W' + ' ' + getWeeksModulus(new Date, lmpDate)%7 + 'D'
                     }                    
                 }
             })
@@ -89,105 +88,110 @@ window.addEventListener('DOMContentLoaded', function () {
     ECT.Handler.configure(mySettings, myCallbacks)
 
     //visit Table and consultations that are active
-    const allPatientsVisitTable = getAllPatientsVisitTable('#allPatientsVisitTable')
+    const allRegularPatientsVisitTable = getAllRegularPatientsVisitTable('#allRegularPatientsVisitTable')
+    const userRegularPatientsVisitTable = getUserRegularPatientsVisitTable('#userRegularPatientsVisitTable')
+    const allAncPatientsVisitTable = getAllAncPatientsVisitTable('#allAncPatientsVisitTable')
+    const userAncPatientsVisitTable = getUserAncPatientsVisitTable('#userAncPatientsVisitTable')
     const waitingTable = getWaitingTable('#waitingTable')
     
-    document.querySelector('#allPatientsVisitTable').addEventListener('click', function (event) {
-        const consultationReviewBtn    = event.target.closest('.consultationReviewBtn')
-        const vitalsignsBtn             = event.target.closest('.vitalSignsBtn')
-
-        if (consultationReviewBtn) {
-            consultationReviewBtn.setAttribute('disabled', 'disabled')
-            const visitId       = consultationReviewBtn.getAttribute('data-id')
-            const patientType   = consultationReviewBtn.getAttribute('data-patientType')
-            reviewPatientbtn.setAttribute('data-id', visitId)
-            reviewPatientbtn.setAttribute('data-patientType', patientType)
-            newReviewModal._element.querySelector('#saveConsultationBtn').setAttribute('data-id', visitId)
-            
-            specialistConsultationbtn.setAttribute('data-id', visitId)
-            specialistConsultationbtn.setAttribute('data-patientType', patientType)
-            specialistConsultationModal._element.querySelector('#saveConsultationBtn').setAttribute('data-patientType', patientType)
-
-            reviewAncPatientbtn.setAttribute('data-id', visitId)
-            reviewAncPatientbtn.setAttribute('data-patientType', patientType)
-            ancReviewModal._element.querySelector('#saveConsultationBtn').setAttribute('data-patientType', patientType)
-
-            http.get(`/consultation/consultations/${visitId}`)
-            .then((response) => {
-                if (response.status >= 200 || response.status <= 300) {
-                    let iteration = 0
-                    let count = 0
-
-                    const consultations = response.data.consultations.data
-                    const patientBio = response.data.bio
-
-                    openModals(consultationReviewModal, consultationReviewDiv, patientBio)
-
-                    if (patientType === 'ANC') {
-                        reviewAncPatientbtn.classList.remove('d-none')
-                        reviewPatientbtn.classList.add('d-none') 
-                        specialistConsultationbtn.classList.add('d-none')
-                    } else {
-                        reviewAncPatientbtn.classList.add('d-none')
-                        reviewPatientbtn.classList.remove('d-none')
-                        specialistConsultationbtn.classList.remove('d-none')
-                    }
-                        
-                    consultations.forEach(line => {
-                        iteration++
-                        
-                        iteration > 1 ? count++ : ''
-            
+    document.querySelectorAll('#allRegularPatientsVisitTable, #userRegularPatientsVisitTable, #allAncPatientsVisitTable, #userAncPatientsVisitTable').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const consultationReviewBtn    = event.target.closest('.consultationReviewBtn')
+            const vitalsignsBtn             = event.target.closest('.vitalSignsBtn')
+    
+            if (consultationReviewBtn) {
+                consultationReviewBtn.setAttribute('disabled', 'disabled')
+                const visitId       = consultationReviewBtn.getAttribute('data-id')
+                const patientType   = consultationReviewBtn.getAttribute('data-patientType')
+                reviewPatientbtn.setAttribute('data-id', visitId)
+                reviewPatientbtn.setAttribute('data-patientType', patientType)
+                newReviewModal._element.querySelector('#saveConsultationBtn').setAttribute('data-id', visitId)
+                
+                specialistConsultationbtn.setAttribute('data-id', visitId)
+                specialistConsultationbtn.setAttribute('data-patientType', patientType)
+                specialistConsultationModal._element.querySelector('#saveConsultationBtn').setAttribute('data-patientType', patientType)
+    
+                reviewAncPatientbtn.setAttribute('data-id', visitId)
+                reviewAncPatientbtn.setAttribute('data-patientType', patientType)
+                ancReviewModal._element.querySelector('#saveConsultationBtn').setAttribute('data-patientType', patientType)
+    
+                http.get(`/consultation/consultations/${visitId}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        let iteration = 0
+                        let count = 0
+    
+                        const consultations = response.data.consultations.data
+                        const patientBio = response.data.bio
+    
+                        openModals(consultationReviewModal, consultationReviewDiv, patientBio)
+    
                         if (patientType === 'ANC') {
-                            consultationReviewDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultations.length, line, '')
+                            reviewAncPatientbtn.classList.remove('d-none')
+                            reviewPatientbtn.classList.add('d-none') 
+                            specialistConsultationbtn.classList.add('d-none')
                         } else {
-                            consultationReviewDiv.innerHTML += regularReviewDetails(iteration, getOrdinal, count, consultations.length, line, '')
+                            reviewAncPatientbtn.classList.add('d-none')
+                            reviewPatientbtn.classList.remove('d-none')
+                            specialistConsultationbtn.classList.remove('d-none')
                         }
-                    })
-
-                    getVitalSignsTableByVisit('#vitalSignsConsultationReview', visitId, consultationReviewModal)
-                    http.get('/vitalsigns/load/visit_vitalsigns_chart',{params: {  visitId: visitId }})
-                    .then((response) => {
-                        getVitalsignsChartByVisit(vitalsignsChartReview, response, consultationReviewModal)
-                    })
-                    .catch((error) => {
-                        alert(error)
-                        console.log(error)
-                    })
-                    consultationReviewModal.show()
-                }
-                consultationReviewBtn.removeAttribute('disabled')
-            })
-            .catch((error) => {
-                consultationReviewBtn.removeAttribute('disabled')
-                alert(error)
-                console.log(error)
-            })
-        }
-
-        if (vitalsignsBtn) {
-            vitalsignsBtn.setAttribute('disabled', 'disabled')
-            const tableId = '#'+vitalsignsModal._element.querySelector('.vitalsTable').id
-            const visitId = vitalsignsBtn.getAttribute('data-id')
-            vitalsignsModal._element.querySelector('#patient').value = vitalsignsBtn.getAttribute('data-patient')
-            vitalsignsModal._element.querySelector('#sponsor').value = vitalsignsBtn.getAttribute('data-sponsor')
-            vitalsignsModal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
-
-            getVitalSignsTableByVisit(tableId, visitId, vitalsignsModal)
-
-            http.get('/vitalsigns/load/visit_vitalsigns_chart',{params: {  visitId: visitId }})
-            .then((response) => {
-                getVitalsignsChartByVisit(vitalsignsChart, response, vitalsignsModal)
-                vitalsignsBtn.removeAttribute('disabled')
-            })
-            .catch((error) => {
-                vitalsignsBtn.removeAttribute('disabled')
-                alert(error)
-                console.log(error)
-            })
-
-            vitalsignsModal.show()
-        }
+                            
+                        consultations.forEach(line => {
+                            iteration++
+                            
+                            iteration > 1 ? count++ : ''
+                
+                            if (patientType === 'ANC') {
+                                consultationReviewDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultations.length, line, '')
+                            } else {
+                                consultationReviewDiv.innerHTML += regularReviewDetails(iteration, getOrdinal, count, consultations.length, line, '')
+                            }
+                        })
+    
+                        getVitalSignsTableByVisit('#vitalSignsConsultationReview', visitId, consultationReviewModal)
+                        http.get('/vitalsigns/load/visit_vitalsigns_chart',{params: {  visitId: visitId }})
+                        .then((response) => {
+                            getVitalsignsChartByVisit(vitalsignsChartReview, response, consultationReviewModal)
+                        })
+                        .catch((error) => {
+                            alert(error)
+                            console.log(error)
+                        })
+                        consultationReviewModal.show()
+                    }
+                    consultationReviewBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    consultationReviewBtn.removeAttribute('disabled')
+                    alert(error)
+                    console.log(error)
+                })
+            }
+    
+            if (vitalsignsBtn) {
+                vitalsignsBtn.setAttribute('disabled', 'disabled')
+                const tableId = '#'+vitalsignsModal._element.querySelector('.vitalsTable').id
+                const visitId = vitalsignsBtn.getAttribute('data-id')
+                vitalsignsModal._element.querySelector('#patient').value = vitalsignsBtn.getAttribute('data-patient')
+                vitalsignsModal._element.querySelector('#sponsor').value = vitalsignsBtn.getAttribute('data-sponsor')
+                vitalsignsModal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
+    
+                getVitalSignsTableByVisit(tableId, visitId, vitalsignsModal)
+    
+                http.get('/vitalsigns/load/visit_vitalsigns_chart',{params: {  visitId: visitId }})
+                .then((response) => {
+                    getVitalsignsChartByVisit(vitalsignsChart, response, vitalsignsModal)
+                    vitalsignsBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    vitalsignsBtn.removeAttribute('disabled')
+                    alert(error)
+                    console.log(error)
+                })
+    
+                vitalsignsModal.show()
+            }
+        })
     })
 
     document.querySelector('#waitingTable').addEventListener('click', function (event) {
@@ -242,9 +246,9 @@ window.addEventListener('DOMContentLoaded', function () {
     // Show waiting table
     waitingBtn.addEventListener('click', function () {waitingTable.draw()})
 
-    waitingListOffcanvas._element.addEventListener('hide.bs.offcanvas', () => {allPatientsVisitTable.draw()})
+    waitingListOffcanvas._element.addEventListener('hide.bs.offcanvas', () => {allRegularPatientsVisitTable.draw()})
 
-    vitalsignsModal._element.addEventListener('hide.bs.modal', () => {allPatientsVisitTable.draw()})
+    vitalsignsModal._element.addEventListener('hide.bs.modal', () => {allRegularPatientsVisitTable.draw()})
 
     // manipulating all known clinical info div
     updateKnownClinicalInfoBtn.forEach(updateBtn => {
@@ -386,7 +390,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             new Toast(div.querySelector('#saveConsultationToast'), {delay:2000}).show()
                             getPrescriptionTableByConsultation(tableId, response.data.id, modal)
                             waitingTable.draw()
-                            allPatientsVisitTable.draw()
+                            allRegularPatientsVisitTable.draw()
                         }
                     })
                     .catch((error) => {
@@ -476,7 +480,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     if (response.status >= 200 || response.status <= 300) {
                         openModals(newReviewModal, newReviewModal._element.querySelector('#saveConsultationBtn'), response.data)
                         getVitalSignsTableByVisit('#vitalSignsTableReview', visitId, newReviewModal)
-                        allPatientsVisitTable.draw()
+                        allRegularPatientsVisitTable.draw()
                     }
                     reviewPatientbtn.removeAttribute('disabled')
                 })
@@ -498,7 +502,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     if (response.status >= 200 || response.status <= 300) {
                         openModals(specialistConsultationModal, specialistConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                         getVitalSignsTableByVisit('#vitalSignsTableSpecialist', visitId, specialistConsultationModal)
-                        allPatientsVisitTable.draw()
+                        allRegularPatientsVisitTable.draw()
                     }
                     specialistConsultationbtn.removeAttribute('disabled')
                 })
@@ -520,7 +524,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     if (response.status >= 200 || response.status <= 300) {
                         openModals(ancReviewModal, ancReviewModal._element.querySelector('#saveConsultationBtn'), response.data)
                         getVitalSignsTableByVisit('#vitalSignsTableAncReview', visitId, ancReviewModal)
-                        allPatientsVisitTable.draw()
+                        allRegularPatientsVisitTable.draw()
                     }
                     reviewAncPatientbtn.removeAttribute('disabled')
                 })
@@ -533,27 +537,27 @@ window.addEventListener('DOMContentLoaded', function () {
 
      // tasks to run when closing new consultation modal
      newConsultationModal._element.addEventListener('hide.bs.modal', function(event) {
-        doctorsModalClosingTasks(event, newConsultationModal, textareaHeight, allPatientsVisitTable)
+        doctorsModalClosingTasks(event, newConsultationModal, textareaHeight, allRegularPatientsVisitTable)
      })
 
     // tasks to run when closing new review modal 
     newReviewModal._element.addEventListener('hide.bs.modal', function (event) {
-        doctorsModalClosingTasks(event, newReviewModal, textareaHeight, allPatientsVisitTable)
+        doctorsModalClosingTasks(event, newReviewModal, textareaHeight, allRegularPatientsVisitTable)
     })
 
     // tasks to run when closing specialist consultation modal
     specialistConsultationModal._element.addEventListener('hide.bs.modal', function (event) {
-        doctorsModalClosingTasks(event, specialistConsultationModal, textareaHeight, allPatientsVisitTable)
+        doctorsModalClosingTasks(event, specialistConsultationModal, textareaHeight, allRegularPatientsVisitTable)
     })
 
     // tasks to run when closing Anc consultation modal consultation modal
     ancConsultationModal._element.addEventListener('hide.bs.modal', function (event) {
-        doctorsModalClosingTasks(event, ancConsultationModal, textareaHeight, allPatientsVisitTable)
+        doctorsModalClosingTasks(event, ancConsultationModal, textareaHeight, allRegularPatientsVisitTable)
     })
 
     // tasks to run when closing Anc review modal consultation modal
     ancReviewModal._element.addEventListener('hide.bs.modal', function (event) {
-        doctorsModalClosingTasks(event, ancReviewModal, textareaHeight, allPatientsVisitTable)
+        doctorsModalClosingTasks(event, ancReviewModal, textareaHeight, allRegularPatientsVisitTable)
     })
 
     // review consultation loops
@@ -733,7 +737,7 @@ window.addEventListener('DOMContentLoaded', function () {
             let collapseable = new Collapse(el, {toggle: false})
             collapseable.hide()
         })
-        allPatientsVisitTable.draw()
+        allRegularPatientsVisitTable.draw()
     })
 })
 

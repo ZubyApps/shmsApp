@@ -6,7 +6,7 @@ import DataTable from 'datatables.net-bs5';
 
 
 const getAllPatientsVisitTable = (tableId) => {
-    return new DataTable(tableId, {
+    return new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  '/visits/load/consulted/nurses',
         orderMulti: true,
@@ -56,7 +56,7 @@ const getAllPatientsVisitTable = (tableId) => {
 }
 
 const getWaitingTable = (tableId) => {
-    return new DataTable(tableId, {
+    return new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  '/visits/load/waiting',
         orderMulti: true,
@@ -152,6 +152,7 @@ const getNurseTreatmentByConsultation = (tableId, conId, modal) => {
                                                     <td class="text-secondary">Dose Given</td>
                                                     <td class="text-secondary">Time Given</td>
                                                     <td class="text-secondary">Given By</td>
+                                                    <td class="text-secondary">Note</td>
                                                     <td class="text-secondary">Action</td>
                                                 </tr>
                                             </thead>
@@ -167,11 +168,19 @@ const getNurseTreatmentByConsultation = (tableId, conId, modal) => {
                                                 <td class="text-secondary">${line.givenDose}</td>
                                                 <td class="text-secondary">${line.timeGiven}</td>
                                                 <td class="text-secondary">${line.givenBy}</td>
-                                                <td class="text-secondary"><div class="d-flex flex-">
-                                                <button type="button" id="giveMedicationBtn" class="btn btn-primary giveMedicationBtn tooltip-test" title="give medication" data-id="${line.id}" data-table="${tableId}">
-                                                    Give
-                                                </button>
-                                            </div></td>
+                                                <td class="text-secondary">${line.note}</td>
+                                                <td class="text-secondary">
+                                                    <div class="d-flex flex-">
+                                                        ${line.status ? `
+                                                        <button type="button" id="deleteGivenBtn" class="btn btn-primary deleteGivenBtn tooltip-test" title="remove record" data-id="${line.id}" data-table="${tableId}">
+                                                            </i> <i class="bi bi-x-circle-fill deleteGivenBtn"></i>
+                                                        </button>
+                                                        ` : `
+                                                        <button type="button" id="giveMedicationBtn" class="btn btn-primary giveMedicationBtn tooltip-test" title="give medication" data-id="${line.id}" data-table="${tableId}" data-dose="${line.dosePrescribed}" data-prescription="${data.prescription}" data-treatment="${data.resource}" data-patient="${line.patient}">
+                                                        ${line.doseCount}<i class="bi bi-clipboard-plus"></i>${line.count}
+                                                        </button>` }
+                                                    </div>
+                                                </td>
                                             </tr>   
                                     `
                                 })
@@ -247,7 +256,51 @@ const getMedicationChartByPrescription = (tableId, prescriptionId, modal) => {
 }
 
 
-export {getWaitingTable, getAllPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription}
+const getUpcomingMedicationsTable = (tableId, bsComponent, type) => {
+    const allMedicationChartTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax: '/medicationchart/load/upcoming',
+        orderMulti: false,
+        lengthMenu:[20, 40, 60, 80, 100],
+        language: {
+            emptyTable: 'No medication has been charted'
+        },
+        columns: [
+            {data: "patient"},
+            {data: row => () => {
+                return row.status == 'Inpatient' ? 
+                `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
+                `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
+            } },
+            {data: "ward"},
+            {data: "treatment"},
+            {data: "prescription"},
+            {data: "chartedBy"},
+            {data: "date"},
+            {data: "time"},
+            {
+                sortable: false,
+                data: row =>  `
+                <div class="d-flex flex-">
+                    <button type="submit" id="giveMedicationBtn" class="ms-1 btn btn-primary giveMedicationBtn tooltip-test" data-table="${tableId}" title="give medication" data-id="${ row.id}" data-dose="${row.dose}" data-prescription="${row.prescription}" data-patient="${row.patient}" data-treatment="${row.treatment}">
+                    ${row.doseCount}<i class="bi bi-clipboard-plus"></i>${row.count}
+                    </button>
+                </div>
+                `      
+            },
+        ]
+    });
+
+    // bsComponent.addEventListener(`hidden.bs.${type}`, function () {
+    //     console.log('called')
+    //     allMedicationChartTable.draw()
+    // })
+
+    return allMedicationChartTable
+}
+
+
+export {getWaitingTable, getAllPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable}
 
 
                         // <div class="dropdown">

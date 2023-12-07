@@ -158,6 +158,7 @@ class PrescriptionService
         return $this->prescription
                     ->where('consultation_id', $data->conId)
                     ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'Medication')
+                    ->orWhereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'Medical Service')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -180,10 +181,15 @@ class PrescriptionService
                     'chartedAt'         => (new Carbon($medicationChart->created_at))->format('D/m/y g:ia') ?? '',
                     'chartedBy'         => $medicationChart->user->username ?? '',
                     'dosePrescribed'    => $medicationChart->dose_prescribed ?? '',
-                    'scheduledTime'     => (new Carbon($medicationChart->scheduled_time))->format('g:ia D dS') ?? '',
+                    'scheduledTime'     => (new Carbon($medicationChart->scheduled_time))->format('g:ia D jS') ?? '',
                     'givenDose'         => $medicationChart->dose_given ?? '',
-                    'timeGiven'         => $medicationChart->time_given ? (new Carbon($medicationChart->time_given))->format('g:ia D dS') : '',
+                    'timeGiven'         => $medicationChart->time_given ? (new Carbon($medicationChart->time_given))->format('g:ia D jS') : '',
                     'givenBy'           => $medicationChart->givenBy->username ?? '',
+                    'note'              => $medicationChart->note ?? '',
+                    'status'            => $medicationChart->status ?? '',
+                    'doseCount'         => $medicationChart->dose_count,
+                    'count'             => $medicationChart::where('prescription_id', $medicationChart->prescription->id)->count(),
+                    'patient'           => $medicationChart->visit->patient->card_no .' '. $medicationChart->visit->patient->first_name .' '. $medicationChart->visit->patient->middle_name .' '. $medicationChart->visit->patient->last_name ?? ''
                 ]),
             ];
          };

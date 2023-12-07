@@ -22,8 +22,10 @@ return new class extends Migration
             $table->string('scheduled_time');
             $table->string('dose_given')->nullable();
             $table->dateTime('time_given')->nullable();
+            $table->string('note')->nullable();
             $table->foreignIdFor(User::class, 'given_by')->nullable();
             $table->boolean('status')->default(false);
+            $table->integer('dose_count');
             $table->foreignIdFor(User::class);
             $table->foreignIdFor(Consultation::class);
             $table->foreignIdFor(Visit::class);

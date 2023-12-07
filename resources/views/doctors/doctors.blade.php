@@ -55,21 +55,66 @@
         <div>
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <button class="nav-link active" id="nav-allPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-allPatients" 
-                    type="button" role="tab" aria-controls="nav-allPatients"  aria-selected="true">All Patients Consultations</button>
+                    
+                    <button class="nav-link active" id="nav-yourRegularPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-yourRegularPatients"
+                    type="button" role="tab" aria-controls="nav-yourRegularPatients" aria-selected="false">Your Regular Patients</button>
 
-                    <button class="nav-link" id="nav-yourPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-yourPatients"
-                        type="button" role="tab" aria-controls="nav-yourPatients" aria-selected="false">Your Patients Consultations</button>
+                    <button class="nav-link" id="nav-yourAncPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-yourAncPatients"
+                    type="button" role="tab" aria-controls="nav-yourAncPatients" aria-selected="false">Your ANC Patients</button>
+                    
+                    <button class="nav-link" id="nav-allRegularPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-allRegularPatients" 
+                    type="button" role="tab" aria-controls="nav-allRegularPatients"  aria-selected="true">All Regular Patients</button>
 
-                    {{-- <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
-                        type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Sponsors</button> --}}
+                    <button class="nav-link" id="nav-allAncPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-allAncPatients" 
+                    type="button" role="tab" aria-controls="nav-allAncPatients"  aria-selected="true">All ANC Patients</button>
+                    
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
-                <!-- patients table -->
-                <div class="tab-pane fade show active" id="nav-allPatients" aria-labelledby="nav-allPatients-tab" role="tabpanel"  tabindex="0">
+                <!-- your regular patients table -->
+                <div class="tab-pane fade show active"  id="nav-yourRegularPatients" aria-labelledby="nav-yourRegularPatients-tab" role="tabpanel"  tabindex="0">
                     <div class="py-4">
-                        <table id="allPatientsVisitTable"  class="table table-hover align-middle table-sm">
+                        <table id="userRegularPatientsVisitTable" class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Seen</th>
+                                    <th>Patient</th>
+                                    <th>Diagnosis</th>
+                                    <th>Sponsor</th>
+                                    <th>Vitals</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- your anc patients table -->
+                <div class="tab-pane fade active"  id="nav-yourAncPatients" aria-labelledby="nav-yourAncPatients-tab" role="tabpanel"  tabindex="0">
+                    <div class="py-4">
+                        <table id="userAncPatientsVisitTable" class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Seen</th>
+                                    <th>Patient</th>
+                                    <th>Diagnosis</th>
+                                    <th>Sponsor</th>
+                                    <th>Vitals</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!--all regular patients table -->
+                <div class="tab-pane fade active" id="nav-allRegularPatients" aria-labelledby="nav-allRegularPatients-tab" role="tabpanel"   tabindex="0">
+                    <div class="py-4">
+                        <table id="allRegularPatientsVisitTable"  class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
                                     <th>Seen</th>
@@ -86,16 +131,19 @@
                         </table>
                     </div>
                 </div>
-                <!-- active table -->
-                <div class="tab-pane fade" id="nav-yourPatients" role="tabpanel" aria-labelledby="nav-yourPatients-tab" tabindex="0">
+
+                <!--all regular patients table -->
+                <div class="tab-pane fade active" id="nav-allAncPatients" aria-labelledby="nav-allAncPatients-tab" role="tabpanel"   tabindex="0">
                     <div class="py-4">
-                        <table id="yourPatientsVisitTable" class="table table-hover table-sm">
+                        <table id="allAncPatientsVisitTable"  class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
+                                    <th>Seen</th>
                                     <th>Patient</th>
-                                    <th>Diagnosis</th>
+                                    <th>Doctor</th>
+                                    <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
+                                    <th>Vitals</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -104,26 +152,7 @@
                         </table>
                     </div>
                 </div>
-                <!-- sponsors table -->
-                {{-- <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab"
-                    tabindex="0">
-                    <div class="py-4 ">
-                        <table id="sponsorsTable" class="table table-hover align-middle table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Sponsor Name</th>
-                                    <th>Payment Category</th>
-                                    <th>Sponsor Category</th>
-                                    <th>Payment Matrix</th>
-                                    <th>Balance Required?</th>
-                                    <th>Registration Bill</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div> --}}
+                
             </div>
         </div>
     </div>

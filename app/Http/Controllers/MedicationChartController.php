@@ -55,6 +55,17 @@ class MedicationChartController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $medicationCharts, $params);  
     }
 
+    public function loadUpcomingMedications(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $upcomingMedications = $this->medicationChartService->getUpcomingMedications($params, $request);
+       
+        $transformer = $this->medicationChartService->upcomingMedicationsTransformer();
+
+        return $this->datatablesService->datatableResponse($transformer, $upcomingMedications, $params);  
+    }
+
     /**
      * Display the specified resource.
      */
@@ -74,9 +85,14 @@ class MedicationChartController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMedicationChartRequest $request, MedicationChart $medicationChart)
+    public function saveGivenData(UpdateMedicationChartRequest $request, MedicationChart $medicationChart)
     {
         return $this->medicationChartService->updateRecord($request, $medicationChart, $request->user());
+    }
+
+    public function removeGivenData(MedicationChart $medicationChart)
+    {
+        return $this->medicationChartService->removeRecord($medicationChart);
     }
 
     /**
