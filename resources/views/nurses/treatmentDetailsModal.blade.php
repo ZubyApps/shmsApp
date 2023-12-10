@@ -40,7 +40,7 @@
                                 </table>
                             </div>
                             <div class="row">
-                                <div class="row" id="addVitalsignsDiv"  data-div="nurses">
+                                <div id="addVitalsignsDiv"  data-div="nurses">
                                     @include('vitalsigns.vitalsigns', ['sf' => 'nurseDetails'])
                                     <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                 </div>

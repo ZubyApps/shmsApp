@@ -174,24 +174,22 @@ function openModals(modal, button, {id, ...data}) {
     modal.show()
 }
 
-function doctorsModalClosingTasks(event, modal, textareaHeight, table){
+function doctorsModalClosingTasks(event, modal, textareaHeight){
     if (!confirm('Have you saved? You will loose all unsaved data')) {
         event.preventDefault()
         return
     }
-    clearDivValues(modal._element.querySelector('.investigationAndManagementDiv'))
-    clearDivValues(modal._element.querySelector('#consultationDiv'))
-    clearValidationErrors(modal._element.querySelector('#consultationDiv'))
-    modal._element.querySelector('#updateKnownClinicalInfoBtn').innerHTML = `Update`
-    modal._element.querySelector('#saveConsultationBtn').removeAttribute('disabled')
-    modal._element.querySelector('.investigationAndManagementDiv').classList.add('d-none')
-    modal._element.querySelectorAll('.resourceList').forEach(list => clearItemsList(list))
-    removeAttributeLoop(querySelectAllTags(modal._element.querySelector('#consultationDiv'), ['input, select, textarea']), 'disabled')
-    for (let t = 0; t < modal._element.querySelector('#consultationDiv').getElementsByTagName("textarea").length; t++){
-        modal._element.querySelector('#consultationDiv').getElementsByTagName("textarea")[t].setAttribute("style", "height:" + textareaHeight + "px;overflow-y:hidden;")
+    clearDivValues(modal.querySelector('.investigationAndManagementDiv'))
+    clearDivValues(modal.querySelector('#consultationDiv'))
+    clearValidationErrors(modal.querySelector('#consultationDiv'))
+    modal.querySelector('#updateKnownClinicalInfoBtn').innerHTML = `Update`
+    modal.querySelector('#saveConsultationBtn').removeAttribute('disabled')
+    modal.querySelector('.investigationAndManagementDiv').classList.add('d-none')
+    modal.querySelectorAll('.resourceList').forEach(list => clearItemsList(list))
+    removeAttributeLoop(querySelectAllTags(modal.querySelector('#consultationDiv'), ['input, select, textarea']), 'disabled')
+    for (let t = 0; t < modal.querySelector('#consultationDiv').getElementsByTagName("textarea").length; t++){
+        modal.querySelector('#consultationDiv').getElementsByTagName("textarea")[t].setAttribute("style", "height:" + textareaHeight + "px;overflow-y:hidden;")
     }
-    
-    table.draw()
 }
 
 function addDays(date, days) {
@@ -209,5 +207,18 @@ function getWeeksModulus(today, lmp) {
     const daysCoverter = 1000 * 60 * 60 * 24;
     return Math.round(Math.abs(today.getTime() - lmp.getTime())/daysCoverter);
 }
+
+function loadingSpinners() {
+    return `<div class="spinner-grow spinner-grow-sm text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="spinner-grow spinner-grow-sm text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="spinner-grow spinner-grow-sm text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        `
+}
     
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus }    
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners }    

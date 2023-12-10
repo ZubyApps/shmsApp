@@ -84,20 +84,43 @@
     <div>
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <button class="nav-link active" id="nav-allPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-allPatients" 
-                    type="button" role="tab" aria-controls="nav-allPatients" aria-selected="true">All Patients</button>
+                <button class="nav-link active" id="nav-allRegularPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-allRegularPatients" 
+                    type="button" role="tab" aria-controls="nav-allRegularPatients" aria-selected="true">All Regular Patients</button>
+
+                <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients"
+                    type="button" role="tab" aria-controls="nav-inPatients" aria-selected="false">Inpatients</button>
 
                 <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients"
                     type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button>
-
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
             <!-- patients table -->
-            <div class="tab-pane fade show active" id="nav-allPatients" role="tabpanel"
-                aria-labelledby="nav-allPatients-tab" tabindex="0">
+            <div class="tab-pane fade show active" id="nav-allRegularPatients" role="tabpanel"
+                aria-labelledby="nav-allRegularPatients-tab" tabindex="0">
                 <div class="py-4">
-                    <table id="allPatientsTable" class="table table-hover align-middle table-sm">
+                    <table id="allRegularPatientsTable" class="table table-hover align-middle table-sm">
+                        <thead>
+                            <tr>
+                                <th>Seen</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Current Diagnosis</th>
+                                <th>Sponsor</th>
+                                <th>Vitals</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- inpatients table -->
+            <div class="tab-pane fade" id="nav-inPatients" role="tabpanel" aria-labelledby="nav-inPatients-tab"
+                tabindex="0">
+                <div class="py-4 ">
+                    <table id="inPatientsVisitTable" class="table table-hover align-middle table-sm">
                         <thead>
                             <tr>
                                 <th>Seen</th>
@@ -118,7 +141,7 @@
             <div class="tab-pane fade" id="nav-ancPatients" role="tabpanel" aria-labelledby="nav-ancPatients-tab"
                 tabindex="0">
                 <div class="py-4 ">
-                    <table id="ancPatientsTable" class="table table-hover align-middle table-sm">
+                    <table id="ancPatientsVisitTable" class="table table-hover align-middle table-sm">
                         <thead>
                             <tr>
                                 <th>Seen</th>
@@ -126,6 +149,7 @@
                                 <th>Doctor</th>
                                 <th>Current Diagnosis</th>
                                 <th>Sponsor</th>
+                                <th>Vitals</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -138,59 +162,3 @@
     </div>
 </div>
 @endsection
-
-
-{{-- <tr class="fw-semibold thisRow">
-    <td class="fw-semibold">SH21/4012 Joesphine Ene Odeh</td>
-    <td>PW 2</td>
-    <td>Iv Cipro</td>
-    <td>300mg 12hrly 2/7</td>
-    <td>Nurse Patience</td>
-    <td>11:45pm</td>
-    <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
-</tr>
-<tr class="fw-semibold table-warning">
-    <td>SH23/7865 Patrick Abiodun Aso</td>
-    <td>Mw Bed 1</td>
-    <td>Iv Flagyl</td>
-    <td>250mg 8hrly 2/7</td>
-    <td>Nurse Maureen</td>
-    <td>12:00am</td>
-    <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
-</tr>
-<tr>
-    <td>SH23/7865 Patrick Abiodun Aso</td>
-    <td>Mw Bed 1</td>
-    <td>Iv Flagyl</td>
-    <td>250mg 8hrly 2/7</td>
-    <td>Nurse Maureen</td>
-    <td>12:00am</td>
-    <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
-</tr>
-<tr>
-    <td>SH23/7865 Patrick Abiodun Aso</td>
-    <td>Mw Bed 1</td>
-    <td>Iv Flagyl</td>
-    <td>250mg 8hrly 2/7</td>
-    <td>Nurse Maureen</td>
-    <td>12:00am</td>
-    <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
-</tr>
-<tr>
-    <td>SH23/7865 Patrick Abiodun Aso</td>
-    <td>Mw Bed 1</td>
-    <td>Iv Flagyl</td>
-    <td>250mg 8hrly 2/7</td>
-    <td>Nurse Maureen</td>
-    <td>12:00am</td>
-    <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
-</tr>
-<tr>
-    <td>SH23/7865 Patrick Abiodun Aso</td>
-    <td>Mw Bed 1</td>
-    <td>Iv Flagyl</td>
-    <td>250mg 8hrly 2/7</td>
-    <td>Nurse Maureen</td>
-    <td>12:00am</td>
-    <td><button class="btn btn-outline-primary giveMedicationBtn"><i class="bi bi-clipboard-plus"></i></button></td>
-</tr> --}}

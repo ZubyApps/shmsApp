@@ -4,7 +4,7 @@ import "@whoicd/icd11ect/style.css"
 import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
-import { getAllRegularPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation, getAllAncPatientsVisitTable, getUserRegularPatientsVisitTable, getUserAncPatientsVisitTable} from "./tables/doctorstables"
+import { getAllPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation, getInpatientsVisitTable, getUserRegularPatientsVisitTable, getUserAncPatientsVisitTable} from "./tables/doctorstables"
 import { getVitalsignsChartByVisit } from "./charts/vitalsignsCharts"
 import jQuery from "jquery";
 import $ from 'jquery';
@@ -40,10 +40,10 @@ window.addEventListener('DOMContentLoaded', function () {
     const addVitalsignsBtn                  = document.querySelectorAll('#addVitalsignsBtn')
     const saveConsultationBtn               = document.querySelectorAll('#saveConsultationBtn')
     const waitingBtn                        = document.querySelector('#waitingBtn')
+
+    const [userRegularPatientsTab, userAncPatientsTab, allPatientsTab, inPatientsTab]  = [document.querySelector('#nav-yourRegularPatients-tab'), document.querySelector('#nav-yourAncPatients-tab'), document.querySelector('#nav-allPatients-tab'), document.querySelector('#nav-inPatients-tab')]
     
-    const resourceInput                     = document.querySelectorAll('#resource')
-    const heightEl                          = document.querySelectorAll('#height') 
-    const lmpEl                             = document.querySelectorAll('#lmp') 
+    const [resourceInput, heightEl, lmpEl]  = [document.querySelectorAll('#resource'), document.querySelectorAll('#height'), document.querySelectorAll('#lmp')]
 
     heightEl.forEach(heightInput => {
         heightInput.addEventListener('input',  function (e){
@@ -87,14 +87,40 @@ window.addEventListener('DOMContentLoaded', function () {
     // ICD11 handler
     ECT.Handler.configure(mySettings, myCallbacks)
 
-    //visit Table and consultations that are active
-    const allRegularPatientsVisitTable = getAllRegularPatientsVisitTable('#allRegularPatientsVisitTable')
+    //visit Tables and consultations that are active
+    let allPatientsVisitTable, inPatientsVisitTable, userAncPatientsVisitTable 
+
     const userRegularPatientsVisitTable = getUserRegularPatientsVisitTable('#userRegularPatientsVisitTable')
-    const allAncPatientsVisitTable = getAllAncPatientsVisitTable('#allAncPatientsVisitTable')
-    const userAncPatientsVisitTable = getUserAncPatientsVisitTable('#userAncPatientsVisitTable')
     const waitingTable = getWaitingTable('#waitingTable')
+
+    userRegularPatientsTab.addEventListener('click', function() {userRegularPatientsVisitTable.draw()})
+
+    userAncPatientsTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#userAncPatientsVisitTable' )){
+            $('#userAncPatientsVisitTable').dataTable().fnDraw()
+        } else {
+            userAncPatientsVisitTable = getUserAncPatientsVisitTable('#userAncPatientsVisitTable')
+        }
+    })
+
+    allPatientsTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#allPatientsVisitTable' )){
+            $('#allPatientsVisitTable').dataTable().fnDraw()
+        } else {
+            inPatientsVisitTable = getAllPatientsVisitTable('#allPatientsVisitTable')
+        }
+    })    
+
+    inPatientsTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#inPatientsVisitTable' )){
+            $('#inPatientsVisitTable').dataTable().fnDraw()
+        } else {
+            inPatientsVisitTable = getInpatientsVisitTable('#inPatientsVisitTable')
+        }
+    })
     
-    document.querySelectorAll('#allRegularPatientsVisitTable, #userRegularPatientsVisitTable, #allAncPatientsVisitTable, #userAncPatientsVisitTable').forEach(table => {
+    
+    document.querySelectorAll('#allPatientsVisitTable, #userRegularPatientsVisitTable, #inPatientsVisitTable, #userAncPatientsVisitTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const consultationReviewBtn    = event.target.closest('.consultationReviewBtn')
             const vitalsignsBtn             = event.target.closest('.vitalSignsBtn')
@@ -154,7 +180,6 @@ window.addEventListener('DOMContentLoaded', function () {
                             getVitalsignsChartByVisit(vitalsignsChartReview, response, consultationReviewModal)
                         })
                         .catch((error) => {
-                            alert(error)
                             console.log(error)
                         })
                         consultationReviewModal.show()
@@ -163,7 +188,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch((error) => {
                     consultationReviewBtn.removeAttribute('disabled')
-                    alert(error)
                     console.log(error)
                 })
             }
@@ -185,7 +209,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch((error) => {
                     vitalsignsBtn.removeAttribute('disabled')
-                    alert(error)
                     console.log(error)
                 })
     
@@ -213,14 +236,12 @@ window.addEventListener('DOMContentLoaded', function () {
                             openModals(newConsultationModal, newConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                             getVitalSignsTableByVisit('#vitalSignsTableNew', visitId, newConsultationModal)
                         }
-                        waitingTable.draw()
                         waitingListOffcanvas.hide()
                     }
                     consultBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {
                     consultBtn.removeAttribute('disabled')
-                    alert(error)
                     console.log(error)
                 })
         }
@@ -237,7 +258,6 @@ window.addEventListener('DOMContentLoaded', function () {
                     removeBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {
-                    alert(error)
                 })
             }  
         }
@@ -246,18 +266,26 @@ window.addEventListener('DOMContentLoaded', function () {
     // Show waiting table
     waitingBtn.addEventListener('click', function () {waitingTable.draw()})
 
-    waitingListOffcanvas._element.addEventListener('hide.bs.offcanvas', () => {allRegularPatientsVisitTable.draw()})
+    waitingListOffcanvas._element.addEventListener('hide.bs.offcanvas', () => {
+        userRegularPatientsVisitTable.draw()
+        userAncPatientsVisitTable ? userAncPatientsVisitTable.draw() : ''
+        allPatientsVisitTable ? allPatientsVisitTable.draw() : ''
+        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+    })
 
-    vitalsignsModal._element.addEventListener('hide.bs.modal', () => {allRegularPatientsVisitTable.draw()})
+    vitalsignsModal._element.addEventListener('hide.bs.modal', () => {
+        userRegularPatientsVisitTable.draw()
+        allPatientsVisitTable ? allPatientsVisitTable.draw() : ''
+        userAncPatientsVisitTable ? userAncPatientsVisitTable.draw() : ''
+        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+    })
 
     // manipulating all known clinical info div
     updateKnownClinicalInfoBtn.forEach(updateBtn => {
         updateBtn.addEventListener('click', function () {
             knownClinicalInfoDiv.forEach(div => {
-                
                 if (div.dataset.div === updateBtn.dataset.btn) {
-                    toggleAttributeLoop(querySelectAllTags(div, ['input, select, textarea']), 'disabled', '')
-                    
+                    toggleAttributeLoop(querySelectAllTags(div, ['input, select, textarea']), 'disabled', '')        
                     updateBtn.textContent === "Done" ? updateBtn.innerHTML = `Update` : updateBtn.textContent = "Done"
                     if (updateBtn.textContent === 'Update'){
                         const patient = updateBtn.dataset.id
@@ -309,7 +337,6 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#vitalSignsTableNew, #vitalSignsTableSpecialist, #vitalSignsTableAnc, #vitalSignsTableAncReview, #vitalSignsTableReview').forEach(table => {
         table.addEventListener('click', function (event) {
             const deleteBtn  = event.target.closest('.deleteBtn')
-    
             if (deleteBtn){
                 deleteBtn.setAttribute('disabled', 'disabled')
                 if (confirm('Are you sure you want to delete this record?')) {
@@ -319,12 +346,12 @@ window.addEventListener('DOMContentLoaded', function () {
                         if (response.status >= 200 || response.status <= 300){
                             if ($.fn.DataTable.isDataTable( '#'+table.id )){
                             $('#'+table.id).dataTable().fnDraw()
-                        }
+                            }
                         }
                         deleteBtn.removeAttribute('disabled')
                     })
                     .catch((error) => {
-                        alert(error)
+                        console.log(error)
                         deleteBtn.removeAttribute('disabled')
                     })
                 }
@@ -336,7 +363,6 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#prescriptionTablenew, #prescriptionTablespecialist, #prescriptionTableanc, #prescriptionTableancReview').forEach(table => {
         table.addEventListener('click', function (event) {
             const deleteBtn  = event.target.closest('.deleteBtn')
-    
             if (deleteBtn){
                 deleteBtn.setAttribute('disabled', 'disabled')
                 if (confirm('Are you sure you want to delete this prescription?')) {
@@ -346,7 +372,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             if (response.status >= 200 || response.status <= 300){
                                 if ($.fn.DataTable.isDataTable('#'+table.id)){
                                 $('#'+table.id).dataTable().fnDraw()
-                            }
+                                }
                             }
                             deleteBtn.removeAttribute('disabled')
                         })
@@ -390,11 +416,14 @@ window.addEventListener('DOMContentLoaded', function () {
                             new Toast(div.querySelector('#saveConsultationToast'), {delay:2000}).show()
                             getPrescriptionTableByConsultation(tableId, response.data.id, modal)
                             waitingTable.draw()
-                            allRegularPatientsVisitTable.draw()
+                            userRegularPatientsVisitTable.draw()
+                            userAncPatientsVisitTable ? userAncPatientsVisitTable.draw() : ''
+                            allPatientsVisitTable ? allPatientsVisitTable.draw() : ''
+                            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
                         }
                     })
                     .catch((error) => {
-                        alert(error)
+                        console.log(error)
                         saveBtn.removeAttribute('disabled')
                     })
                 }
@@ -419,7 +448,6 @@ window.addEventListener('DOMContentLoaded', function () {
                     const selectedOption = datalistEl.options.namedItem(input.value)
                     if (selectedOption){
                         if (selectedOption.getAttribute('data-cat') == 'Medication'){
-                            console.log('this too')
                             div.querySelector('.qty').classList.add('d-none')
                             div.querySelector('.pres').classList.remove('d-none')
                         } else {
@@ -468,96 +496,44 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     // REVIEW CONSULTATION MODAL CODE
-
-    // open review patient modal
-    reviewPatientbtn.addEventListener('click', function () {
-        reviewPatientbtn.setAttribute('disabled', 'disabled')
-            const visitId       = reviewPatientbtn.getAttribute('data-id')
-            const patientType   = reviewPatientbtn.getAttribute('data-patientType')
-    
-            http.post(`/visits/consult/${ visitId }`, {patientType})
-                .then((response) => {
-                    if (response.status >= 200 || response.status <= 300) {
-                        openModals(newReviewModal, newReviewModal._element.querySelector('#saveConsultationBtn'), response.data)
-                        getVitalSignsTableByVisit('#vitalSignsTableReview', visitId, newReviewModal)
-                        allRegularPatientsVisitTable.draw()
-                    }
-                    reviewPatientbtn.removeAttribute('disabled')
-                })
-                .catch((error) => {
-                    reviewPatientbtn.removeAttribute('disabled')
-                    alert(error)
-                })
-        consultationReviewModal.hide()
+    //open, review,specialist review and anc review modals
+    consultationReviewModal._element.querySelectorAll('#reviewPatientBtn, #reviewAncPatientBtn, #specialistConsultationBtn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            btn.setAttribute('disabled', 'disabled')
+            let modal
+                const [visitId, patientType] = [btn.getAttribute('data-id'), btn.getAttribute('data-patientType')]
+                btn.id == 'reviewPatientBtn' ? modal = newReviewModal :
+                btn.id == 'specialistConsultationBtn' ? modal = specialistConsultationModal :
+                btn.id == 'reviewAncPatientBtn' ? modal = ancReviewModal : ''
+            
+                http.post(`/visits/consult/${ visitId }`, {patientType})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            openModals(modal, modal._element.querySelector('#saveConsultationBtn'), response.data)
+                            getVitalSignsTableByVisit('#'+modal._element.querySelector('.vitalsTable').id, visitId, newReviewModal)
+                            userRegularPatientsVisitTable.draw()
+                            userAncPatientsVisitTable ? userAncPatientsVisitTable.draw() : ''
+                            allPatientsVisitTable ? allPatientsVisitTable.draw() : ''
+                            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+                        }
+                        btn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        btn.removeAttribute('disabled')
+                        alert(error)
+                    })
+            consultationReviewModal.hide()
+        })
     })
 
-    // open specialist consultation modal
-    specialistConsultationbtn.addEventListener('click', function () {
-        specialistConsultationbtn.setAttribute('disabled', 'disabled')
-            const visitId       = specialistConsultationbtn.getAttribute('data-id')
-            const patientType   = specialistConsultationbtn.getAttribute('data-patientType')
-    
-            http.post(`/visits/consult/${ visitId }`, {patientType})
-                .then((response) => {
-                    if (response.status >= 200 || response.status <= 300) {
-                        openModals(specialistConsultationModal, specialistConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
-                        getVitalSignsTableByVisit('#vitalSignsTableSpecialist', visitId, specialistConsultationModal)
-                        allRegularPatientsVisitTable.draw()
-                    }
-                    specialistConsultationbtn.removeAttribute('disabled')
-                })
-                .catch((error) => {
-                    specialistConsultationbtn.removeAttribute('disabled')
-                    alert(error)
-                })
-        consultationReviewModal.hide()
-    })
-
-     // open specialist consultation modal
-     reviewAncPatientbtn.addEventListener('click', function () {
-        reviewAncPatientbtn.setAttribute('disabled', 'disabled')
-            const visitId       = reviewAncPatientbtn.getAttribute('data-id')
-            const patientType   = reviewAncPatientbtn.getAttribute('data-patientType')
-    
-            http.post(`/visits/consult/${ visitId }`, {patientType})
-                .then((response) => {
-                    if (response.status >= 200 || response.status <= 300) {
-                        openModals(ancReviewModal, ancReviewModal._element.querySelector('#saveConsultationBtn'), response.data)
-                        getVitalSignsTableByVisit('#vitalSignsTableAncReview', visitId, ancReviewModal)
-                        allRegularPatientsVisitTable.draw()
-                    }
-                    reviewAncPatientbtn.removeAttribute('disabled')
-                })
-                .catch((error) => {
-                    reviewAncPatientbtn.removeAttribute('disabled')
-                    alert(error)
-                })
-        consultationReviewModal.hide()
-    })
-
-     // tasks to run when closing new consultation modal
-     newConsultationModal._element.addEventListener('hide.bs.modal', function(event) {
-        doctorsModalClosingTasks(event, newConsultationModal, textareaHeight, allRegularPatientsVisitTable)
-     })
-
-    // tasks to run when closing new review modal 
-    newReviewModal._element.addEventListener('hide.bs.modal', function (event) {
-        doctorsModalClosingTasks(event, newReviewModal, textareaHeight, allRegularPatientsVisitTable)
-    })
-
-    // tasks to run when closing specialist consultation modal
-    specialistConsultationModal._element.addEventListener('hide.bs.modal', function (event) {
-        doctorsModalClosingTasks(event, specialistConsultationModal, textareaHeight, allRegularPatientsVisitTable)
-    })
-
-    // tasks to run when closing Anc consultation modal consultation modal
-    ancConsultationModal._element.addEventListener('hide.bs.modal', function (event) {
-        doctorsModalClosingTasks(event, ancConsultationModal, textareaHeight, allRegularPatientsVisitTable)
-    })
-
-    // tasks to run when closing Anc review modal consultation modal
-    ancReviewModal._element.addEventListener('hide.bs.modal', function (event) {
-        doctorsModalClosingTasks(event, ancReviewModal, textareaHeight, allRegularPatientsVisitTable)
+    document.querySelectorAll('#newConsultationModal, #ancConsultationModal, #ancReviewModal, #newReviewModal, #specialistConsultationModal').forEach(modal => {
+        modal.addEventListener('hide.bs.modal', function(event) {
+            doctorsModalClosingTasks(event, modal, textareaHeight)
+            userRegularPatientsVisitTable.draw()
+            userAncPatientsVisitTable ? userAncPatientsVisitTable.draw() : ''
+            allPatientsVisitTable ? allPatientsVisitTable.draw() : ''
+            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+         })
     })
 
     // review consultation loops
@@ -568,7 +544,6 @@ window.addEventListener('DOMContentLoaded', function () {
         const updateResourceListBtn                 = event.target.closest('#updateResourceListBtn')
         const surgeryBtn                            = event.target.closest('#surgeryBtn')
         const fileBtn                               = event.target.closest('#fileBtn')
-        const deliveryBtn                           = event.target.closest('#deliveryBtn')
         const collapseBtn                           = event.target.closest('.collapseBtn')
         const deleteBtn                             = event.target.closest('.deleteBtn')
         const resourceInput                         = consultationReviewDiv.querySelector('.resource')
@@ -662,62 +637,59 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (deleteConsultationBtn) {
             deleteConsultationBtn.setAttribute('disabled', 'disabled')
-                if (confirm('If you delete this consultation you cannot get it back! Are you sure you want to delete?')) {
-                    const id = deleteConsultationBtn.getAttribute('data-id')
-                    http.delete(`/consultation/${id}`)
-                        .then((response) => {
-                            if (response.status >= 200 || response.status <= 300){
-                                
-                                consultationReviewModal.hide()
-                            }
-                            deleteConsultationBtn.removeAttribute('disabled')
-                        })
-                        .catch((error) => {
-                            alert(error)
-                            deleteConsultationBtn.removeAttribute('disabled')
-                        })
+            if (confirm('If you delete this consultation you cannot get it back! Are you sure you want to delete?')) {
+                const id = deleteConsultationBtn.getAttribute('data-id')
+                http.delete(`/consultation/${id}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){   
+                            consultationReviewModal.hide()
+                        }
+                        deleteConsultationBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                        deleteConsultationBtn.removeAttribute('disabled')
+                    })
             }
         }
 
         if (addInvestigationAndManagmentBtn) {
-                updateInvestigationAndManagmentDiv.forEach(div => {
-                    
-                    if (addInvestigationAndManagmentBtn.dataset.btn === div.dataset.div) {
-                        addInvestigationAndManagmentBtn.setAttribute('disabled', 'disabled')
+            updateInvestigationAndManagmentDiv.forEach(div => {
+                if (addInvestigationAndManagmentBtn.dataset.btn === div.dataset.div) {
+                    addInvestigationAndManagmentBtn.setAttribute('disabled', 'disabled')
 
-                        const resourceValues = getSelectedResourceValues(div, div.querySelector('.resource'), div.querySelector(`#resourceList${div.dataset.div}`))
-                        const conId = addInvestigationAndManagmentBtn.dataset.conid
-                        const visitId = addInvestigationAndManagmentBtn.dataset.visitid
-                        const divPrescriptionTableId = '#'+div.querySelector('.prescriptionTable').id
-                        const investigationTableId = '#investigationTable'+conId
-                        const medicationTableId = '#treatmentTable'+conId
-                        let data = {...getDivData(div), ...resourceValues, conId, visitId}
-    
-                        http.post('prescription', {...data}, {"html": div})
-                        .then((response) => {
-                            if (response.status >= 200 || response.status <= 300) {
-                                new Toast(div.querySelector('#saveUpdateInvestigationAndManagementToast'), {delay:2000}).show()
-                                clearDivValues(div)
-                                clearValidationErrors(div)
-                            }
-                            if ($.fn.DataTable.isDataTable( divPrescriptionTableId )){
-                                $(divPrescriptionTableId).dataTable().fnDraw()
-                            }
-                            if ($.fn.DataTable.isDataTable( investigationTableId )){
-                                $(investigationTableId).dataTable().fnDraw()
-                            }
-                            if ($.fn.DataTable.isDataTable( medicationTableId )){
-                                $(medicationTableId).dataTable().fnDraw()
-                            }
-                            addInvestigationAndManagmentBtn.removeAttribute('disabled')
-                        })
-                        .catch((error) => {
-                            console.log(error)
-                            addInvestigationAndManagmentBtn.removeAttribute('disabled')
-                        }) 
-                    }
-                })
-            
+                    const resourceValues = getSelectedResourceValues(div, div.querySelector('.resource'), div.querySelector(`#resourceList${div.dataset.div}`))
+                    const conId = addInvestigationAndManagmentBtn.dataset.conid
+                    const visitId = addInvestigationAndManagmentBtn.dataset.visitid
+                    const divPrescriptionTableId = '#'+div.querySelector('.prescriptionTable').id
+                    const investigationTableId = '#investigationTable'+conId
+                    const medicationTableId = '#treatmentTable'+conId
+                    let data = {...getDivData(div), ...resourceValues, conId, visitId}
+
+                    http.post('prescription', {...data}, {"html": div})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            new Toast(div.querySelector('#saveUpdateInvestigationAndManagementToast'), {delay:2000}).show()
+                            clearDivValues(div)
+                            clearValidationErrors(div)
+                        }
+                        if ($.fn.DataTable.isDataTable( divPrescriptionTableId )){
+                            $(divPrescriptionTableId).dataTable().fnDraw()
+                        }
+                        if ($.fn.DataTable.isDataTable( investigationTableId )){
+                            $(investigationTableId).dataTable().fnDraw()
+                        }
+                        if ($.fn.DataTable.isDataTable( medicationTableId )){
+                            $(medicationTableId).dataTable().fnDraw()
+                        }
+                        addInvestigationAndManagmentBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        addInvestigationAndManagmentBtn.removeAttribute('disabled')
+                    }) 
+                }
+            })  
         }
 
         if (surgeryBtn) {
@@ -732,12 +704,10 @@ window.addEventListener('DOMContentLoaded', function () {
     // tasks to run when closing review consultation modal
     consultationReviewModal._element.addEventListener('hide.bs.modal', function(event) {
         consultationReviewDiv.innerHTML = ''
-        
-        document.querySelectorAll('#collapseReviewDiv').forEach(el => {
-            let collapseable = new Collapse(el, {toggle: false})
-            collapseable.hide()
-        })
-        allRegularPatientsVisitTable.draw()
+        userRegularPatientsVisitTable.draw()
+        userAncPatientsVisitTable ? userAncPatientsVisitTable.draw() : ''
+        allPatientsVisitTable ? allPatientsVisitTable.draw() : ''
+        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
     })
 })
 
@@ -764,9 +734,7 @@ function openModals(modal, button, {id, visitId, ...data}) {
 
     modal._element.querySelector('#updateKnownClinicalInfoBtn').setAttribute('data-id', id)
 
-    // if (modal._element.id == 'newConsultationModal' || modal._element.id == 'ancConsultationModal') {
         modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
-    // }
     
     if (modal._element.id !== 'consultationReviewModal') {
         button.setAttribute('data-id', visitId)

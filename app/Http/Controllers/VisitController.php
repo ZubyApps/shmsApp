@@ -55,11 +55,11 @@ class VisitController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 
-    public function loadAllRegularVisits(Request $request)
+    public function loadAllVisits(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $visits = $this->visitService->getPaginatedRegularConsultedVisits($params);
+        $visits = $this->visitService->getPaginatedAllConsultedVisits($params);
        
         $loadTransformer = $this->visitService->getRegularConsultedVisitsTransformer();
 
@@ -77,13 +77,13 @@ class VisitController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 
-    public function loadAllAncVisits(Request $request)
+    public function loadInpatientsVisits(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $visits = $this->visitService->getPaginatedAncConsultedVisits($params);
+        $visits = $this->visitService->getPaginatedInpatientVisits($params);
        
-        $loadTransformer = $this->visitService->getAncConsultedVisitsTransformer();
+        $loadTransformer = $this->visitService->getInpatientsVisitsTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
@@ -99,11 +99,22 @@ class VisitController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 
-    public function loadVisitsNurses(Request $request)
+    public function loadRegularVisitsNurses(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $visits = $this->visitService->getPaginatedConsultedVisitsNurses($params);
+        $visits = $this->visitService->getPaginatedRegularConsultedVisitsNurses($params);
+       
+        $loadTransformer = $this->visitService->getConsultedVisitsNursesTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
+
+    public function loadAncVisitsNurses(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->visitService->getPaginatedAncConsultedVisitsNurses($params);
        
         $loadTransformer = $this->visitService->getConsultedVisitsNursesTransformer();
 

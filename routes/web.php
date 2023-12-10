@@ -92,11 +92,12 @@ Route::middleware('auth')->group(function () {
         Route::post('', [VisitController::class, 'store']);
         Route::get('/load/waiting', [VisitController::class, 'loadWaitingTable']);
         Route::post('/consult/{visit}', [VisitController::class, 'consult']);
-        Route::get('/load/consulted/regular', [VisitController::class, 'loadAllRegularVisits']);
+        Route::get('/load/consulted/', [VisitController::class, 'loadAllVisits']);
         Route::get('/load/consulted/regular/user', [VisitController::class, 'loadUserRegularVisits']);
-        Route::get('/load/consulted/anc', [VisitController::class, 'loadAllAncVisits']);
+        Route::get('/load/consulted/inpatients', [VisitController::class, 'loadInpatientsVisits']);
         Route::get('/load/consulted/anc/user', [VisitController::class, 'loadUserAncVisits']);
-        Route::get('/load/consulted/nurses', [VisitController::class, 'loadVisitsNurses']);
+        Route::get('/load/consulted/regular/nurses', [VisitController::class, 'loadRegularVisitsNurses']);
+        Route::get('/load/consulted/anc/nurses', [VisitController::class, 'loadAncVisitsNurses']);
         Route::delete('/{visit}', [VisitController::class, 'destroy']);
     })->name('Visits');
     

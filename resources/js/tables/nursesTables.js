@@ -5,10 +5,60 @@ import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 
 
-const getAllPatientsVisitTable = (tableId) => {
+const getAllRegularPatientsVisitTable = (tableId) => {
     return new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  '/visits/load/consulted/nurses',
+        ajax:  '/visits/load/consulted/regular/nurses',
+        orderMulti: true,
+        search:true,
+        language: {
+            emptyTable: 'No patient record'
+        },
+        columns: [
+            {data: "came"},
+            {data: "patient"},
+            {data: "doctor"},
+            {data: "diagnosis"},
+            {data: "sponsor"},
+            {data: row => function () {
+                if (row.vitalSigns < 1){
+                    return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                            <i class="bi bi-plus-square-dotted"></i>
+                            </button>
+                        </div>`
+                    } else {
+                        return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                            <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
+                            </button>
+                        </div>`
+                    }
+                }
+            },
+            {data: row => () => {
+                return row.admissionStatus == 'Inpatient' ? 
+                `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
+                `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
+            } },
+            {
+                sortable: false,
+                data: row =>  `
+                <div class="d-flex flex-">
+                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Details</button>
+                </div>
+                `      
+            },
+        ]
+    });
+}
+
+const getAncPatientsVisitTable = (tableId) => {
+    return new DataTable(tableId, {
+        serverSide: true,
+        ajax:  '/visits/load/consulted/anc/nurses',
         orderMulti: true,
         search:true,
         language: {
@@ -291,16 +341,12 @@ const getUpcomingMedicationsTable = (tableId, bsComponent, type) => {
         ]
     });
 
-    // bsComponent.addEventListener(`hidden.bs.${type}`, function () {
-    //     console.log('called')
-    //     allMedicationChartTable.draw()
-    // })
-
     return allMedicationChartTable
 }
 
 
-export {getWaitingTable, getAllPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable}
+
+export {getWaitingTable, getAllRegularPatientsVisitTable, getAncPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable}
 
 
                         // <div class="dropdown">

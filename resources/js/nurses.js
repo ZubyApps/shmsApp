@@ -1,32 +1,33 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
-import { clearDivValues, clearValidationErrors, getOrdinal, getDivData } from "./helpers"
+import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners,getDivData } from "./helpers"
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
-import { getWaitingTable, getAllPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable } from "./tables/nursesTables";
-import { getVitalSignsTableByVisit, getLabTableByConsultation } from "./tables/doctorsTables";
+import { getWaitingTable, getAllRegularPatientsVisitTable, getAncPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable } from "./tables/nursesTables";
+import { getVitalSignsTableByVisit, getLabTableByConsultation, getInpatientsVisitTable } from "./tables/doctorstables";
 
 window.addEventListener('DOMContentLoaded', function () {
     const upcomingMedicationsCanvas = new Offcanvas(document.getElementById('upcomingMedicationsoffcanvas'))
-    const waitingListCanvas = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
+    const waitingListCanvas         = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
 
-    const reviewDetailsModal = new Modal(document.getElementById('treatmentDetailsModal'))
-    const newDeliveryNoteModal = new Modal(document.getElementById('newDeliveryNoteModal'))
-    const updateDeliveryNoteModal = new Modal(document.getElementById('updateDeliveryNoteModal'))
-    const chartMedicationModal = new Modal(document.getElementById('chartMedicationModal'))
-    const vitalsignsModal = new Modal(document.getElementById('vitalsignsModal'))
-    const giveMedicationModal = new Modal(document.getElementById('giveMedicationModal'))
+    const reviewDetailsModal        = new Modal(document.getElementById('treatmentDetailsModal'))
+    const newDeliveryNoteModal      = new Modal(document.getElementById('newDeliveryNoteModal'))
+    const updateDeliveryNoteModal   = new Modal(document.getElementById('updateDeliveryNoteModal'))
+    const chartMedicationModal      = new Modal(document.getElementById('chartMedicationModal'))
+    const vitalsignsModal           = new Modal(document.getElementById('vitalsignsModal'))
+    const giveMedicationModal       = new Modal(document.getElementById('giveMedicationModal'))
 
-    const addVitalsignsDiv = document.querySelectorAll('#addVitalsignsDiv')
-    const medicationChartDiv = chartMedicationModal._element.querySelector('#chartMedicationDiv')
-    const medicationChartTable = chartMedicationModal._element.querySelector('#medicationChartTable')
-    const giveMedicationDiv = giveMedicationModal._element.querySelector('#giveMedicationDiv')
+    const addVitalsignsDiv          = document.querySelectorAll('#addVitalsignsDiv')
+    const medicationChartDiv        = chartMedicationModal._element.querySelector('#chartMedicationDiv')
+    const medicationChartTable      = chartMedicationModal._element.querySelector('#medicationChartTable')
+    const giveMedicationDiv         = giveMedicationModal._element.querySelector('#giveMedicationDiv')
+    const treatmentDiv              = document.querySelector('#treatmentDiv')
 
-    const waitingBtn = document.querySelector('#waitingBtn')
-    const addVitalsignsBtn = document.querySelectorAll('#addVitalsignsBtn')
-    const saveMedicationChartBtn = chartMedicationModal._element.querySelector('#saveMedicationChartBtn')
-    const saveGivenMedicationBtn = giveMedicationModal._element.querySelector('.saveGivenMedicationBtn')
-    const treatmentDiv = document.querySelector('#treatmentDiv')
+    const waitingBtn                = document.querySelector('#waitingBtn')
+    const addVitalsignsBtn          = document.querySelectorAll('#addVitalsignsBtn')
+    const saveMedicationChartBtn    = chartMedicationModal._element.querySelector('#saveMedicationChartBtn')
+    const saveGivenMedicationBtn    = giveMedicationModal._element.querySelector('.saveGivenMedicationBtn')
+    const [allRegularPatientsTab, inPatientsTab, ancPatientsTab]  = [document.querySelector('#nav-allRegularPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab')]
     
     const heightEl                 = document.querySelectorAll('#height') 
 
@@ -57,84 +58,115 @@ window.addEventListener('DOMContentLoaded', function () {
     // function toggleClass() {
     //     blinkTable.classList.toggle('table-danger')
     // }
+    let inPatientsVisitTable, ancPatientsVisitTable
 
-    const allPatientsTable = getAllPatientsVisitTable('allPatientsTable')
+    const allRegularPatientsTable = getAllRegularPatientsVisitTable('allRegularPatientsTable')
     const waitingTable = getWaitingTable('waitingTable')
     const upcomingMedicationsTable = getUpcomingMedicationsTable('upcomingMedicationsTable', upcomingMedicationsCanvas._element, 'offcanvas')
+
+    allRegularPatientsTab.addEventListener('click', function() {allRegularPatientsTable.draw()})
+
+    inPatientsTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#inPatientsVisitTable' )){
+            $('#inPatientsVisitTable').dataTable().fnDraw()
+        } else {
+            inPatientsVisitTable = getInpatientsVisitTable('#inPatientsVisitTable')
+        }
+    })
+
+    ancPatientsTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#ancPatientsVisitTable' )){
+            $('#ancPatientsVisitTable').dataTable().fnDraw()
+        } else {
+            ancPatientsVisitTable = getAncPatientsVisitTable('#ancPatientsVisitTable')
+        }
+    })
 
     waitingBtn.addEventListener('click', function () {
         waitingTable.draw()
     })
 
     waitingListCanvas._element.addEventListener('hide.bs.offcanvas', function () {
-        allPatientsTable.draw()
+        allRegularPatientsTable.draw()
+        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
     })
 
     upcomingMedicationsCanvas._element.addEventListener('show.bs.offcanvas', function () {
         upcomingMedicationsTable.draw()
     })
 
-    document.querySelector('#allPatientsTable').addEventListener('click', function (event) {
-        const consultationDetailsBtn = event.target.closest('.consultationDetailsBtn')
-        const vitalsignsBtn = event.target.closest('.vitalSignsBtn')
+    upcomingMedicationsCanvas._element.addEventListener('hide.bs.offcanvas', function () {
+        upcomingMedicationsTable.draw()
+        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+    })
 
-        if (consultationDetailsBtn) {
-            consultationDetailsBtn.setAttribute('disabled', 'disabled')
-
-            const visitId = consultationDetailsBtn.getAttribute('data-id')
-            const patientType = consultationDetailsBtn.getAttribute('data-patientType')
-
-            http.get(`/consultation/consultations/${visitId}`)
-                .then((response) => {
-                    if (response.status >= 200 || response.status <= 300) {
-                        let iteration = 0
-                        let count = 0
-
-                        const consultations = response.data.consultations.data
-                        const patientBio = response.data.bio
-
-                        openNurseModals(reviewDetailsModal, treatmentDiv, patientBio)
-
-                        chartMedicationModal._element.querySelector('#patient').value = patientBio.patientId
-                        chartMedicationModal._element.querySelector('#sponsor').value = patientBio.sponsorName
-
-                        const viewer = 'nurse'
-                        consultations.forEach(line => {
-                            iteration++
-
-                            iteration > 1 ? count++ : ''
-
-                            if (patientType === 'ANC') {
-                                treatmentDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
-                            } else {
-                                treatmentDiv.innerHTML += regularReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
-                            }
-                        })
-
-                        getVitalSignsTableByVisit('#vitalSignsTableNurses', visitId, reviewDetailsModal)
-                        reviewDetailsModal.show()
-
-                    }
-                    consultationDetailsBtn.removeAttribute('disabled')
-                })
-                .catch((error) => {
-                    consultationDetailsBtn.removeAttribute('disabled')
-                    alert(error)
-                    console.log(error)
-                })
-        }
-
-        if (vitalsignsBtn) {
-            const tableId = '#' + vitalsignsModal._element.querySelector('.vitalsTable').id
-            const visitId = vitalsignsBtn.getAttribute('data-id')
-            vitalsignsModal._element.querySelector('#patient').value = vitalsignsBtn.getAttribute('data-patient')
-            vitalsignsModal._element.querySelector('#sponsor').value = vitalsignsBtn.getAttribute('data-sponsor')
-            vitalsignsModal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
-
-            getVitalSignsTableByVisit(tableId, visitId, vitalsignsModal)
-            vitalsignsModal.show()
-        }
-
+    document.querySelectorAll('#allRegularPatientsTable, #inPatientsVisitTable, #ancPatientsVisitTable').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const consultationDetailsBtn = event.target.closest('.consultationDetailsBtn')
+            const vitalsignsBtn = event.target.closest('.vitalSignsBtn')
+    
+            if (consultationDetailsBtn) {
+                consultationDetailsBtn.setAttribute('disabled', 'disabled')
+                const btnHtml = consultationDetailsBtn.innerHTML
+                consultationDetailsBtn.innerHTML = loadingSpinners()
+    
+                const visitId = consultationDetailsBtn.getAttribute('data-id')
+                const patientType = consultationDetailsBtn.getAttribute('data-patientType')
+    
+                http.get(`/consultation/consultations/${visitId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            let iteration = 0
+                            let count = 0
+    
+                            const consultations = response.data.consultations.data
+                            const patientBio = response.data.bio
+    
+                            openNurseModals(reviewDetailsModal, treatmentDiv, patientBio)
+    
+                            chartMedicationModal._element.querySelector('#patient').value = patientBio.patientId
+                            chartMedicationModal._element.querySelector('#sponsor').value = patientBio.sponsorName
+    
+                            const viewer = 'nurse'
+                            consultations.forEach(line => {
+                                iteration++
+    
+                                iteration > 1 ? count++ : ''
+    
+                                if (patientType === 'ANC') {
+                                    treatmentDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
+                                } else {
+                                    treatmentDiv.innerHTML += regularReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
+                                }
+                            })
+    
+                            getVitalSignsTableByVisit('#vitalSignsTableNurses', visitId, reviewDetailsModal)
+                            reviewDetailsModal.show()
+    
+                        }
+                        consultationDetailsBtn.innerHTML = btnHtml
+                        consultationDetailsBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        consultationDetailsBtn.removeAttribute('disabled')
+                        console.log(error)
+                    })
+            }
+    
+            if (vitalsignsBtn) {
+                const tableId = '#' + vitalsignsModal._element.querySelector('.vitalsTable').id
+                const visitId = vitalsignsBtn.getAttribute('data-id')
+                vitalsignsModal._element.querySelector('#patient').value = vitalsignsBtn.getAttribute('data-patient')
+                vitalsignsModal._element.querySelector('#sponsor').value = vitalsignsBtn.getAttribute('data-sponsor')
+                vitalsignsModal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
+    
+                getVitalSignsTableByVisit(tableId, visitId, vitalsignsModal)
+                vitalsignsModal.show()
+            }
+    
+        })
     })
 
     document.querySelector('#waitingTable').addEventListener('click', function (event) {
@@ -157,10 +189,14 @@ window.addEventListener('DOMContentLoaded', function () {
 
     reviewDetailsModal._element.addEventListener('hide.bs.modal', function () {
         treatmentDiv.innerHTML = ''
+        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
     })
 
     vitalsignsModal._element.addEventListener('hide.bs.modal', function () {
         waitingTable.draw()
+        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
     })
 
     // manipulating all vital signs div
@@ -445,7 +481,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     reviewDetailsModal._element.addEventListener('hidden.bs.modal', function () {
-        allPatientsTable.draw()
+        allRegularPatientsTable.draw()
     })
 })
 

@@ -62,11 +62,11 @@
                     <button class="nav-link" id="nav-yourAncPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-yourAncPatients"
                     type="button" role="tab" aria-controls="nav-yourAncPatients" aria-selected="false">Your ANC Patients</button>
                     
-                    <button class="nav-link" id="nav-allRegularPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-allRegularPatients" 
-                    type="button" role="tab" aria-controls="nav-allRegularPatients"  aria-selected="true">All Regular Patients</button>
+                    <button class="nav-link" id="nav-allPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-allPatients" 
+                    type="button" role="tab" aria-controls="nav-allPatients"  aria-selected="true">All Patients</button>
 
-                    <button class="nav-link" id="nav-allAncPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-allAncPatients" 
-                    type="button" role="tab" aria-controls="nav-allAncPatients"  aria-selected="true">All ANC Patients</button>
+                    <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients" 
+                    type="button" role="tab" aria-controls="nav-inPatients"  aria-selected="true">Inpatients</button>
                     
                 </div>
             </nav>
@@ -92,7 +92,7 @@
                 </div>
 
                 <!-- your anc patients table -->
-                <div class="tab-pane fade active"  id="nav-yourAncPatients" aria-labelledby="nav-yourAncPatients-tab" role="tabpanel"  tabindex="0">
+                <div class="tab-pane fade"  id="nav-yourAncPatients" aria-labelledby="nav-yourAncPatients-tab" role="tabpanel"  tabindex="0">
                     <div class="py-4">
                         <table id="userAncPatientsVisitTable" class="table table-hover table-sm">
                             <thead>
@@ -112,9 +112,9 @@
                 </div>
 
                 <!--all regular patients table -->
-                <div class="tab-pane fade active" id="nav-allRegularPatients" aria-labelledby="nav-allRegularPatients-tab" role="tabpanel"   tabindex="0">
+                <div class="tab-pane fade" id="nav-allPatients" aria-labelledby="nav-allPatients-tab" role="tabpanel"   tabindex="0">
                     <div class="py-4">
-                        <table id="allRegularPatientsVisitTable"  class="table table-hover align-middle table-sm">
+                        <table id="allPatientsVisitTable"  class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
                                     <th>Seen</th>
@@ -133,9 +133,9 @@
                 </div>
 
                 <!--all regular patients table -->
-                <div class="tab-pane fade active" id="nav-allAncPatients" aria-labelledby="nav-allAncPatients-tab" role="tabpanel"   tabindex="0">
+                <div class="tab-pane fade" id="nav-inPatients" aria-labelledby="nav-inPatients-tab" role="tabpanel"   tabindex="0">
                     <div class="py-4">
-                        <table id="allAncPatientsVisitTable"  class="table table-hover align-middle table-sm">
+                        <table id="inPatientsVisitTable"  class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
                                     <th>Seen</th>

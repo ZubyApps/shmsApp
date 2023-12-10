@@ -43,7 +43,7 @@
                                 </table>
                             </div>
                             <div class="row {{ $isDoctor ? 'd-none' : '' }}">
-                                <div class="row" id="addVitalsignsDiv"  data-div="waiting">
+                                <div id="addVitalsignsDiv"  data-div="waiting">
                                     @include('vitalsigns.vitalsigns', ['sf' => 'nurses'])
                                     <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                 </div>

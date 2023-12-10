@@ -11,10 +11,10 @@ import 'datatables.net-fixedheader-bs5';
 import 'datatables.net-select-bs5';
 import 'datatables.net-staterestore-bs5';
 
-const getAllRegularPatientsVisitTable = (tableId) => {
+const getAllPatientsVisitTable = (tableId) => {
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  '/visits/load/consulted/regular',
+        ajax:  '/visits/load/consulted/',
         orderMulti: true,
         search:true,
         language: {
@@ -93,10 +93,10 @@ const getUserRegularPatientsVisitTable = (tableId) => {
     });
 }
 
-const getAllAncPatientsVisitTable = (tableId) => {
+const getInpatientsVisitTable = (tableId) => {
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  '/visits/load/consulted/anc',
+        ajax:  '/visits/load/consulted/inpatients',
         orderMulti: true,
         search:true,
         language: {
@@ -474,4 +474,4 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
     return treatmentTable
 }
 
-export {getAllRegularPatientsVisitTable, getUserRegularPatientsVisitTable, getAllAncPatientsVisitTable, getUserAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation}
+export {getAllPatientsVisitTable, getUserRegularPatientsVisitTable, getInpatientsVisitTable, getUserAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation}

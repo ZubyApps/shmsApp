@@ -49,7 +49,7 @@
                                     </table>
                                 </div>
                                 <div class="row">
-                                    <div class="row" id="addVitalsignsDiv" {!! $isSpecialist ? 'data-div="specialist"' : 'data-div="new"' !!}>
+                                    <div id="addVitalsignsDiv" {!! $isSpecialist ? 'data-div="specialist"' : 'data-div="new"' !!}>
                                         @include('vitalsigns.vitalsigns', [ 'sf' => $isSpecialist ? 'Specialist' : 'New', ])
                                         <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                     </div>
