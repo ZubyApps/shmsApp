@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\MedicationChart;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateMedicationChartRequest extends FormRequest
+class SaveLabResultRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +22,7 @@ class UpdateMedicationChartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'doseGiven'             => ['required'],
-            'unit'                  => ['required'],
+            'result' => ['required']
         ];
     }
 }

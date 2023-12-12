@@ -64,7 +64,7 @@
                                     </div>
                                 </div>
                                 <div class="overflow-auto">
-                                    <div class="chart-container" style="position: relative; height:60vh; width:100vw">
+                                    <div class="chart-container" style="position: relative; height:60vh; width:90vw">
                                         <canvas id="vitalsignsChart"></canvas>
                                     </div>
                                 </div>

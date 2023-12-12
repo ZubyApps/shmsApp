@@ -11,6 +11,9 @@
 
 @include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isAnc' => false, 'id' => 'consultationReviewModal'])
 @include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isDoctor' => true, 'id' => 'vitalsignsModal'])
+@include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
+@include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
+
 
 @include('doctors.surgeryModal', ['title' => 'New Surgery', 'isUpdate' => false, 'id' => 'surgeryModal'])
 @include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
@@ -42,7 +45,6 @@
                 </div>
             </div>
         </div>
-        {{-- @include('visits.waitingList') --}}
 
         <div class="text-start mb-4">
             <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn"
@@ -81,6 +83,7 @@
                                     <th>Patient</th>
                                     <th>Diagnosis</th>
                                     <th>Sponsor</th>
+                                    <th>Investigations</th>
                                     <th>Vitals</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -101,6 +104,7 @@
                                     <th>Patient</th>
                                     <th>Diagnosis</th>
                                     <th>Sponsor</th>
+                                    <th>Investigations</th>
                                     <th>Vitals</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -120,8 +124,9 @@
                                     <th>Seen</th>
                                     <th>Patient</th>
                                     <th>Doctor</th>
-                                    <th>Current Diagnosis</th>
+                                    <th>Diagnosis</th>
                                     <th>Sponsor</th>
+                                    <th>Investigations</th>
                                     <th>Vitals</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -141,8 +146,9 @@
                                     <th>Seen</th>
                                     <th>Patient</th>
                                     <th>Doctor</th>
-                                    <th>Current Diagnosis</th>
+                                    <th>Diagnosis</th>
                                     <th>Sponsor</th>
+                                    <th>Investigations</th>
                                     <th>Vitals</th>
                                     <th>Status</th>
                                     <th>Actions</th>

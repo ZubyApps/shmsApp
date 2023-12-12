@@ -6,7 +6,7 @@ use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HmoController;
-use App\Http\Controllers\InvestigationsController;
+use App\Http\Controllers\InvestigationController;
 use App\Http\Controllers\MedicationChartController;
 use App\Http\Controllers\NurseController;
 use App\Http\Controllers\PatientController;
@@ -52,7 +52,6 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/doctors', [DoctorController::class, 'index'])->name('Doctors');
     Route::get('/nurses', [NurseController::class, 'index'])->name('Nurses');
-    Route::get('/investigations', [InvestigationsController::class, 'index'])->name('Investigations');
     Route::get('/pharmacy', [PharmacyController::class, 'index'])->name('Pharmacy');
     Route::get('/hmo', [HmoController::class, 'index'])->name('Hmo');
     Route::get('/billing', [BillingController::class, 'index'])->name('Billing');
@@ -98,6 +97,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/consulted/anc/user', [VisitController::class, 'loadUserAncVisits']);
         Route::get('/load/consulted/regular/nurses', [VisitController::class, 'loadRegularVisitsNurses']);
         Route::get('/load/consulted/anc/nurses', [VisitController::class, 'loadAncVisitsNurses']);
+        Route::get('/load/consulted/regular/lab', [VisitController::class, 'loadRegularVisitsLab']);
+        Route::get('/load/consulted/inpatient/lab', [VisitController::class, 'loadInpatientVisitsLab']);
+        Route::get('/load/consulted/anc/lab', [VisitController::class, 'loadAncVisitsLab']);
         Route::delete('/{visit}', [VisitController::class, 'destroy']);
     })->name('Visits');
     
@@ -178,8 +180,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/treatment', [PrescriptionController::class, 'loadTreatmentTable']);
         Route::get('/list', [PrescriptionController::class, 'list']);
         Route::get('/{prescription}', [PrescriptionController::class, 'edit']);
+        Route::patch('/remove/{prescription}', [PrescriptionController::class, 'removeLabResult']);
         Route::delete('/{prescription}', [PrescriptionController::class, 'destroy']);
-        Route::post('/{prescription}', [PrescriptionController::class, 'update']);
+        Route::patch('/{prescription}', [PrescriptionController::class, 'saveLabResult']);
     })->name('Prescription');
 
     Route::prefix('medicationchart')->group(function (){
@@ -194,6 +197,10 @@ Route::middleware('auth')->group(function () {
         Route::patch('/removegiven/{medicationChart}', [MedicationChartController::class, 'removeGivenData']);
         Route::patch('/{medicationChart}', [MedicationChartController::class, 'saveGivenData']);
     })->name('MedicationChart');
+
+    Route::prefix('investigations')->group(function () {
+        Route::get('', [InvestigationController::class, 'index'])->name('Investigations');
+    });
 });
 
 require __DIR__.'/auth.php';

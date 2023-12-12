@@ -135,6 +135,13 @@ class VisitService
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->admission_status,
                 'patientType'       => $visit->patient->patient_type,
+                'labPrescribed'     => Prescription::where('visit_id', $visit->id)
+                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
+                                        ->count(),
+                'labDone'           => Prescription::where('visit_id', $visit->id)
+                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
+                                        ->where('result_date','!=', null)
+                                        ->count(),
 
             ];
          };
@@ -193,6 +200,7 @@ class VisitService
         return $this->visit
                     ->where('consulted', '!=', null)
                     ->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
+                    ->orWhereRelation('consultations', 'admission_status', '=', 'Observation')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -210,6 +218,13 @@ class VisitService
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->admission_status,
                 'patientType'       => $visit->patient->patient_type,
+                'labPrescribed'     => Prescription::where('visit_id', $visit->id)
+                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
+                                        ->count(),
+                'labDone'           => Prescription::where('visit_id', $visit->id)
+                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
+                                        ->where('result_date','!=', null)
+                                        ->count(),
 
             ];
          };
@@ -257,6 +272,13 @@ class VisitService
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->admission_status,
                 'patientType'       => $visit->patient->patient_type,
+                'labPrescribed'     => Prescription::where('visit_id', $visit->id)
+                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
+                                        ->count(),
+                'labDone'           => Prescription::where('visit_id', $visit->id)
+                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
+                                        ->where('result_date','!=', null)
+                                        ->count(),
 
             ];
          };
@@ -340,4 +362,116 @@ class VisitService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
+    public function getPaginatedRegularConsultedVisitsLab(DataTableQueryParams $params)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+
+        if (! empty($params->searchTerm)) {
+            return $this->visit
+                    ->where('consulted', '!=', null)
+                    ->where(function (Builder $query) use($params) {
+                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    })
+                    
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return $this->visit
+                    ->where('consulted', '!=', null)
+                    ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+                    ->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Laboratory')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
+    public function getPaginatedInpatientVisitsLab(DataTableQueryParams $params)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+
+        if (! empty($params->searchTerm)) {
+            return $this->visit
+                    ->where('consulted', '!=', null)
+                    ->where(function (Builder $query) use($params) {
+                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    })
+                    
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return $this->visit
+                    ->where('consulted', '!=', null)
+                    ->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Laboratory')
+                    ->where(function (Builder $query) use($params) {
+                        $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
+                        ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
+                    })
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
+    public function getPaginatedAncConsultedVisitsLab(DataTableQueryParams $params)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+
+        if (! empty($params->searchTerm)) {
+            return $this->visit
+                    ->where('consulted', '!=', null)
+                    ->where(function (Builder $query) use($params) {
+                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    })
+                    
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return $this->visit
+                    ->where('consulted', '!=', null)
+                    ->whereRelation('patient', 'patient_type', '=', 'ANC')
+                    ->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Laboratory')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
+    public function getConsultedVisitsLabTransformer(): callable
+    {
+       return  function (Visit $visit) {
+            return [
+                'id'                => $visit->id,
+                'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
+                'patient'           => $visit->patient->card_no.' ' .$visit->patient->first_name.' '. $visit->patient->middle_name.' '.$visit->patient->last_name,
+                'doctor'            => $visit->doctor->username,
+                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->icd11_diagnosis,
+                'sponsor'           => $visit->sponsor->name,
+                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->admission_status,
+                'patientType'       => $visit->patient->patient_type,
+                'labPrescribed'     => Prescription::where('visit_id', $visit->id)
+                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
+                                        ->count(),
+                'labDone'           => Prescription::where('visit_id', $visit->id)
+                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
+                                        ->where('result_date','!=', null)
+                                        ->count(),
+            ];
+         };
+    }
 }

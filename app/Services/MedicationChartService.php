@@ -115,12 +115,15 @@ class MedicationChartService
                         ->where('status', false)
                         ->whereRelation('prescription.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return $this->medicationChart
                     ->where('status', false)
+                    ->whereRelation('consultation', 'admission_status', '=', 'Inpatient')
+                    ->orWhereRelation('visit.consultations', 'admission_status', '=','Observation')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }

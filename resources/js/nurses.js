@@ -1,10 +1,10 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
-import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners,getDivData } from "./helpers"
+import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData } from "./helpers"
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
-import { getWaitingTable, getAllRegularPatientsVisitTable, getAncPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable } from "./tables/nursesTables";
-import { getVitalSignsTableByVisit, getLabTableByConsultation, getInpatientsVisitTable } from "./tables/doctorstables";
+import { getWaitingTable, getAllRegularPatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable } from "./tables/nursesTables";
+import { getVitalSignsTableByVisit, getLabTableByConsultation } from "./tables/doctorstables";
 
 window.addEventListener('DOMContentLoaded', function () {
     const upcomingMedicationsCanvas = new Offcanvas(document.getElementById('upcomingMedicationsoffcanvas'))
@@ -29,7 +29,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveGivenMedicationBtn    = giveMedicationModal._element.querySelector('.saveGivenMedicationBtn')
     const [allRegularPatientsTab, inPatientsTab, ancPatientsTab]  = [document.querySelector('#nav-allRegularPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab')]
     
-    const heightEl                 = document.querySelectorAll('#height') 
+    const heightEl                  = document.querySelectorAll('#height') 
 
     heightEl.forEach(heightInput => {
         heightInput.addEventListener('input',  function (e){

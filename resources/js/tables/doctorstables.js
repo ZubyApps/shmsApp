@@ -2,14 +2,6 @@ import jQuery from "jquery";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import 'datatables.net-buttons-bs5';
-import 'datatables.net-buttons/js/buttons.colVis.mjs';
-import 'datatables.net-buttons/js/buttons.html5.mjs';
-import 'datatables.net-buttons/js/buttons.print.mjs';
-import 'datatables.net-fixedcolumns-bs5';
-import 'datatables.net-fixedheader-bs5';
-import 'datatables.net-select-bs5';
-import 'datatables.net-staterestore-bs5';
 
 const getAllPatientsVisitTable = (tableId) => {
     return new DataTable(tableId, {
@@ -26,6 +18,13 @@ const getAllPatientsVisitTable = (tableId) => {
             {data: "doctor"},
             {data: "diagnosis"},
             {data: "sponsor"},
+            {data: row =>  `
+                        <div class="d-flex justify-content-center">
+                            <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                            ${row.labDone}<i class="bi bi-eyedropper"></i>${row.labPrescribed}
+                            </button>
+                        </div>`                
+            },
             {data: row => function () {
                    return `
                     <div class="d-flex flex-">
@@ -36,9 +35,13 @@ const getAllPatientsVisitTable = (tableId) => {
                 }
             },
             {data: row => () => {
-                return row.admissionStatus == 'Inpatient' ? 
-                `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
-                `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
+                return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
+                `<div class="d-flex flex- justify-content-center">
+                <span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>
+                </div>` :
+                `<div class="d-flex flex- justify-content-center">
+                <span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>
+                </div>`
             } },
             {
                 sortable: false,
@@ -67,6 +70,13 @@ const getUserRegularPatientsVisitTable = (tableId) => {
             // {data: "doctor"},
             {data: "diagnosis"},
             {data: "sponsor"},
+            {data: row =>  `
+                        <div class="d-flex justify-content-center">
+                            <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                            ${row.labDone}<i class="bi bi-eyedropper"></i>${row.labPrescribed}
+                            </button>
+                        </div>`                
+            },
             {data: row => function () {
                    return `
                     <div class="d-flex flex-">
@@ -77,9 +87,13 @@ const getUserRegularPatientsVisitTable = (tableId) => {
                 }
             },
             {data: row => () => {
-                return row.admissionStatus == 'Inpatient' ? 
-                `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
-                `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
+                return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
+                `<div class="d-flex flex- justify-content-center">
+                <span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>
+                </div>` :
+                `<div class="d-flex flex- justify-content-center">
+                <span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>
+                </div>`
             } },
             {
                 sortable: false,
@@ -108,6 +122,13 @@ const getInpatientsVisitTable = (tableId) => {
             {data: "doctor"},
             {data: "diagnosis"},
             {data: "sponsor"},
+            {data: row =>  `
+                        <div class="d-flex flex- justify-content-center">
+                            <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                            ${row.labDone}<i class="bi bi-eyedropper"></i>${row.labPrescribed}
+                            </button>
+                        </div>`                
+            },
             {data: row => function () {
                    return `
                     <div class="d-flex flex-">
@@ -118,9 +139,13 @@ const getInpatientsVisitTable = (tableId) => {
                 }
             },
             {data: row => () => {
-                return row.admissionStatus == 'Inpatient' ? 
-                `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
-                `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
+                return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
+                `<div class="d-flex flex- justify-content-center">
+                <span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>
+                </div>` :
+                `<div class="d-flex flex- justify-content-center">
+                <span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>
+                </div>`
             } },
             {
                 sortable: false,
@@ -149,6 +174,13 @@ const getUserAncPatientsVisitTable = (tableId) => {
             // {data: "doctor"},
             {data: "diagnosis"},
             {data: "sponsor"},
+            {data: row =>  `
+                        <div class="d-flex flex- justify-content-center">
+                            <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                            ${row.labDone}<i class="bi bi-eyedropper"></i>${row.labPrescribed}
+                            </button>
+                        </div>`                
+            },
             {data: row => function () {
                    return `
                     <div class="d-flex flex-">
@@ -159,9 +191,13 @@ const getUserAncPatientsVisitTable = (tableId) => {
                 }
             },
             {data: row => () => {
-                return row.admissionStatus == 'Inpatient' ? 
-                `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
-                `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
+                return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
+                    `<div class="d-flex flex- justify-content-center">
+                        <span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>
+                    </div>` :
+                    `<div class="d-flex flex- justify-content-center">
+                        <span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>
+                    </div>`
             } },
             {
                 sortable: false,
@@ -335,11 +371,12 @@ const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
     return prescriptionTable
 }
 
-const getLabTableByConsultation = (tableId, conId, modal, viewer) => {
+const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
     const investigationTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/prescription/load/lab', data: {
             'conId': conId,
+            'visitId': visitId,
         }},
         paging: true,
         lengthChange: false,
@@ -349,27 +386,88 @@ const getLabTableByConsultation = (tableId, conId, modal, viewer) => {
             emptyTable: 'No lab investigation requested'
         },
         columns: [
-            {data: "requested"},
-            {data: "resource"},
+            {data: "type"},
+            {data: row => `<span class="text-primary fw-semibold">${row.resource}</span>`},
             {data: "dr"},
-            {data: "result"},
-            {data: "sent"},
-            {data: "staff"},
+            {data: "requested"},
             {
                 sortable: false,
                 data: row =>  `
-                <div class="d-flex flex- ${viewer == 'nurse' ? 'd-none' : ''}">
-                    <button type="submit" class="ms-1 btn btn-outline-primary uploadDocBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
-                    <i class="bi bi-upload"></i>
-                    </button>
-                </div>
+                        <div class="dropdown ${viewer == 'nurse' || visitId ? 'd-none' : ''}">
+                            <i class="btn btn-outline-primary bi bi-gear" role="button" data-bs-toggle="dropdown"></i>
+
+                            <ul class="dropdown-menu">
+                                <li class="${row.sent ? 'd-none' : ''}">
+                                    <a class="btn btn-outline-primary dropdown-item addResultBtn" id="addResultBtn" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
+                                        <i class="bi bi-plus-square"></i> Add Result
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="btn dropdown-item edit-result-btn" data-investigation="${row.resource}" data-table="${tableId}" title="edit result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
+                                        <i class="bi bi-upload"></i> Upload Doc
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="btn dropdown-item deleteResultBtn" data-table="${tableId}" title="delete" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
+                                        <i class="bi bi-trash3-fill"></i> Delete
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                 `      
             },
         ]
     });
 
+    function formatChild(data) {
+        // const chart = data.chart
+                if (data.result) {
+                    return `   
+                                <table class="table align-middle table-sm">
+                                            <thead >
+                                                <tr class="fw-semibold fs-italics">
+                                                    <td> </td>
+                                                    <td class="text-secondary">Result</td>
+                                                    <td class="text-secondary">Entered By</td>
+                                                    <td class="text-secondary">DateTime</td>
+                                                    <td class="text-secondary">Document </td>
+                                                </tr>
+                                            </thead>
+                                        <tbody>
+                                             <tr>
+                                                <td> </td>
+                                                <td class="text-secondary">${data.result}</td>
+                                                <td class="text-secondary">${data.staff}</td>
+                                                <td class="text-secondary">${data.sent}</td>
+                                                <td class="text-secondary">Documents</td>
+                                            </tr>   
+                                     </tbody>
+                                </table>
+                            `
+                } else {
+                   return  `
+                                <table class="table align-middle table-sm">
+                                        <tr>
+                                            <td align="center" colspan="8" class="text-secondary">
+                                                No result
+                                            </td>
+                                        </tr>
+                                    </table>
+                            `
+                }
+            }
+
     modal.addEventListener('hidden.bs.modal', function () {
         investigationTable.destroy()
+    })
+
+    investigationTable.on('draw', function() {
+        const tableId = investigationTable.table().container().id.split('_')[0]
+        investigationTable.rows().every(function () {
+            let tr = $(this.node())
+            let row = this.row(tr);
+            this.child(formatChild(row.data(), tableId)).show()
+        })
     })
 
     return investigationTable
@@ -394,7 +492,7 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
         },
         columns: [
             {data: row => `<i role="button" class="text-primary fs-5 bi bi-prescription2"></i>`},
-            {data: "resource"},
+            {data: row => `<span class="text-primary">${row.resource}</span>`},
             {data: "prescription"},
             {data: "prescribedBy"},
             {data: "prescribed"},
@@ -475,3 +573,9 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
 }
 
 export {getAllPatientsVisitTable, getUserRegularPatientsVisitTable, getInpatientsVisitTable, getUserAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation}
+
+{/* <div class="d-flex flex- ${viewer == 'nurse' ? 'd-none' : ''}">
+                    <button type="submit" class="ms-1 btn btn-outline-primary uploadDocBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
+                    <i class="bi bi-upload"></i>
+                    </button>
+                </div> */}

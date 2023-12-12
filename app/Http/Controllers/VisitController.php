@@ -121,6 +121,38 @@ class VisitController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
     
+    public function loadRegularVisitsLab(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->visitService->getPaginatedRegularConsultedVisitsLab($params);
+       
+        $loadTransformer = $this->visitService->getConsultedVisitsLabTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
+
+    public function loadAncVisitsLab(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->visitService->getPaginatedAncConsultedVisitsLab($params);
+       
+        $loadTransformer = $this->visitService->getConsultedVisitsLabTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
+
+    public function loadInpatientVisitsLab(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->visitService->getPaginatedInpatientVisitsLab($params);
+       
+        $loadTransformer = $this->visitService->getConsultedVisitsLabTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
 
     /**
      * Display the specified resource.

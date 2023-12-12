@@ -39,7 +39,48 @@ const getAllRegularPatientsVisitTable = (tableId) => {
                 }
             },
             {data: row => () => {
-                return row.admissionStatus == 'Inpatient' ? 
+                return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
+                `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
+                `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
+            } },
+            {
+                sortable: false,
+                data: row =>  `
+                <div class="d-flex flex-">
+                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Details</button>
+                </div>
+                `      
+            },
+        ]
+    });
+}
+
+const getInpatientsVisitTable = (tableId) => {
+    return new DataTable(tableId, {
+        serverSide: true,
+        ajax:  '/visits/load/consulted/inpatients',
+        orderMulti: true,
+        search:true,
+        language: {
+            emptyTable: "No patient"
+        },
+        columns: [
+            {data: "came"},
+            {data: "patient"},
+            {data: "doctor"},
+            {data: "diagnosis"},
+            {data: "sponsor"},
+            {data: row => function () {
+                   return `
+                    <div class="d-flex flex-">
+                        <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                        <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
+                        </button>
+                    </div>`
+                }
+            },
+            {data: row => () => {
+                return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
                 `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
                 `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
             } },
@@ -89,7 +130,7 @@ const getAncPatientsVisitTable = (tableId) => {
                 }
             },
             {data: row => () => {
-                return row.admissionStatus == 'Inpatient' ? 
+                return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
                 `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
                 `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
             } },
@@ -169,7 +210,7 @@ const getNurseTreatmentByConsultation = (tableId, conId, modal) => {
             return row
         },
         columns: [
-            {data: "resource"},
+            {data: row =>  `<span class="text-primary">${row.resource}</span>`},
             {data: "prescription"},
             {data: "prescribedBy"},
             {data: "prescribed"},
@@ -345,8 +386,7 @@ const getUpcomingMedicationsTable = (tableId, bsComponent, type) => {
 }
 
 
-
-export {getWaitingTable, getAllRegularPatientsVisitTable, getAncPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable}
+export {getWaitingTable, getAllRegularPatientsVisitTable, getAncPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable, getInpatientsVisitTable}
 
 
                         // <div class="dropdown">

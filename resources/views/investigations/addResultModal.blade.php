@@ -13,19 +13,19 @@
                         <div class="row">
                             <x-form-div class="col-xl-6">
                                 <x-input-span id="patientLabel">Patient</x-input-span>
-                                <x-form-input name="patientIds" readonly value="SH23/7865 Patrick Abiodun Aso" />
+                                <x-form-input name="patientIds" readonly id="patient"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span id="sponsorNameLabel">Sponsor Name</x-input-span>
-                                <x-form-input type="search" class="sponsorName" name="sponsorName" value="Axe Mansard HMO" readonly />
+                                <x-form-input type="search" class="sponsorName" name="sponsorName" id="sponsorName" readonly />
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Diagnosis</x-input-span>
-                                <x-form-input name="diagnosis" class="" id="diagnosis" value="Gastroenterities" />
+                                <x-form-input name="diagnosis" class="" id="diagnosis" />
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Investigation</x-input-span>
-                                <x-form-input type="text" name="investigation" id="investigation" value="Malaria RDT" readonly />
+                                <x-form-input type="text" name="investigation" id="investigation" readonly />
                             </x-form-div>
                         </div>
                     </div>
@@ -37,7 +37,7 @@
                                 <x-form-input name="sample"> </x-form-input>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="statusLabel">Result<x-required-span /></x-input-span>
+                                <x-input-span id="statusLabel">Result/Report<x-required-span /></x-input-span>
                                 <x-form-textarea name="result"></x-form-textarea>
                             </x-form-div>
                             <x-form-div class="col-xl-12">

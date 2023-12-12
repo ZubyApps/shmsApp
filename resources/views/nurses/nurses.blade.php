@@ -3,7 +3,7 @@
 @section('content')
 @vite(['resources/js/nurses.js'])
 
-@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isUpdate' => false, 'id' => 'treatmentDetailsModal'])
+@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isLab' => false, 'id' => 'treatmentDetailsModal'])
 @include('nurses.deliveryNotesModal', ['title' => 'New Delivery Note', 'isUpdate' => false, 'id' => 'newDeliveryNoteModal'])
 @include('nurses.deliveryNotesModal', ['title' => 'Update Delivery Note', 'isUpdate' => true, 'id' => 'updateDeliveryNoteModal'])
 @include('nurses.chartMedicationModal', ['title' => 'Chart Medication', 'isUpdate' => false, 'id' => 'chartMedicationModal'])
@@ -72,7 +72,7 @@
         <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas"
             data-bs-target="#upcomingMedicationsoffcanvas" aria-controls="upcomingMedicationsoffcanvas">
             <i class="bi bi-list-check"></i>
-            Medication/Treatment Table
+            Medication Table
         </button>
         <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn"
         data-bs-target="#waitingListOffcanvas2" aria-controls="waitingListOffcanvas2">

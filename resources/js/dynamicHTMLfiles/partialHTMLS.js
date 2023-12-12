@@ -439,13 +439,11 @@ const investigations = (line) => {
                         <table id="investigationTable${line.id}" data-id="${line.id}" class="table table-hover align-middle table-sm investigationTable">
                             <thead>
                                 <tr>
-                                    <th>Requested</th>
+                                    <th>Type</th>
                                     <th>Investigation</th>
-                                    <th>By</th>
-                                    <th>Result</th>
-                                    <th>Sent</th>
-                                    <th>Staff</th>
-                                    <th>Upload</th>
+                                    <th>Requested By</th>
+                                    <th>Requested</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>

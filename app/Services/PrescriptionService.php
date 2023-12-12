@@ -125,7 +125,7 @@ class PrescriptionService
         $orderDir   =  'desc';
 
         return $this->prescription
-                    ->where('consultation_id', $data->conId)
+                    ->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
                     ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'Laboratory')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -139,13 +139,12 @@ class PrescriptionService
                 'type'              => $prescription->resource->resourceSubCategory->name,
                 'requested'         => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                 'resource'          => $prescription->resource->name,
+                'diagnosis'         => $prescription->consultation->icd11_diagnosis,
                 'dr'                => $prescription->user->username,
                 'result'            => $prescription->result,
-                'sent'              => $prescription->result_date ?? '',
-                'staff'             => $prescription->lab->name ?? '',
+                'sent'              => $prescription->result_date ? (new Carbon($prescription->result_at))->format('d/m/y g:ia') : '',
+                'staff'             => $prescription->labScientist->username ?? '',
                 'doc'               => $prescription->doc ?? '',
-
-                // 'count'             => 0//$prescription->prescriptions()->count(),
             ];
          };
     }
@@ -193,5 +192,29 @@ class PrescriptionService
                 ]),
             ];
          };
+    }
+
+    public function updateRecord(Request $data, Prescription $prescription, User $user): Prescription
+    {
+       $prescription->update([
+           'result'         => $data->result,
+           'result_date'    => Carbon::now(),
+           'lab_id'         => $user->id,
+
+        ]);
+
+        return $prescription;
+    }
+
+    public function removeRecord(Prescription $prescription): Prescription
+    {
+       $prescription->update([
+        'result'         => null,
+        'result_date'    => null,
+        'lab_id'         => null,
+
+        ]);
+
+        return  $prescription;
     }
 }

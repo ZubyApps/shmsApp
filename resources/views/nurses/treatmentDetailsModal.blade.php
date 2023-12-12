@@ -17,7 +17,7 @@
                                 @include('patients.partials.known-clinical-info', ['disabled' => true])
                             </div>
                         </div>
-                        <div class="mb-2 form-control vitalsDiv">
+                        <div class="mb-2 form-control vitalsDiv {{ $isLab ? 'd-none' : '' }}">
                             <x-form-span>Vital Signs</x-form-span>
                             <div class="row overflow-auto my-3">
                                 <table id="vitalSignsTableNurses" class="table table-hover align-middle table-sm vitalsTable">

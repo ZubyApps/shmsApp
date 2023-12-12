@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SaveLabResultRequest;
 use App\Models\Prescription;
 use App\Http\Requests\StorePrescriptionRequest;
 use App\Http\Requests\UpdatePrescriptionRequest;
@@ -83,6 +84,16 @@ class PrescriptionController extends Controller
     public function show(Prescription $prescription)
     {
         //
+    }
+
+    public function saveLabResult(SaveLabResultRequest $request, Prescription $prescription)
+    {
+        return $this->prescriptionService->updateRecord($request, $prescription, $request->user());
+    }
+
+    public function removeLabResult(Prescription $prescription)
+    {
+        return $this->prescriptionService->removeRecord($prescription);
     }
 
     /**
