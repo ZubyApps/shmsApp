@@ -39,31 +39,30 @@
         </div>
     </div>
     <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2"
-            aria-labelledby="waitingListOffcanvasLabel" aria-expanded="false">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <div class="py-4 ">
-                    <table id="waitingTable" class="table table-hover align-middle table-sm bg-primary">
-                        <thead>
-                            <tr>
-                                <th>Patient</th>
-                                <th>Sex</th>
-                                <th>Age</th>
-                                <th>Sponsor</th>
-                                <th>Came</th>
-                                <th>Dr</th>
-                                <th>Vitals</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+        aria-labelledby="waitingListOffcanvasLabel" aria-expanded="false">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="py-4 ">
+                <table id="waitingTable" class="table table-hover align-middle table-sm bg-primary">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Sex</th>
+                            <th>Age</th>
+                            <th>Sponsor</th>
+                            <th>Came</th>
+                            <th>Dr</th>
+                            <th>Vitals</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
-        {{-- @include('visits.waitingList') --}}
+    </div>
 
         <div class="text-start mb-4">
            
@@ -74,11 +73,10 @@
             <i class="bi bi-list-check"></i>
             Medication Table
         </button>
-        <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn"
-        data-bs-target="#waitingListOffcanvas2" aria-controls="waitingListOffcanvas2">
-        <i class="bi bi-list-check"></i>
-        Waiting List
-    </button>
+        <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn" data-bs-target="#waitingListOffcanvas2" aria-controls="waitingListOffcanvas2">
+            <i class="bi bi-list-check"></i>
+            Waiting List
+        </button>
     </div>
 
     <div>

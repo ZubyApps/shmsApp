@@ -12,7 +12,7 @@ class HmoController extends Controller
      */
     public function index()
     {
-        return view('hmo.hmodesk');
+        return view('hmo.hmo');
     }
 
     /**

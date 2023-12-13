@@ -247,13 +247,13 @@ const getWaitingTable = (tableId) => {
                                 <i class="bi bi-clipboard2-plus-fill"></i>
                             </button>
                             <button class="ms-1 btn btn-outline-primary removeBtn tooltip-test" title="remove" data-id="${ row.id }">
-                            <i class="bi bi-x-circle-fill"></i>
+                                <i class="bi bi-x-circle-fill"></i>
                             </button>
                         </div>`
                     } else {
                         return `
                         <div class="dropdown">
-                            <a class="text-black tooltip-test text-decoration-none" title="doctor" data-bs-toggle="dropdown" href="" >
+                            <a class="text-black tooltip-test text-decoration-none" title="doctor" data-bs-toggle="dropdown">
                                 ${row.doctor}
                                 <i class="bi bi-chevron-double-down"> </i>
                             </a>

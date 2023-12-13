@@ -4,55 +4,36 @@
 @vite(['resources/js/hmo.js'])
 
 @include('hmo.verifyModal', ['title' => 'Verify Patient', 'isUpdate' => false, 'id' => 'verifyModal'])
-@include('hmo.treatmentDetailsModal', ['title' => 'Treatment Details', 'isUpdate' => false, 'id' => 'treatmentDetailsModal'])
+@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isLab' => false, 'id' => 'treatmentDetailsModal'])
 @include('hmo.approvalModal', ['title' => 'Approve Medication/Treatment', 'isUpdate' => false, 'id' => 'approvalModal'])
 
     <div class="container p-1 mt-5 bg-white">
-        <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
-            aria-labelledby="offcanvasWithBothOptionsLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title text-primary" id="offcanvasWithBothOptionsLabel">List of Waiting Patients</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <div class="py-4 ">
-                    <table id="waitingListTable" class="table table-hover align-middle table-sm">
-                        <thead>
-                            <tr>
-                                <th>Patient</th>
-                                <th>Sponsor</th>
-                                <th>Status</th>
-                                <th>Remove</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>SH21/4012 Joesphine Ene Odeh</td>
-                                <td>Avon HMO</td>
-                                <td><span class="badge rounded-pill text-bg-secondary p-2">Waiting</span></td>
-                                <td><i class="btn btn-outline-none text-primary bi bi-x-circle"></i></td>
-                            </tr>
-                            <tr>
-                                <td>SH23/7865 Patrick Abiodun Aso</td>
-                                <td>Axe Mansard HMO</td>
-                                <td><span class="badge rounded-pill text-bg-light p-2">Dr Toby</span></td>
-                                <td>
-                                    {{-- <i class="btn btn-outline-none text-primary bi bi-x-circle"></i> --}}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>SH21/4012 John Okoro</td>
-                                <td>Avon HMO</td>
-                                <td><span class="badge rounded-pill text-bg-light p-2">Dr Bisoye</span></td>
-                                <td>
-                                    {{-- <i class="btn btn-outline-none text-primary bi bi-x-circle"></i> --}}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+        <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2"
+        aria-labelledby="waitingListOffcanvasLabel" aria-expanded="false">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="py-4 ">
+                <table id="waitingTable" class="table table-hover align-middle table-sm bg-primary">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Sex</th>
+                            <th>Age</th>
+                            <th>Sponsor</th>
+                            <th>Came</th>
+                            <th>Dr</th>
+                            <th>Vitals</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
+    </div>
 
         <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions2"
             aria-labelledby="offcanvasWithBothOptions2Label">
@@ -114,8 +95,7 @@
         </div>
 
         <div class="text-start mb-4">
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas"
-                data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
+            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn" data-bs-target="#waitingListOffcanvas2" aria-controls="waitingListOffcanvas2">
                 <i class="bi bi-list-check"></i>
                 Waiting List
             </button>
@@ -125,13 +105,6 @@
                 Medication/Treatment Approval List
             </button>
         </div>
-        {{-- <div class="text-start mb-4">
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas2"
-                data-bs-target="#offcanvasWithBothOptions2" aria-controls="offcanvasWithBothOptions2">
-                <i class="bi bi-list-check"></i>
-                Medication/Treatment Approval List
-            </button>
-        </div> --}}
 
         <div>
             <nav>
@@ -155,17 +128,20 @@
                 <div class="tab-pane fade show active" id="nav-verifyPatients" role="tabpanel"
                     aria-labelledby="nav-verifyPatients-tab" tabindex="0">
                     <div class="py-4">
-                        <table id="yourPatientsTable" class="table table-hover align-middle table-sm">
+                        <table id="verificationTable" class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
+                                    <th>Came</th>
                                     <th>Patient</th>
+                                    <th>Sex</th>
+                                    <th>Age</th>
                                     <th>Sponsor</th>
+                                    <th>Doctor</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                {{-- <tr>
                                     <td>20/09/23</td>
                                     <td>SH23/7865 Patrick Abiodun Aso</td>
                                     <td>Axe Mansard HMO</td>
@@ -176,7 +152,7 @@
                                     <td>SH21/4012 Josephine Ene Ode</td>
                                     <td>Hygia HMO</td>
                                     <td><button class="btn btn-outline-primary">Verify</button></td>
-                                </tr>
+                                </tr> --}}
                             </tbody>
                         </table>
                     </div>

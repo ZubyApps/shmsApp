@@ -90,6 +90,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('visits')->group(function () {
         Route::post('', [VisitController::class, 'store']);
         Route::get('/load/waiting', [VisitController::class, 'loadWaitingTable']);
+        Route::get('/load/verification', [VisitController::class, 'loadVerificationListTable']);
+        Route::post('/verify/{visit}', [VisitController::class, 'verifyPatient']);
         Route::post('/consult/{visit}', [VisitController::class, 'consult']);
         Route::get('/load/consulted/', [VisitController::class, 'loadAllVisits']);
         Route::get('/load/consulted/regular/user', [VisitController::class, 'loadUserRegularVisits']);

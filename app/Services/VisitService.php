@@ -86,6 +86,49 @@ class VisitService
          };
     }
 
+    public function getPaginatedVerificationList(DataTableQueryParams $params)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+
+        if (! empty($params->searchTerm)) {
+            return $this->visit
+                        ->Where('consulted', null)
+                        ->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return $this->visit
+                    ->where('verification_status', false)
+                    ->whereRelation('sponsor.sponsorCategory', 'name', '=', 'HMO')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+
+       
+    }
+
+    public function getVerificationListTransformer(): callable
+    {
+       return  function (Visit $visit) {
+            return [
+                'id'                => $visit->id,
+                'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
+                'patientId'         => $visit->patient->id,
+                'patient'           => $visit->patient->card_no.' ' .$visit->patient->first_name.' '. $visit->patient->middle_name.' '.$visit->patient->last_name,
+                'staffId'           => $visit->patient->staff_id ?? '',
+                'sex'               => $visit->patient->sex,
+                'age'               => str_replace(['a', 'g', 'o'], '', (new Carbon($visit->patient->date_of_birth))->diffForHumans(['other' => null, 'parts' => 1, 'short' => true]), ),
+                'sponsor'           => $visit->sponsor->name,
+                'doctor'            => $visit->doctor->username ?? '',
+                'phone'            => $visit->patient->phone,
+            ];
+         };
+    }
+
     public function initiateConsultation(Visit $visit, Request $request) 
     {
         $visit->update([

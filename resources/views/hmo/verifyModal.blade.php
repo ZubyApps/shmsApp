@@ -13,19 +13,19 @@
                         <div class="row">
                             <x-form-div class="col-xl-6">
                                 <x-input-span id="patientLabel">Patient</x-input-span>
-                                <x-form-input name="patientIds" readonly value="SH23/7865 Patrick Abiodun Aso" />
+                                <x-form-input name="patientId" id="patientId" readonly />
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span id="sponsorNameLabel">Sponsor Name</x-input-span>
-                                <x-form-input type="search" class="sponsorName" name="sponsorName" value="Axe Mansard HMO" readonly />
+                                <x-form-input type="search" class="sponsorName" name="sponsorName" id="sponsorName" readonly />
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Staff ID/No.</x-input-span>
-                                <x-form-input name="staffId" class="staffId" />
+                                <x-form-input name="staffId" class="staffId" id="staffId"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Phone Number</x-input-span>
-                                <x-form-input type="tel" name="phoneNumber" id="phoneNumber" value="08034987761" readonly />
+                                <x-form-input type="tel" name="phoneNumber" id="phoneNumber" readonly />
                             </x-form-div>
                         </div>
                     </div>
@@ -44,7 +44,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Enter Code/Text</x-input-span>
-                                <x-form-input name="code/text" />
+                                <x-form-input name="codeText" id="codeText" />
                             </x-form-div>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                     <i class="bi bi-x-circle me-1"></i>
                     Close
                 </button>
-                <button type="button" id="verifyPatientBtn" class="btn bg-primary text-white">
+                <button type="button" id="verifyBtn" class="btn bg-primary text-white">
                     <i class="bi bi-check-circle me-1"></i>
                     Verify
                 </button>

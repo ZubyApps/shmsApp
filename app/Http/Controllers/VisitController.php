@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Visit;
 use App\Http\Requests\StoreVisitRequest;
 use App\Http\Requests\UpdateVisitRequest;
+use App\Http\Requests\VerifyPatientRequest;
 use App\Services\DatatablesService;
 use App\Services\VisitService;
 use Illuminate\Http\Request;
@@ -51,6 +52,17 @@ class VisitController extends Controller
         $visits = $this->visitService->getPaginatedWaitingVisits($params);
        
         $loadTransformer = $this->visitService->getWaitingListTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
+
+    public function loadVerificationListTable(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->visitService->getPaginatedVerificationList($params);
+       
+        $loadTransformer = $this->visitService->getVerificationListTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
@@ -165,9 +177,16 @@ class VisitController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Visit $visit)
+    public function verifyPatient(VerifyPatientRequest $request, Visit $visit)
     {
-        //
+        if ($request->status == 'Verified'){
+            return $visit->update([
+                'verification_status'   => true,
+                'verification_code'     => $request->codeText
+            ]);
+        }
+
+        return;
     }
 
     /**
