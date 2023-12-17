@@ -31,9 +31,29 @@ class Prescription extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function labScientist()
+    public function resultBy()
     {
-        return $this->belongsTo(User::class, 'lab_id');
+        return $this->belongsTo(User::class, 'result_by');
+    }
+
+    public function billedBy()
+    {
+        return $this->belongsTo(User::class, 'billed_by');
+    }
+
+    public function dispensedBy()
+    {
+        return $this->belongsTo(User::class, 'dispensed_by');
+    }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function rejectedBy()
+    {
+        return $this->belongsTo(User::class, 'rejected_by');
     }
 
     public function medicationCharts() 

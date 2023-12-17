@@ -19,9 +19,9 @@ class PatientBioResource extends JsonResource
         return [
             "id"            => $this->patient->id,
             "visitId"       => $this->id,
-            "patientId"     => $this->patient->card_no . ' ' . $this->patient->first_name . ' ' . $this->patient->middle_name . ' ' . $this->patient->last_name,
+            "patientId"     => $this->patient->patientId(),
             "sponsorName"   => $this->sponsor->name,
-            "age"           => str_replace(['a', 'g', 'o'], '', (new Carbon($this->patient->date_of_birth))->diffForHumans(['other' => null, 'parts' => 2, 'short' => true]), ),
+            "age"           => $this->patient->age(),
             "sex"           => $this->patient->sex,
             "maritalStatus" => $this->patient->marital_status,
             "phone"         => $this->patient->phone,

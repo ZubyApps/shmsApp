@@ -4,11 +4,56 @@ import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 
+const getWaitingTable = (tableId) => {
+    return new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  '/visits/load/waiting',
+        orderMulti: true,
+        search:true,
+        language: {
+            emptyTable: 'No patient is waiting'
+        },
+        columns: [
+            {data: "patient"},
+            {data: "sex"},
+            {data: "age"},
+            {data: "sponsor"},
+            {data: "came"},
+            {data: "doctor"},
+            {data: row => function () {
+                if (row.vitalSigns < 1){
+                    return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                            <i class="bi bi-plus-square-dotted"></i>
+                            </button>
+                        </div>`
+                    } else {
+                        return `
+                        <div class="dropdown">
+                            <a class="text-black tooltip-test text-decoration-none" title="vital signs" data-bs-toggle="dropdown" href="" >
+                            <i class="btn btn-outline-primary bi bi-check-circle-fill">${row.vitalSigns}</i>
+                            </a>
+                                <ul class="dropdown-menu">
+                                <li>
+                                    <a role="button" class="dropdown-item vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                                    <i class="bi bi-plus-square-dotted text-primary"></i> Add
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        `
+                    }
+                }
+            },
+        ]
+    });
+}
 
 const getAllRegularPatientsVisitTable = (tableId) => {
     return new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  '/visits/load/consulted/regular/nurses',
+        ajax:  '/nurses/load/consulted/regular/nurses',
         orderMulti: true,
         search:true,
         language: {
@@ -99,7 +144,7 @@ const getInpatientsVisitTable = (tableId) => {
 const getAncPatientsVisitTable = (tableId) => {
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  '/visits/load/consulted/anc/nurses',
+        ajax:  '/nurses/load/consulted/anc/nurses',
         orderMulti: true,
         search:true,
         language: {
@@ -141,52 +186,6 @@ const getAncPatientsVisitTable = (tableId) => {
                 <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Details</button>
                 </div>
                 `      
-            },
-        ]
-    });
-}
-
-const getWaitingTable = (tableId) => {
-    return new DataTable('#'+tableId, {
-        serverSide: true,
-        ajax:  '/visits/load/waiting',
-        orderMulti: true,
-        search:true,
-        language: {
-            emptyTable: 'No patient is waiting'
-        },
-        columns: [
-            {data: "patient"},
-            {data: "sex"},
-            {data: "age"},
-            {data: "sponsor"},
-            {data: "came"},
-            {data: "doctor"},
-            {data: row => function () {
-                if (row.vitalSigns < 1){
-                    return `
-                        <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                            <i class="bi bi-plus-square-dotted"></i>
-                            </button>
-                        </div>`
-                    } else {
-                        return `
-                        <div class="dropdown">
-                            <a class="text-black tooltip-test text-decoration-none" title="vital signs" data-bs-toggle="dropdown" href="" >
-                            <i class="btn btn-outline-primary bi bi-check-circle-fill">${row.vitalSigns}</i>
-                            </a>
-                                <ul class="dropdown-menu">
-                                <li>
-                                    <a role="button" class="dropdown-item vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                                    <i class="bi bi-plus-square-dotted text-primary"></i> Add
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        `
-                    }
-                }
             },
         ]
     });
@@ -305,7 +304,6 @@ const getNurseTreatmentByConsultation = (tableId, conId, modal) => {
         })
     })
     
-
     return treatmentTable
 }
 

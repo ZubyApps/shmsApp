@@ -125,6 +125,12 @@
                                             <x-form-textarea type="text" name="selectedDiagnosis"
                                                 class="selectedDiagnosis-{{ $isReview ? '5' : '4' }}"></x-form-textarea>
                                         </x-form-div>
+                                        @if ($isReview)
+                                        <x-form-div class="col-xl-6">
+                                            <x-input-span id="diagnosisLabel">Provisional <br /> Diagnosis</x-input-span>
+                                            <x-form-textarea type="text" name="provisionalDiagnosis" class="provisionalDiagnosis" id="provisionalDiagnosis" cols="10" rows="2"></x-form-textarea>
+                                        </x-form-div>
+                                        @endif
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="physiciansPlanLabel">Physicians Notes</x-input-span>
                                             <x-form-textarea type="text" name="notes" id="notes"

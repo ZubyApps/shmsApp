@@ -14,7 +14,12 @@
                         <x-form-div class="my-2 col-xl-6">
                             <x-input-span>Category<x-required-span /></x-input-span>
                             <select class="form-select form-select-md" id="sponsorCategory1" name="category">
-                                <option value="">Select Category</option>   
+                                <option value="">Select Category</option> 
+                                {{-- <option value="Self">Self</option> 
+                                <option value="Family">Family</option> 
+                                <option value="HMO">HMO</option> 
+                                <option value="NHIS">NHIS</option> 
+                                <option value="Retainership">Retainership</option>  --}}
                                 @foreach ($categories as $category )
                                     @if (Str::lower($category->name) == "self" && $category->sponsors()->count() > 0)
                                     <option disabled value="{{ $category->id}}" name="{{ $category->name }}">{{ $category->name }}</option>

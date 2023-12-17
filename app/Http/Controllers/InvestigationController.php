@@ -3,10 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Investigation;
+use App\Services\DatatablesService;
+use App\Services\InvestigationService;
 use Illuminate\Http\Request;
 
 class InvestigationController extends Controller
 {
+    public function __construct(
+        private readonly DatatablesService $datatablesService, 
+        private readonly InvestigationService $investigationService)
+    {
+        
+    }
     /**
      * Display a listing of the resource.
      */
@@ -31,35 +39,36 @@ class InvestigationController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
-    // public function show(Investigation $investigations)
-    // {
-    //     //
-    // }
+    public function loadRegularVisitsLab(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-    // /**
-    //  * Show the form for editing the specified resource.
-    //  */
-    // public function edit(Investigation $investigations)
-    // {
-    //     //
-    // }
+        $visits = $this->investigationService->getPaginatedRegularConsultedVisitsLab($params);
+       
+        $loadTransformer = $this->investigationService->getConsultedVisitsLabTransformer();
 
-    // /**
-    //  * Update the specified resource in storage.
-    //  */
-    // public function update(Request $request, Investigation $investigations)
-    // {
-    //     //
-    // }
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
 
-    // /**
-    //  * Remove the specified resource from storage.
-    //  */
-    // public function destroy(Investigation $investigations)
-    // {
-    //     //
-    // }
+    public function loadAncVisitsLab(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->investigationService->getPaginatedAncConsultedVisitsLab($params);
+       
+        $loadTransformer = $this->investigationService->getConsultedVisitsLabTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
+
+    public function loadInpatientVisitsLab(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->investigationService->getPaginatedInpatientVisitsLab($params);
+       
+        $loadTransformer = $this->investigationService->getConsultedVisitsLabTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Resource;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateAddResourceRequest extends FormRequest
+class UpdateAddResourceStockRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

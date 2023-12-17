@@ -9,7 +9,7 @@
             <div class="modal-body">
                 <x-form-div class="col-xl-12">
                     <x-input-span>Initiate</x-input-span>
-                    <x-form-input name="patientId" readonly/>
+                    <x-form-input name="patientId" id="patientId" readonly/>
                     <x-input-span>visit?</x-input-span>
                 </x-form-div>
             </div>
@@ -18,7 +18,7 @@
                     <i class="bi bi-x-circle me-1"></i>
                     No
                 </button>
-                <button type="button" class="btn btn-primary confirmVisitBtn">
+                <button type="button" class="btn btn-primary" id="confirmVisitBtn">
                     <i class="bi bi-check-circle me-1"></i>
                     Yes
                 </button>

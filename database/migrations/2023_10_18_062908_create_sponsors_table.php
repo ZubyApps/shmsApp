@@ -19,8 +19,9 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('email')->unique()->nullable();
             $table->string('registration_bill')->nullable();
-            $table->foreignIdFor(SponsorCategory::class);
-            $table->foreignIdFor(User::class);
+            $table->string('category_name')->nullable();
+            $table->foreignIdFor(SponsorCategory::class)->constrained()->restrictOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();
         });
     }

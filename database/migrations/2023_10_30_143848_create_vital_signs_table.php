@@ -23,8 +23,8 @@ return new class extends Migration
             $table->string('weight')->nullable();
             $table->string('height')->nullable();
             $table->string('bmi')->nullable();
-            $table->foreignIdFor(Visit::class);
-            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();
         });
     }

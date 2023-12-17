@@ -3,10 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Doctor;
+use App\Models\Visit;
+use App\Services\DatatablesService;
+use App\Services\DoctorService;
 use Illuminate\Http\Request;
 
 class DoctorController extends Controller
 {
+    public function __construct(
+        private readonly DatatablesService $datatablesService, 
+        private readonly DoctorService $doctorService)
+    {
+        
+    }
+
+
     /**
      * Display a listing of the resource.
      */
@@ -31,35 +42,30 @@ class DoctorController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
-    // public function show(Doctor $doctor)
-    // {
-    //     //
-    // }
+    public function loadUserRegularVisits(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-    // /**
-    //  * Show the form for editing the specified resource.
-    //  */
-    // public function edit(Doctor $doctor)
-    // {
-    //     //
-    // }
+        $visits = $this->doctorService->getPaginatedUserRegularConsultedVisits($params, $request->user());
+       
+        $loadTransformer = $this->doctorService->getUserConsultedVisitsTransformer();
 
-    // /**
-    //  * Update the specified resource in storage.
-    //  */
-    // public function update(Request $request, Doctor $doctor)
-    // {
-    //     //
-    // }
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
 
-    // /**
-    //  * Remove the specified resource from storage.
-    //  */
-    // public function destroy(Doctor $doctor)
-    // {
-    //     //
-    // }
+    public function loadUserAncVisits(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->doctorService->getPaginatedUserAncConsultedVisits($params, $request->user());
+       
+        $loadTransformer = $this->doctorService->getUserConsultedVisitsTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
+
+    public function consult(Visit $visit, Request $request)
+    {
+        return $this->doctorService->initiateConsultation($visit, $request);
+    }
 }

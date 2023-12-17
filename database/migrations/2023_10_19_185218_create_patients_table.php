@@ -42,8 +42,8 @@ return new class extends Migration
             $table->text('known_conditions')->nullable();
             $table->string('registration_bill')->nullable();
             $table->boolean('is_active')->default(false);
-            $table->foreignIdFor(Sponsor::class);
-            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(Sponsor::class)->constrained()->restrictOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();
         });
     }

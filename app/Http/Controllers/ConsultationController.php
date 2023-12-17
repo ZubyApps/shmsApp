@@ -12,6 +12,7 @@ use App\Models\Visit;
 use App\Services\ConsultationService;
 use App\Services\DatatablesService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ConsultationController extends Controller
 {
@@ -89,6 +90,10 @@ class ConsultationController extends Controller
      */
     public function destroy(Consultation $consultation)
     {
-        return $consultation->destroy($consultation->id);
+       return DB::transaction(function () use ($consultation) {
+                    $consultation->visit->consultations->count() < 2 ? $consultation->visit->update(['consulted' => null]) : '' ;
+                    $consultation->destroy($consultation->id);
+                }, 2);
+
     }
 }

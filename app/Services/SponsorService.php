@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Sponsor;
+use App\Models\SponsorCategory;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -23,7 +24,8 @@ class SponsorService
             'phone'                 => $data->phone,
             'email'                 => $data->email,
             'registration_bill'     => $data->registrationBill,
-            'sponsor_category_id'   => $data->category
+            'sponsor_category_id'   => $data->category,
+            'category_naame'        => SponsorCategory::findOrFail($data->category)->name
         ]);
     }
 

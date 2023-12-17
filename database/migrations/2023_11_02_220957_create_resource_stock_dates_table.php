@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('participants');
             $table->boolean('reset')->default(false);
-            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();
         });
     }

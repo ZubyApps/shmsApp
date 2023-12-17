@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AddResource;
 use App\Services\DatatablesService;
 use App\Services\AddResourceStockService;
-use App\Http\Requests\StoreAddResourceRequest;
-use App\Http\Requests\UpdateAddResourceRequest;
+use App\Http\Requests\StoreAddResourceStockRequest;
+use App\Http\Requests\UpdateAddResourceStockRequest;
+use App\Models\AddResourceStock;
 use Illuminate\Http\Request;
 
-class AddResourceController extends Controller
+class AddResourceStockController extends Controller
 {
     public function __construct(
         private readonly DatatablesService $datatablesService, 
@@ -38,7 +38,7 @@ class AddResourceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAddResourceRequest $request)
+    public function store(StoreAddResourceStockRequest $request)
     {
         $addResourceStock = $this->addResourceStockService->create($request, $request->user());
 
@@ -59,23 +59,7 @@ class AddResourceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(AddResource $addResource)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(AddResource $addResource)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateAddResourceRequest $request, AddResource $addResource)
+    public function show(AddResourceStock $addResourceStock)
     {
         //
     }
@@ -83,11 +67,11 @@ class AddResourceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(AddResource $addResource)
+    public function destroy(AddResourceStock $addResourceStock)
     {
-        $addResource->resource()->update([
-            'stock_level' => $addResource->resource->stock_level - $addResource->quantity
+        $addResourceStock->resource()->update([
+            'stock_level' => $addResourceStock->resource->stock_level - $addResourceStock->quantity
         ]);
-        return $addResource->destroy($addResource->id);
+        return $addResourceStock->destroy($addResourceStock->id);
     }
 }

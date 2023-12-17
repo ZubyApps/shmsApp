@@ -2,11 +2,14 @@ import jQuery from "jquery";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
+import { reviewBtn } from "../helpers";
 
-const getAllPatientsVisitTable = (tableId) => {
+const getAllPatientsVisitTable = (tableId, filter) => {
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  '/visits/load/consulted/',
+        ajax:  {url: '/visits/load/consulted/', data: {
+            'filterBy': filter 
+        }},
         orderMulti: true,
         search:true,
         language: {
@@ -45,11 +48,7 @@ const getAllPatientsVisitTable = (tableId) => {
             } },
             {
                 sortable: false,
-                data: row =>  `
-                <div class="d-flex flex-">
-                    <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Review</button>
-                </div>
-                `      
+                data: row => reviewBtn(row)
             },
         ]
     });
@@ -58,7 +57,7 @@ const getAllPatientsVisitTable = (tableId) => {
 const getUserRegularPatientsVisitTable = (tableId) => {
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  '/visits/load/consulted/regular/user',
+        ajax:  '/doctors/load/consulted/regular/user',
         orderMulti: true,
         search:true,
         language: {
@@ -67,7 +66,6 @@ const getUserRegularPatientsVisitTable = (tableId) => {
         columns: [
             {data: "came"},
             {data: "patient"},
-            // {data: "doctor"},
             {data: "diagnosis"},
             {data: "sponsor"},
             {data: row =>  `
@@ -97,11 +95,7 @@ const getUserRegularPatientsVisitTable = (tableId) => {
             } },
             {
                 sortable: false,
-                data: row =>  `
-                <div class="d-flex flex-">
-                    <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Review</button>
-                </div>
-                `      
+                data: row => reviewBtn(row)
             },
         ]
     });
@@ -149,11 +143,7 @@ const getInpatientsVisitTable = (tableId) => {
             } },
             {
                 sortable: false,
-                data: row =>  `
-                <div class="d-flex flex-">
-                    <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Review</button>
-                </div>
-                `      
+                data: row => reviewBtn(row)
             },
         ]
     });
@@ -162,7 +152,7 @@ const getInpatientsVisitTable = (tableId) => {
 const getUserAncPatientsVisitTable = (tableId) => {
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  '/visits/load/consulted/anc/user',
+        ajax:  '/doctors/load/consulted/anc/user',
         orderMulti: true,
         search:true,
         language: {
@@ -171,7 +161,6 @@ const getUserAncPatientsVisitTable = (tableId) => {
         columns: [
             {data: "came"},
             {data: "patient"},
-            // {data: "doctor"},
             {data: "diagnosis"},
             {data: "sponsor"},
             {data: row =>  `
@@ -201,11 +190,7 @@ const getUserAncPatientsVisitTable = (tableId) => {
             } },
             {
                 sortable: false,
-                data: row =>  `
-                <div class="d-flex flex-">
-                    <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Review</button>
-                </div>
-                `      
+                data: row => reviewBtn(row)
             },
         ]
     });
@@ -276,7 +261,7 @@ const getWaitingTable = (tableId) => {
     });
 }
 
-const getVitalSignsTableByVisit = (tableId, visitId, modal) => {
+const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
     const vitalSignsByVisit =  new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/vitalsigns/load/visit_vitalsigns', data: {
@@ -316,7 +301,7 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal) => {
             {
                 sortable: false,
                 data: row =>  `
-                <div class="d-flex flex-">
+                <div class="d-flex flex- ${viewer ? 'd-none' : ''}">
                     <button type="submit" class="ms-1 btn btn-outline-primary ${modal._element.id == 'consultationReviewModal' ? 'd-none' : ''} deleteBtn tooltip-test" title="delete" data-id="${ row.id}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>
@@ -393,7 +378,7 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
             {
                 sortable: false,
                 data: row =>  `
-                        <div class="dropdown ${viewer == 'nurse' || visitId ? 'd-none' : ''}">
+                        <div class="dropdown ${viewer == 'nurse' || viewer == 'hmo' || visitId ? 'd-none' : ''}">
                             <i class="btn btn-outline-primary bi bi-gear" role="button" data-bs-toggle="dropdown"></i>
 
                             <ul class="dropdown-menu">
@@ -573,9 +558,3 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
 }
 
 export {getAllPatientsVisitTable, getUserRegularPatientsVisitTable, getInpatientsVisitTable, getUserAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation}
-
-{/* <div class="d-flex flex- ${viewer == 'nurse' ? 'd-none' : ''}">
-                    <button type="submit" class="ms-1 btn btn-outline-primary uploadDocBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
-                    <i class="bi bi-upload"></i>
-                    </button>
-                </div> */}

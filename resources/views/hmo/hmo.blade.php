@@ -4,8 +4,12 @@
 @vite(['resources/js/hmo.js'])
 
 @include('hmo.verifyModal', ['title' => 'Verify Patient', 'isUpdate' => false, 'id' => 'verifyModal'])
-@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isLab' => false, 'id' => 'treatmentDetailsModal'])
+@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isLab' => false, 'isHmo' => true, 'id' => 'treatmentDetailsModal'])
 @include('hmo.approvalModal', ['title' => 'Approve Medication/Treatment', 'isUpdate' => false, 'id' => 'approvalModal'])
+@include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isDoctor' => true, 'id' => 'vitalsignsModal'])
+@include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
+
+
 
     <div class="container p-1 mt-5 bg-white">
         <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2"
@@ -35,60 +39,31 @@
         </div>
     </div>
 
-        <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions2"
-            aria-labelledby="offcanvasWithBothOptions2Label">
+        <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="approvalListOffcanvas"
+            aria-labelledby="approvalListOffcanvasLabel">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title text-primary" id="offcanvasWithBothOptions2Label2">Medication/Treatment List for Approval</h5>
+                <h5 class="offcanvas-title text-primary" id="approvalListOffcanvasLabel">Approval List</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas2-body">
                 <div class="p-2 ">
-                    <table id="waitingListTable" class="table table-hover table-striped align-middle table-sm">
+                    <table id="approvalListTable" class="table table-hover table-sm approvalListTable">
                         <thead>
                             <tr>
                                 <th>Patient</th>
                                 <th>Sponsor</th>
+                                <th>Dr</th>
+                                <th>Prescribed</th>
                                 <th>Diagnosis</th>
-                                <th>Med/Treatment</th>
+                                <th>Treatment</th>
                                 <th>Prescription</th>
                                 <th>Qty</th>
                                 <th>Bill</th>
+                                <th>Billed</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>SH21/4012 Joesphine Ene Odeh</td>
-                                <td>Avon HMO</td>
-                                <td>QR14-Gastrosnteritis</td>
-                                <td>N/S 500mls</td>
-                                <td>500mls 12hrly 3/7</td>
-                                <td>6 Infusion(s)</td>
-                                <td>6600</td>
-                                <td><i class="btn btn-outline-none text-primary bi bi-check-circle" id="approvalBtn"></i></td>
-                            </tr>
-                            <tr>
-                                <td>SH21/4012 Obaje Dickson</td>
-                                <td>Liberty Blue HMO</td>
-                                <td>PTR4C-Malaria unspecified</td>
-                                <td>ACT (Armatem Soft Gel)</td>
-                                <td>480/80mg bd 3/7</td>
-                                <td>1 pack(s)</td>
-                                <td>1500</td>
-                                <td><i class="btn btn-outline-none text-primary bi bi-check-circle"></i></td>
-                            </tr>
-                            <tr>
-                                <td>SH21/4012 Michael Okonkwo</td>
-                                <td>Health Partners HMO</td>
-                                <td>QR14-Sepsis Unspecified</td>
-                                <td>Inj Ceftiraxone (unbranded)</td>
-                                <td>1g 12hrly 2/7</td>
-                                <td>4 Vials(s)</td>
-                                <td>4800</td>
-                                <td><i class="btn btn-outline-none text-primary bi bi-check-circle"></i></td>
-                            </tr>
-                           
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -99,10 +74,10 @@
                 <i class="bi bi-list-check"></i>
                 Waiting List
             </button>
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas"
-                data-bs-target="#offcanvasWithBothOptions2" aria-controls="offcanvasWithBothOptions2">
+            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="approvalListBtn"
+                data-bs-target="#approvalListOffcanvas" aria-controls="approvalListOffcanvas">
                 <i class="bi bi-list-check"></i>
-                Medication/Treatment Approval List
+                Approval List
             </button>
         </div>
 
@@ -128,7 +103,7 @@
                 <div class="tab-pane fade show active" id="nav-verifyPatients" role="tabpanel"
                     aria-labelledby="nav-verifyPatients-tab" tabindex="0">
                     <div class="py-4">
-                        <table id="verificationTable" class="table table-hover align-middle table-sm">
+                        <table id="verificationTable" class="table table-hover table-sm">
                             <thead>
                                 <tr>
                                     <th>Came</th>
@@ -140,52 +115,37 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {{-- <tr>
-                                    <td>20/09/23</td>
-                                    <td>SH23/7865 Patrick Abiodun Aso</td>
-                                    <td>Axe Mansard HMO</td>
-                                    <td><button class="btn btn-outline-primary" id="verifyBtn">Verify</button></td>
-                                </tr>
-                                <tr>
-                                    <td>21/05/22</td>
-                                    <td>SH21/4012 Josephine Ene Ode</td>
-                                    <td>Hygia HMO</td>
-                                    <td><button class="btn btn-outline-primary">Verify</button></td>
-                                </tr> --}}
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>
                 <!-- treatments table -->
-                <div class="tab-pane fade" id="nav-treatments" role="tabpanel" aria-labelledby="nav-treatments-tab"
-                    tabindex="0">
-                    <div class="py-4">
-                        <table id="treatmentsTable" class="table table-hover">
+                <div class="tab-pane fade" id="nav-treatments" role="tabpanel" aria-labelledby="nav-treatments-tab" tabindex="0">
+                    <x-form-div class="col-md-4 pt-2">
+                        <x-input-span id="filterListLabel">Filter List<x-required-span /></x-input-span>
+                        <select class="form-select form-select-md" name="filterList" id="filterList">
+                            <option value="">All</option>
+                            <option value="Outpatient">Outpatients</option>
+                            <option value="Inpatient">Inpatient</option>
+                            <option value="ANC">ANC</option>
+                        </select>
+                    </x-form-div>
+                    <div class="py-2">
+                        <table id="hmoTreatmentsTable" class="table table-hover table-sm">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
+                                    <th>Seen</th>
                                     <th>Patient</th>
-                                    <th>Sponsor</th>
                                     <th>Doctor</th>
                                     <th>Diagnosis</th>
+                                    <th>Sponsor</th>
+                                    <th>Investigations</th>
+                                    <th>Vitals</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>09/10/2023</td>
-                                    <td>SH21/4012 Josephine Ene Ode</td>
-                                    <td>Axe Mansard</td>
-                                    <td>Dr Toby</td>
-                                    <td>F12Z-Acute Spundolosis</td>
-                                    <td>Out-Patient</td>
-                                    <td>
-                                        <button class="btn btn-outline-primary" id="treatmentDetailsBtn">Details</button>
-                                        {{-- <button class="btn btn-outline-primary" id="reviewConsultationBtn">Approve</button> --}}
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -194,7 +154,7 @@
                 <div class="tab-pane fade" id="nav-bills" role="tabpanel" aria-labelledby="nav-bills-tab"
                     tabindex="0">
                     <div class="py-4 ">
-                        <table id="sponsorsTable" class="table table-hover align-middle table-sm">
+                        <table id="billsTable" class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
                                     <th>Date</th>

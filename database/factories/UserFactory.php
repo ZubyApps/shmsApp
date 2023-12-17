@@ -20,22 +20,22 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'firstname' => 'Nzube',
-            'middlename' => 'Yonna',
-            'lastname' => 'Okoye',
-            'email' => 'zuby@example.com',
-            'address' => 'Flat 1 Behind Larazon Annex, Achusa',
-            'date_of_birth' => new DateTime('1983/03/05'),
-            'highest_qualification' => 'B.Tech',
+            'firstname' => 'Admin',
+            'middlename' => 'Admin',
+            'lastname' => 'Admin',
+            'email' => 'admin@example.com',
+            'address' => '24 J.S Tarka Way, Wadata',
+            'date_of_birth' => new DateTime('1982/06/28'),
+            'highest_qualification' => 'MBBS',
             'sex' => 'male',
             'marital_status' => 'married',
-            'username' => 'Mr Nzube',
-            'phone_no' => '08035999029',
+            'username' => 'Mr Admin',
+            'phone_no' => '08022812281',
             'state_of_origin' => 'Anambra',
-            'next_of_kin' => 'Stephanie Okoye',
-            'next_of_kin_rship' => 'wife',
-            'next_of_kin_phone' => '08103830241',
-            'date_of_employment' => new DateTime('2018/02/01'),
+            'next_of_kin' => 'Nzube Okoye',
+            'next_of_kin_rship' => 'Son',
+            'next_of_kin_phone' => '08035999029',
+            'date_of_employment' => new DateTime('1982/06/28'),
             'password' => Hash::make('mylovelywife'), // password
         ];
     }

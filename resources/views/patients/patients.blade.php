@@ -16,11 +16,11 @@
     <div>
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <button class="nav-link active"  id="nav-home-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home"
+                <button class="nav-link active"  id="nav-patients-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-patients" type="button" role="tab" aria-controls="nav-patients"
                     aria-selected="true">Patients</button>
-                <button class="nav-link"  id="nav-profile-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile"
+                <button class="nav-link"  id="nav-sponsors-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-sponsors" type="button" role="tab" aria-controls="nav-sponsors"
                     aria-selected="false">Sponsors</button>
                 <button class="nav-link"   id="nav-contact-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact"
@@ -29,7 +29,7 @@
         </nav>
         <div class="tab-content" id="nav-tabContent">
             <!-- patients table -->
-            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
+            <div class="tab-pane fade show active" id="nav-patients" role="tabpanel" aria-labelledby="nav-patients-tab" tabindex="0">
                 <div class="text-start py-3">
                     <button type="button" id="newPatient" class="btn btn-primary text-white">
                         <i class="bi bi-plus-circle me-1"></i>
@@ -56,7 +56,7 @@
                 </div>
             </div>
             <!-- sponsors table -->
-            <div class="tab-pane fade active" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+            <div class="tab-pane fade active" id="nav-sponsors" role="tabpanel" aria-labelledby="nav-sponsors-tab" tabindex="0">
                 <div class="text-start py-3">
                     <button type="button" id="newSponsor" class="btn btn-primary text-white">
                         <i class="bi bi-plus-circle me-1"></i>

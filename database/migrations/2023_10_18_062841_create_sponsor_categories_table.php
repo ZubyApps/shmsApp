@@ -22,7 +22,7 @@ return new class extends Migration
             $table->boolean('approval')->default(false);
             $table->integer('bill_matrix');
             $table->boolean('balance_required')->default(true);
-            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();
         });
     }

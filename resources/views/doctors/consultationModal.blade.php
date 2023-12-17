@@ -98,15 +98,12 @@
                                         @if ($isSpecialist) <x-icd11-diagnosis-div :number="3" /> @else <x-icd11-diagnosis-div :number="1" /> @endif
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="diagnosisLabel">Selected <br />ICD11 Diagnosis<x-required-span /></x-input-span>
-                                            <x-form-textarea type="text" name="selectedDiagnosis" class="selectedDiagnosis-{{ $isSpecialist ? '3' : '1' }}" style="height: 100px"></x-form-textarea>
+                                            <x-form-textarea type="text" name="selectedDiagnosis" class="selectedDiagnosis-{{ $isSpecialist ? '3' : '1' }}" id="selectedDiagnosis"></x-form-textarea>
                                         </x-form-div>
-                                        {{-- <x-form-div class="col-xl-6">
-                                            <x-input-span id="diagnosisLabel">Addional <br />
-                                                Diagnosis</x-input-span>
-                                            <x-form-textarea type="text" name="additionalDiagnosis"
-                                                class="additionalDiagnosis" cols="10"
-                                                rows="3"></x-form-textarea>
-                                        </x-form-div> --}}
+                                        <x-form-div class="col-xl-6">
+                                            <x-input-span id="diagnosisLabel">Provisional <br /> Diagnosis</x-input-span>
+                                            <x-form-textarea type="text" name="provisionalDiagnosis" class="provisionalDiagnosis" id="provisionalDiagnosis" cols="10" rows="2"></x-form-textarea>
+                                        </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="physiciansPlanLabel">Physicians Plan</x-input-span>
                                             <x-form-textarea type="text" name="plan" id="plan" cols="10" rows="2"></x-form-textarea>

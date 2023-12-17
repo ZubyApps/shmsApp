@@ -3,10 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Nurse;
+use App\Services\DatatablesService;
+use App\Services\NurseService;
 use Illuminate\Http\Request;
 
 class NurseController extends Controller
 {
+    public function __construct(
+        private readonly DatatablesService $datatablesService, 
+        private readonly NurseService $nurseService)
+    {
+        
+    }
     /**
      * Display a listing of the resource.
      */
@@ -23,43 +31,25 @@ class NurseController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    // public function store(Request $request)
-    // {
-    //     //
-    // }
+    public function loadRegularVisitsNurses(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-    // /**
-    //  * Display the specified resource.
-    //  */
-    // public function show(Nurse $nurse)
-    // {
-    //     //
-    // }
+        $visits = $this->nurseService->getPaginatedRegularConsultedVisitsNurses($params);
+       
+        $loadTransformer = $this->nurseService->getConsultedVisitsNursesTransformer();
 
-    // /**
-    //  * Show the form for editing the specified resource.
-    //  */
-    // public function edit(Nurse $nurse)
-    // {
-    //     //
-    // }
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
 
-    // /**
-    //  * Update the specified resource in storage.
-    //  */
-    // public function update(Request $request, Nurse $nurse)
-    // {
-    //     //
-    // }
+    public function loadAncVisitsNurses(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-    // /**
-    //  * Remove the specified resource from storage.
-    //  */
-    // public function destroy(Nurse $nurse)
-    // {
-    //     //
-    // }
+        $visits = $this->nurseService->getPaginatedAncConsultedVisitsNurses($params);
+       
+        $loadTransformer = $this->nurseService->getConsultedVisitsNursesTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
 }

@@ -16,16 +16,20 @@ return new class extends Migration
     {
         Schema::create('visits', function (Blueprint $table) {
             $table->id();
-            $table->boolean('verification_status')->default(false);
+            $table->string('verification_status')->default(false);
             $table->string('verification_code')->nullable();
             $table->dateTime('consulted')->nullable();
             $table->boolean('closed')->default(false);
-            $table->foreignIdFor(User::class, 'doctor_id')->nullable();
-            $table->dateTime('vital_signs')->nullable();
-            $table->boolean('status')->default(false);
-            $table->foreignIdFor(Patient::class);
-            $table->foreignIdFor(Sponsor::class);
-            $table->foreignIdFor(User::class);
+            $table->string('doctor_done')->nullable();
+            $table->string('nurse_done')->nullable();
+            $table->string('pharmacy_done')->nullable();
+            $table->string('lab_done')->nullable();
+            $table->string('billing_done')->nullable();
+            $table->string('hmo_done')->nullable();
+            $table->foreignIdFor(User::class, 'doctor_id')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignIdFor(Patient::class)->constrained()->restrictOnDelete();
+            $table->foreignIdFor(Sponsor::class)->constrained()->restrictOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();
         });
     }

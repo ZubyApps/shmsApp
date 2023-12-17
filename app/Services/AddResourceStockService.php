@@ -5,18 +5,18 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
-use App\Models\AddResource;
+use App\Models\AddResourceStock;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AddResourceStockService
 {
-    public function __construct(private readonly AddResource $addResource)
+    public function __construct(private readonly AddResourceStock $addResourceStock)
     {
     }
 
-    public function create(Request $data, User $user): AddResource
+    public function create(Request $data, User $user): AddResourceStock
     {
         $addedStock = $user->addResources()->create([
             'resource_id'           => $data->resourceId,
@@ -54,13 +54,13 @@ class AddResourceStockService
         $orderDir   =  'desc';
 
         if (! empty($params->searchTerm)) {
-            return $this->addResource
+            return $this->addResourceStock
                         ->whereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->addResource
+        return $this->addResourceStock
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
@@ -69,17 +69,17 @@ class AddResourceStockService
 
     public function getLoadTransformer(): callable
     {
-       return  function (AddResource $addResource) {
+       return  function (AddResourceStock $addResourceStock) {
             return [
-                'id'                => $addResource->id,
-                'resource'          => $addResource->resource->name,
-                'qty'               => $addResource->quantity,
-                'purchasePrice'     => $addResource->purchase_price,
-                'sellingPrice'      => $addResource->selling_price,
-                'expiryDate'        => (new Carbon($addResource->expiry_date))->format('d/m/y'),
-                'supplier'          => $addResource->resourceSupplier?->company,
-                'createdBy'         => $addResource->user->username,
-                'createdAt'         => (new Carbon($addResource->created_at))->format('d/m/y'),
+                'id'                => $addResourceStock->id,
+                'resource'          => $addResourceStock->resource->name,
+                'qty'               => $addResourceStock->quantity,
+                'purchasePrice'     => $addResourceStock->purchase_price,
+                'sellingPrice'      => $addResourceStock->selling_price,
+                'expiryDate'        => (new Carbon($addResourceStock->expiry_date))->format('d/m/y'),
+                'supplier'          => $addResourceStock->resourceSupplier?->company,
+                'createdBy'         => $addResourceStock->user->username,
+                'createdAt'         => (new Carbon($addResourceStock->created_at))->format('d/m/y'),
                 // 'count'             => $addResource->resourceSubCategories()->count(),
             ];
          };

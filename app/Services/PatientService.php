@@ -101,7 +101,10 @@ class PatientService
             return $this->patient
                         ->where('first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('phone', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('sex', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
@@ -124,20 +127,14 @@ class PatientService
                 'name'              => $patient->first_name.' '. $patient->middle_name.' '.$patient->last_name,
                 'phone'             => $patient->phone,
                 'sex'               => $patient->sex,
-                'age'               => str_replace(['a', 'g', 'o'], '', (new Carbon($patient->date_of_birth))->diffForHumans(['other' => null, 'parts' => 2, 'short' => true]), ),
+                'age'               => $patient->age(),
                 'sponsor'           => $patient->sponsor->name,
                 'category'          => $patient->sponsor->sponsorCategory->name,
                 'createdAt'         => (new Carbon($patient->created_at))->format('d/m/Y'),
                 'active'            => $patient->is_active,
-                'count'             => $patient->visits()->count()
+                'count'             => $patient->visits()->count(),
+                'patient'           => $patient->patientId()
             ];
          };
     }
-
-    // public function ageConverter($date)
-    // {
-    //     match((new Carbon($date))->age){
-    //         0 
-    //     };
-    // }
 }

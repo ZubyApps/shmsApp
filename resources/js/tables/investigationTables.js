@@ -3,11 +3,12 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
+import { detailsBtn } from "../helpers";
 
 const getAllRegularPatientsVisitTable = (tableId) => {
     return new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  '/visits/load/consulted/regular/lab',
+        ajax:  '/investigations/load/consulted/regular/lab',
         orderMulti: true,
         search:true,
         language: {
@@ -33,11 +34,7 @@ const getAllRegularPatientsVisitTable = (tableId) => {
             } },
             {
                 sortable: false,
-                data: row =>  `
-                <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Details</button>
-                </div>
-                `      
+                data: row => detailsBtn(row) 
             },
         ]
     });
@@ -46,7 +43,7 @@ const getAllRegularPatientsVisitTable = (tableId) => {
 const getInpatientsVisitTable = (tableId) => {
     return new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  '/visits/load/consulted/inpatient/lab',
+        ajax:  '/investigations/load/consulted/inpatient/lab',
         orderMulti: true,
         search:true,
         language: {
@@ -72,11 +69,7 @@ const getInpatientsVisitTable = (tableId) => {
             } },
             {
                 sortable: false,
-                data: row =>  `
-                <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Details</button>
-                </div>
-                `      
+                data: row => detailsBtn(row)
             },
         ]
     });
@@ -85,7 +78,7 @@ const getInpatientsVisitTable = (tableId) => {
 const getAncPatientsVisitTable = (tableId) => {
     return new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  '/visits/load/consulted/anc/lab',
+        ajax:  '/investigations/load/consulted/anc/lab',
         orderMulti: true,
         search:true,
         language: {
@@ -111,11 +104,7 @@ const getAncPatientsVisitTable = (tableId) => {
             } },
             {
                 sortable: false,
-                data: row =>  `
-                <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Details</button>
-                </div>
-                `      
+                data: row => detailsBtn(row)  
             },
         ]
     });

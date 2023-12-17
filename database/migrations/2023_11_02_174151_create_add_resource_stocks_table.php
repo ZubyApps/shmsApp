@@ -14,7 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('add_resources', function (Blueprint $table) {
+        Schema::create('add_resource_stocks', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Resource::class);
             $table->integer('quantity');
@@ -22,8 +22,8 @@ return new class extends Migration
             $table->integer('purchase_price');
             $table->integer('selling_price');
             $table->dateTime('expiry_date')->nullable();
-            $table->foreignIdFor(ResourceSupplier::class)->nullable();
-            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(ResourceSupplier::class)->nullable()->constrained()->restrictOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();
         });
     }
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('add_resources');
+        Schema::dropIfExists('add_resource_stocks');
     }
 };

@@ -27,7 +27,7 @@ class ConsultationService
                 "exam_findings"             => $data->examinationFindings,
                 "obgyn_history"             => $data->obGynHistory,
                 "icd11_diagnosis"           => $data->selectedDiagnosis,
-                "ad_diagnosis"              => $data->additionalDiagnosis,
+                "provisional_diagnosis"     => $data->provisionalDiagnosis,
                 "admission_status"          => $data->admit,
                 "ward"                      => $data->ward,
                 "bed_no"                    => $data->bedNumber,
@@ -60,7 +60,7 @@ class ConsultationService
             "admission_status"          => $data->admit,
             "ward"                      => $data->ward,
             "bed_no"                    => $data->bedNumber,
-            // "updated_by"                => $user->id
+            "updated_by"                => $user->id
         ]);
 
         return $updatedConsultation;

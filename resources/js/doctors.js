@@ -112,7 +112,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#allPatientsVisitTable' )){
             $('#allPatientsVisitTable').dataTable().fnDraw()
         } else {
-            inPatientsVisitTable = getAllPatientsVisitTable('#allPatientsVisitTable')
+            allPatientsVisitTable = getAllPatientsVisitTable('#allPatientsVisitTable')
         }
     })    
 
@@ -210,6 +210,7 @@ window.addEventListener('DOMContentLoaded', function () {
     
                 getVitalSignsTableByVisit(tableId, visitId, vitalsignsModal)
     
+
                 http.get('/vitalsigns/load/visit_vitalsigns_chart',{params: {  visitId: visitId }})
                 .then((response) => {
                     getVitalsignsChartByVisit(vitalsignsChart, response, vitalsignsModal)
@@ -247,7 +248,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const visitId       = consultBtn.getAttribute('data-id')
             const patientType   = consultBtn.getAttribute('data-patientType')
 
-            http.post(`/visits/consult/${ visitId }`, {patientType})
+            http.post(`/doctors/consult/${ visitId }`, {patientType})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         if (patientType === 'ANC'){
@@ -416,16 +417,17 @@ window.addEventListener('DOMContentLoaded', function () {
                     const investigationDiv = div.parentElement.querySelector('.investigationAndManagementDiv')
                     const investigationBtn = div.parentElement.querySelector('#addInvestigationAndManagementBtn')
                     const modal = div.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
-                    
+                    let urlSuffix = ''
+                    modal.id !== 'newConsultationModal' || modal.id !== 'ancConsultationModal' || modal.id !== 'ancReviewModal' ? urlSuffix = '/review' : ''
                     saveBtn.setAttribute('disabled', 'disabled')
                     const tableId = investigationDiv.querySelector('.prescriptionTable').id
                     let data = {...getDivData(div), visitId}
 
-                    http.post('/consultation', {...data}, {"html": div})
+                    http.post(`/consultation${urlSuffix}`, {...data}, {"html": div})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
                             toggleAttributeLoop(querySelectAllTags(div, ['input, select, textarea']), 'disabled')
-                    
+                            clearValidationErrors(div)
                             saveBtn.textContent === 'Saved' ? saveBtn.textContent = `Save` : saveBtn.textContent = 'Saved'
                             investigationDiv.classList.remove('d-none')
                             location.href = '#'+investigationDiv.id
@@ -527,7 +529,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 btn.id == 'specialistConsultationBtn' ? modal = specialistConsultationModal :
                 btn.id == 'reviewAncPatientBtn' ? modal = ancReviewModal : ''
             
-                http.post(`/visits/consult/${ visitId }`, {patientType})
+                http.post(`/doctors/consult/${ visitId }`, {patientType})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                             openModals(modal, modal._element.querySelector('#saveConsultationBtn'), response.data)

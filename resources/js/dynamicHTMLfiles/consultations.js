@@ -14,7 +14,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                             ${iteration < 2 || line.specialistFlag ? consultation(line) :  review(count, line)}
                             ${ viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}
                             ${investigations(line, viewer)}
-                            ${viewer == '' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
+                            ${viewer == '' ||  viewer == 'hmo' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
                             ${!viewer ? updateInvestigationAndManagement(length, iteration, line) : ''}
                             
                             <div class="d-flex justify-content-start my-3 gap-2" >

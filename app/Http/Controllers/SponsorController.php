@@ -26,12 +26,9 @@ class SponsorController extends Controller
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+    public function list(Request $request, Sponsor $sponsor)
+    {   
+        return $sponsor::where('category', $request->category)->orderBy('name')->get(['id', 'name'])->toJson();
     }
 
     /**

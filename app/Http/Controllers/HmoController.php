@@ -2,11 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\VerifyPatientRequest;
 use App\Models\Hmo;
+use App\Models\Prescription;
+use App\Models\Visit;
+use App\Services\DatatablesService;
+use App\Services\HmoService;
 use Illuminate\Http\Request;
 
 class HmoController extends Controller
 {
+    public function __construct(
+        private readonly DatatablesService $datatablesService, 
+        private readonly HmoService $hmoService)
+    {
+        
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -31,35 +43,50 @@ class HmoController extends Controller
         //
     }
 
+    public function loadVerificationListTable(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->hmoService->getPaginatedVerificationList($params);
+       
+        $loadTransformer = $this->hmoService->getVerificationListTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
+
+    public function verifyPatient(VerifyPatientRequest $request, Visit $visit)
+    {
+        if ($request->status == 'Verified'){
+            return $visit->update([
+                'verification_status'   => true,
+                'verification_code'     => $request->codeText
+            ]);
+        }
+
+        return;
+    }
+
+    public function loadHmoApprovalTable(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sponsors = $this->hmoService->getPaginatedAllPrescriptionsRequest($params, $request);
+       
+        $loadTransformer = $this->hmoService->getAllPrescriptionsTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
+    }
+
     /**
-     * Display the specified resource.
+     * HMO officers approval.
      */
-    // public function show(Hmo $hmo)
-    // {
-    //     //
-    // }
+    public function approveItem(Request $request, Prescription $prescription)
+    {
+       return $this->hmoService->approve($request, $prescription, $request->user());
+    }
 
-    // /**
-    //  * Show the form for editing the specified resource.
-    //  */
-    // public function edit(Hmo $hmo)
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * Update the specified resource in storage.
-    //  */
-    // public function update(Request $request, Hmo $hmo)
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * Remove the specified resource from storage.
-    //  */
-    // public function destroy(Hmo $hmo)
-    // {
-    //     //
-    // }
+    public function rejectItem(Request $request, Prescription $prescription)
+    {
+       return $this->hmoService->reject($request, $prescription, $request->user());
+    }
 }

@@ -10,6 +10,7 @@ use App\Models\Prescription;
 use App\Models\Resource;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class PrescriptionService
@@ -47,7 +48,6 @@ class PrescriptionService
             return $this->prescription
                         ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('prescription.resource.rescurceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        // ->orWhereRelation('prescriptionSubCategory.prescriptionCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -71,52 +71,8 @@ class PrescriptionService
                 'quantity'          => $prescription->qty_billed,
                 'by'                => $prescription->user->username,
                 'note'              => $prescription->note
-                // 'count'             => 0//$prescription->prescriptions()->count(),
             ];
          };
-    }
-
-    public function dataDifferenceInDays(string $date) {
-                $now = Carbon::now();
-                $carbonatedDate = new Carbon($date);
-                $days = $now->diffInDays($carbonatedDate, false);
-
-                if ($days >= 90){
-                    return 'No';
-                    }
-               
-                if ($days > 0 && $days < 90){
-                    return 'Soon';
-                    }
-
-               if ($days <= 0){
-                return 'Yes';
-                    }
-        
-    }
-
-    public function getFormattedList($data)
-    {
-        if (! empty($data->prescription)){
-            return $this->prescription
-                        ->where('name', 'LIKE', '%' . addcslashes($data->prescription, '%_') . '%' )
-                        ->where('expiry_date', '>', new Carbon())
-                        ->where('is_active', true)
-                        ->orderBy('name', 'asc')
-                        ->get();
-        }
-           
-    }
-
-    public function listTransformer()
-    {
-        return function (Prescription $prescription){
-            return [
-                'id' => $prescription->id,
-                'name'  => $prescription->name.($prescription->flag ? ' '.$prescription->flag : '').($prescription->expiry_date && $prescription->expiry_date < (new Carbon())->addMonths(3) ? ' expiring soon - '.(new Carbon($prescription->expiry_date))->format('d/M/y') : '' )
-            ];
-        };
-        
     }
 
     public function getPaginatedLabRequests(DataTableQueryParams $params, $data)
@@ -126,7 +82,7 @@ class PrescriptionService
 
         return $this->prescription
                     ->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
-                    ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'Laboratory')
+                    ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'Investigations')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -143,7 +99,7 @@ class PrescriptionService
                 'dr'                => $prescription->user->username,
                 'result'            => $prescription->result,
                 'sent'              => $prescription->result_date ? (new Carbon($prescription->result_at))->format('d/m/y g:ia') : '',
-                'staff'             => $prescription->labScientist->username ?? '',
+                'staff'             => $prescription->resultBy->username ?? '',
                 'doc'               => $prescription->doc ?? '',
             ];
          };
@@ -188,33 +144,34 @@ class PrescriptionService
                     'status'            => $medicationChart->status ?? '',
                     'doseCount'         => $medicationChart->dose_count,
                     'count'             => $medicationChart::where('prescription_id', $medicationChart->prescription->id)->count(),
-                    'patient'           => $medicationChart->visit->patient->card_no .' '. $medicationChart->visit->patient->first_name .' '. $medicationChart->visit->patient->middle_name .' '. $medicationChart->visit->patient->last_name ?? ''
+                    'patient'           => $medicationChart->visit->patient->patientId() ?? ''
                 ]),
             ];
          };
     }
 
-    public function updateRecord(Request $data, Prescription $prescription, User $user): Prescription
+    public function updateLabResultRecord(Request $data, Prescription $prescription, User $user): Prescription
     {
        $prescription->update([
            'result'         => $data->result,
            'result_date'    => Carbon::now(),
-           'lab_id'         => $user->id,
+           'result_by'      => $user->id,
 
         ]);
 
         return $prescription;
     }
 
-    public function removeRecord(Prescription $prescription): Prescription
+    public function removeLabResultRecord(Prescription $prescription): Prescription
     {
        $prescription->update([
         'result'         => null,
         'result_date'    => null,
-        'lab_id'         => null,
+        'result_by'      => null,
 
         ]);
 
         return  $prescription;
     }
+
 }

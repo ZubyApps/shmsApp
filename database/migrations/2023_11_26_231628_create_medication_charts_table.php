@@ -17,18 +17,18 @@ return new class extends Migration
     {
         Schema::create('medication_charts', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Prescription::class);
+            $table->foreignIdFor(Prescription::class)->constrained()->cascadeOnDelete();
             $table->string('dose_prescribed');
             $table->string('scheduled_time');
             $table->string('dose_given')->nullable();
             $table->dateTime('time_given')->nullable();
             $table->string('note')->nullable();
-            $table->foreignIdFor(User::class, 'given_by')->nullable();
+            $table->foreignIdFor(User::class, 'given_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->boolean('status')->default(false);
             $table->integer('dose_count');
-            $table->foreignIdFor(User::class);
-            $table->foreignIdFor(Consultation::class);
-            $table->foreignIdFor(Visit::class);
+            $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
+            $table->foreignIdFor(Consultation::class)->constrained()->restrictOnDelete();
+            $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();
             $table->timestamps();
         });
     }

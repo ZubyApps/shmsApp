@@ -55,7 +55,8 @@ window.addEventListener('DOMContentLoaded', function () {
         table.addEventListener('click', function (event) {
             const consultationDetailsBtn = event.target.closest('.consultationDetailsBtn')
             const investigationsBtn = event.target.closest('.investigationsBtn')
-    
+            const viewer = 'Lab'
+
             if (consultationDetailsBtn) {
                 consultationDetailsBtn.setAttribute('disabled', 'disabled')
                 const btnHtml = consultationDetailsBtn.innerHTML
@@ -63,7 +64,7 @@ window.addEventListener('DOMContentLoaded', function () {
     
                 const visitId = consultationDetailsBtn.getAttribute('data-id')
                 const patientType = consultationDetailsBtn.getAttribute('data-patientType')
-    
+                
                 http.get(`/consultation/consultations/${visitId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
@@ -78,7 +79,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             addResultModal._element.querySelector('#patient').value = patientBio.patientId
                             addResultModal._element.querySelector('#sponsorName').value = patientBio.sponsorName
     
-                            const viewer = 'Lab'
+                            
                             consultations.forEach(line => {
                                 iteration++
     
@@ -111,7 +112,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 investigationsModal._element.querySelector('#patient').value = investigationsBtn.getAttribute('data-patient')
                 investigationsModal._element.querySelector('#sponsor').value = investigationsBtn.getAttribute('data-sponsor')
     
-                getLabTableByConsultation(tableId, investigationsModal._element, '', null, visitId)
+                getLabTableByConsultation(tableId, investigationsModal._element, viewer, null, visitId)
     
                 investigationsModal.show()
                 investigationsBtn.removeAttribute('disabled')
@@ -133,12 +134,12 @@ window.addEventListener('DOMContentLoaded', function () {
         const collapseBtn  = event.target.closest('.collapseBtn')
         const addResultBtn = event.target.closest('#addResultBtn')
         const deleteResultBtn = event.target.closest('.deleteResultBtn')
+        const viewer = 'lab'
 
         if (collapseBtn) {
             const gotoDiv = document.querySelector(collapseBtn.getAttribute('data-goto'))
             const investigationTableId = gotoDiv.querySelector('.investigationTable').id
             const conId = gotoDiv.querySelector('.investigationTable').dataset.id
-            const viewer = 'lab'
 
             if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
                 $('#' + investigationTableId).dataTable().fnDestroy()
@@ -147,7 +148,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const goto = () => {
                 location.href = collapseBtn.getAttribute('data-goto')
                 window.history.replaceState({}, document.title, '/' + 'investigations')
-                getLabTableByConsultation(investigationTableId, conId, reviewDetailsModal._element, viewer)
+                getLabTableByConsultation(investigationTableId, reviewDetailsModal._element, viewer, conId, null)
             }
             setTimeout(goto, 300)
         }

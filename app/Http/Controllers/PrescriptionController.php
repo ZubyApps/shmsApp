@@ -76,24 +76,16 @@ class PrescriptionController extends Controller
         $loadTransformer = $this->prescriptionService->getTreatmentTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
-    }    
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Prescription $prescription)
-    {
-        //
     }
 
     public function saveLabResult(SaveLabResultRequest $request, Prescription $prescription)
     {
-        return $this->prescriptionService->updateRecord($request, $prescription, $request->user());
+        return $this->prescriptionService->updateLabResultRecord($request, $prescription, $request->user());
     }
 
     public function removeLabResult(Prescription $prescription)
     {
-        return $this->prescriptionService->removeRecord($prescription);
+        return $this->prescriptionService->removeLabResultRecord($prescription);
     }
 
     /**

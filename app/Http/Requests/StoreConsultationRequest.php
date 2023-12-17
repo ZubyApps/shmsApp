@@ -24,11 +24,12 @@ class StoreConsultationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'visitId'           => ['required', 'numeric', 'exists:'.Visit::class.',id'],
-            'selectedDiagnosis' => ['required'],
-            'admit'             => ['required'],
-            'ward'              => ['required_if:admit,Inpatient,admit,Observation,'],
-            'bedNumber'         => ['required_if:admit,=,Inpatient,admit,=,Observation'],
+            'visitId'              => ['required', 'numeric', 'exists:'.Visit::class.',id'],
+            // 'selectedDiagnosis'    => ['required'],
+            'provisionalDiagnosis' => ['required_if:selectedDiagnosis,null'],
+            'admit'                => ['required'],
+            // 'ward'                 => ['required_if:admit,Inpatient,admit,Observation,'],
+            // 'bedNumber'            => ['required_if:admit,=,Inpatient,admit,=,Observation'],
         ];
     }
 }

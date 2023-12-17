@@ -35,13 +35,13 @@ class VisitService
         ]);
     }
 
-    public function update(Request $data, Visit $visit, User $user): Visit
-    {
-       $visit->update([
-                "patient_type"   => $data->patientType,
-        ]);
-        return $visit;
-    }
+    // public function update(Request $data, Visit $visit, User $user): Visit
+    // {
+    //    $visit->update([
+    //             "patient_type"   => $data->patientType,
+    //     ]);
+    //     return $visit;
+    // }
 
     public function getPaginatedWaitingVisits(DataTableQueryParams $params)
     {
@@ -51,16 +51,21 @@ class VisitService
         if (! empty($params->searchTerm)) {
             return $this->visit
                         ->Where('consulted', null)
-                        ->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->where(function (Builder $query) use($params) {
+                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
+        
         return $this->visit
                     ->where('consulted', null)
+                    ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
@@ -73,9 +78,9 @@ class VisitService
             return [
                 'id'                => $visit->id,
                 'patientId'         => $visit->patient->id,
-                'patient'           => $visit->patient->card_no.' ' .$visit->patient->first_name.' '. $visit->patient->middle_name.' '.$visit->patient->last_name,
+                'patient'           => $visit->patient->patientId(),
                 'sex'               => $visit->patient->sex,
-                'age'               => str_replace(['a', 'g', 'o'], '', (new Carbon($visit->patient->date_of_birth))->diffForHumans(['other' => null, 'parts' => 1, 'short' => true]), ),
+                'age'               => $visit->patient->age(),
                 'sponsor'           => $visit->sponsor->name,
                 'came'              => (new Carbon($visit->created_at))->diffForHumans(['parts' => 2, 'short' => true]),
                 'doctor'            => $visit->doctor->username ?? '',
@@ -86,59 +91,7 @@ class VisitService
          };
     }
 
-    public function getPaginatedVerificationList(DataTableQueryParams $params)
-    {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
-
-        if (! empty($params->searchTerm)) {
-            return $this->visit
-                        ->Where('consulted', null)
-                        ->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        return $this->visit
-                    ->where('verification_status', false)
-                    ->whereRelation('sponsor.sponsorCategory', 'name', '=', 'HMO')
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-
-       
-    }
-
-    public function getVerificationListTransformer(): callable
-    {
-       return  function (Visit $visit) {
-            return [
-                'id'                => $visit->id,
-                'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
-                'patientId'         => $visit->patient->id,
-                'patient'           => $visit->patient->card_no.' ' .$visit->patient->first_name.' '. $visit->patient->middle_name.' '.$visit->patient->last_name,
-                'staffId'           => $visit->patient->staff_id ?? '',
-                'sex'               => $visit->patient->sex,
-                'age'               => str_replace(['a', 'g', 'o'], '', (new Carbon($visit->patient->date_of_birth))->diffForHumans(['other' => null, 'parts' => 1, 'short' => true]), ),
-                'sponsor'           => $visit->sponsor->name,
-                'doctor'            => $visit->doctor->username ?? '',
-                'phone'            => $visit->patient->phone,
-            ];
-         };
-    }
-
-    public function initiateConsultation(Visit $visit, Request $request) 
-    {
-        $visit->update([
-            'doctor_id'    =>  $request->user()->id
-        ]);
-
-        return response()->json(new PatientBioResource($visit));
-    }
-
-    public function getPaginatedAllConsultedVisits(DataTableQueryParams $params)
+    public function getPaginatedAllConsultedVisits(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
@@ -152,9 +105,34 @@ class VisitService
                         ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                     })
                     
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->filterBy == 'OutPatient'){
+            return $this->visit
+            ->where('consulted', '!=', null)
+            ->whereRelation('consultations', 'patient_type', 'Outpatient')
+            ->orderBy($orderBy, $orderDir)
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->filterBy == 'Inpatient'){
+            return $this->visit
+                    ->where('consulted', '!=', null)
+                    ->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
+                    ->orWhereRelation('consultations', 'admission_status', '=', 'Observation')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+        if ($data->filterBy == 'ANC'){
+            return $this->visit
+                    ->where('consulted', '!=', null)
+                    ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -171,18 +149,18 @@ class VisitService
             return [
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
-                'patient'           => $visit->patient->card_no.' ' .$visit->patient->first_name.' '. $visit->patient->middle_name.' '.$visit->patient->last_name,
+                'patient'           => $visit->patient->patientId(),
                 'doctor'            => $visit->doctor->username,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->icd11_diagnosis,
+                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis,
                 'sponsor'           => $visit->sponsor->name,
                 'vitalSigns'        => $visit->vitalSigns->count(),
-                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->admission_status,
+                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
                 'patientType'       => $visit->patient->patient_type,
                 'labPrescribed'     => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
+                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
                                         ->count(),
                 'labDone'           => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
+                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
                                         ->where('result_date','!=', null)
                                         ->count(),
 
@@ -190,34 +168,6 @@ class VisitService
          };
     }
 
-    public function getPaginatedUserRegularConsultedVisits(DataTableQueryParams $params, User $user)
-    {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
-
-        if (! empty($params->searchTerm)) {
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where(function (Builder $query) use($params) {
-                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                    })
-                    
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-                    ->where('user_id', '=', $user->id)
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    }
 
     public function getPaginatedInpatientVisits(DataTableQueryParams $params)
     {
@@ -233,7 +183,8 @@ class VisitService
                         ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                     })
                     
                     ->orderBy($orderBy, $orderDir)
@@ -254,266 +205,21 @@ class VisitService
             return [
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
-                'patient'           => $visit->patient->card_no.' ' .$visit->patient->first_name.' '. $visit->patient->middle_name.' '.$visit->patient->last_name,
+                'patient'           => $visit->patient->patientId(),
                 'doctor'            => $visit->doctor->username,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->icd11_diagnosis,
+                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis,
                 'sponsor'           => $visit->sponsor->name,
                 'vitalSigns'        => $visit->vitalSigns->count(),
-                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->admission_status,
+                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
                 'patientType'       => $visit->patient->patient_type,
                 'labPrescribed'     => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
+                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
                                         ->count(),
                 'labDone'           => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
+                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
                                         ->where('result_date','!=', null)
                                         ->count(),
 
-            ];
-         };
-    }
-
-    public function getPaginatedUserAncConsultedVisits(DataTableQueryParams $params, User $user)
-    {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
-
-        if (! empty($params->searchTerm)) {
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where(function (Builder $query) use($params) {
-                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                    })
-                    
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->whereRelation('patient', 'patient_type', '=', 'ANC')
-                    ->where('user_id', '=', $user->id)
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    }
-
-    public function getAncConsultedVisitsTransformer(): callable
-    {
-       return  function (Visit $visit) {
-            return [
-                'id'                => $visit->id,
-                'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
-                'patient'           => $visit->patient->card_no.' ' .$visit->patient->first_name.' '. $visit->patient->middle_name.' '.$visit->patient->last_name,
-                'doctor'            => $visit->doctor->username,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->icd11_diagnosis,
-                'sponsor'           => $visit->sponsor->name,
-                'vitalSigns'        => $visit->vitalSigns->count(),
-                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->admission_status,
-                'patientType'       => $visit->patient->patient_type,
-                'labPrescribed'     => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
-                                        ->count(),
-                'labDone'           => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
-                                        ->where('result_date','!=', null)
-                                        ->count(),
-
-            ];
-         };
-    }
-
-    public function getPaginatedRegularConsultedVisitsNurses(DataTableQueryParams $params)
-    {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
-
-        if (! empty($params->searchTerm)) {
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where(function (Builder $query) use($params) {
-                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                    })
-                    
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-                    ->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Medication')
-                    ->orWhereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Medical Service')
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    }
-
-    public function getConsultedVisitsNursesTransformer(): callable
-    {
-       return  function (Visit $visit) {
-            return [
-                'id'                => $visit->id,
-                'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
-                'patient'           => $visit->patient->card_no.' ' .$visit->patient->first_name.' '. $visit->patient->middle_name.' '.$visit->patient->last_name,
-                'doctor'            => $visit->doctor->username,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->icd11_diagnosis,
-                'sponsor'           => $visit->sponsor->name,
-                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->admission_status,
-                'patientType'       => $visit->patient->patient_type,
-                'vitalSigns'        => $visit->vitalSigns->count(),
-                'chartCount'        => Prescription::where('visit_id', $visit->id)->count()
-            ];
-         };
-    }
-
-    public function getPaginatedAncConsultedVisitsNurses(DataTableQueryParams $params)
-    {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
-
-        if (! empty($params->searchTerm)) {
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where(function (Builder $query) use($params) {
-                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                    })
-                    
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->whereRelation('patient', 'patient_type', '=', 'ANC')
-                    ->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Medication')
-                    ->orWhereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Medical Service')
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    }
-
-    public function getPaginatedRegularConsultedVisitsLab(DataTableQueryParams $params)
-    {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
-
-        if (! empty($params->searchTerm)) {
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where(function (Builder $query) use($params) {
-                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                    })
-                    
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-                    ->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Laboratory')
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    }
-
-    public function getPaginatedInpatientVisitsLab(DataTableQueryParams $params)
-    {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
-
-        if (! empty($params->searchTerm)) {
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where(function (Builder $query) use($params) {
-                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                    })
-                    
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Laboratory')
-                    ->where(function (Builder $query) use($params) {
-                        $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
-                        ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
-                    })
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    }
-
-    public function getPaginatedAncConsultedVisitsLab(DataTableQueryParams $params)
-    {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
-
-        if (! empty($params->searchTerm)) {
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where(function (Builder $query) use($params) {
-                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                    })
-                    
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->whereRelation('patient', 'patient_type', '=', 'ANC')
-                    ->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Laboratory')
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    }
-
-    public function getConsultedVisitsLabTransformer(): callable
-    {
-       return  function (Visit $visit) {
-            return [
-                'id'                => $visit->id,
-                'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
-                'patient'           => $visit->patient->card_no.' ' .$visit->patient->first_name.' '. $visit->patient->middle_name.' '.$visit->patient->last_name,
-                'doctor'            => $visit->doctor->username,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->icd11_diagnosis,
-                'sponsor'           => $visit->sponsor->name,
-                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()->admission_status,
-                'patientType'       => $visit->patient->patient_type,
-                'labPrescribed'     => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
-                                        ->count(),
-                'labDone'           => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
-                                        ->where('result_date','!=', null)
-                                        ->count(),
             ];
          };
     }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enum\VerificationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,6 +11,9 @@ class Visit extends Model
     use HasFactory;
 
     protected $guarded = [];
+    protected $cast = [
+        'verification_status' => VerificationStatus::class,
+    ];
 
     public function user()
     {

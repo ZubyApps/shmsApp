@@ -21,8 +21,8 @@ return new class extends Migration
             $table->text('med_surg_history')->nullable();
             $table->text('obgyn_history')->nullable();
             $table->text('exam_findings')->nullable();
-            $table->text('icd11_diagnosis');
-            $table->text('ad_diagnosis')->nullable();
+            $table->text('icd11_diagnosis')->nullable();
+            $table->text('provisional_diagnosis')->nullable();
             $table->text('phys_plan')->nullable();
             $table->text('complaint')->nullable();
             $table->text('assessment')->nullable();
@@ -40,9 +40,9 @@ return new class extends Migration
             $table->string('ward')->nullable();
             $table->string('bed_no')->nullable();
             $table->boolean('specialist_consultation')->default(false)->nullable();
-            $table->foreignIdFor(Visit::class);
-            $table->foreignIdFor(User::class, 'updated_by')->nullable();
-            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();
+            $table->foreignIdFor(User::class, 'updated_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();
         });
     }

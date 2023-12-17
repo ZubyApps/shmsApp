@@ -25,9 +25,9 @@ return new class extends Migration
             $table->date('expiry_date')->nullable();
             $table->integer('stock_level')->default(0)->nullable();
             $table->boolean('is_active')->default(true);
-            $table->foreignIdFor(ResourceSubCategory::class);
-            $table->foreignIdFor(ResourceSupplier::class)->nullable();
-            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(ResourceSubCategory::class)->constrained()->restrictOnDelete();
+            $table->foreignIdFor(ResourceSupplier::class)->nullable()->constrained()->restrictOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();
         });
     }

@@ -309,13 +309,13 @@ window.addEventListener('DOMContentLoaded', function () {
         const saveWardAndBedBtn = event.target.closest('#saveWardAndBedBtn')
         const wardAndBedDiv = document.querySelectorAll('#wardAndBedDiv')
         const deleteGivenBtn = event.target.closest('#deleteGivenBtn')
+        const viewer = 'nurse'
 
         if (collapseBtn) {
             const gotoDiv = document.querySelector(collapseBtn.getAttribute('data-goto'))
             const investigationTableId = gotoDiv.querySelector('.investigationTable').id
             const treatmentTableId = gotoDiv.querySelector('.nurseTreatmentTable').id
             const conId = gotoDiv.querySelector('.investigationTable').dataset.id
-            const viewer = 'nurse'
 
             if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
                 $('#' + investigationTableId).dataTable().fnDestroy()
@@ -327,7 +327,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const goto = () => {
                 location.href = collapseBtn.getAttribute('data-goto')
                 window.history.replaceState({}, document.title, "/" + "nurses")
-                getLabTableByConsultation(investigationTableId, conId, reviewDetailsModal._element, viewer)
+                getLabTableByConsultation(investigationTableId, reviewDetailsModal._element, viewer, conId, null)
                 getNurseTreatmentByConsultation(treatmentTableId, conId, reviewDetailsModal._element)
             }
             setTimeout(goto, 300)

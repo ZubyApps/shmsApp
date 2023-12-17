@@ -9,6 +9,7 @@ use App\Http\Requests\VerifyPatientRequest;
 use App\Services\DatatablesService;
 use App\Services\VisitService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class VisitController extends Controller
 {
@@ -19,26 +20,7 @@ class VisitController extends Controller
         
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreVisitRequest $request)
+    public function storeVisit(StoreVisitRequest $request)
     {
         $visit = $this->visitService->create($request, $request->user());
         
@@ -56,33 +38,11 @@ class VisitController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 
-    public function loadVerificationListTable(Request $request)
-    {
-        $params = $this->datatablesService->getDataTableQueryParameters($request);
-
-        $visits = $this->visitService->getPaginatedVerificationList($params);
-       
-        $loadTransformer = $this->visitService->getVerificationListTransformer();
-
-        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
-    }
-
     public function loadAllVisits(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $visits = $this->visitService->getPaginatedAllConsultedVisits($params);
-       
-        $loadTransformer = $this->visitService->getRegularConsultedVisitsTransformer();
-
-        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
-    }
-
-    public function loadUserRegularVisits(Request $request)
-    {
-        $params = $this->datatablesService->getDataTableQueryParameters($request);
-
-        $visits = $this->visitService->getPaginatedUserRegularConsultedVisits($params, $request->user());
+        $visits = $this->visitService->getPaginatedAllConsultedVisits($params, $request);
        
         $loadTransformer = $this->visitService->getRegularConsultedVisitsTransformer();
 
@@ -99,102 +59,19 @@ class VisitController extends Controller
 
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
-
-    public function loadUserAncVisits(Request $request)
-    {
-        $params = $this->datatablesService->getDataTableQueryParameters($request);
-
-        $visits = $this->visitService->getPaginatedUserAncConsultedVisits($params, $request->user());
-       
-        $loadTransformer = $this->visitService->getAncConsultedVisitsTransformer();
-
-        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
-    }
-
-    public function loadRegularVisitsNurses(Request $request)
-    {
-        $params = $this->datatablesService->getDataTableQueryParameters($request);
-
-        $visits = $this->visitService->getPaginatedRegularConsultedVisitsNurses($params);
-       
-        $loadTransformer = $this->visitService->getConsultedVisitsNursesTransformer();
-
-        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
-    }
-
-    public function loadAncVisitsNurses(Request $request)
-    {
-        $params = $this->datatablesService->getDataTableQueryParameters($request);
-
-        $visits = $this->visitService->getPaginatedAncConsultedVisitsNurses($params);
-       
-        $loadTransformer = $this->visitService->getConsultedVisitsNursesTransformer();
-
-        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
-    }
     
-    public function loadRegularVisitsLab(Request $request)
-    {
-        $params = $this->datatablesService->getDataTableQueryParameters($request);
-
-        $visits = $this->visitService->getPaginatedRegularConsultedVisitsLab($params);
-       
-        $loadTransformer = $this->visitService->getConsultedVisitsLabTransformer();
-
-        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
-    }
-
-    public function loadAncVisitsLab(Request $request)
-    {
-        $params = $this->datatablesService->getDataTableQueryParameters($request);
-
-        $visits = $this->visitService->getPaginatedAncConsultedVisitsLab($params);
-       
-        $loadTransformer = $this->visitService->getConsultedVisitsLabTransformer();
-
-        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
-    }
-
-    public function loadInpatientVisitsLab(Request $request)
-    {
-        $params = $this->datatablesService->getDataTableQueryParameters($request);
-
-        $visits = $this->visitService->getPaginatedInpatientVisitsLab($params);
-       
-        $loadTransformer = $this->visitService->getConsultedVisitsLabTransformer();
-
-        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
-    }
+    
 
     /**
-     * Display the specified resource.
+     * close a completed visit
      */
-    public function consult(Visit $visit, Request $request)
+    public function closeVisit(Request $request, Visit $visit)
     {
-        return $this->visitService->initiateConsultation($visit, $request);
-    }
+        return DB::transaction(function () use($visit){
+                $visit->update(['closed' => true]);
+                $visit->patient()->update(['is_active' => false]);
+            });
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function verifyPatient(VerifyPatientRequest $request, Visit $visit)
-    {
-        if ($request->status == 'Verified'){
-            return $visit->update([
-                'verification_status'   => true,
-                'verification_code'     => $request->codeText
-            ]);
-        }
-
-        return;
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateVisitRequest $request, Visit $visit)
-    {
-        //
     }
 
     /**
@@ -202,11 +79,9 @@ class VisitController extends Controller
      */
     public function destroy(Visit $visit)
     {
-        $visit->destroy($visit->id);
-
-       return $visit->patient()->update([
-            'is_active' => false
-        ]);
-        
+       return DB::transaction(function() use($visit){
+                $visit->destroy($visit->id);
+                $visit->patient()->update(['is_active' => false]);
+            });
     }
 }

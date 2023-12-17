@@ -97,11 +97,6 @@ class PatientController extends Controller
                 'known_conditions']);
     }
 
-    public function initiateVisit(Patient $patient)
-    {
-        return new PatientIdResource($patient);
-    }
-
     /**
      * Remove the specified resource from storage.
      */
