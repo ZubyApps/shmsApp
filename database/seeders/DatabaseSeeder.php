@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Enum\PayClass;
 use App\Models\Patient;
 use App\Models\Sponsor;
 use App\Models\SponsorCategory;
@@ -18,9 +19,71 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
          User::factory(1)->create();
-         SponsorCategory::factory(1)->create();
-         Sponsor::factory(1)->create();
+        //  SponsorCategory::factory(1)->create();
+        //  Sponsor::factory(1)->create();
          Patient::factory(1)->create();
+
+         //Sponsor Categories
+         \App\Models\SponsorCategory::create([
+            'user_id' => 1,
+            'name' => 'Personal',
+            'description' => 'Sponsored by the Patient',
+            'pay_class' => PayClass::from('Cash'),
+            'approval'  => filter_var('false', FILTER_VALIDATE_BOOL),
+            'bill_matrix' => '40',
+            'balance_required' => filter_var('true', FILTER_VALIDATE_BOOL),
+            'consultation_fee' => '1500'
+         ]);
+         \App\Models\SponsorCategory::create([
+            'user_id' => 1,
+            'name' => 'Family',
+            'description' => 'Sponsored by the family',
+            'pay_class' => PayClass::from('Cash'),
+            'approval'  => filter_var('false', FILTER_VALIDATE_BOOL),
+            'bill_matrix' => '40',
+            'balance_required' => filter_var('true', FILTER_VALIDATE_BOOL),
+            'consultation_fee' => '1500'
+         ]);
+         \App\Models\SponsorCategory::create([
+            'user_id' => 1,
+            'name' => 'HMO',
+            'description' => 'Sponsored by Private Insurance',
+            'pay_class' => PayClass::from('Credit'),
+            'approval'  => filter_var('true', FILTER_VALIDATE_BOOL),
+            'bill_matrix' => '100',
+            'balance_required' => filter_var('false', FILTER_VALIDATE_BOOL),
+            'consultation_fee' => '2500'
+         ]);
+         \App\Models\SponsorCategory::create([
+            'user_id' => 1,
+            'name' => 'NHIS',
+            'description' => 'Sponsored by Govt. Insurance',
+            'pay_class' => PayClass::from('Cash'),
+            'approval'  => filter_var('true', FILTER_VALIDATE_BOOL),
+            'bill_matrix' => '10',
+            'balance_required' => filter_var('false', FILTER_VALIDATE_BOOL),
+            'consultation_fee' => '0'
+         ]);
+         \App\Models\SponsorCategory::create([
+            'user_id' => 1,
+            'name' => 'Retainership',
+            'description' => 'Sponsored by Organization',
+            'pay_class' => PayClass::from('Credit'),
+            'approval'  => filter_var('true', FILTER_VALIDATE_BOOL),
+            'bill_matrix' => '0',
+            'balance_required' => filter_var('true', FILTER_VALIDATE_BOOL),
+            'consultation_fee' => '1500'
+         ]);
+
+        //Sponsor 
+        \App\Models\Sponsor::create([
+            'user_id' => 1,
+            'name' => 'Self',
+            'phone' => '00000000000',
+            'email' => '',
+            'registration_bill' => '2000',
+            'sponsor_category_id' => 1
+        ]);
 
         // Resource Categories
         \App\Models\ResourceCategory::create([
@@ -81,7 +144,7 @@ class DatabaseSeeder extends Seeder
         ]);
         \App\Models\ResourceSubCategory::create([
             'name' => 'Treatment',
-            'description' => 'Dressings, Care treatments',
+            'description' => 'Monitoring, Dressings, Care treatments',
             'user_id'   => 1,
             'resource_category_id'   => 1
         ]);
@@ -132,10 +195,81 @@ class DatabaseSeeder extends Seeder
 
         //ResourceSubCategories for Resource Category 3
         \App\Models\ResourceSubCategory::create([
-            'name' => 'Consultations',
+            'name' => 'Consultation',
             'description' => 'Gp Consultations & Reviews, Specialist Consultation & Reviews ',
             'user_id'   => 1,
             'resource_category_id'   => 3
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Operation',
+            'description' => 'Invasive interventions',
+            'user_id'   => 1,
+            'resource_category_id'   => 3
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Procedure',
+            'description' => 'Non-invasive to mildly invasive interventions',
+            'user_id'   => 1,
+            'resource_category_id'   => 3
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Clinical Care',
+            'description' => 'Professional Care Services',
+            'user_id'   => 1,
+            'resource_category_id'   => 3
+        ]);
+        
+        //ResourceSubCategories for Resource Category 4
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Devices',
+            'description' => 'Countable Items eg. Gloves, Syringes, Cannulas etc.',
+            'user_id'   => 1,
+            'resource_category_id'   => 4
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Uncountables',
+            'description' => 'Liquid Disinfectants, Wound care materials eg. Cotton wool, guaze etc.',
+            'user_id'   => 1,
+            'resource_category_id'   => 4
+        ]);
+        //ResourceSubCategories for Resource Category 5
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Accommodation',
+            'description' => 'Wards and Beds',
+            'user_id'   => 1,
+            'resource_category_id'   => 5
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Amenities',
+            'description' => 'Wards and Beds',
+            'user_id'   => 1,
+            'resource_category_id'   => 5
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'In-House Service',
+            'description' => 'Disposables, Laundry',
+            'user_id'   => 1,
+            'resource_category_id'   => 5
+        ]);
+
+        //ResourceSubCategories for Resource Category 6
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Documents',
+            'description' => 'Birth Certificates, Death Certificates, Medical Reports etc.',
+            'user_id'   => 1,
+            'resource_category_id'   => 6
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Fines',
+            'description' => 'Birth Certificates, Death Certificates, Medical Reports etc.',
+            'user_id'   => 1,
+            'resource_category_id'   => 6
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Outside Service',
+            'description' => 'Home, Office or Out of Hospital Inverventions etc.',
+            'user_id'   => 1,
+            'resource_category_id'   => 6
         ]);
     }
 }

@@ -20,12 +20,12 @@ return new class extends Migration
             $table->string('verification_code')->nullable();
             $table->dateTime('consulted')->nullable();
             $table->boolean('closed')->default(false);
-            $table->string('doctor_done')->nullable();
-            $table->string('nurse_done')->nullable();
-            $table->string('pharmacy_done')->nullable();
-            $table->string('lab_done')->nullable();
-            $table->string('billing_done')->nullable();
-            $table->string('hmo_done')->nullable();
+            $table->foreignIdFor(User::class, 'doctor_done_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignIdFor(User::class, 'nurse_done_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignIdFor(User::class, 'pharmacy_done_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignIdFor(User::class, 'lab_done_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignIdFor(User::class, 'billing_done_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignIdFor(User::class, 'hmo_done_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'doctor_id')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(Patient::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Sponsor::class)->constrained()->restrictOnDelete();

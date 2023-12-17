@@ -25,6 +25,36 @@ class Visit extends Model
         return $this->belongsTo(User::class, 'doctor_id');
     }
 
+    public function doctorDoneBy()
+    {
+        return $this->belongsTo(User::class, 'doctor_done_by');
+    }
+
+    public function nurseDoneBy()
+    {
+        return $this->belongsTo(User::class, 'nurse_done_by');
+    }
+
+    public function pharmacyDoneBy()
+    {
+        return $this->belongsTo(User::class, 'pharmacy_done_by');
+    }
+
+    public function labDoneBy()
+    {
+        return $this->belongsTo(User::class, 'lab_done_by');
+    }
+
+    public function billingDoneBy()
+    {
+        return $this->belongsTo(User::class, 'billing_done_by');
+    }
+
+    public function hmoDoneBy()
+    {
+        return $this->belongsTo(User::class, 'hmo_done_by');
+    }
+
     public function patient()
     {
         return $this->belongsTo(Patient::class);

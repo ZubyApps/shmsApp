@@ -92,7 +92,7 @@ class User extends Authenticatable
 
     public function addResources() 
     {
-        return $this->hasMany(AddResource::class);
+        return $this->hasMany(AddResourceStock::class);
     }
 
     public function dispenseResources() 
