@@ -6,7 +6,7 @@ use App\Models\Visit;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 
-class StoreConsultationRequest extends FormRequest
+class StoreConsultationReviewRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class StoreConsultationRequest extends FormRequest
     {
         return [
             'visitId'              => ['required', 'numeric', 'exists:'.Visit::class.',id'],
-            'provisionalDiagnosis' => ['required_if:selectedDiagnosis,null'],
+            'assessment'           => ['required_without_all:selectedDiagnosis,provisionalDiagnosis'],
             'admit'                => ['required'],
             // 'ward'                 => ['required_if:admit,Inpatient,admit,Observation,'],
             // 'bedNumber'            => ['required_if:admit,=,Inpatient,admit,=,Observation'],

@@ -22,6 +22,8 @@ return new class extends Migration
             $table->integer('purchase_price')->default(0);
             $table->integer('selling_price')->default(0);
             $table->string('unit_description')->nullable();
+            $table->string('category')->nullable();
+            $table->string('sub_category')->nullable();
             $table->date('expiry_date')->nullable();
             $table->integer('stock_level')->default(0)->nullable();
             $table->boolean('is_active')->default(true);

@@ -25,7 +25,7 @@ class ConsultationReviewResource extends JsonResource
             "examinationFindings"           => $this->exam_findings ?? '',
             "obGynHistory"                  => $this->obgyn_history ?? '',
             "selectedDiagnosis"             => $this->icd11_diagnosis ?? '',
-            "additionalDiagnosis"           => $this->ad_diagnosis ?? '',
+            "provisionalDiagnosis"          => $this->provisional_diagnosis ?? '',
             "status"                        => $this->admission_status ?? '',
             "ward"                          => $this->ward ?? '',
             "bedNumber"                     => $this->bed_no ?? '',

@@ -44,6 +44,7 @@ class ResourceSubCategoryService
         if (! empty($params->searchTerm)) {
             return $this->resourceSubCategory
                         ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('resourceCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }

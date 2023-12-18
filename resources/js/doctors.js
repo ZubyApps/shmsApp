@@ -418,7 +418,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     const investigationBtn = div.parentElement.querySelector('#addInvestigationAndManagementBtn')
                     const modal = div.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
                     let urlSuffix = ''
-                    modal.id !== 'newConsultationModal' || modal.id !== 'ancConsultationModal' || modal.id !== 'ancReviewModal' ? urlSuffix = '/review' : ''
+                    modal.id == 'newConsultationModal' || modal.id == 'ancConsultationModal' || modal.id == 'ancReviewModal' || modal.id == 'specialistConsultationModal' ? '' : urlSuffix = '/review'
                     saveBtn.setAttribute('disabled', 'disabled')
                     const tableId = investigationDiv.querySelector('.prescriptionTable').id
                     let data = {...getDivData(div), visitId}
@@ -470,7 +470,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     }
                     const selectedOption = datalistEl.options.namedItem(input.value)
                     if (selectedOption){
-                        if (selectedOption.getAttribute('data-cat') == 'Medication'){
+                        if (selectedOption.getAttribute('data-cat') == 'Medications'){
                             div.querySelector('.qty').classList.add('d-none')
                             div.querySelector('.pres').classList.remove('d-none')
                         } else {

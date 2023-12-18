@@ -105,11 +105,11 @@ Route::middleware('auth')->group(function () {
         Route::get('', [NurseController::class, 'index'])->name('Nurses');
         Route::get('/load/consulted/regular/nurses', [NurseController::class, 'loadRegularVisitsNurses']);
         Route::get('/load/consulted/anc/nurses', [NurseController::class, 'loadAncVisitsNurses']);
-
     });
 
     Route::prefix('consultation')->group(function () {
         Route::post('', [ConsultationController::class, 'store']);
+        Route::post('/review', [ConsultationController::class, 'storeReview']);
         Route::post('/{consultation}', [ConsultationController::class, 'updateAdmissionStatus']);
         Route::get('/consultations/{visit}', [ConsultationController::class, 'loadConsultations']);
         Route::delete('/{consultation}', [ConsultationController::class, 'destroy']);
@@ -209,16 +209,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/consulted/regular/lab', [InvestigationController::class, 'loadRegularVisitsLab']);
         Route::get('/load/consulted/inpatient/lab', [InvestigationController::class, 'loadInpatientVisitsLab']);
         Route::get('/load/consulted/anc/lab', [InvestigationController::class, 'loadAncVisitsLab']);
-
     });
 
-    Route::prefix('/hmo')->group(function () {
+    Route::prefix('hmo')->group(function () {
         Route::get('', [HmoController::class, 'index'])->name('Hmo');
-        Route::get('/load/verification', [HmoController::class, 'loadVerificationListTable']);
         Route::post('/verify/{visit}', [HmoController::class, 'verifyPatient']);
-        Route::get('/load/hmo', [HmoController::class, 'loadHmoApprovalTable']);
-        Route::post('/approve/{prescription}', [HmoController::class, 'approveItem']);
+        Route::get('/load/consulted/', [HmoController::class, 'loadAllHmoVisits']);
+        Route::get('/load/verification/list', [HmoController::class, 'loadVerificationListTable']);
+        Route::get('/load/approval/list', [HmoController::class, 'loadHmoApprovalListTable']);
+        Route::patch('/approve/{prescription}', [HmoController::class, 'approveItem']);
         Route::patch('/reject/{prescription}', [HmoController::class, 'rejectItem']);
+        Route::patch('/bill/{prescription}', [HmoController::class, 'saveHmoBill']);
     });
 });
 

@@ -36,9 +36,14 @@ class Prescription extends Model
         return $this->belongsTo(User::class, 'result_by');
     }
 
-    public function billedBy()
+    public function hmsBillBy()
     {
-        return $this->belongsTo(User::class, 'billed_by');
+        return $this->belongsTo(User::class, 'hms_bill_by');
+    }
+
+    public function hmoBillBy()
+    {
+        return $this->belongsTo(User::class, 'hmo_bill_by');
     }
 
     public function dispensedBy()

@@ -60,32 +60,32 @@ window.addEventListener('DOMContentLoaded', function () {
             {data: "category"},
             {data: "createdBy"},
             {data: "createdAt"},
-            {
-                sortable: false,
-                data: row => () => {
-                    if (row.count < 1) {
-                         return `
-                            <div class="d-flex flex-">
-                                <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </button>
-                                <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
-                                    <i class="bi bi-trash3-fill"></i>
-                                </button>
-                            </div>
-                        `
-                    } else {
-                        return `
-                            <div class="d-flex flex-">
-                                <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </button>
-                            </div>
-                        `
-                    }
+            // {
+            //     sortable: false,
+            //     data: row => () => {
+            //         if (row.count < 1) {
+            //              return `
+            //                 <div class="d-flex flex-">
+            //                     <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
+            //                         <i class="bi bi-pencil-fill"></i>
+            //                     </button>
+            //                     <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
+            //                         <i class="bi bi-trash3-fill"></i>
+            //                     </button>
+            //                 </div>
+            //             `
+            //         } else {
+            //             return `
+            //                 <div class="d-flex flex-">
+            //                     <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
+            //                         <i class="bi bi-pencil-fill"></i>
+            //                     </button>
+            //                 </div>
+            //             `
+            //         }
                            
-                } 
-                    }
+            //     } 
+            //         }
         ]
     });
 
@@ -248,18 +248,18 @@ window.addEventListener('DOMContentLoaded', function () {
                                 </a>
                             </div>
                             <div class="dropdown ms-1">
-                                <a class="text-${!row.isActive ? 'danger' : 'primary'} tooltip-test text-decoration-none" title="options" data-bs-toggle="dropdown" href="" >
-                                <i class="bi bi-gear fs-4" role="button"></i>
+                                <a class="btn btn-outline-${!row.isActive ? 'danger' : 'primary'} tooltip-test text-decoration-none" title="options" data-bs-toggle="dropdown" href="" >
+                                <i class="bi bi-gear" role="button"></i>
                                 </a>
                                     <ul class="dropdown-menu">
                                     <li>
-                                        <a class="dropdown-item addStockBtn tooltip-test" title="remove" data-id="${ row.id }">
+                                        <a class="btn dropdown-item addStockBtn tooltip-test" title="add" data-id="${ row.id }">
                                             <i class="bi bi-plus-square text-primary"></i> Add stock
                                         </a>
-                                        <a class="dropdown-item updateBtn tooltip-test" title="remove"  data-id="${ row.id }">
+                                        <a class="btn dropdown-item updateBtn tooltip-test" title="edit"  data-id="${ row.id }">
                                         <i class="bi bi-pencil-fill text-primary"></i> Edit
                                         </a>
-                                        <a class="dropdown-item deleteBtn tooltip-test" title="delete"  data-id="${ row.id }">
+                                        <a class="btn dropdown-item deleteBtn tooltip-test" title="delete"  data-id="${ row.id }">
                                             <i class="bi bi-x-circle-fill text-primary"></i> Delete
                                         </a>
                                     </li>
@@ -272,20 +272,20 @@ window.addEventListener('DOMContentLoaded', function () {
                         <div class="d-flex flex-">
                             <div>
                                     <a class="btn btn-outline-${!row.isActive ? 'danger' : 'primary'} toggleActiveStatusBtn" data-id="${ row.id }">
-                                    ${!row.isActive ? '<i class="bi bi-x-square-fill tooltip-test fs-4" title="activate"></i>' : '<i class="bi bi-check-square-fill tooltip-test" title="activate"></i>'}
+                                    ${!row.isActive ? '<i class="bi bi-x-square-fill tooltip-test" title="activate"></i>' : '<i class="bi bi-check-square-fill tooltip-test" title="activate"></i>'}
                                     </a>
                                 </div>
                                 <div class="dropdown ms-1">
-                                <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="options" data-bs-toggle="dropdown"  >
-                                <i class="bi bi-gear fs-4" role="button"></i>
+                                <a class="btn btn-outline-${!row.isActive ? 'danger' : 'primary'} tooltip-test text-decoration-none" title="options" data-bs-toggle="dropdown"  >
+                                <i class="bi bi-gear" role="button"></i>
                                 </a>
                                     <ul class="dropdown-menu">
                                     <li>
-                                        <a class="dropdown-item addStockBtn tooltip-test" title="Add stock" data-id="${ row.id }">
+                                        <a class="btn dropdown-item addStockBtn tooltip-test" title="add" data-id="${ row.id }">
                                             <i class="bi bi-plus-square text-primary"></i> Add stock
                                         </a>
-                                        <a class="dropdown-item updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                                        <i class="bi bi-pencil-fill text-primary"></i> Update
+                                        <a class="btn dropdown-item updateBtn tooltip-test" title="edit" data-id="${ row.id }">
+                                        <i class="bi bi-pencil-fill text-primary"></i> Edit
                                         </a>
                                     </li>
                                 </ul>

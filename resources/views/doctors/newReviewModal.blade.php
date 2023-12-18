@@ -99,12 +99,16 @@
                                             class="selectedDiagnosis-2" style="height: 100px"></x-form-textarea>
                                     </x-form-div>
                                     <x-form-div class="col-xl-6">
+                                        <x-input-span id="diagnosisLabel">Provisional <br /> Diagnosis</x-input-span>
+                                        <x-form-textarea type="text" name="provisionalDiagnosis" class="provisionalDiagnosis" id="provisionalDiagnosis" cols="10" rows="2"></x-form-textarea>
+                                    </x-form-div>
+                                    <x-form-div class="col-xl-6">
                                         <x-input-span class="" id="assessmentLabel"> Assessment
                                         </x-input-span>
-                                        <x-form-textarea class="assessment" name="assessment" cols="10"
+                                        <x-form-textarea class="assessment" name="assessment" id="assessment" cols="10"
                                             rows="3"></x-form-textarea>
                                     </x-form-div>
-                                    <x-form-div class="col-xl-12">
+                                    <x-form-div class="col-xl-6">
                                         <x-input-span class="" id="planLabel">Plan</x-input-span>
                                         <x-form-textarea class="" name="plan" id="plan" cols="10"
                                             rows="3"></x-form-textarea>

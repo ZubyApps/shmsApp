@@ -85,16 +85,16 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
                             ${AncConsultation(line, iteration, count)}
                             ${ viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}
                             ${investigations(line)}
-                            ${viewer == '' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
+                            ${viewer == '' ||  viewer == 'hmo' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
                             ${!viewer ? updateInvestigationAndManagement(length, iteration, line) : ''}
                             <div class="extraInfoDiv" >
-                                ${length > iteration ? '' : 
+                                ${length == iteration && viewer == '' ? 
                                 `<div class="d-flex justify-content-end my-2">
                                     <button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" class="btn btn-outline-primary">
                                         <i class="bi bi-trash"></i>
                                         Delete
                                     </button>
-                                </div>`}
+                                </div>`  : ''}
                             </div>
                         </div>
                     </div>

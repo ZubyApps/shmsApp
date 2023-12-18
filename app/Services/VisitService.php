@@ -35,14 +35,6 @@ class VisitService
         ]);
     }
 
-    // public function update(Request $data, Visit $visit, User $user): Visit
-    // {
-    //    $visit->update([
-    //             "patient_type"   => $data->patientType,
-    //     ]);
-    //     return $visit;
-    // }
-
     public function getPaginatedWaitingVisits(DataTableQueryParams $params)
     {
         $orderBy    = 'created_at';
@@ -151,7 +143,9 @@ class VisitService
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
                 'doctor'            => $visit->doctor->username,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis,
+                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
+                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
+                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
                 'sponsor'           => $visit->sponsor->name,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
@@ -207,7 +201,9 @@ class VisitService
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
                 'doctor'            => $visit->doctor->username,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis,
+                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
+                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
+                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
                 'sponsor'           => $visit->sponsor->name,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,

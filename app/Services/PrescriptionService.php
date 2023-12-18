@@ -12,6 +12,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PrescriptionService
 {
@@ -21,22 +22,26 @@ class PrescriptionService
 
     public function createFromDoctors(Request $data, User $user): Prescription
     {
-        $bill = null;
-        if ($data->quantity){
-            $resource = $this->resource->find($data->resource);
-            $bill = $resource->selling_price * $data->quantity;
-        }
+        return DB::transaction(function () use($data, $user) {
+            $bill = null;
+            if ($data->quantity){
+                $resource = $this->resource->find($data->resource);
+                $bill = $resource->selling_price * $data->quantity;
+            }
 
-        return $user->prescriptions()->create([
-            'resource_id'        => $data->resource,
-            'prescription'       => $data->prescription,
-            'consultation_id'    => $data->conId,
-            'visit_id'           => $data->visitId,
-            'qty_billed'         => $data->quantity,
-            'bill'               => $bill,
-            'bill_date'          => $bill ? new Carbon() : null,
-            'note'               => $data->note
-        ]);
+            return $user->prescriptions()->create([
+                'resource_id'       => $data->resource,
+                'prescription'      => $data->prescription,
+                'consultation_id'   => $data->conId,
+                'visit_id'          => $data->visitId,
+                'qty_billed'        => $data->quantity,
+                'hms_bill'          => $bill,
+                'hms_bill_date'     => $bill ? new Carbon() : null,
+                'hms_bill_by'       => $bill ? $user->id : null,
+                'note'              => $data->note
+            ]);
+        });
+        
     }
 
     public function getPaginatedInitialPrescriptions(DataTableQueryParams $params, $data)
@@ -47,7 +52,7 @@ class PrescriptionService
         if (! empty($params->searchTerm)) {
             return $this->prescription
                         ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('prescription.resource.rescurceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -82,7 +87,8 @@ class PrescriptionService
 
         return $this->prescription
                     ->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
-                    ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'Investigations')
+                    ->whereRelation('resource', 'category', 'Investigations')
+                    // ->whereRelation('resource.resourceSubCategory.resourceCategory', 'category', 'name', '=', 'Investigations')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -112,8 +118,8 @@ class PrescriptionService
 
         return $this->prescription
                     ->where('consultation_id', $data->conId)
-                    ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'Medication')
-                    ->orWhereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'Medical Service')
+                    ->whereRelation('resource', 'category', 'Medications')
+                    ->orWhereRelation('resource', 'category', 'Medical Services')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -173,5 +179,4 @@ class PrescriptionService
 
         return  $prescription;
     }
-
 }

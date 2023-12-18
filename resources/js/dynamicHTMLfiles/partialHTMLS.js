@@ -565,13 +565,13 @@ const consultation = (line) => {
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
                             <span class="input-group-text" id="diagnosisLabel"> Selected <br>ICD11 Diagnosis </span>
-                            <textarea class="form-control reviewSelectedDiagnosis" type="text" name="selectedDiagnosis" cols="10" rows="2" readonly="readonly">${line.selectedDiagnosis ?? 'nill'}</textarea>
+                            <textarea class="form-control reviewSelectedDiagnosis" type="text" name="selectedDiagnosis" cols="10" rows="2" readonly="readonly">${line.selectedDiagnosis}</textarea>
                         </div>
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="input-group mb-1">
-                            <span class="input-group-text" id="diagnosisLabel"> Addional <br> Diagnosis </span> 
-                            <textarea class="form-control additionalDiagnosis" type="text" name="additionalDiagnosis" cols="10" rows="2" readonly="readonly"></textarea>
+                            <span class="input-group-text" id="diagnosisLabel"> Provisional <br> Diagnosis </span> 
+                            <textarea class="form-control additionalDiagnosis" type="text" name="additionalDiagnosis" cols="10" rows="2" readonly="readonly">${line.provisionalDiagnosis}</textarea>
                         </div>
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-6">

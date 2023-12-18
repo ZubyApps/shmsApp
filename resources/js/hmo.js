@@ -2,7 +2,7 @@ import { Offcanvas, Modal } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
 import { clearDivValues, getOrdinal, getDivData, clearValidationErrors, loadingSpinners} from "./helpers"
-import { getAllPatientsVisitTable, getApprovalListTable, getVerificationTable, getWaitingTable } from "./tables/hmoTables";
+import { getAllHmoPatientsVisitTable, getApprovalListTable, getHmoPatientsBillVisitTable, getVerificationTable, getWaitingTable } from "./tables/hmoTables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getLabTableByConsultation, getTreatmentTableByConsultation, getVitalSignsTableByVisit } from "./tables/doctorstables";
 import { getVitalsignsChartByVisit } from "./charts/vitalsignsCharts";
@@ -29,7 +29,7 @@ window.addEventListener('DOMContentLoaded', function () {
     
     const verificationTab           = document.querySelector('#nav-verifyPatients-tab')
     const treatmentsTab             = document.querySelector('#nav-treatments-tab')
-    const billsTab                  = document.querySelector('#nav-bills-tab')
+    const billPatientsTab                  = document.querySelector('#nav-billpatients-tab')
     const reportsTab                = document.querySelector('#nav-reports-tab')
 
     const filterListOption          = document.querySelector('#filterList')
@@ -38,7 +38,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const waitingTable = getWaitingTable('waitingTable')
     const verificationTable = getVerificationTable('verificationTable')
     const approvalListTable = getApprovalListTable('approvalListTable')
-    let hmotreatmentsTable, billsTable
+    let hmotreatmentsTable, billPatientsTable
 
     waitingBtn.addEventListener('click', function () {
         waitingTable.draw()
@@ -54,15 +54,16 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#hmoTreatmentsTable' )){
             $('#hmoTreatmentsTable').dataTable().fnDraw()
         } else {
-            hmotreatmentsTable = getAllPatientsVisitTable('#hmoTreatmentsTable')
+            hmotreatmentsTable = getAllHmoPatientsVisitTable('#hmoTreatmentsTable')
         }
     })
     
-    billsTab.addEventListener('click', function () {
-        if ($.fn.DataTable.isDataTable( '#billsTable' )){
-            $('#billsTable').dataTable().fnDraw()
+    billPatientsTab.addEventListener('click', function () {
+        console,log('opened')
+        if ($.fn.DataTable.isDataTable( '#billPatientsTable' )){
+            $('#billPatientssTable').dataTable().fnDraw()
         } else {
-            billsTable = getInpatientsVisitTable('#billsTable')
+            billPatientsTable = getHmoPatientsBillVisitTable('billPatientsTable')
         }
     })
 
@@ -161,23 +162,23 @@ window.addEventListener('DOMContentLoaded', function () {
             const prescriptionId = approveBtn.getAttribute('data-id')
             approveBtn.classList.add('d-none')
             approveBtn.parentElement.querySelector('.rejectBtn').classList.add('d-none')
-            const commentInput = approveBtn.parentElement.querySelector('.commentInput')
-            commentInput.classList.remove('d-none')
-            commentInput.focus()
-            commentInput.addEventListener('blur', function() {
-            console.log(commentInput.value)
-            http.post(`/hmo/approve/${prescriptionId}`, {comment: commentInput.value})
+            const noteInput = approveBtn.parentElement.querySelector('.noteInput')
+            noteInput.classList.remove('d-none')
+            noteInput.focus()
+            noteInput.addEventListener('blur', function() {
+            console.log(noteInput.value)
+            http.patch(`/hmo/approve/${prescriptionId}`, {note: noteInput.value})
             .then((response) => {
                 if (response.status >= 200 || response.status <= 300) {
                     approveBtn.removeAttribute('disabled')
                     approvalListTable.draw()
                 }
             })
-            .catch((error) => {
-                console.log(error)
-                approvalListTable.draw()
-                approveBtn.removeAttribute('disabled')
-            })
+                .catch((error) => {
+                    console.log(error)
+                    approvalListTable.draw()
+                    approveBtn.removeAttribute('disabled')
+                })
             }) 
         }
 
@@ -185,13 +186,13 @@ window.addEventListener('DOMContentLoaded', function () {
             const prescriptionId = rejectBtn.getAttribute('data-id')
             rejectBtn.classList.add('d-none')
             rejectBtn.parentElement.querySelector('.approveBtn').classList.add('d-none')
-            const commentInput = rejectBtn.parentElement.querySelector('.commentInput')
-            commentInput.classList.remove('d-none')
-            commentInput.focus()
-            commentInput.addEventListener('blur', function() {
-            console.log(commentInput.value)
-                if (commentInput.value) {
-                    http.post(`/hmo/reject/${prescriptionId}`, {comment: commentInput.value})
+            const noteInput = rejectBtn.parentElement.querySelector('.noteInput')
+            noteInput.classList.remove('d-none')
+            noteInput.focus()
+            noteInput.addEventListener('blur', function() {
+            console.log(noteInput.value)
+                if (noteInput.value) {
+                    http.patch(`/hmo/reject/${prescriptionId}`, {note: noteInput.value})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                             rejectBtn.removeAttribute('disabled')
@@ -213,7 +214,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#hmoTreatmentsTable' )){
             $('#hmoTreatmentsTable').dataTable().fnDestroy()
         }
-        getAllPatientsVisitTable('#hmoTreatmentsTable', filterListOption.value)
+        getAllHmoPatientsVisitTable('#hmoTreatmentsTable', filterListOption.value)
     })
 
     document.querySelector('#verificationTable').addEventListener('click', function (event) {
@@ -298,7 +299,9 @@ window.addEventListener('DOMContentLoaded', function () {
         if (collapseBtn) {
             const gotoDiv = document.querySelector(collapseBtn.getAttribute('data-goto'))
             const investigationTableId = gotoDiv.querySelector('.investigationTable').id
+            console.log(investigationTableId)
             const treatmentTableId = gotoDiv.querySelector('.treatmentTable').id
+            console.log(treatmentTableId)
             const conId = gotoDiv.querySelector('.investigationTable').dataset.id
 
             if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {

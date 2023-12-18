@@ -91,8 +91,8 @@
                     <button class="nav-link" id="nav-treatments-tab" data-bs-toggle="tab" data-bs-target="#nav-treatments"
                         type="button" role="tab" aria-controls="nav-treatments" aria-selected="false">Treatments</button>
 
-                    <button class="nav-link" id="nav-bills-tab" data-bs-toggle="tab" data-bs-target="#nav-bills"
-                        type="button" role="tab" aria-controls="nav-bills" aria-selected="false">Bills</button>
+                    <button class="nav-link" id="nav-billpatients-tab" data-bs-toggle="tab" data-bs-target="#nav-billpatients"
+                        type="button" role="tab" aria-controls="nav-billpatients" aria-selected="false">Bill</button>
 
                     <button class="nav-link" id="nav-reporst-tab" data-bs-toggle="tab" data-bs-target="#nav-reports"
                         type="button" role="tab" aria-controls="nav-reports" aria-selected="false">Reports</button>
@@ -126,7 +126,7 @@
                         <select class="form-select form-select-md" name="filterList" id="filterList">
                             <option value="">All</option>
                             <option value="Outpatient">Outpatients</option>
-                            <option value="Inpatient">Inpatient</option>
+                            <option value="Inpatient">Inpatients</option>
                             <option value="ANC">ANC</option>
                         </select>
                     </x-form-div>
@@ -151,23 +151,23 @@
                     </div>
                 </div>
                 <!-- bills table -->
-                <div class="tab-pane fade" id="nav-bills" role="tabpanel" aria-labelledby="nav-bills-tab"
+                <div class="tab-pane fade" id="nav-billpatients" role="tabpanel" aria-labelledby="nav-billpatients-tab"
                     tabindex="0">
                     <div class="py-4 ">
-                        <table id="billsTable" class="table table-hover align-middle table-sm">
+                        <table id="billPatientsTable" class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
+                                    <th>Seen</th>
                                     <th>Patient</th>
                                     <th>Sponsor</th>
                                     <th>Doctor</th>
                                     <th>Diagnosis</th>
                                     <th>Status</th>
-                                    <th>Bill Status</th>
+                                    <th>Make Bill</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                {{-- <tr>
                                     <td>09/10/2023</td>
                                     <td>SH21/4012 Josephine Ene Ode</td>
                                     <td>Axe Mansard</td>
@@ -176,9 +176,9 @@
                                     <td>Out-Patient</td>
                                     <td>
                                         <button class="btn btn-outline-primary" id="treatmentDetailsBtn">Sent</button>
-                                        {{-- <button class="btn btn-outline-primary" id="reviewConsultationBtn">Approve</button> --}}
+                                        <button class="btn btn-outline-primary" id="reviewConsultationBtn">Approve</button>
                                     </td>
-                                </tr>
+                                </tr> --}}
                             </tbody>
                         </table>
                     </div>

@@ -21,12 +21,11 @@ class DatabaseSeeder extends Seeder
          User::factory(1)->create();
         //  SponsorCategory::factory(1)->create();
         //  Sponsor::factory(1)->create();
-         Patient::factory(1)->create();
 
          //Sponsor Categories
          \App\Models\SponsorCategory::create([
             'user_id' => 1,
-            'name' => 'Personal',
+            'name' => 'Individual',
             'description' => 'Sponsored by the Patient',
             'pay_class' => PayClass::from('Cash'),
             'approval'  => filter_var('false', FILTER_VALIDATE_BOOL),
@@ -82,8 +81,12 @@ class DatabaseSeeder extends Seeder
             'phone' => '00000000000',
             'email' => '',
             'registration_bill' => '2000',
-            'sponsor_category_id' => 1
+            'sponsor_category_id' => 1,
+            'category_name'  => 'Individual'
         ]);
+
+        //Patient
+        Patient::factory(1)->create();
 
         // Resource Categories
         \App\Models\ResourceCategory::create([
@@ -132,7 +135,7 @@ class DatabaseSeeder extends Seeder
         ]);
         \App\Models\ResourceSubCategory::create([
             'name' => 'Topical',
-            'description' => 'Powders, Creams',
+            'description' => 'Powders, Creams, Ointments',
             'user_id'   => 1,
             'resource_category_id'   => 1
         ]);
@@ -142,17 +145,17 @@ class DatabaseSeeder extends Seeder
             'user_id'   => 1,
             'resource_category_id'   => 1
         ]);
-        \App\Models\ResourceSubCategory::create([
-            'name' => 'Treatment',
-            'description' => 'Monitoring, Dressings, Care treatments',
-            'user_id'   => 1,
-            'resource_category_id'   => 1
-        ]);
+        // \App\Models\ResourceSubCategory::create([
+        //     'name' => 'Treatment',
+        //     'description' => 'Monitoring, Dressings, Care treatments',
+        //     'user_id'   => 1,
+        //     'resource_category_id'   => 1
+        // ]);
 
         //ResourceSubCategories for Resource Category 2
         \App\Models\ResourceSubCategory::create([
             'name' => 'Microbiology',
-            'description' => 'Microbiological Tests',
+            'description' => 'Microbiological Tests eg MP',
             'user_id'   => 1,
             'resource_category_id'   => 2
         ]);
@@ -163,7 +166,7 @@ class DatabaseSeeder extends Seeder
             'resource_category_id'   => 2
         ]);
         \App\Models\ResourceSubCategory::create([
-            'name' => 'Hermatology/Microscopy',
+            'name' => 'Hermatology',
             'description' => 'Blood tests',
             'user_id'   => 1,
             'resource_category_id'   => 2
@@ -176,7 +179,7 @@ class DatabaseSeeder extends Seeder
         ]);
         \App\Models\ResourceSubCategory::create([
             'name' => 'Toxicology',
-            'description' => 'Immunity tests',
+            'description' => 'Tests for toxins',
             'user_id'   => 1,
             'resource_category_id'   => 2
         ]);
@@ -208,7 +211,7 @@ class DatabaseSeeder extends Seeder
         ]);
         \App\Models\ResourceSubCategory::create([
             'name' => 'Procedure',
-            'description' => 'Non-invasive to mildly invasive interventions',
+            'description' => 'Non-invasive or less invasive interventions',
             'user_id'   => 1,
             'resource_category_id'   => 3
         ]);
@@ -221,17 +224,24 @@ class DatabaseSeeder extends Seeder
         
         //ResourceSubCategories for Resource Category 4
         \App\Models\ResourceSubCategory::create([
-            'name' => 'Devices',
+            'name' => 'Device',
             'description' => 'Countable Items eg. Gloves, Syringes, Cannulas etc.',
             'user_id'   => 1,
             'resource_category_id'   => 4
         ]);
         \App\Models\ResourceSubCategory::create([
-            'name' => 'Uncountables',
-            'description' => 'Liquid Disinfectants, Wound care materials eg. Cotton wool, guaze etc.',
+            'name' => 'Material',
+            'description' => 'Wound care materials eg. Cotton wool, guaze etc.',
             'user_id'   => 1,
             'resource_category_id'   => 4
         ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Uncountable',
+            'description' => 'Liquid Disinfectants eg. Spirit, Purit etc.',
+            'user_id'   => 1,
+            'resource_category_id'   => 4
+        ]);
+
         //ResourceSubCategories for Resource Category 5
         \App\Models\ResourceSubCategory::create([
             'name' => 'Accommodation',
@@ -240,8 +250,8 @@ class DatabaseSeeder extends Seeder
             'resource_category_id'   => 5
         ]);
         \App\Models\ResourceSubCategory::create([
-            'name' => 'Amenities',
-            'description' => 'Wards and Beds',
+            'name' => 'Amenity',
+            'description' => 'Water, Light, Intercom',
             'user_id'   => 1,
             'resource_category_id'   => 5
         ]);
@@ -254,14 +264,14 @@ class DatabaseSeeder extends Seeder
 
         //ResourceSubCategories for Resource Category 6
         \App\Models\ResourceSubCategory::create([
-            'name' => 'Documents',
+            'name' => 'Document',
             'description' => 'Birth Certificates, Death Certificates, Medical Reports etc.',
             'user_id'   => 1,
             'resource_category_id'   => 6
         ]);
         \App\Models\ResourceSubCategory::create([
-            'name' => 'Fines',
-            'description' => 'Birth Certificates, Death Certificates, Medical Reports etc.',
+            'name' => 'Fine',
+            'description' => 'Penalty for inproper conduct etc.',
             'user_id'   => 1,
             'resource_category_id'   => 6
         ]);

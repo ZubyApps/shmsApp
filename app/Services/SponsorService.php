@@ -25,7 +25,7 @@ class SponsorService
             'email'                 => $data->email,
             'registration_bill'     => $data->registrationBill,
             'sponsor_category_id'   => $data->category,
-            'category_naame'        => SponsorCategory::findOrFail($data->category)->name
+            'category_name'         => SponsorCategory::findOrFail($data->category)->name
         ]);
     }
 

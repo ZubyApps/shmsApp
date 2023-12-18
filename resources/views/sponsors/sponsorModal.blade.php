@@ -21,7 +21,7 @@
                                 <option value="NHIS">NHIS</option> 
                                 <option value="Retainership">Retainership</option>  --}}
                                 @foreach ($categories as $category )
-                                    @if (Str::lower($category->name) == "self" && $category->sponsors()->count() > 0)
+                                    @if (Str::lower($category->name) == "individual" && $category->sponsors()->count() > 0)
                                     <option disabled value="{{ $category->id}}" name="{{ $category->name }}">{{ $category->name }}</option>
                                     @else
                                     <option value="{{ $category->id}}" name="{{ $category->name }}">{{ $category->name }}</option>

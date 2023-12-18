@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Resource;
+use App\Models\ResourceSubCategory;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -21,13 +22,14 @@ class ResourceService
         return $user->resources()->create([
             'name'                      => $data->name,
             'flag'                      => $data->flag,
+            'category'                  => ResourceSubCategory::findOrFail($data->resourceSubCategory)->resourceCategory->name,
+            'sub_category'              => ResourceSubCategory::findOrFail($data->resourceSubCategory)->name,
             'resource_sub_category_id'  => $data->resourceSubCategory,
             'purchase_price'            => $data->purchasePrice,
             'selling_price'             => $data->sellingPrice,
             'reorder_level'             => $data->reOrder,
             'unit_description'          => $data->unitDescription,
-            'expiry_date'               => $data->expiryDate ? new Carbon($data->expiryDate) : '',
-            // 'stock_level'               => $data->stockLevel,
+            'expiry_date'               => $data->expiryDate ? new Carbon($data->expiryDate) : null,
         ]);
     }
 
@@ -36,13 +38,14 @@ class ResourceService
        $resource->update([
             'name'                      => $data->name,
             'flag'                      => $data->flag,
+            'category'                  => ResourceSubCategory::findOrFail($data->resourceSubCategory)->resourceCategory->name,
+            'sub_category'              => ResourceSubCategory::findOrFail($data->resourceSubCategory)->name,
             'resource_sub_category_id'  => $data->resourceSubCategory,
             'purchase_price'            => $data->purchasePrice,
             'selling_price'             => $data->sellingPrice,
             'reorder_level'             => $data->reOrder,
             'unit_description'          => $data->unitDescription,
             'expiry_date'               => new Carbon($data->expiryDate),
-            // 'stock_level'               => $data->stockLevel,
         ]);
 
         return $resource;
@@ -56,8 +59,10 @@ class ResourceService
         if (! empty($params->searchTerm)) {
             return $this->resource
                         ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('resourceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('resourceSubCategory.resourceCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('resourceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -88,7 +93,7 @@ class ResourceService
                 'expired'           => $resource->expiry_date ? $this->dataDifferenceInDays($resource->expiry_date) : 'N/A',
                 'createdBy'         => $resource->user->username,
                 'createdAt'         => $resource->created_at->format('d/m/y'),
-                'count'             => 0//$resource->resources()->count(),
+                'count'             => $resource->prescriptions()->count(),
             ];
          };
     }
@@ -130,8 +135,8 @@ class ResourceService
         return function (Resource $resource){
             return [
                 'id'        => $resource->id,
-                'name'      => $resource->name.($resource->flag ? ' - '.$resource->flag : '').($resource->expiry_date && $resource->expiry_date < (new Carbon())->addMonths(3) ? ' - expiring soon - '.$resource->expiry_date : '' ),
-                'category'  => $resource->resourceSubCategory->resourceCategory->name
+                'name'      => $resource->nameWithIndicators(),
+                'category'  => $resource->category
             ];
         };
         

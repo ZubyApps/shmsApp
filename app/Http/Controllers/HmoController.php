@@ -54,6 +54,17 @@ class HmoController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 
+    public function loadAllHmoVisits(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->hmoService->getPaginatedAllConsultedHmoVisits($params, $request);
+       
+        $loadTransformer = $this->hmoService->getAllHmoConsultedVisitsTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
+
     public function verifyPatient(VerifyPatientRequest $request, Visit $visit)
     {
         if ($request->status == 'Verified'){
@@ -66,7 +77,7 @@ class HmoController extends Controller
         return;
     }
 
-    public function loadHmoApprovalTable(Request $request)
+    public function loadHmoApprovalListTable(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
@@ -88,5 +99,10 @@ class HmoController extends Controller
     public function rejectItem(Request $request, Prescription $prescription)
     {
        return $this->hmoService->reject($request, $prescription, $request->user());
+    }
+
+    public function saveHmoBill(Request $request, Prescription $prescription)
+    {
+        return $this->hmoService->saveBill($request, $prescription, $request->user());
     }
 }

@@ -29,7 +29,7 @@ class UserFactory extends Factory
             'highest_qualification' => 'MBBS',
             'sex' => 'male',
             'marital_status' => 'married',
-            'username' => 'Mr Admin',
+            'username' => 'Admin',
             'phone_no' => '08022812281',
             'state_of_origin' => 'Anambra',
             'next_of_kin' => 'Nzube Okoye',

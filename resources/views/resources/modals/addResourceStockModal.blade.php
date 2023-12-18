@@ -19,20 +19,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="reOrderLabel">Unit of Purchase<x-required-span /></x-input-span>
-                                {{-- <x-form-input type="string"  value="" /> --}}
-                                <select class="form-select form-select-md" name="unitPurchase">
-                                    <option value="">Select</option>
-                                    <option value="Cards(s)">Card(s)</option>
-                                    <option value="Tab(s)">Tab(s)</option>
-                                    <option value="Capsule(s)">Capsule(s)</option>
-                                    <option value="Ample(s)">Ample(s)</option>
-                                    <option value="Vial(s)">Vial(s)</option>
-                                    <option value="Bottle(s)">Bottle(s)</option>
-                                    <option value="Packs">Pack(s)</option>
-                                    <option value="Infusion(s)">Infusion(s)</option>
-                                    <option value="Box(es)">Box(es)</option>
-                                    <option value="Piece(s)">Piece(s)</option>
-                                </select>
+                                <x-select-unit-description name="unitDescription" id="unitDescription"></x-select-unit-description>                                
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="purchasePriceLabel">Purchase Unit Price</x-input-span>

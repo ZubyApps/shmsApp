@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('verification_code')->nullable();
             $table->dateTime('consulted')->nullable();
             $table->boolean('closed')->default(false);
+            $table->string('total_paid')->nullable();
             $table->foreignIdFor(User::class, 'doctor_done_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'nurse_done_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'pharmacy_done_by')->nullable()->constrained('users')->restrictOnDelete();
