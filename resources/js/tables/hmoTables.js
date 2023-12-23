@@ -51,7 +51,7 @@ const getVerificationTable = (tableId) => {
         orderMulti: true,
         search:true,
         language: {
-            emptyTable: 'No patient is waiting'
+            emptyTable: 'No verification requested'
         },
         columns: [
             {data: "came"},
@@ -64,7 +64,7 @@ const getVerificationTable = (tableId) => {
                         `
                     <div class="d-flex flex-">
                         <button class=" btn btn-outline-primary verifyPatientBtn tooltip-test" title="Verify" data-id="${ row.id }" data-patient="${ row.patient }" data-phone="${ row.phone }" data-sponsor="${ row.sponsor }" data-staffid="${ row.staffId }">
-                            Verify
+                            ${row.status ? row.status : 'Verify'}
                         </button>
                     </div>
                         `
@@ -98,15 +98,15 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                             </button>
                         </div>`                
             },
-            {data: row => function () {
-                   return `
-                    <div class="d-flex flex-">
-                        <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                        <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
-                        </button>
-                    </div>`
-                }
-            },
+            // {data: row => function () {
+            //        return `
+            //         <div class="d-flex flex-">
+            //             <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+            //             <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
+            //             </button>
+            //         </div>`
+            //     }
+            // },
             {data: row => () => {
                 return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
                 `<div class="d-flex flex- justify-content-center">
@@ -128,7 +128,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                             <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
                                 Details
                             </a>
-                            <a class="dropdown-item billPatientBtn btn tooltip-test" title="bill"  data-id="${ row.id }">
+                            <a class="dropdown-item patientBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
                                 Bill
                             </a>
                             <a class="dropdown-item openCloseBtn btn tooltip-test" title="${row.closed ? 'open': 'close'}"  data-id="${ row.id }">
@@ -158,24 +158,33 @@ const getApprovalListTable = (tableId) => {
             {data: "doctor"},
             {data: "prescribed"},
             {data: "diagnosis"},
-            {data: "resource"},
+            {data:row => () => {
+                return row.approved ? row.resource + `<i class="ms-1 text-primary bi bi-check-circle-fill"></i>` : 
+                       row.rejected ? row.resource + `<i class="ms-1 text-danger bi bi-x-square-fill"></i>` :
+                       row.resource
+            }},
             {data: "prescription"},
             {data: "quantity"},
             {data: "hmsBill"},
             {data: "hmsBillDate"},
             {
                 sortable: false,
-                data: row =>  `
-                <div class="d-flex">
-                    <button type="submit" class="ms-1 btn btn-outline-primary approveBtn tooltip-test" data-table="${tableId}" title="approve" data-id="${row.id}">
-                            <i class="bi bi-check-circle"></i>
-                    </button>
-                    <button type="submit" class="ms-1 btn btn-outline-primary rejectBtn tooltip-test" data-table="${tableId}" title="reject" data-id="${ row.id}">
-                            <i class="bi bi-x-square"></i>
-                    </button>
-                    <input class="ms-1 form-control noteInput d-none" id="noteInput">
-                </div>
-                `      
+                data: row =>  () => {
+                    if (row.approved || row.rejected){
+                        return row.approvedBy || row.rejectedBy
+                    }
+                    return `
+                    <div class="d-flex">
+                        <button type="submit" class="ms-1 btn btn-outline-primary approveBtn tooltip-test" data-table="${tableId}" title="approve" data-id="${row.id}">
+                                <i class="bi bi-check-circle"></i>
+                        </button>
+                        <button type="submit" class="ms-1 btn btn-outline-danger rejectBtn tooltip-test" data-table="${tableId}" title="reject" data-id="${ row.id}">
+                                <i class="bi bi-x-square"></i>
+                        </button>
+                        <input class="ms-1 form-control noteInput d-none" id="noteInput">
+                    </div>
+                    `    
+                }  
             },
         ]
     });
@@ -183,42 +192,57 @@ const getApprovalListTable = (tableId) => {
     return prescriptionTable
 }
 
-const getHmoPatientsBillVisitTable = (tableId, filter) => {
-    return new DataTable(tableId, {
+const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
+    const visitPrescriptionsTable = new DataTable(tableId, {
         serverSide: true,
-        ajax:  {url: '/hmo/load/consulted/', data: {
-            'filterBy': filter 
+        ajax:  {url: '/hmo/load/visit/prescriptions', data: {
+            'visitId': visitId 
         }},
         orderMulti: true,
         search:true,
         language: {
             emptyTable: "No patient"
         },
+        drawCallback: function () {
+            var api = this.api()
+                $( api.column(7).footer() ).html(api.column( 7, {page:'current'} ).data().sum());
+
+                $( api.column(8).footer() ).html( new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(
+                    api.column(8, {page:'current'} ).data().sum()));
+                const value = (api.column( 8, {page:'current'} ).data().sum()) - (api.column( 7, {page:'current'} ).data().sum())
+                $( api.column(9).footer() ).html(`<span class="text-${value < 0 ? 'danger': value == 0 ? 'primary': 'success'}">${value}</span>`);
+        },
         columns: [
-            {data: "came"},
-            {data: "patient"},
             {data: "doctor"},
-            {data: "diagnosis"},
-            {data: "sponsor"},
+            {data: "prescribed"},
             {data: row => () => {
-                return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
-                `<div class="d-flex flex- justify-content-center">
-                <span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>
-                </div>` :
-                `<div class="d-flex flex- justify-content-center">
-                <span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>
-                </div>`
+                return row.approved ? row.resource + `<i class="ms-1 text-primary bi bi-check-circle-fill"></i>` : 
+                       row.rejected ? row.resource + `<i class="ms-1 text-danger bi bi-x-square-fill"></i>` :
+                       row.resource
             } },
+            {data: "diagnosis"},
+            {data: "prescription"},
+            {data: "note"},
+            {data: "quantity"},
+            {data: "hmsBill"},
             {
-                sortable: false,
-                data: row => `
-                                <div class="d-flex flex-">
-                                    <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Bill</button>
-                                </div>
-                            `
+                data: 'hmoBill',
+                render: (data, type, row) => {
+                    return ` <div class="d-flex justify-content-center">
+                    <span class="hmoBillSpan btn btn-white" data-id="${row.id}">${data ?? 'Bill'}</span>
+                    <input class="ms-1 form-control hmoBillInput d-none" id="hmoBillInput" value="${data ?? ''}">
+                </div>
+                `}
             },
+            {data: "hmoBillBy"},
         ]
     });
+
+    modal._element.addEventListener('hidden.bs.modal', function () {
+        visitPrescriptionsTable.destroy()
+    })
+
+    return visitPrescriptionsTable
 }
 
-export {getWaitingTable, getVerificationTable, getAllHmoPatientsVisitTable, getApprovalListTable, getHmoPatientsBillVisitTable}
+export {getWaitingTable, getVerificationTable, getAllHmoPatientsVisitTable, getApprovalListTable, getVisitPrescriptionsTable}

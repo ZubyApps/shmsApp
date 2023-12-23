@@ -219,6 +219,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/approval/list', [HmoController::class, 'loadHmoApprovalListTable']);
         Route::patch('/approve/{prescription}', [HmoController::class, 'approveItem']);
         Route::patch('/reject/{prescription}', [HmoController::class, 'rejectItem']);
+        Route::get('/load/visit/prescriptions', [HmoController::class, 'loadVisitPrescriptions']);
         Route::patch('/bill/{prescription}', [HmoController::class, 'saveHmoBill']);
     });
 });

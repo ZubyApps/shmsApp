@@ -55,6 +55,16 @@ class Visit extends Model
         return $this->belongsTo(User::class, 'hmo_done_by');
     }
 
+    public function verifiedBy()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    public function closedBy()
+    {
+        return $this->belongsTo(User::class, 'closed_by');
+    }
+
     public function patient()
     {
         return $this->belongsTo(Patient::class);

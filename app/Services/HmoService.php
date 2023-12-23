@@ -30,12 +30,13 @@ class HmoService
 
         if (! empty($params->searchTerm)) {
             return $this->visit
-                        ->Where('verification_status', null)
+                        ->Where('verified_at', null)
                         ->where(function (Builder $query) use($params) {
                             $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                         })
                         
                         ->orderBy($orderBy, $orderDir)
@@ -43,7 +44,7 @@ class HmoService
         }
 
         return $this->visit
-                    ->where('verification_status', false)
+                    ->where('verified_at', null)
                     ->where(function (Builder $query) use($params) {
                         $query->whereRelation('sponsor.sponsorCategory', 'name', '=', 'HMO')
                         ->orWhereRelation('sponsor.sponsorCategory', 'name', '=', 'NHIS');
@@ -67,9 +68,23 @@ class HmoService
                 'age'               => $visit->patient->age(),
                 'sponsor'           => $visit->sponsor->name,
                 'doctor'            => $visit->doctor->username ?? '',
-                'phone'            => $visit->patient->phone,
+                'codeText'          => $visit->verification_code,
+                'phone'             => $visit->patient->phone,
+                'status'            => $visit->verification_status
             ];
          };
+    }
+
+    public function verify(Request $request, Visit $visit): Visit
+    {
+       
+            $visit->update([
+                'verification_status'   => $request->status,
+                'verification_code'     => $request->codeText,
+                'verified_at'           => $request->status === 'Verified' ? new Carbon() : null
+            ]);
+
+            return $visit;
     }
 
     public function getPaginatedAllConsultedHmoVisits(DataTableQueryParams $params, $data)
@@ -102,6 +117,8 @@ class HmoService
         if ($data->filterBy == 'Outpatient'){
             return $this->visit
             ->where('consulted', '!=', null)
+            ->where('closed', null)
+            ->where('hmo_done_by', null)
             ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->where(function (Builder $query) {
@@ -109,7 +126,6 @@ class HmoService
                 ->orWhereRelation('sponsor', 'category_name', 'NHIS')
                 ->orWhereRelation('sponsor', 'category_name', 'Retainership');
             })
-            ->where('closed', false)
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -117,6 +133,8 @@ class HmoService
         if ($data->filterBy == 'Inpatient'){
             return $this->visit
                     ->where('consulted', '!=', null)
+                    ->where('hmo_done_by', null)
+                    ->where('closed', null)
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
                         ->orWhereRelation('sponsor', 'category_name', 'NHIS')
@@ -126,67 +144,35 @@ class HmoService
                         $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
                         ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
                     })
-                    ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
         if ($data->filterBy == 'ANC'){
             return $this->visit
                     ->where('consulted', '!=', null)
+                    ->where('hmo_done_by', null)
+                    ->where('closed', null)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
                         ->orWhereRelation('sponsor', 'category_name', 'NHIS')
                         ->orWhereRelation('sponsor', 'category_name', 'Retainership');
                     })
-                    ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return $this->visit
                     ->where('consulted', '!=', null)
+                    ->where('hmo_done_by', null)
+                    ->where('closed', null)
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
                         ->orWhereRelation('sponsor', 'category_name', 'NHIS')
                         ->orWhereRelation('sponsor', 'category_name', 'Retainership');
                     })
-                    ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    }
-
-    public function getPaginatedAllPrescriptionsRequest(DataTableQueryParams $params, $data)
-    {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
-
-            if (! empty($params->searchTerm)) {
-                return $this->prescription
-                            ->where('approved', false)
-                            ->where(function (Builder $query) use($params) {
-                                $query->whereRelation('visit.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('resource.rescurceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('resource.rescurceSubCategory.resourceCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                            })
-                            ->orderBy($orderBy, $orderDir)
-                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
-
-        return $this->prescription
-                ->where('approved', false)
-                ->where('rejected', false)
-                ->where(function (Builder $query) {
-                    $query->whereRelation('visit.sponsor.sponsorCategory', 'name', 'HMO')
-                    ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'NHIS');
-                })
-                ->orderBy($orderBy, $orderDir)
-                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
     public function getAllHmoConsultedVisitsTransformer(): callable
@@ -216,6 +202,45 @@ class HmoService
          };
     }
 
+    public function getPaginatedAllPrescriptionsRequest(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+
+            if (! empty($params->searchTerm)) {
+                return $this->prescription
+                            // ->where('rejected', false)
+                            ->where(function (Builder $query) {
+                                $query->whereRelation('visit.sponsor.sponsorCategory', 'name', 'HMO')
+                                ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'NHIS');
+                            })
+                            ->where(function (Builder $query) use($params) {
+                                $query->whereRelation('visit.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('resource.resourceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('approvedBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
+                                ->orWhereRelation('rejectedBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%');
+                            })
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+        return $this->prescription
+                ->where('approved', false)
+                ->where('rejected', false)
+                ->where(function (Builder $query) {
+                    $query->whereRelation('visit.sponsor.sponsorCategory', 'name', 'HMO')
+                    ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'NHIS');
+                })
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
     public function getAllPrescriptionsTransformer(): callable
     {
        return  function (Prescription $prescription) {
@@ -225,19 +250,30 @@ class HmoService
                 'sponsor'           => $prescription->visit->sponsor->name,
                 'doctor'            => $prescription->user->username,
                 'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
-                'diagnosis'         => $prescription->consultation?->icd11_diagnosis,
+                'diagnosis'         => $prescription->consultation?->icd11_diagnosis ?? 
+                                       $prescription->consultation?->provisional_diagnosis ?? 
+                                       $prescription->consultation?->assessment, 
                 'resource'          => $prescription->resource->name,
                 'prescription'      => $prescription->prescription,
                 'quantity'          => $prescription->qty_billed,
+                'note'              => $prescription->note,
                 'hmsBill'           => $prescription->hms_bill,
                 'hmsBillDate'       => $prescription->hms_bill_date ? (new Carbon($prescription->hms_bill_date))->format('d/m/y g:ia') : '',
-                'approved_status'   => $prescription->approved,
+                'hmoBill'           => $prescription->hmo_bill,
+                'hmoBillBy'         => $prescription->hmoBillBy?->username,
+                'approved'          => $prescription->approved,
+                'approvedBy'        => $prescription->approvedBy?->username,
+                'rejected'          => $prescription->rejected,
+                'rejectedBy'        => $prescription->rejectedBy?->username,
             ];
          };
     }
 
     public function approve($data, Prescription $prescription, User $user)
     {
+        if ($prescription->approved == true || $prescription->rejected == true){
+            return response('Already treated by ' . $prescription->approvedBy->username, 222);
+        }
         return  $prescription->update([
             'approved'         => true,
             'approval_note'    => $data->note,
@@ -247,6 +283,9 @@ class HmoService
 
     public function reject($data, Prescription $prescription, User $user)
     {
+        if ($prescription->approved == true || $prescription->rejected == true){
+            return response('Already treated by ' . $prescription->approvedBy->username, 222);
+        }
         return  $prescription->update([
             'rejected'          => true,
             'rejection_note'    => $data->note,
@@ -254,11 +293,36 @@ class HmoService
         ]);
     }
 
+    public function getPaginatedVisitPrescriptionsRequest(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+
+            if (! empty($params->searchTerm)) {
+                return $this->prescription
+                            ->where('visit_id', $data->visitId)
+                            ->where(function (Builder $query) use($params) {
+                                $query->whereRelation('consultation', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('resource.rescurceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('resource.rescurceSubCategory.resourceCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+        return $this->prescription
+                ->where('visit_id', $data->visitId)
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
     public function saveBill(Request $data, Prescription $prescription, User $user): Prescription
     {
         $prescription->update([
             'hmo_bill'       => $data->bill,
-            'hmo_bill_date'  => new Carbon(),
+            // 'hmo_bill_date'  => new Carbon(),
             'hmo_bill_by'    => $user->id,
             'hmo_bill_note'  => $data->note
         ]);   

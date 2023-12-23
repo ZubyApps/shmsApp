@@ -187,6 +187,7 @@ window.addEventListener('DOMContentLoaded', function(){
                     break;
                 case 'ANC': 
                     ancCardNumber.setAttribute('name', 'cardNumber')
+                    ancCardNumber.setAttribute('id', 'cardNumber')
                     newCardNumber.removeAttribute('name')
                     newCardNumber.removeAttribute('id')
                     oldCardNumber.removeAttribute('name')

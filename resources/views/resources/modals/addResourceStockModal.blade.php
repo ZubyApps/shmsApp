@@ -19,7 +19,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="reOrderLabel">Unit of Purchase<x-required-span /></x-input-span>
-                                <x-select-unit-description name="unitDescription" id="unitDescription"></x-select-unit-description>                                
+                                <x-select-unit-description name="unitPurchase" id="unitPurchase"></x-select-unit-description>                                
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="purchasePriceLabel">Purchase Unit Price</x-input-span>

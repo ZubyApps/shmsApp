@@ -45,6 +45,7 @@ class DoctorService
 
         return $this->visit
                     ->where('consulted', '!=', null)
+                    ->where('doctor_done_by', null)
                     ->whereRelation('patient', 'patient_type', '!=', 'ANC')
                     ->where('user_id', '=', $user->id)
                     ->orderBy($orderBy, $orderDir)
@@ -75,6 +76,7 @@ class DoctorService
 
         return $this->visit
                     ->where('consulted', '!=', null)
+                    ->where('doctor_done_by', null)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->where('user_id', '=', $user->id)
                     ->orderBy($orderBy, $orderDir)
@@ -96,10 +98,10 @@ class DoctorService
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
                 'patientType'       => $visit->patient->patient_type,
                 'labPrescribed'     => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
+                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
                                         ->count(),
                 'labDone'           => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Laboratory')
+                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
                                         ->where('result_date','!=', null)
                                         ->count(),
 

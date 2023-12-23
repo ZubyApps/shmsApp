@@ -43,6 +43,7 @@ class VisitService
         if (! empty($params->searchTerm)) {
             return $this->visit
                         ->Where('consulted', null)
+                        ->where('closed', null)
                         ->where(function (Builder $query) use($params) {
                             $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -57,7 +58,7 @@ class VisitService
         
         return $this->visit
                     ->where('consulted', null)
-                    ->where('closed', false)
+                    ->where('closed', null)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 

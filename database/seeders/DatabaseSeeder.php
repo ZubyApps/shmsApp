@@ -134,6 +134,24 @@ class DatabaseSeeder extends Seeder
             'resource_category_id'   => 1
         ]);
         \App\Models\ResourceSubCategory::create([
+            'name' => 'Suspension',
+            'description' => 'Constituted medications',
+            'user_id'   => 1,
+            'resource_category_id'   => 1
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Syrup',
+            'description' => 'Liquid medications including tonics',
+            'user_id'   => 1,
+            'resource_category_id'   => 1
+        ]);
+        \App\Models\ResourceSubCategory::create([
+            'name' => 'Dispersable',
+            'description' => 'Medications disolved in a solution',
+            'user_id'   => 1,
+            'resource_category_id'   => 1
+        ]);
+        \App\Models\ResourceSubCategory::create([
             'name' => 'Topical',
             'description' => 'Powders, Creams, Ointments',
             'user_id'   => 1,

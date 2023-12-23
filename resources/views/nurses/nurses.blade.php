@@ -11,7 +11,7 @@
 @include('nurses.giveMedicationModal')
 
 <div class="container p-1 mt-5">
-    <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="upcomingMedicationsoffcanvas"
+    <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="upcomingMedicationsoffcanvas"
         aria-labelledby="upcomingMedicationsoffcanvasLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title text-primary" id="upcomingMedicationsoffcanvasLabel">List of Upcoming Medications</h5>
@@ -38,7 +38,7 @@
             </div>
         </div>
     </div>
-    <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2"
+    <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2"
         aria-labelledby="waitingListOffcanvasLabel" aria-expanded="false">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>

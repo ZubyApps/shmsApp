@@ -647,7 +647,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     }
                     const selectedOption = datalistEl.options.namedItem(resourceInput.value)
                     if (selectedOption){
-                        if (selectedOption.getAttribute('data-cat') == 'Medication'){
+                        if (selectedOption.getAttribute('data-cat') == 'Medications'){
                             console.log('it is')
                             div.querySelector('#qty').classList.add('d-none')
                             div.querySelector('#pres').classList.remove('d-none')

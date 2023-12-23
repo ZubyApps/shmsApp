@@ -41,9 +41,12 @@ class NurseService
 
         return $this->visit
                     ->where('consulted', '!=', null)
+                    ->where('nurse_done_by', null)
                     ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-                    ->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Medications')
-                    ->orWhereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Medical Services')
+                    ->where(function (Builder $query) use($params) {
+                        $query->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Medications')
+                        ->orWhereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Medical Services');
+                    })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -71,9 +74,12 @@ class NurseService
 
         return $this->visit
                     ->where('consulted', '!=', null)
+                    ->where('nurse_done_by', null)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
-                    ->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Medication')
-                    ->orWhereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Medical Service')
+                    ->where(function (Builder $query) use($params) {
+                        $query->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Medications')
+                        ->orWhereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Medical Services');
+                    })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }

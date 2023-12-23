@@ -67,14 +67,7 @@ class HmoController extends Controller
 
     public function verifyPatient(VerifyPatientRequest $request, Visit $visit)
     {
-        if ($request->status == 'Verified'){
-            return $visit->update([
-                'verification_status'   => true,
-                'verification_code'     => $request->codeText
-            ]);
-        }
-
-        return;
+        return $this->hmoService->verify($request, $visit);
     }
 
     public function loadHmoApprovalListTable(Request $request)
@@ -99,6 +92,17 @@ class HmoController extends Controller
     public function rejectItem(Request $request, Prescription $prescription)
     {
        return $this->hmoService->reject($request, $prescription, $request->user());
+    }
+
+    public function loadVisitPrescriptions(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sponsors = $this->hmoService->getPaginatedVisitPrescriptionsRequest($params, $request);
+       
+        $loadTransformer = $this->hmoService->getAllPrescriptionsTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 
     public function saveHmoBill(Request $request, Prescription $prescription)

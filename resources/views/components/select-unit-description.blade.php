@@ -10,6 +10,7 @@
     <option value="Packs">Pack(s)</option>
     <option value="Piece(s)">Piece(s)</option>
     <option value="Procedure(s)">Procedure(s)</option>
+    <option value="Sachet(s)">Sachet(s)</option>
     <option value="Service(s)">Service(s)</option>
     <option value="Session(s)">Session(s)</option>
     <option value="Tab(s)">Tab(s)</option>

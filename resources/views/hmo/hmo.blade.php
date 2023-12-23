@@ -6,13 +6,13 @@
 @include('hmo.verifyModal', ['title' => 'Verify Patient', 'isUpdate' => false, 'id' => 'verifyModal'])
 @include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isLab' => false, 'isHmo' => true, 'id' => 'treatmentDetailsModal'])
 @include('hmo.approvalModal', ['title' => 'Approve Medication/Treatment', 'isUpdate' => false, 'id' => 'approvalModal'])
-@include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isDoctor' => true, 'id' => 'vitalsignsModal'])
+@include('hmo.makeBillModal', ['title' => "Make Patient's Bill", 'isEdit' => false, 'id' => 'makeBillModal'])
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
 
 
 
     <div class="container p-1 mt-5 bg-white">
-        <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2"
+        <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2"
         aria-labelledby="waitingListOffcanvasLabel" aria-expanded="false">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>
@@ -39,15 +39,15 @@
         </div>
     </div>
 
-        <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="approvalListOffcanvas"
+        <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="approvalListOffcanvas"
             aria-labelledby="approvalListOffcanvasLabel">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title text-primary" id="approvalListOffcanvasLabel">Approval List</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas2-body">
-                <div class="p-2 ">
-                    <table id="approvalListTable" class="table table-hover table-sm approvalListTable">
+                <div class="p-2 form-control">
+                    <table id="approvalListTable" class="table table-hover align-middle table-sm approvalListTable">
                         <thead>
                             <tr>
                                 <th>Patient</th>
@@ -140,7 +140,7 @@
                                     <th>Diagnosis</th>
                                     <th>Sponsor</th>
                                     <th>Investigations</th>
-                                    <th>Vitals</th>
+                                    {{-- <th>Vitals</th> --}}
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>

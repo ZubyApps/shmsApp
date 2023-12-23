@@ -41,6 +41,7 @@ class InvestigationService
 
         return $this->visit
                     ->where('consulted', '!=', null)
+                    ->where('lab_done_by', null)
                     ->whereRelation('patient', 'patient_type', '!=', 'ANC')
                     ->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Investigations')
                     ->orderBy($orderBy, $orderDir)
@@ -70,6 +71,7 @@ class InvestigationService
 
         return $this->visit
                     ->where('consulted', '!=', null)
+                    ->where('lab_done_by', null)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Investigations')
                     ->orderBy($orderBy, $orderDir)
@@ -124,6 +126,7 @@ class InvestigationService
 
         return $this->visit
                     ->where('consulted', '!=', null)
+                    ->where('lab_done_by', null)
                     ->whereRelation('consultations.prescriptions.resource.resourceSubcategory.resourceCategory', 'name', 'Investigations')
                     ->where(function (Builder $query) use($params) {
                         $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
