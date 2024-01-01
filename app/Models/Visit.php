@@ -60,6 +60,11 @@ class Visit extends Model
         return $this->belongsTo(User::class, 'verified_by');
     }
 
+    public function viewedBy()
+    {
+        return $this->belongsTo(User::class, 'viewed_by');
+    }
+
     public function closedBy()
     {
         return $this->belongsTo(User::class, 'closed_by');
@@ -93,5 +98,28 @@ class Visit extends Model
     public function medicationCharts() 
     {
         return $this->hasMany(MedicationChart::class);
+    }
+
+    public function payments() 
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function totalBills()
+    {
+        $totalBill = 0;
+         foreach($this->prescriptions as $prescription){
+            $totalBill += $prescription->hms_bill;
+         }
+
+         return $totalBill;
+    }
+
+    public function totalpayments()
+    {
+        $totalPayment = 0;
+        foreach($this->payments as $payment){
+            $totalPayment += $payment->amount_paid;
+         }
     }
 }

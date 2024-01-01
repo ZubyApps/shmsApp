@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -64,5 +65,17 @@ class Prescription extends Model
     public function medicationCharts() 
     {
         return $this->hasMany(MedicationChart::class);
+    }
+
+    public function forPharmacy(int $conId)
+    {
+        return $this->where('consultation_id', $conId)
+                    ->where(function(Builder $query) {
+                        $query->whereRelation('resource', 'category', 'Medications')
+                              ->orWhereRelation('resource', 'category', 'Consumables');
+                    })
+                    // ->where('qty_dispensed', null)
+                    // ->orderBy('created_at', 'desc')
+                    ->get();
     }
 }

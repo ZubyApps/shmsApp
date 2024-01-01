@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Investigation;
 use App\Services\DatatablesService;
 use App\Services\InvestigationService;
 use Illuminate\Http\Request;
@@ -23,52 +22,25 @@ class InvestigationController extends Controller
         return view('investigations.investigations');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    public function loadRegularVisitsLab(Request $request)
+    public function loadVisitsByFilterLab(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $visits = $this->investigationService->getPaginatedRegularConsultedVisitsLab($params);
+        $visits = $this->investigationService->getpaginatedFilteredLabVisits($params, $request);
        
         $loadTransformer = $this->investigationService->getConsultedVisitsLabTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 
-    public function loadAncVisitsLab(Request $request)
+    public function loadInpatientsLabTable(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $visits = $this->investigationService->getPaginatedAncConsultedVisitsLab($params);
+        $sponsors = $this->investigationService->getPaginatedLabRequests($params, $request);
        
-        $loadTransformer = $this->investigationService->getConsultedVisitsLabTransformer();
+        $loadTransformer = $this->investigationService->getLabTransformer();
 
-        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
-    }
-
-    public function loadInpatientVisitsLab(Request $request)
-    {
-        $params = $this->datatablesService->getDataTableQueryParameters($request);
-
-        $visits = $this->investigationService->getPaginatedInpatientVisitsLab($params);
-       
-        $loadTransformer = $this->investigationService->getConsultedVisitsLabTransformer();
-
-        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 }

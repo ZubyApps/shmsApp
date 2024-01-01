@@ -10,7 +10,6 @@ use App\Models\Prescription;
 use App\Models\Resource;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -29,7 +28,7 @@ class PrescriptionService
                 $bill = $resource->selling_price * $data->quantity;
             }
 
-            return $user->prescriptions()->create([
+            $prescription = $user->prescriptions()->create([
                 'resource_id'       => $data->resource,
                 'prescription'      => $data->prescription,
                 'consultation_id'   => $data->conId,
@@ -40,6 +39,15 @@ class PrescriptionService
                 'hms_bill_by'       => $bill ? $user->id : null,
                 'note'              => $data->note
             ]);
+
+            $prescription->visit->update([
+                'viewed_at'     => null,
+                'viewed_by'     => null,
+                'total_bill'    => $data->quantity ? $prescription->visit->totalBills() : ($prescription->visit->totalBills() - $bill)
+            ]);
+
+            return $prescription;
+
         });
         
     }
@@ -88,7 +96,6 @@ class PrescriptionService
         return $this->prescription
                     ->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
                     ->whereRelation('resource', 'category', 'Investigations')
-                    // ->whereRelation('resource.resourceSubCategory.resourceCategory', 'category', 'name', '=', 'Investigations')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -134,7 +141,8 @@ class PrescriptionService
                 'prescription'          => $prescription->prescription,
                 'prescribed'            => (new Carbon($prescription->created_at))->format('D/m/y g:ia'),
                 'prescribedFormatted'   => (new Carbon($prescription->created_at))->format('Y-m-d\TH:i'),
-                'billed'                => $prescription->bill_date ? (new Carbon($prescription->bill_date))->format('d/m/y g:ia') : '',
+                'billed'                => $prescription->qty_billed,
+                'dispensed'             => $prescription->qty_dispensed,
                 'conId'                 => $prescription->consultation->id,
                 'visitId'               => $prescription->visit->id,
                 'chart'                 => $prescription->medicationCharts->map(fn(MedicationChart $medicationChart)=> [

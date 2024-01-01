@@ -71,7 +71,7 @@
         <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas"
             data-bs-target="#upcomingMedicationsoffcanvas" aria-controls="upcomingMedicationsoffcanvas">
             <i class="bi bi-list-check"></i>
-            Medication Table
+            Medication Chart
         </button>
         <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn" data-bs-target="#waitingListOffcanvas2" aria-controls="waitingListOffcanvas2">
             <i class="bi bi-list-check"></i>
@@ -82,8 +82,8 @@
     <div>
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <button class="nav-link active" id="nav-allRegularPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-allRegularPatients" 
-                    type="button" role="tab" aria-controls="nav-allRegularPatients" aria-selected="true">All Regular Patients</button>
+                <button class="nav-link active" id="nav-outPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-outPatients" 
+                    type="button" role="tab" aria-controls="nav-outPatients" aria-selected="true">OutPatients</button>
 
                 <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients"
                     type="button" role="tab" aria-controls="nav-inPatients" aria-selected="false">Inpatients</button>
@@ -94,17 +94,18 @@
         </nav>
         <div class="tab-content" id="nav-tabContent">
             <!-- patients table -->
-            <div class="tab-pane fade show active" id="nav-allRegularPatients" role="tabpanel"
-                aria-labelledby="nav-allRegularPatients-tab" tabindex="0">
+            <div class="tab-pane fade show active" id="nav-outPatients" role="tabpanel"
+                aria-labelledby="nav-outPatients-tab" tabindex="0">
                 <div class="py-4">
-                    <table id="allRegularPatientsTable" class="table table-hover align-middle table-sm">
+                    <table id="outPatientsVisitTable" class="table table-hover align-middle table-sm">
                         <thead>
                             <tr>
                                 <th>Seen</th>
                                 <th>Patient</th>
                                 <th>Doctor</th>
-                                <th>Current Diagnosis</th>
+                                <th>Diagnosis</th>
                                 <th>Sponsor</th>
+                                <th>Rx count</th>
                                 <th>Vitals</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -124,8 +125,9 @@
                                 <th>Seen</th>
                                 <th>Patient</th>
                                 <th>Doctor</th>
-                                <th>Current Diagnosis</th>
+                                <th>Diagnosis</th>
                                 <th>Sponsor</th>
+                                <th>Rx count</th>
                                 <th>Vitals</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -145,8 +147,9 @@
                                 <th>Seen</th>
                                 <th>Patient</th>
                                 <th>Doctor</th>
-                                <th>Current Diagnosis</th>
+                                <th>Diagnosis</th>
                                 <th>Sponsor</th>
+                                <th>Rx count</th>
                                 <th>Vitals</th>
                                 <th>Status</th>
                                 <th>Actions</th>

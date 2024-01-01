@@ -209,13 +209,10 @@ function getWeeksModulus(today, lmp) {
 }
 
 function loadingSpinners() {
-    return `<div class="spinner-grow spinner-grow-sm text-primary" role="status">
+    return `<div class="ms-1 spinner-grow spinner-grow-sm text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            <div class="spinner-grow spinner-grow-sm text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <div class="spinner-grow spinner-grow-sm text-primary" role="status">
+            <div class="ms-1 spinner-grow spinner-grow-sm text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         `

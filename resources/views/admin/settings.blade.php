@@ -26,8 +26,8 @@
                     <button class="nav-link" id="nav-resourceCategory-tab" data-bs-toggle="tab" data-bs-target="#nav-resourceCategory"
                         type="button" role="tab" aria-controls="nav-resourceCategory" aria-selected="false">Resource Category</button>
 
-                    <button class="nav-link" id="nav-reporst-tab" data-bs-toggle="tab" data-bs-target="#nav-reports"
-                        type="button" role="tab" aria-controls="nav-reports" aria-selected="false">Reports</button>
+                    {{-- <button class="nav-link" id="nav-reporst-tab" data-bs-toggle="tab" data-bs-target="#nav-reports"
+                        type="button" role="tab" aria-controls="nav-reports" aria-selected="false">Reports</button> --}}
                 </div>
             </nav>
             <div class="tab-content px-2" id="nav-tabContent">
@@ -54,7 +54,7 @@
                                     <th>Bill Matrix</th>
                                     <th>Pay Bal?</th>
                                     <th>Created</th>
-                                    <th>Action</th>
+                                    {{-- <th>Action</th> --}}
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -62,7 +62,7 @@
                     </div>
                 </div>
                 <!-- resourceStockDate table -->
-                <div class="tab-pane fade active" id="nav-resourceStockDate" role="tabpanel" aria-labelledby="nav-resourceStockDate-tab"
+                <div class="tab-pane fade" id="nav-resourceStockDate" role="tabpanel" aria-labelledby="nav-resourceStockDate-tab"
                     tabindex="0">
                     
                     <div class="text-start gx-5 my-4">
@@ -89,7 +89,7 @@
                     </div>
                 </div>
                 <!-- resourceCategory table -->
-                <div class="tab-pane fade active" id="nav-resourceCategory" role="tabpanel" aria-labelledby="nav-resourceCategory-tab"
+                <div class="tab-pane fade" id="nav-resourceCategory" role="tabpanel" aria-labelledby="nav-resourceCategory-tab"
                     tabindex="0">
 
                     <div class="text-start my-4">
@@ -106,7 +106,7 @@
                                     <th>Description</th>
                                     <th>Created By</th>
                                     <th>Created At</th>
-                                    <th>Actions</th>
+                                    {{-- <th>Actions</th> --}}
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -115,7 +115,7 @@
                    
                 </div>
                 <!-- reports table -->
-                <div class="tab-pane fade" id="nav-reports" role="tabpanel" aria-labelledby="nav-reports-tab"
+                {{-- <div class="tab-pane fade" id="nav-reports" role="tabpanel" aria-labelledby="nav-reports-tab"
                     tabindex="0">
                     <div class="py-4 justify-content-center">
                         <table id="reportsTable" class="table table-hover align-center table-sm">
@@ -143,9 +143,9 @@
                                     <td class="fst-italic">Pending</td>
                                     <td class="fst-italic">No Code</td>
                                     <td class="fst-italic">Not Sent</td>
-                                    {{-- <td>
+                                    <td>
                                         <button class="btn btn-outline-primary" id="treatmentDetailsBtn">Sent</button>
-                                    </td> --}}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>08/10/2023</td>
@@ -157,14 +157,14 @@
                                     <td class="fst-italic">Verified</td>
                                     <td class="fst-italic">HP-45srt6if1</td>
                                     <td class="fst-italic">Sent</td>
-                                    {{-- <td>
+                                    <td>
                                         <button class="btn btn-outline-primary" id="treatmentDetailsBtn">Sent</button>
-                                    </td> --}}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>

@@ -4,11 +4,61 @@ import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 import { reviewBtn } from "../helpers";
 
-const getAllPatientsVisitTable = (tableId, filter) => {
+// const getAllPatientsVisitTable = (tableId, filter) => {
+//     return new DataTable(tableId, {
+//         serverSide: true,
+//         ajax:  {url: '/visits/load/consulted/', data: {
+//             'filterBy': filter 
+//         }},
+//         orderMulti: true,
+//         search:true,
+//         language: {
+//             emptyTable: "No patient"
+//         },
+//         columns: [
+//             {data: "came"},
+//             {data: "patient"},
+//             {data: "doctor"},
+//             {data: "diagnosis"},
+//             {data: "sponsor"},
+//             {data: row =>  `
+//                         <div class="d-flex justify-content-center">
+//                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+//                             ${row.labDone}<i class="bi bi-eyedropper"></i>${row.labPrescribed}
+//                             </button>
+//                         </div>`                
+//             },
+//             {data: row => function () {
+//                    return `
+//                     <div class="d-flex flex-">
+//                         <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+//                         <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
+//                         </button>
+//                     </div>`
+//                 }
+//             },
+//             {data: row => () => {
+//                 return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
+//                 `<div class="d-flex flex- justify-content-center">
+//                 <span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>
+//                 </div>` :
+//                 `<div class="d-flex flex- justify-content-center">
+//                 <span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>
+//                 </div>`
+//             } },
+//             {
+//                 sortable: false,
+//                 data: row => reviewBtn(row)
+//             },
+//         ]
+//     });
+// }
+
+const getOutpatientsVisitTable = (tableId, filter) => {
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  {url: '/visits/load/consulted/', data: {
-            'filterBy': filter 
+        ajax:  {url: '/doctors/load/consulted/outpatient', data: {
+            'filterBy' : filter
         }},
         orderMulti: true,
         search:true,
@@ -54,57 +104,12 @@ const getAllPatientsVisitTable = (tableId, filter) => {
     });
 }
 
-const getUserRegularPatientsVisitTable = (tableId) => {
+const getInpatientsVisitTable = (tableId, filter) => {
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  '/doctors/load/consulted/regular/user',
-        orderMulti: true,
-        search:true,
-        language: {
-            emptyTable: "No patient"
-        },
-        columns: [
-            {data: "came"},
-            {data: "patient"},
-            {data: "diagnosis"},
-            {data: "sponsor"},
-            {data: row =>  `
-                        <div class="d-flex justify-content-center">
-                            <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                            ${row.labDone}<i class="bi bi-eyedropper"></i>${row.labPrescribed}
-                            </button>
-                        </div>`                
-            },
-            {data: row => function () {
-                   return `
-                    <div class="d-flex flex-">
-                        <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                        <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
-                        </button>
-                    </div>`
-                }
-            },
-            {data: row => () => {
-                return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
-                `<div class="d-flex flex- justify-content-center">
-                <span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>
-                </div>` :
-                `<div class="d-flex flex- justify-content-center">
-                <span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>
-                </div>`
-            } },
-            {
-                sortable: false,
-                data: row => reviewBtn(row)
-            },
-        ]
-    });
-}
-
-const getInpatientsVisitTable = (tableId) => {
-    return new DataTable(tableId, {
-        serverSide: true,
-        ajax:  '/visits/load/consulted/inpatients',
+        ajax:  {url: '/visits/load/consulted/inpatients', data: {
+            'filterBy' : filter
+        }},
         orderMulti: true,
         search:true,
         language: {
@@ -149,10 +154,12 @@ const getInpatientsVisitTable = (tableId) => {
     });
 }
 
-const getUserAncPatientsVisitTable = (tableId) => {
+const getAncPatientsVisitTable = (tableId, filter) => {
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  '/doctors/load/consulted/anc/user',
+        ajax:  {url: '/doctors/load/consulted/anc', data: {
+            'filterBy' : filter
+        }},
         orderMulti: true,
         search:true,
         language: {
@@ -161,6 +168,7 @@ const getUserAncPatientsVisitTable = (tableId) => {
         columns: [
             {data: "came"},
             {data: "patient"},
+            {data: "doctor"},
             {data: "diagnosis"},
             {data: "sponsor"},
             {data: row =>  `
@@ -421,7 +429,9 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                                         <tbody>
                                              <tr>
                                                 <td> </td>
-                                                <td class="text-secondary">${data.result}</td>
+                                                <td class="text-secondary">
+                                                    <div>${data.result}</div>
+                                                </td>
                                                 <td class="text-secondary">${data.staff}</td>
                                                 <td class="text-secondary">${data.sent}</td>
                                                 <td class="text-secondary">Documents</td>
@@ -481,7 +491,12 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
             {data: "prescription"},
             {data: "prescribedBy"},
             {data: "prescribed"},
-            {data: "billed"},
+            {data: row => () => {
+                    return row.billed ? '<i class=" text-primary bi bi-check-circle-fill"></i>' : '-'
+            } },
+            {data:  row => () => {
+                return row.dispensed ? '<i class=" text-primary bi bi-check-circle-fill"></i>' : '-'
+            }},
         ]
     });
 
@@ -557,4 +572,4 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
     return treatmentTable
 }
 
-export {getAllPatientsVisitTable, getUserRegularPatientsVisitTable, getInpatientsVisitTable, getUserAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation}
+export {getOutpatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation}

@@ -261,6 +261,7 @@ class HmoService
                 'hmsBillDate'       => $prescription->hms_bill_date ? (new Carbon($prescription->hms_bill_date))->format('d/m/y g:ia') : '',
                 'hmoBill'           => $prescription->hmo_bill,
                 'hmoBillBy'         => $prescription->hmoBillBy?->username,
+                'paidHms'           => 2500,
                 'approved'          => $prescription->approved,
                 'approvedBy'        => $prescription->approvedBy?->username,
                 'rejected'          => $prescription->rejected,

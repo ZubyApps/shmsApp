@@ -21,8 +21,11 @@ return new class extends Migration
             $table->dateTime('verified_at')->nullable();
             $table->foreignIdFor(User::class, 'verified_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->dateTime('consulted')->nullable();
+            $table->dateTime('viewed_at')->nullable();
+            $table->foreignIdFor(User::class, 'viewed_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->dateTime('closed')->nullable();
             $table->foreignIdFor(User::class, 'closed_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->string('total_bill')->nullable();
             $table->string('total_paid')->nullable();
             $table->foreignIdFor(User::class, 'doctor_done_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'nurse_done_by')->nullable()->constrained('users')->restrictOnDelete();

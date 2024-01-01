@@ -2,14 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Billing;
+use App\Http\Requests\StorePaymentRequest;
+use App\Services\BillingService;
+use App\Services\DatatablesService;
+use App\Services\PaymentService;
 use Illuminate\Http\Request;
 
 class BillingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct(
+        private readonly DatatablesService $datatablesService,
+        private readonly BillingService $billingService,
+        private readonly PaymentService $paymentService)
+    {
+        
+    }
+
     public function index()
     {
         return view('billing.billing');
@@ -26,40 +34,21 @@ class BillingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePaymentRequest $request)
     {
-        //
+        $payment = $this->paymentService->create($request, $request->user());
+        
+        return $payment->load('user');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    // public function show(Billing $billing)
-    // {
-    //     //
-    // }
+    public function loadVisitsByFilterBilling(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-    // /**
-    //  * Show the form for editing the specified resource.
-    //  */
-    // public function edit(Billing $billing)
-    // {
-    //     //
-    // }
+        $visits = $this->billingService->getpaginatedFilteredNurseVisits($params, $request);
+       
+        $loadTransformer = $this->billingService->getConsultedVisitsNursesTransformer();
 
-    // /**
-    //  * Update the specified resource in storage.
-    //  */
-    // public function update(Request $request, Billing $billing)
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * Remove the specified resource from storage.
-    //  */
-    // public function destroy(Billing $billing)
-    // {
-    //     //
-    // }
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
 }

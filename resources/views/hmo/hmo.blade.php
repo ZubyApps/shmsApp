@@ -140,7 +140,6 @@
                                     <th>Diagnosis</th>
                                     <th>Sponsor</th>
                                     <th>Investigations</th>
-                                    {{-- <th>Vitals</th> --}}
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>

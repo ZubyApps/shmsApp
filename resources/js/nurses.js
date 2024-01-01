@@ -3,7 +3,7 @@ import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, get
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
-import { getWaitingTable, getAllRegularPatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable } from "./tables/nursesTables";
+import { getWaitingTable, getPatientsVisitsByFilterTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable } from "./tables/nursesTables";
 import { getVitalSignsTableByVisit, getLabTableByConsultation } from "./tables/doctorstables";
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const addVitalsignsBtn          = document.querySelectorAll('#addVitalsignsBtn')
     const saveMedicationChartBtn    = chartMedicationModal._element.querySelector('#saveMedicationChartBtn')
     const saveGivenMedicationBtn    = giveMedicationModal._element.querySelector('.saveGivenMedicationBtn')
-    const [allRegularPatientsTab, inPatientsTab, ancPatientsTab]  = [document.querySelector('#nav-allRegularPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab')]
+    const [outPatientsTab, inPatientsTab, ancPatientsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab')]
     
     const heightEl                  = document.querySelectorAll('#height') 
 
@@ -60,17 +60,17 @@ window.addEventListener('DOMContentLoaded', function () {
     // }
     let inPatientsVisitTable, ancPatientsVisitTable
 
-    const allRegularPatientsTable = getAllRegularPatientsVisitTable('allRegularPatientsTable')
+    const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient')
     const waitingTable = getWaitingTable('waitingTable')
     const upcomingMedicationsTable = getUpcomingMedicationsTable('upcomingMedicationsTable', upcomingMedicationsCanvas._element, 'offcanvas')
 
-    allRegularPatientsTab.addEventListener('click', function() {allRegularPatientsTable.draw()})
+    outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw()})
 
     inPatientsTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#inPatientsVisitTable' )){
             $('#inPatientsVisitTable').dataTable().fnDraw()
         } else {
-            inPatientsVisitTable = getInpatientsVisitTable('#inPatientsVisitTable')
+            inPatientsVisitTable = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient')
         }
     })
 
@@ -78,7 +78,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#ancPatientsVisitTable' )){
             $('#ancPatientsVisitTable').dataTable().fnDraw()
         } else {
-            ancPatientsVisitTable = getAncPatientsVisitTable('#ancPatientsVisitTable')
+            ancPatientsVisitTable = getPatientsVisitsByFilterTable('ancPatientsVisitTable', 'ANC')
         }
     })
 
@@ -102,7 +102,7 @@ window.addEventListener('DOMContentLoaded', function () {
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
     })
 
-    document.querySelectorAll('#allRegularPatientsTable, #inPatientsVisitTable, #ancPatientsVisitTable').forEach(table => {
+    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const consultationDetailsBtn = event.target.closest('.consultationDetailsBtn')
             const vitalsignsBtn = event.target.closest('.vitalSignsBtn')

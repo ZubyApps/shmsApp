@@ -3,63 +3,55 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pharmacy;
+use App\Models\Prescription;
+use App\Services\DatatablesService;
+use App\Services\PharmacyService;
 use Illuminate\Http\Request;
 
 class PharmacyController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct(
+        private readonly DatatablesService $datatablesService, 
+        private readonly PharmacyService $pharmacyService)
+    {
+        
+    }
+
     public function index()
     {
         return view('pharmacy.pharmacy');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function loadVisitsByFilterPharmacy(Request $request)
     {
-        //
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->pharmacyService->getpaginatedFilteredPharmacyVisits($params, $request);
+       
+        $loadTransformer = $this->pharmacyService->getPharmacyVisitsTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function loadConsultationPrescriptions(Request $request)
     {
-        //
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $consultations = $this->pharmacyService->getPrescriptionsByConsultation($params, $request);
+       
+        $loadTransformer = $this->pharmacyService->getprescriptionByConsultationTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $consultations, $params);  
     }
 
-    /**
-     * Display the specified resource.
-     */
-    // public function show(Pharmacy $pharmacy)
-    // {
-    //     //
-    // }
+    public function billPrescription(Request $request, Prescription $prescription)
+    {
+       return $this->pharmacyService->bill($request, $prescription, $request->user());
+    }
 
-    // /**
-    //  * Show the form for editing the specified resource.
-    //  */
-    // public function edit(Pharmacy $pharmacy)
-    // {
-    //     //
-    // }
+    public function dispensePrescription(Request $request, Prescription $prescription)
+    {
+       return $this->pharmacyService->dispense($request, $prescription, $request->user());
+    }
 
-    // /**
-    //  * Update the specified resource in storage.
-    //  */
-    // public function update(Request $request, Pharmacy $pharmacy)
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * Remove the specified resource from storage.
-    //  */
-    // public function destroy(Pharmacy $pharmacy)
-    // {
-    //     //
-    // }
 }

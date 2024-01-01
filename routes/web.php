@@ -97,14 +97,14 @@ Route::middleware('auth')->group(function () {
     Route::prefix('doctors')->group(function () {
         Route::get('', [DoctorController::class, 'index'])->name('Doctors');
         Route::post('/consult/{visit}', [DoctorController::class, 'consult']);
-        Route::get('/load/consulted/regular/user', [DoctorController::class, 'loadUserRegularVisits']);
-        Route::get('/load/consulted/anc/user', [DoctorController::class, 'loadUserAncVisits']);
+        Route::get('/load/consulted/outpatient', [DoctorController::class, 'loadOutpatientVisits']);
+        Route::get('/load/consulted/inpatient', [DoctorController::class, 'loadInpatientVisits']);
+        Route::get('/load/consulted/anc', [DoctorController::class, 'loadAncPatientVisits']);
     });
 
     Route::prefix('nurses')->group(function () {
         Route::get('', [NurseController::class, 'index'])->name('Nurses');
-        Route::get('/load/consulted/regular/nurses', [NurseController::class, 'loadRegularVisitsNurses']);
-        Route::get('/load/consulted/anc/nurses', [NurseController::class, 'loadAncVisitsNurses']);
+        Route::get('/load/consulted/nurses', [NurseController::class, 'loadVisitsNurses']);
     });
 
     Route::prefix('consultation')->group(function () {
@@ -206,21 +206,35 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('investigations')->group(function () {
         Route::get('', [InvestigationController::class, 'index'])->name('Investigations');
-        Route::get('/load/consulted/regular/lab', [InvestigationController::class, 'loadRegularVisitsLab']);
-        Route::get('/load/consulted/inpatient/lab', [InvestigationController::class, 'loadInpatientVisitsLab']);
-        Route::get('/load/consulted/anc/lab', [InvestigationController::class, 'loadAncVisitsLab']);
+        Route::get('/load/consulted', [InvestigationController::class, 'loadVisitsByFilterLab']);
+        Route::get('/load/inpatients', [InvestigationController::class, 'loadInpatientsLabTable']);
     });
 
     Route::prefix('hmo')->group(function () {
         Route::get('', [HmoController::class, 'index'])->name('Hmo');
         Route::post('/verify/{visit}', [HmoController::class, 'verifyPatient']);
-        Route::get('/load/consulted/', [HmoController::class, 'loadAllHmoVisits']);
+        Route::get('/load/consulted/', [HmoController::class, 'loadVisitsByFilterHmo']);
         Route::get('/load/verification/list', [HmoController::class, 'loadVerificationListTable']);
         Route::get('/load/approval/list', [HmoController::class, 'loadHmoApprovalListTable']);
         Route::patch('/approve/{prescription}', [HmoController::class, 'approveItem']);
         Route::patch('/reject/{prescription}', [HmoController::class, 'rejectItem']);
         Route::get('/load/visit/prescriptions', [HmoController::class, 'loadVisitPrescriptions']);
         Route::patch('/bill/{prescription}', [HmoController::class, 'saveHmoBill']);
+    });
+
+    Route::prefix('pharmacy')->group(function () {
+        Route::get('', [PharmacyController::class, 'index'])->name('Pharmacy');
+        Route::get('/load/consulted', [PharmacyController::class, 'loadVisitsByFilterPharmacy']);
+        Route::patch('/bill/{prescription}', [PharmacyController::class, 'billPrescription']);
+        Route::patch('/dispense/{prescription}', [PharmacyController::class, 'dispensePrescription']);
+        Route::get('/load/visit/prescriptions', [PharmacyController::class, 'loadVisitPrescriptions']);
+        Route::get('/load/consultation/prescriptions', [PharmacyController::class, 'loadConsultationPrescriptions']);
+    });
+
+    Route::prefix('billing')->group(function () {
+        Route::get('', [BillingController::class, 'index'])->name('Billing');
+        Route::get('/load/consulted', [BillingController::class, 'loadVisitsByFilterBilling']);
+        Route::get('/pay', [BillingController::class, 'store']);
     });
 });
 

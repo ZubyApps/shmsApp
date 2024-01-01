@@ -2,6 +2,7 @@ import { Modal } from "bootstrap";
 import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, clearValidationErrors, openModals} from "./helpers"
 import http from "./http";
 import jQuery from "jquery";
+import $ from 'jquery';
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
@@ -13,6 +14,7 @@ import 'datatables.net-fixedcolumns-bs5';
 import 'datatables.net-fixedheader-bs5';
 import 'datatables.net-select-bs5';
 import 'datatables.net-staterestore-bs5';
+import { getResourceCategoryTable, getResourceStockDateTable, getSponsorCategoryTable } from "./tables/settingsTables";
 
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -32,65 +34,42 @@ window.addEventListener('DOMContentLoaded', function () {
     const createSponsorCategoryBtn          = document.querySelector('#createSponsorCategoryBtn')
     const saveSponsorCategoryBtn            = document.querySelector('#saveSponsorCategoryBtn')
 
-    const createResourceStockDateBtn          = document.querySelector('#createResourceStockDateBtn')
-    const saveResourceStockDateBtn            = document.querySelector('#saveResourceStockDateBtn')
+    const createResourceStockDateBtn        = document.querySelector('#createResourceStockDateBtn')
+    const saveResourceStockDateBtn          = document.querySelector('#saveResourceStockDateBtn')
     
     const createResourceCategoryBtn         = document.querySelector('#createResourceCategoryBtn')
     const saveResourceCategoryBtn           = document.querySelector('#saveResourceCategoryBtn')
 
-    const sponsorCategoryTable = new DataTable('#sponsorCategoryTable', {
-        serverSide: true,
-        ajax:  '/sponsorcategory/load',
-        orderMulti: true,
-        search:true,
-        columns: [
-            {data: "name"},
-            {data: "description"},
-            {data: "consultationFee"},
-            {data: "payClass"},
-            {data: row => () =>{
-                if (row.approval == 'false'){
-                    return 'No'
-                } else {
-                    return 'Yes'
-                }
-                }},
-            {data: row => row.billMatrix + "%"},
-            {data: row => () => { 
-                if (row.balanceRequired == 'false'){
-                    return 'No'
-                } else {
-                    return 'Yes'
-                }
-            }
-            },
-            {data: "createdAt"},
-            {
-                sortable: false,
-                data: row => function () {
-                    if (row.count < 1) {
-                        return `
-                        <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                                <i class="bi bi-pencil-fill"></i>
-                            </button>
-                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
-                                <i class="bi bi-trash3-fill"></i>
-                            </button>
-                        </div>
-                    `
-                    } else {
-                        return `
-                        <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary updateBtn" data-id="${ row.id }">
-                            <i class="bi bi-pencil-fill"></i>
-                        </button>
-                        </div>
-                    `
-                    }
-                }}
-        ]
-    });
+    const sponsorCategoryTab                = document.querySelector('#nav-sponsorCategory-tab')
+    const resourceStockDateTab              = document.querySelector('#nav-resourceStockDate-tab')
+    const resourceCategoryTab               = document.querySelector('#nav-resourceCategory-tab')
+    const reportsTab                        = document.querySelector('#nav-reports-tab') 
+
+    let resourceStockDateTable, resourceCategoryTable
+
+    const sponsorCategoryTable = getSponsorCategoryTable('sponsorCategoryTable')
+
+    sponsorCategoryTab.addEventListener('click', function() {
+        sponsorCategoryTable.draw()
+    })
+
+    resourceStockDateTab.addEventListener('click', function() {
+        if ($.fn.DataTable.isDataTable( '#resourceStockDateTable' )){
+            $('#resourceStockDateTable').dataTable().fnDraw()
+        } else {
+            resourceStockDateTable = getResourceStockDateTable('resourceStockDateTable')
+        }
+        // resourceStockDateTable.draw()
+    })
+
+    resourceCategoryTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#resourceCategoryTable' )){
+            $('#resourceCategoryTable').dataTable().fnDraw()
+        } else {
+            resourceCategoryTable = getResourceCategoryTable('resourceCategoryTable')
+        }
+        // resourceCategoryTable.draw()
+    })
 
     document.querySelector('#sponsorCategoryTable').addEventListener('click', function (event) {
         const editBtn    = event.target.closest('.updateBtn')
@@ -169,36 +148,6 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    const resourceStockDateTable = new DataTable('#resourceStockDateTable', {
-        serverSide: true,
-        ajax:  '/resourcestockdate/load',
-        orderMulti: true,
-        search:true,
-        columns: [
-            {data: "date"},
-            {data: "description"},
-            {data: "participants"},
-            {data: "createdBy"},
-            {data: "createdAt"},
-            {data: row => function () {
-                if (row.reset){
-                    return `<span class="fs-italics text-primary"><i class="bi bi-check-circle-fill"></i> Stock reset</span>`
-                } else {
-                    return `
-                    <div class="d-flex flex-">
-                        <button class="btn btn-outline-primary resetResourceStockBtn tooltip-test" title="reset stock" data-id="${ row.id }">
-                            <i class="bi bi-gear-wide-connected"></i>
-                        </button>
-                        <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
-                        <i class="bi bi-trash3-fill"></i>
-                    </button>
-                    </div>
-                `
-                }
-            }},
-        ]
-    });
-
     document.querySelector('#resourceStockDateTable').addEventListener('click', function (event) {
         const resetBtn    = event.target.closest('.resetResourceStockBtn')
         const deleteBtn  = event.target.closest('.deleteBtn')
@@ -209,7 +158,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
                 if (confirm('Are you very sure?. This cannot be reversed')) {
 
-                    if (confirm('Are you authorized to do this?')) {
+                    if (confirm('Last chance to make sure!')) {
 
                         const resourceStockDateId = resetBtn.getAttribute('data-id')
                         
@@ -289,47 +238,6 @@ window.addEventListener('DOMContentLoaded', function () {
             saveResourceStockDateBtn.removeAttribute('disabled')
         })
     })
-
-    const resourceCategoryTable = new DataTable('#resourceCategoryTable', {
-        serverSide: true,
-        ajax:  '/resourcecategory/load',
-        orderMulti: true,
-        search:true,
-        columns: [
-            {data:row => () => {
-                return `<span class="text-primary"> ${row.name}</span>`
-            }},
-            {data: "description"},
-            {data: "createdBy"},
-            {data: "createdAt"},
-            {
-                sortable: false,
-                data: row => () => {
-                    if (row.count < 1) {
-                         return `
-                            <div class="d-flex flex-">
-                                <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </button>
-                                <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
-                                    <i class="bi bi-trash3-fill"></i>
-                                </button>
-                            </div>
-                        `
-                    } else {
-                        return `
-                        <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                                <i class="bi bi-pencil-fill"></i>
-                            </button>
-                        </div>
-                    `
-                    }
-                           
-                } 
-                    }
-        ]
-    });
 
     document.querySelector('#resourceCategoryTable').addEventListener('click', function (event) {
         const editBtn    = event.target.closest('.updateBtn')

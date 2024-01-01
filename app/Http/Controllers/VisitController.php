@@ -60,8 +60,6 @@ class VisitController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
     
-    
-
     /**
      * close a completed visit
      */
@@ -75,7 +73,7 @@ class VisitController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * delete a specified visit.
      */
     public function destroy(Visit $visit)
     {

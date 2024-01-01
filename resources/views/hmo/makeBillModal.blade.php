@@ -33,13 +33,25 @@
                                             <th>Prescription</th>
                                             <th>Note</th>
                                             <th>Qty</th>
-                                            <th>HMS Bill</th>
-                                            <th class="text-center" >HMO Bill</th>
+                                            <th class="text-center">HMS Bill</th>
+                                            <th class="text-center">HMO Bill</th>
                                             <th>Bill By</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
-                                    <tfoot class="fw-bold">
+                                    <tfoot>
+                                        <tr class="">
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="">Total</td>
+                                            <td class="text-primary text-center"></td>
+                                            <td class="text-primary text-center"></td>
+                                            <td></td>
+                                        </tr>
                                         <tr>
                                             <td></td>
                                             <td></td>
@@ -47,9 +59,21 @@
                                             <td></td>
                                             <td></td>
                                             <td></td>
+                                            <td class="">Paid HMS</td>
+                                            <td class="text-success text-center"></td>
+                                            <td class="text-success  text-center"></td>
                                             <td></td>
-                                            <td class="text-primary"></td>
-                                            <td class="text-primary text-center"></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="">Balance</td>
+                                            <td class="text-center"></td>
+                                            <td class="text-center"></td>
                                             <td></td>
                                         </tr>
                                     </tfoot>

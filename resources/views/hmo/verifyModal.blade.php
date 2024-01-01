@@ -55,9 +55,9 @@
                     <i class="bi bi-x-circle me-1"></i>
                     Close
                 </button>
-                <button type="button" id="verifyBtn" class="btn bg-primary text-white">
+                <button type="button" id="verifyBtn" class="btn btn-primary text-white">
                     <i class="bi bi-check-circle me-1"></i>
-                    Verify
+                    Save
                 </button>
             </div>
         </div>

@@ -124,6 +124,7 @@ class ResourceService
                         ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
                         ->where('expiry_date', '>', new Carbon())
                         ->where('is_active', true)
+                        ->where('stock_level', '>', 0)
                         ->orderBy('name', 'asc')
                         ->get();
         }

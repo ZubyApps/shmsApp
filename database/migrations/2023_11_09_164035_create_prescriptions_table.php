@@ -35,9 +35,11 @@ return new class extends Migration
             $table->boolean('rejected')->default(false);
             $table->string('rejection_note')->nullable();
             $table->foreignIdFor(User::class, 'rejected_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->string('test_sample')->nullable();
             $table->string('result')->nullable();
             $table->dateTime('result_date')->nullable();
             $table->foreignIdFor(User::class, 'result_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->string('paid')->nullable();
             $table->string('prescription_status')->nullable();
             $table->foreignIdFor(Resource::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Consultation::class)->constrained()->restrictOnDelete();

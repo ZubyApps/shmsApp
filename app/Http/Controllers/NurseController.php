@@ -15,38 +15,17 @@ class NurseController extends Controller
     {
         
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         return view('nurses.nurses');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    public function loadRegularVisitsNurses(Request $request)
+    public function loadVisitsNurses(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $visits = $this->nurseService->getPaginatedRegularConsultedVisitsNurses($params);
-       
-        $loadTransformer = $this->nurseService->getConsultedVisitsNursesTransformer();
-
-        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
-    }
-
-    public function loadAncVisitsNurses(Request $request)
-    {
-        $params = $this->datatablesService->getDataTableQueryParameters($request);
-
-        $visits = $this->nurseService->getPaginatedAncConsultedVisitsNurses($params);
+        $visits = $this->nurseService->getpaginatedFilteredNurseVisits($params, $request);
        
         $loadTransformer = $this->nurseService->getConsultedVisitsNursesTransformer();
 

@@ -325,10 +325,6 @@ window.addEventListener('DOMContentLoaded', function () {
             }
             setTimeout(goto, 300)
         }
-
-        if (approvalBtn) {
-            approvalModal.show()
-        }
     })
 
 })

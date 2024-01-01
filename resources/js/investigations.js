@@ -3,21 +3,23 @@ import $ from 'jquery';
 import http from "./http";
 import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, loadingSpinners, clearValidationErrors} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations";
-import { getAllRegularPatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable } from "./tables/investigationTables";
+import { getPatientsVisitsByFilterTable, getInpatientsInvestigationsTable } from "./tables/investigationTables";
 import { getLabTableByConsultation } from "./tables/doctorstables";
 
 window.addEventListener('DOMContentLoaded', function () {
     const reviewDetailsModal        = new Modal(document.getElementById('treatmentDetailsModal'))
     const addResultModal            = new Modal(document.getElementById('addResultModal'))
     const investigationsModal       = new Modal(document.getElementById('investigationsModal'))
-    // const investigationsList        = new Offcanvas(document.getElementById('offcanvasInvestigations'))
+    const investigationsList        = new Offcanvas(document.getElementById('offcanvasInvestigations'))
 
     const treatmentDiv              = document.querySelector('#treatmentDiv')
     const resultDiv                 = addResultModal._element.querySelector('#resultDiv')
 
     const saveResultBtn             = addResultModal._element.querySelector('#saveResultBtn')
 
-    const [allRegularPatientsTab, inPatientsTab, ancPatientsTab]  = [document.querySelector('#nav-allRegularPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab')]
+    const outPatientsTab            = document.querySelector('#nav-outPatients-tab')
+    const inPatientsTab             = document.querySelector('#nav-inPatients-tab')
+    const ancPatientsTab            = document.querySelector('#nav-ancPatients-tab')
 
      // Auto textarea adjustment
      const textareaHeight = 90;
@@ -25,15 +27,17 @@ window.addEventListener('DOMContentLoaded', function () {
 
     let inPatientsVisitTable, ancPatientsVisitTable
 
-    const allRegularPatientsTable = getAllRegularPatientsVisitTable('allRegularPatientsVisitTable')
+    const inpatientsInvestigationsTale = getInpatientsInvestigationsTable('inpatientInvestigationsTable')
 
-    allRegularPatientsTab.addEventListener('click', function() {allRegularPatientsTable.draw()})
+    const outPatientsVisitsTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient')
+
+    outPatientsTab.addEventListener('click', function() {outPatientsVisitsTable.draw()})
 
     inPatientsTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#inPatientsVisitTable' )){
             $('#inPatientsVisitTable').dataTable().fnDraw()
         } else {
-            inPatientsVisitTable = getInpatientsVisitTable('inPatientsVisitTable')
+            inPatientsVisitTable = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient')
         }
     })
 
@@ -41,17 +45,19 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#ancPatientsVisitTable' )){
             $('#ancPatientsVisitTable').dataTable().fnDraw()
         } else {
-            ancPatientsVisitTable = getAncPatientsVisitTable('ancPatientsVisitTable')
+            ancPatientsVisitTable = getPatientsVisitsByFilterTable('ancPatientsVisitTable', 'ANC')
         }
     })
 
-    // investigationsList._element.addEventListener('hide.bs.offcanvas', function () {
-    //     allRegularPatientsTable.draw()
-    //     inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
-    //     ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-    // })
+    investigationsList._element.addEventListener('show.bs.offcanvas', function () {inpatientsInvestigationsTale.draw()})
 
-    document.querySelectorAll('#allRegularPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable').forEach(table => {
+    investigationsList._element.addEventListener('hide.bs.offcanvas', function () {
+        outPatientsVisitsTable.draw()
+        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+    })
+
+    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const consultationDetailsBtn = event.target.closest('.consultationDetailsBtn')
             const investigationsBtn = event.target.closest('.investigationsBtn')
@@ -122,13 +128,25 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     reviewDetailsModal._element.addEventListener('hide.bs.modal', function () {
-        allRegularPatientsTable.draw()
+        outPatientsVisitsTable.draw()
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
         treatmentDiv.innerHTML = ''
     })
 
-    
+    document.querySelector('#inpatientInvestigationsTable').addEventListener('click', (event) => {
+        const addResultBtn = event.target.closest('#addResultBtn')
+
+        if (addResultBtn) {
+            saveResultBtn.setAttribute('data-id', addResultBtn.getAttribute('data-id'))
+            saveResultBtn.setAttribute('data-table', addResultBtn.getAttribute('data-table'))
+            addResultModal._element.querySelector('#patient').value = addResultBtn.getAttribute('data-patient')
+            addResultModal._element.querySelector('#sponsorName').value = addResultBtn.getAttribute('data-sponsor')
+            addResultModal._element.querySelector('#diagnosis').value = addResultBtn.getAttribute('data-diagnosis')
+            addResultModal._element.querySelector('#investigation').value = addResultBtn.getAttribute('data-investigation')
+            addResultModal.show()
+        }
+    })
 
     document.querySelector('#treatmentDiv').addEventListener('click', function (event) {
         const collapseBtn  = event.target.closest('.collapseBtn')

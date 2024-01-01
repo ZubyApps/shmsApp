@@ -11,14 +11,14 @@ use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
-class InvestigationService
+class BillingService
 {
-    public function __construct(private readonly Visit $visit, private readonly Prescription $prescription)
+    public function __construct(private readonly Visit $visit)
     {
         
     }
 
-    public function getpaginatedFilteredLabVisits(DataTableQueryParams $params, $data)
+    public function getpaginatedFilteredNurseVisits(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
@@ -44,9 +44,12 @@ class InvestigationService
         if ($data->filterBy == 'Outpatient'){
             return $this->visit
             ->where('consulted', '!=', null)
-            ->where('lab_done_by', null)
+            ->where('nurse_done_by', null)
             ->where('closed', null)
-            ->whereRelation('prescriptions.resource', 'category', '=', 'Investigations')
+            ->where(function(Builder $query) {
+                $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
+                    ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services');
+            })
             ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
@@ -56,9 +59,12 @@ class InvestigationService
         if ($data->filterBy == 'Inpatient'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('lab_done_by', null)
+                    ->where('nurse_done_by', null)
                     ->where('closed', null)
-                    ->whereRelation('prescriptions.resource', 'category', '=', 'Investigations')
+                    ->where(function(Builder $query) {
+                        $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
+                            ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services');
+                    })
                     ->where(function (Builder $query) {
                         $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
                         ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
@@ -69,9 +75,12 @@ class InvestigationService
         if ($data->filterBy == 'ANC'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('lab_done_by', null)
+                    ->where('nurse_done_by', null)
                     ->where('closed', null)
-                    ->whereRelation('prescriptions.resource', 'category', '=', 'Investigations')
+                    ->where(function(Builder $query) {
+                        $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
+                            ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services');
+                    })
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -79,13 +88,13 @@ class InvestigationService
 
         return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('lab_done_by', null)
+                    ->where('nurse_done_by', null)
                     ->where('closed', null)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
-    public function getConsultedVisitsLabTransformer(): callable
+    public function getConsultedVisitsNursesTransformer(): callable
     {
        return  function (Visit $visit) {
             return [
@@ -99,47 +108,13 @@ class InvestigationService
                 'sponsor'           => $visit->sponsor->name,
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
                 'patientType'       => $visit->patient->patient_type,
-                'labPrescribed'     => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
-                                        ->count(),
-                'labDone'           => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
-                                        ->where('result_date','!=', null)
-                                        ->count(),
+                'payPercent'        => $visit->total_bill ? round((float)($visit->total_paid / $visit->total_bill) * 100, 2) : 0
+                // 'vitalSigns'        => $visit->vitalSigns->count(),
+                // 'prescriptionCount' => Prescription::where('visit_id', $visit->id)
+                //                        ->whereRelation('resource', 'category', 'Medications')
+                //                        ->orWhereRelation('resource', 'category', 'Medical Services')
+                //                        ->count()
             ];
          };
     }
-
-    public function getPaginatedLabRequests(DataTableQueryParams $params, $data)
-    {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
-
-        return $this->prescription
-                    ->whereRelation('resource', 'category', 'Investigations')
-                    ->where(function (Builder $query) {
-                        $query->whereRelation('consultation', 'admission_status', '=', 'Inpatient')
-                        ->orWhereRelation('consultation', 'admission_status', '=', 'Observation');
-                    })
-                    ->where('result_date', null)
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    }
-
-    public function getLabTransformer(): callable
-    {
-       return  function (Prescription $prescription) {
-            return [
-                'id'                => $prescription->id,
-                'requested'         => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
-                'type'              => $prescription->resource->resourceSubCategory->name,
-                'doctor'            => $prescription->user->username,
-                'patient'           => $prescription->visit->patient->patientId(),
-                'sponsor'           => $prescription->visit->patient->sponsor->name,
-                'diagnosis'         => $prescription->consultation->icd11_diagnosis,
-                'resource'          => $prescription->resource->name,
-            ];
-         };
-    }
-
 }

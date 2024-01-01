@@ -4,7 +4,7 @@ import "@whoicd/icd11ect/style.css"
 import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
-import { getAllPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation, getInpatientsVisitTable, getUserRegularPatientsVisitTable, getUserAncPatientsVisitTable} from "./tables/doctorstables"
+import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable} from "./tables/doctorstables"
 import { getVitalsignsChartByVisit } from "./charts/vitalsignsCharts"
 import jQuery from "jquery";
 import $ from 'jquery';
@@ -46,7 +46,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const waitingBtn                        = document.querySelector('#waitingBtn')
 
 
-    const [userRegularPatientsTab, userAncPatientsTab, allPatientsTab, inPatientsTab]  = [document.querySelector('#nav-yourRegularPatients-tab'), document.querySelector('#nav-yourAncPatients-tab'), document.querySelector('#nav-allPatients-tab'), document.querySelector('#nav-inPatients-tab')]
+    const [outPatientsTab, ancPatientsTab, inPatientsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-inPatients-tab')]
     
     const [resourceInput, heightEl, lmpEl]  = [document.querySelectorAll('#resource'), document.querySelectorAll('#height'), document.querySelectorAll('#lmp')]
 
@@ -93,43 +93,51 @@ window.addEventListener('DOMContentLoaded', function () {
     ECT.Handler.configure(mySettings, myCallbacks)
 
     //visit Tables and consultations that are active
-    let allPatientsVisitTable, inPatientsVisitTable, userAncPatientsVisitTable 
+    let inPatientsVisitTable, ancPatientsVisitTable 
 
-    const userRegularPatientsVisitTable = getUserRegularPatientsVisitTable('#userRegularPatientsVisitTable')
+    const outPatientsVisitTable = getOutpatientsVisitTable('#outPatientsVisitTable', 'My Patients')
     const waitingTable = getWaitingTable('#waitingTable')
 
-    userRegularPatientsTab.addEventListener('click', function() {userRegularPatientsVisitTable.draw()})
+    outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw()})
 
-    userAncPatientsTab.addEventListener('click', function () {
-        if ($.fn.DataTable.isDataTable( '#userAncPatientsVisitTable' )){
-            $('#userAncPatientsVisitTable').dataTable().fnDraw()
+    ancPatientsTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#ancPatientsVisitTable' )){
+            $('#ancPatientsVisitTable').dataTable().fnDraw()
         } else {
-            userAncPatientsVisitTable = getUserAncPatientsVisitTable('#userAncPatientsVisitTable')
+            ancPatientsVisitTable = getAncPatientsVisitTable('#ancPatientsVisitTable', 'My Patients')
         }
     })
-
-    allPatientsTab.addEventListener('click', function () {
-        if ($.fn.DataTable.isDataTable( '#allPatientsVisitTable' )){
-            $('#allPatientsVisitTable').dataTable().fnDraw()
-        } else {
-            allPatientsVisitTable = getAllPatientsVisitTable('#allPatientsVisitTable')
-        }
-    })    
 
     inPatientsTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#inPatientsVisitTable' )){
             $('#inPatientsVisitTable').dataTable().fnDraw()
         } else {
-            inPatientsVisitTable = getInpatientsVisitTable('#inPatientsVisitTable')
+            inPatientsVisitTable = getInpatientsVisitTable('#inPatientsVisitTable', 'My Patients')
         }
     })
     
+    document.querySelectorAll('#filterListOutPatients, #filterListInPatients, #filterListAncPatients').forEach(filterInput => {
+        filterInput.addEventListener('change', function () {
+            if (filterInput.id == 'filterListOutPatients'){
+                $.fn.DataTable.isDataTable( '#outPatientsVisitTable' ) ? $('#outPatientsVisitTable').dataTable().fnDestroy() : ''
+                getOutpatientsVisitTable('#outPatientsVisitTable', filterInput.value)
+            }
+            if (filterInput.id == 'filterListInPatients'){
+                $.fn.DataTable.isDataTable( '#inPatientsVisitTable' ) ? $('#inPatientsVisitTable').dataTable().fnDestroy() : ''
+                getInpatientsVisitTable('#inPatientsVisitTable', filterInput.value)
+            }
+            if (filterInput.id == 'filterListAncPatients'){
+                $.fn.DataTable.isDataTable( '#ancPatientsVisitTable' ) ? $('#ancPatientsVisitTable').dataTable().fnDestroy() : ''
+                getAncPatientsVisitTable('#ancPatientsVisitTable', filterInput.value)
+            }
+        })
+    })
     
-    document.querySelectorAll('#allPatientsVisitTable, #userRegularPatientsVisitTable, #inPatientsVisitTable, #userAncPatientsVisitTable').forEach(table => {
+    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const consultationReviewBtn    = event.target.closest('.consultationReviewBtn')
-            const vitalsignsBtn             = event.target.closest('.vitalSignsBtn')
-            const investigationsBtn             = event.target.closest('.investigationsBtn')
+            const vitalsignsBtn            = event.target.closest('.vitalSignsBtn')
+            const investigationsBtn        = event.target.closest('.investigationsBtn')
     
             if (consultationReviewBtn) {
                 consultationReviewBtn.setAttribute('disabled', 'disabled')
@@ -289,16 +297,14 @@ window.addEventListener('DOMContentLoaded', function () {
     waitingBtn.addEventListener('click', function () {waitingTable.draw()})
 
     waitingListOffcanvas._element.addEventListener('hide.bs.offcanvas', () => {
-        userRegularPatientsVisitTable.draw()
-        userAncPatientsVisitTable ? userAncPatientsVisitTable.draw() : ''
-        allPatientsVisitTable ? allPatientsVisitTable.draw() : ''
+        outPatientsVisitTable.draw()
+        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
     })
 
     vitalsignsModal._element.addEventListener('hide.bs.modal', () => {
-        userRegularPatientsVisitTable.draw()
-        allPatientsVisitTable ? allPatientsVisitTable.draw() : ''
-        userAncPatientsVisitTable ? userAncPatientsVisitTable.draw() : ''
+        outPatientsVisitTable.draw()
+        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
     })
 
@@ -439,9 +445,8 @@ window.addEventListener('DOMContentLoaded', function () {
                             new Toast(div.querySelector('#saveConsultationToast'), {delay:2000}).show()
                             getPrescriptionTableByConsultation(tableId, response.data.id, modal)
                             waitingTable.draw()
-                            userRegularPatientsVisitTable.draw()
-                            userAncPatientsVisitTable ? userAncPatientsVisitTable.draw() : ''
-                            allPatientsVisitTable ? allPatientsVisitTable.draw() : ''
+                            outPatientsVisitTable.draw()
+                            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
                             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
                         }
                     })
@@ -534,9 +539,8 @@ window.addEventListener('DOMContentLoaded', function () {
                         if (response.status >= 200 || response.status <= 300) {
                             openModals(modal, modal._element.querySelector('#saveConsultationBtn'), response.data)
                             getVitalSignsTableByVisit('#'+modal._element.querySelector('.vitalsTable').id, visitId, modal)
-                            userRegularPatientsVisitTable.draw()
-                            userAncPatientsVisitTable ? userAncPatientsVisitTable.draw() : ''
-                            allPatientsVisitTable ? allPatientsVisitTable.draw() : ''
+                            outPatientsVisitTable.draw()
+                            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
                             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
                         }
                         btn.removeAttribute('disabled')
@@ -552,9 +556,8 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#newConsultationModal, #ancConsultationModal, #ancReviewModal, #newReviewModal, #specialistConsultationModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function(event) {
             doctorsModalClosingTasks(event, modal, textareaHeight)
-            userRegularPatientsVisitTable.draw()
-            userAncPatientsVisitTable ? userAncPatientsVisitTable.draw() : ''
-            allPatientsVisitTable ? allPatientsVisitTable.draw() : ''
+            outPatientsVisitTable.draw()
+            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
          })
     })
@@ -648,7 +651,6 @@ window.addEventListener('DOMContentLoaded', function () {
                     const selectedOption = datalistEl.options.namedItem(resourceInput.value)
                     if (selectedOption){
                         if (selectedOption.getAttribute('data-cat') == 'Medications'){
-                            console.log('it is')
                             div.querySelector('#qty').classList.add('d-none')
                             div.querySelector('#pres').classList.remove('d-none')
                         } else {
@@ -785,9 +787,8 @@ window.addEventListener('DOMContentLoaded', function () {
     // tasks to run when closing review consultation modal
     consultationReviewModal._element.addEventListener('hide.bs.modal', function(event) {
         consultationReviewDiv.innerHTML = ''
-        userRegularPatientsVisitTable.draw()
-        userAncPatientsVisitTable ? userAncPatientsVisitTable.draw() : ''
-        allPatientsVisitTable ? allPatientsVisitTable.draw() : ''
+        outPatientsVisitTable.draw()
+        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
     })
 })

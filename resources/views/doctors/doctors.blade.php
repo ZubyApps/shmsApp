@@ -58,73 +58,35 @@
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     
-                    <button class="nav-link active" id="nav-yourRegularPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-yourRegularPatients"
-                    type="button" role="tab" aria-controls="nav-yourRegularPatients" aria-selected="false">Your Regular Patients</button>
-
-                    <button class="nav-link" id="nav-yourAncPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-yourAncPatients"
-                    type="button" role="tab" aria-controls="nav-yourAncPatients" aria-selected="false">Your ANC Patients</button>
-                    
-                    <button class="nav-link" id="nav-allPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-allPatients" 
-                    type="button" role="tab" aria-controls="nav-allPatients"  aria-selected="true">All Patients</button>
+                    <button class="nav-link active" id="nav-outPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-outPatients"
+                    type="button" role="tab" aria-controls="nav-outPatients" aria-selected="false">OutPatients</button>
 
                     <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients" 
                     type="button" role="tab" aria-controls="nav-inPatients"  aria-selected="true">Inpatients</button>
+
+                    <button class="nav-link" id="nav-ancPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-ancPatients"
+                    type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button>
                     
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
                 <!-- your regular patients table -->
-                <div class="tab-pane fade show active"  id="nav-yourRegularPatients" aria-labelledby="nav-yourRegularPatients-tab" role="tabpanel"  tabindex="0">
+                <div class="tab-pane fade show active"  id="nav-outPatients" aria-labelledby="nav-outPatients-tab" role="tabpanel"  tabindex="0">
+                    <x-form-div class="col-md-4 pt-2">
+                        <x-input-span id="filterListLabel">Filter List<x-required-span /></x-input-span>
+                        <select class="form-select form-select-md" name="filterList" id="filterListOutPatients">
+                            <option value="My Patients">My Patients </option>
+                            <option value="">All Patients</option>
+                        </select>
+                    </x-form-div>
                     <div class="py-4">
-                        <table id="userRegularPatientsVisitTable" class="table table-hover table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Seen</th>
-                                    <th>Patient</th>
-                                    <th>Diagnosis</th>
-                                    <th>Sponsor</th>
-                                    <th>Investigations</th>
-                                    <th>Vitals</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- your anc patients table -->
-                <div class="tab-pane fade"  id="nav-yourAncPatients" aria-labelledby="nav-yourAncPatients-tab" role="tabpanel"  tabindex="0">
-                    <div class="py-4">
-                        <table id="userAncPatientsVisitTable" class="table table-hover table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Seen</th>
-                                    <th>Patient</th>
-                                    <th>Diagnosis</th>
-                                    <th>Sponsor</th>
-                                    <th>Investigations</th>
-                                    <th>Vitals</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!--all regular patients table -->
-                <div class="tab-pane fade" id="nav-allPatients" aria-labelledby="nav-allPatients-tab" role="tabpanel"   tabindex="0">
-                    <div class="py-4">
-                        <table id="allPatientsVisitTable"  class="table table-hover align-middle table-sm">
+                        <table id="outPatientsVisitTable" class="table table-hover table-sm">
                             <thead>
                                 <tr>
                                     <th>Seen</th>
                                     <th>Patient</th>
                                     <th>Doctor</th>
-                                    <th>Diagnosis</th>
+                                    <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
                                     <th>Investigations</th>
                                     <th>Vitals</th>
@@ -139,6 +101,13 @@
 
                 <!--all regular patients table -->
                 <div class="tab-pane fade" id="nav-inPatients" aria-labelledby="nav-inPatients-tab" role="tabpanel"   tabindex="0">
+                    <x-form-div class="col-md-4 pt-2">
+                        <x-input-span id="filterListLabel">Filter List<x-required-span /></x-input-span>
+                        <select class="form-select form-select-md" name="filterList" id="filterListInPatients">
+                            <option value="My Patients">My Patients </option>
+                            <option value="">All Patients</option>
+                        </select>
+                    </x-form-div>
                     <div class="py-4">
                         <table id="inPatientsVisitTable"  class="table table-hover align-middle table-sm">
                             <thead>
@@ -146,7 +115,36 @@
                                     <th>Seen</th>
                                     <th>Patient</th>
                                     <th>Doctor</th>
-                                    <th>Diagnosis</th>
+                                    <th>Current Diagnosis</th>
+                                    <th>Sponsor</th>
+                                    <th>Investigations</th>
+                                    <th>Vitals</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- your anc patients table -->
+                <div class="tab-pane fade"  id="nav-ancPatients" aria-labelledby="nav-ancPatients-tab" role="tabpanel"  tabindex="0">
+                    <x-form-div class="col-md-4 pt-2">
+                        <x-input-span id="filterListLabel">Filter List<x-required-span /></x-input-span>
+                        <select class="form-select form-select-md" name="filterList" id="filterListAncPatients">
+                            <option value="My Patients">My Patients </option>
+                            <option value="">All Patients</option>
+                        </select>
+                    </x-form-div>
+                    <div class="py-4">
+                        <table id="ancPatientsVisitTable" class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Seen</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
                                     <th>Investigations</th>
                                     <th>Vitals</th>

@@ -69,7 +69,7 @@
                     </div>                        
                 </div>
                 <!-- resourceSubCategory table -->
-                <div class="tab-pane fade active" id="nav-resourceSubCategory" role="tabpanel" aria-labelledby="nav-resourceSubCategory-tab"
+                <div class="tab-pane fade" id="nav-resourceSubCategory" role="tabpanel" aria-labelledby="nav-resourceSubCategory-tab"
                     tabindex="0">
                     <div class="text-start my-4">
                         <button class="btn btn-primary" type="button" id="addResourceSubCategoryBtn">
@@ -86,7 +86,7 @@
                                     <th>Category</th>
                                     <th>Created By</th>
                                     <th>Created At</th>
-                                    <th>Actions</th>
+                                    {{-- <th>Actions</th> --}}
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -94,7 +94,7 @@
                     </div>
                 </div>
                 <!-- addResourceStock table -->
-                <div class="tab-pane fade active" id="nav-addResourceStock" role="tabpanel" aria-labelledby="nav-addResourceStock-tab"
+                <div class="tab-pane fade" id="nav-addResourceStock" role="tabpanel" aria-labelledby="nav-addResourceStock-tab"
                     tabindex="0">
                     <div class="my-4">
                         <table id="addResourceStockTable" class="table table-hover align-middle">
@@ -116,7 +116,7 @@
                     </div>
                 </div>
                 <!-- resourceSupplier table -->
-                <div class="tab-pane fade active" id="nav-resourceSupplier" role="tabpanel" aria-labelledby="nav-resourceSupplier-tab"
+                <div class="tab-pane fade" id="nav-resourceSupplier" role="tabpanel" aria-labelledby="nav-resourceSupplier-tab"
                     tabindex="0">
 
                     <div class="text-start my-4">

@@ -27,6 +27,11 @@ class Patient extends Model
         return $this->hasMany(Visit::class);
     }
 
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function patientId()
     {
         return $this->card_no.' '.$this->first_name.' '.$this->middle_name.' '.$this->last_name;

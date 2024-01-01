@@ -98,15 +98,6 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                             </button>
                         </div>`                
             },
-            // {data: row => function () {
-            //        return `
-            //         <div class="d-flex flex-">
-            //             <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-            //             <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
-            //             </button>
-            //         </div>`
-            //     }
-            // },
             {data: row => () => {
                 return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
                 `<div class="d-flex flex- justify-content-center">
@@ -150,7 +141,7 @@ const getApprovalListTable = (tableId) => {
         orderMulti: true,
         search:true,
         language: {
-            emptyTable: 'No prescriptions for approval'
+            emptyTable: 'No items for approval'
         },
         columns: [
             {data: "patient"},
@@ -160,7 +151,7 @@ const getApprovalListTable = (tableId) => {
             {data: "diagnosis"},
             {data:row => () => {
                 return row.approved ? row.resource + `<i class="ms-1 text-primary bi bi-check-circle-fill"></i>` : 
-                       row.rejected ? row.resource + `<i class="ms-1 text-danger bi bi-x-square-fill"></i>` :
+                       row.rejected ? row.resource + `<i class="ms-1 text-danger bi bi-x-circle-fill"></i>` :
                        row.resource
             }},
             {data: "prescription"},
@@ -179,7 +170,7 @@ const getApprovalListTable = (tableId) => {
                                 <i class="bi bi-check-circle"></i>
                         </button>
                         <button type="submit" class="ms-1 btn btn-outline-danger rejectBtn tooltip-test" data-table="${tableId}" title="reject" data-id="${ row.id}">
-                                <i class="bi bi-x-square"></i>
+                                <i class="bi bi-x-circle"></i>
                         </button>
                         <input class="ms-1 form-control noteInput d-none" id="noteInput">
                     </div>
@@ -203,33 +194,45 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
         language: {
             emptyTable: "No patient"
         },
-        drawCallback: function () {
-            var api = this.api()
-                $( api.column(7).footer() ).html(api.column( 7, {page:'current'} ).data().sum());
-
-                $( api.column(8).footer() ).html( new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(
-                    api.column(8, {page:'current'} ).data().sum()));
+        drawCallback: function (settings) {
+            var api = this.api()                
+                $( 'tr:eq(0) td:eq(7)', api.table().footer() ).html(api.column( 7, {page:'current'} ).data().sum());
+                $( 'tr:eq(0) td:eq(8)', api.table().footer() ).html( api.column(8, {page:'current'} ).data().sum());
+                
                 const value = (api.column( 8, {page:'current'} ).data().sum()) - (api.column( 7, {page:'current'} ).data().sum())
-                $( api.column(9).footer() ).html(`<span class="text-${value < 0 ? 'danger': value == 0 ? 'primary': 'success'}">${value}</span>`);
+                $( 'tr:eq(0) td:eq(9)', api.table().footer() ).html(`<span class="text-${value < 0 ? 'danger': value == 0 ? 'primary': 'success'}">Diff: ${value}</span>`);
+                
+                $( 'tr:eq(1) td:eq(7)', api.table().footer() ).html(api.data()[0].paidHms);
+                $( 'tr:eq(1) td:eq(8)', api.table().footer() ).html(api.data()[0].paidHms);
+                
+                $( 'tr:eq(2) td:eq(7)', api.table().footer() ).html((api.column( 7, {page:'current'} ).data().sum() - api.data()[0].paidHms));
+                $( 'tr:eq(2) td:eq(8)', api.table().footer() ).html((api.column( 8, {page:'current'} ).data().sum() - api.data()[0].paidHms));
+
         },
         columns: [
             {data: "doctor"},
             {data: "prescribed"},
             {data: row => () => {
                 return row.approved ? row.resource + `<i class="ms-1 text-primary bi bi-check-circle-fill"></i>` : 
-                       row.rejected ? row.resource + `<i class="ms-1 text-danger bi bi-x-square-fill"></i>` :
+                       row.rejected ? row.resource + `<i class="ms-1 text-danger bi bi-x-circle-fill"></i>` :
                        row.resource
             } },
             {data: "diagnosis"},
             {data: "prescription"},
             {data: "note"},
             {data: "quantity"},
-            {data: "hmsBill"},
+            {data: "hmsBill",
+                render: (data, type, row) => {
+                    return ` <div class="d-flex justify-content-center">
+                                <span>${data}</span>
+                            </div>
+                            `}
+            },
             {
                 data: 'hmoBill',
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
-                    <span class="hmoBillSpan btn btn-white" data-id="${row.id}">${data ?? 'Bill'}</span>
+                    <span class="${ row.rejected ? '' : 'hmoBillSpan'} btn btn-white" data-id="${row.id}">${row.rejected ? 'Not approved' : data ?? 'Bill'}</span>
                     <input class="ms-1 form-control hmoBillInput d-none" id="hmoBillInput" value="${data ?? ''}">
                 </div>
                 `}

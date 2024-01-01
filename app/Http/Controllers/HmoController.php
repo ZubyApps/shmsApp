@@ -27,22 +27,6 @@ class HmoController extends Controller
         return view('hmo.hmo');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
     public function loadVerificationListTable(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
@@ -54,7 +38,7 @@ class HmoController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 
-    public function loadAllHmoVisits(Request $request)
+    public function loadVisitsByFilterHmo(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 

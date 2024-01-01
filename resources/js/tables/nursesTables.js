@@ -50,10 +50,12 @@ const getWaitingTable = (tableId) => {
     });
 }
 
-const getAllRegularPatientsVisitTable = (tableId) => {
+const getPatientsVisitsByFilterTable = (tableId, filter) => {
     return new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  '/nurses/load/consulted/regular/nurses',
+        ajax:  {url: '/nurses/load/consulted/nurses', data: {
+            'filterBy': filter
+        }},
         orderMulti: true,
         search:true,
         language: {
@@ -65,97 +67,12 @@ const getAllRegularPatientsVisitTable = (tableId) => {
             {data: "doctor"},
             {data: "diagnosis"},
             {data: "sponsor"},
-            {data: row => function () {
-                if (row.vitalSigns < 1){
-                    return `
-                        <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                            <i class="bi bi-plus-square-dotted"></i>
-                            </button>
-                        </div>`
-                    } else {
-                        return `
-                        <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                            <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
-                            </button>
-                        </div>`
-                    }
-                }
-            },
-            {data: row => () => {
-                return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
-                `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
-                `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
-            } },
-            {
-                sortable: false,
-                data: row =>  `
-                <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Details</button>
-                </div>
-                `      
-            },
-        ]
-    });
-}
-
-const getInpatientsVisitTable = (tableId) => {
-    return new DataTable(tableId, {
-        serverSide: true,
-        ajax:  '/visits/load/consulted/inpatients',
-        orderMulti: true,
-        search:true,
-        language: {
-            emptyTable: "No patient"
-        },
-        columns: [
-            {data: "came"},
-            {data: "patient"},
-            {data: "doctor"},
-            {data: "diagnosis"},
-            {data: "sponsor"},
-            {data: row => function () {
-                   return `
-                    <div class="d-flex flex-">
-                        <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                        <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
-                        </button>
-                    </div>`
-                }
-            },
-            {data: row => () => {
-                return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
-                `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
-                `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
-            } },
-            {
-                sortable: false,
-                data: row =>  `
-                <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Details</button>
-                </div>
-                `      
-            },
-        ]
-    });
-}
-
-const getAncPatientsVisitTable = (tableId) => {
-    return new DataTable(tableId, {
-        serverSide: true,
-        ajax:  '/nurses/load/consulted/anc/nurses',
-        orderMulti: true,
-        search:true,
-        language: {
-            emptyTable: 'No patient record'
-        },
-        columns: [
-            {data: "came"},
-            {data: "patient"},
-            {data: "doctor"},
-            {data: "diagnosis"},
-            {data: "sponsor"},
+            {data: row => `
+                <div class="d-flex flex">
+                    <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                        <i class="bi bi-prescription2">${row.prescriptionCount}</i>
+                    </button>
+                </div>`},
             {data: row => function () {
                 if (row.vitalSigns < 1){
                     return `
@@ -384,19 +301,4 @@ const getUpcomingMedicationsTable = (tableId, bsComponent, type) => {
 }
 
 
-export {getWaitingTable, getAllRegularPatientsVisitTable, getAncPatientsVisitTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable, getInpatientsVisitTable}
-
-
-                        // <div class="dropdown">
-                        //     <a class="text-black tooltip-test text-decoration-none" title="vital signs" data-bs-toggle="dropdown" href="" >
-                        //     <i class="btn btn-outline-primary bi bi-check-circle-fill">${row.vitalSigns}</i>
-                        //     </a>
-                        //         <ul class="dropdown-menu">
-                        //         <li>
-                        //             <a role="button" class="dropdown-item vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                        //             <i class="bi bi-plus-square-dotted text-primary"></i> Add
-                        //             </a>
-                        //         </li>
-                        //     </ul>
-                        // </div>
-                        
+export {getWaitingTable, getPatientsVisitsByFilterTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable}
