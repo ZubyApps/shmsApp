@@ -47,7 +47,8 @@ class HmoService
                     ->where('verified_at', null)
                     ->where(function (Builder $query) use($params) {
                         $query->whereRelation('sponsor.sponsorCategory', 'name', '=', 'HMO')
-                        ->orWhereRelation('sponsor.sponsorCategory', 'name', '=', 'NHIS');
+                        ->orWhereRelation('sponsor.sponsorCategory', 'name', '=', 'NHIS')
+                        ->orWhereRelation('sponsor.sponsorCategory', 'name', '=', 'Retainership');
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
