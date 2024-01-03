@@ -2,7 +2,7 @@ import jQuery from "jquery";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { reviewBtn } from "../helpers";
+import { reviewBtn, sponsorAndPayPercent } from "../helpers";
 
 // const getAllPatientsVisitTable = (tableId, filter) => {
 //     return new DataTable(tableId, {
@@ -70,7 +70,7 @@ const getOutpatientsVisitTable = (tableId, filter) => {
             {data: "patient"},
             {data: "doctor"},
             {data: "diagnosis"},
-            {data: "sponsor"},
+            {data: row => sponsorAndPayPercent(row)},
             {data: row =>  `
                         <div class="d-flex justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
@@ -107,7 +107,7 @@ const getOutpatientsVisitTable = (tableId, filter) => {
 const getInpatientsVisitTable = (tableId, filter) => {
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  {url: '/visits/load/consulted/inpatients', data: {
+        ajax:  {url: '/doctors/load/consulted/inpatient', data: {
             'filterBy' : filter
         }},
         orderMulti: true,
@@ -120,7 +120,7 @@ const getInpatientsVisitTable = (tableId, filter) => {
             {data: "patient"},
             {data: "doctor"},
             {data: "diagnosis"},
-            {data: "sponsor"},
+            {data: row => sponsorAndPayPercent(row)},
             {data: row =>  `
                         <div class="d-flex flex- justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
@@ -170,7 +170,7 @@ const getAncPatientsVisitTable = (tableId, filter) => {
             {data: "patient"},
             {data: "doctor"},
             {data: "diagnosis"},
-            {data: "sponsor"},
+            {data: row => sponsorAndPayPercent(row)},
             {data: row =>  `
                         <div class="d-flex flex- justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">

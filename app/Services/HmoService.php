@@ -70,7 +70,8 @@ class HmoService
                 'doctor'            => $visit->doctor->username ?? '',
                 'codeText'          => $visit->verification_code,
                 'phone'             => $visit->patient->phone,
-                'status'            => $visit->verification_status
+                'status'            => $visit->verification_status,
+                '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
             ];
          };
     }
@@ -197,6 +198,11 @@ class HmoService
                                         ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
                                         ->where('result_date','!=', null)
                                         ->count(),
+                'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
+                'payPercent'        => $visit->totalBills() ? round((float)($visit->totalPayments() / $visit->totalBills()) * 100) : null,
+                'payPercentNhis'    => $visit->totalBills() ? round((float)($visit->totalPayments() / ($visit->totalBills()/10)) * 100) : null,
+                'payPercentHmo'     => $visit->totalBills() ? round((float)($visit->totalApprovedBills() / $visit->totalBills()) * 100) : null,
+                '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
 
             ];
          };

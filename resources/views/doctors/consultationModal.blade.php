@@ -98,7 +98,7 @@
                                         @if ($isSpecialist) <x-icd11-diagnosis-div :number="3" /> @else <x-icd11-diagnosis-div :number="1" /> @endif
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="diagnosisLabel">Selected <br />ICD11 Diagnosis<x-required-span /></x-input-span>
-                                            <x-form-textarea type="text" name="selectedDiagnosis" class="selectedDiagnosis-{{ $isSpecialist ? '3' : '1' }}" id="selectedDiagnosis"></x-form-textarea>
+                                            <x-form-textarea type="text" name="selectedDiagnosis" class="selectedDiagnosis-{{ $isSpecialist ? '3' : '1' }}" id="selectedDiagnosis" readonly></x-form-textarea>
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="diagnosisLabel">Provisional <br /> Diagnosis</x-input-span>

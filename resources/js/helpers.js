@@ -233,5 +233,21 @@ const reviewBtn = (row) => {
             </div>
             `      
 }
+
+const sponsorAndPayPercent = (row) => {
+    let payPercent
+    if (row.sponsorCategory === 'NHIS'){
+        payPercent = row.payPercentNhis
+    } else if (row.sponsorCategory === 'HMO' || row.sponsorCategory === 'Retainership'){
+        payPercent = row.payPercentHmo
+    } else {
+        payPercent = row.payPercent
+    }
+    return payPercent !== null ? 
+            `<div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
+            <div class="progress-bar text-dark fs-6 px-1 overflow-visible bg-${payPercent <= 50 ? 'danger' : payPercent > 50 && payPercent < 100 ? 'warning' : 'primary'}" style="width: ${payPercent}%";>${row.sponsor+' '+payPercent+'%'}</div>
+            </div>` : 
+           row.sponsor
+}
     
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn }    
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent }    

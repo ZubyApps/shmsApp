@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('amount_paid');
             $table->string('pay_method');
-            $table->string('comment');
+            $table->string('comment')->nullable();
             $table->foreignIdFor(Patient::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();

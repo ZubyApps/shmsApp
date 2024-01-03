@@ -326,7 +326,7 @@ window.addEventListener('DOMContentLoaded', function () {
     createAddResourceStockBtn.addEventListener('click', function (event) {
         const resourceId = event.currentTarget.getAttribute('data-id')
         const resourceSupplierId = getDatalistOptionId(newAddResourceStockModal, newSupplierInput, newSupplierDatalistEl)
-        console.log(resourceSupplierId)
+        
         createAddResourceStockBtn.setAttribute('disabled', 'disabled')
         let data = {...getDivData(newAddResourceStockModal._element), resourceId, resourceSupplierId}
 
@@ -335,7 +335,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                     newAddResourceStockModal.hide()
                     clearDivValues(newAddResourceStockModal._element)
-                    addResourceStockTable.draw()
+                    addResourceStockTable ? addResourceStockTable.draw() : ''
                     resourceTable.draw()
                 }
             createAddResourceStockBtn.removeAttribute('disabled')

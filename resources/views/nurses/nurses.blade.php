@@ -14,12 +14,12 @@
     <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="upcomingMedicationsoffcanvas"
         aria-labelledby="upcomingMedicationsoffcanvasLabel">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-primary" id="upcomingMedicationsoffcanvasLabel">List of Upcoming Medications</h5>
+            <h5 class="offcanvas-title text-primary" id="upcomingMedicationsoffcanvasLabel">List of Upcoming Inpatients Medication</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <div class="py-4 ">
-                <table id="upcomingMedicationsTable" class="table table-hover align-middle table-sm bg-primary">
+                <table id="upcomingMedicationsTable" class="table table-hover align-middle table-sm">
                     <thead>
                         <tr>
                             <th>Patient</th>
@@ -71,7 +71,7 @@
         <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas"
             data-bs-target="#upcomingMedicationsoffcanvas" aria-controls="upcomingMedicationsoffcanvas">
             <i class="bi bi-list-check"></i>
-            Medication Chart
+            Inpatients Medication Chart
         </button>
         <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn" data-bs-target="#waitingListOffcanvas2" aria-controls="waitingListOffcanvas2">
             <i class="bi bi-list-check"></i>
@@ -103,7 +103,7 @@
                                 <th>Seen</th>
                                 <th>Patient</th>
                                 <th>Doctor</th>
-                                <th>Diagnosis</th>
+                                <th>Current Diagnosis</th>
                                 <th>Sponsor</th>
                                 <th>Rx count</th>
                                 <th>Vitals</th>
@@ -125,7 +125,7 @@
                                 <th>Seen</th>
                                 <th>Patient</th>
                                 <th>Doctor</th>
-                                <th>Diagnosis</th>
+                                <th>Current Diagnosis</th>
                                 <th>Sponsor</th>
                                 <th>Rx count</th>
                                 <th>Vitals</th>
@@ -147,7 +147,7 @@
                                 <th>Seen</th>
                                 <th>Patient</th>
                                 <th>Doctor</th>
-                                <th>Diagnosis</th>
+                                <th>Current Diagnosis</th>
                                 <th>Sponsor</th>
                                 <th>Rx count</th>
                                 <th>Vitals</th>

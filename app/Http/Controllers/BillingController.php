@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DiscountRequest;
 use App\Http\Requests\StorePaymentRequest;
+use App\Models\Payment;
+use App\Models\Visit;
 use App\Services\BillingService;
 use App\Services\DatatablesService;
 use App\Services\PaymentService;
@@ -45,10 +48,42 @@ class BillingController extends Controller
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $visits = $this->billingService->getpaginatedFilteredNurseVisits($params, $request);
+        $visits = $this->billingService->getpaginatedFilteredBillingVisits($params, $request);
        
-        $loadTransformer = $this->billingService->getConsultedVisitsNursesTransformer();
+        $loadTransformer = $this->billingService->getConsultedVisitsBillingTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
+
+    public function loadPatientBillTable(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sponsors = $this->billingService->getPatientBillTable($params, $request);
+       
+        $loadTransformer = $this->billingService->getPatientBillTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
+    }
+
+    public function loadPatientPaymentTable(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sponsors = $this->billingService->getPatientPaymentTable($params, $request);
+       
+        $loadTransformer = $this->billingService->getPatientPaymentTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
+    }
+
+    public function saveDiscount(DiscountRequest $request, Visit $visit)
+    {
+        return $this->billingService->saveDiscount($request, $visit, $request->user());
+    }
+
+    public function destroy(Payment $payment)
+    {
+        return $payment->destroy($payment->id);
     }
 }

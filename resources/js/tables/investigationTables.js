@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { detailsBtn } from "../helpers";
+import { detailsBtn, sponsorAndPayPercent } from "../helpers";
 
 const getPatientsVisitsByFilterTable = (tableId, filter) => {
     return new DataTable('#'+tableId, {
@@ -21,7 +21,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
             {data: "patient"},
             {data: "doctor"},
             {data: "diagnosis"},
-            {data: "sponsor"},
+            {data: row => sponsorAndPayPercent(row)},
             {data: row =>  `
                         <div class="d-flex flex-">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">

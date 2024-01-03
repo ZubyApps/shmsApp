@@ -123,7 +123,7 @@
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="selectedDiagnosisLabel">Selected <br />ICD11 Diagnosis<x-required-span /></x-input-span>
                                             <x-form-textarea type="text" name="selectedDiagnosis"
-                                                class="selectedDiagnosis-{{ $isReview ? '5' : '4' }}"></x-form-textarea>
+                                                class="selectedDiagnosis-{{ $isReview ? '5' : '4' }}" readonly></x-form-textarea>
                                         </x-form-div>
                                         {{-- @if ($isReview) --}}
                                         <x-form-div class="col-xl-6">

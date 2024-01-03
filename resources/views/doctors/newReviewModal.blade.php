@@ -96,7 +96,7 @@
                                         <x-input-span id="diagnosisLabel">Updated <br />ICD11
                                             Diagnosis<x-required-span /></x-input-span>
                                         <x-form-textarea type="text" name="selectedDiagnosis"
-                                            class="selectedDiagnosis-2" style="height: 100px"></x-form-textarea>
+                                            class="selectedDiagnosis-2" readonly></x-form-textarea>
                                     </x-form-div>
                                     <x-form-div class="col-xl-6">
                                         <x-input-span id="diagnosisLabel">Provisional <br /> Diagnosis</x-input-span>

@@ -19,7 +19,7 @@ Class PaymentService
     public function create(Request $data, User $user): Payment
     {
         return DB::transaction(function () use($data, $user) {
-            $payment = $user->payments->create([
+            $payment = $user->payments()->create([
                 'amount_paid'   => $data->amount,
                 'pay_method'    => $data->payMethod,
                 'comment'       => $data->comment,
@@ -27,7 +27,7 @@ Class PaymentService
                 'visit_id'      => $data->visitId,
             ]);
 
-            $totalPayments = $payment->visitPayments($payment->visit);
+            $totalPayments = $payment->visit->totalPayments();
 
             $payment->visit->update([
                 'total_paid' => $totalPayments
@@ -37,12 +37,16 @@ Class PaymentService
 
             $prescriptions = $payment->visit->prescriptions;
 
-            array_reduce($prescriptions, function($carry, $prescription) {
-                $carry = $carry - $prescription->hms_bill;
-                $carry >= $prescription->hms_bill ? 
-                $prescription->update(['paid' => $prescription->hms_bill]) :
-                '';
-                return $carry;
+            array_reduce([$prescriptions], function($carry, $prescription) {
+                foreach($prescription as $p){
+                    $carry = $carry - $p->hms_bill;
+                    $carry >= $p->hms_bill ? 
+                    $p->update(
+                        ['paid' => $p->hms_bill]
+                        ) :
+                    '';
+                    return $carry;
+                }
             }, $totalPaymentsforPrescriptions);
             return $payment;
         });

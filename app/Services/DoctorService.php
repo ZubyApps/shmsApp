@@ -55,23 +55,25 @@ class DoctorService
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        if ($data->filterBy == 'Inpatient'){
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('user_id', '=', $user->id)
-                    ->where('doctor_done_by', null)
-                    ->where('closed', null)
-                    ->where(function (Builder $query) {
-                        $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
-                        ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
-                    })
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
+        // if ($data->filterBy == 'Inpatient'){
+        //     return $this->visit
+        //             ->where('consulted', '!=', null)
+        //             ->where('user_id', '=', $user->id)
+        //             ->where('doctor_done_by', null)
+        //             ->where('closed', null)
+        //             ->where(function (Builder $query) {
+        //                 $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
+        //                 ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
+        //             })
+        //             ->orderBy($orderBy, $orderDir)
+        //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        // }
 
         return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('doctor_done_by', null)
+                    ->where('closed', null)
+                    ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
                     ->whereRelation('patient', 'patient_type', '!=', 'ANC')
                     ->where('user_id', '=', $user->id)
                     ->orderBy($orderBy, $orderDir)
@@ -191,6 +193,10 @@ class DoctorService
                                         ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
                                         ->where('result_date','!=', null)
                                         ->count(),
+                'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
+                'payPercent'        => $visit->totalBills() ? round((float)($visit->totalPayments() / $visit->totalBills()) * 100) : null,
+                'payPercentNhis'    => $visit->totalBills() ? round((float)($visit->totalPayments() / ($visit->totalBills()/10)) * 100) : null,
+                'payPercentHmo'     => $visit->totalBills() ? round((float)($visit->totalApprovedBills() / $visit->totalBills()) * 100) : null,
 
             ];
          };

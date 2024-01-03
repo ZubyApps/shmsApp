@@ -10,7 +10,7 @@
 
     <div class="container p-1 mt-5 bg-white">
 
-        <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="offcanvasInvestigations"
+        <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="offcanvasInvestigations"
             aria-labelledby="offcanvasInvestigationsLabel">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title text-primary" id="offcanvasInvestigations">Investigation Table</h5>
@@ -19,7 +19,7 @@
             <div class="offcanvas2-body">
                 <div class="my-2 form-control">
                     <span class="fw-bold text-primary"> Inpatient's Investigations </span>
-                    <div class="row overflow-auto m-1">
+                    <div class="row m-1">
                         <table id="inpatientInvestigationsTable" class="table table-hover align-middle table-sm bg-primary">
                             <thead>
                                 <tr>

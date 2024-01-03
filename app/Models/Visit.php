@@ -70,6 +70,11 @@ class Visit extends Model
         return $this->belongsTo(User::class, 'closed_by');
     }
 
+    public function discountBy()
+    {
+        return $this->belongsTo(User::class, 'discount_by');
+    }
+
     public function patient()
     {
         return $this->belongsTo(Patient::class);
@@ -115,11 +120,23 @@ class Visit extends Model
          return $totalBill;
     }
 
-    public function totalpayments()
+    public function totalApprovedBills()
+    {
+        $totalApprovedBill = 0;
+         foreach($this->prescriptions as $prescription){
+            $totalApprovedBill += $prescription->approved ? $prescription->hms_bill : 0;
+         }
+
+         return $totalApprovedBill;
+    }
+
+    public function totalPayments()
     {
         $totalPayment = 0;
         foreach($this->payments as $payment){
             $totalPayment += $payment->amount_paid;
-         }
+        }
+        
+        return $totalPayment;
     }
 }

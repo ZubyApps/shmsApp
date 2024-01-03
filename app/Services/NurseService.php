@@ -112,7 +112,11 @@ class NurseService
                 'prescriptionCount' => Prescription::where('visit_id', $visit->id)
                                        ->whereRelation('resource', 'category', 'Medications')
                                        ->orWhereRelation('resource', 'category', 'Medical Services')
-                                       ->count()
+                                       ->count(),
+                'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
+                'payPercent'        => $visit->totalBills() ? round((float)($visit->totalPayments() / $visit->totalBills()) * 100) : null,
+                'payPercentNhis'    => $visit->totalBills() ? round((float)($visit->totalPayments() / ($visit->totalBills()/10)) * 100) : null,
+                'payPercentHmo'     => $visit->totalBills() ? round((float)($visit->totalApprovedBills() / $visit->totalBills()) * 100) : null,
             ];
          };
     }

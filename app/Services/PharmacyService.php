@@ -135,6 +135,10 @@ class PharmacyService
                                         })
                                         ->where('qty_dispensed', '!=', null)
                                         ->count(),
+                'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
+                'payPercent'        => $visit->totalBills() ? round((float)($visit->totalPayments() / $visit->totalBills()) * 100) : null,
+                'payPercentNhis'    => $visit->totalBills() ? round((float)($visit->totalPayments() / ($visit->totalBills()/10)) * 100) : null,
+                'payPercentHmo'     => $visit->totalBills() ? round((float)($visit->totalApprovedBills() / $visit->totalBills()) * 100) : null,
             ];
          };
     }

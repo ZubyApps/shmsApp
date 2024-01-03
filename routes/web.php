@@ -234,7 +234,11 @@ Route::middleware('auth')->group(function () {
     Route::prefix('billing')->group(function () {
         Route::get('', [BillingController::class, 'index'])->name('Billing');
         Route::get('/load/consulted', [BillingController::class, 'loadVisitsByFilterBilling']);
-        Route::get('/pay', [BillingController::class, 'store']);
+        Route::get('load/bill', [BillingController::class, 'loadPatientBillTable']);
+        Route::get('load/payment', [BillingController::class, 'loadPatientPaymentTable']);
+        Route::post('/pay', [BillingController::class, 'store']);
+        Route::patch('/discount/{visit}', [BillingController::class, 'saveDiscount']);
+        Route::delete('/payment/delete/{payment}', [BillingController::class, 'destroy']);
     });
 });
 

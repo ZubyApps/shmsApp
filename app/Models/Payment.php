@@ -25,9 +25,4 @@ class Payment extends Model
     {
         return $this->belongsTo(Patient::class);
     }
-
-    // public function visitPayments(Visit $visit)
-    // {
-    //     return $visit->payments->sum('amount_paid');
-    // }
 }

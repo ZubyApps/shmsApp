@@ -167,6 +167,7 @@ class PrescriptionService
     public function updateLabResultRecord(Request $data, Prescription $prescription, User $user): Prescription
     {
        $prescription->update([
+           'test_sample'    => $data->sample,
            'result'         => $data->result,
            'result_date'    => Carbon::now(),
            'result_by'      => $user->id,
@@ -179,6 +180,7 @@ class PrescriptionService
     public function removeLabResultRecord(Prescription $prescription): Prescription
     {
        $prescription->update([
+        'test_sample'    => null,
         'result'         => null,
         'result_date'    => null,
         'result_by'      => null,

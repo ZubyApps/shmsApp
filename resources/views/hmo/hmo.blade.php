@@ -111,6 +111,7 @@
                                     <th>Sex</th>
                                     <th>Age</th>
                                     <th>Sponsor</th>
+                                    <th>Last 30days</th>
                                     <th>Doctor</th>
                                     <th>Actions</th>
                                 </tr>
@@ -139,6 +140,7 @@
                                     <th>Doctor</th>
                                     <th>Diagnosis</th>
                                     <th>Sponsor</th>
+                                    <th>Last 30days</th>
                                     <th>Investigations</th>
                                     <th>Status</th>
                                     <th>Actions</th>
