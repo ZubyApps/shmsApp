@@ -84,6 +84,6 @@ class BillingController extends Controller
 
     public function destroy(Payment $payment)
     {
-        return $payment->destroy($payment->id);
+        return $this->billingService->processPaymentDestroy($payment);
     }
 }

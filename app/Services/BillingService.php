@@ -215,4 +215,15 @@ class BillingService
 
         return $visit;
     }
+
+    public function processPaymentDestroy(Payment $payment)
+    {
+        // $prescriptions = $this->prescription->visit->prescriptions->where('payment_id', $payment->id)->get();
+        // foreach($prescriptions as $prescription){
+        //     $prescription->update([
+        //         'paid' => null
+        //     ]);
+        
+        return $payment->destroy($payment->id);
+    }
 }

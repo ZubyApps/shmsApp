@@ -62,7 +62,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
 
     function format(data, tableId) {
         // `d` is the original data object for the row
-        const HMO = data.sponsor == 'HMO' //|| data.sponsor == 'NHIS'
+        const HMO = data.sponsorCategoryClass == 'Credit' //|| data.sponsor == 'NHIS'
         const prescriptions = data.prescriptions
         let count = 1
                 if (prescriptions.length > 0) {
@@ -90,7 +90,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-secondary">${p.prescribedBy}</td>                
                                                 <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold">
                                                 ${p.item} 
-                                                ${HMO ? `<i class="bi bi-${p.approved ? 'check' : p.rejected ? 'x' : 'dash'}-circle-fill"></i>` : ''}
+                                                ${HMO ? `<i class="bi bi-${p.approved ? 'check' : p.rejected ? 'x' : 'dash'}-circle-fill"></i>` : p.paid ? '<i class="bi bi-p-circle-fill"></i>' : ''}
                                                 </td>                
                                                 <td class="text-secondary">${p.prescription}</td>                
                                                 <td class="text-secondary">${p.note}</td>
@@ -104,7 +104,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                             </tr>
                                             <tr class="${p.qtyBilled ? '' : 'd-none'}">
                                                 <td class="text-secondary">Price: ${p.bill ? p.price : ''}</td>
-                                                <td class="text-secondary fw-semibold">Bill: ${p.bill}</td>
+                                                <td class="text-secondary fw-semibold">Bill: ${p.bill} (paid: ${p.amountPaid})</td>
                                                 <td class="text-secondary">Bill by: ${p.hmsBillBy}</td>
                                                 <td class="text-secondary">Time: ${p.billed}</td>
                                                 <td class="text-secondary"> 

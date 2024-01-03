@@ -39,14 +39,15 @@ Class PaymentService
 
             array_reduce([$prescriptions], function($carry, $prescription) {
                 foreach($prescription as $p){
+                    if ($carry >= $p->hms_bill){
+                        $p->update(['paid' => $p->hms_bill]);
+                    } else if ($carry < $p->hms_bill && $carry > 0) {
+                        $p->update(['paid' => $carry]);
+                    }
                     $carry = $carry - $p->hms_bill;
-                    $carry >= $p->hms_bill ? 
-                    $p->update(
-                        ['paid' => $p->hms_bill]
-                        ) :
-                    '';
-                    return $carry;
+                    var_dump($carry);
                 }
+                return $carry;
             }, $totalPaymentsforPrescriptions);
             return $payment;
         });
