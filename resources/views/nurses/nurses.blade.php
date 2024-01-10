@@ -68,14 +68,14 @@
            
         </div>
     <div class="text-start mb-4">
+        <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn" data-bs-target="#waitingListOffcanvas2" aria-controls="waitingListOffcanvas2">
+            <i class="bi bi-list-check"></i>
+            Waiting List
+        </button>
         <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas"
             data-bs-target="#upcomingMedicationsoffcanvas" aria-controls="upcomingMedicationsoffcanvas">
             <i class="bi bi-list-check"></i>
             Inpatients Medication Chart
-        </button>
-        <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn" data-bs-target="#waitingListOffcanvas2" aria-controls="waitingListOffcanvas2">
-            <i class="bi bi-list-check"></i>
-            Waiting List
         </button>
     </div>
 

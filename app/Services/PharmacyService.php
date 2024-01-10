@@ -21,7 +21,10 @@ class PharmacyService
         private readonly Visit $visit, 
         private readonly Resource $resource,
         private readonly Prescription $prescription,
-        private readonly Consultation $consultation)
+        private readonly Consultation $consultation,
+        private readonly PaymentService $paymentService,
+        private readonly PayPercentageService $payPercentageService
+        )
     {
         
     }
@@ -136,9 +139,9 @@ class PharmacyService
                                         ->where('qty_dispensed', '!=', null)
                                         ->count(),
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
-                'payPercent'        => $visit->totalBills() ? round((float)($visit->totalPayments() / $visit->totalBills()) * 100) : null,
-                'payPercentNhis'    => $visit->totalBills() ? round((float)($visit->totalPayments() / ($visit->totalBills()/10)) * 100) : null,
-                'payPercentHmo'     => $visit->totalBills() ? round((float)($visit->totalApprovedBills() / $visit->totalBills()) * 100) : null,
+                'payPercent'        => $this->payPercentageService->individual_Family($visit),
+                'payPercentNhis'    => $this->payPercentageService->nhis($visit),
+                'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
             ];
          };
     }
@@ -160,6 +163,12 @@ class PharmacyService
             $prescription->visit->update([
                 'total_bill' => $data->quantity ? $prescription->visit->totalBills() : ($prescription->visit->totalBills() - $bill)
             ]);
+ 
+            if ($prescription->visit->sponsor->sponsorCategory->name == 'NHIS'){
+                $this->paymentService->prescriptionsPaymentSeiveNhis($prescription->visit->totalPayments(), $prescription->visit->prescriptions);
+            } else {
+                $this->paymentService->prescriptionsPaymentSeive($prescription->visit->totalPayments(), $prescription->visit->prescriptions);
+            }
         });
     }
 
@@ -174,7 +183,7 @@ class PharmacyService
                     $resource->stock_level = $resource->stock_level + $qtyDispensed;
                     $resource->save();
                 }
-
+                
                 $resource->stock_level = $resource->stock_level - $data->quantity;
                 $resource->save();
 
@@ -191,6 +200,13 @@ class PharmacyService
                 'dispensed_by'      => $data->quantity ? $user->id : null,
             ]);
         });
+    }
+
+    public function saveDispenseComment(Request $data, Prescription $prescription)
+    {
+        return $prescription->update([
+            'dispense_comment' => $data->comment
+        ]);
     }
 
     public function getPrescriptionsByConsultation(DataTableQueryParams $params, $data)
@@ -245,14 +261,16 @@ class PharmacyService
                     'billed'            => $prescription->hms_bill_date ? (new Carbon($prescription->hms_bill_date))->format('d/m/y g:ia') : '',
                     'approved'          => $prescription->approved, 
                     'rejected'          => $prescription->rejected,
-                    'statusNote'        => $prescription->approval_note ?? $prescription->rejection_note ?? '',
+                    'hmoNote'           => $prescription->hmo_note ?? '',
                     'statusBy'          => $prescription->approvedBy?->username ?? $prescription->rejectedBy?->username ?? '',
                     'qtyDispensed'      => $prescription->qty_dispensed,
                     'dispensedBy'       => $prescription->dispensedBy->username ?? '',
                     'dispensed'         => $prescription->dispense_date ? (new Carbon($prescription->dispense_date))->format('d/m/y g:ia') : '',
+                    'dispenseComment'   => $prescription->dispense_comment ?? '',
                     'note'              => $prescription->note ?? '',
                     'status'            => $prescription->status ?? '',
-                    'paid'              => $prescription->paid >= $prescription->hms_bill,
+                    'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
+                    'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
                     'amountPaid'        => $prescription->paid ?? 0,
                 ]),
             ];

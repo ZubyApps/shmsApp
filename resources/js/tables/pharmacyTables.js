@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { detailsBtn, sponsorAndPayPercent } from "../helpers";
+import { detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
 
 const getPatientsVisitByFilterTable = (tableId, filter) => {
     return new DataTable('#'+tableId, {
@@ -25,7 +25,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
             {data: row =>  `
                         <div class="d-flex flex-">
                             <button class=" btn btn-outline-primary billingDispenseBtn tooltip-test" title="Billing/Dispense" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                            ${row.countDispensed} - ${row.countBilled} - ${row.countPrescribed}
+                            ${row.countPrescribed} - ${row.countBilled} - ${row.countDispensed}
                             </button>
                         </div>`                
             },
@@ -62,7 +62,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
 
     function format(data, tableId) {
         // `d` is the original data object for the row
-        const HMO = data.sponsorCategoryClass == 'Credit' //|| data.sponsor == 'NHIS'
+        const credit = data.sponsorCategoryClass == 'Credit'
         const prescriptions = data.prescriptions
         let count = 1
                 if (prescriptions.length > 0) {
@@ -76,8 +76,9 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                     <td class="text-secondary">Item</td>
                                                     <td class="text-secondary">Prescription</td>
                                                     <td class="text-secondary">Note</td>
-                                                    ${HMO ? '<td class="text-secondary">HMO Approval</td>' : ''}
+                                                    ${credit ? '<td class="text-secondary">HMO Approval</td>' : ''}
                                                     <td class="text-secondary">Bill Qty</td>
+                                                    <td class="text-secondary">Comment</td>
                                                 </tr>
                                             </thead>
                                         <tbody>`
@@ -88,19 +89,17 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-secondary">${count++}</td>
                                                 <td class="text-secondary">${p.prescribed}</td>                
                                                 <td class="text-secondary">${p.prescribedBy}</td>                
-                                                <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold">
-                                                ${p.item} 
-                                                ${HMO ? `<i class="bi bi-${p.approved ? 'check' : p.rejected ? 'x' : 'dash'}-circle-fill"></i>` : p.paid ? '<i class="bi bi-p-circle-fill"></i>' : ''}
-                                                </td>                
+                                                <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold">${p.item +' '+ displayPaystatus(p, credit)}</td>                
                                                 <td class="text-secondary">${p.prescription}</td>                
                                                 <td class="text-secondary">${p.note}</td>
-                                                ${HMO ? `<td class="text-primary fst-italic">${p.statusNote ? p.statusBy+'-'+p.statusNote: p.statusBy}</td>` : ''}
+                                                ${credit ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>` : ''}
                                                 <td class="text-secondary"> 
-                                                <div class="d-flex text-secondary">
-                                                    <span class="${p.qtyDispensed || (HMO && !p.approved) ? '': 'billQtySpan'} btn btn-${p.qtyBilled ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}">${p.qtyBilled ? p.qtyBilled+' '+p.unit : 'Bill'}</span>
-                                                    <input class="ms-1 form-control billQtyInput d-none text-secondary" type="number" style="width:4rem;" id="billQtyInput" value="${p.qtyBilled ?? ''}">
-                                                </div>
+                                                    <div class="d-flex text-secondary">
+                                                        <span class="${p.qtyDispensed ? '': 'billQtySpan'} btn btn-${p.qtyBilled ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}">${p.qtyBilled ? p.qtyBilled+' '+p.unit : 'Bill'}</span>
+                                                        <input class="ms-1 form-control billQtyInput d-none text-secondary" type="number" style="width:6rem;" id="billQtyInput" value="${p.qtyBilled ?? ''}" name="quantity" id="quantity">
+                                                    </div>
                                                 </td>
+                                                <td class="text-secondary"></td>
                                             </tr>
                                             <tr class="${p.qtyBilled ? '' : 'd-none'}">
                                                 <td class="text-secondary">Price: ${p.bill ? p.price : ''}</td>
@@ -109,13 +108,18 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-secondary">Time: ${p.billed}</td>
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
-                                                        <span class="${p.qtyBilled ? 'dispenseQtySpan' : ''} btn btn-${p.dispensed ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}" data-qtybilled="${p.qtyBilled}">${p.qtyDispensed ? 'Qty dispensed: '+p.qtyDispensed+' '+p.unit : 'Dispense'}</span>
-                                                        <input class="ms-1 form-control dispenseQtyInput d-none text-secondary" type="number" style="width:4rem;" id="billQtyInput" value="${p.qtyDispensed ?? ''}">
+                                                        <span class="${p.qtyBilled ? 'dispenseQtySpan' : ''} btn btn-${p.dispensed ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}" data-qtybilled="${p.qtyBilled}">${p.qtyDispensed ? 'Dispensed: '+p.qtyDispensed : 'Dispense'}</span>
+                                                        <input class="ms-1 form-control dispenseQtyInput d-none text-secondary" type="number" style="width:6rem;" value="${p.qtyDispensed ?? ''}" name="quantity" id="quantity">
                                                     </div>
                                                 </td>
                                                 <td class="text-secondary">By: ${p.dispensedBy}</td>
                                                 <td class="text-secondary">Time: ${p.dispensed}</td>
-                                                <td class="text-secondary"></td>
+                                                <td class="text-secondary"> 
+                                                    <div class="d-flex text-secondary ${p.dispensed ? '' : 'd-none'}">
+                                                        <span class="dispenseCommentSpan btn btn-${p.dispenseComment ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}">${p.dispenseComment ? p.dispenseComment : 'Comment'}</span>
+                                                        <input class="ms-1 form-control dispenseCommentInput d-none text-secondary" type="text" style="width:4rem;" value="${p.dispenseComment ?? ''}">
+                                                    </div>
+                                                </td>
                                             </tr>
                                             `
                                     })

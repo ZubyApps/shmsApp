@@ -736,6 +736,7 @@ const medicationAndTreatment = (line) => {
                                 <th></th>
                                 <th>Treatment</th>
                                 <th>Prescription</th>
+                                <th>Qty</th>
                                 <th>Dr</th>
                                 <th>Prescribed</th>
                                 <th>Billed</th>
@@ -759,6 +760,7 @@ const medicationAndTreatmentNurses = (line) => {
                             <tr>
                                 <th>Treatment</th>
                                 <th>Prescription</th>
+                                <th>Qty</th>
                                 <th>Dr</th>
                                 <th>Prescribed</th>
                                 <th>Create</th>

@@ -2,57 +2,7 @@ import jQuery from "jquery";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { reviewBtn, sponsorAndPayPercent } from "../helpers";
-
-// const getAllPatientsVisitTable = (tableId, filter) => {
-//     return new DataTable(tableId, {
-//         serverSide: true,
-//         ajax:  {url: '/visits/load/consulted/', data: {
-//             'filterBy': filter 
-//         }},
-//         orderMulti: true,
-//         search:true,
-//         language: {
-//             emptyTable: "No patient"
-//         },
-//         columns: [
-//             {data: "came"},
-//             {data: "patient"},
-//             {data: "doctor"},
-//             {data: "diagnosis"},
-//             {data: "sponsor"},
-//             {data: row =>  `
-//                         <div class="d-flex justify-content-center">
-//                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-//                             ${row.labDone}<i class="bi bi-eyedropper"></i>${row.labPrescribed}
-//                             </button>
-//                         </div>`                
-//             },
-//             {data: row => function () {
-//                    return `
-//                     <div class="d-flex flex-">
-//                         <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-//                         <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
-//                         </button>
-//                     </div>`
-//                 }
-//             },
-//             {data: row => () => {
-//                 return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
-//                 `<div class="d-flex flex- justify-content-center">
-//                 <span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>
-//                 </div>` :
-//                 `<div class="d-flex flex- justify-content-center">
-//                 <span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>
-//                 </div>`
-//             } },
-//             {
-//                 sortable: false,
-//                 data: row => reviewBtn(row)
-//             },
-//         ]
-//     });
-// }
+import { displayPaystatus, reviewBtn, sponsorAndPayPercent } from "../helpers";
 
 const getOutpatientsVisitTable = (tableId, filter) => {
     return new DataTable(tableId, {
@@ -236,7 +186,7 @@ const getWaitingTable = (tableId) => {
                 if (row.doctor === ''){
                     return `
                         <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
+                            <button class=" btn btn-outline-primary consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}">
                                 <i class="bi bi-clipboard2-plus-fill"></i>
                             </button>
                             <button class="ms-1 btn btn-outline-primary removeBtn tooltip-test" title="remove" data-id="${ row.id }">
@@ -246,13 +196,13 @@ const getWaitingTable = (tableId) => {
                     } else {
                         return `
                         <div class="dropdown">
-                            <a class="text-black tooltip-test text-decoration-none" title="doctor" data-bs-toggle="dropdown">
+                            <a class="btn text-black tooltip-test text-decoration-none" title="doctor" data-bs-toggle="dropdown">
                                 ${row.doctor}
                                 <i class="bi bi-chevron-double-down"> </i>
                             </a>
                                 <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item consultBtn btn tooltip-test" title="consult"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
+                                    <a class="dropdown-item consultBtn btn tooltip-test" title="consult"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}">
                                         <i class="bi bi-clipboard2-plus-fill text-primary"></i> Consult
                                     </a>
                                     <a class="dropdown-item removeBtn btn tooltip-test" title="remove"  data-id="${ row.id }">
@@ -284,7 +234,7 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
         columns: [
             {data: "created_at"},
             {data: row => () => {
-                    if (Number(row.temperature.split('°C')[0]) > 37.2){
+                    if (Number(row.temperature?.split('°C')[0]) > 37.2){
                     return  `<span class="text-danger fw-semibold">${row.temperature}</span>` 
                     } else {
                     return row.temperature
@@ -487,15 +437,16 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
         },
         columns: [
             {data: row => `<i role="button" class="text-primary fs-5 bi bi-prescription2"></i>`},
-            {data: row => `<span class="text-primary">${row.resource}</span>`},
+            {data: row => `<span class="text-primary">${row.resource + ' ' + displayPaystatus(row, (row.credit == 'Credit')) }</span>`},
             {data: "prescription"},
+            {data: "qtyBilled"},
             {data: "prescribedBy"},
             {data: "prescribed"},
             {data: row => () => {
-                    return row.billed ? '<i class=" text-primary bi bi-check-circle-fill"></i>' : '-'
+                    return row.qtyBilled ? '<i class=" text-primary bi bi-check-circle-fill"></i>' : '-'
             } },
             {data:  row => () => {
-                return row.dispensed ? '<i class=" text-primary bi bi-check-circle-fill"></i>' : '-'
+                return row.qtyDispensed ? '<i class=" text-primary bi bi-check-circle-fill"></i>' : '-'
             }},
         ]
     });

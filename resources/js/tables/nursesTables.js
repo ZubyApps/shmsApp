@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { sponsorAndPayPercent } from "../helpers";
+import { displayPaystatus, sponsorAndPayPercent } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     return new DataTable('#'+tableId, {
@@ -127,8 +127,9 @@ const getNurseTreatmentByConsultation = (tableId, conId, modal) => {
             return row
         },
         columns: [
-            {data: row =>  `<span class="text-primary">${row.resource}</span>`},
+            {data: row =>  `<span class="text-primary">${row.resource + ' ' + displayPaystatus(row, (row.credit == 'Credit'))}</span>`},
             {data: "prescription"},
+            {data: "qtyBilled"},
             {data: "prescribedBy"},
             {data: "prescribed"},
             {

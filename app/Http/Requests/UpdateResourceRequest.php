@@ -26,6 +26,8 @@ class UpdateResourceRequest extends FormRequest
     {
         return [
             'name'                  => ['required', Rule::unique('resources','name')->ignore($request->name, 'name')],
+            'flag'                  => ['required'],
+            'unitDescription'       => ['required'],
             'expiryDate'            => ['nullable', 'date', 'after_or_equal:'.date('d-m-Y')],
             'resourceSubCategory'   => ['required', 'numeric', 'exists:'.ResourceSubCategory::class.',id'],
         ];

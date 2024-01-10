@@ -46,12 +46,25 @@ class PharmacyController extends Controller
 
     public function billPrescription(Request $request, Prescription $prescription)
     {
+        $request->validate([
+            'quantity' => ['nullable', 'integer']
+        ]);
+        
        return $this->pharmacyService->bill($request, $prescription, $request->user());
     }
 
     public function dispensePrescription(Request $request, Prescription $prescription)
     {
+        $request->validate([
+                'quantity' => ['nullable', 'integer']
+        ]);
+
        return $this->pharmacyService->dispense($request, $prescription, $request->user());
+    }
+
+    public function dispenseComment(Request $request, Prescription $prescription)
+    {
+        return $this->pharmacyService->saveDispenseComment($request, $prescription);
     }
 
 }

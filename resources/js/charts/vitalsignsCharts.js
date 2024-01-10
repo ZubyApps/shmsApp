@@ -9,7 +9,7 @@ function getVitalsignsChartByVisit(chart, vitals, modal){
             datasets: [
                 {
             label: `Temperature Chart`,
-            data: vitals.data.map(row => row.temperature.replace('°C', '')),
+            data: vitals.data.map(row => row.temperature?.replace('°C', '')),
             borderWidth: 4,
             backgroundColor: ["#0d6efd"],
             tension: 0.5,

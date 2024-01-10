@@ -1,6 +1,6 @@
 
 import {Modal } from "bootstrap";
-import {getOrdinal, textareaHeightAdjustment, loadingSpinners} from "./helpers"
+import {getOrdinal, textareaHeightAdjustment, loadingSpinners, removeDisabled, resetFocusEndofLine} from "./helpers"
 import { getPatientsVisitByFilterTable, getPrescriptionsByConsultation } from "./tables/pharmacyTables";
 import http from "./http";
 import $ from 'jquery';
@@ -106,64 +106,107 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     document.querySelector('#visitPrescriptionsTable').addEventListener('click', function (event) {
-        const billQtySpan       = event.target.closest('.billQtySpan')
-        const dispenseQtySpan   = event.target.closest('.dispenseQtySpan')
+        const billQtySpan               = event.target.closest('.billQtySpan')
+        const dispenseQtySpan           = event.target.closest('.dispenseQtySpan')
+        const dispenseCommentSpan       = event.target.closest('.dispenseCommentSpan')
+        const billingDispenseFieldset   = document.querySelector('#billingDispenseFieldset')
 
         if (billQtySpan){
             const prescriptionId    = billQtySpan.getAttribute('data-id')
-            const billQtyInput      = billQtySpan.parentElement.querySelector('.billQtyInput')
+            const div               = billQtySpan.parentElement
+            const billQtyInput      = div.querySelector('.billQtyInput')
             billQtySpan.classList.add('d-none')
             billQtyInput.classList.remove('d-none')
-            billQtyInput.focus()
+
+            resetFocusEndofLine(billQtyInput)
             
             billQtyInput.addEventListener('blur', function () {
-                
-                http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value})
+                billingDispenseFieldset.setAttribute('disabled', 'disabled')
+                http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value}, {'html' : div})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
-                        visitPrescriptionsTable.draw()
+                        visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
+                        visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
                     }
                 })
                 .catch((error) => {
-                    console.log(error)
-                    visitPrescriptionsTable.draw()
+                    if (error.response.status == 422){
+                        removeDisabled(billingDispenseFieldset)
+                        console.log(error)
+                    } else{
+                        console.log(error)
+                        visitPrescriptionsTable.draw()
+                        visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                    }
                 }) 
                                
             })
         }
 
         if (dispenseQtySpan){
-            const prescriptionId   = dispenseQtySpan.getAttribute('data-id')
-            const qtyBilled        = dispenseQtySpan.getAttribute('data-qtybilled')
-            const dispenseQtyInput  = dispenseQtySpan.parentElement.querySelector('.dispenseQtyInput')
+            const prescriptionId    = dispenseQtySpan.getAttribute('data-id')
+            const qtyBilled         = dispenseQtySpan.getAttribute('data-qtybilled')
+            const div               = dispenseQtySpan.parentElement
+            const dispenseQtyInput  = div.querySelector('.dispenseQtyInput')
             dispenseQtySpan.classList.add('d-none')
             dispenseQtyInput.classList.remove('d-none')
-            dispenseQtyInput.focus()
+            resetFocusEndofLine(dispenseQtyInput)
             
             dispenseQtyInput.addEventListener('blur', function () {
-                if (dispenseQtyInput.value > qtyBilled){
+                if (dispenseQtyInput.value > +qtyBilled){
                     alert('Quantity to be dispensed should not be more than Quantity billed')
-                    setTimeout(function(){dispenseQtyInput.focus()}, 1)
+                    resetFocusEndofLine(dispenseQtyInput)
                 } else {
-                    http.patch(`/pharmacy/dispense/${prescriptionId}`, {quantity: dispenseQtyInput.value})
+                    billingDispenseFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/pharmacy/dispense/${prescriptionId}`, {quantity: dispenseQtyInput.value}, {'html' : div})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                             visitPrescriptionsTable.draw()
+                            visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
                         }
                     })
                     .catch((error) => {
-                        console.log(error)
-                        visitPrescriptionsTable.draw()
+                        if (error.response.status == 422){
+                            removeDisabled(billingDispenseFieldset)
+                            console.log(error)
+                        } else{
+                            console.log(error)
+                            visitPrescriptionsTable.draw()
+                            visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                        }
                     })
-                }
-                 
-                               
+                }               
+            })
+        }
+
+        if (dispenseCommentSpan){
+            const prescriptionId        = dispenseCommentSpan.getAttribute('data-id')
+            const dispenseCommentInput  = dispenseCommentSpan.parentElement.querySelector('.dispenseCommentInput')
+            dispenseCommentSpan.classList.add('d-none')
+            dispenseCommentInput.classList.remove('d-none')
+            resetFocusEndofLine(dispenseCommentInput)
+            
+            dispenseCommentInput.addEventListener('blur', function () {
+                billingDispenseFieldset.setAttribute('disabled', 'disabled')
+                http.patch(`/pharmacy/dispense/comment/${prescriptionId}`, {comment: dispenseCommentInput.value})
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        visitPrescriptionsTable.draw()
+                        visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    visitPrescriptionsTable.draw()
+                    visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                })
+                       
             })
         }
     })
 
     billingDispenseModal._element.addEventListener('hide.bs.modal', function () {
-        treatmentDiv.innerHTML = ''
+        // treatmentDiv.innerHTML = ''
         outPatientsTable.draw()
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
@@ -200,6 +243,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     reviewDetailsModal._element.addEventListener('hide.bs.modal',function () {
+        treatmentDiv.innerHTML = ''
         outPatientsTable.draw()
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''

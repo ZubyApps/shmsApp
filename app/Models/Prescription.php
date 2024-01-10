@@ -62,6 +62,11 @@ class Prescription extends Model
         return $this->belongsTo(User::class, 'rejected_by');
     }
 
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class);
+    }
+
     public function medicationCharts() 
     {
         return $this->hasMany(MedicationChart::class);

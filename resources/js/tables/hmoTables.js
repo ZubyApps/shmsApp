@@ -114,7 +114,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                 data: row => `
                 <div class="dropdown">
                     <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="status" data-bs-toggle="dropdown">
-                        ${row.closed ? 'Closed': 'Open'}
+                        ${row.closed ? 'Closed': 'More'}
                     </a>
                         <ul class="dropdown-menu">
                         <li>

@@ -50,9 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
-    Route::get('/pharmacy', [PharmacyController::class, 'index'])->name('Pharmacy');
-    
+    // Route::get('/pharmacy', [PharmacyController::class, 'index'])->name('Pharmacy');
     Route::get('/billing', [BillingController::class, 'index'])->name('Billing');
     Route::get('/admin', [AdminController::class, 'index'])->name('Admin');
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('Settings');
@@ -183,9 +181,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/initial', [PrescriptionController::class, 'loadInitialTable']);
         Route::get('/load/lab', [PrescriptionController::class, 'loadLabTable']);
         Route::get('/load/treatment', [PrescriptionController::class, 'loadTreatmentTable']);
-        
         Route::get('/list', [PrescriptionController::class, 'list']);
-        
         Route::delete('/{prescription}', [PrescriptionController::class, 'destroy']);
         Route::patch('/remove/{prescription}', [PrescriptionController::class, 'removeLabResult']);
         Route::patch('/{prescription}', [PrescriptionController::class, 'saveLabResult']);
@@ -227,6 +223,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/consulted', [PharmacyController::class, 'loadVisitsByFilterPharmacy']);
         Route::patch('/bill/{prescription}', [PharmacyController::class, 'billPrescription']);
         Route::patch('/dispense/{prescription}', [PharmacyController::class, 'dispensePrescription']);
+        Route::patch('/dispense/comment/{prescription}', [PharmacyController::class, 'dispenseComment']);
         Route::get('/load/visit/prescriptions', [PharmacyController::class, 'loadVisitPrescriptions']);
         Route::get('/load/consultation/prescriptions', [PharmacyController::class, 'loadConsultationPrescriptions']);
     });

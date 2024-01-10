@@ -22,7 +22,7 @@
     </x-form-div>
     <x-form-div>
         <x-input-span id="weightLabel">Weight</x-input-span>
-        <x-form-input type="text" name="weight" id="weight" class="weight"/>
+        <x-form-input type="text" name="weight" id="weight" class="weight" data-id="{{ $sf }}"/>
     </x-form-div>
     <x-form-div>
         <x-input-span id="heightLabel">Height</x-input-span>

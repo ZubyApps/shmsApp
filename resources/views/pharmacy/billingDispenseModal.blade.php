@@ -23,18 +23,20 @@
                         <div class="mb-2 form-control vitalsDiv">
                             <x-form-span>All Prescriptions for this Visit</x-form-span>
                             <div class="row overflow-auto my-3">
-                                <table id="visitPrescriptionsTable" class="table align-middle table-sm visitPrescriptionsTable mt-2">
-                                    <thead>
-                                        <tr>
-                                            <th>Doctor</th>
-                                            <th>Diagnosis</th>
-                                            <th>Consulted</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                    <tfoot>
-                                    </tfoot>
-                                </table>
+                                <fieldset id="billingDispenseFieldset">
+                                    <table id="visitPrescriptionsTable" class="table align-middle table-sm visitPrescriptionsTable mt-2">
+                                        <thead>
+                                            <tr>
+                                                <th>Doctor</th>
+                                                <th>Diagnosis</th>
+                                                <th>Consulted</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                        <tfoot>
+                                        </tfoot>
+                                    </table>
+                                </fieldset>
                             </div>
                             
                         </div>

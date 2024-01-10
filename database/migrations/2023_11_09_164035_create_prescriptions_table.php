@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Consultation;
+use App\Models\Payment;
 use App\Models\Resource;
 use App\Models\User;
 use App\Models\Visit;
@@ -24,17 +25,18 @@ return new class extends Migration
             $table->dateTime('hms_bill_date')->nullable();
             $table->foreignIdFor(User::class, 'hms_bill_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->string('hmo_bill')->nullable();
+            $table->dateTime('hmo_bill_date')->nullable();
             $table->string('hmo_bill_note')->nullable();
             $table->foreignIdFor(User::class, 'hmo_bill_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->string('qty_dispensed')->nullable();
             $table->dateTime('dispense_date')->nullable();
+            $table->string('dispense_comment')->nullable();
             $table->foreignIdFor(User::class, 'dispensed_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->boolean('approved')->default(false);
-            $table->string('approval_note')->nullable();
             $table->foreignIdFor(User::class, 'approved_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->boolean('rejected')->default(false);
-            $table->string('rejection_note')->nullable();
             $table->foreignIdFor(User::class, 'rejected_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->string('hmo_note')->nullable();
             $table->string('test_sample')->nullable();
             $table->string('result')->nullable();
             $table->dateTime('result_date')->nullable();

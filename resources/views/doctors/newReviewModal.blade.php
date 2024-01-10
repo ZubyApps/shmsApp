@@ -93,9 +93,9 @@
                                     </x-form-div>
                                     <x-icd11-diagnosis-div :number="2" />
                                     <x-form-div class="col-xl-6">
-                                        <x-input-span id="diagnosisLabel">Updated <br />ICD11
-                                            Diagnosis<x-required-span /></x-input-span>
-                                        <x-form-textarea type="text" name="selectedDiagnosis"
+                                        <x-input-span id="diagnosisLabel">Selected <br />ICD11
+                                            Diagnosis<x-required-span /><i class="bi bi-arrow-clockwise btn form-control clearDiagnosis"></i></x-input-span>
+                                        <x-form-textarea type="text" name="selectedDiagnosis" id="selectedDiagnosis"
                                             class="selectedDiagnosis-2" readonly></x-form-textarea>
                                     </x-form-div>
                                     <x-form-div class="col-xl-6">

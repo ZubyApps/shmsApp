@@ -26,6 +26,8 @@ class StoreResourceRequest extends FormRequest
     {
         return [
             'name'                  => ['required', 'unique:'.Resource::class],
+            'flag'                  => ['required'],
+            'unitDescription'       => ['required'],
             'expiryDate'            => ['nullable', 'date', 'after_or_equal:'.date('d-m-Y')],
             'resourceSubCategory'   => ['required', 'numeric', 'exists:'.ResourceSubCategory::class.',id'],
         ];

@@ -33,23 +33,58 @@ Class PaymentService
                 'total_paid' => $totalPayments
             ]);
 
-            $totalPaymentsforPrescriptions = $totalPayments;
-
             $prescriptions = $payment->visit->prescriptions;
 
-            array_reduce([$prescriptions], function($carry, $prescription) {
-                foreach($prescription as $p){
-                    if ($carry >= $p->hms_bill){
-                        $p->update(['paid' => $p->hms_bill]);
-                    } else if ($carry < $p->hms_bill && $carry > 0) {
-                        $p->update(['paid' => $carry]);
-                    }
-                    $carry = $carry - $p->hms_bill;
-                    var_dump($carry);
-                }
-                return $carry;
-            }, $totalPaymentsforPrescriptions);
+            if ($payment->visit->sponsor->sponsorCategory->name == 'NHIS'){
+                $this->prescriptionsPaymentSeiveNhis($totalPayments, $prescriptions);
+            } else {
+                $this->prescriptionsPaymentSeive($totalPayments, $prescriptions);
+            }            
             return $payment;
         });
+    }
+
+    public function prescriptionsPaymentSeive(mixed $totalPayments, mixed $prescriptions): void
+    {
+        array_reduce([$prescriptions], function($carry, $prescription) {
+            foreach($prescription as $p){
+                $bill = $p->hms_bill;
+                $p->update(['paid' => $carry >= $bill ? $bill : ($carry < $bill && $carry > 0 ? $carry : null)]);
+                $carry = $carry - $bill;
+            }
+            return $carry;
+
+        }, $totalPayments);
+    }
+
+    public function prescriptionsPaymentSeiveNhis(mixed $totalPayments, mixed $prescriptions): void
+    {
+        array_reduce([$prescriptions], function($carry, $prescription) {
+            foreach($prescription as $p){
+                $bill = $p->hms_bill/10;
+                $p->update(['paid' => $carry >= $bill ? $bill : ($carry < $bill && $carry > 0 ? $carry : null)]);
+                $carry = $carry - $bill;
+            }
+            return $carry;
+
+        }, $totalPayments);
+    }
+
+    public function destroyPayment(Payment $payment)
+    {
+        $deleted = $payment->destroy($payment->id);
+
+        $totalPayments = $payment->visit->totalPayments();
+
+        $prescriptions = $payment->visit->prescriptions;
+
+        if ($payment->visit->sponsor->sponsorCategory->name == 'NHIS'){
+            $this->prescriptionsPaymentSeiveNhis($totalPayments, $prescriptions);
+        } else {
+            $this->prescriptionsPaymentSeive($totalPayments, $prescriptions);
+        }
+
+        return $deleted;
+    
     }
 }

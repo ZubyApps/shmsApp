@@ -14,8 +14,9 @@
                                 <x-form-input type="text" class="name" name="name" id="name" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="flagLabel">Flag</x-input-span>
-                                <x-form-input name="flag" value="" />
+                                <x-input-span id="flagLabel">Flag<x-required-span /></x-input-span>
+                                <x-select-flags name="flag" id="flag"></x-select-flags>
+                                {{-- <x-form-input name="flag" value="" /> --}}
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span>Category<x-required-span /></x-input-span>
@@ -36,11 +37,11 @@
                                 <x-form-input type="number" name="reOrder" value="" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="purchasePriceLabel">Purchase Price</x-input-span>
+                                <x-input-span id="purchasePriceLabel">Purchase Price<x-required-span /></x-input-span>
                                 <x-form-input type="number" name="purchasePrice" id="purchasePrice" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="sellingPriceLabel">Selling Price</x-input-span>
+                                <x-input-span id="sellingPriceLabel">Selling Price<x-required-span /></x-input-span>
                                 <x-form-input type="number" name="sellingPrice" id="sellingPrice" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">

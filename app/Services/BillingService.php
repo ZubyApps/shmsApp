@@ -19,7 +19,9 @@ class BillingService
     public function __construct(
         private readonly Visit $visit,
         private readonly Prescription $prescription,
-        private readonly Payment $payment
+        private readonly Payment $payment,
+        private readonly PaymentService $paymentService,
+        private readonly PayPercentageService $payPercentageService
         )
     {
         
@@ -108,9 +110,9 @@ class BillingService
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
                 'patientType'       => $visit->patient->patient_type,
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
-                'payPercent'        => $visit->totalBills() ? round((float)($visit->totalPayments() / $visit->totalBills()) * 100) : null,
-                'payPercentNhis'    => $visit->totalBills() ? round((float)($visit->totalPayments() / ($visit->totalBills()/10)) * 100) : null,
-                'payPercentHmo'     => $visit->totalBills() ? round((float)($visit->totalApprovedBills() / $visit->totalBills()) * 100) : null,
+                'payPercent'        => $this->payPercentageService->individual_Family($visit),
+                'payPercentNhis'    => $this->payPercentageService->nhis($visit),
+                'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
             ];
          };
     }
@@ -144,6 +146,7 @@ class BillingService
                 'patient'           => $visit->patient->patientId(),
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
+                'sponsorCategoryClass'  => $visit->sponsor->sponsorCategory->pay_class,
                 'doctor'            => $visit->doctor->username,
                 'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
@@ -151,21 +154,25 @@ class BillingService
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'discount'          => $visit->discount ?? '',
                 'discountBy'        => $visit->discountBy?->username ?? '',
-                'totalBill'         => $visit->totalBills() ?? 0,
-                'nhisTotalBill'     => ($visit->totalBills()/10) ?? 0,
-                'totalPaid'         => $visit->totalPayments() ?? 0,
+                'subTotal'          => $visit->totalBills() ?? 0,
+                'nhisSubTotal'      => ($visit->totalBills()/10) ?? 0,
+                'nhisNetTotal'      => ($visit->totalBills() - $visit->discount)/10  ?? 0,
                 'netTotal'          => $visit->totalBills() - $visit->discount,
+                'totalPaid'         => $visit->totalPayments() ?? 0,
                 'balance'           => $visit->totalBills() - $visit->discount - $visit->totalPayments() ?? 0,
-                'nhisBalance'       => ($visit->totalBills()/10) - $visit->discount - $visit->totalPayments() ?? 0,
+                'nhisBalance'       => (($visit->totalBills() - $visit->discount)/10) - $visit->totalPayments() ?? 0,
                 'prescriptions'     => $visit->prescriptions->map(fn(Prescription $prescription) => [
                     'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                     'prescribedBy'      => $prescription->user->username,
-                    'resource'          => $prescription->resource->name,
+                    'description'       => $prescription->resource->unit_description,
+                    'item'              => $prescription->resource->name,
                     'unitPrice'         => $prescription->resource->selling_price,
                     'quantity'          => $prescription->qty_billed ?? '',
                     'bill'              => $prescription->hms_bill ?? '',
                     'approved'          => $prescription->approved,
                     'rejected'          => $prescription->rejected,
+                    'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
+                    'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
                 ]),
                 
             ];
@@ -218,12 +225,12 @@ class BillingService
 
     public function processPaymentDestroy(Payment $payment)
     {
-        // $prescriptions = $this->prescription->visit->prescriptions->where('payment_id', $payment->id)->get();
+        // $prescriptions = $this->payment->visit->prescriptions;
         // foreach($prescriptions as $prescription){
         //     $prescription->update([
         //         'paid' => null
         //     ]);
-        
-        return $payment->destroy($payment->id);
+        // }
+        return $this->paymentService->destroyPayment($payment);
     }
 }

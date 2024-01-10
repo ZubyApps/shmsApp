@@ -16,7 +16,10 @@ use Illuminate\Http\Request;
 
 class DoctorService
 {
-    public function __construct(private readonly Visit $visit)
+    public function __construct(
+        private readonly Visit $visit,
+        private readonly PayPercentageService $payPercentageService
+        )
     {
         
     }
@@ -54,20 +57,6 @@ class DoctorService
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
-
-        // if ($data->filterBy == 'Inpatient'){
-        //     return $this->visit
-        //             ->where('consulted', '!=', null)
-        //             ->where('user_id', '=', $user->id)
-        //             ->where('doctor_done_by', null)
-        //             ->where('closed', null)
-        //             ->where(function (Builder $query) {
-        //                 $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
-        //                 ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
-        //             })
-        //             ->orderBy($orderBy, $orderDir)
-        //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        // }
 
         return $this->visit
                     ->where('consulted', '!=', null)
@@ -183,6 +172,7 @@ class DoctorService
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
                 'sponsor'           => $visit->sponsor->name,
+                'sponsorCategory'   => $visit->sponsor->category_name,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
                 'patientType'       => $visit->patient->patient_type,
@@ -194,9 +184,9 @@ class DoctorService
                                         ->where('result_date','!=', null)
                                         ->count(),
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
-                'payPercent'        => $visit->totalBills() ? round((float)($visit->totalPayments() / $visit->totalBills()) * 100) : null,
-                'payPercentNhis'    => $visit->totalBills() ? round((float)($visit->totalPayments() / ($visit->totalBills()/10)) * 100) : null,
-                'payPercentHmo'     => $visit->totalBills() ? round((float)($visit->totalApprovedBills() / $visit->totalBills()) * 100) : null,
+                'payPercent'        => $this->payPercentageService->individual_Family($visit),
+                'payPercentNhis'    => $this->payPercentageService->nhis($visit),
+                'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
 
             ];
          };

@@ -106,7 +106,7 @@ const getResourceTable = (tableId) => {
                         <div class="d-flex flex-">
                             <div>
                                 <a class="btn btn-outline-${!row.isActive ? 'danger' : 'primary'} toggleActiveStatusBtn" data-id="${ row.id }">
-                                ${!row.isActive ? '<i class="bi bi-x-square-fill  tooltip-test" title="activate"></i>' : '<i class="bi bi-check-square-fill tooltip-test" title="activate"></i>'}
+                                ${!row.isActive ? '<i class="bi bi-x-square-fill  tooltip-test" title="inactive"></i>' : '<i class="bi bi-check-square-fill tooltip-test" title="active"></i>'}
                                 </a>
                             </div>
                             <div class="dropdown ms-1">
@@ -134,7 +134,7 @@ const getResourceTable = (tableId) => {
                         <div class="d-flex flex-">
                             <div>
                                     <a class="btn btn-outline-${!row.isActive ? 'danger' : 'primary'} toggleActiveStatusBtn" data-id="${ row.id }">
-                                    ${!row.isActive ? '<i class="bi bi-x-square-fill tooltip-test" title="activate"></i>' : '<i class="bi bi-check-square-fill tooltip-test" title="activate"></i>'}
+                                    ${!row.isActive ? '<i class="bi bi-x-square-fill tooltip-test" title="inactive"></i>' : '<i class="bi bi-check-square-fill tooltip-test" title="active"></i>'}
                                     </a>
                                 </div>
                                 <div class="dropdown ms-1">

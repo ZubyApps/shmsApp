@@ -292,6 +292,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                 updateResourceModal.hide()
                 resourceTable.draw()
+                clearValidationErrors(updateResourceModal._element)
             }
             saveResourceBtn.removeAttribute('disabled')
         })

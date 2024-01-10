@@ -13,7 +13,10 @@ use Illuminate\Database\Eloquent\Builder;
 
 class NurseService
 {
-    public function __construct(private readonly Visit $visit)
+    public function __construct(
+        private readonly Visit $visit,
+        private readonly PayPercentageService $payPercentageService
+        )
     {
         
     }
@@ -114,9 +117,9 @@ class NurseService
                                        ->orWhereRelation('resource', 'category', 'Medical Services')
                                        ->count(),
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
-                'payPercent'        => $visit->totalBills() ? round((float)($visit->totalPayments() / $visit->totalBills()) * 100) : null,
-                'payPercentNhis'    => $visit->totalBills() ? round((float)($visit->totalPayments() / ($visit->totalBills()/10)) * 100) : null,
-                'payPercentHmo'     => $visit->totalBills() ? round((float)($visit->totalApprovedBills() / $visit->totalBills()) * 100) : null,
+                'payPercent'        => $this->payPercentageService->individual_Family($visit),
+                'payPercentNhis'    => $this->payPercentageService->nhis($visit),
+                'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
             ];
          };
     }

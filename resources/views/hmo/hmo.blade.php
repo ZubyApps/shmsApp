@@ -47,24 +47,26 @@
             </div>
             <div class="offcanvas2-body">
                 <div class="p-2 form-control">
-                    <table id="approvalListTable" class="table table-hover align-middle table-sm approvalListTable">
-                        <thead>
-                            <tr>
-                                <th>Patient</th>
-                                <th>Sponsor</th>
-                                <th>Dr</th>
-                                <th>Prescribed</th>
-                                <th>Diagnosis</th>
-                                <th>Treatment</th>
-                                <th>Prescription</th>
-                                <th>Qty</th>
-                                <th>Bill</th>
-                                <th>Billed</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <fieldset id="approvalFieldset">
+                        <table id="approvalListTable" class="table table-hover align-middle table-sm approvalListTable">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Sponsor</th>
+                                    <th>Dr</th>
+                                    <th>Prescribed</th>
+                                    <th>Diagnosis</th>
+                                    <th>Treatment</th>
+                                    <th>Prescription</th>
+                                    <th>Qty</th>
+                                    <th>Bill</th>
+                                    <th>Billed</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </fieldset>
                 </div>
             </div>
         </div>

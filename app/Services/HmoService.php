@@ -17,7 +17,8 @@ class HmoService
 {
     public function __construct(
         private readonly Visit $visit, 
-        private readonly Prescription $prescription
+        private readonly Prescription $prescription,
+        private readonly PayPercentageService $payPercentageService
         )
     {
         
@@ -200,9 +201,9 @@ class HmoService
                                         ->where('result_date','!=', null)
                                         ->count(),
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
-                'payPercent'        => $visit->totalBills() ? round((float)($visit->totalPayments() / $visit->totalBills()) * 100) : null,
-                'payPercentNhis'    => $visit->totalBills() ? round((float)($visit->totalPayments() / ($visit->totalBills()/10)) * 100) : null,
-                'payPercentHmo'     => $visit->totalBills() ? round((float)($visit->totalApprovedBills() / $visit->totalBills()) * 100) : null,
+                'payPercent'        => $this->payPercentageService->individual_Family($visit),
+                'payPercentNhis'    => $this->payPercentageService->nhis($visit),
+                'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
                 '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
 
             ];
@@ -219,7 +220,8 @@ class HmoService
                             // ->where('rejected', false)
                             ->where(function (Builder $query) {
                                 $query->whereRelation('visit.sponsor.sponsorCategory', 'name', 'HMO')
-                                ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'NHIS');
+                                ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'NHIS')
+                                ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'Retainership');
                             })
                             ->where(function (Builder $query) use($params) {
                                 $query->whereRelation('visit.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -242,7 +244,9 @@ class HmoService
                 ->where('rejected', false)
                 ->where(function (Builder $query) {
                     $query->whereRelation('visit.sponsor.sponsorCategory', 'name', 'HMO')
-                    ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'NHIS');
+                    ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'NHIS')
+                    ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'Retainership')
+                    ;
                 })
                 ->orderBy($orderBy, $orderDir)
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -264,11 +268,11 @@ class HmoService
                 'prescription'      => $prescription->prescription,
                 'quantity'          => $prescription->qty_billed,
                 'note'              => $prescription->note,
-                'hmsBill'           => $prescription->hms_bill,
+                'hmsBill'           => $prescription->hms_bill ?? '',
                 'hmsBillDate'       => $prescription->hms_bill_date ? (new Carbon($prescription->hms_bill_date))->format('d/m/y g:ia') : '',
                 'hmoBill'           => $prescription->hmo_bill,
                 'hmoBillBy'         => $prescription->hmoBillBy?->username,
-                'paidHms'           => 2500,
+                'paidHms'           => $prescription->visit->totalPayments() ?? '',
                 'approved'          => $prescription->approved,
                 'approvedBy'        => $prescription->approvedBy?->username,
                 'rejected'          => $prescription->rejected,
@@ -280,11 +284,11 @@ class HmoService
     public function approve($data, Prescription $prescription, User $user)
     {
         if ($prescription->approved == true || $prescription->rejected == true){
-            return response('Already treated by ' . $prescription->approvedBy->username, 222);
+            return response('Already treated by ' . $prescription->approvedBy->username ?? $prescription->rejectedBy->username, 222);
         }
         return  $prescription->update([
             'approved'         => true,
-            'approval_note'    => $data->note,
+            'hmo_note'          => $data->note,
             'approved_by'      => $user->id,
         ]);
     }
@@ -292,11 +296,11 @@ class HmoService
     public function reject($data, Prescription $prescription, User $user)
     {
         if ($prescription->approved == true || $prescription->rejected == true){
-            return response('Already treated by ' . $prescription->approvedBy->username, 222);
+            return response('Already treated by ' . $prescription->rejectedBy->username ??  $prescription->approvedBy->username, 222);
         }
         return  $prescription->update([
             'rejected'          => true,
-            'rejection_note'    => $data->note,
+            'hmo_note'          => $data->note,
             'rejected_by'       => $user->id,
         ]);
     }
@@ -330,7 +334,7 @@ class HmoService
     {
         $prescription->update([
             'hmo_bill'       => $data->bill,
-            // 'hmo_bill_date'  => new Carbon(),
+            'hmo_bill_date'  => new Carbon(),
             'hmo_bill_by'    => $user->id,
             'hmo_bill_note'  => $data->note
         ]);   

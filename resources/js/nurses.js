@@ -1,5 +1,5 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
-import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData } from "./helpers"
+import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator } from "./helpers"
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
@@ -28,19 +28,17 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveMedicationChartBtn    = chartMedicationModal._element.querySelector('#saveMedicationChartBtn')
     const saveGivenMedicationBtn    = giveMedicationModal._element.querySelector('.saveGivenMedicationBtn')
     const [outPatientsTab, inPatientsTab, ancPatientsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab')]
-    
-    const heightEl                  = document.querySelectorAll('#height') 
 
-    heightEl.forEach(heightInput => {
-        heightInput.addEventListener('input',  function (e){
-            const div = heightInput.parentElement.parentElement.parentElement
-            console.log(heightInput.dataset.id, div.id)
-            if (heightInput.dataset.id == div.id){
-                div.querySelector('#bmi').value = (div.querySelector('#weight').value.split('k')[0]/div.querySelector('#height').value.split('m')[0]**2).toFixed(2)
-            }
-        })
-    })
+    // document.querySelectorAll('#height, #weight').forEach(elInput => {
+    //     elInput.addEventListener('input',  function (e){
+    //         const div = elInput.parentElement.parentElement.parentElement
+    //         if (elInput.dataset.id == div.id){
+    //             div.querySelector('#bmi').value = (div.querySelector('#weight').value.split('k')[0]/div.querySelector('#height').value.split('m')[0]**2).toFixed(2)
+    //         }
+    //     })
+    // })
 
+    bmiCalculator(document.querySelectorAll('#height, #weight'))
 
     const blinkTable = document.querySelector('.thisRow')
 
@@ -87,7 +85,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     waitingListCanvas._element.addEventListener('hide.bs.offcanvas', function () {
-        allRegularPatientsTable.draw()
+        outPatientsVisitTable.draw()
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
     })
@@ -189,12 +187,14 @@ window.addEventListener('DOMContentLoaded', function () {
 
     reviewDetailsModal._element.addEventListener('hide.bs.modal', function () {
         treatmentDiv.innerHTML = ''
+        outPatientsVisitTable.draw()
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
     })
 
     vitalsignsModal._element.addEventListener('hide.bs.modal', function () {
         waitingTable.draw()
+        outPatientsVisitTable.draw()
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
     })
@@ -478,10 +478,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 console.log(error)
                 saveGivenMedicationBtn.removeAttribute('disabled')
             })
-    })
-
-    reviewDetailsModal._element.addEventListener('hidden.bs.modal', function () {
-        allRegularPatientsTable.draw()
     })
 })
 

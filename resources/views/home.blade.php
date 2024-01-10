@@ -23,7 +23,7 @@
                         <a href="/admin" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-person-fill"> Admin</i></a>
                     </div>
                     <br>
-                    <p class="fs-5 mb-0"><a href="#" class="text-decoration-none text-black">The Hospital's Motto...</a></p>
+                    <p class="fs-5 mb-0"><a href="#" class="text-decoration-none text-black">We treat, <span class="text-primary fw-bold">God</span> heals...</a></p>
                 </div>
             </div>
         </main>

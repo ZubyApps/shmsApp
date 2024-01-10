@@ -121,9 +121,10 @@
                                         </x-form-div>
                                         @if ($isReview) <x-icd11-diagnosis-div :number="5" /> @else <x-icd11-diagnosis-div :number="4" /> @endif
                                         <x-form-div class="col-xl-6">
-                                            <x-input-span id="selectedDiagnosisLabel">Selected <br />ICD11 Diagnosis<x-required-span /></x-input-span>
+                                            <x-input-span id="selectedDiagnosisLabel">Selected <br />ICD11 Diagnosis<x-required-span />
+                                                <i class="bi bi-arrow-clockwise btn form-control clearDiagnosis"></i></x-input-span>
                                             <x-form-textarea type="text" name="selectedDiagnosis"
-                                                class="selectedDiagnosis-{{ $isReview ? '5' : '4' }}" readonly></x-form-textarea>
+                                                class="selectedDiagnosis-{{ $isReview ? '5' : '4' }}" id="selectedDiagnosis" readonly></x-form-textarea>
                                         </x-form-div>
                                         {{-- @if ($isReview) --}}
                                         <x-form-div class="col-xl-6">

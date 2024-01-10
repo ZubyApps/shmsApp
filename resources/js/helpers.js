@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import { getAncPatientsVisitTable, getInpatientsVisitTable, getOutpatientsVisitTable } from './tables/doctorstables';
+
 function clearDivValues(div) {
     const tagName = div.querySelectorAll('input, select, textarea')
 
@@ -229,7 +232,7 @@ const detailsBtn = (row) => {
 const reviewBtn = (row) => {
     return `
             <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Review</button>
+                <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patientType="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}">Review</button>
             </div>
             `      
 }
@@ -249,5 +252,69 @@ const sponsorAndPayPercent = (row) => {
             </div>` : 
            row.sponsor
 }
+
+const displayPaystatus = (row, credit) => {
+    return credit ? `<i class="bi bi-${row.approved ? 'check' : row.rejected ? 'x' : 'dash'}-circle-fill tooltip-test" title=${row.approved ? 'approved' : row.rejected ? 'rejected' : 'not processed'}></i>` : row.paid || row.paidNhis ? '<i class="bi bi-p-circle-fill tooltip-test" title="paid"></i>' : ''
+}
+
+const bmiCalculator = (elements) => {
+    elements.forEach(elInput => {
+        elInput.addEventListener('input',  function (e){
+            const div = elInput.parentElement.parentElement.parentElement
+            if (elInput.dataset.id == div.id){
+                const bmiValue = (div.querySelector('#weight').value.split('k')[0]/(div.querySelector('#height').value.split('m')[0])**2).toFixed(2) 
+                div.querySelector('#bmi').value = bmiValue > 0 && bmiValue !== 'Infinity' ? bmiValue : ''
+            }
+        })
+    })
+}
+
+const lmpCalculator = (elements, elementDiv) => {
+    elements.forEach(lmp => {
+        lmp.addEventListener('change', function () {
+            elementDiv.forEach(div => {
+                if (lmp.dataset.lmp == div.dataset.div){
+                    if (lmp.value){
+                        const lmpDate = new Date(lmp.value) 
+                        div.querySelector('#edd').value = addDays(lmpDate, 280).toISOString().split('T')[0]
+                        div.querySelector('#ega').value = String(getWeeksDiff(new Date(), lmpDate)).split('.')[0] + 'W' + ' ' + getWeeksModulus(new Date, lmpDate)%7 + 'D'
+                    }                    
+                }
+            })
+        })
+    })
+}
+
+const filterPatients = (elements) => {
+    elements.forEach(filterInput => {
+        filterInput.addEventListener('change', function () {
+            if (filterInput.id == 'filterListOutPatients'){
+                $.fn.DataTable.isDataTable( '#outPatientsVisitTable' ) ? $('#outPatientsVisitTable').dataTable().fnDestroy() : ''
+                getOutpatientsVisitTable('#outPatientsVisitTable', filterInput.value)
+            }
+            if (filterInput.id == 'filterListInPatients'){
+                $.fn.DataTable.isDataTable( '#inPatientsVisitTable' ) ? $('#inPatientsVisitTable').dataTable().fnDestroy() : ''
+                getInpatientsVisitTable('#inPatientsVisitTable', filterInput.value)
+            }
+            if (filterInput.id == 'filterListAncPatients'){
+                $.fn.DataTable.isDataTable( '#ancPatientsVisitTable' ) ? $('#ancPatientsVisitTable').dataTable().fnDestroy() : ''
+                getAncPatientsVisitTable('#ancPatientsVisitTable', filterInput.value)
+            }
+        })
+    })
+}
+
+const removeDisabled = (element) => {
+    setTimeout(() => element.removeAttribute('disabled'), 2000 ) 
+}
+
+const resetFocusEndofLine = (element) => {
+    let value = element.value
+    setTimeout(function(){
+        element.focus()
+        element.value = ''
+        element.value = value
+    }, 1)
+}
     
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent }    
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine}    

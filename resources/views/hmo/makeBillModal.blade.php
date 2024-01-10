@@ -23,61 +23,63 @@
                         <div class="mb-2 form-control vitalsDiv">
                             <x-form-span>All Prescriptions for this Visit</x-form-span>
                             <div class="row overflow-auto my-3">
-                                <table id="visitPrescriptionsTable" class="table table-hover align-middle table-sm visitPrescriptionsTable">
-                                    <thead>
-                                        <tr>
-                                            <th>By</th>
-                                            <th>Prescribed</th>
-                                            <th>Item</th>
-                                            <th>Diagnosis</th>
-                                            <th>Prescription</th>
-                                            <th>Note</th>
-                                            <th>Qty</th>
-                                            <th class="text-center">HMS Bill</th>
-                                            <th class="text-center">HMO Bill</th>
-                                            <th>Bill By</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                    <tfoot>
-                                        <tr class="">
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td class="">Total</td>
-                                            <td class="text-primary text-center"></td>
-                                            <td class="text-primary text-center"></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td class="">Paid HMS</td>
-                                            <td class="text-success text-center"></td>
-                                            <td class="text-success  text-center"></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td class="">Balance</td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                            <td></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
+                                <fieldset id="makeBillFieldset">
+                                    <table id="visitPrescriptionsTable" class="table table-hover align-middle table-sm visitPrescriptionsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>By</th>
+                                                <th>Prescribed</th>
+                                                <th>Item</th>
+                                                <th>Diagnosis</th>
+                                                <th>Prescription</th>
+                                                <th>Note</th>
+                                                <th>Qty</th>
+                                                <th class="text-center">HMS Bill</th>
+                                                <th class="text-center">HMO Bill</th>
+                                                <th>Bill By</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                        <tfoot>
+                                            <tr class="">
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td class="">Total</td>
+                                                <td class="text-primary text-center"></td>
+                                                <td class="text-primary text-center"></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td class="">Paid HMS</td>
+                                                <td class="text-success text-center"></td>
+                                                <td class="text-success  text-center"></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td class="">Balance</td>
+                                                <td class="text-center"></td>
+                                                <td class="text-center"></td>
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </fieldset>
                             </div>
                             
                         </div>
