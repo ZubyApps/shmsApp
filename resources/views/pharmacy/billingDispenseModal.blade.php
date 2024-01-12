@@ -20,7 +20,7 @@
                                 </x-form-div>
                             </div>
                         </div>
-                        <div class="mb-2 form-control vitalsDiv">
+                        <div class="mb-2 form-control">
                             <x-form-span>All Prescriptions for this Visit</x-form-span>
                             <div class="row overflow-auto my-3">
                                 <fieldset id="billingDispenseFieldset">
@@ -37,10 +37,9 @@
                                         </tfoot>
                                     </table>
                                 </fieldset>
-                            </div>
-                            
+                            </div>  
                         </div>
-            
+                        <x-bill-summary :number="1"></x-bill-summary>
                     </div>
                 </div>
                 <div class="modal-footer px-5">

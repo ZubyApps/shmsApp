@@ -39,16 +39,48 @@
         </div>
     </div>
 
-        <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="approvalListOffcanvas"
-            aria-labelledby="approvalListOffcanvasLabel">
+        <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="hmoApprovalListOffcanvas"
+            aria-labelledby="hmoApprovalListOffcanvasLabel">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title text-primary" id="approvalListOffcanvasLabel">Approval List</h5>
+                <h5 class="offcanvas-title text-primary" id="hmoApprovalListOffcanvasLabel">Private HMOs Approval List</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas2-body">
                 <div class="p-2 form-control">
-                    <fieldset id="approvalFieldset">
-                        <table id="approvalListTable" class="table table-hover align-middle table-sm approvalListTable">
+                    <fieldset id="hmoApprovalFieldset">
+                        <table id="hmoApprovalListTable" class="table table-hover align-middle table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Sponsor</th>
+                                    <th>Dr</th>
+                                    <th>Prescribed</th>
+                                    <th>Diagnosis</th>
+                                    <th>Treatment</th>
+                                    <th>Prescription</th>
+                                    <th>Qty</th>
+                                    <th>Bill</th>
+                                    <th>Billed</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+
+        <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="nhisApprovalListOffcanvas"
+            aria-labelledby="nhisApprovalListOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-primary" id="nhisApprovalListOffcanvasLabel">NHIS Approval List</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas2-body">
+                <div class="p-2 form-control">
+                    <fieldset id="nhisApprovalFieldset">
+                        <table id="nhisApprovalListTable" class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
                                     <th>Patient</th>
@@ -76,10 +108,15 @@
                 <i class="bi bi-list-check"></i>
                 Waiting List
             </button>
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="approvalListBtn"
-                data-bs-target="#approvalListOffcanvas" aria-controls="approvalListOffcanvas">
+            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="hmoApprovalListBtn"
+                data-bs-target="#hmoApprovalListOffcanvas" aria-controls="hmoApprovalListOffcanvas">
                 <i class="bi bi-list-check"></i>
-                Approval List
+                HMO Approval List
+            </button>
+            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="nhisApprovalListBtn"
+                data-bs-target="#nhisApprovalListOffcanvas" aria-controls="nhisApprovalListOffcanvas">
+                <i class="bi bi-list-check"></i>
+                NHIS Approval List
             </button>
         </div>
 

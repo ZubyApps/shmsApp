@@ -245,6 +245,7 @@ class PharmacyService
                                            $consultation->assessment, 
                 'consulted'             => (new Carbon($consultation->created_at))->format('D/m/y g:ia'),                
                 'conId'                 => $consultation->id,
+                'sponsor'               => $consultation->visit->sponsor->name,
                 'sponsorCategoryClass'  => $consultation->visit->sponsor->sponsorCategory->pay_class,
                 'prescriptions'         => (new Prescription)->forPharmacy($consultation->id)->map(fn(Prescription $prescription)=> [
                     'id'                => $prescription->id ?? '',

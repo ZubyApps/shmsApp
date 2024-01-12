@@ -6,6 +6,7 @@ import http from "./http";
 import $ from 'jquery';
 import { getLabTableByConsultation, getTreatmentTableByConsultation, getVitalSignsTableByVisit } from "./tables/doctorstables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
+import { getbillingTableByVisit } from "./tables/billingTables";
 
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -19,7 +20,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const textareaHeight = 90;
     textareaHeightAdjustment(textareaHeight, document.getElementsByTagName("textarea"))
 
-    let inPatientsVisitTable, ancPatientsVisitTable, visitPrescriptionsTable
+    let inPatientsVisitTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable
 
     const outPatientsTable = getPatientsVisitByFilterTable('outPatientsTable', 'Outpatient')
 
@@ -80,6 +81,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             })
     
                             getVitalSignsTableByVisit('#vitalSignsTableNurses', visitId, reviewDetailsModal, viewer)
+                            getbillingTableByVisit('billingTable', visitId, reviewDetailsModal._element)
                             reviewDetailsModal.show()
     
                         }
@@ -100,6 +102,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 billingDispenseModal._element.querySelector('#markDoneBtn').setAttribute('data-id', visitId)
     
                 visitPrescriptionsTable = getPrescriptionsByConsultation(tableId, visitId, billingDispenseModal)
+                billingTable = getbillingTableByVisit('billingTable1', visitId, billingDispenseModal._element)
                 billingDispenseModal.show()
             }
         })
@@ -127,6 +130,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     if (response.status >= 200 || response.status <= 300) {
                         visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
                         visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                        billingTable ? billingTable.draw() : ''
                     }
                 })
                 .catch((error) => {

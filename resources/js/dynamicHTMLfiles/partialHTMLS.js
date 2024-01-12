@@ -436,7 +436,7 @@ const investigations = (line) => {
                 <div class="my-2 form-control">
                     <span class="fw-bold text-primary"> Investigations </span>
                     <div class="row overflow-auto m-1">
-                        <table id="investigationTable${line.id}" data-id="${line.id}" class="table table-hover align-middle table-sm investigationTable">
+                        <table id="investigationTable${line.id}" data-id="${line.id}" class="table table-sm investigationTable">
                             <thead>
                                 <tr>
                                     <th>Type</th>
@@ -730,7 +730,7 @@ const medicationAndTreatment = (line) => {
             <div class="my-2 form-control">
                 <span class="fw-bold text-primary">Treatment & Medication</span>
                 <div class="row overflow-auto m-1">
-                    <table id="treatmentTable${line.id}" data-id="${line.id}" class="table table-hover table-sm treatmentTable">
+                    <table id="treatmentTable${line.id}" data-id="${line.id}" class="table table-sm treatmentTable">
                         <thead>
                             <tr>
                                 <th></th>
@@ -755,7 +755,7 @@ const medicationAndTreatmentNurses = (line) => {
             <div class="my-2 form-control">
                 <span class="fw-bold text-primary">Treatment & Medication</span>
                 <div class="row overflow-auto m-1">
-                    <table id="nurseTreatmentTable${line.id}" data-id="${line.id}" class="table table-hover table-sm nurseTreatmentTable">
+                    <table id="nurseTreatmentTable${line.id}" data-id="${line.id}" class="table table-sm nurseTreatmentTable">
                         <thead>
                             <tr>
                                 <th>Treatment</th>

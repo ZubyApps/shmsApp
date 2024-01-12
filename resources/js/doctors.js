@@ -11,6 +11,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
+import { getbillingTableByVisit } from "./tables/billingTables"
 
 window.addEventListener('DOMContentLoaded', function () {
     const waitingListOffcanvas              = new Offcanvas(document.getElementById('waitingListOffcanvas1'))
@@ -171,6 +172,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         .catch((error) => {
                             console.log(error)
                         })
+                        getbillingTableByVisit('billingTable', visitId, consultationReviewModal._element)
                         
                         consultationReviewDiv.querySelector('.resource').setAttribute('data-sponsorcat', consultationReviewBtn.getAttribute('data-sponsorcat'))
 
@@ -194,7 +196,6 @@ window.addEventListener('DOMContentLoaded', function () {
     
                 getVitalSignsTableByVisit(tableId, visitId, vitalsignsModal)
     
-
                 http.get('/vitalsigns/load/visit_vitalsigns_chart',{params: {  visitId: visitId }})
                 .then((response) => {
                     getVitalsignsChartByVisit(vitalsignsChart, response, vitalsignsModal)

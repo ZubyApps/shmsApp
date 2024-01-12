@@ -74,7 +74,7 @@ window.addEventListener('DOMContentLoaded', function () {
             
             if (billingDetailsBtn){
                 const visitId = billingDetailsBtn.getAttribute('data-id') 
-                getbillingTableByVisit('billingTable', visitId, billingModal._element)
+                getbillingTableByVisit('billingTable', visitId, billingModal._element, true)
                 getPaymentTableByVisit('paymentTable', visitId, billingModal._element)
                 billingModal.show()
             }

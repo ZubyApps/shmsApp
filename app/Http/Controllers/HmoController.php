@@ -78,6 +78,11 @@ class HmoController extends Controller
        return $this->hmoService->reject($request, $prescription, $request->user());
     }
 
+    public function resetItem(Prescription $prescription)
+    {
+       return $this->hmoService->reset($prescription);
+    }
+
     public function loadVisitPrescriptions(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);

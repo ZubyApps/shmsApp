@@ -217,11 +217,10 @@ class HmoService
 
             if (! empty($params->searchTerm)) {
                 return $this->prescription
-                            // ->where('rejected', false)
-                            ->where(function (Builder $query) {
-                                $query->whereRelation('visit.sponsor.sponsorCategory', 'name', 'HMO')
-                                ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'NHIS')
-                                ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'Retainership');
+                            ->where(function (Builder $query) use($data) {
+                                $query->whereRelation('visit.sponsor.sponsorCategory', 'name', ($data->sponsor == 'NHIS' ? '' : 'HMO'))
+                                ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', ($data->sponsor == 'NHIS' ? 'NHIS' : ''))
+                                ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', ($data->sponsor == 'NHIS' ? '' : 'Retainership'));
                             })
                             ->where(function (Builder $query) use($params) {
                                 $query->whereRelation('visit.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -239,17 +238,24 @@ class HmoService
                             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
-        return $this->prescription
-                ->where('approved', false)
-                ->where('rejected', false)
-                ->where(function (Builder $query) {
-                    $query->whereRelation('visit.sponsor.sponsorCategory', 'name', 'HMO')
-                    ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'NHIS')
-                    ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'Retainership')
-                    ;
-                })
-                ->orderBy($orderBy, $orderDir)
-                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            if ($data->sponsor == 'NHIS'){
+                return $this->prescription
+                    ->where('approved', false)
+                    ->where('rejected', false)
+                    ->whereRelation('visit.sponsor.sponsorCategory', 'name', 'NHIS')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            return $this->prescription
+                    ->where('approved', false)
+                    ->where('rejected', false)
+                    ->where(function (Builder $query) {
+                        $query->whereRelation('visit.sponsor.sponsorCategory', 'name', 'HMO')
+                        ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'Retainership');
+                    })
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
     public function getAllPrescriptionsTransformer(): callable
@@ -277,6 +283,7 @@ class HmoService
                 'approvedBy'        => $prescription->approvedBy?->username,
                 'rejected'          => $prescription->rejected,
                 'rejectedBy'        => $prescription->rejectedBy?->username,
+                'dispensed'         => $prescription->dispensed,
             ];
          };
     }
@@ -302,6 +309,18 @@ class HmoService
             'rejected'          => true,
             'hmo_note'          => $data->note,
             'rejected_by'       => $user->id,
+        ]);
+    }
+
+    public function reset(Prescription $prescription)
+    {
+        return  $prescription->update([
+            'approved'          => false,
+            'hmo_note'          => null,
+            'approved_by'       => null,
+            'rejected'          => false,
+            'hmo_note'          => null,
+            'rejected_by'       => null,
         ]);
     }
 

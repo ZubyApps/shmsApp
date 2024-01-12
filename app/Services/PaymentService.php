@@ -48,7 +48,7 @@ Class PaymentService
     {
         array_reduce([$prescriptions], function($carry, $prescription) {
             foreach($prescription as $p){
-                $bill = $p->hms_bill;
+                $bill = $p->approved ? 0 : $p->hms_bill;
                 $p->update(['paid' => $carry >= $bill ? $bill : ($carry < $bill && $carry > 0 ? $carry : null)]);
                 $carry = $carry - $bill;
             }
@@ -61,7 +61,7 @@ Class PaymentService
     {
         array_reduce([$prescriptions], function($carry, $prescription) {
             foreach($prescription as $p){
-                $bill = $p->hms_bill/10;
+                $bill = $p->approved ? $p->hms_bill/10 : $p->hms_bill;
                 $p->update(['paid' => $carry >= $bill ? $bill : ($carry < $bill && $carry > 0 ? $carry : null)]);
                 $carry = $carry - $bill;
             }

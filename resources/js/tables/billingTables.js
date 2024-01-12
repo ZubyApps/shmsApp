@@ -78,7 +78,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
     });
 }
 
-const getbillingTableByVisit = (tableId, visitId, modal) => {
+const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
     const billingTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/billing/load/bill', data: {
@@ -106,7 +106,7 @@ const getbillingTableByVisit = (tableId, visitId, modal) => {
             },
             {
                 sortable: false,
-                data: "sponsor"
+                data: row => row.sponsor +' '+ row.sponsorCategory
             },
             {
                 sortable: false,
@@ -131,9 +131,10 @@ const getbillingTableByVisit = (tableId, visitId, modal) => {
                                             <thead >
                                                 <tr class="fw-semibold fst-italic">
                                                     <td class="text-secondary">S/N</td>
-                                                    <td class="text-secondary">Prescribed</td>
+                                                    <td class="text-secondary">Date</td>
                                                     <td class="text-secondary">Added by</td>
                                                     <td class="text-secondary">Item</td>
+                                                    ${credit || NHIS ? '<td class="text-secondary">HMO Note</td>' : ''}
                                                     <td class="text-secondary">Unit price</td>
                                                     <td class="text-secondary">Qty</td>
                                                     <td class="text-secondary">Description</td>
@@ -148,8 +149,9 @@ const getbillingTableByVisit = (tableId, visitId, modal) => {
                                                 <td class="text-secondary">${p.prescribed}</td>                
                                                 <td class="text-secondary">${p.prescribedBy}</td>                                
                                                 <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold">
-                                                ${p.item +' '+ displayPaystatus(p, credit)}
-                                                </td>                
+                                                    ${p.item +' '+ displayPaystatus(p, credit, NHIS)}
+                                                </td>
+                                                ${credit || NHIS ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>` : ''}                
                                                 <td class="">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(p.unitPrice)}</td>
                                                 <td class="">${p.quantity}</td>
                                                 <td class="text-secondary">${p.description}</td>                
@@ -160,17 +162,19 @@ const getbillingTableByVisit = (tableId, visitId, modal) => {
                             child += `</tbody>
                                     <tfoot>
                                         <tr>
-                                            <td>     </td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
+                                            <td></td>
+                                            ${credit || NHIS ? `<td></td>` : ''}
                                             <td></td>
                                             <td></td>
                                             <td class="text-secondary">Sub total</td>
                                             <td class="text-secondary">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(data.subTotal)}</td>
                                         </tr>
-                                        ${data.sponsorCategory === 'NHIS' ?
+                                        ${NHIS ?
                                          `  <tr>
+                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
@@ -182,32 +186,38 @@ const getbillingTableByVisit = (tableId, visitId, modal) => {
                                             </tr>` :
                                          ''}
                                         <tr>
-                                            <td>     </td>
-                                            <td class=""></td>
                                             <td></td>
                                             <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            ${credit || NHIS ? `<td></td>` : ''}
                                             <td class="p-1">
+                                            ${billing ? 
+                                                `
                                                 <div class="">
                                                     <button class="discountBtn btn btn-outline-secondary m-0" data-id="${data.id}">Discount</button>
                                                     <input class="ms-1 form-control discountInput d-none" id="discountInput" type="number" value="${data.discount}">
                                                 </div>
+                                                ` : ''}
                                             </td>
                                             <td class="text-secondary">${data.discountBy}</td>
                                             <td class="text-secondary">Discount</td>
                                             <td class="text-secondary">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(data.discount)}</td>
                                         </tr>
                                         <tr>
-                                            <td>     </td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
+                                            <td></td>
+                                            ${credit || NHIS ? `<td></td>` : ''}
                                             <td></td>
                                             <td class="text-secondary fw-bold">Net total</td>
                                             <td class="text-secondary fw-bold">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(data.netTotal)}</td>
                                         </tr>
-                                        ${data.sponsorCategory === 'NHIS' ?
+                                        ${NHIS ?
                                          `  <tr>
+                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
@@ -220,27 +230,30 @@ const getbillingTableByVisit = (tableId, visitId, modal) => {
                                          ''}
                                         <tr>
                                         <tr>
-                                            <td>     </td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
+                                            <td></td>
+                                            ${credit || NHIS ? `<td></td>` : ''}
                                             <td></td>
                                             <td></td>
                                             <td class="text-secondary">Paid</td>
                                             <td class="text-secondary">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(data.totalPaid)}</td>
                                         </tr>
                                         <tr>
-                                            <td>     </td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
+                                            ${credit || NHIS ? `<td></td>` : ''}
                                             <td></td>
-                                            <td class="text-${balance ? 'danger' : 'secondary'} fw-bold">Balance</td>
-                                            <td class="text-${balance ? 'danger' : 'secondary'} fw-bold">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(balance)}</td>
+                                            <td></td>
+                                            <td class="text-${balance > 0 ? 'danger' : balance == 0 ? 'secondary' : 'success'} fw-bold">Balance</td>
+                                            <td class="text-${balance > 0 ? 'danger' : balance == 0 ? 'secondary' : 'success'} fw-bold">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(balance)}</td>
                                         </tr>
                                     </tfoot>
                                 </table>
+                                ${billing ? `
                                 <div class="d-flex justify-content-end paymentDetailsDiv">
                                     <div class="card border-0" style="width: 18rem;">
                                         <div class="toast align-items-center shadow-none border-0" id="savePaymentToast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -266,6 +279,7 @@ const getbillingTableByVisit = (tableId, visitId, modal) => {
                                         </div>
                                     </div>
                                 </div>
+                                ` : ''}
                                 `
                     return (child);
                 } else {
@@ -277,6 +291,34 @@ const getbillingTableByVisit = (tableId, visitId, modal) => {
                             </td>
                         </tr>
                     </table>
+                    ${billing ? 
+                    `
+                    <div class="d-flex justify-content-end paymentDetailsDiv">
+                                    <div class="card border-0" style="width: 18rem;">
+                                        <div class="toast align-items-center shadow-none border-0" id="savePaymentToast" role="alert" aria-live="assertive" aria-atomic="true">
+                                            <div class="toast-body">
+                                                <h6 class="text-primary">Successful</h6>
+                                            </div>  
+                                        </div>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item border-0"> Amount <input class="ms-1 form-control amountInput" id="amount" name="amount"></li>
+                                            <li class="list-group-item border-0">Pay Method
+                                            <select class="form-select form-select-md payMethodInput" name="payMethod" id="payMethod">
+                                                <option value="Cash">Cash</option>
+                                                <option value="UBA">UBA Pos</option>
+                                                <option value="Union Pos">Union Pos</option>
+                                                <option value="Ecobank">Ecobank</option>
+                                                <option value="Surety">Surety</option>
+                                            </select>
+                                            </li>
+                                            <li class="list-group-item border-0">Comment <input class="ms-1 form-control commentInput" id="comment" name="comment"></li>
+                                        </ul>
+                                        <div class="card-footer">
+                                            <button class="payBtn btn btn-outline-primary" data-id="${data.id}" data-patientid="${data.patientId}">Pay</button>
+                                        </div>
+                                    </div>
+                                </div>
+                    ` : ''}
                    `
                    return (noChild)
                 }

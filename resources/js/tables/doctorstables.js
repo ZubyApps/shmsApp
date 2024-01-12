@@ -328,9 +328,13 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
         language: {
             emptyTable: 'No lab investigation requested'
         },
+        rowCallback: (row, data) => {
+            row.classList.add('fw-semibold')
+        return row
+        },
         columns: [
             {data: "type"},
-            {data: row => `<span class="text-primary fw-semibold">${row.resource}</span>`},
+            {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) }</span>`},
             {data: "dr"},
             {data: "requested"},
             {
@@ -437,7 +441,7 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
         },
         columns: [
             {data: row => `<i role="button" class="text-primary fs-5 bi bi-prescription2"></i>`},
-            {data: row => `<span class="text-primary">${row.resource + ' ' + displayPaystatus(row, (row.credit == 'Credit')) }</span>`},
+            {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) }</span>`},
             {data: "prescription"},
             {data: "qtyBilled"},
             {data: "prescribedBy"},

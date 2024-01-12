@@ -20,7 +20,7 @@
                 <div class="my-2 form-control">
                     <span class="fw-bold text-primary"> Inpatient's Investigations </span>
                     <div class="row m-1">
-                        <table id="inpatientInvestigationsTable" class="table table-hover align-middle table-sm bg-primary">
+                        <table id="inpatientInvestigationsTable" class="table table-sm">
                             <thead>
                                 <tr>
                                     <th>Requested</th>
@@ -40,11 +40,6 @@
         </div>
 
         <div class="text-start mb-4">
-            {{-- <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas"
-                data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
-                <i class="bi bi-list-check"></i>
-                Waiting List
-            </button> --}}
             <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas"
                 data-bs-target="#offcanvasInvestigations" aria-controls="offcanvasInvestigations">
                 <i class="bi bi-list-check"></i>
@@ -70,7 +65,7 @@
                 <div class="tab-pane fade show active" id="nav-outPatients" role="tabpanel"
                     aria-labelledby="nav-outPatients-tab" tabindex="0">
                     <div class="py-4">
-                        <table id="outPatientsVisitTable" class="table table-hover align-middle table-sm">
+                        <table id="outPatientsVisitTable" class="table table-hover table-sm">
                             <thead>
                                 <tr>
                                     <th>Seen</th>

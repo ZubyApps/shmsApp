@@ -55,6 +55,7 @@
                         </div>
                         <div id="treatmentDiv">
                         </div>
+                        <x-bill-summary></x-bill-summary>
                     </div>
                 </div>
                 <div class="modal-footer px-5">

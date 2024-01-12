@@ -120,11 +120,21 @@ class Visit extends Model
          return $totalBill;
     }
 
+    public function totalNhisBills()
+    {
+        $totalNhisBill = 0;
+         foreach($this->prescriptions as $prescription){
+            $totalNhisBill += $prescription->approved ? ($prescription->hms_bill/10) : $prescription->hms_bill;
+         }
+
+         return $totalNhisBill;
+    }
+
     public function totalApprovedBills()
     {
         $totalApprovedBill = 0;
          foreach($this->prescriptions as $prescription){
-            $totalApprovedBill += $prescription->approved ? $prescription->hms_bill : 0;
+            $totalApprovedBill += $prescription->approved || $prescription->paid >= $prescription->hms_bill ? $prescription->hms_bill : 0;
          }
 
          return $totalApprovedBill;

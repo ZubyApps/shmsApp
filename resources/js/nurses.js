@@ -5,6 +5,7 @@ import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import { getWaitingTable, getPatientsVisitsByFilterTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable } from "./tables/nursesTables";
 import { getVitalSignsTableByVisit, getLabTableByConsultation } from "./tables/doctorstables";
+import { getbillingTableByVisit } from "./tables/billingTables";
 
 window.addEventListener('DOMContentLoaded', function () {
     const upcomingMedicationsCanvas = new Offcanvas(document.getElementById('upcomingMedicationsoffcanvas'))
@@ -141,6 +142,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             })
     
                             getVitalSignsTableByVisit('#vitalSignsTableNurses', visitId, reviewDetailsModal)
+                            getbillingTableByVisit('billingTable', visitId, reviewDetailsModal._element)
                             reviewDetailsModal.show()
     
                         }

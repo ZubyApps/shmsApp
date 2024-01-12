@@ -155,12 +155,12 @@ class BillingService
                 'discount'          => $visit->discount ?? '',
                 'discountBy'        => $visit->discountBy?->username ?? '',
                 'subTotal'          => $visit->totalBills() ?? 0,
-                'nhisSubTotal'      => ($visit->totalBills()/10) ?? 0,
-                'nhisNetTotal'      => ($visit->totalBills() - $visit->discount)/10  ?? 0,
+                'nhisSubTotal'      => ($visit->totalNhisBills()) ?? 0,
+                'nhisNetTotal'      => ($visit->totalNhisBills() - $visit->discount)  ?? 0,
                 'netTotal'          => $visit->totalBills() - $visit->discount,
                 'totalPaid'         => $visit->totalPayments() ?? 0,
                 'balance'           => $visit->totalBills() - $visit->discount - $visit->totalPayments() ?? 0,
-                'nhisBalance'       => (($visit->totalBills() - $visit->discount)/10) - $visit->totalPayments() ?? 0,
+                'nhisBalance'       => (($visit->totalNhisBills() - $visit->discount)) - $visit->totalPayments() ?? 0,
                 'prescriptions'     => $visit->prescriptions->map(fn(Prescription $prescription) => [
                     'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                     'prescribedBy'      => $prescription->user->username,
@@ -171,8 +171,10 @@ class BillingService
                     'bill'              => $prescription->hms_bill ?? '',
                     'approved'          => $prescription->approved,
                     'rejected'          => $prescription->rejected,
+                    'hmoNote'           => $prescription->hmo_note ?? '',
+                    'statusBy'          => $prescription->approvedBy?->username ?? $prescription->rejectedBy?->username ?? '',
                     'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
-                    'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
+                    'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
                 ]),
                 
             ];

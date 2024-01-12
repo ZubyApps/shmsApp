@@ -25,6 +25,6 @@ Class PayPercentageService
 
     public function nhis(Visit $visit): int|float|null
     {
-        return $visit->totalBills() ? round((float)($visit->totalPayments() / (($visit->totalBills() - $visit->discount)/10)) * 100) : null;
+        return $visit->totalBills() ? round((float)($visit->totalPayments() / ($visit->totalNhisBills() - $visit->discount)) * 100) : null;
     }
 }

@@ -127,7 +127,7 @@ const getNurseTreatmentByConsultation = (tableId, conId, modal) => {
             return row
         },
         columns: [
-            {data: row =>  `<span class="text-primary">${row.resource + ' ' + displayPaystatus(row, (row.credit == 'Credit'))}</span>`},
+            {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) }</span>`},
             {data: "prescription"},
             {data: "qtyBilled"},
             {data: "prescribedBy"},

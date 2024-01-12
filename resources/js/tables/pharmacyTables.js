@@ -63,6 +63,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
     function format(data, tableId) {
         // `d` is the original data object for the row
         const credit = data.sponsorCategoryClass == 'Credit'
+        const NHIS = data.sponsorCategory == 'NHIS'
         const prescriptions = data.prescriptions
         let count = 1
                 if (prescriptions.length > 0) {
@@ -89,7 +90,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-secondary">${count++}</td>
                                                 <td class="text-secondary">${p.prescribed}</td>                
                                                 <td class="text-secondary">${p.prescribedBy}</td>                
-                                                <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold">${p.item +' '+ displayPaystatus(p, credit)}</td>                
+                                                <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold">${p.item +' '+ displayPaystatus(p, credit, NHIS)}</td>                
                                                 <td class="text-secondary">${p.prescription}</td>                
                                                 <td class="text-secondary">${p.note}</td>
                                                 ${credit ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>` : ''}
@@ -126,8 +127,9 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                             child += `</tbody>
                                     <tfoot>
                                         <tr>
-                                            <td>     </td>
+                                            <td></td>
                                             <td class="text-secondary fw-bold">Total: ${totalBill}</td>
+                                            <td></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>

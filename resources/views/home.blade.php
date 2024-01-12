@@ -16,7 +16,7 @@
                         <br>
                         <a href="/investigations" class="btn btn-outline-primary mx-1"><i class="bi bi-eyedropper" aria-hidden="true"> Investigations</i></a>
                         <a href="/pharmacy" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-capsule"> Pharmacy</i></a>
-                        <a href="/hmodesk" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-calendar2-plus-fill"> HMO</i></a>
+                        <a href="/hmo" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-calendar2-plus-fill"> HMO</i></a>
                         <br>
                         <a href="/billing" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-receipt"> Billing</i></a>
                         <a href="/resources" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-minecart-loaded"> Resources</i></a>

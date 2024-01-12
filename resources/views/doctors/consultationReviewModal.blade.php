@@ -72,6 +72,7 @@
                         </div>
                         <div id="consultationReviewDiv" data-bs-spy="scroll" tabindex="0" data-bs-smooth-scroll="true">
                         </div>
+                        <x-bill-summary></x-bill-summary>
                     </div>
                 </div>
                 <div class="modal-footer pe-4">    
