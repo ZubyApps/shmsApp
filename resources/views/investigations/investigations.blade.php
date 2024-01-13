@@ -5,6 +5,7 @@
 
 @include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isLab' => true, 'isHmo' => false, 'id' => 'treatmentDetailsModal'])
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
+@include('investigations.addResultModal', ['title' => 'Update Result', 'isUpdate' => true, 'id' => 'updateResultModal'])
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
 
 

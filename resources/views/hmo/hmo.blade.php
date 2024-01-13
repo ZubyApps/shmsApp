@@ -42,7 +42,7 @@
         <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="hmoApprovalListOffcanvas"
             aria-labelledby="hmoApprovalListOffcanvasLabel">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title text-primary" id="hmoApprovalListOffcanvasLabel">Private HMOs Approval List</h5>
+                <h5 class="offcanvas-title text-primary" id="hmoApprovalListOffcanvasLabel">PHIS Approval List</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas2-body">
@@ -111,7 +111,7 @@
             <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="hmoApprovalListBtn"
                 data-bs-target="#hmoApprovalListOffcanvas" aria-controls="hmoApprovalListOffcanvas">
                 <i class="bi bi-list-check"></i>
-                HMO Approval List
+                PHIS Approval List
             </button>
             <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="nhisApprovalListBtn"
                 data-bs-target="#nhisApprovalListOffcanvas" aria-controls="nhisApprovalListOffcanvas">

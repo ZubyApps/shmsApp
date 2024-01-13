@@ -41,6 +41,7 @@
                                                 <th>Weight</th>
                                                 <th>Height</th>
                                                 <th>BMI</th>
+                                                <th>Note</th>
                                                 <th>By</th>
                                                 <th></th>
                                             </tr>
@@ -50,7 +51,7 @@
                                 </div>
                                 <div class="row">
                                     <div id="addVitalsignsDiv" {!! $isSpecialist ? 'data-div="specialist"' : 'data-div="new"' !!}>
-                                        @include('vitalsigns.vitalsigns', [ 'sf' => $isSpecialist ? 'Specialist' : 'New', ])
+                                        @include('vitalsigns.vitalsigns', [ 'sf' => $isSpecialist ? 'Specialist' : 'New' ])
                                         <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                     </div>
                                     <div class="d-flex justify-content-center">
@@ -140,56 +141,7 @@
                                     </div>
                                     <x-toast-successful  id="saveConsultationToast"></x-toast-successful>
                                 </div>
-                                <div class="d-none investigationAndManagementDiv" id="investigationAndManagementDiv{{ $isSpecialist ? 'Specialist' : 'New' }}" {!! $isSpecialist ? 'data-div="specialist"' : 'data-div="new"' !!}>
-                                    <div class="mb-2 form-control">
-                                        <x-form-span>Investigation & Management</x-form-span>
-                                        <div class="row">
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="resourceLabel">Medical Resource<x-required-span /></x-input-span>
-                                                <input class="form-control resource" type="search" name="resource" id="resource" {!! $isSpecialist ? 'data-input="specialist"' : 'data-input="new"' !!} placeholder="search" list="resourceList{{ $isSpecialist ? 'specialist' : 'new' }}"/>
-                                                <datalist name="resource" type="text" class="decoration-none resourceList" id="resourceList{{ $isSpecialist ? 'specialist' : 'new' }}"></datalist>
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-6 pres" id="pres">
-                                                <x-input-span id="prescriptionLabel">Prescription<x-required-span /></x-input-span>
-                                                <x-form-input type="text" name="prescription" id="prescription"
-                                                    placeholder="eg: 5mg BD x5" />
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-6 qty" id="qty">
-                                                <x-input-span id="quantityLabel">Quantity<x-required-span /></x-input-span>
-                                                <x-form-input type="number" name="quantity" id="quantity"
-                                                    placeholder="" value=""/>
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="noteLabel">Note</x-input-span>
-                                                <x-form-input type="text" name="note" id="note"/>
-                                            </x-form-div>
-                                        </div>
-                                        <div class="d-flex justify-content-center">
-                                            <button type="button" id="addInvestigationAndManagementBtn"
-                                            {!! $isSpecialist ? 'data-btn="specialist"' : 'data-btn="new"' !!} class="btn btn-primary">
-                                                add
-                                                <i class="bi bi-prescription"></i>
-                                            </button>
-                                        </div>
-                                        <x-toast-successful  id="saveInvestigationAndManagementToast"></x-toast-successful>
-                                    </div>
-                                    <div class="mb-2 form-control">
-                                        <table id="prescriptionTable{{ $isSpecialist ? 'specialist' : 'new' }}" class="table table-hover align-middle table-sm prescriptionTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Prescribed</th>
-                                                    <th>Resource</th>
-                                                    <th>Prescription</th>
-                                                    <th>Qty</th>
-                                                    <th>Note</th>
-                                                    <th>By</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody></tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                                @include('extras.investigationAndManagementDiv', ['type' => $isSpecialist ? 'Specialist' : 'New'])
                             </div>
                         </div>
                     </div>
@@ -201,6 +153,6 @@
                     </button>
                 </div>
             </div>
-        </div>
+        </div
     </div>
 </div>

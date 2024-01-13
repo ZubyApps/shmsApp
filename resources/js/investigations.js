@@ -1,7 +1,7 @@
 import { Offcanvas, Modal } from "bootstrap";
 import $ from 'jquery';
 import http from "./http";
-import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, loadingSpinners, clearValidationErrors} from "./helpers"
+import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, loadingSpinners, clearValidationErrors, openModals} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getPatientsVisitsByFilterTable, getInpatientsInvestigationsTable } from "./tables/investigationTables";
 import { getLabTableByConsultation } from "./tables/doctorstables";
@@ -9,13 +9,16 @@ import { getLabTableByConsultation } from "./tables/doctorstables";
 window.addEventListener('DOMContentLoaded', function () {
     const reviewDetailsModal        = new Modal(document.getElementById('treatmentDetailsModal'))
     const addResultModal            = new Modal(document.getElementById('addResultModal'))
+    const updateResultModal         = new Modal(document.getElementById('updateResultModal'))
     const investigationsModal       = new Modal(document.getElementById('investigationsModal'))
     const investigationsList        = new Offcanvas(document.getElementById('offcanvasInvestigations'))
 
     const treatmentDiv              = document.querySelector('#treatmentDiv')
-    const resultDiv                 = addResultModal._element.querySelector('#resultDiv')
+    const addResultDiv              = addResultModal._element.querySelector('#resultDiv')
+    const updateResultDiv           = updateResultModal._element.querySelector('#resultDiv')
 
-    const saveResultBtn             = addResultModal._element.querySelector('#saveResultBtn')
+    const createResultBtn           = addResultModal._element.querySelector('#createResultBtn')
+    const saveResultBtn             = updateResultModal._element.querySelector('#saveResultBtn')
 
     const outPatientsTab            = document.querySelector('#nav-outPatients-tab')
     const inPatientsTab             = document.querySelector('#nav-inPatients-tab')
@@ -83,7 +86,9 @@ window.addEventListener('DOMContentLoaded', function () {
                             openLabModals(reviewDetailsModal, treatmentDiv, patientBio)
     
                             addResultModal._element.querySelector('#patient').value = patientBio.patientId
+                            updateResultModal._element.querySelector('#patient').value = patientBio.patientId
                             addResultModal._element.querySelector('#sponsorName').value = patientBio.sponsorName
+                            updateResultModal._element.querySelector('#sponsorName').value = patientBio.sponsorName
     
                             
                             consultations.forEach(line => {
@@ -151,6 +156,7 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#treatmentDiv').addEventListener('click', function (event) {
         const collapseBtn  = event.target.closest('.collapseBtn')
         const addResultBtn = event.target.closest('#addResultBtn')
+        const updateResultBtn = event.target.closest('#updateResultBtn')
         const deleteResultBtn = event.target.closest('.deleteResultBtn')
         const viewer = 'lab'
 
@@ -172,11 +178,26 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
         if (addResultBtn) {
-            saveResultBtn.setAttribute('data-id', addResultBtn.getAttribute('data-id'))
-            saveResultBtn.setAttribute('data-table', addResultBtn.getAttribute('data-table'))
+            createResultBtn.setAttribute('data-id', addResultBtn.getAttribute('data-id'))
+            createResultBtn.setAttribute('data-table', addResultBtn.getAttribute('data-table'))
             addResultModal._element.querySelector('#diagnosis').value = addResultBtn.getAttribute('data-diagnosis')
             addResultModal._element.querySelector('#investigation').value = addResultBtn.getAttribute('data-investigation')
             addResultModal.show()
+        }
+
+        if (updateResultBtn) {
+            const prescriptionId = updateResultBtn.getAttribute('data-id')
+            updateResultModal._element.querySelector('#diagnosis').value = updateResultBtn.getAttribute('data-diagnosis')
+            updateResultModal._element.querySelector('#investigation').value = updateResultBtn.getAttribute('data-investigation')
+            http.get(`/investigations/${prescriptionId}`)
+            .then((response) => {
+                if (response.status >= 200 || response.status <= 300) {
+                    openModals(updateResultModal, saveResultBtn, response.data.data)
+                }
+            })
+            .catch((error) => {
+                alert(error)
+            })
         }
 
         if (deleteResultBtn){
@@ -184,7 +205,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const prescriptionTableId = deleteResultBtn.getAttribute('data-table')
             if (confirm('Are you sure you want to delete this result?')) {
                 const prescriptionId = deleteResultBtn.getAttribute('data-id')
-                http.patch(`/prescription/remove/${prescriptionId}`)
+                http.patch(`/investigations/remove/${prescriptionId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                             
@@ -202,26 +223,53 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    createResultBtn.addEventListener('click', function () {
+        const prescriptionId = createResultBtn.getAttribute('data-id')
+        const investigationTableId = createResultBtn.getAttribute('data-table')
+        createResultBtn.setAttribute('disabled', 'disabled')
+
+        let data = { ...getDivData(addResultDiv), prescriptionId }
+
+        http.patch(`/investigations/${prescriptionId}`, { ...data }, { "html": addResultDiv })
+            .then((response) => {
+                if (response.status >= 200 || response.status <= 300) {
+
+                    clearDivValues(addResultDiv)
+                    clearValidationErrors(addResultDiv)
+
+                    if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
+                        $('#' + investigationTableId).dataTable().fnDraw()
+                    }
+                }
+                createResultBtn.removeAttribute('disabled')
+                addResultModal.hide()
+            })
+            .catch((error) => {
+                console.log(error)
+                createResultBtn.removeAttribute('disabled')
+            })
+    })
+
     saveResultBtn.addEventListener('click', function () {
         const prescriptionId = saveResultBtn.getAttribute('data-id')
         const investigationTableId = saveResultBtn.getAttribute('data-table')
         saveResultBtn.setAttribute('disabled', 'disabled')
 
-        let data = { ...getDivData(resultDiv), prescriptionId }
+        let data = { ...getDivData(updateResultDiv), prescriptionId }
 
-        http.patch(`/prescription/${prescriptionId}`, { ...data }, { "html": resultDiv })
+        http.patch(`/investigations/${prescriptionId}`, { ...data }, { "html": updateResultDiv })
             .then((response) => {
                 if (response.status >= 200 || response.status <= 300) {
 
-                    clearDivValues(resultDiv)
-                    clearValidationErrors(resultDiv)
+                    clearDivValues(updateResultDiv)
+                    clearValidationErrors(updateResultDiv)
 
                     if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
                         $('#' + investigationTableId).dataTable().fnDraw()
                     }
                 }
                 saveResultBtn.removeAttribute('disabled')
-                addResultModal.hide()
+                updateResultModal.hide()
             })
             .catch((error) => {
                 console.log(error)

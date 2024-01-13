@@ -78,24 +78,6 @@ class PrescriptionController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 
-    public function saveLabResult(SaveLabResultRequest $request, Prescription $prescription)
-    {
-        return $this->prescriptionService->updateLabResultRecord($request, $prescription, $request->user());
-    }
-
-    public function removeLabResult(Prescription $prescription)
-    {
-        return $this->prescriptionService->removeLabResultRecord($prescription);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Prescription $prescription)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      */

@@ -30,15 +30,6 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveGivenMedicationBtn    = giveMedicationModal._element.querySelector('.saveGivenMedicationBtn')
     const [outPatientsTab, inPatientsTab, ancPatientsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab')]
 
-    // document.querySelectorAll('#height, #weight').forEach(elInput => {
-    //     elInput.addEventListener('input',  function (e){
-    //         const div = elInput.parentElement.parentElement.parentElement
-    //         if (elInput.dataset.id == div.id){
-    //             div.querySelector('#bmi').value = (div.querySelector('#weight').value.split('k')[0]/div.querySelector('#height').value.split('m')[0]**2).toFixed(2)
-    //         }
-    //     })
-    // })
-
     bmiCalculator(document.querySelectorAll('#height, #weight'))
 
     const blinkTable = document.querySelector('.thisRow')

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SaveLabResultRequest;
+use App\Http\Resources\InvestigationResultResource;
+use App\Models\Prescription;
 use App\Services\DatatablesService;
 use App\Services\InvestigationService;
 use Illuminate\Http\Request;
@@ -42,5 +45,20 @@ class InvestigationController extends Controller
         $loadTransformer = $this->investigationService->getLabTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
+    }
+
+    public function saveLabResult(SaveLabResultRequest $request, Prescription $prescription)
+    {
+        return $this->investigationService->updateLabResultRecord($request, $prescription, $request->user());
+    }
+
+    public function removeLabResult(Prescription $prescription)
+    {
+        return $this->investigationService->removeLabResultRecord($prescription);
+    }
+
+    public function edit(Prescription $prescription)
+    {
+        return new InvestigationResultResource($prescription);
     }
 }

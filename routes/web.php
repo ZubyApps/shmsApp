@@ -50,7 +50,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    // Route::get('/pharmacy', [PharmacyController::class, 'index'])->name('Pharmacy');
     Route::get('/billing', [BillingController::class, 'index'])->name('Billing');
     Route::get('/admin', [AdminController::class, 'index'])->name('Admin');
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('Settings');
@@ -183,8 +182,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/treatment', [PrescriptionController::class, 'loadTreatmentTable']);
         Route::get('/list', [PrescriptionController::class, 'list']);
         Route::delete('/{prescription}', [PrescriptionController::class, 'destroy']);
-        Route::patch('/remove/{prescription}', [PrescriptionController::class, 'removeLabResult']);
-        Route::patch('/{prescription}', [PrescriptionController::class, 'saveLabResult']);
     })->name('Prescription');
 
     Route::prefix('medicationchart')->group(function (){
@@ -204,6 +201,9 @@ Route::middleware('auth')->group(function () {
         Route::get('', [InvestigationController::class, 'index'])->name('Investigations');
         Route::get('/load/consulted', [InvestigationController::class, 'loadVisitsByFilterLab']);
         Route::get('/load/inpatients', [InvestigationController::class, 'loadInpatientsLabTable']);
+        Route::get('/{prescription}', [InvestigationController::class, 'edit']);
+        Route::patch('/remove/{prescription}', [InvestigationController::class, 'removeLabResult']);
+        Route::patch('/{prescription}', [InvestigationController::class, 'saveLabResult']);
     });
 
     Route::prefix('hmo')->group(function () {

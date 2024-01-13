@@ -266,6 +266,7 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
                 </div>
                 `      
             },
+            {data: "note"},
         ]
     });
 
@@ -298,7 +299,7 @@ const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
                 sortable: false,
                 data: row =>  `
                 <div class="d-flex flex-">
-                    <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
+                    <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}" data-conid="${conId}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>
                 </div>
@@ -340,7 +341,7 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
             {
                 sortable: false,
                 data: row =>  `
-                        <div class="dropdown ${viewer == 'nurse' || viewer == 'hmo' || visitId ? 'd-none' : ''}">
+                        <div class="dropdown ${viewer == 'nurse' || viewer == 'hmo' ? 'd-none' : ''}">
                             <i class="btn btn-outline-primary bi bi-gear" role="button" data-bs-toggle="dropdown"></i>
 
                             <ul class="dropdown-menu">
@@ -349,14 +350,19 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                                         <i class="bi bi-plus-square"></i> Add Result
                                     </a>
                                 </li>
+                                <li  class="${!row.sent ? 'd-none' : ''}">
+                                    <a class="btn btn-outline-primary dropdown-item updateResultBtn" id="updateResultBtn" data-investigation="${row.resource}" data-table="${tableId}" title="update result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
+                                        <i class="bi bi-pencil-fill"></i> Update Result
+                                    </a>
+                                </li>
                                 <li>
-                                    <a class="btn dropdown-item edit-result-btn" data-investigation="${row.resource}" data-table="${tableId}" title="edit result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
+                                    <a class="btn dropdown-item upload-result-btn" data-investigation="${row.resource}" data-table="${tableId}" title="edit result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-upload"></i> Upload Doc
                                     </a>
                                 </li>
                                 <li>
                                     <a class="btn dropdown-item deleteResultBtn" data-table="${tableId}" title="delete" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
-                                        <i class="bi bi-trash3-fill"></i> Delete
+                                        <i class="bi bi-trash3-fill"></i> Delete Result
                                     </a>
                                 </li>
                             </ul>
@@ -494,15 +500,7 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
                         </table>`
                     return (child);
                 } else {
-                   let noChild = `
-                   <table class="table align-middle table-sm">
-                        <tr>
-                            <td align="center" colspan="8" class="text-secondary">
-                                This treatment/medication has not been charted
-                            </td>
-                        </tr>
-                    </table>
-                   `
+                   let noChild = ``
                    return (noChild)
                 }
             }

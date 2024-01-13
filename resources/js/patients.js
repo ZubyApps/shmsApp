@@ -118,7 +118,7 @@ window.addEventListener('DOMContentLoaded', function(){
                 http.delete(`/sponsors/${sponsorId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
-                            sponsorTable.draw()
+                            sponsorsTable.draw()
                         }
                         deleteBtn.removeAttribute('disabled')
                     })

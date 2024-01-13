@@ -42,7 +42,7 @@ return new class extends Migration
             $table->dateTime('result_date')->nullable();
             $table->foreignIdFor(User::class, 'result_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->string('paid')->nullable();
-            $table->string('prescription_status')->nullable();
+            $table->boolean('discontinued')->default(false);
             $table->foreignIdFor(Resource::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Consultation::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();

@@ -110,6 +110,11 @@ class Visit extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function deliveryNotes()
+    {
+        return $this->hasMany(DeliveryNote::class);
+    }
+
     public function totalBills()
     {
         $totalBill = 0;

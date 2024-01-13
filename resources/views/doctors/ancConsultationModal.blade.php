@@ -41,6 +41,7 @@
                                                 <th>Weight</th>
                                                 <th>Height</th>
                                                 <th>BMI</th>
+                                                <th>Note</th>
                                                 <th>By</th>
                                                 <th></th>
                                             </tr>

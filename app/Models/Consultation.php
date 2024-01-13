@@ -30,4 +30,9 @@ class Consultation extends Model
     {
         return $this->hasMany(Prescription::class);
     }
+
+    public function deliveryNotes()
+    {
+        return $this->hasMany(DeliveryNote::class);
+    }
 }

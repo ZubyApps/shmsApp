@@ -28,7 +28,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                                     <i class="bi bi-pencil-square"></i>
                                 </button>` : ''}
                                 ${length == iteration && viewer == 'nurse' ? `
-                                <button type="button" id="deliveryBtn" class="btn btn-outline-primary">
+                                <button type="button" id="newDeliveryNoteBtn" class="btn btn-outline-primary">
                                     Delivery Note
                                     <i class="bi bi-pencil-square"></i>
                                 </button>` : ''}

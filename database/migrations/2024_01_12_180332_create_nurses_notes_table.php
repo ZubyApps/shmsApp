@@ -13,17 +13,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vital_signs', function (Blueprint $table) {
+        Schema::create('nurses_notes', function (Blueprint $table) {
             $table->id();
-            $table->string('temperature')->nullable();
-            $table->string('blood_pressure')->nullable();
-            $table->string('respiratory_rate')->nullable();
-            $table->string('spO2')->nullable();
-            $table->string('pulse_rate')->nullable();
-            $table->string('weight')->nullable();
-            $table->string('height')->nullable();
-            $table->string('bmi')->nullable();
-            $table->string('note')->nullable();
+            $table->text('note');
             $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();
@@ -35,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vital_signs');
+        Schema::dropIfExists('nurses_notes');
     }
 };

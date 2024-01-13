@@ -7,9 +7,11 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Consultation;
 use App\Models\Prescription;
+use App\Models\User;
 use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 class InvestigationService
 {
@@ -148,6 +150,32 @@ class InvestigationService
                 'resource'          => $prescription->resource->name,
             ];
          };
+    }
+
+    public function updateLabResultRecord(Request $data, Prescription $prescription, User $user): Prescription
+    {
+       $prescription->update([
+           'test_sample'    => $data->sample,
+           'result'         => $data->result,
+           'result_date'    => Carbon::now(),
+           'result_by'      => $user->id,
+
+        ]);
+
+        return $prescription;
+    }
+
+    public function removeLabResultRecord(Prescription $prescription): Prescription
+    {
+       $prescription->update([
+        'test_sample'    => null,
+        'result'         => null,
+        'result_date'    => null,
+        'result_by'      => null,
+
+        ]);
+
+        return  $prescription;
     }
 
 }

@@ -120,6 +120,10 @@ class PrescriptionService
                 'resource'          => $prescription->resource->name,
                 'sponsorCategory'   => $prescription->visit->sponsor->sponsorCategory->name,
                 'payClass'          => $prescription->visit->sponsor->sponsorCategory->pay_class,
+                'approved'          => $prescription->approved,
+                'rejected'          => $prescription->rejected,
+                'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
+                'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
                 'diagnosis'         => $prescription->consultation->icd11_diagnosis,
                 'dr'                => $prescription->user->username,
                 'result'            => $prescription->result,
@@ -165,7 +169,7 @@ class PrescriptionService
                 'approved'              => $prescription->approved,
                 'rejected'              => $prescription->rejected,
                 'paid'                  => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
-                'paidNhis'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
+                'paidNhis'              => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
                 'chart'                 => $prescription->medicationCharts->map(fn(MedicationChart $medicationChart)=> [
                     'id'                => $medicationChart->id ?? '',
                     'chartedAt'         => (new Carbon($medicationChart->created_at))->format('D/m/y g:ia') ?? '',
@@ -183,31 +187,5 @@ class PrescriptionService
                 ]),
             ];
          };
-    }
-
-    public function updateLabResultRecord(Request $data, Prescription $prescription, User $user): Prescription
-    {
-       $prescription->update([
-           'test_sample'    => $data->sample,
-           'result'         => $data->result,
-           'result_date'    => Carbon::now(),
-           'result_by'      => $user->id,
-
-        ]);
-
-        return $prescription;
-    }
-
-    public function removeLabResultRecord(Prescription $prescription): Prescription
-    {
-       $prescription->update([
-        'test_sample'    => null,
-        'result'         => null,
-        'result_date'    => null,
-        'result_by'      => null,
-
-        ]);
-
-        return  $prescription;
     }
 }

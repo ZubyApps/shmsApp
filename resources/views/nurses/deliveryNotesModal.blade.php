@@ -18,27 +18,27 @@
                             <x-form-input type="datetime-local" name="timeOfAdmission" />
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Date of Delivery</x-input-span>
+                            <x-input-span>Date of Delivery<x-required-span /></x-input-span>
                             <x-form-input type="datetime-local" name="timeOfDelivery" />
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Apgar Score</x-input-span>
+                            <x-input-span>Apgar Score<x-required-span /></x-input-span>
                             <x-form-input name="apgarScore" />
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Weight</x-input-span>
-                            <x-form-input name="weight" />
+                            <x-input-span>Birth Weight<x-required-span /></x-input-span>
+                            <x-form-input name="birthWeight" />
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Mode of Delivery</x-input-span>
+                            <x-input-span>Mode of Delivery<x-required-span /></x-input-span>
                             <x-form-input name="modeOfDelivery" />
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Lenght of Parity</x-input-span>
+                            <x-input-span>Lenght of Parity<x-required-span /></x-input-span>
                             <x-form-input name="lengthOfParity" />
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Head Circumference</x-input-span>
+                            <x-input-span>Head Circumference<x-required-span /></x-input-span>
                             <x-form-input name="headCircumference" />
                         </x-form-div>
                         <x-form-div>
@@ -46,7 +46,7 @@
                             <x-form-input name="sex" />
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>EBL</x-input-span>
+                            <x-input-span>EBL<x-required-span /></x-input-span>
                             <x-form-input name="ebl" />
                         </x-form-div>
                     </div>

@@ -363,7 +363,7 @@ const updateInvestigationAndManagement = (length, iteration, line) => {
     return ` 
                 <div class="investigationAndManagmentDiv mt-2 active" data-div="${iteration}" data-goto=#gotoResource${iteration}>
                     <div class="d-flex justify-content-center">
-                        <button type="button" id="updateResourceListBtn" data-conid="${line.id}" data-visitid="${line.visitId}" data-btn="${iteration}" class="btn btn-primary">
+                        <button type="button" id="updateResourceListBtn" data-conid="${line.id}" data-visitid="${line.visitId}" data-btn="${iteration}" data-last="${length > iteration ? iteration : 'last'}" class="btn btn-primary">
                             Update Resources
                             <i class="bi bi-prescription"></i>
                         </button>
@@ -399,13 +399,13 @@ const updateInvestigationAndManagement = (length, iteration, line) => {
                                 <div class="col-xl-4 themed-grid-col col-xl-6" id="pres">
                                     <div class="input-group mb-1">
                                         <span class="input-group-text" id="prescriptionLabel">Prescription</span> 
-                                        <input class="form-control" type="text" name="prescription" id="prescription" placeholder="eg: 5mg BD x5" autocomplete="">
+                                        <input class="form-control" type="text" name="prescription" id="prescription" placeholder="eg: 5mg BD x5/7" autocomplete="">
                                     </div>
                                 </div>
                                 <div class="col-xl-4 themed-grid-col col-xl-6" id="qty">
                                     <div class="input-group mb-1">
                                         <span class="input-group-text" id="quantityLabel"> Quantity</span> 
-                                        <input class="form-control" type="number" name="quantity" id="quantity" placeholder="" autocomplete="">
+                                        <input class="form-control" type="number" name="quantity" id="quantity" value="1" autocomplete="">
                                     </div>
                                 </div>
                                 <div class="col-xl-4 themed-grid-col col-xl-6">

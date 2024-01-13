@@ -213,7 +213,7 @@ class HmoService
     public function getPaginatedAllPrescriptionsRequest(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
-        $orderDir   =  'desc';
+        $orderDir   =  'asc';
 
             if (! empty($params->searchTerm)) {
                 return $this->prescription
