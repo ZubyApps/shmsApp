@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('head_circumference');
             $table->string('sex');
             $table->string('ebl');
-            $table->text('ebl');
+            $table->text('note');
             $table->foreignIdFor(Consultation::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
