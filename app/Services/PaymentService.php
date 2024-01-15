@@ -72,19 +72,25 @@ Class PaymentService
 
     public function destroyPayment(Payment $payment)
     {
-        $deleted = $payment->destroy($payment->id);
+        return DB::transaction(function () use($payment) {
+            $deleted = $payment->destroy($payment->id);
 
-        $totalPayments = $payment->visit->totalPayments();
+            $totalPayments = $payment->visit->totalPayments();
 
-        $prescriptions = $payment->visit->prescriptions;
+            $payment->visit->update([
+                'total_paid' => $totalPayments
+            ]);
 
-        if ($payment->visit->sponsor->sponsorCategory->name == 'NHIS'){
-            $this->prescriptionsPaymentSeiveNhis($totalPayments, $prescriptions);
-        } else {
-            $this->prescriptionsPaymentSeive($totalPayments, $prescriptions);
-        }
+            $prescriptions = $payment->visit->prescriptions;
 
-        return $deleted;
+            if ($payment->visit->sponsor->sponsorCategory->name == 'NHIS'){
+                $this->prescriptionsPaymentSeiveNhis($totalPayments, $prescriptions);
+            } else {
+                $this->prescriptionsPaymentSeive($totalPayments, $prescriptions);
+            }
+
+            return $deleted;
+        });
     
     }
 }

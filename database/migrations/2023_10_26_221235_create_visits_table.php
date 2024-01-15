@@ -27,8 +27,8 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'closed_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->string('discount')->nullable();
             $table->foreignIdFor(User::class, 'discount_by')->nullable()->constrained('users')->restrictOnDelete();
-            $table->string('total_bill')->nullable();
-            $table->string('total_paid')->nullable();
+            $table->string('total_bill')->default(0);
+            $table->string('total_paid')->default(0);
             $table->foreignIdFor(User::class, 'doctor_done_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'nurse_done_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'pharmacy_done_by')->nullable()->constrained('users')->restrictOnDelete();

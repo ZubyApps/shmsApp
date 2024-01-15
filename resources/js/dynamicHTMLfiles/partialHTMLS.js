@@ -249,13 +249,13 @@ const deliveryNote = (delivery) => {
                         <div class="col-xl-4 themed-grid-col">
                             <div class="input-group mb-1">
                                 <span class="input-group-text">Date</span>
-                                <input class="form-control" name="date" value="${delivery.date ?? ''}" readonly>
+                                <input class="form-control" name="date" value="${delivery.date}" readonly>
                             </div>
                         </div>
                         <div class="col-xl-4 themed-grid-col">
                             <div class="input-group mb-1">
                                 <span class="input-group-text">Time of Admission</span>
-                                <input class="form-control" name="timeOfAdmission" value="${delivery.timeOfAdmission ?? ' '}" readonly>
+                                <input class="form-control" name="timeOfAdmission" value="${delivery.timeOfAdmission}" readonly>
                             </div>
                         </div>
                         <div class="col-xl-4 themed-grid-col">
@@ -368,66 +368,6 @@ const updateInvestigationAndManagement = (length, iteration, line) => {
                             <i class="bi bi-prescription"></i>
                         </button>
                     </div>
-                    <div class="my-2 form-control resourceDiv d-none" id="gotoResource${iteration}">
-                        <span class="fw-semibold">Resource Items</span>
-                        <div class="mb-2 form-control active">
-                            <table id="prescriptionTable${line.id}" data-id="${line.id}" class="table table-hover align-middle table-sm prescriptionTable">
-                                <thead>
-                                    <tr>
-                                        <th>Added</th>
-                                        <th>Resource</th>
-                                        <th>Prescription</th>
-                                        <th>Qty</th>
-                                        <th>Note</th>
-                                        <th>By</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                        ${length > iteration ? '': `
-                        <div class="my-2">
-                            <div class="row">
-                                <div class="col-xl-4 themed-grid-col col-xl-6">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="resourceLabel">Medical Resource</span> 
-                                        <input class="form-control resource" type="search" name="resource" id="resource" data-input="${iteration}" placeholder="search" autocomplete="" list="resourceList${iteration}">
-                                        <datalist name="resource" class="datalistEl"  type="text" id="resourceList${iteration}"></datalist>
-                                    </div>
-                                </div>
-                                <div class="col-xl-4 themed-grid-col col-xl-6" id="pres">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="prescriptionLabel">Prescription</span> 
-                                        <input class="form-control" type="text" name="prescription" id="prescription" placeholder="eg: 5mg BD x5/7" autocomplete="">
-                                    </div>
-                                </div>
-                                <div class="col-xl-4 themed-grid-col col-xl-6" id="qty">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="quantityLabel"> Quantity</span> 
-                                        <input class="form-control" type="number" name="quantity" id="quantity" value="1" autocomplete="">
-                                    </div>
-                                </div>
-                                <div class="col-xl-4 themed-grid-col col-xl-6">
-                                    <div class="input-group mb-1">
-                                        <span class="input-group-text" id="notesLabel">Note</span> 
-                                        <input class="form-control" name="note" id="notes" placeholder="" autocomplete="">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-center">
-                                <button type="button" id="addInvestigationAndManagmentBtn" data-conid="${line.id}" data-visitid="${line.visitId}" data-btn="${iteration}" class="btn btn-primary">
-                                    add
-                                <i class="bi bi-prescription"></i>
-                                </button>
-                            </div>
-                            <div class="toast align-items-center shadow-none border-0" id="saveUpdateInvestigationAndManagementToast" role="alert" aria-live="assertive" aria-atomic="true">
-                                <div class="toast-body">
-                                    <h6 class="text-primary">Successful</h6>
-                                </div>  
-                            </div>
-                        </div>`}
-                    </div>
                 </div>`
 }
 
@@ -443,6 +383,30 @@ const investigations = (line) => {
                                     <th>Investigation</th>
                                     <th>Requested By</th>
                                     <th>Requested</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+        `
+}
+
+const deliveryNotes = (line) => {
+            return `
+                <div class="my-2 form-control">
+                    <span class="fw-bold text-primary"> Delivery Note </span>
+                    <div class="row overflow-auto m-1">
+                        <table id="deliveryNoteTable${line.id}" data-id="${line.id}" class="table table-sm deliveryNoteTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time of Admission</th>
+                                    <th>Time of Delivery</th>
+                                    <th>Mode of Delivery</th>
+                                    <th>EBL</th>
+                                    <th>Nurse</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -831,7 +795,7 @@ const updateAdmissionStatus = (line, iteration) => {
     </div>`
 }
 
-export {surgeryNote, deliveryNote, vitalsignsTable, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses, updateAdmissionStatus}
+export {surgeryNote, deliveryNotes, vitalsignsTable, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses, updateAdmissionStatus}
 
 {/* <td><span class="position-relative"><a href="/transactions/11/receipts/15" target="blank" title="ABAGI Ernest_Nguevese.pdf"> *
                                     <i class="bi bi-file-earmark-text download-receipt text-primary fs-4"></i></a></span></td> */}

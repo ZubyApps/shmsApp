@@ -6,6 +6,7 @@
 @include('hmo.treatmentDetailsModal', ['title' => 'Treatment Details', 'isUpdate' => false, 'id' => 'treatmentDetailsModal'])
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
 @include('billing.billingModal', ['title' => 'Billing Details', 'isUpdate' => false, 'id' => 'billingModal'])
+@include('billing.outstandingBillsModal', ['title' => "Patient's Outstanding Bills", 'isUpdate' => false, 'id' => 'outstandingBillsModal'])
 
     <div class="container p-1 mt-5 bg-white">
 
@@ -102,10 +103,8 @@
                                     <th>Seen</th>
                                     <th>Patient</th>
                                     <th>Doctor</th>
-                                    <th>Diagnosis</th>
+                                    <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
-                                    {{-- <th>Rx count</th>
-                                    <th>Vitals</th> --}}
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -124,10 +123,8 @@
                                     <th>Seen</th>
                                     <th>Patient</th>
                                     <th>Doctor</th>
-                                    <th>Diagnosis</th>
+                                    <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
-                                    {{-- <th>Rx count</th>
-                                    <th>Vitals</th> --}}
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -146,10 +143,8 @@
                                     <th>Seen</th>
                                     <th>Patient</th>
                                     <th>Doctor</th>
-                                    <th>Diagnosis</th>
+                                    <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
-                                    {{-- <th>Rx count</th>
-                                    <th>Vitals</th> --}}
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>

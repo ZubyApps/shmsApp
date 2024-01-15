@@ -44,11 +44,12 @@ const getWaitingTable = (tableId) => {
     });
 }
 
-const getPatientsVisitsByFilterTable = (tableId, filter) => {
+const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) => {
     return new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  {url: '/billing/load/consulted', data: {
-            'filterBy': filter
+        ajax:  {url: `/billing/load/${urlSuffix}`, data: {
+            'filterBy': filter,
+            'patientId': patientId
         }},
         orderMulti: true,
         search:true,
@@ -115,6 +116,13 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
             {
                 sortable: false,
                 data: "diagnosis"
+            },
+            {
+                sortable: false,
+                data: row => () => {
+                    const outstanding = row.sponsorCategory === 'NHIS' ? row.outstandingNhisBalance : row.outstandingBalance
+                    return `<span class="btn fw-bold text-${outstanding > 0 ? 'danger' : outstanding === 0 ? 'primary' : 'success'} outstandingsBtn" data-patientid="${row.patientId}">Outstanding: ${outstanding}</span>`
+                }
             },
         ]
     });
@@ -196,7 +204,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                                 `
                                                 <div class="">
                                                     <button class="discountBtn btn btn-outline-secondary m-0" data-id="${data.id}">Discount</button>
-                                                    <input class="ms-1 form-control discountInput d-none" id="discountInput" type="number" value="${data.discount}">
+                                                    <input class="ms-1 form-control discountInput d-none" id="discountInput" type="number" style="width:6rem;" value="${data.discount}">
                                                 </div>
                                                 ` : ''}
                                             </td>

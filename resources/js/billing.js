@@ -2,25 +2,26 @@ import { Offcanvas, Modal, Toast } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
 import { consultationDetails, items } from "./data"
-import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, clearValidationErrors} from "./helpers"
+import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, clearValidationErrors, resetFocusEndofLine} from "./helpers"
 import { InitialRegularConsultation, review } from "./dynamicHTMLfiles/treamentsInvestigations";
 import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit } from "./tables/billingTables";
 
 
 window.addEventListener('DOMContentLoaded', function () {
-    const waitingListCanvas     = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
-    const billingModal          = new Modal(document.getElementById('billingModal'))
+    const waitingListCanvas         = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
+    const billingModal              = new Modal(document.getElementById('billingModal'))
+    const outstandingBillsModal     = new Modal(document.getElementById('outstandingBillsModal'))
 
-    const waitingBtn            = document.querySelector('#waitingBtn')
+    const waitingBtn                = document.querySelector('#waitingBtn')
 
-    const outPatientsTab        = document.querySelector('#nav-outPatients-tab')
-    const inPatientsTab         = document.querySelector('#nav-inPatients-tab')
-    const ancPatientsTab        = document.querySelector('#nav-ancPatients-tab')
+    const outPatientsTab            = document.querySelector('#nav-outPatients-tab')
+    const inPatientsTab             = document.querySelector('#nav-inPatients-tab')
+    const ancPatientsTab            = document.querySelector('#nav-ancPatients-tab')
 
 
     let inPatientsVisitTable, ancPatientsVisitTable
 
-    const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient')
+    const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient', 'consulted')
     const waitingTable = getWaitingTable('waitingTable')
 
     outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw()})
@@ -29,7 +30,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#inPatientsVisitTable' )){
             $('#inPatientsVisitTable').dataTable().fnDraw()
         } else {
-            inPatientsVisitTable = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient')
+            inPatientsVisitTable = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient', 'consulted')
         }
     })
 
@@ -37,7 +38,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#ancPatientsVisitTable' )){
             $('#ancPatientsVisitTable').dataTable().fnDraw()
         } else {
-            ancPatientsVisitTable = getPatientsVisitsByFilterTable('ancPatientsVisitTable', 'ANC')
+            ancPatientsVisitTable = getPatientsVisitsByFilterTable('ancPatientsVisitTable', 'ANC', 'consulted')
         }
     })
 
@@ -68,7 +69,7 @@ window.addEventListener('DOMContentLoaded', function () {
     
     })
 
-    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable').forEach(table => {
+    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #outstandingBillsTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const billingDetailsBtn = event.target.closest('.billingDetailsBtn')
             
@@ -76,6 +77,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const visitId = billingDetailsBtn.getAttribute('data-id') 
                 getbillingTableByVisit('billingTable', visitId, billingModal._element, true)
                 getPaymentTableByVisit('paymentTable', visitId, billingModal._element)
+                outstandingBillsModal.hide()
                 billingModal.show()
             }
         })
@@ -84,7 +86,8 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#billingTable').addEventListener('click',  function (event) {
             const payBtn = event.target.closest('.payBtn')
             const paymentDetailsDiv = document.querySelector('.paymentDetailsDiv')
-            const discountBtn = event.target.closest('.discountBtn')
+            const discountBtn       = event.target.closest('.discountBtn')
+            const outstandingsBtn    = event.target.closest('.outstandingsBtn')
 
             if (payBtn) {
                 console.log(payBtn)
@@ -121,7 +124,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const discountInput      = discountBtn.parentElement.querySelector('.discountInput')
                 discountBtn.classList.add('d-none')
                 discountInput.classList.remove('d-none')
-                discountInput.focus()
+                resetFocusEndofLine(discountInput)
                 
                 discountInput.addEventListener('blur', function () {
                     if (discountInput.value){
@@ -146,6 +149,13 @@ window.addEventListener('DOMContentLoaded', function () {
                     }
                                     
                 })
+            }
+
+            if (outstandingsBtn){
+                const patientId = outstandingsBtn.dataset.patientid
+                getPatientsVisitsByFilterTable('outstandingBillsTable', '', 'outstandings', patientId)
+                outstandingBillsModal.show()
+                billingModal.hide()
             }
     })
 
@@ -180,6 +190,15 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     billingModal._element.addEventListener('hide.bs.modal', function () {
+        outPatientsVisitTable.draw()
+        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+    })
+
+    outstandingBillsModal._element.addEventListener('hide.bs.modal', function () {
+        if ($.fn.DataTable.isDataTable('#outstandingBillsTable')){
+            $('#outstandingBillsTable').dataTable().fnDestroy()
+            }
         outPatientsVisitTable.draw()
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''

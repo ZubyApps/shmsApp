@@ -302,5 +302,43 @@ const getUpcomingMedicationsTable = (tableId, bsComponent, type) => {
     return allMedicationChartTable
 }
 
+const getDeliveryNoteTable = (tableId, conId) => {
+    return new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:   {url: '/deliverynote/load/details', data: {
+            'conId': conId,
+        }},
+        orderMulti: true,
+        searching:false,
+        lengthChange: false,
+        language: {
+            emptyTable: 'No delivery'
+        },
+        columns: [
+            {data: "date"},
+            {data: "timeAdmitted"},
+            {data: "timeDelivered"},
+            {data: "modeOfDelivery"},
+            {data: "ebl"},
+            {data: "nurse"},
+            {data: row => function () {
+                return `
+                <div class="d-flex flex-">
+                    <button class=" btn btn-outline-primary viewDeliveryNoteBtn tooltip-test" title="See more" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-zoom-in"></i>
+                    </button>
+                    <button class="ms-1 btn btn-outline-primary updateDeliveryNoteBtn tooltip-test" title="edit" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+            `
+                }
+            },
+        ]
+    });
+}
 
-export {getWaitingTable, getPatientsVisitsByFilterTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable}
+export {getWaitingTable, getPatientsVisitsByFilterTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable, getDeliveryNoteTable}

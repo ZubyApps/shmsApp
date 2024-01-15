@@ -1,4 +1,4 @@
-import { deliveryNote, surgeryNote, updateAdmissionStatus, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses} from "./partialHTMLS"
+import { deliveryNotes, surgeryNote, updateAdmissionStatus, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses} from "./partialHTMLS"
 
 const regularReviewDetails = (iteration, numberConverter, count, length, line, viewer) => {
 
@@ -27,8 +27,8 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                                     Surgery 
                                     <i class="bi bi-pencil-square"></i>
                                 </button>` : ''}
-                                ${length == iteration && viewer == 'nurse' ? `
-                                <button type="button" id="newDeliveryNoteBtn" class="btn btn-outline-primary">
+                                ${length == iteration && (viewer == 'nurse') ? `
+                                <button type="button" id="newDeliveryNoteBtn" class="btn btn-outline-primary ${line.deliveryNotes ? 'd-none' : ''}" data-id="${line.id}" data-visitid="${line.visitId}">
                                     Delivery Note
                                     <i class="bi bi-pencil-square"></i>
                                 </button>` : ''}
@@ -45,14 +45,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                                     <span class="fw-semibold fs-5 mb-2"> Surgery Details </span>
                                     ${line.surgery === undefined ? '<div class="mb-2">No record</div>' : surgeryNote(line.surgery)}
                                 </div>` : ''}
-                                ${viewer == 'nurse' ? `
-                                <div class="mb-2">
-                                    <div class="my-2 form-control">
-                                        <span class="fw-bold text-primary"> Delivery Note </span>
-                                        ${line.deliveryNote === undefined ? '<div class="mb-2">No record</div>' : deliveryNote(line.deliveryNote)
-                                        }
-                                    </div>
-                                </div>` : ''}
+                                ${viewer == 'nurse' || !viewer ? deliveryNotes(line): ''}
                                 ${length == iteration && viewer == '' ? 
                                 `<div class="d-flex justify-content-end my-2">
                                     <button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" class="btn btn-outline-primary">

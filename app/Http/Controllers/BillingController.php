@@ -50,7 +50,7 @@ class BillingController extends Controller
 
         $visits = $this->billingService->getpaginatedFilteredBillingVisits($params, $request);
        
-        $loadTransformer = $this->billingService->getConsultedVisitsBillingTransformer();
+        $loadTransformer = $this->billingService->getVisitsBillingTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
@@ -85,5 +85,16 @@ class BillingController extends Controller
     public function destroy(Payment $payment)
     {
         return $this->billingService->processPaymentDestroy($payment);
+    }
+
+    public function loadVisitsWithOutstandingBills(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->billingService->getVisitsWithOutstandingBills($params, $request);
+       
+        $loadTransformer = $this->billingService->getVisitsBillingTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 }

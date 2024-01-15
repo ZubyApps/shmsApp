@@ -12,11 +12,11 @@
                             <div class="row">
                                 <x-form-div class="col-xl-6">
                                     <x-input-span>Patient</x-input-span>
-                                    <x-form-input name="patient" value="" id="patient"/>
+                                    <x-form-input name="patient" value="" id="patient" readonly/>
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
                                     <x-input-span>Sponsor</x-input-span>
-                                    <x-form-input name="sponsor" value="" id="sponsor"/>
+                                    <x-form-input name="sponsor" value="" id="sponsor" readonly/>
                                 </x-form-div>
                             </div>
                         </div>
@@ -35,6 +35,7 @@
                                             <th>Weight</th>
                                             <th>Height</th>
                                             <th>BMI</th>
+                                            <th>Note</th>
                                             <th>By</th>
                                             <th></th>
                                         </tr>

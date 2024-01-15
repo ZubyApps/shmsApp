@@ -16,16 +16,17 @@ return new class extends Migration
     {
         Schema::create('delivery_notes', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('date');
-            $table->dateTime('date_of_admission');
-            $table->dateTime('date_of_delivery');
-            $table->dateTime('apgar_score');
-            $table->dateTime('birth_weight');
-            $table->dateTime('mode_of_delivery');
-            $table->dateTime('length_of_parity');
-            $table->dateTime('head_circumference');
-            $table->dateTime('sex');
-            $table->dateTime('ebl');
+            $table->date('date');
+            $table->dateTime('time_of_admission');
+            $table->dateTime('time_of_delivery');
+            $table->string('apgar_score');
+            $table->string('birth_weight');
+            $table->string('mode_of_delivery');
+            $table->string('length_of_parity');
+            $table->string('head_circumference');
+            $table->string('sex');
+            $table->string('ebl');
+            $table->text('ebl');
             $table->foreignIdFor(Consultation::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();

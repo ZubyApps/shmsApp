@@ -11,43 +11,47 @@
                     <div class="row">
                         <x-form-div>
                             <x-input-span>Date<x-required-span /></x-input-span>
-                            <x-form-input type="date" name="date" value="" />
+                            <x-form-input type="date" name="date" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Date of Admission<x-required-span /></x-input-span>
-                            <x-form-input type="datetime-local" name="timeOfAdmission" />
+                            <x-input-span>Time of Admission<x-required-span /></x-input-span>
+                            <x-form-input type="datetime-local" name="timeOfAdmission" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Date of Delivery<x-required-span /></x-input-span>
-                            <x-form-input type="datetime-local" name="timeOfDelivery" />
+                            <x-input-span>Time of Delivery<x-required-span /></x-input-span>
+                            <x-form-input type="datetime-local" name="timeOfDelivery" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Apgar Score<x-required-span /></x-input-span>
-                            <x-form-input name="apgarScore" />
+                            <x-form-input name="apgarScore" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Birth Weight<x-required-span /></x-input-span>
-                            <x-form-input name="birthWeight" />
+                            <x-form-input name="birthWeight" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Mode of Delivery<x-required-span /></x-input-span>
-                            <x-form-input name="modeOfDelivery" />
+                            <x-form-input name="modeOfDelivery" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Lenght of Parity<x-required-span /></x-input-span>
-                            <x-form-input name="lengthOfParity" />
+                            <x-form-input name="lengthOfParity" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Head Circumference<x-required-span /></x-input-span>
-                            <x-form-input name="headCircumference" />
+                            <x-form-input name="headCircumference" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Sex<x-required-span /></x-input-span>
-                            <x-form-input name="sex" />
+                            <x-form-input name="sex" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>EBL<x-required-span /></x-input-span>
-                            <x-form-input name="ebl" />
+                            <x-form-input name="ebl" :readonly="$isView"/>
+                        </x-form-div>
+                        <x-form-div>
+                            <x-input-span>Note<x-required-span /></x-input-span>
+                            <x-form-textarea name="note" :readonly="$isView"></x-form-textarea>
                         </x-form-div>
                     </div>
                 </div>
@@ -57,7 +61,7 @@
                     <i class="bi bi-x-circle me-1"></i>
                     Close
                 </button>
-                <button type="button" id="{{ $isUpdate ? 'saveBtn' : 'createBtn' }}" class="btn bg-primary text-white">
+                <button type="button" id="{{ $isUpdate ? 'saveBtn' : 'createBtn' }}" class="btn bg-primary text-white {{ $isView ? 'd-none' : '' }}">
                     <i class="bi bi-check-circle me-1"></i>
                     {{ $isUpdate ? 'Update' : 'Create' }}
                 </button>

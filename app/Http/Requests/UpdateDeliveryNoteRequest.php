@@ -23,8 +23,9 @@ class UpdateDeliveryNoteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'dateOfAdmission'   => ['date', 'required'],
-            'dateOfDelivery'    => ['date', 'required'],
+            'date'              => ['date'],
+            'timeOfAdmission'   => ['date', 'required'],
+            'timeOfDelivery'    => ['date', 'required'],
             'apgarScore'        => ['required'],
             'birthWeight'       => ['required'],
             'modeOfDelivery'    => ['required'],
@@ -32,7 +33,6 @@ class UpdateDeliveryNoteRequest extends FormRequest
             'headCircumference' => ['required'],
             'sex'               => ['required'],
             'ebl'               => ['required'],
-            'conId'             => ['required', 'numeric', 'exists:'.Consultation::class.',id'],
         ];
     }
 }

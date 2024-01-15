@@ -308,7 +308,7 @@ const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
         ]
     });
 
-    modal.addEventListener('hidden.bs.modal', function () {
+    modal._element.addEventListener('hidden.bs.modal', function () {
         prescriptionTable.destroy()
     })
 

@@ -1,9 +1,9 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
-import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator } from "./helpers"
+import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals } from "./helpers"
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
-import { getWaitingTable, getPatientsVisitsByFilterTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable } from "./tables/nursesTables";
+import { getWaitingTable, getPatientsVisitsByFilterTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable, getDeliveryNoteTable } from "./tables/nursesTables";
 import { getVitalSignsTableByVisit, getLabTableByConsultation } from "./tables/doctorstables";
 import { getbillingTableByVisit } from "./tables/billingTables";
 
@@ -14,6 +14,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const reviewDetailsModal        = new Modal(document.getElementById('treatmentDetailsModal'))
     const newDeliveryNoteModal      = new Modal(document.getElementById('newDeliveryNoteModal'))
     const updateDeliveryNoteModal   = new Modal(document.getElementById('updateDeliveryNoteModal'))
+    const viewDeliveryNoteModal     = new Modal(document.getElementById('viewDeliveryNoteModal'))
     const chartMedicationModal      = new Modal(document.getElementById('chartMedicationModal'))
     const vitalsignsModal           = new Modal(document.getElementById('vitalsignsModal'))
     const giveMedicationModal       = new Modal(document.getElementById('giveMedicationModal'))
@@ -28,6 +29,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const addVitalsignsBtn          = document.querySelectorAll('#addVitalsignsBtn')
     const saveMedicationChartBtn    = chartMedicationModal._element.querySelector('#saveMedicationChartBtn')
     const saveGivenMedicationBtn    = giveMedicationModal._element.querySelector('.saveGivenMedicationBtn')
+    const createDeliveryNoteBtn     = newDeliveryNoteModal._element.querySelector('#createBtn')
+    const saveDeliveryNoteBtn       = updateDeliveryNoteModal._element.querySelector('#saveBtn')
     const [outPatientsTab, inPatientsTab, ancPatientsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab')]
 
     bmiCalculator(document.querySelectorAll('#height, #weight'))
@@ -298,7 +301,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const giveMedicationBtn = event.target.closest('#giveMedicationBtn')
         const chartMedicationBtn = event.target.closest('#chartMedicationBtn')
         const newDeliveryNoteBtn = event.target.closest('#newDeliveryNoteBtn')
-        const updateDeliveryNoteBtn = event.target.closest('#updateDeliveryNoteBtn')
+        const deliveryNoteBtn = event.target.closest('.updateDeliveryNoteBtn, .viewDeliveryNoteBtn')
         const saveWardAndBedBtn = event.target.closest('#saveWardAndBedBtn')
         const wardAndBedDiv = document.querySelectorAll('#wardAndBedDiv')
         const deleteGivenBtn = event.target.closest('#deleteGivenBtn')
@@ -316,12 +319,16 @@ window.addEventListener('DOMContentLoaded', function () {
             if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {
                 $('#' + treatmentTableId).dataTable().fnDestroy()
             }
+            if ($.fn.DataTable.isDataTable('#deliveryNoteTable'+conId)) {
+                $('#deliveryNoteTable'+conId).dataTable().fnDestroy()
+            }
 
             const goto = () => {
                 location.href = collapseBtn.getAttribute('data-goto')
                 window.history.replaceState({}, document.title, "/" + "nurses")
                 getLabTableByConsultation(investigationTableId, reviewDetailsModal._element, viewer, conId, null)
                 getNurseTreatmentByConsultation(treatmentTableId, conId, reviewDetailsModal._element)
+                getDeliveryNoteTable('deliveryNoteTable'+conId, conId)
             }
             setTimeout(goto, 300)
         }
@@ -380,11 +387,26 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
         if (newDeliveryNoteBtn) {
+            createDeliveryNoteBtn.setAttribute('data-conid', newDeliveryNoteBtn.dataset.id)
+            createDeliveryNoteBtn.setAttribute('data-visitid', newDeliveryNoteBtn.dataset.visitid)
             newDeliveryNoteModal.show()
         }
 
-        if (updateDeliveryNoteBtn) {
-            updateDeliveryNoteModal.show()
+        if (deliveryNoteBtn) {
+            const isUpdate = deliveryNoteBtn.id == 'updateDeliveryNoteBtn'
+            const [btn, modalBtn, modal ] = isUpdate ? [deliveryNoteBtn, saveDeliveryNoteBtn, updateDeliveryNoteModal] : [deliveryNoteBtn, saveDeliveryNoteBtn, viewDeliveryNoteModal]
+            btn.setAttribute('disabled', 'disabled')
+            saveDeliveryNoteBtn.setAttribute('data-table', btn.dataset.table)
+            http.get(`/deliverynote/${btn.getAttribute('data-id')}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openModals(modal, modalBtn, response.data.data)
+                    }
+                })
+                .catch((error) => {
+                    alert(error)
+                })
+            setTimeout(()=>{btn.removeAttribute('disabled')}, 2000)
         }
 
         if (saveWardAndBedBtn) {
@@ -471,6 +493,50 @@ window.addEventListener('DOMContentLoaded', function () {
                 console.log(error)
                 saveGivenMedicationBtn.removeAttribute('disabled')
             })
+    })
+
+    createDeliveryNoteBtn.addEventListener('click', function () {
+        createDeliveryNoteBtn.setAttribute('disabled', 'disabled')
+        const conId = createDeliveryNoteBtn.dataset.conid
+        const visitId = createDeliveryNoteBtn.dataset.visitid
+
+        let data = { ...getDivData(newDeliveryNoteModal._element), conId, visitId }
+        http.post('/deliverynote', {...data}, {"html": newDeliveryNoteModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                newDeliveryNoteModal.hide()
+                clearDivValues(newDeliveryNoteModal._element)
+                if ($.fn.DataTable.isDataTable('#deliveryNoteTable' + conId)) {
+                    $('#deliveryNoteTable' + conId).dataTable().fnDraw()
+                }
+            }
+            createDeliveryNoteBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            createDeliveryNoteBtn.removeAttribute('disabled')
+            alert(error)
+        })
+    })
+
+    saveDeliveryNoteBtn.addEventListener('click', function () {
+        saveDeliveryNoteBtn.setAttribute('disabled', 'disabled')
+        const id        = saveDeliveryNoteBtn.dataset.id
+        const tableId   = '#'+saveDeliveryNoteBtn.dataset.table
+
+        http.patch(`/deliverynote/${id}`, getDivData(updateDeliveryNoteModal._element), {"html": updateDeliveryNoteModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                updateDeliveryNoteModal.hide()
+                if ($.fn.DataTable.isDataTable(tableId)) {
+                    $(tableId).dataTable().fnDraw()
+                }
+            }
+            saveDeliveryNoteBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            saveDeliveryNoteBtn.removeAttribute('disabled')
+            alert(error)
+        })
     })
 })
 

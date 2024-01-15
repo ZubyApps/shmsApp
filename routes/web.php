@@ -5,6 +5,7 @@ use App\Http\Controllers\AddResourceStockController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ConsultationController;
+use App\Http\Controllers\DeliveryNoteController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HmoController;
 use App\Http\Controllers\InvestigationController;
@@ -237,6 +238,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/pay', [BillingController::class, 'store']);
         Route::patch('/discount/{visit}', [BillingController::class, 'saveDiscount']);
         Route::delete('/payment/delete/{payment}', [BillingController::class, 'destroy']);
+        Route::get('/load/outstandings', [BillingController::class, 'loadVisitsWithOutstandingBills']);
+    });
+
+    Route::prefix('deliverynote')->group(function () {
+        Route::post('', [DeliveryNoteController::class, 'store']);
+        Route::get('load/details', [DeliveryNoteController::class, 'loadDeliveryNoteTable']);
+        Route::get('/{deliveryNote}', [DeliveryNoteController::class, 'edit']);
+        Route::patch('/{deliveryNote}', [DeliveryNoteController::class, 'update']);
+        Route::delete('', [DeliveryNoteController::class, 'destroy']);
     });
 });
 

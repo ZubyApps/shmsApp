@@ -11,6 +11,7 @@ import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 import { getbillingTableByVisit } from "./tables/billingTables"
+import { getDeliveryNoteTable } from "./tables/nursesTables"
 
 window.addEventListener('DOMContentLoaded', function () {
     const waitingListOffcanvas              = new Offcanvas(document.getElementById('waitingListOffcanvas1'))
@@ -179,8 +180,6 @@ window.addEventListener('DOMContentLoaded', function () {
                         })
                         getbillingTableByVisit('billingTable', visitId, consultationReviewModal._element)
                         
-                        consultationReviewDiv.querySelector('.resource').setAttribute('data-sponsorcat', consultationReviewBtn.getAttribute('data-sponsorcat'))
-
                         consultationReviewModal.show()
                     }
                     consultationReviewBtn.removeAttribute('disabled')
@@ -490,6 +489,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 if ($.fn.DataTable.isDataTable( addBtn.dataset?.treatmenttable )){
                     $(addBtn.dataset?.treatmenttable).dataTable().fnDraw()
                 }
+                if ($.fn.DataTable.isDataTable( '#billingTable' )){
+                    $('#billingTable').dataTable().fnDraw()
+                }
                 div.querySelector('#quantity').value = 1
                 addBtn.removeAttribute('disabled')
             })
@@ -563,6 +565,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 window.history.replaceState({}, document.title, "/" + "doctors" )
                 getLabTableByConsultation(investigationTableId, consultationReviewModal._element, '', conId, '')
                 getTreatmentTableByConsultation(treatmentTableId, conId, consultationReviewModal._element)
+                getDeliveryNoteTable('deliveryNoteTable'+conId, conId)
             }
             setTimeout(goto, 300)
         }
@@ -579,7 +582,7 @@ window.addEventListener('DOMContentLoaded', function () {
             btn.setAttribute('data-last', updateResourceListBtn.dataset.last)
             btn.setAttribute('data-investigationtable', '#investigationTable'+conId)
             btn.setAttribute('data-treatmenttable', '#treatmentTable'+conId)
-            getPrescriptionTableByConsultation('prescriptionTableconReview', conId, investigationAndManagementModal._element)
+            getPrescriptionTableByConsultation('prescriptionTableconReview', conId, investigationAndManagementModal)
             investigationAndManagementModal.show()
             setTimeout(()=> {updateResourceListBtn.removeAttribute('disabled')}, 1000)
 
@@ -617,7 +620,7 @@ window.addEventListener('DOMContentLoaded', function () {
             modalBtn.setAttribute('data-table', btn.getAttribute('data-table'))
             modal._element.querySelector('#diagnosis').value = btn.getAttribute('data-diagnosis')
             modal._element.querySelector('#investigation').value = btn.getAttribute('data-investigation')
-            if (update){
+            if (update) {
                 http.get(`/investigations/${btn.getAttribute('data-id')}`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {

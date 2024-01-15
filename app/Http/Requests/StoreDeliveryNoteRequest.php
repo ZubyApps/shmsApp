@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Consultation;
+use App\Models\Visit;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreDeliveryNoteRequest extends FormRequest
@@ -23,8 +24,9 @@ class StoreDeliveryNoteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'dateOfAdmission'   => ['date', 'required'],
-            'dateOfDelivery'    => ['date', 'required'],
+            'date'              => ['date'],
+            'timeOfAdmission'   => ['date', 'required'],
+            'timeOfDelivery'    => ['date', 'required'],
             'apgarScore'        => ['required'],
             'birthWeight'       => ['required'],
             'modeOfDelivery'    => ['required'],
@@ -33,6 +35,7 @@ class StoreDeliveryNoteRequest extends FormRequest
             'sex'               => ['required'],
             'ebl'               => ['required'],
             'conId'             => ['required', 'numeric', 'exists:'.Consultation::class.',id'],
+            'visitId'           => ['required', 'numeric', 'exists:'.Visit::class.',id'],
         ];
     }
 }

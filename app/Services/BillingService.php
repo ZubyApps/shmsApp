@@ -13,6 +13,7 @@ use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BillingService
 {
@@ -53,7 +54,7 @@ class BillingService
         if ($data->filterBy == 'Outpatient'){
             return $this->visit
             ->where('consulted', '!=', null)
-            ->where('hmo_done_by', null)
+            ->where('billing_done_by', null)
             ->where('closed', null)
             ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
@@ -65,7 +66,7 @@ class BillingService
         if ($data->filterBy == 'Inpatient'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('hmo_done_by', null)
+                    ->where('billing_done_by', null)
                     ->where('closed', null)
                     ->where(function (Builder $query) {
                         $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
@@ -78,7 +79,7 @@ class BillingService
         if ($data->filterBy == 'ANC'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('hmo_done_by', null)
+                    ->where('billing_done_by', null)
                     ->where('closed', null)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
@@ -88,14 +89,14 @@ class BillingService
 
         return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('hmo_done_by', null)
+                    ->where('billing_done_by', null)
                     ->where('closed', null)
                     ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
-    public function getConsultedVisitsBillingTransformer(): callable
+    public function getVisitsBillingTransformer(): callable
     {
        return  function (Visit $visit) {
             return [
@@ -140,28 +141,30 @@ class BillingService
     {
        return  function (Visit $visit) {
             return [
-                'id'                => $visit->id,
-                'visitId'           => $visit->id,
-                'patientId'         => $visit->patient->id,
-                'patient'           => $visit->patient->patientId(),
-                'sponsor'           => $visit->sponsor->name,
-                'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
+                'id'                    => $visit->id,
+                'visitId'               => $visit->id,
+                'patientId'             => $visit->patient->id,
+                'patient'               => $visit->patient->patientId(),
+                'sponsor'               => $visit->sponsor->name,
+                'sponsorCategory'       => $visit->sponsor->sponsorCategory->name,
                 'sponsorCategoryClass'  => $visit->sponsor->sponsorCategory->pay_class,
-                'doctor'            => $visit->doctor->username,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
-                'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
-                'discount'          => $visit->discount ?? '',
-                'discountBy'        => $visit->discountBy?->username ?? '',
-                'subTotal'          => $visit->totalBills() ?? 0,
-                'nhisSubTotal'      => ($visit->totalNhisBills()) ?? 0,
-                'nhisNetTotal'      => ($visit->totalNhisBills() - $visit->discount)  ?? 0,
-                'netTotal'          => $visit->totalBills() - $visit->discount,
-                'totalPaid'         => $visit->totalPayments() ?? 0,
-                'balance'           => $visit->totalBills() - $visit->discount - $visit->totalPayments() ?? 0,
-                'nhisBalance'       => (($visit->totalNhisBills() - $visit->discount)) - $visit->totalPayments() ?? 0,
-                'prescriptions'     => $visit->prescriptions->map(fn(Prescription $prescription) => [
+                'doctor'                => $visit->doctor->username,
+                'diagnosis'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
+                                           Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
+                                           Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
+                'came'                  => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
+                'discount'              => $visit->discount ?? '',
+                'discountBy'            => $visit->discountBy?->username ?? '',
+                'subTotal'              => $visit->totalBills() ?? 0,
+                'nhisSubTotal'          => ($visit->totalNhisBills()) ?? 0,
+                'nhisNetTotal'          => ($visit->totalNhisBills() - $visit->discount)  ?? 0,
+                'netTotal'              => $visit->totalBills() - $visit->discount,
+                'totalPaid'             => $visit->totalPayments() ?? 0,
+                'balance'               => $visit->totalBills() - $visit->discount - $visit->totalPayments() ?? 0,
+                'nhisBalance'           => $visit->sponsor->sponsorCategory->name == 'NHIS' ? (($visit->totalNhisBills() - $visit->discount)) - $visit->totalPayments() ?? 0 : 'N/A',
+                'outstandingBalance'    => $visit->patient->allBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
+                'outstandingNhisBalance'=> $visit->patient->allNhisBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
+                'prescriptions'         => $visit->prescriptions->map(fn(Prescription $prescription) => [
                     'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                     'prescribedBy'      => $prescription->user->username,
                     'description'       => $prescription->resource->unit_description,
@@ -218,6 +221,7 @@ class BillingService
     public function saveDiscount(Request $request, Visit $visit, User $user): Visit
     {
         $visit->update([
+            'total_bill'    => $visit->discount ? ($visit->total_bill + $visit->discount) - $request->discount : $visit->total_bill - $request->discount,
             'discount'      => $request->discount,
             'discount_by'   => $user->id
         ]);
@@ -227,12 +231,26 @@ class BillingService
 
     public function processPaymentDestroy(Payment $payment)
     {
-        // $prescriptions = $this->payment->visit->prescriptions;
-        // foreach($prescriptions as $prescription){
-        //     $prescription->update([
-        //         'paid' => null
-        //     ]);
-        // }
         return $this->paymentService->destroyPayment($payment);
+    }
+
+    public function getVisitsWithOutstandingBills(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+
+        if (! empty($params->searchTerm)) {
+            return $this->visit
+                        ->where('id', $data->patientId)
+                        ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return $this->visit
+                    ->where('patient_id', $data->patientId)
+                    ->whereColumn('total_bill', '!=', 'total_paid')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 }
