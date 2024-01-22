@@ -254,9 +254,9 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 })
 
-function openPharmacyModals(modal, button, { id, visitId, ...data }) {
+function openPharmacyModals(modal, button, { id, visitId, ancRegId, ...data }) {
     for (let name in data) {
-
+        
         const nameInput = modal._element.querySelector(`[name="${name}"]`)
 
         nameInput.value = data[name]

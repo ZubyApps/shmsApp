@@ -62,7 +62,7 @@ function getOrdinal(n) {
 
     fields.forEach(select => {
         select.hasAttribute('name') ?
-            data[select.name] = select.value : ''
+            data[select.name] = select.hasAttribute('multiple') ? $('#'+ select.id).val().toString(): select.value : ''
     })
 
     return data
@@ -211,6 +211,16 @@ function getWeeksModulus(today, lmp) {
     return Math.round(Math.abs(today.getTime() - lmp.getTime())/daysCoverter);
 }
 
+function getPatientSponsorDatalistOptionId(modal, inputEl, datalistEl) {  
+    const selectedOption = datalistEl.options.namedItem(inputEl.value)
+    
+        if (selectedOption) {
+            return selectedOption.getAttribute('data-id')
+        } else {
+            return ""
+        }
+    }
+
 function loadingSpinners() {
     return `<div class="ms-1 spinner-grow spinner-grow-sm text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
@@ -224,7 +234,7 @@ function loadingSpinners() {
 const detailsBtn = (row) => {
     return `
             <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }">Details</button>
+                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }" data-ancregid="${row.ancRegId}">Details</button>
             </div>
             `      
 }
@@ -232,7 +242,7 @@ const detailsBtn = (row) => {
 const reviewBtn = (row) => {
     return `
             <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patientType="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}">Review</button>
+                <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patientType="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}">Review</button>
             </div>
             `      
 }
@@ -259,6 +269,22 @@ const displayPaystatus = (row, credit, NHIS) => {
     } else {
         return  row.paid ? '<i class="bi bi-p-circle-fill tooltip-test text-primary" title="paid"></i>' : ''
     }
+}
+
+const admissionStatus = (row) => {
+    return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
+    `<div class="d-flex flex-">
+        <button class="btn fw-bold text-primary tooltip-test dischargedBtn" title="Inpatient" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}">
+        <i class="bi bi-hospital-fill"></i>
+        ${row.dicharged ? '<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-primary" title="discharged"></i>' : ''}
+        </button>
+    </div>` :
+    `<div class="d-flex flex-">
+        <button class="btn fw-bold tooltip-test dischargedBtn" title="Outpatient" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}">
+        <i class="bi bi-hospital"></i>
+        ${row.discharged ? '<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-primary" title="discharged"></i>' : ''}
+        </button>
+    </div>`
 }
 
 const bmiCalculator = (elements) => {
@@ -321,4 +347,4 @@ const resetFocusEndofLine = (element) => {
     }, 1)
 }
     
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine}    
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus}    

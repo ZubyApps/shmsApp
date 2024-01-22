@@ -26,6 +26,7 @@ class DeliveryNoteResource extends JsonResource
             'headCircumference' => $this->head_circumference,
             'sex'               => $this->sex,
             'ebl'               => $this->ebl,
+            'note'              => $this->note,
         ];
     }
 }

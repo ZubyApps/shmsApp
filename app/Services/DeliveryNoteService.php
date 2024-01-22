@@ -30,6 +30,7 @@ Class DeliveryNoteService
             'head_circumference'    => $data->headCircumference,
             'sex'                   => $data->sex,
             'ebl'                   => $data->ebl,
+            'note'                  => $data->note,
             'consultation_id'       => $data->conId,
             'visit_id'              => $data->visitId
         ]);
@@ -50,6 +51,7 @@ Class DeliveryNoteService
             'head_circumference'    => $data->headCircumference,
             'sex'                   => $data->sex,
             'ebl'                   => $data->ebl,
+            'note'                  => $data->note,
             'user_id'               => $user->id
         ]);
 
@@ -86,6 +88,7 @@ Class DeliveryNoteService
                 'timeDelivered'     => (new Carbon($deliveryNote->time_of_delivery))->format('d/m/y g:ia'),
                 'modeOfDelivery'    => $deliveryNote->mode_of_delivery,
                 'ebl'               => $deliveryNote->ebl,
+                'note'              => $deliveryNote->note,
                 'nurse'             => $deliveryNote->user->username
             ];
          };

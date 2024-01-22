@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { detailsBtn, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, detailsBtn, sponsorAndPayPercent } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     return new DataTable('#'+tableId, {
@@ -58,7 +58,10 @@ const getVerificationTable = (tableId) => {
             {data: "patient"},
             {data: "sex"},
             {data: "age"},
-            {data: "sponsor"},
+            {data: row => 
+                        `
+                    <button class="btn changeSponsorBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-phone="${ row.phone }"         data-sponsor="${ row.sponsor }" data-staffid="${ row.staffId }">${row.sponsor}</button>`
+            },
             {data: "30dayCount"},
             {data: "doctor"},
             {data: row => 
@@ -100,15 +103,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                             </button>
                         </div>`                
             },
-            {data: row => () => {
-                return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
-                `<div class="d-flex flex- justify-content-center">
-                <span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>
-                </div>` :
-                `<div class="d-flex flex- justify-content-center">
-                <span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>
-                </div>`
-            } },
+            {data: row => admissionStatus(row)},
             {
                 sortable: false,
                 data: row => `

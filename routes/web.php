@@ -3,6 +3,8 @@
 use App\Http\Controllers\AddResourceController;
 use App\Http\Controllers\AddResourceStockController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AncVitalSignsController;
+use App\Http\Controllers\AntenatalRegisterationController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DeliveryNoteController;
@@ -86,6 +88,7 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('visits')->group(function () {
         Route::post('', [VisitController::class, 'storeVisit']);
+        Route::patch('changesponsor/{visit}', [VisitController::class, 'changeSponsor']);
         Route::get('/load/waiting', [VisitController::class, 'loadWaitingTable']);
         Route::get('/load/consulted/', [VisitController::class, 'loadAllVisits']);
         Route::get('/load/consulted/inpatients', [VisitController::class, 'loadInpatientsVisits']);      
@@ -115,8 +118,8 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('vitalsigns')->group(function () {
         Route::post('', [VitalSignsController::class, 'store']);
-        Route::get('/load/visit_vitalsigns', [VitalSignsController::class, 'loadVitalSignsTableByVisit']);
-        Route::get('/load/visit_vitalsigns_chart', [VitalSignsController::class, 'loadVitalSignsChartByVisit']);
+        Route::get('/load/table', [VitalSignsController::class, 'loadVitalSignsTableByVisit']);
+        Route::get('/load/chart', [VitalSignsController::class, 'loadVitalSignsChartByVisit']);
         Route::delete('/{vitalSigns}', [VitalSignsController::class, 'destroy']);
     });
 
@@ -202,6 +205,7 @@ Route::middleware('auth')->group(function () {
         Route::get('', [InvestigationController::class, 'index'])->name('Investigations');
         Route::get('/load/consulted', [InvestigationController::class, 'loadVisitsByFilterLab']);
         Route::get('/load/inpatients', [InvestigationController::class, 'loadInpatientsLabTable']);
+        Route::get('/load/outpatients', [InvestigationController::class, 'loadOutpatientsLabTable']);
         Route::get('/{prescription}', [InvestigationController::class, 'edit']);
         Route::patch('/remove/{prescription}', [InvestigationController::class, 'removeLabResult']);
         Route::patch('/{prescription}', [InvestigationController::class, 'saveLabResult']);
@@ -247,6 +251,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/{deliveryNote}', [DeliveryNoteController::class, 'edit']);
         Route::patch('/{deliveryNote}', [DeliveryNoteController::class, 'update']);
         Route::delete('', [DeliveryNoteController::class, 'destroy']);
+    });
+
+    Route::prefix('ancregisteration')->group(function () {
+        Route::post('', [AntenatalRegisterationController::class, 'store']);
+        Route::get('/{antenatalRegisteration}', [AntenatalRegisterationController::class, 'edit']);
+        Route::patch('/{antenatalRegisteration}', [AntenatalRegisterationController::class, 'update']);
+        Route::delete('/{antenatalRegisteration}', [AntenatalRegisterationController::class, 'destroy']);
+    });
+
+    Route::prefix('ancvitalsigns')->group(function () {
+        Route::post('', [AncVitalSignsController::class, 'store']);
+        Route::get('/load/table', [AncVitalSignsController::class, 'loadAncVitalSignsTableByVisit']);
+        Route::get('/load/chart', [AncVitalSignsController::class, 'loadAncVitalSignsChartByVisit']);
+        Route::delete('/{ancVitalSigns}', [AncVitalSignsController::class, 'destroy']);
     });
 });
 

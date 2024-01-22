@@ -5,24 +5,27 @@ import { consultationDetails, items } from "./data"
 import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, clearValidationErrors, resetFocusEndofLine} from "./helpers"
 import { InitialRegularConsultation, review } from "./dynamicHTMLfiles/treamentsInvestigations";
 import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit } from "./tables/billingTables";
+import { getOutpatientsInvestigationTable } from "./tables/investigationTables";
 
 
 window.addEventListener('DOMContentLoaded', function () {
-    const waitingListCanvas         = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
-    const billingModal              = new Modal(document.getElementById('billingModal'))
-    const outstandingBillsModal     = new Modal(document.getElementById('outstandingBillsModal'))
+    const waitingListCanvas             = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
+    const billingModal                  = new Modal(document.getElementById('billingModal'))
+    const outstandingBillsModal         = new Modal(document.getElementById('outstandingBillsModal'))
 
-    const waitingBtn                = document.querySelector('#waitingBtn')
+    const waitingBtn                    = document.querySelector('#waitingBtn')
+    const outpatientsInvestigationBtn   = document.querySelector('#outpatientsInvestigationBtn')
 
-    const outPatientsTab            = document.querySelector('#nav-outPatients-tab')
-    const inPatientsTab             = document.querySelector('#nav-inPatients-tab')
-    const ancPatientsTab            = document.querySelector('#nav-ancPatients-tab')
+    const outPatientsTab                = document.querySelector('#nav-outPatients-tab')
+    const inPatientsTab                 = document.querySelector('#nav-inPatients-tab')
+    const ancPatientsTab                = document.querySelector('#nav-ancPatients-tab')
 
 
     let inPatientsVisitTable, ancPatientsVisitTable
 
     const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient', 'consulted')
     const waitingTable = getWaitingTable('waitingTable')
+    const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable')
 
     outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw()})
 
@@ -44,6 +47,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
     waitingBtn.addEventListener('click', function () {
         waitingTable.draw()
+    })
+
+    outpatientsInvestigationBtn.addEventListener('click', function () {
+        outpatientInvestigationTable.draw()
     })
     
     document.querySelector('#waitingTable').addEventListener('click', function (event) {

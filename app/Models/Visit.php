@@ -115,6 +115,16 @@ class Visit extends Model
         return $this->hasMany(DeliveryNote::class);
     }
 
+    public function surgeryNotes()
+    {
+        return $this->hasMany(SurgeryNote::class);
+    }
+
+    public function ancVitalSigns() 
+    {
+        return $this->hasMany(AncVitalSigns::class);
+    }
+
     public function totalBills()
     {
         $totalBill = 0;

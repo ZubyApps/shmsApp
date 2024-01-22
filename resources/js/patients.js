@@ -1,6 +1,6 @@
 import { Modal } from "bootstrap"
 import { MaskInput } from "maska"
-import { getDivData, clearDivValues, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals } from "./helpers"
+import { getDivData, clearDivValues, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, getPatientSponsorDatalistOptionId } from "./helpers"
 import http from "./http"
 import jQuery, { error } from "jquery";
 import jszip from 'jszip';
@@ -369,17 +369,3 @@ function openPatientModal(modal, button, {id, sponsorId, sponsorCategoryId, ...d
     button.setAttribute('data-id', id)
     modal.show()
 }
-
-function getPatientSponsorDatalistOptionId(modal, inputEl, datalistEl) {  
-    //console.log(inputEl)  
-    // if (modal._element.id === 'updatePatientModal'){
-    //     return modal._element.querySelector('#updatePatientSponsor').dataset.id
-    // }
-    const selectedOption = datalistEl.options.namedItem(inputEl.value)
-    
-        if (selectedOption) {
-            return selectedOption.getAttribute('data-id')
-        } else {
-            return ""
-        }
-    }

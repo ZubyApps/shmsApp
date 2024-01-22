@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
 
 const getPatientsVisitByFilterTable = (tableId, filter) => {
     return new DataTable('#'+tableId, {
@@ -29,11 +29,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
                             </button>
                         </div>`                
             },
-            {data: row => () => {
-                return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
-                `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
-                `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
-            } },
+            {data: row => admissionStatus(row)},
             {
                 sortable: false,
                 data: row => detailsBtn(row) 

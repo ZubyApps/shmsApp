@@ -40,7 +40,18 @@ class InvestigationController extends Controller
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $sponsors = $this->investigationService->getPaginatedLabRequests($params, $request);
+        $sponsors = $this->investigationService->getInpatientLabRequests($params, $request);
+       
+        $loadTransformer = $this->investigationService->getLabTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
+    }
+
+    public function loadOutpatientsLabTable(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sponsors = $this->investigationService->getOutpatientLabRequests($params, $request);
        
         $loadTransformer = $this->investigationService->getLabTransformer();
 

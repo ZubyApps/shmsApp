@@ -120,18 +120,65 @@ class InvestigationService
          };
     }
 
-    public function getPaginatedLabRequests(DataTableQueryParams $params, $data)
+    public function getInpatientLabRequests(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
 
+        if (! empty($params->searchTerm)) {
+            return $this->prescription
+                    ->whereRelation('resource', 'category', 'Investigations')
+                    ->where(function (Builder $query) use($params) {
+                        $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
+                    ->whereRelation('visit', 'consulted', '!=', null)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
         return $this->prescription
                     ->whereRelation('resource', 'category', 'Investigations')
+                    ->whereRelation('visit', 'consulted', '!=', null)
                     ->where(function (Builder $query) {
                         $query->whereRelation('consultation', 'admission_status', '=', 'Inpatient')
                         ->orWhereRelation('consultation', 'admission_status', '=', 'Observation');
                     })
                     ->where('result_date', null)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
+    public function getOutpatientLabRequests(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+
+        if (! empty($params->searchTerm)) {
+            return $this->prescription
+                        ->whereRelation('resource', 'category', 'Investigations')
+                        ->where(function (Builder $query) use($params) {
+                            $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                        ->whereRelation('visit', 'consulted', '!=', null)
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return $this->prescription
+                    ->whereRelation('resource', 'category', 'Investigations')
+                    ->whereRelation('visit', 'consulted', '!=', null)
+                    ->whereRelation('consultation', 'admission_status', '=', 'Outpatient')
+                    ->where('created_at', '>', (new Carbon)->subDays(2))
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -148,6 +195,7 @@ class InvestigationService
                 'sponsor'           => $prescription->visit->patient->sponsor->name,
                 'diagnosis'         => $prescription->consultation->icd11_diagnosis,
                 'resource'          => $prescription->resource->name,
+                'result'            => $prescription->result_date,
             ];
          };
     }

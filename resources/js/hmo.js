@@ -1,7 +1,7 @@
 import { Offcanvas, Modal } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { clearDivValues, getOrdinal, getDivData, clearValidationErrors, loadingSpinners, removeDisabled} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, clearValidationErrors, loadingSpinners, removeDisabled, displayList, getPatientSponsorDatalistOptionId} from "./helpers"
 import { getAllHmoPatientsVisitTable, getApprovalListTable, getVerificationTable, getVisitPrescriptionsTable, getWaitingTable } from "./tables/hmoTables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getLabTableByConsultation, getTreatmentTableByConsultation, getVitalSignsTableByVisit } from "./tables/doctorstables";
@@ -19,8 +19,10 @@ window.addEventListener('DOMContentLoaded', function () {
     const verifyModal               = new Modal(document.getElementById('verifyModal'))
     const investigationsModal       = new Modal(document.getElementById('investigationsModal'))
     const makeBillModal             = new Modal(document.getElementById('makeBillModal'))
+    const changeSponsorModal        = new Modal(document.getElementById('changeSponsorModal'))
 
     const codeTextDiv               = verifyModal._element.querySelector('#codeTextDiv')
+    const sponsorDetailsDiv         = changeSponsorModal._element.querySelector('#sponsorDetailsDiv')
     const treatmentDiv              = document.querySelector('#treatmentDiv')
     const approveDiv                = document.querySelector('#approveDiv')
     
@@ -28,11 +30,15 @@ window.addEventListener('DOMContentLoaded', function () {
     const hmoApprovalListBtn        = document.querySelector('#hmoApprovalListBtn')
     const nhisApprovalListBtn       = document.querySelector('#nhisApprovalListBtn')
     const verifyBtn                 = verifyModal._element.querySelector('#verifyBtn')
+    const saveNewSponsorBtn         = changeSponsorModal._element.querySelector('#saveNewSponsorBtn')
     
     const verificationTab           = document.querySelector('#nav-verifyPatients-tab')
     const treatmentsTab             = document.querySelector('#nav-treatments-tab')
-    const billPatientsTab                  = document.querySelector('#nav-billpatients-tab')
-    const reportsTab                = document.querySelector('#nav-reports-tab')
+    const billPatientsTab                   = document.querySelector('#nav-billpatients-tab')
+    const reportsTab                        = document.querySelector('#nav-reports-tab')
+    const newSponsorCategoryInput           = document.querySelector('#newSponsorCategory')
+    const newPatientSponsorInputEl          = document.querySelector('#newPatientSponsor')
+    const newPatientSponsorDatalistEl       = document.querySelector('#newSponsorList')
 
     const filterListOption          = document.querySelector('#filterList')
 
@@ -256,6 +262,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelector('#verificationTable').addEventListener('click', function (event) {
         const verifyPatientBtn = event.target.closest('.verifyPatientBtn')
+        const changeSponsorBtn = event.target.closest('.changeSponsorBtn')
 
         if (verifyPatientBtn) {
             verifyBtn.setAttribute('data-id', verifyPatientBtn.getAttribute('data-id'))
@@ -265,6 +272,16 @@ window.addEventListener('DOMContentLoaded', function () {
             verifyModal._element.querySelector('#staffId').value = verifyPatientBtn.getAttribute('data-staffid')
             verifyModal._element.querySelector('#phoneNumber').value = verifyPatientBtn.getAttribute('data-phone')
             verifyModal.show()
+        }
+
+        if (changeSponsorBtn){
+            saveNewSponsorBtn.setAttribute('data-id', changeSponsorBtn.getAttribute('data-id'))
+            saveNewSponsorBtn.setAttribute('data-table', changeSponsorBtn.getAttribute('data-table'))
+            changeSponsorModal._element.querySelector('#patientId').value = changeSponsorBtn.getAttribute('data-patient')
+            changeSponsorModal._element.querySelector('#sponsorName').value = changeSponsorBtn.getAttribute('data-sponsor')
+            changeSponsorModal._element.querySelector('#staffId').value = changeSponsorBtn.getAttribute('data-staffid')
+            changeSponsorModal._element.querySelector('#phoneNumber').value = changeSponsorBtn.getAttribute('data-phone')
+            changeSponsorModal.show()
         }
     })
 
@@ -288,6 +305,38 @@ window.addEventListener('DOMContentLoaded', function () {
         .catch((error) => {
             console.log(error)
             verifyBtn.removeAttribute('disabled')
+        })
+    })
+
+    newSponsorCategoryInput.addEventListener('change', function() {
+        if (newSponsorCategoryInput.value) {
+            http.get(`/sponsorcategory/list_sponsors/${newSponsorCategoryInput.value}`, {params: {category: newSponsorCategoryInput.value}})
+            .then((response) => {
+                    displayList(newPatientSponsorDatalistEl, 'sponsorOption', response.data)
+            })
+        }
+    })
+
+    saveNewSponsorBtn.addEventListener('click', function () {
+        saveNewSponsorBtn.setAttribute('disabled', 'disabled')
+        const visitId = saveNewSponsorBtn.getAttribute('data-id')
+        const sponsor = getPatientSponsorDatalistOptionId(changeSponsorModal, newPatientSponsorInputEl, newPatientSponsorDatalistEl)
+
+        let data = { ...getDivData(sponsorDetailsDiv), sponsor }
+
+        http.patch(`/visits/changesponsor/${visitId}`,  { ...data }, { "html": sponsorDetailsDiv })
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) {
+                clearDivValues(sponsorDetailsDiv)
+                clearValidationErrors(sponsorDetailsDiv)
+                verificationTable.draw()
+            }
+            saveNewSponsorBtn.removeAttribute('disabled')
+            changeSponsorModal.hide()
+        })
+        .catch((error) => {
+            console.log(error)
+            saveNewSponsorBtn.removeAttribute('disabled')
         })
     })
 

@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -34,22 +36,22 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function sponsorCategories()
+    public function sponsorCategories(): HasMany
     {
         return $this->hasMany(SponsorCategory::class);
     }
 
-    public function sponsors()
+    public function sponsors(): HasMany
     {
         return $this->hasMany(Sponsor::class);
     }
 
-    public function patients()
+    public function patients(): HasMany
     {
         return $this->hasMany(Patient::class);
     }
 
-    public function visits()
+    public function visits(): HasMany
     {
         return $this->hasMany(Visit::class);
     }
@@ -59,63 +61,78 @@ class User extends Authenticatable
         return $this->hasMany(Consultation::class);
     }
 
-    public function vitalSigns() 
+    public function vitalSigns(): HasMany 
     {
         return $this->hasMany(VitalSigns::class);
     }
 
-    public function resourceCategories() 
+    public function resourceCategories(): HasMany 
     {
         return $this->hasMany(ResourceCategory::class);
     }
 
-    public function resourceSubCategories() 
+    public function resourceSubCategories(): HasMany 
     {
         return $this->hasMany(ResourceSubCategory::class);
     }
 
-    public function resources() 
+    public function resources(): HasMany 
     {
         return $this->hasMany(Resource::class);
     }
 
-    public function addResources() 
+    public function addResources(): HasMany 
     {
         return $this->hasMany(AddResourceStock::class);
     }
 
-    public function dispenseResources() 
+    public function dispenseResources(): HasMany 
     {
         return $this->hasMany(DispenseResource::class);
     }
 
-    public function resourceSuppliers() 
+    public function resourceSuppliers(): HasMany 
     {
         return $this->hasMany(ResourceSupplier::class);
     }
 
-    public function resourceStockDates() 
+    public function resourceStockDates(): HasMany 
     {
         return $this->hasMany(ResourceStockDate::class);
     }
 
-    public function prescriptions() 
+    public function prescriptions(): HasMany
     {
         return $this->hasMany(Prescription::class);
     }
 
-    public function medicationCharts() 
+    public function medicationCharts(): HasMany
     {
         return $this->hasMany(MedicationChart::class);
     }
 
-    public function payments() 
+    public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
     }
 
-    public function deliveryNotes()
+    public function deliveryNotes(): HasMany
     {
         return $this->hasMany(DeliveryNote::class);
+    }
+
+    public function surgeryNotes(): HasMany
+    {
+        return $this->hasMany(SurgeryNote::class);
+    }
+
+    public function antenatalRegisterations(): HasMany
+    {
+        return $this->hasMany(AntenatalRegisteration::class);
+    }
+
+    public function ancVitalSigns(): HasMany
+    {
+        return $this->hasMany(AncVitalSigns::class);
     }
 }

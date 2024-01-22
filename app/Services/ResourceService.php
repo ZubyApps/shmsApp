@@ -119,7 +119,6 @@ class ResourceService
 
     public function getFormattedList($data)
     {
-        // var_dump($data->sponsorCat);
         if (! empty($data->resource)){
             return $this->resource
                         ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )

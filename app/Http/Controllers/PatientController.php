@@ -28,7 +28,7 @@ class PatientController extends Controller
     {
         return view('patients.patients', 
         ['categories' =>$this->sponsorCategoryController->showAll('id', 'name')]
-    );
+        );
     }
 
     /**

@@ -35,4 +35,9 @@ class Consultation extends Model
     {
         return $this->hasMany(DeliveryNote::class);
     }
+
+    public function surgeryNotes()
+    {
+        return $this->hasMany(SurgeryNote::class);
+    }
 }

@@ -4,7 +4,8 @@
 @vite(['resources/js/hmo.js'])
 
 @include('hmo.verifyModal', ['title' => 'Verify Patient', 'isUpdate' => false, 'id' => 'verifyModal'])
-@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isLab' => false, 'isHmo' => true, 'id' => 'treatmentDetailsModal'])
+@include('hmo.changeSponsorModal', ['title' => "Change Patient's Visit's Sponsor", 'id' => 'changeSponsorModal'])
+@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isAnc' => false, 'isLab' => false, 'isHmo' => true, 'id' => 'treatmentDetailsModal'])
 @include('hmo.approvalModal', ['title' => 'Approve Medication/Treatment', 'isUpdate' => false, 'id' => 'approvalModal'])
 @include('hmo.makeBillModal', ['title' => "Make Patient's Bill", 'isEdit' => false, 'id' => 'makeBillModal'])
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])

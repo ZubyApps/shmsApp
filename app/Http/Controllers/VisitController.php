@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChangeSponsorRequest;
 use App\Models\Visit;
 use App\Http\Requests\StoreVisitRequest;
 use App\Http\Requests\UpdateVisitRequest;
@@ -58,6 +59,11 @@ class VisitController extends Controller
         $loadTransformer = $this->visitService->getInpatientsVisitsTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
+
+    public function changeSponsor(ChangeSponsorRequest $request, Visit $visit)
+    {
+        return $this->visitService->changeVisitSponsor($request, $visit, $request->user());
     }
     
     /**

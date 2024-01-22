@@ -10,13 +10,14 @@
 @include('doctors.ancConsultationModal', ['title' => 'New ANC Review', 'isReview' => true, 'id' => 'ancReviewModal'])
 
 @include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isAnc' => false, 'id' => 'consultationReviewModal'])
+@include('doctors.consultationReviewModal', ['title' => 'ANC Consultation Review', 'isAnc' => true, 'id' => 'ancConsultationReviewModal'])
 @include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isDoctor' => true, 'id' => 'vitalsignsModal'])
+@include('vitalsigns.ancVitalsignsModal', ['title' => 'Anc Vital Signs', 'isDoctor' => true, 'id' => 'ancVitalsignsModal', ])
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
 @include('investigations.addResultModal', ['title' => 'Update Result', 'isUpdate' => true, 'id' => 'updateResultModal'])
 @include('extras.investigationAndManagementModal', ['title' => 'Update Investigation and Management', 'id' => 'investigationAndManagementModal'])
-
-
+@include('doctors.dischargeModal', ['title' => 'Discharge Patient', 'isNurses' => false, 'id' => 'dischargeModal'])
 @include('doctors.surgeryModal', ['title' => 'New Surgery', 'isUpdate' => false, 'id' => 'surgeryModal'])
 @include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
 @include('doctors.newReviewModal', ['title' => 'New Review', 'isUpdate' => false, 'id' => 'newReviewModal'])

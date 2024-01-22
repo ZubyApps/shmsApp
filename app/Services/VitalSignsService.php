@@ -77,7 +77,8 @@ class VitalSignsService
                 'bmi'               => $vitalSigns->bmi ?? '',
                 'created_at'        => (new Carbon($vitalSigns->created_at))->format('d/m/y g:ia'),
                 'by'                => $vitalSigns->user->username,
-                'note'            => $vitalSigns->note,
+                'note'              => $vitalSigns->note,
+                'patientType'       => $vitalSigns->visit->patient->patient_type
             ];
          };
     }

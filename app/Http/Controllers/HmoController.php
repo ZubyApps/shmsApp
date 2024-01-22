@@ -14,7 +14,9 @@ class HmoController extends Controller
 {
     public function __construct(
         private readonly DatatablesService $datatablesService, 
-        private readonly HmoService $hmoService)
+        private readonly HmoService $hmoService,
+        private readonly SponsorCategoryController $sponsorCategoryController
+        )
     {
         
     }
@@ -24,7 +26,9 @@ class HmoController extends Controller
      */
     public function index()
     {
-        return view('hmo.hmo');
+        return view('hmo.hmo',
+        ['categories' =>$this->sponsorCategoryController->showAll('id', 'name')]
+    );
     }
 
     public function loadVerificationListTable(Request $request)

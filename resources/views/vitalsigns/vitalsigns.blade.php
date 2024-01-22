@@ -34,6 +34,6 @@
     </x-form-div>
     <x-form-div>
         <x-input-span id="noteLabel">Note</x-input-span>
-        <x-form-textarea type="text" name="note" id="note" class="note"></x-form-textarea>
+        <x-form-input type="text" name="note" id="note" class="note"/>
     </x-form-div>
 </div>

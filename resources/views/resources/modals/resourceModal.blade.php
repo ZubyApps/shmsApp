@@ -14,9 +14,8 @@
                                 <x-form-input type="text" class="name" name="name" id="name" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="flagLabel">Flag<x-required-span /></x-input-span>
-                                <x-select-flags name="flag" id="flag"></x-select-flags>
-                                {{-- <x-form-input name="flag" value="" /> --}}
+                                <x-input-span id="flagLabel">Flag Sponsor<x-required-span /></x-input-span>
+                                <x-select-flags name="flag" id="{{ $isUpdate ? 'flagUpdate' : 'flag' }}"></x-select-flags>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span>Category<x-required-span /></x-input-span>
@@ -34,7 +33,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="reOrderLabel">Re-order Level</x-input-span>
-                                <x-form-input type="number" name="reOrder" value="" />
+                                <x-form-input type="number" name="reOrder" id="reOrder" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="purchasePriceLabel">Purchase Price<x-required-span /></x-input-span>
@@ -50,7 +49,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="expiryDateLabel">Expiry Date</x-input-span>
-                                <x-form-input type="date" name="expiryDate" value="" />
+                                <x-form-input type="date" name="expiryDate" id="expiryDate" />
                             </x-form-div>
                             {{-- <x-form-div class="col-xl-12">
                                 <x-input-span id="stockLevelLabel">Stock Level</x-input-span>

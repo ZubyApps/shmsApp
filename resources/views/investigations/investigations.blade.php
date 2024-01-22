@@ -3,7 +3,7 @@
 @section('content')
 @vite(['resources/js/investigations.js'])
 
-@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isLab' => true, 'isHmo' => false, 'id' => 'treatmentDetailsModal'])
+@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isAnc' => false, 'isLab' => true, 'isHmo' => false, 'id' => 'treatmentDetailsModal'])
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
 @include('investigations.addResultModal', ['title' => 'Update Result', 'isUpdate' => true, 'id' => 'updateResultModal'])
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])

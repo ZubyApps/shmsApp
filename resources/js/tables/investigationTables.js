@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { detailsBtn, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, detailsBtn, sponsorAndPayPercent } from "../helpers";
 
 const getPatientsVisitsByFilterTable = (tableId, filter) => {
     return new DataTable('#'+tableId, {
@@ -29,11 +29,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                             </button>
                         </div>`                
             },
-            {data: row => () => {
-                return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
-                `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
-                `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
-            } },
+            {data: row => admissionStatus(row)},
             {
                 sortable: false,
                 data: row => detailsBtn(row) 
@@ -47,8 +43,6 @@ const getInpatientsInvestigationsTable = (tableId) => {
         serverSide: true,
         ajax:  '/investigations/load/inpatients',
         paging: true,
-        lengthChange: false,
-        searching: false,
         orderMulti: false,
         language: {
             emptyTable: 'No lab investigation requested'
@@ -87,4 +81,41 @@ const getInpatientsInvestigationsTable = (tableId) => {
     return investigationsTable
 }
 
-export {getPatientsVisitsByFilterTable, getInpatientsInvestigationsTable}
+const getOutpatientsInvestigationTable = (tableId) => {
+    const investigationsTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  '/investigations/load/outpatients',
+        paging: true,
+        orderMulti: false,
+        language: {
+            emptyTable: 'No lab investigation requested'
+        },
+        columns: [
+            {data: "requested"},
+            {data: "type"},
+            {data: "doctor"},
+            {data: "patient"},
+            {data: "diagnosis"},
+            {data: row => `<span class="text-primary fw-semibold">${row.resource}</span>`},
+            {
+                sortable: false,
+                data: row => function () {
+                    if (row.result){
+                        return `
+                            <div class="d-flex flex-">
+                                <button class=" btn btn-outline-primary border-0 vitalSignsBtn tooltip-test" title="result added">
+                                <i class="bi bi-check-circle-fill"></i>
+                                </button>
+                            </div>`
+                        } else {
+                            return ``
+                        }
+                    }  
+            },
+        ]
+    });
+
+    return investigationsTable
+}
+
+export {getPatientsVisitsByFilterTable, getInpatientsInvestigationsTable, getOutpatientsInvestigationTable}

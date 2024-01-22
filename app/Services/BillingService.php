@@ -114,6 +114,7 @@ class BillingService
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
+                'discharged'        => true
             ];
          };
     }
@@ -148,7 +149,7 @@ class BillingService
                 'sponsor'               => $visit->sponsor->name,
                 'sponsorCategory'       => $visit->sponsor->sponsorCategory->name,
                 'sponsorCategoryClass'  => $visit->sponsor->sponsorCategory->pay_class,
-                'doctor'                => $visit->doctor->username,
+                'doctor'                => $visit->doctor?->username,
                 'diagnosis'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
                                            Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
                                            Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,

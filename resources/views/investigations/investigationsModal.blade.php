@@ -36,25 +36,7 @@
                                     <tbody></tbody>
                                 </table>
                             </div>
-                            {{-- <div class="row {{ $isDoctor ? 'd-none' : '' }}">
-                                <div id="addVitalsignsDiv"  data-div="waiting">
-                                    @include('vitalsigns.vitalsigns', ['sf' => 'nurses'])
-                                    <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
-                                </div>
-                                <div class="d-flex justify-content-center">
-                                    <button type="button" id="addVitalsignsBtn"  data-btn="waiting"
-                                        class="btn btn-primary">
-                                        <i class="bi bi-plus-circle me-1"></i>
-                                        add
-                                    </button>
-                                </div>
-                            </div> --}}
                         </div>
-                        {{-- <div class="overflow-auto {{ !$isDoctor ? 'd-none' : '' }}">
-                            <div class="chart-container" style="position: relative; height:60vh; width:80vw">
-                                <canvas id="vitalsignsChart"></canvas>
-                            </div>
-                        </div> --}}
                     </div>
                 </div>
                 <div class="modal-footer px-5">

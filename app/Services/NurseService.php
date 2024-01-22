@@ -77,13 +77,13 @@ class NurseService
         }
         if ($data->filterBy == 'ANC'){
             return $this->visit
-                    ->where('consulted', '!=', null)
+                    // ->where('consulted', null)
                     ->where('nurse_done_by', null)
                     ->where('closed', null)
-                    ->where(function(Builder $query) {
-                        $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
-                            ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services');
-                    })
+                    // ->where(function(Builder $query) {
+                    //     $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
+                    //         ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services');
+                    // })
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -104,7 +104,10 @@ class NurseService
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
-                'doctor'            => $visit->doctor->username,
+                'patientId'         => $visit->patient->id,
+                'age'               => $visit->patient->age(),
+                'doctor'            => $visit->doctor?->username,
+                'ancRegId'          => $visit->patient->antenatalRegisteration?->id,
                 'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
@@ -112,6 +115,7 @@ class NurseService
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
                 'patientType'       => $visit->patient->patient_type,
                 'vitalSigns'        => $visit->vitalSigns->count(),
+                'ancVitalSigns'     => $visit->patient->antenatalRegisteration?->ancVitalSigns->count(),
                 'prescriptionCount' => Prescription::where('visit_id', $visit->id)
                                        ->whereRelation('resource', 'category', 'Medications')
                                        ->orWhereRelation('resource', 'category', 'Medical Services')

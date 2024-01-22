@@ -71,6 +71,7 @@ class VisitService
             return [
                 'id'                => $visit->id,
                 'patientId'         => $visit->patient->id,
+                'ancRegId'          => $visit->patient->antenatalRegisteration?->id,
                 'patient'           => $visit->patient->patientId(),
                 'sex'               => $visit->patient->sex,
                 'age'               => $visit->patient->age(),
@@ -80,7 +81,8 @@ class VisitService
                 'doctor'            => $visit->doctor->username ?? '',
                 'patientType'       => $visit->patient->patient_type,
                 'status'            => $visit->status,
-                'vitalSigns'        => $visit->vitalSigns->count()
+                'vitalSigns'        => $visit->vitalSigns->count(),
+                'ancVitalSigns'     => $visit->patient->antenatalRegisteration?->ancVitalSigns->count()
             ];
          };
     }
@@ -224,5 +226,15 @@ class VisitService
 
             ];
          };
+    }
+
+    public function changeVisitSponsor(Request $data, Visit $visit, User $user)
+    {
+        $visit->update([
+            "sponsor_id" => $data->sponsor,
+            // "sponsor_changed_by" => $user->id,
+        ]);
+
+        return $visit;
     }
 }

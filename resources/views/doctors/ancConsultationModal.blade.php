@@ -33,15 +33,11 @@
                                         <thead>
                                             <tr>
                                                 <th>Done</th>
-                                                <th>Temp</th>
                                                 <th>BP</th>
-                                                <th>Pulse</th>
-                                                <th>Resp Rate</th>
-                                                <th>SpO2</th>
                                                 <th>Weight</th>
-                                                <th>Height</th>
-                                                <th>BMI</th>
-                                                <th>Note</th>
+                                                <th>Urine-Protein</th>
+                                                <th>Urine-Glucose</th>
+                                                <th>Remarks</th>
                                                 <th>By</th>
                                                 <th></th>
                                             </tr>
@@ -51,7 +47,7 @@
                                 </div>
                                 <div class="row">
                                     <div id="addVitalsignsDiv" {!! $isReview ? 'data-div="ancReview"' : 'data-div="anc"' !!}>
-                                        @include('vitalsigns.vitalsigns', ['sf' =>  $isReview ? 'AncReview' : 'Anc' ])
+                                        @include('vitalsigns.ancVitalsigns', ['sf' =>  $isReview ? 'AncReview' : 'Anc' ])
                                         <x-toast-successful class="col-xl-12"  id="vitalSignsToast"></x-toast-successful>
                                     </div>
                                     <div class="d-flex justify-content-center">

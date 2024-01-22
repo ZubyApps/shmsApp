@@ -3,13 +3,19 @@
 @section('content')
 @vite(['resources/js/nurses.js'])
 
-@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isLab' => false, 'isHmo' => false, 'id' => 'treatmentDetailsModal'])
+@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isAnc' => false, 'isLab' => false, 'isHmo' => false, 'id' => 'treatmentDetailsModal'])
+@include('nurses.treatmentDetailsModal', ['title' => 'ANC Treatment Details', 'isAnc' => true, 'isLab' => false, 'isHmo' => false, 'id' => 'ancTreatmentDetailsModal'])
 @include('nurses.deliveryNotesModal', ['title' => 'New Delivery Note', 'isUpdate' => false,'isView' => false, 'id' => 'newDeliveryNoteModal'])
 @include('nurses.deliveryNotesModal', ['title' => 'Update Delivery Note', 'isUpdate' => true, 'isView' => false, 'id' => 'updateDeliveryNoteModal'])
 @include('nurses.deliveryNotesModal', ['title' => 'View Delivery Note', 'isUpdate' => true, 'isView' => true, 'id' => 'viewDeliveryNoteModal'])
 @include('nurses.chartMedicationModal', ['title' => 'Chart Medication', 'isUpdate' => false, 'id' => 'chartMedicationModal'])
+@include('nurses.ancRegisterationModal', ['title' => 'New ANC Registeration', 'isUpdate' => false, 'isView' => false, 'id' => 'newAncRegisterationModal', ])
+@include('nurses.ancRegisterationModal', ['title' => 'Update ANC Registeration', 'isUpdate' => true, 'isView' => false, 'id' => 'updateAncRegisterationModal', ])
+@include('nurses.ancRegisterationModal', ['title' => 'View ANC Registeration', 'isUpdate' => false, 'isView' => true, 'id' => 'viewAncRegisterationModal', ])
 @include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isDoctor' => false, 'id' => 'vitalsignsModal', ])
+@include('vitalsigns.ancVitalsignsModal', ['title' => 'Anc Vital Signs', 'isDoctor' => false, 'id' => 'ancVitalsignsModal', ])
 @include('nurses.giveMedicationModal')
+@include('doctors.dischargeModal', ['title' => 'Discharge Patient', 'isNurses' => true, 'id' => 'dischargeModal'])
 
 <div class="container p-1 mt-5">
     <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="upcomingMedicationsoffcanvas"
@@ -150,7 +156,7 @@
                                 <th>Doctor</th>
                                 <th>Current Diagnosis</th>
                                 <th>Sponsor</th>
-                                <th>Rx count</th>
+                                <th>Register</th>
                                 <th>Vitals</th>
                                 <th>Status</th>
                                 <th>Actions</th>

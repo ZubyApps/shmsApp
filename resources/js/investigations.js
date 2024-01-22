@@ -278,7 +278,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 })
 
-function openLabModals(modal, button, { id, visitId, ...data }) {
+function openLabModals(modal, button, { id, visitId, ancRegId, ...data }) {
     for (let name in data) {
 
         const nameInput = modal._element.querySelector(`[name="${name}"]`)

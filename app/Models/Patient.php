@@ -6,10 +6,13 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Notifications\Notifiable;
 
 class Patient extends Model
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $guarded = [];
 
@@ -31,6 +34,11 @@ class Patient extends Model
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function antenatalRegisteration(): HasOne
+    {
+        return $this->hasOne(AntenatalRegisteration::class);
     }
 
     public function patientId()

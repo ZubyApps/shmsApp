@@ -44,7 +44,7 @@ class ConsultationReviewResource extends JsonResource
             "remarks"                       => $this->remarks ?? '',
             "doctor"                        => $this->user->username ?? '',
             "specialistFlag"                => $this->specialist_consultation ?? '',
-            "deliveryNotes"                 => $this->deliveryNotes
+            "deliveryNotes"                 => $this->deliveryNotes->count()
         ];
     }
 }

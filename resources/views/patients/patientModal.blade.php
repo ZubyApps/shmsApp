@@ -128,12 +128,12 @@
                             <div class="row">
                                 <x-form-div>
                                     <x-input-span>Phone Number<x-required-span /></x-input-span>
-                                    <x-form-input type="tel" name="phone" id="phone"/>
+                                    <x-form-input type="number" name="phone" id="phone"/>
                                 </x-form-div>
 
                                 <x-form-div>
                                     <x-input-span>Address</x-input-span>
-                                    <x-form-input name="address" />
+                                    <x-form-input name="address" id="address"/>
                                 </x-form-div>
 
                                 <x-form-div>
@@ -153,29 +153,29 @@
 
                                 <x-form-div>
                                     <x-input-span >Nationality</x-input-span>
-                                    <x-form-input name="nationality" placeholder="eg. Nigerian" />
+                                    <x-form-input name="nationality" id="nationality" placeholder="eg. Nigerian" />
                                 </x-form-div>
 
                                 <x-form-div>
                                     <x-input-span >State Origin</x-input-span>
-                                    <x-select-states name="stateOrigin"/>
+                                    <x-select-states name="stateOrigin" id="stateOfOrigin"/>
                                 </x-form-div>
                             </div>
                             <!-- second row -->
                             <div class="row">
                                 <x-form-div>
                                     <x-input-span >Occupation</x-input-span>
-                                    <x-form-input name="occupation"/>
+                                    <x-form-input name="occupation" id="occupation"/>
                                 </x-form-div>
 
                                 <x-form-div>
                                     <x-input-span >Religion</x-input-span>
-                                    <x-form-input name="religion" />
+                                    <x-form-input name="religion" id="religion"/>
                                 </x-form-div>
 
                                 <x-form-div>
                                     <x-input-span >Ethnic Group</x-input-span>
-                                    <x-form-input name="ethnicGroup"/>
+                                    <x-form-input name="ethnicGroup" id="ethnicGroup"/>
                                 </x-form-div>
                             </div>
                         </div>
@@ -190,7 +190,7 @@
 
                                 <x-form-div>
                                     <x-input-span >Phone Number<x-required-span /></x-input-span>
-                                    <x-form-input type="tel" name="nextOfKinPhone" id="nextOfKinPhone"/>
+                                    <x-form-input type="number" name="nextOfKinPhone" id="nextOfKinPhone"/>
                                 </x-form-div>
 
                                 <x-form-div>

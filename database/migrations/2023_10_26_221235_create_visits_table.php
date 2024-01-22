@@ -18,6 +18,9 @@ return new class extends Migration
             $table->id();
             $table->string('verification_code')->nullable();
             $table->string('verification_status')->nullable();
+            $table->string('verification_status')->nullable();
+            $table->string('discharge_reason')->nullable();
+            $table->text('discharge_remark')->nullable();
             $table->dateTime('verified_at')->nullable();
             $table->foreignIdFor(User::class, 'verified_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->dateTime('consulted')->nullable();
@@ -29,6 +32,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'discount_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->string('total_bill')->default(0);
             $table->string('total_paid')->default(0);
+            $table->foreignIdFor(User::class, 'sponsor_changed_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'doctor_done_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'nurse_done_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'pharmacy_done_by')->nullable()->constrained('users')->restrictOnDelete();

@@ -167,6 +167,8 @@ class DoctorService
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
+                'ancRegId'          => $visit->patient->antenatalRegisteration?->id,
+                'age'               => $visit->patient->age(),
                 'doctor'            => $visit->doctor->username,
                 'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
@@ -174,6 +176,7 @@ class DoctorService
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->category_name,
                 'vitalSigns'        => $visit->vitalSigns->count(),
+                'ancVitalSigns'     => $visit->patient->antenatalRegisteration?->ancVitalSigns->count(),
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
                 'patientType'       => $visit->patient->patient_type,
                 'labPrescribed'     => Prescription::where('visit_id', $visit->id)

@@ -445,7 +445,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     newResourceSubCategoryModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(newResourceSubCategoryModal._element)
-        resourceSubCategoryTable.draw()
+        resourceSubCategoryTable ? resourceSubCategoryTable.draw() : ''
     })
 
     newResourceModal._element.addEventListener('hidden.bs.modal', function () {
@@ -456,13 +456,13 @@ window.addEventListener('DOMContentLoaded', function () {
     newAddResourceStockModal._element.addEventListener('hidden.bs.modal', function () {
         clearDivValues(newAddResourceStockModal._element)
         clearValidationErrors(newAddResourceStockModal._element)
-        addResourceStockTable.draw()
+        addResourceStockTable ? addResourceStockTable.draw() : ''
     })
 
     newResourceSupplierModal._element.addEventListener('hidden.bs.modal', function () {
         clearDivValues(newResourceSupplierModal._element)
         clearValidationErrors(newResourceSupplierModal._element)
-        resourceSupplierTable.draw()
+        resourceSupplierTable ? resourceSupplierTable.draw() : ''
     })
 
 })

@@ -3,7 +3,7 @@
 @section('content')
 @vite(['resources/js/pharmacy.js'])
 
-@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isLab' => false, 'isHmo' => true, 'id' => 'treatmentDetailsModal'])
+@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isAnc' => false, 'isLab' => false, 'isHmo' => true, 'id' => 'treatmentDetailsModal'])
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
 @include('pharmacy.billingDispenseModal', ['title' => "Patient's Billing & Dispense", 'isEdit' => false, 'id' => 'billingDispenseModal'])
 
