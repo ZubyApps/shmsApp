@@ -216,7 +216,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 dischargeModal._element.querySelector('#sponsorName').value = dischargedBtn.getAttribute('data-sponsor')
                 dischargeModal._element.querySelector('#currentDiagnosis').value = dischargedBtn.getAttribute('data-diagnosis')
                 dischargeModal._element.querySelector('#admissionStatus').value = dischargedBtn.getAttribute('data-admissionstatus')
-                dischargeModal._element.querySelector('#dischargeReason').value = 'AHOR'
+                dischargeModal._element.querySelector('#reason').value = dischargedBtn.getAttribute('data-reason')
+                dischargeModal._element.querySelector('#remark').value = dischargedBtn.getAttribute('data-remark')
+                dischargeModal._element.querySelector('#doctor').innerHTML = dischargedBtn.getAttribute('data-doctor')
                 dischargeModal._element.querySelector('#saveDischargeBtn').setAttribute('data-id', dischargedBtn.getAttribute('data-id'))
                 dischargeModal.show()
             }

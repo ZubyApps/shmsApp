@@ -65,6 +65,11 @@ class VisitController extends Controller
     {
         return $this->visitService->changeVisitSponsor($request, $visit, $request->user());
     }
+
+    public function dischargePatient(Request $request, Visit $visit)
+    {
+        return $this->visitService->discharge($request, $visit, $request->user());
+    }
     
     /**
      * close a completed visit

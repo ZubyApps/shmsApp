@@ -21,7 +21,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Current Diagnosis</x-input-span>
-                                <x-form-input name="currentDiagnosis" class="currentDiagnosis" id="currentDiagnosis"/>
+                                <x-form-textarea name="currentDiagnosis" class="currentDiagnosis" id="currentDiagnosis" readonly></x-form-textarea>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Admission Status</x-input-span>
@@ -34,8 +34,8 @@
                         <div class="row">
                             <x-form-div class="col-xl-6">
                                 <x-input-span id="reasonLabel">Reason<x-required-span /></x-input-span>
-                                <select class="form-select form-select-md" id="dischargeReason"
-                                   name="dischargeReason" {{ $isNurses ? 'disabled' : '' }}>
+                                <select class="form-select form-select-md" id="reason"
+                                   name="reason" {{ $isNurses ? 'disabled' : '' }}>
                                     <option value="">Select Option</option>
                                     <option value="Treated">Treated</option>
                                     <option value="AHOR">AHOR</option>
@@ -49,6 +49,9 @@
                                 <x-input-span>Remark</x-input-span>
                                 <x-form-textarea name="remark" id="remark" :readonly="$isNurses"></x-form-textarea>
                             </x-form-div>
+                        </div>
+                        <div class="d-flex justify-content-end my-2">
+                            <span class="input-group-text" id="doctor"></span>
                         </div>
                     </div>
                 </div>

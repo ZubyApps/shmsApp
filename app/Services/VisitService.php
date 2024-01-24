@@ -232,7 +232,18 @@ class VisitService
     {
         $visit->update([
             "sponsor_id" => $data->sponsor,
-            // "sponsor_changed_by" => $user->id,
+            "sponsor_changed_by" => $user->id,
+        ]);
+
+        return $visit;
+    }
+
+    public function discharge(Request $data, Visit $visit, User $user)
+    {
+        $visit->update([
+            "discharge_reason"  => $data->reason,
+            "discharge_remark"  => $data->remark,
+            "doctor_done_by"    => $user->id
         ]);
 
         return $visit;

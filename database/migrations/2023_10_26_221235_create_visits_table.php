@@ -18,7 +18,6 @@ return new class extends Migration
             $table->id();
             $table->string('verification_code')->nullable();
             $table->string('verification_status')->nullable();
-            $table->string('verification_status')->nullable();
             $table->string('discharge_reason')->nullable();
             $table->text('discharge_remark')->nullable();
             $table->dateTime('verified_at')->nullable();

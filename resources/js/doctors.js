@@ -1,7 +1,7 @@
 import { Modal, Collapse, Toast, Offcanvas } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, filterPatients, openModals} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, filterPatients, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
 import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable} from "./tables/doctorstables"
@@ -35,12 +35,12 @@ window.addEventListener('DOMContentLoaded', function () {
     const consultationDiv                   = document.querySelectorAll('#consultationDiv')
     const addResultDiv                      = addResultModal._element.querySelector('#resultDiv')
     const updateResultDiv                   = updateResultModal._element.querySelector('#resultDiv')
+    const dischargeDetailsDiv               = dischargeModal._element.querySelector('#dischargeDetails')
     
     const reviewPatientbtn                  = consultationReviewModal._element.querySelector('#reviewPatientBtn')
     const reviewAncPatientbtn               = ancConsultationReviewModal._element.querySelector('#reviewAncPatientBtn')
+    const [dischargeBtn, saveDischargeBtn]  = [document.querySelector('#dischargeBtn'), document.querySelector('#saveDischargeBtn')]
     const specialistConsultationbtn         = consultationReviewModal._element.querySelector('#specialistConsultationBtn')
-    const vitalsignsChartReview             = consultationReviewModal._element.querySelector('#vitalsignsChart')
-    const vitalsignsChart                   = vitalsignsModal._element.querySelector('#vitalsignsChart')
     const createResultBtn                   = addResultModal._element.querySelector('#createResultBtn')
     const saveResultBtn                     = updateResultModal._element.querySelector('#saveResultBtn')
     const addInvestigationAndManagmentBtn   = document.querySelectorAll('#addInvestigationAndManagementBtn')
@@ -112,21 +112,17 @@ window.addEventListener('DOMContentLoaded', function () {
     
             if (consultationReviewBtn) {
                 consultationReviewBtn.setAttribute('disabled', 'disabled')
-                const [visitId, patientType, ancRegId] = [consultationReviewBtn.getAttribute('data-id'), consultationReviewBtn.getAttribute('data-patientType'), consultationReviewBtn.getAttribute('data-ancregid')] 
+                const [visitId, patientType, ancRegId, isDoctorDone] = [consultationReviewBtn.dataset.id, consultationReviewBtn.dataset.patienttype, consultationReviewBtn.dataset.ancregid, consultationReviewBtn.dataset.doctor] 
+                
                 const isAnc = patientType === 'ANC'
                 resourceInput.forEach(input => {input.setAttribute('data-sponsorcat', consultationReviewBtn.getAttribute('data-sponsorcat'))})
-                reviewPatientbtn.setAttribute('data-id', visitId)
-                reviewPatientbtn.setAttribute('data-patientType', patientType)
-                newReviewModal._element.querySelector('#saveConsultationBtn').setAttribute('data-id', visitId)
-                
-                specialistConsultationbtn.setAttribute('data-id', visitId)
-                specialistConsultationbtn.setAttribute('data-patientType', patientType)
-                specialistConsultationModal._element.querySelector('#saveConsultationBtn').setAttribute('data-patientType', patientType)
-    
-                reviewAncPatientbtn.setAttribute('data-id', visitId)
-                reviewAncPatientbtn.setAttribute('data-ancregid', ancRegId)
-                reviewAncPatientbtn.setAttribute('data-patientType', patientType)
-                ancReviewModal._element.querySelector('#saveConsultationBtn').setAttribute('data-patientType', patientType)
+
+                populateConsultationModal(newReviewModal, reviewPatientbtn, visitId, ancRegId, patientType)
+                populateConsultationModal(specialistConsultationModal, specialistConsultationbtn, visitId, ancRegId, patientType)
+                populateConsultationModal(ancReviewModal, reviewAncPatientbtn, visitId, ancRegId, patientType)
+
+                populateDischargeModal(dischargeModal, consultationReviewBtn, visitId)
+
                 const [modal, div, displayFunction, vitalSignsTable, vitalSignsChart, id, url, suffixId] = isAnc ? [ancConsultationReviewModal, ancConsultationReviewDiv, AncPatientReviewDetails, getAncVitalSignsTable, getAncVitalsignsChart, ancRegId, 'ancvitalsigns', 'AncConReview'] : [consultationReviewModal, regularConsultationReviewDiv, regularReviewDetails, getVitalSignsTableByVisit, getVitalsignsChartByVisit, visitId, 'vitalsigns', 'ConReview']
     
                 http.get(`/consultation/consultations/${visitId}`)
@@ -139,17 +135,14 @@ window.addEventListener('DOMContentLoaded', function () {
                         const patientBio = response.data.bio
     
                         openDoctorModals(modal, div, patientBio)
-                        addResultModal._element.querySelector('#patient').value = patientBio.patientId
-                        updateResultModal._element.querySelector('#patient').value = patientBio.patientId
-                        investigationAndManagementModal._element.querySelector('#patient').value = patientBio.patientId
-                        addResultModal._element.querySelector('#sponsorName').value = patientBio.sponsorName
-                        updateResultModal._element.querySelector('#sponsorName').value = patientBio.sponsorName
-                        investigationAndManagementModal._element.querySelector('#sponsorName').value = patientBio.sponsorName
+                        populatePatientSponsor(addResultModal, patientBio)
+                        populatePatientSponsor(updateResultModal, patientBio)
+                        populatePatientSponsor(investigationAndManagementModal, patientBio)
                             
                         consultations.forEach(line => {
                             iteration++
                             iteration > 1 ? count++ : ''
-                            div.innerHTML += displayFunction(iteration, getOrdinal, count, consultations.length, line, '')
+                            div.innerHTML += displayFunction(iteration, getOrdinal, count, consultations.length, line, '',isDoctorDone)
                         })
     
                         vitalSignsTable(`#vitalSignsConsultation${suffixId}`, id, modal)
@@ -211,26 +204,36 @@ window.addEventListener('DOMContentLoaded', function () {
 
             if (dischargedBtn){
                 dischargedBtn.setAttribute('disabled', 'disabled')
-                dischargeModal._element.querySelector('.patientInfoDiv').classList.remove('d-none')
-                dischargeModal._element.querySelector('#patientId').value = dischargedBtn.getAttribute('data-patient')
-                dischargeModal._element.querySelector('#sponsorName').value = dischargedBtn.getAttribute('data-sponsor')
-                dischargeModal._element.querySelector('#currentDiagnosis').value = dischargedBtn.getAttribute('data-diagnosis')
-                dischargeModal._element.querySelector('#admissionStatus').value = dischargedBtn.getAttribute('data-admissionstatus')
-                dischargeModal._element.querySelector('#dischargeReason').value = 'AHOR'//dischargedBtn.getAttribute('data-admissionstatus')
-                dischargeModal._element.querySelector('#saveDischargeBtn').setAttribute('data-id', dischargedBtn.getAttribute('data-id'))
+                populateDischargeModal(dischargeModal, dischargedBtn)
                 dischargeModal.show()
             }
         })
     })
 
-    document.querySelector('#dischargeBtn').addEventListener('click', function () {
+    dischargeBtn.addEventListener('click', function () {
         this.setAttribute('disabled', 'disabled')
-                dischargeModal._element.querySelector('.patientInfoDiv').classList.add('d-none')
-                dischargeModal._element.querySelector('#dischargeReason').value = 'AHOR'//dischargedBtn.getAttribute('data-admissionstatus')
-                dischargeModal._element.querySelector('#saveDischargeBtn').setAttribute('data-id', this.getAttribute('data-id'))
-                dischargeModal.show()
-                this.removeAttribute('disabled')
-    })    
+        dischargeModal.show()
+        this.removeAttribute('disabled')
+    })
+    
+    saveDischargeBtn.addEventListener('click', function () {
+        const id = this.getAttribute('data-id')
+        saveDischargeBtn.setAttribute('disabled', 'disabled')
+
+        http.patch(`/visits/discharge/${id}`, getDivData(dischargeDetailsDiv), {html:dischargeDetailsDiv})
+        .then((response) => {
+            if (response) {
+                clearDivValues(dischargeDetailsDiv)
+                clearValidationErrors(dischargeDetailsDiv)
+                dischargeModal.hide()
+            }
+            saveDischargeBtn.removeAttribute('disabled')
+        })
+        .catch((response) => {
+            console.log(response)
+            saveDischargeBtn.removeAttribute('disabled')
+        })
+    })
 
     document.querySelector('#waitingTable').addEventListener('click', function (event) {
         const consultBtn    = event.target.closest('.consultBtn')
@@ -287,10 +290,12 @@ window.addEventListener('DOMContentLoaded', function () {
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
     })
 
-    vitalsignsModal._element.addEventListener('hide.bs.modal', () => {
-        outPatientsVisitTable.draw()
-        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+    document.querySelectorAll('#dischargeModal, #vitalsignsModal, #ancVitalsignsModal').forEach(modal => {
+        modal.addEventListener('hide.bs.modal', () => {
+            outPatientsVisitTable.draw()
+            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+        })
     })
 
     // manipulating all known clinical info div
@@ -532,9 +537,9 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelectorAll('#newConsultationModal, #ancConsultationModal, #ancReviewModal, #newReviewModal, #specialistConsultationModal, #vitalsignsModal, #ancVitalsignsModal').forEach(modal => {
+    document.querySelectorAll('#newConsultationModal, #ancConsultationModal, #ancReviewModal, #newReviewModal, #specialistConsultationModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function(event) {
-            modal._element.id == 'vitalsignsModal' || modal._element.id == 'ancVitalsignsModal' ? '' : doctorsModalClosingTasks(event, modal, textareaHeight)
+            doctorsModalClosingTasks(event, modal, textareaHeight)
             outPatientsVisitTable.draw()
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''

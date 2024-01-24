@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     return new DataTable('#'+tableId, {
@@ -129,12 +129,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
             {data: row => admissionStatus(row)},
             {
                 sortable: false,
-                data: row =>  `
-                <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }" data-ancregid="${row.ancRegId}">Details</button>
-                </div>
-                `      
-            },
+                data: row => detailsBtn(row)},
         ]
     });
 }

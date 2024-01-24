@@ -65,12 +65,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) =
             {data: row => admissionStatus(row)},
             {
                 sortable: false,
-                data: row =>  `
-                <div class="d-flex flex-">
-                <button class="btn btn-outline-primary billingDetailsBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-diagnosis="${ row.diagnosis }" data-doctor="${ row.doctor }" data-came="${ row.cameFormatted }" data-sponsor="${ row.sponsor }" data-sponsorcat="${ row.sponsorCategory }">Details</button>
-                </div>
-                `      
-            },
+                data: row => detailsBtn(row)},
         ]
     });
 }

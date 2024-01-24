@@ -234,7 +234,7 @@ function loadingSpinners() {
 const detailsBtn = (row) => {
     return `
             <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }" data-ancregid="${row.ancRegId}">Details</button>
+                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">Details</button>
             </div>
             `      
 }
@@ -242,7 +242,7 @@ const detailsBtn = (row) => {
 const reviewBtn = (row) => {
     return `
             <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patientType="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}">Review</button>
+                <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patientType="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">Review</button>
             </div>
             `      
 }
@@ -274,15 +274,15 @@ const displayPaystatus = (row, credit, NHIS) => {
 const admissionStatus = (row) => {
     return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
     `<div class="d-flex flex-">
-        <button class="btn fw-bold text-primary tooltip-test dischargedBtn" title="Inpatient" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}">
+        <button class="d-flex flex- btn fw-bold text-primary tooltip-test dischargedBtn" title="Inpatient" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">
         <i class="bi bi-hospital-fill"></i>
-        ${row.dicharged ? '<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-primary" title="discharged"></i>' : ''}
+        ${row.dicharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged"></i>` : ''}
         </button>
     </div>` :
     `<div class="d-flex flex-">
-        <button class="btn fw-bold tooltip-test dischargedBtn" title="Outpatient" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}">
+        <button class="d-flex flex- btn fw-bold tooltip-test dischargedBtn" title="Outpatient" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">
         <i class="bi bi-hospital"></i>
-        ${row.discharged ? '<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-primary" title="discharged"></i>' : ''}
+        ${row.reason ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged"></i>` : ''}
         </button>
     </div>`
 }
@@ -346,5 +346,58 @@ const resetFocusEndofLine = (element) => {
         element.value = value
     }, 1)
 }
+
+const dischargeColour = (reason) => {
+    switch(reason) {
+        case 'Treated':
+            return 'primary'
+          break;
+        case 'AHOR':
+            return 'warning'
+          break;
+        case 'Referred':
+            return 'info'
+            break;
+        case 'DAMA':
+            return 'danger'
+            break;
+        case 'LTFU':
+            return 'secondary'
+            break;
+        case 'Diceased':
+            return 'dark'
+            break;
+        default:
+          return ''
+      }
+}
+
+const populateConsultationModal = (modal, btn, visitId, ancRegId, patientType) => {
+    btn.setAttribute('data-id', visitId)
+    btn.setAttribute('data-ancregid', ancRegId)
+    btn.setAttribute('data-patientType', patientType)
+    modal._element.querySelector('#saveConsultationBtn').setAttribute('data-patientType', patientType)
+}
+
+const populateDischargeModal = (modal, btn) => {
+    modal._element.querySelector('#patientId').value = btn.getAttribute('data-patient')
+    modal._element.querySelector('#sponsorName').value = btn.getAttribute('data-sponsor')
+    modal._element.querySelector('#currentDiagnosis').value = btn.getAttribute('data-diagnosis')
+    modal._element.querySelector('#admissionStatus').value = btn.getAttribute('data-admissionstatus')
+    modal._element.querySelector('#reason').value = btn.getAttribute('data-reason')
+    modal._element.querySelector('#remark').value = btn.getAttribute('data-remark')
+    modal._element.querySelector('#doctor').innerHTML = btn.getAttribute('data-doctor')
+    modal._element.querySelector('#saveDischargeBtn').setAttribute('data-id', btn.getAttribute('data-id'))
+}
+
+const populatePatientSponsor = (modal, data) => {
+    modal._element.querySelector('#patient').value = data.patientId
+    modal._element.querySelector('#sponsorName').value = data.sponsorName
     
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus}    
+    // updateResultModal._element.querySelector('#sponsorName').value = patientBio.sponsorName
+    // updateResultModal._element.querySelector('#patient').value = patientBio.patientId
+    // investigationAndManagementModal._element.querySelector('#patient').value = patientBio.patientId
+    // investigationAndManagementModal._element.querySelector('#sponsorName').value = patientBio.sponsorName
+}
+    
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor}    

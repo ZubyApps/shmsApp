@@ -92,6 +92,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/waiting', [VisitController::class, 'loadWaitingTable']);
         Route::get('/load/consulted/', [VisitController::class, 'loadAllVisits']);
         Route::get('/load/consulted/inpatients', [VisitController::class, 'loadInpatientsVisits']);      
+        Route::patch('discharge/{visit}', [VisitController::class, 'dischargePatient']);
         Route::delete('/{visit}', [VisitController::class, 'destroy']);
     })->name('Visits');
     

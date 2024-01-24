@@ -124,6 +124,9 @@ class NurseService
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
+                'reason'            => $visit->discharge_reason,
+                'remark'            => $visit->discharge_remark ?? '',
+                'doctor'            => $visit->doctor_done_by ?? ''
             ];
          };
     }

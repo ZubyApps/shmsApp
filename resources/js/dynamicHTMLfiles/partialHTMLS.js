@@ -359,11 +359,11 @@ const files = (line) => {
         </table>`
 }
 
-const updateInvestigationAndManagement = (length, iteration, line) => {
+const updateInvestigationAndManagement = (length, iteration, line, isDoctorDone) => {
     return ` 
                 <div class="investigationAndManagmentDiv mt-2 active" data-div="${iteration}" data-goto=#gotoResource${iteration}>
                     <div class="d-flex justify-content-center">
-                        <button type="button" id="updateResourceListBtn" data-conid="${line.id}" data-visitid="${line.visitId}" data-btn="${iteration}" data-last="${length > iteration ? iteration : 'last'}" class="btn btn-primary">
+                        <button type="button" id="updateResourceListBtn" data-conid="${line.id}" data-visitid="${line.visitId}" data-btn="${iteration}" data-last="${length > iteration || isDoctorDone ? iteration : 'last'}" class="btn btn-primary">
                             Update Resources
                             <i class="bi bi-prescription"></i>
                         </button>
