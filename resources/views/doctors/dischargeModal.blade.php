@@ -13,7 +13,7 @@
                         <div class="row">
                             <x-form-div class="col-xl-6">
                                 <x-input-span id="patientLabel">Patient</x-input-span>
-                                <x-form-input name="patientId" id="patientId" readonly />
+                                <x-form-input name="patient" id="patient" readonly />
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span id="sponsorNameLabel">Sponsor Name</x-input-span>
@@ -37,12 +37,12 @@
                                 <select class="form-select form-select-md" id="reason"
                                    name="reason" {{ $isNurses ? 'disabled' : '' }}>
                                     <option value="">Select Option</option>
-                                    <option value="Treated">Treated</option>
+                                    <option value="Recovered">Recovered</option>
                                     <option value="AHOR">AHOR</option>
                                     <option value="Referred">Referred</option>
                                     <option value="DAMA">DAMA</option>
                                     <option value="LTFU">LTFU</option>
-                                    <option value="Diceased">Diceased</option>
+                                    <option value="Deceased">Deceased</option>
                                 </select>
                             </x-form-div>
                             <x-form-div class="col-xl-6">

@@ -21,7 +21,7 @@ Class SurgeryNoteService
     {
        $surgeryNote = $user->surgeryNotes()->create([
             'date'                  => $data->date,
-            'type_of_operaton'      => $data->typeOfOperation,
+            'type_of_operation'     => $data->typeOfOperation,
             'type_of_aneasthesia'   => $data->typeOfAneasthesia,
             'surgeon'               => $data->surgeon,
             'assistant_surgeon'     => $data->assistantSurgeon,
@@ -54,7 +54,7 @@ Class SurgeryNoteService
             'baby_out'              => $data->babyOut,
             'sex'                   => $data->sex,
             'apgar_score'           => $data->apgarScore,
-            'weight'                => $data->weight,
+            'weight'                => $data->birthWeight,
             'cs_surgeon'            => $data->csSsurgeon,
             'cs_anaesthetist'       => $data->csAnaesthetist,
             'consultation_id'       => $data->conId,
@@ -68,7 +68,7 @@ Class SurgeryNoteService
     {
         $surgeryNote->update([
             'date'                  => $data->date,
-            'type_of_operaton'      => $data->typeOfOperation,
+            'type_of_operation'     => $data->typeOfOperation,
             'type_of_aneasthesia'   => $data->typeOfAneasthesia,
             'surgeon'               => $data->surgeon,
             'assistant_surgeon'     => $data->assistantSurgeon,
@@ -101,7 +101,7 @@ Class SurgeryNoteService
             'baby_out'              => $data->babyOut,
             'sex'                   => $data->sex,
             'apgar_score'           => $data->apgarScore,
-            'weight'                => $data->weight,
+            'weight'                => $data->birthWeight,
             'cs_surgeon'            => $data->csSsurgeon,
             'cs_anaesthetist'       => $data->csAnaesthetist,
             'user_id'               => $user->id
@@ -130,18 +130,18 @@ Class SurgeryNoteService
        
     }
 
-    public function getDeliveryNoteTransformer(): callable
+    public function getSurgeryNoteTransformer(): callable
     {
        return  function (SurgeryNote $surgeryNote) {
             return [
                 'id'                => $surgeryNote->id,
                 'date'              => (new Carbon($surgeryNote->date))->format('d/m/y'),
-                'timeAdmitted'      => (new Carbon($surgeryNote->time_of_admission))->format('d/m/y g:ia'),
-                'timeDelivered'     => (new Carbon($surgeryNote->time_of_delivery))->format('d/m/y g:ia'),
-                'modeOfDelivery'    => $surgeryNote->mode_of_delivery,
-                'ebl'               => $surgeryNote->ebl,
-                'note'              => $surgeryNote->note,
-                'nurse'             => $surgeryNote->user->username
+                'typeOfOperation'   => $surgeryNote->type_of_operation,
+                'typeOfAneasthesia' => $surgeryNote->type_of_aneasthesia,
+                'surgeon'           => $surgeryNote->surgeon,
+                'surgeonsNotes'     => $surgeryNote->surgeons_notes,
+                'postOpNotes'       => $surgeryNote->post_op_notes,
+                'doctor'            => $surgeryNote->user->username
             ];
          };
     }

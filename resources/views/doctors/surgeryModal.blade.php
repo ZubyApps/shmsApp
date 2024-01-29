@@ -1,3 +1,4 @@
+@vite(['resources/js/deliveryNoteMasks.js'])
 <div class="modal fade" id="{{ $id }}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -12,49 +13,49 @@
                         <div class="row">
                             <x-form-div class="col-xl-4">
                                 <x-input-span>Date<x-required-span /></x-input-span>
-                                <x-form-input type="date" name="date" value="" />
+                                <x-form-input type="date" name="date" id="date" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-4">
                                 <x-input-span>Type of Operation<x-required-span /></x-input-span>
-                                <x-form-input name="typeOfOperation" />
+                                <x-form-input name="typeOfOperation" id="typeOfOperation" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-4">
                                 <x-input-span>Type of Aneasthesia<x-required-span /></x-input-span>
-                                <x-form-input name="typeOfAneasthesia" />
+                                <x-form-input name="typeOfAneasthesia" id="typeOfAneasthesia" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Surgeon<x-required-span /></x-input-span>
-                                <x-form-input name="surgeon" />
+                                <x-form-input name="surgeon" id="surgeon" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Assistant Surgeon</x-input-span>
-                                <x-form-input name="assistantSurgeon" />
+                                <x-form-input name="assistantSurgeon" id="assistantSurgeon" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Aneasthetist</x-input-span>
-                                <x-form-input name="aneasthetist" />
+                                <x-form-input name="aneasthetist" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Scrub Nurse<x-required-span /></x-input-span>
-                                <x-form-input name="scrubNurse" />
+                                <x-form-input name="scrubNurse" id="scrubNurse" :readonly="$isView"/>
                             </x-form-div>
                         </div>
                         <div class="row">
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Surgical Procedure</x-input-span>
-                                <x-form-textarea name="surgicalProcedure"></x-form-textarea>
+                                <x-form-textarea name="surgicalProcedure" id="surgicalProcedure" :readonly="$isView"></x-form-textarea>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Surgeon's Notes<x-required-span /></x-input-span>
-                                <x-form-textarea name="surgeonsNotes"></x-form-textarea>
+                                <x-form-textarea name="surgeonsNotes" id="surgeonsNotes" :readonly="$isView"></x-form-textarea>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Aneasthetist's Notes</x-input-span>
-                                <x-form-textarea name="anaesthetisitsNotes"></x-form-textarea>
+                                <x-form-textarea name="aneasthetistsNotes" :readonly="$isView"></x-form-textarea>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Post Operarion <br> Notes<x-required-span /></x-input-span>
-                                <x-form-textarea name="postOperationNotes" ></x-form-textarea>
+                                <x-form-textarea name="postOperationNotes" id="postOperationNotes" :readonly="$isView"></x-form-textarea>
                             </x-form-div>
                         </div>
                     </div>
@@ -66,90 +67,90 @@
                         <div class="row">
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Pre-assessment</x-input-span>
-                                <x-form-input name="preAssessment" />
+                                <x-form-input name="preAssessment" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Indication</x-input-span>
-                                <x-form-input name="indication" />
+                                <x-form-input name="indication" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Surgery</x-input-span>
-                                <x-form-input name="surgery" />
+                                <x-form-input name="surgery" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Plan</x-input-span>
-                                <x-form-input name="plan" />
+                                <x-form-input name="plan" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Pre-med</x-input-span>
-                                <x-form-input name="preMed" />
+                                <x-form-input name="preMed" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Baseline</x-input-span>
-                                <x-form-input name="baseline" />
+                                <x-form-input name="baseline" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Cannulation</x-input-span>
-                                <x-form-input name="cannulation" />
+                                <x-form-input name="cannulation" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Preloading</x-input-span>
-                                <x-form-input name="preloading" />
+                                <x-form-input name="preloading" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Induction</x-input-span>
-                                <x-form-input name="induction" />
+                                <x-form-input name="induction" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Maintenance</x-input-span>
-                                <x-form-input name="maintenance" />
+                                <x-form-input name="maintenance" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Infusion</x-input-span>
-                                <x-form-input name="infusion" />
+                                <x-form-input name="infusion" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Analgesics</x-input-span>
-                                <x-form-input name="analgesics" />
+                                <x-form-input name="analgesics" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Transfusion</x-input-span>
-                                <x-form-input name="transfusion" />
+                                <x-form-input name="transfusion" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Antibiotics</x-input-span>
-                                <x-form-input name="antibiotics" />
+                                <x-form-input name="antibiotics" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>KOS</x-input-span>
-                                <x-form-input name="kos" />
+                                <x-form-input name="kos" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>EOS</x-input-span>
-                                <x-form-input name="eos" />
+                                <x-form-input name="eos" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>EBL</x-input-span>
-                                <x-form-input name="ebl" />
+                                <x-form-input name="ebl" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Immediate post-op</x-input-span>
-                                <x-form-input name="immediatePostOp" />
+                                <x-form-input name="immediatePostOp" id="immediatePostOp" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Tourniquet time</x-input-span>
-                                <x-form-input name="tourniquetTime" />
+                                <x-form-input type="datetime-local" name="tourniquetTime" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Tourniquet out</x-input-span>
-                                <x-form-input name="tourniquetOut" />
+                                <x-form-input type="datetime-local" name="tourniquetOut" :readonly="$isView"/>
                             </x-form-div>
                         </div>
                         <x-form-span>Baby Details </x-form-span>
                         <div class="row">
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Baby out</x-input-span>
-                                <x-form-input type="datetime-local" name="babyOut" />
+                                <x-form-input type="datetime-local" name="babyOut" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Sex</x-input-span>
@@ -162,19 +163,19 @@
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Apgar Score</x-input-span>
-                                <x-form-input name="apgarScore" />
+                                <x-form-input name="apgarScore" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
-                                <x-input-span>Weight</x-input-span>
-                                <x-form-input name="weight" />
+                                <x-input-span>Birth Weight</x-input-span>
+                                <x-form-input name="birthWeight" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>CS Surgeon</x-input-span>
-                                <x-form-input name="csSsurgeon" />
+                                <x-form-input name="csSurgeon" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>CS Anaesthetist</x-input-span>
-                                <x-form-input name="csAnaesthetist" />
+                                <x-form-input name="csAneasthetist" :readonly="$isView"/>
                             </x-form-div>
                         </div>
                     </div>
@@ -186,7 +187,7 @@
                     <i class="bi bi-x-circle me-1"></i>
                     Close
                 </button>
-                <button type="button" id="{{ $isUpdate ? 'saveBtn' : 'createBtn' }}" class="btn bg-primary text-white">
+                <button type="button" id="{{ $isUpdate ? 'saveSurgeryNoteBtn' : 'createSurgeryNoteBtn' }}" class="btn btn-primary {{ $isView ? 'd-none' : '' }}">
                     <i class="bi bi-check-circle me-1"></i>
                     {{ $isUpdate ? 'Update' : 'Create' }}
                 </button>

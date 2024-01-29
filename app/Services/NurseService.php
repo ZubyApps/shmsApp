@@ -126,7 +126,7 @@ class NurseService
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
                 'reason'            => $visit->discharge_reason,
                 'remark'            => $visit->discharge_remark ?? '',
-                'doctor'            => $visit->doctor_done_by ?? ''
+                'doctor'            => $visit->doctorDoneBy->username ?? ''
             ];
          };
     }

@@ -1,168 +1,148 @@
 @extends('layout')
 
 @section('content')
+@vite(['resources/js/users.js'])
 
+@include('auth.newstaffModal', ['title' => 'Register Staff', 'isUpdate' => false, 'id' => 'newStaffModal'])
+@include('auth.newstaffModal', ['title' => 'Edit Staff', 'isUpdate' => true, 'id' => 'editStaffModal'])
 
-<div class="mb-2 d-flex justify-content-center">
-    <!-- first row -->
-    <div class="container form-control p-3">
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
-
-            <x-form-label>Sign Up New Staff</x-form-label>
-            <div class="row">
-                <x-form-div class="">
-                    <x-input-span>First Name<x-required-span /></x-input-span>
-                    <x-form-input name="firstName" :value="old('firstName')"/>
-                </x-form-div>
-                    <x-input-error :messages="$errors->get('firstName')" class="" />
-                
-
-                <x-form-div class="">
-                    <x-input-span>Middle Name<x-required-span /></x-input-span>
-                    <x-form-input name="middleName" :value="old('middleName')"/>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('middleName')" class="" />
-
-                <x-form-div class="">
-                    <x-input-span>Last Name<x-required-span /></x-input-span>
-                    <x-form-input name="lastName" :value="old('lastName')"/>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('lastName')" class="" />
+<div class="container p-1 mt-5 bg-white">
+    <div class="container p-1 mt-5 bg-white">
+        <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="activeListOffcanvas2"
+        aria-labelledby="activeListOffcanvasLabel" aria-expanded="false">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-primary" id="activeListOffcanvasLabel">List of Waiting Patients</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="py-4 ">
+                <table id="activeTable" class="table table-hover align-middle table-sm bg-primary">
+                    <thead>
+                        <tr>
+                            <th>Logged in</th>
+                            <th>Name</th>
+                            <th>Designation</th>
+                            <th>Department</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
+        </div>
+    </div>
 
-            <div class="row">
-                <x-form-div class="">
-                    <x-input-span>Username<x-required-span /></x-input-span>
-                    <x-form-input name="username" :value="old('username')"/>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('username')" class="" />
-
-                <x-form-div class="">
-                    <x-input-span>Phone No.<x-required-span /></x-input-span>
-                    <x-form-input type="number" name="phone_no" :value="old('phone_no')"/>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('phone_no')" class="" />
-
-                <x-form-div class="">
-                    <x-input-span>Email</x-input-span>
-                    <x-form-input name="email" autocomplete="username" :value="old('email')"/>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('email')" class="" />
+    {{-- <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="offcanvasInvestigations"
+        aria-labelledby="offcanvasInvestigationsLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-primary" id="offcanvasInvestigations">Investigations</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas2-body">
+            <div class="my-2 form-control">
+                <span class="fw-bold text-primary"> Outpatient's Investigations </span>
+                <div class="row overflow-auto m-1">
+                    <table id="outpatientInvestigationsTable" class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Doctor</th>
+                                <th>Patient</th>
+                                <th>Diagnosis</th>
+                                <th>Investigation</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
+        </div>
+    </div> --}}
 
-            <div class="row">
-                <x-form-div class="">
-                    <x-input-span>Address</x-input-span>
-                    <x-form-textarea name="address" :value="old('address')" rows="1"></x-form-textarea>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('address')" class="" />
+    <div class="text-start mb-4">
+        <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="activeUsersBtn" data-bs-target="#activeListOffcanvas2" aria-controls="activeListOffcanvas2">
+            <i class="bi bi-list-check"></i>
+            Active Users
+        </button>
+    </div>
 
-                <x-form-div class="">
-                    <x-input-span>Highest Qaulification</x-input-span>
-                    <x-form-input name="highestQualification" :value="old('highestQualification')"/>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('highestQualification')" class="" />
+    <div>
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <button class="nav-link active" id="nav-users-tab" data-bs-toggle="tab" data-bs-target="#nav-users" 
+                    type="button" role="tab" aria-controls="nav-outPatients" aria-selected="true">All Users</button>
 
-                <x-form-div class="">
-                    <x-input-span>Date Of Birth</x-input-span>
-                    <x-form-input type="date" name="dateOfBirth" :value="old('dateOfBirth')"/>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('dateOfBirth')" class="" />
+                {{-- <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients"
+                    type="button" role="tab" aria-controls="nav-inPatients" aria-selected="false">Inpatients</button>
+
+                <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients"
+                    type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button> --}}
             </div>
-
-            <div class="row">
-                <x-form-div class="">
-                    <x-input-span>Sex</x-input-span>
-                    <select class="form-select form-select-md" name="sex" :value="old('sex')">
-                        <option value="">Select Sex</option>
-                        <option value="female">Female</option>
-                        <option value="male">Male</option>
-                    </select>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('sex')" class="" />
-
-                <x-form-div class="">
-                    <x-input-span id="maritalStatusLabel">Marital Status<x-required-span /></x-input-span>
-                    <select class="form-select form-select-md" name="maritalStatus" :value="old('maritalStatus')">
-                        <option value="">Select Class</option>
-                        <option value="Single">Single</option>
-                        <option value="Married">Married</option>
-                        <option value="Separated">Separated</option>
-                        <option value="Divorced">Divorced</option>
-                        <option value="Widow">Widow</option>
-                        <option value="Widower">Widower</option>
-                    </select>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('maritalStatus')" class="" />
-
-                <x-form-div class="">
-                    <x-input-span>State of Origin</x-input-span>
-                    <x-select-states name="stateOfOrigin" :value="old('stateOfOrigin')"></x-select-states>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('stateOfOrigin')" class="" />
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+            <!-- patients table -->
+            <div class="tab-pane fade show active" id="nav-outPatients" role="tabpanel"
+                aria-labelledby="nav-outPatients-tab" tabindex="0">
+                <div class="py-4">
+                    <table id="outPatientsVisitTable" class="table table-hover align-middle table-sm">
+                        <thead>
+                            <tr>
+                                <th>Seen</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Current Diagnosis</th>
+                                <th>Sponsor</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
-
-            <div class="row">
-                <x-form-div class="">
-                    <x-input-span>Next of Kin</x-input-span>
-                    <x-form-input name="nextOfKin" :value="old('nextOfKin')"/>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('nextOfKin')" class="" />
-
-                <x-form-div class="">
-                    <x-input-span>Next of Kin Relationship</x-input-span>
-                    <x-select-nok name="nextOfKinRship" :value="old('nextOfKinRship')"></x-select-nok>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('nextOfKinRship')" class="" />
-
-                <x-form-div class="">
-                    <x-input-span>Next of Kin Phone</x-input-span>
-                    <x-form-input type="number" name="nextOfKinPhone" :value="old('nextOfKinPhone')"/>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('nextOfKinPhone')" class="" />
+            <!-- inpatients table -->
+            <div class="tab-pane fade" id="nav-inPatients" role="tabpanel" aria-labelledby="nav-inPatients-tab"
+                tabindex="0">
+                <div class="py-4 ">
+                    <table id="inPatientsVisitTable" class="table table-hover align-middle table-sm">
+                        <thead>
+                            <tr>
+                                <th>Seen</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Current Diagnosis</th>
+                                <th>Sponsor</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
-
-            <div class="row">
-                <x-form-div class="">
-                    <x-input-span>Date of Employment</x-input-span>
-                    <x-form-input type="date" name="dateOfEmployment" :value="old('dateOfEmployment')"/>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('dateOfEmployment')" class="" />
-
-                <x-form-div class="">
-                    <x-input-span>Date Of Exit</x-input-span>
-                    <x-form-input type="date" name="dateOfExit" :value="old('dateOfExit')"/>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('dateOfExit')" class="" />
-                    
-                <x-form-div class="">
-                    <x-input-span>Department</x-input-span>
-                    <x-form-input name="department" :value="old('department')"/>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('department')" class="" />
+            <!-- Anc table -->
+            <div class="tab-pane fade" id="nav-ancPatients" role="tabpanel" aria-labelledby="nav-ancPatients-tab"
+                tabindex="0">
+                <div class="py-4 ">
+                    <table id="ancPatientsVisitTable" class="table table-hover align-middle table-sm">
+                        <thead>
+                            <tr>
+                                <th>Seen</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Current Diagnosis</th>
+                                <th>Sponsor</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
-
-            <div class="row">
-                <x-form-div class="">
-                    <x-input-span>Password</x-input-span>
-                    <x-form-input type="password" name="password" autocomplete="new-password"/>
-                </x-form-div>
-                <x-input-error :messages="$errors->get('password')" class="" />
-
-                <x-form-div class="">
-                    <x-input-span>Confirm Password</x-input-span>
-                    <x-form-input type="password" name="password_confirmation" />
-                </x-form-div>
-                <x-input-error :messages="$errors->get('password_confirmation')" class="" />
-            </div>
-            <div class="modal-footer mt-3">
-                <button type="submit" id="createBtn" class="btn bg-primary text-white">
-                    <i class="bi bi-check-circle me-1"></i>
-                    Sign Up
-                </button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 

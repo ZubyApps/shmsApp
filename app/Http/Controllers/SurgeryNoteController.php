@@ -5,15 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\SurgeryNote;
 use App\Http\Requests\StoreSurgeryNoteRequest;
 use App\Http\Requests\UpdateSurgeryNoteRequest;
+use App\Http\Resources\SurgeryNoteResource;
+use App\Services\DatatablesService;
+use App\Services\SurgeryNoteService;
+use Illuminate\Http\Request;
 
 class SurgeryNoteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        private readonly DatatablesService $datatablesService, 
+        private readonly SurgeryNoteService $surgeryNoteService
+    )
     {
-        //
+        
     }
 
     /**
@@ -29,7 +33,9 @@ class SurgeryNoteController extends Controller
      */
     public function store(StoreSurgeryNoteRequest $request)
     {
-        //
+        $registeration = $this->surgeryNoteService->create($request, $request->user());
+        
+        return $registeration;
     }
 
     /**
@@ -40,12 +46,24 @@ class SurgeryNoteController extends Controller
         //
     }
 
+
+    public function loadSurgeryNoteTable(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sponsors = $this->surgeryNoteService->getSurgeryNotes($params, $request);
+       
+        $loadTransformer = $this->surgeryNoteService->getSurgeryNoteTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
+    }
+
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(SurgeryNote $surgeryNote)
     {
-        //
+       return new SurgeryNoteResource($surgeryNote);
     }
 
     /**
@@ -53,7 +71,7 @@ class SurgeryNoteController extends Controller
      */
     public function update(UpdateSurgeryNoteRequest $request, SurgeryNote $surgeryNote)
     {
-        //
+        return $this->surgeryNoteService->update($request, $surgeryNote, $request->user());
     }
 
     /**

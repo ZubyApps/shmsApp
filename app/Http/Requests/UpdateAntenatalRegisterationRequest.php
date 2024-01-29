@@ -27,7 +27,7 @@ class UpdateAntenatalRegisterationRequest extends FormRequest
             'previousPregnancies'   => ['required'],
             'totalPregnancies'      => ['required'],
             'noOfLivingChildren'    => ['required'],
-            'rvst'                  => ['required']
+            // 'rvst'                  => ['required']
         ];
     }
 }

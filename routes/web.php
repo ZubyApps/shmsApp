@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\AddResourceController;
 use App\Http\Controllers\AddResourceStockController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AncVitalSignsController;
 use App\Http\Controllers\AntenatalRegisterationController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DeliveryNoteController;
@@ -25,9 +25,9 @@ use App\Http\Controllers\ResourceSubCategoryController;
 use App\Http\Controllers\ResourceSupplierController;
 use App\Http\Controllers\SponsorCategoryController;
 use App\Http\Controllers\SponsorController;
+use App\Http\Controllers\SurgeryNoteController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VitalSignsController;
-use App\Models\AddResource;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,6 +50,9 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+    Route::post('register', [RegisteredUserController::class, 'store']);
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -244,6 +247,14 @@ Route::middleware('auth')->group(function () {
         Route::patch('/discount/{visit}', [BillingController::class, 'saveDiscount']);
         Route::delete('/payment/delete/{payment}', [BillingController::class, 'destroy']);
         Route::get('/load/outstandings', [BillingController::class, 'loadVisitsWithOutstandingBills']);
+    });
+
+    Route::prefix('surgerynote')->group(function () {
+        Route::post('', [SurgeryNoteController::class, 'store']);
+        Route::get('load/details', [SurgeryNoteController::class, 'loadSurgeryNoteTable']);
+        Route::get('/{surgeryNote}', [SurgeryNoteController::class, 'edit']);
+        Route::patch('/{surgeryNote}', [SurgeryNoteController::class, 'update']);
+        Route::delete('', [SurgeryNoteController::class, 'destroy']);
     });
 
     Route::prefix('deliverynote')->group(function () {

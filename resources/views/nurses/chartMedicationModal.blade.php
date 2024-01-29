@@ -16,7 +16,7 @@
                                 </x-form-div>
                                 <x-form-div>
                                     <x-input-span>Sponsor</x-input-span>
-                                    <x-form-input name="sponsor" value="" id="sponsor" readonly/>
+                                    <x-form-input name="sponsorName" value="" id="sponsorName" readonly/>
                                 </x-form-div>
                                 <x-form-div>
                                     <x-input-span>Treatment</x-input-span>

@@ -57,7 +57,6 @@ const getWaitingTable = (tableId) => {
 }
 
 const getPatientsVisitsByFilterTable = (tableId, filter) => {
-    const anc = filter == 'ANC'
     return new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/nurses/load/consulted/nurses', data: {
@@ -75,7 +74,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
             {data: "diagnosis"},
             {data: row => sponsorAndPayPercent(row)},
             {data: row => function () { 
-                if (anc) {
+                if (row.patientType == 'ANC') {
                         return `
                         <div class="d-flex flex" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }" data-patientid="${ row.patientId }" data-ancregid="${ row.ancRegId }">
                                 ${ row.ancRegId ? '<i class="btn btn-outline-primary bi bi-check-circle-fill tooltip-test" title="view" id="viewRegisterationBtn"></i> <i class="ms-1 btn btn-outline-primary bi bi-pencil-fill tooltip-test" title="edit" id="editRegisterationBtn"></i>': '<i class="btn btn-outline-primary bi bi-plus-square ancRegisterationBtn tooltip-test" title="register"></i>' }
@@ -91,7 +90,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                 }
             },
             {data: row => function () {
-                if (anc) {
+                if (row.patientType == 'ANC') {
                     if (row.ancVitalSigns < 1){
                         return `
                             <div class="d-flex flex-">
@@ -326,7 +325,7 @@ const getUpcomingMedicationsTable = (tableId, bsComponent, type) => {
     return allMedicationChartTable
 }
 
-const getDeliveryNoteTable = (tableId, conId) => {
+const getDeliveryNoteTable = (tableId, conId, view) => {
     return new DataTable('#'+tableId, {
         serverSide: true,
         ajax:   {url: '/deliverynote/load/details', data: {
@@ -347,14 +346,14 @@ const getDeliveryNoteTable = (tableId, conId) => {
             {data: "nurse"},
             {data: row => function () {
                 return `
-                <div class="d-flex flex-">
-                    <button class=" btn btn-outline-primary viewDeliveryNoteBtn tooltip-test" title="See more" data-id="${row.id}" data-table="${tableId}">
+                <div class="d-flex flex- ${view ? '' : 'd-none'}">
+                    <button class=" btn btn-outline-primary viewDeliveryNoteBtn tooltip-test" title="view" id="viewDeliveryNoteBtn" data-id="${row.id}" data-table="${tableId}">
                         <i class="bi bi-zoom-in"></i>
                     </button>
-                    <button class="ms-1 btn btn-outline-primary updateDeliveryNoteBtn tooltip-test" title="edit" data-id="${row.id}" data-table="${tableId}">
+                    <button class="ms-1 btn btn-outline-primary updateDeliveryNoteBtn tooltip-test" title="update" id="updateDeliveryNoteBtn" data-id="${row.id}" data-table="${tableId}">
                         <i class="bi bi-pencil-fill"></i>
                     </button>
-                    <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${row.id}" data-table="${tableId}">
+                    <button type="submit" class="ms-1 btn btn-outline-primary deleteDeliveryNoteBtn tooltip-test" title="delete" data-id="${row.id}" data-table="${tableId}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>
                 </div>

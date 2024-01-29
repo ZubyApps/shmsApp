@@ -40,7 +40,6 @@ class ConsultationService
                 "remarks"                   => $data->remarks,
                 "phys_plan"                 => $data->plan,
                 "complaint"                 => $data->complaint,
-                "ultrasound_report"         => $data->ultrasoundReport,
                 "p_position"                => $data->presentationAndPosition,
                 "ho_fundus"                 => $data->heightOfFundus,
                 "roppt_brim"                => $data->relationOfPresentingPartToBrim,

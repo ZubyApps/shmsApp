@@ -20,13 +20,16 @@
                                         @include('patients.partials.known-clinical-info', ['disabled' => true])
                                         <div class="d-flex justify-content-center">
                                             <button type="button" id="updateKnownClinicalInfoBtn"
-                                                class="btn bg-primary text-white" data-btn="conReview">
-                                                Update
+                                            class="btn bg-primary text-white" data-btn="conReview">
+                                            Update
                                             </button>
                                         </div>
                                     </div>   
                                 </div>
                             </div>
+                            @if ($isAnc)
+                            <x-current-lmp-calculation></x-current-lmp-calculation>  
+                            @endif
                             <div class="mb-2 form-control">
                                 <x-form-span>Vital Signs</x-form-span>
                                 <div class="row overflow-auto my-3">

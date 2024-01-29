@@ -117,14 +117,14 @@ const getAncPatientsVisitTable = (tableId, filter) => {
                     if (row.ancVitalSigns < 1){
                         return `
                             <div class="d-flex flex-">
-                                <button class=" btn btn-outline-primary ancVitalSignsBtn  tooltip-test" title="${row.ancRegId ? 'add vital signs' : 'no anc registeration'}" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-ancregid="${row.ancRegId}" id="ancVitalSignsBtn">
+                                <button class=" btn btn-outline-primary ancVitalSignsBtn  tooltip-test" title="${row.ancRegId ? 'add anc vital signs' : 'no anc registeration'}" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-ancregid="${row.ancRegId}" id="ancVitalSignsBtn">
                                     <i class="bi bi-plus-square-fill"></i>
                                 </button>
                             </div>`
                         } else {
                             return `
                             <div class="d-flex flex-">
-                                <button class=" btn btn-outline-primary ancVitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" id="ancVitalSignsBtn">
+                                <button class=" btn btn-outline-primary ancVitalSignsBtn tooltip-test" title="anc vitalsigns" data-id="${ row.id }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" id="ancVitalSignsBtn">
                                 <i class="bi bi-check-circle-fill">${row.ancVitalSigns}</i>
                                 </button>
                             </div>`
@@ -133,14 +133,14 @@ const getAncPatientsVisitTable = (tableId, filter) => {
                         if (row.vitalSigns < 1){
                             return `
                                 <div class="d-flex flex-">
-                                    <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                                    <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="add regular vitalsigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
                                         <i class="bi bi-plus-square-dotted"></i>
                                     </button>
                                 </div>`
                             } else {
                                 return `
                                 <div class="d-flex flex-">
-                                    <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                                    <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="regular vitalsigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
                                     <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
                                     </button>
                                 </div>`
@@ -318,7 +318,7 @@ const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
         ]
     });
 
-    modal._element.addEventListener('hidden.bs.modal', function () {
+    modal.addEventListener('hidden.bs.modal', function () {
         prescriptionTable.destroy()
     })
 
@@ -535,4 +535,44 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
     return treatmentTable
 }
 
-export {getOutpatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation}
+const getSurgeryNoteTable = (tableId, conId, view) => {
+    return new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:   {url: '/surgerynote/load/details', data: {
+            'conId': conId,
+        }},
+        orderMulti: true,
+        searching:false,
+        lengthChange: false,
+        language: {
+            emptyTable: 'No surgery'
+        },
+        columns: [
+            {data: "date"},
+            {data: "typeOfOperation"},
+            {data: "typeOfAneasthesia"},
+            {data: "surgeon"},
+            {data: "surgeonsNotes"},
+            {data: "postOpNotes"},
+            {data: "doctor"},
+            {data: row => function () {
+                return `
+                <div class="d-flex flex- ${view ? '' : 'd-none'}">
+                    <button class=" btn btn-outline-primary viewSurgeryNoteBtn tooltip-test" title="view" id="viewSurgerNoteBtn" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-zoom-in"></i>
+                    </button>
+                    <button class="ms-1 btn btn-outline-primary updateSurgeryNoteBtn tooltip-test" title="update" id="updateSurgeryNoteBtn" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button type="submit" class="ms-1 btn btn-outline-primary deleteSurgeryNoteBtn tooltip-test" title="delete" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+            `
+                }
+            },
+        ]
+    });
+}
+
+export {getOutpatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation, getSurgeryNoteTable}

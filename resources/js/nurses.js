@@ -1,10 +1,10 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
-import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator } from "./helpers"
+import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator } from "./helpers"
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import { getWaitingTable, getPatientsVisitsByFilterTable, getNurseTreatmentByConsultation, getMedicationChartByPrescription, getUpcomingMedicationsTable, getDeliveryNoteTable, getAncVitalSignsTable } from "./tables/nursesTables";
-import { getVitalSignsTableByVisit, getLabTableByConsultation } from "./tables/doctorstables";
+import { getVitalSignsTableByVisit, getLabTableByConsultation, getSurgeryNoteTable } from "./tables/doctorstables";
 import { getbillingTableByVisit } from "./tables/billingTables";
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -122,7 +122,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const [visitId, patientType, ancRegId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-patientType'), consultationDetailsBtn.getAttribute('data-ancregid')] 
                 const isAnc = patientType === 'ANC'
                 const [modal, div, displayFunction, vitalSignsTable, id, suffixId] = isAnc ? [ancTreatmentDetailsModal, ancTreatmentDiv, AncPatientReviewDetails, getAncVitalSignsTable, ancRegId, 'AncConDetails'] : [treatmentDetailsModal, regularTreatmentDiv, regularReviewDetails, getVitalSignsTableByVisit, visitId, 'ConDetails']
-                console.log(ancRegId)
+                populatePatientSponsor(chartMedicationModal, consultationDetailsBtn)
                 http.get(`/consultation/consultations/${visitId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
@@ -130,32 +130,22 @@ window.addEventListener('DOMContentLoaded', function () {
                             let count = 0
     
                             const consultations = response.data.consultations.data
-                            const patientBio = response.data.bio
+                            const patientBio    = response.data.bio
+                            const lmp           = response.data.latestLmp
     
                             openNurseModals(modal, div, patientBio)
-    
-                            chartMedicationModal._element.querySelector('#patient').value = patientBio.patientId
-                            chartMedicationModal._element.querySelector('#sponsor').value = patientBio.sponsorName
-    
+                            isAnc ? lmpCurrentCalculator(lmp.lmp, modal._element.querySelector('.lmpDetailsDiv')) : ''
                             const viewer = 'nurse'
                             consultations.forEach(line => {
                                 iteration++
     
                                 iteration > 1 ? count++ : ''
     
-                                // if (patientType === 'ANC') {
-                                //     treatmentDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
-                                // } else {
-                                //     treatmentDiv.innerHTML += regularReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
-                                // }
                                 div.innerHTML += displayFunction(iteration, getOrdinal, count, consultations.length, line, viewer)
                             })
                             vitalSignsTable(`#vitalSignsTableNurses${suffixId}`, id, modal)
-                            // getVitalSignsTableByVisit('#vitalSignsTableNurses', visitId, reviewDetailsModal)
-                            // getbillingTableByVisit('billingTable', visitId, reviewDetailsModal._element)
                             getbillingTableByVisit(`billingTable${suffixId}`, visitId, modal._element)
                             modal.show()
-    
                         }
                         consultationDetailsBtn.innerHTML = btnHtml
                         consultationDetailsBtn.removeAttribute('disabled')
@@ -167,23 +157,20 @@ window.addEventListener('DOMContentLoaded', function () {
             }
     
             if (vitalsignsBtn) {
+                vitalsignsBtn.setAttribute('disabled', 'disabled')
                 const isAnc = vitalsignsBtn.id == 'ancVitalSignsBtn'
-                const [btn, modal] = isAnc ? [vitalsignsBtn, ancVitalsignsModal] : [vitalsignsBtn, vitalsignsModal]
-                btn.setAttribute('disabled', 'disabled')
+                const [btn, modal, id, getTable] = isAnc ? [vitalsignsBtn, ancVitalsignsModal, vitalsignsBtn.getAttribute('data-ancregid'), getAncVitalSignsTable] : [vitalsignsBtn, vitalsignsModal, vitalsignsBtn.getAttribute('data-id'), getVitalSignsTableByVisit]
+
                 const tableId = '#' + modal._element.querySelector('.vitalsTable').id
-                const visitId = btn.getAttribute('data-id')
-                const ancRegId = btn.getAttribute('data-ancregid')
-                modal._element.querySelector('#patient').value = btn.getAttribute('data-patient')
-                modal._element.querySelector('#sponsor').value = btn.getAttribute('data-sponsor')
-                modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
-                modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-ancregid', ancRegId)
-    
+                populateVitalsignsModal(modal, btn, id)
+   
                 modal.show()
-                isAnc ? getAncVitalSignsTable(tableId, ancRegId, modal) : getVitalSignsTableByVisit(tableId, visitId, modal)
+                getTable(tableId, id, modal)
                 setTimeout(()=>{btn.removeAttribute('disabled')}, 2000)
             }
 
             if (ancRegisterationBtn){
+
                 ancRegisterationBtn.parentElement.setAttribute('disabled', 'disabled')
                 newAncRegisterationModal._element.querySelector('.patient').value = ancRegisterationBtn.parentElement.dataset.patient
                 newAncRegisterationModal._element.querySelector('.age').value = ancRegisterationBtn.parentElement.dataset.age
@@ -212,14 +199,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
             if (dischargedBtn){
                 dischargedBtn.setAttribute('disabled', 'disabled')
-                dischargeModal._element.querySelector('#patientId').value = dischargedBtn.getAttribute('data-patient')
-                dischargeModal._element.querySelector('#sponsorName').value = dischargedBtn.getAttribute('data-sponsor')
-                dischargeModal._element.querySelector('#currentDiagnosis').value = dischargedBtn.getAttribute('data-diagnosis')
-                dischargeModal._element.querySelector('#admissionStatus').value = dischargedBtn.getAttribute('data-admissionstatus')
-                dischargeModal._element.querySelector('#reason').value = dischargedBtn.getAttribute('data-reason')
-                dischargeModal._element.querySelector('#remark').value = dischargedBtn.getAttribute('data-remark')
-                dischargeModal._element.querySelector('#doctor').innerHTML = dischargedBtn.getAttribute('data-doctor')
-                dischargeModal._element.querySelector('#saveDischargeBtn').setAttribute('data-id', dischargedBtn.getAttribute('data-id'))
+                populateDischargeModal(dischargeModal, dischargedBtn)
+                dischargedBtn.setAttribute('disabled', 'disabled')
                 dischargeModal.show()
             }
         })
@@ -298,11 +279,15 @@ window.addEventListener('DOMContentLoaded', function () {
             addVitalsignsDiv.forEach(div => {
                 if (div.dataset.div === addBtn.dataset.btn) {
                     addBtn.setAttribute('disabled', 'disabled')
+                    const isAnc     = addBtn.getAttribute('data-patienttype') == 'ANC'
                     const visitId   = addBtn.getAttribute('data-id')
                     const ancRegId  = addBtn.getAttribute('data-ancregid')
+                    console.log(isAnc, ancRegId)
                     const tableId   = div.parentNode.parentNode.querySelector('.vitalsTable').id
                     let data = { ...getDivData(div), visitId, ancRegId }
-                    const url = div.dataset.div == 'anc' || div.dataset.div == 'ancConDetails' ? '/ancvitalsigns' : '/vitalsigns'
+                    const url = isAnc ? '/ancvitalsigns' : '/vitalsigns'
+
+                    isAnc && JSON.parse(ancRegId) == null ? alert('Register patient for ANC first') : 
                     http.post(url, { ...data }, { "html": div })
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
@@ -396,83 +381,82 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     // review consultation loops
-    document.querySelector('#treatmentDiv').addEventListener('click', function (event) {
-        const collapseBtn = event.target.closest('.collapseBtn')
-        const giveMedicationBtn = event.target.closest('#giveMedicationBtn')
-        const chartMedicationBtn = event.target.closest('#chartMedicationBtn')
-        const newDeliveryNoteBtn = event.target.closest('#newDeliveryNoteBtn')
-        const deliveryNoteBtn = event.target.closest('.updateDeliveryNoteBtn, .viewDeliveryNoteBtn')
-        const saveWardAndBedBtn = event.target.closest('#saveWardAndBedBtn')
-        const wardAndBedDiv = document.querySelectorAll('#wardAndBedDiv')
-        const deleteGivenBtn = event.target.closest('#deleteGivenBtn')
-        const viewer = 'nurse'
-
-        if (collapseBtn) {
-            const gotoDiv = document.querySelector(collapseBtn.getAttribute('data-goto'))
-            const investigationTableId = gotoDiv.querySelector('.investigationTable').id
-            const treatmentTableId = gotoDiv.querySelector('.nurseTreatmentTable').id
-            const conId = gotoDiv.querySelector('.investigationTable').dataset.id
-
-            if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
-                $('#' + investigationTableId).dataTable().fnDestroy()
+    document.querySelectorAll('#treatmentDiv').forEach(div => {
+        div.addEventListener('click', function (event) {
+            const collapseBtn = event.target.closest('.collapseBtn')
+            const giveMedicationBtn = event.target.closest('#giveMedicationBtn')
+            const chartMedicationBtn = event.target.closest('#chartMedicationBtn')
+            const newDeliveryNoteBtn = event.target.closest('#newDeliveryNoteBtn')
+            const deliveryNoteBtn = event.target.closest('.updateDeliveryNoteBtn, .viewDeliveryNoteBtn')
+            const saveWardAndBedBtn = event.target.closest('#saveWardAndBedBtn')
+            const wardAndBedDiv = document.querySelectorAll('#wardAndBedDiv')
+            const deleteGivenBtn = event.target.closest('#deleteGivenBtn')
+            const deleteDeliveryNoteBtn = event.target.closest('.deleteDeliveryNoteBtn')
+            const viewer = 'nurse'
+    
+            if (collapseBtn) {
+                const gotoDiv = document.querySelector(collapseBtn.getAttribute('data-goto'))
+                const investigationTableId = gotoDiv.querySelector('.investigationTable').id
+                const treatmentTableId = gotoDiv.querySelector('.nurseTreatmentTable').id
+                const conId = gotoDiv.querySelector('.investigationTable').dataset.id
+    
+                if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
+                    $('#' + investigationTableId).dataTable().fnDestroy()
+                }
+                if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {
+                    $('#' + treatmentTableId).dataTable().fnDestroy()
+                }
+                if ($.fn.DataTable.isDataTable('#deliveryNoteTable'+conId)) {
+                    $('#deliveryNoteTable'+conId).dataTable().fnDestroy()
+                }
+                const goto = () => {
+                    location.href = collapseBtn.getAttribute('data-goto')
+                    window.history.replaceState({}, document.title, "/" + "nurses")
+                    getLabTableByConsultation(investigationTableId, treatmentDetailsModal._element, viewer, conId, null)
+                    getNurseTreatmentByConsultation(treatmentTableId, conId, treatmentDetailsModal._element)
+                    getDeliveryNoteTable('deliveryNoteTable'+conId, conId, true)
+                    getSurgeryNoteTable('surgeryNoteTable'+conId, conId, false)
+                }
+                setTimeout(goto, 300)
             }
-            if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {
-                $('#' + treatmentTableId).dataTable().fnDestroy()
+    
+            if (chartMedicationBtn) {
+                const prescriptionId = chartMedicationBtn.getAttribute('data-id')
+                const tableId = chartMedicationBtn.getAttribute('data-table')
+                const conId = chartMedicationBtn.getAttribute('data-consultation')
+                const visitId = chartMedicationBtn.getAttribute('data-visit')
+                chartMedicationModal._element.querySelector('#treatment').value = chartMedicationBtn.getAttribute('data-resource')
+                chartMedicationModal._element.querySelector('#prescription').value = chartMedicationBtn.getAttribute('data-prescription')
+                chartMedicationModal._element.querySelector('#prescribedBy').value = chartMedicationBtn.getAttribute('data-prescribedBy')
+                chartMedicationModal._element.querySelector('#prescribed').value = chartMedicationBtn.getAttribute('data-prescribed')
+                saveMedicationChartBtn.setAttribute('data-id', prescriptionId)
+                saveMedicationChartBtn.setAttribute('data-table', tableId)
+                saveMedicationChartBtn.setAttribute('data-consultation', conId)
+                saveMedicationChartBtn.setAttribute('data-visit', visitId)
+    
+                getMedicationChartByPrescription(medicationChartTable.id, prescriptionId, chartMedicationModal._element)
+    
+                chartMedicationModal.show()
             }
-            if ($.fn.DataTable.isDataTable('#deliveryNoteTable'+conId)) {
-                $('#deliveryNoteTable'+conId).dataTable().fnDestroy()
+    
+            if (giveMedicationBtn) {
+                saveGivenMedicationBtn.setAttribute('data-id', giveMedicationBtn.getAttribute('data-id'))
+                saveGivenMedicationBtn.setAttribute('data-table', giveMedicationBtn.getAttribute('data-table'))
+                giveMedicationModal._element.querySelector('#patient').value = giveMedicationBtn.getAttribute('data-patient')
+                giveMedicationModal._element.querySelector('#treatment').value = giveMedicationBtn.getAttribute('data-treatment')
+                giveMedicationModal._element.querySelector('#prescription').value = giveMedicationBtn.getAttribute('data-prescription')
+                giveMedicationModal._element.querySelector('#dose').value = giveMedicationBtn.getAttribute('data-dose')
+                giveMedicationModal.show()
             }
-
-            const goto = () => {
-                location.href = collapseBtn.getAttribute('data-goto')
-                window.history.replaceState({}, document.title, "/" + "nurses")
-                getLabTableByConsultation(investigationTableId, reviewDetailsModal._element, viewer, conId, null)
-                getNurseTreatmentByConsultation(treatmentTableId, conId, reviewDetailsModal._element)
-                getDeliveryNoteTable('deliveryNoteTable'+conId, conId)
-            }
-            setTimeout(goto, 300)
-        }
-
-        if (chartMedicationBtn) {
-            const prescriptionId = chartMedicationBtn.getAttribute('data-id')
-            const tableId = chartMedicationBtn.getAttribute('data-table')
-            const conId = chartMedicationBtn.getAttribute('data-consultation')
-            const visitId = chartMedicationBtn.getAttribute('data-visit')
-            chartMedicationModal._element.querySelector('#treatment').value = chartMedicationBtn.getAttribute('data-resource')
-            chartMedicationModal._element.querySelector('#prescription').value = chartMedicationBtn.getAttribute('data-prescription')
-            chartMedicationModal._element.querySelector('#prescribedBy').value = chartMedicationBtn.getAttribute('data-prescribedBy')
-            chartMedicationModal._element.querySelector('#prescribed').value = chartMedicationBtn.getAttribute('data-prescribed')
-            saveMedicationChartBtn.setAttribute('data-id', prescriptionId)
-            saveMedicationChartBtn.setAttribute('data-table', tableId)
-            saveMedicationChartBtn.setAttribute('data-consultation', conId)
-            saveMedicationChartBtn.setAttribute('data-visit', visitId)
-
-            getMedicationChartByPrescription(medicationChartTable.id, prescriptionId, chartMedicationModal._element)
-
-            chartMedicationModal.show()
-        }
-
-        if (giveMedicationBtn) {
-            saveGivenMedicationBtn.setAttribute('data-id', giveMedicationBtn.getAttribute('data-id'))
-            saveGivenMedicationBtn.setAttribute('data-table', giveMedicationBtn.getAttribute('data-table'))
-            giveMedicationModal._element.querySelector('#patient').value = giveMedicationBtn.getAttribute('data-patient')
-            giveMedicationModal._element.querySelector('#treatment').value = giveMedicationBtn.getAttribute('data-treatment')
-            giveMedicationModal._element.querySelector('#prescription').value = giveMedicationBtn.getAttribute('data-prescription')
-            giveMedicationModal._element.querySelector('#dose').value = giveMedicationBtn.getAttribute('data-dose')
-            giveMedicationModal.show()
-        }
-
-        if (deleteGivenBtn){
-            deleteGivenBtn.setAttribute('disabled', 'disabled')
-            const treatmentTableId = deleteGivenBtn.getAttribute('data-table')
-            if (confirm('Are you sure you want to delete this Information?')) {
-                const id = deleteGivenBtn.getAttribute('data-id')
-                http.patch(`/medicationchart/removegiven/${id}`)
+    
+            if (deleteGivenBtn){
+                deleteGivenBtn.setAttribute('disabled', 'disabled')
+                const treatmentTableId = deleteGivenBtn.getAttribute('data-table')
+                if (confirm('Are you sure you want to delete this Information?')) {
+                    const id = deleteGivenBtn.getAttribute('data-id')
+                    http.patch(`/medicationchart/removegiven/${id}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
-                            // if ($.fn.DataTable.isDataTable('#' + table.id)) {
-                            //     $('#' + table.id).dataTable().fnDraw()
-                            // }
                             if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {
                                 $('#' + treatmentTableId).dataTable().fnDraw()
                             }
@@ -483,54 +467,78 @@ window.addEventListener('DOMContentLoaded', function () {
                         alert(error)
                         deleteGivenBtn.removeAttribute('disabled')
                     })
+                }
             }
-        }
+    
+            if (newDeliveryNoteBtn) {
+                createDeliveryNoteBtn.setAttribute('data-conid', newDeliveryNoteBtn.dataset.id)
+                createDeliveryNoteBtn.setAttribute('data-visitid', newDeliveryNoteBtn.dataset.visitid)
+                newDeliveryNoteModal.show()
+            }
+    
+            if (deliveryNoteBtn) {
+                console.log(deliveryNoteBtn)
+                const isUpdate = deliveryNoteBtn.id == 'updateDeliveryNoteBtn'
+                const [btn, modalBtn, modal ] = isUpdate ? [deliveryNoteBtn, saveDeliveryNoteBtn, updateDeliveryNoteModal] : [deliveryNoteBtn, saveDeliveryNoteBtn, viewDeliveryNoteModal]
+                btn.setAttribute('disabled', 'disabled')
+                saveDeliveryNoteBtn.setAttribute('data-table', btn.dataset.table)
+                http.get(`/deliverynote/${btn.getAttribute('data-id')}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            openModals(modal, modalBtn, response.data.data)
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+                setTimeout(()=>{btn.removeAttribute('disabled')}, 2000)
+            }
 
-        if (newDeliveryNoteBtn) {
-            createDeliveryNoteBtn.setAttribute('data-conid', newDeliveryNoteBtn.dataset.id)
-            createDeliveryNoteBtn.setAttribute('data-visitid', newDeliveryNoteBtn.dataset.visitid)
-            newDeliveryNoteModal.show()
-        }
-
-        if (deliveryNoteBtn) {
-            const isUpdate = deliveryNoteBtn.id == 'updateDeliveryNoteBtn'
-            const [btn, modalBtn, modal ] = isUpdate ? [deliveryNoteBtn, saveDeliveryNoteBtn, updateDeliveryNoteModal] : [deliveryNoteBtn, saveDeliveryNoteBtn, viewDeliveryNoteModal]
-            btn.setAttribute('disabled', 'disabled')
-            saveDeliveryNoteBtn.setAttribute('data-table', btn.dataset.table)
-            http.get(`/deliverynote/${btn.getAttribute('data-id')}`)
-                .then((response) => {
-                    if (response.status >= 200 || response.status <= 300) {
-                        openModals(modal, modalBtn, response.data.data)
-                    }
-                })
-                .catch((error) => {
-                    alert(error)
-                })
-            setTimeout(()=>{btn.removeAttribute('disabled')}, 2000)
-        }
-
-        if (saveWardAndBedBtn) {
-            wardAndBedDiv.forEach(div => {
-                if (div.dataset.div === saveWardAndBedBtn.dataset.btn) {
-                    saveWardAndBedBtn.setAttribute('disabled', 'disabled')
-                    const conId = saveWardAndBedBtn.dataset.id
-
-                    http.post(`consultation/${conId}`, { ...getDivData(div) }, { "html": div })
+            if (deleteDeliveryNoteBtn){
+                deleteDeliveryNoteBtn.setAttribute('disabled', 'disabled')
+                const id = deleteDeliveryNoteBtn.getAttribute('data-id')
+                const tableId = deleteDeliveryNoteBtn.getAttribute('data-table')
+                if (confirm('Are you sure you want to delete Delivery Note?')) {
+                    http.delete(`/deliverynote/${id}`)
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
-                                new Toast(div.querySelector('#saveUpdateAdmissionStatusToast'), { delay: 2000 }).show()
-                                clearDivValues(div)
-                                clearValidationErrors(div)
+                                if ($.fn.DataTable.isDataTable('#' + tableId)) {
+                                    $('#' + tableId).dataTable().fnDraw()
+                                }
                             }
-                            saveWardAndBedBtn.removeAttribute('disabled')
+                            deleteDeliveryNoteBtn.removeAttribute('disabled')
                         })
                         .catch((error) => {
-                            console.log(error)
-                            saveWardAndBedBtn.removeAttribute('disabled')
+                            alert(error)
+                            deleteDeliveryNoteBtn.removeAttribute('disabled')
                         })
-                }
-            })
-        }
+                } deleteDeliveryNoteBtn.removeAttribute('disabled')
+
+            }
+    
+            if (saveWardAndBedBtn) {
+                wardAndBedDiv.forEach(div => {
+                    if (div.dataset.div === saveWardAndBedBtn.dataset.btn) {
+                        saveWardAndBedBtn.setAttribute('disabled', 'disabled')
+                        const conId = saveWardAndBedBtn.dataset.id
+    
+                        http.post(`consultation/${conId}`, { ...getDivData(div) }, { "html": div })
+                            .then((response) => {
+                                if (response.status >= 200 || response.status <= 300) {
+                                    new Toast(div.querySelector('#saveUpdateAdmissionStatusToast'), { delay: 2000 }).show()
+                                    clearDivValues(div)
+                                    clearValidationErrors(div)
+                                }
+                                saveWardAndBedBtn.removeAttribute('disabled')
+                            })
+                            .catch((error) => {
+                                console.log(error)
+                                saveWardAndBedBtn.removeAttribute('disabled')
+                            })
+                    }
+                })
+            }
+        })
     })
 
     saveMedicationChartBtn.addEventListener('click', function () {
@@ -648,7 +656,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 })
 
-function openNurseModals(modal, button, { id, visitId, ancRegId, ...data }) {
+function openNurseModals(modal, button, { id, visitId, ancRegId, patientType, ...data }) {
     for (let name in data) {
 
         const nameInput = modal._element.querySelector(`[name="${name}"]`)
@@ -658,4 +666,5 @@ function openNurseModals(modal, button, { id, visitId, ancRegId, ...data }) {
 
     modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
     modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-ancregid', ancRegId)
+    modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-patienttype', patientType)
 }

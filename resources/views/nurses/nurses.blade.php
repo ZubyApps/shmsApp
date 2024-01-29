@@ -53,7 +53,7 @@
         </div>
         <div class="offcanvas-body">
             <div class="py-4 ">
-                <table id="waitingTable" class="table table-hover align-middle table-sm bg-primary">
+                <table id="waitingTable" class="table table-hover table-sm">
                     <thead>
                         <tr>
                             <th>Patient</th>

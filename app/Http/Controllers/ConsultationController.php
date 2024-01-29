@@ -8,6 +8,7 @@ use App\Http\Requests\StoreConsultationReviewRequest;
 use App\Http\Requests\UpdateAdmissionStatusRequest;
 use App\Http\Requests\UpdateConsultationRequest;
 use App\Http\Resources\ConsultationReviewCollection;
+use App\Http\Resources\LatestLmpResource;
 use App\Http\Resources\PatientBioResource;
 use App\Models\Visit;
 use App\Services\ConsultationService;
@@ -45,7 +46,7 @@ class ConsultationController extends Controller
     {
         $consultations = $this->consultationService->getConsultations($request, $visit);
 
-        return ["consultations" => new ConsultationReviewCollection($consultations), "bio" => new PatientBioResource($visit)];
+        return ["consultations" => new ConsultationReviewCollection($consultations), "bio" => new PatientBioResource($visit), "latestLmp" => new LatestLmpResource($visit)];
     }
 
     public function updateAdmissionStatus(UpdateAdmissionStatusRequest $request, Consultation $consultation)

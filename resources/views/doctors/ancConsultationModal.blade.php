@@ -105,10 +105,6 @@
                                                 cols="10" rows="3"></x-form-textarea>
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
-                                            <x-input-span id="ultrasoundReportLabel">Ultrasound Report</x-input-span>
-                                            <x-form-textarea name="ultrasoundReport" id="ultrasoundReport" cols="10" rows="2"></x-form-textarea>
-                                        </x-form-div>
-                                        <x-form-div class="col-xl-6">
                                             <x-input-span id="remarksLabel">Remarks </x-input-span>
                                             <x-form-textarea type="text" name="remarks" class="remarks" cols="10" rows="2"></x-form-textarea>
                                         </x-form-div>

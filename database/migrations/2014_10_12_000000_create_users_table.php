@@ -30,6 +30,8 @@ return new class extends Migration
             $table->string('next_of_kin_phone')->nullable();
             $table->dateTime('date_of_employment');
             $table->dateTime('date_of_exit')->nullable();
+            $table->dateTime('login')->nullable();
+            $table->dateTime('logout')->nullable();
             $table->boolean('is_active')->default(false);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

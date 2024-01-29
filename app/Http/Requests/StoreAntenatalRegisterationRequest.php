@@ -28,7 +28,7 @@ class StoreAntenatalRegisterationRequest extends FormRequest
             'previousPregnancies'   => ['required'],
             'totalPregnancies'      => ['required'],
             'noOfLivingChildren'    => ['required'],
-            'rvst'                  => ['required'],
+            // 'rvst'                  => ['required'],
             'patientId'             => ['required', 'numeric', 'exists:'.Patient::class.',id'],
         ];
     }

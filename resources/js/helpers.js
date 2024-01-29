@@ -167,7 +167,6 @@ function getDatalistOptionId(modal, inputEl, datalistEl) {
 
 function openModals(modal, button, {id, ...data}) {
     for (let name in data) {
-
         const nameInput = modal._element.querySelector(`[name="${ name }"]`)
         
         nameInput.value = data[name]
@@ -315,6 +314,14 @@ const lmpCalculator = (elements, elementDiv) => {
     })
 }
 
+const lmpCurrentCalculator = (value, div) => {
+    if (!value){return}
+    const lmpDate = new Date(value)
+    div.querySelector('#lmp').value = value
+    div.querySelector('#edd').value = addDays(lmpDate, 280).toISOString().split('T')[0]
+    div.querySelector('#ega').value = String(getWeeksDiff(new Date(), lmpDate)).split('.')[0] + 'W' + ' ' + getWeeksModulus(new Date, lmpDate)%7 + 'D'
+}
+
 const filterPatients = (elements) => {
     elements.forEach(filterInput => {
         filterInput.addEventListener('change', function () {
@@ -349,7 +356,7 @@ const resetFocusEndofLine = (element) => {
 
 const dischargeColour = (reason) => {
     switch(reason) {
-        case 'Treated':
+        case 'Recovered':
             return 'primary'
           break;
         case 'AHOR':
@@ -364,7 +371,7 @@ const dischargeColour = (reason) => {
         case 'LTFU':
             return 'secondary'
             break;
-        case 'Diceased':
+        case 'Deceased':
             return 'dark'
             break;
         default:
@@ -380,8 +387,9 @@ const populateConsultationModal = (modal, btn, visitId, ancRegId, patientType) =
 }
 
 const populateDischargeModal = (modal, btn) => {
-    modal._element.querySelector('#patientId').value = btn.getAttribute('data-patient')
-    modal._element.querySelector('#sponsorName').value = btn.getAttribute('data-sponsor')
+    // modal._element.querySelector('#patient').value = btn.getAttribute('data-patient')
+    // modal._element.querySelector('#sponsorName').value = btn.getAttribute('data-sponsor')
+    populatePatientSponsor(modal, btn)
     modal._element.querySelector('#currentDiagnosis').value = btn.getAttribute('data-diagnosis')
     modal._element.querySelector('#admissionStatus').value = btn.getAttribute('data-admissionstatus')
     modal._element.querySelector('#reason').value = btn.getAttribute('data-reason')
@@ -390,14 +398,15 @@ const populateDischargeModal = (modal, btn) => {
     modal._element.querySelector('#saveDischargeBtn').setAttribute('data-id', btn.getAttribute('data-id'))
 }
 
-const populatePatientSponsor = (modal, data) => {
-    modal._element.querySelector('#patient').value = data.patientId
-    modal._element.querySelector('#sponsorName').value = data.sponsorName
-    
-    // updateResultModal._element.querySelector('#sponsorName').value = patientBio.sponsorName
-    // updateResultModal._element.querySelector('#patient').value = patientBio.patientId
-    // investigationAndManagementModal._element.querySelector('#patient').value = patientBio.patientId
-    // investigationAndManagementModal._element.querySelector('#sponsorName').value = patientBio.sponsorName
+const populatePatientSponsor = (modal, btn) => {
+    modal._element.querySelector('#patient').value = btn.getAttribute('data-patient')
+    modal._element.querySelector('#sponsorName').value = btn.getAttribute('data-sponsor')
 }
-    
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor}    
+
+const populateVitalsignsModal = (modal, btn, id) => {
+    populatePatientSponsor(modal, btn)
+    modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', id)
+    modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-ancregid', id)
+}
+
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator}    

@@ -1,4 +1,4 @@
-import { deliveryNotes, surgeryNote, updateAdmissionStatus, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses} from "./partialHTMLS"
+import { deliveryNotes, surgeryNotes, updateAdmissionStatus, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses} from "./partialHTMLS"
 
 const regularReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone) => {
 
@@ -23,7 +23,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                                     File
                                     <i class="bi bi-file-earmark-medical"></i>
                                 </button>
-                                <button type="button" id="surgeryBtn" data-id="${line.id}" data-visitid="${line.visitId}" class="btn btn-outline-primary">
+                                <button type="button" id="newSurgeryBtn" data-id="${line.id}" data-visitid="${line.visitId}" class="btn btn-outline-primary">
                                     Surgery 
                                     <i class="bi bi-pencil-square"></i>
                                 </button>` : ''}
@@ -40,11 +40,8 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                                     <div class="row overflow-auto m-1">
                                         ${ line.file === undefined ? '<td>No files</td>' : files(line.file)}
                                     </div>
-                                </div>
-                                <div class="my-2 form-control">
-                                    <span class="fw-semibold fs-5 mb-2"> Surgery Details </span>
-                                    ${line.surgery === undefined ? '<div class="mb-2">No record</div>' : surgeryNote(line.surgery)}
-                                </div>` : ''}
+                                </div> ` : ''}
+                                ${viewer == 'nurse' || !viewer ? surgeryNotes(line) : ''}
                                 ${viewer == 'nurse' || !viewer ? deliveryNotes(line): ''}
                                 ${length == iteration && viewer == '' ? 
                                 `<div class="d-flex justify-content-between my-2">
@@ -52,7 +49,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                                         <i class="bi bi-trash"></i>
                                         Close Visit
                                     </button>
-                                    <button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" class="btn btn-outline-primary">
+                                    <button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" data-patienttype="Regular" class="btn btn-outline-primary">
                                         <i class="bi bi-trash"></i>
                                         Delete
                                     </button>
@@ -107,7 +104,7 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
                                         <i class="bi bi-trash"></i>
                                         Close Visit
                                     </button>
-                                    <button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" class="btn btn-outline-primary">
+                                    <button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" data-patienttype="ANC" class="btn btn-outline-primary">
                                         <i class="bi bi-trash"></i>
                                         Delete
                                     </button>
@@ -122,19 +119,5 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
                 </div>
                 `
 }
-
-// 
-{/* <tr>
-<td>Lab</td>
-<td>12/9/23 11:02pm</td>
-<td>Dr Toby</td>
-<td>Malaria Parasite</td>
-<td></td>
-<td><span class="position-relative"><a href="/transactions/11/receipts/15" target="blank" title="ABAGI Ernest_Nguevese.pdf">
-<i class="bi bi-file-earmark-text download-receipt text-primary fs-4"></i></a></span></td>
-<td><a role="button" class=""><i class="bi bi-upload"></i></a></td>
-<td>12/09/23</td>
-<td>Onjefu</td>
-</tr> */}
 
 export{regularReviewDetails, AncPatientReviewDetails}

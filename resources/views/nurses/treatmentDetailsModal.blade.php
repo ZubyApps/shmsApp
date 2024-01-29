@@ -17,6 +17,9 @@
                                 @include('patients.partials.known-clinical-info', ['disabled' => true])
                             </div>
                         </div>
+                        @if ($isAnc)
+                            <x-current-lmp-calculation></x-current-lmp-calculation>  
+                        @endif
                         <div class="mb-2 form-control vitalsDiv {{ $isLab || $isHmo ? 'd-none' : '' }}">
                             <x-form-span>Vital Signs</x-form-span>
                             <div class="row overflow-auto my-3">
