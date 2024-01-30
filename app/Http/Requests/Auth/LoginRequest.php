@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use DateTime;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -40,8 +41,7 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
-
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        if (! Auth::attempt([...$this->only('email', 'password'), 'date_of_exit' => null], $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -49,6 +49,8 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        request()->user()->update(['login' => new DateTime()]);
+        
         RateLimiter::clear($this->throttleKey());
     }
 

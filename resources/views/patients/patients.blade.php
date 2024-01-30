@@ -31,7 +31,7 @@
             <!-- patients table -->
             <div class="tab-pane fade show active" id="nav-patients" role="tabpanel" aria-labelledby="nav-patients-tab" tabindex="0">
                 <div class="text-start py-3">
-                    <button type="button" id="newPatient" class="btn btn-primary text-white">
+                    <button type="button" id="newPatient" class="btn btn-primary">
                         <i class="bi bi-plus-circle me-1"></i>
                         Patient
                     </button>

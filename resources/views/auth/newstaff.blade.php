@@ -5,13 +5,14 @@
 
 @include('auth.newstaffModal', ['title' => 'Register Staff', 'isUpdate' => false, 'id' => 'newStaffModal'])
 @include('auth.newstaffModal', ['title' => 'Edit Staff', 'isUpdate' => true, 'id' => 'editStaffModal'])
+@include('auth.designationModal', ['title' => 'Assign Designation', 'id' => 'designationModal'])
 
 <div class="container p-1 mt-5 bg-white">
     <div class="container p-1 mt-5 bg-white">
         <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="activeListOffcanvas2"
         aria-labelledby="activeListOffcanvasLabel" aria-expanded="false">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-primary" id="activeListOffcanvasLabel">List of Waiting Patients</h5>
+            <h5 class="offcanvas-title text-primary" id="activeListOffcanvasLabel">List of currently logged in staff</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
@@ -64,7 +65,7 @@
     <div class="text-start mb-4">
         <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="activeUsersBtn" data-bs-target="#activeListOffcanvas2" aria-controls="activeListOffcanvas2">
             <i class="bi bi-list-check"></i>
-            Active Users
+            Active Staff
         </button>
     </div>
 
@@ -72,12 +73,12 @@
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                 <button class="nav-link active" id="nav-users-tab" data-bs-toggle="tab" data-bs-target="#nav-users" 
-                    type="button" role="tab" aria-controls="nav-outPatients" aria-selected="true">All Users</button>
+                    type="button" role="tab" aria-controls="nav-outPatients" aria-selected="true">All Staff</button>
 
-                {{-- <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients"
-                    type="button" role="tab" aria-controls="nav-inPatients" aria-selected="false">Inpatients</button>
+                <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients"
+                    type="button" role="tab" aria-controls="nav-inPatients" aria-selected="false">Ex-Staff</button>
 
-                <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients"
+                {{-- <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients"
                     type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button> --}}
             </div>
         </nav>
@@ -85,16 +86,25 @@
             <!-- patients table -->
             <div class="tab-pane fade show active" id="nav-outPatients" role="tabpanel"
                 aria-labelledby="nav-outPatients-tab" tabindex="0">
+                <div class="text-start py-3">
+                    <button type="button" id="newStaffBtn" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Staff
+                    </button>
+                </div>
                 <div class="py-4">
-                    <table id="outPatientsVisitTable" class="table table-hover align-middle table-sm">
+                    <table id="allStaffTable" class="table table-hover table-sm">
                         <thead>
                             <tr>
-                                <th>Seen</th>
-                                <th>Patient</th>
-                                <th>Doctor</th>
-                                <th>Current Diagnosis</th>
-                                <th>Sponsor</th>
-                                <th>Status</th>
+                                <th>Name</th>
+                                <th>Employed</th>
+                                <th>Designation</th>
+                                <th>Last Login</th>
+                                <th>Qualification</th>
+                                <th>Username</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Created</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -103,7 +113,7 @@
                 </div>
             </div>
             <!-- inpatients table -->
-            <div class="tab-pane fade" id="nav-inPatients" role="tabpanel" aria-labelledby="nav-inPatients-tab"
+            {{-- <div class="tab-pane fade" id="nav-inPatients" role="tabpanel" aria-labelledby="nav-inPatients-tab"
                 tabindex="0">
                 <div class="py-4 ">
                     <table id="inPatientsVisitTable" class="table table-hover align-middle table-sm">
@@ -121,9 +131,9 @@
                         <tbody></tbody>
                     </table>
                 </div>
-            </div>
+            </div> --}}
             <!-- Anc table -->
-            <div class="tab-pane fade" id="nav-ancPatients" role="tabpanel" aria-labelledby="nav-ancPatients-tab"
+            {{-- <div class="tab-pane fade" id="nav-ancPatients" role="tabpanel" aria-labelledby="nav-ancPatients-tab"
                 tabindex="0">
                 <div class="py-4 ">
                     <table id="ancPatientsVisitTable" class="table table-hover align-middle table-sm">
@@ -141,7 +151,7 @@
                         <tbody></tbody>
                     </table>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 </div>

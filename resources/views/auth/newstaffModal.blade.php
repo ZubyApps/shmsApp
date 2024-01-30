@@ -1,7 +1,7 @@
 <div class="container">
-    <div class="modal fade" id="{{ $id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade" id="{{ $id }}" tabindex="-1" aria-hidden="true"
         data-bs-keyboard="false">
-        <div class="modal-dialog modal-fullscreen">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fs-4 text-primary">{{ $title }}</h5>
@@ -11,9 +11,6 @@
                 <div class="mb-2 d-flex justify-content-center">
                     <!-- first row -->
                     <div class="container form-control p-3">
-                        <form method="POST" action="{{ route('register') }}">
-                            @csrf
-
                             <x-form-label>Sign Up New Staff</x-form-label>
                             <div class="row">
                                 <x-form-div class="">
@@ -40,7 +37,7 @@
 
                                 <x-form-div class="">
                                     <x-input-span>Phone No.<x-required-span /></x-input-span>
-                                    <x-form-input type="number" name="phone_no" id="phone_no"/>
+                                    <x-form-input type="number" name="phoneNumber" id="phoneNumber"/>
                                 </x-form-div>
 
                                 <x-form-div class="">
@@ -140,7 +137,7 @@
                                     <x-form-input type="password" name="password_confirmation" />
                                 </x-form-div>
                             </div>
-                        </form>
+                        
                     </div>
                 </div>
                 </div>
@@ -149,9 +146,9 @@
                         <i class="bi bi-x-circle me-1"></i>
                         Close
                     </button>
-                    <button type="submit" id="createBtn" class="btn bg-primary text-white">
+                    <button type="button" id="{{ $isUpdate ? 'saveStaffBtn' : 'registerStaffBtn' }}" class="btn btn-primary">
                         <i class="bi bi-check-circle me-1"></i>
-                        Sign Up
+                        {{ $isUpdate ? 'Update' : 'Register' }}
                     </button>
                 </div>
             </div>

@@ -28,13 +28,14 @@ class UserFactory extends Factory
             'date_of_birth' => new DateTime('1982/06/28'),
             'highest_qualification' => 'MBBS',
             'sex' => 'male',
-            'marital_status' => 'married',
-            'username' => 'Admin',
-            'phone_no' => '08022812281',
+            'marital_status' => 'Married',
+            'username' => 'Admin User',
+            'phone_number' => '08022812281',
             'state_of_origin' => 'Anambra',
             'next_of_kin' => 'Nzube Okoye',
             'next_of_kin_rship' => 'Son',
             'next_of_kin_phone' => '08035999029',
+            'access_level'      => 4,
             'date_of_employment' => new DateTime('1982/06/28'),
             'password' => Hash::make('mylovelywife'), // password
         ];

@@ -135,4 +135,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(AncVitalSigns::class);
     }
+
+    public function designation(): HasOne
+    {
+        return $this->hasOne(Designation::class);
+    }
+
+    public function nameInFull()
+    {
+        return $this->firstname.' '.$this->middlename.' '.$this->lastname;
+    }
 }

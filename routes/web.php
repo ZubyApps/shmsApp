@@ -50,8 +50,8 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    // Route::get('users', [RegisteredUserController::class, 'create'])->name('users');
+    // Route::post('register', [RegisteredUserController::class, 'store'])->name('register');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -59,6 +59,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/billing', [BillingController::class, 'index'])->name('Billing');
     Route::get('/admin', [AdminController::class, 'index'])->name('Admin');
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('Settings');
+
+    Route::prefix('users')->group(function () {
+        Route::get('', [RegisteredUserController::class, 'create'])->name('users');
+        Route::post('', [RegisteredUserController::class, 'store'])->name('register');
+        Route::get('/load', [RegisteredUserController::class, 'loadAllUsers']);
+        Route::get('/{user}', [RegisteredUserController::class, 'edit']);
+        Route::delete('/{user}', [RegisteredUserController::class, 'destroy']);
+        Route::patch('/{user}', [RegisteredUserController::class, 'update']);
+        Route::post('/designate/{user}', [RegisteredUserController::class, 'assignDesignation']);
+    });
 
     Route::prefix('sponsorcategory')->group(function () {
         Route::post('', [SponsorCategoryController::class, 'store']);

@@ -23,6 +23,7 @@ export default defineConfig({
                 'resources/js/visits.js',
                 'resources/js/resources.js',
                 'resources/js/vitalSignsMasksjs',
+                'resources/js/users.js',
             ],
             refresh: true,
         }),

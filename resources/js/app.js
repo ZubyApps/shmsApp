@@ -14,8 +14,8 @@ import 'datatables.net-fixedcolumns-bs5';
 import 'datatables.net-select-bs5';
 import 'datatables.net-staterestore-bs5';
 
-import Alpine from 'alpinejs';
+// import Alpine from 'alpinejs';
 
-window.Alpine = Alpine;
+// window.Alpine = Alpine;
 
-Alpine.start();
+// Alpine.start();

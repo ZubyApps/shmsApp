@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-@vite(['resources/js/admin.js'])
+{{-- @vite(['resources/js/admin.js']) --}}
 
     <div class="container mt-5">
         <div class="container px-4 py-5" id="hanging-icons">
