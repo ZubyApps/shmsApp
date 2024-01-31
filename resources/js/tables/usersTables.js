@@ -12,7 +12,7 @@ const getAllStaffTable = (tableId) => {
         columns: [
             {data: "name"},
             {data: "employed"},
-            {data: "designation"},
+            {data: row =>  `<span class="btn deleteDesignationBtn" data-id="${row.designationId}" >${row.designation ?? ''}</span>` },
             {data: "lastLogin"},
             {data: "qualification"},
             {data: "username"},

@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/load', [RegisteredUserController::class, 'loadAllUsers']);
         Route::get('/{user}', [RegisteredUserController::class, 'edit']);
         Route::delete('/{user}', [RegisteredUserController::class, 'destroy']);
+        Route::delete('/designate/{designation}', [RegisteredUserController::class, 'removeDesignation']);
         Route::patch('/{user}', [RegisteredUserController::class, 'update']);
         Route::post('/designate/{user}', [RegisteredUserController::class, 'assignDesignation']);
     });
@@ -127,6 +128,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/review', [ConsultationController::class, 'storeReview']);
         Route::post('/{consultation}', [ConsultationController::class, 'updateAdmissionStatus']);
         Route::get('/consultations/{visit}', [ConsultationController::class, 'loadConsultations']);
+        Route::get('/history/{patient}', [ConsultationController::class, 'loadVisitsAndConsultations']);
         Route::delete('/{consultation}', [ConsultationController::class, 'destroy']);
     });
 

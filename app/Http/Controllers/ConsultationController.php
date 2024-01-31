@@ -10,6 +10,8 @@ use App\Http\Requests\UpdateConsultationRequest;
 use App\Http\Resources\ConsultationReviewCollection;
 use App\Http\Resources\LatestLmpResource;
 use App\Http\Resources\PatientBioResource;
+use App\Http\Resources\VisitCollection;
+use App\Models\Patient;
 use App\Models\Visit;
 use App\Services\ConsultationService;
 use App\Services\DatatablesService;
@@ -47,6 +49,14 @@ class ConsultationController extends Controller
         $consultations = $this->consultationService->getConsultations($request, $visit);
 
         return ["consultations" => new ConsultationReviewCollection($consultations), "bio" => new PatientBioResource($visit), "latestLmp" => new LatestLmpResource($visit)];
+    }
+
+    public function loadVisitsAndConsultations(Request $request, Patient $patient)
+    {
+        $visits = $this->consultationService->getVisitsAndConsultations($request, $patient);
+
+        return ["visits" => new VisitCollection($visits)];
+
     }
 
     public function updateAdmissionStatus(UpdateAdmissionStatusRequest $request, Consultation $consultation)

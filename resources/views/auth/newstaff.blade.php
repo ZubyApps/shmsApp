@@ -1,5 +1,6 @@
 @extends('layout')
 
+
 @section('content')
 @vite(['resources/js/users.js'])
 
@@ -7,7 +8,7 @@
 @include('auth.newstaffModal', ['title' => 'Edit Staff', 'isUpdate' => true, 'id' => 'editStaffModal'])
 @include('auth.designationModal', ['title' => 'Assign Designation', 'id' => 'designationModal'])
 
-<div class="container p-1 mt-5 bg-white">
+<div class="container mt-5 bg-white">
     <div class="container p-1 mt-5 bg-white">
         <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="activeListOffcanvas2"
         aria-labelledby="activeListOffcanvasLabel" aria-expanded="false">

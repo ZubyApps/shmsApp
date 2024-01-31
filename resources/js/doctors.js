@@ -16,6 +16,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const ancConsultationModal              = new Modal(document.getElementById('ancConsultationModal'))
     const ancReviewModal                    = new Modal(document.getElementById('ancReviewModal'))
     const consultationReviewModal           = new Modal(document.getElementById('consultationReviewModal'))
+    const consultationHistoryModal          = new Modal(document.getElementById('consultationHistoryModal'))
     const ancConsultationReviewModal        = new Modal(document.getElementById('ancConsultationReviewModal'))
     const newSurgeryModal                   = new Modal(document.getElementById('newSurgeryModal'))
     const updateSurgeryModal                = new Modal(document.getElementById('updateSurgeryModal'))
@@ -112,6 +113,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const vitalsignsBtn         = event.target.closest('.vitalSignsBtn, .ancVitalSignsBtn')
             const investigationsBtn     = event.target.closest('.investigationsBtn')
             const dischargedBtn         = event.target.closest('.dischargedBtn')
+            const historyBtn            = event.target.closest('.historyBtn')
     
             if (consultationReviewBtn) {
                 consultationReviewBtn.setAttribute('disabled', 'disabled')
@@ -206,6 +208,16 @@ window.addEventListener('DOMContentLoaded', function () {
                 dischargedBtn.setAttribute('disabled', 'disabled')
                 populateDischargeModal(dischargeModal, dischargedBtn)
                 dischargeModal.show()
+            }
+
+            if (historyBtn){
+                const patientId = historyBtn.getAttribute('data-patientid')
+                http.get(`/consultation/history/${patientId}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        consultationHistoryModal.show()
+                    }
+                })
             }
         })
     })

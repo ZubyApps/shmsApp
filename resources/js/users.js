@@ -58,9 +58,10 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     document.querySelector('#allStaffTable').addEventListener('click', function (event) {
-        const editBtn         = event.target.closest('.updateBtn')
-        const deleteBtn       = event.target.closest('.deleteBtn')
-        const designationBtn  = event.target.closest('.designationBtn')
+        const editBtn                    = event.target.closest('.updateBtn')
+        const deleteUserBtn              = event.target.closest('.deleteUserBtn')
+        const designationBtn             = event.target.closest('.designationBtn')
+        const deleteDesignationBtn       = event.target.closest('.deleteDesignationBtn')
 
         if (editBtn) {
             editBtn.setAttribute('disabled', 'disabled')
@@ -77,19 +78,20 @@ window.addEventListener('DOMContentLoaded', function () {
                 })
         }
 
-        if (deleteBtn){
-            deleteBtn.setAttribute('disabled', 'disabled')
+        if (deleteUserBtn){
+            deleteUserBtn.setAttribute('disabled', 'disabled')
             if (confirm('Are you sure you want to delete this Staff?')) {
-                const staffId = deleteBtn.getAttribute('data-id')
+                const staffId = deleteUserBtn.getAttribute('data-id')
                 http.delete(`/users/${staffId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
                             allStaffTable.draw()
                         }
-                        deleteBtn.removeAttribute('disabled')
+                        deleteUserBtn.removeAttribute('disabled')
                     })
                     .catch((error) => {
-                        alert(error)
+                        if (error.response.status === 403){alert(error.response.data.message); deleteUserBtn.removeAttribute('disabled')}
+                        console.log(error)
                     })
             }  
         }
@@ -99,6 +101,25 @@ window.addEventListener('DOMContentLoaded', function () {
             designationModal._element.querySelector('#designateBtn').setAttribute('data-id', designationBtn.getAttribute('data-id'))
             designationModal._element.querySelector('#fullName').value = designationBtn.getAttribute('data-name')
             designationModal.show()
+            setTimeout(()=>{designationBtn.removeAttribute('disabled')}, 1500)
+        }
+
+        if (deleteDesignationBtn){
+            deleteDesignationBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to remove this Designation?')) {
+                const id = deleteDesignationBtn.getAttribute('data-id')
+                http.delete(`/users/designate/${id}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            allStaffTable.draw()
+                        }
+                        deleteDesignationBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        if (error.response.status === 403){alert(error.response.data.message); deleteDesignationBtn.removeAttribute('disabled')}
+                        console.log(error)
+                    })
+            }
         }
     })
 
@@ -117,9 +138,13 @@ window.addEventListener('DOMContentLoaded', function () {
         })
         .catch((error) => {
             designateBtn.removeAttribute('disabled')
-            if (error.response.status === 403){alert(error.response.data.message)}
+            if (error.response.status === 403){alert(error.response.data.message); designateBtn.removeAttribute('disabled')}
             console.log(error)
             // alert(error.response.status)
         })
+    })
+
+    designationModal.addEventListener('hidden.bs.modal', function () {
+        clearValidationErrors(designationModal._element)
     })
 })

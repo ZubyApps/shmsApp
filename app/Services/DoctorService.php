@@ -165,6 +165,7 @@ class DoctorService
        return  function (Visit $visit) {
             return [
                 'id'                => $visit->id,
+                'patientId'         => $visit->patient->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
                 'ancRegId'          => $visit->patient->antenatalRegisteration?->id,

@@ -9,7 +9,6 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                 </div>
                 <div class="collapse mb-2 reviewDiv" id="collapseExample${iteration}" style="">
                     <div class="card card-body">
-                        
                         <div class="mb-2 form-control" id="goto${iteration}">
                             ${iteration < 2 || line.specialistFlag ? consultation(line) :  review(count, line)}
                             ${ viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}

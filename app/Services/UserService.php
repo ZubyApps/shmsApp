@@ -100,6 +100,7 @@ class UserService
        return  function (User $user) {
             return [
                 'id'                => $user->id,
+                'designationId'     => $user->designation?->id,
                 'name'              => $user->nameInFull(),
                 'employed'          => $user->date_of_employment ? (new Carbon($user->date_of_employment))->format('d/m/Y g:ia') : '',
                 'designation'       => $user?->designation?->designation,

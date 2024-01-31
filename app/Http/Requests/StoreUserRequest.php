@@ -13,7 +13,7 @@ class StoreUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->designation->access_level > 3;
+        return $this->user()->designation?->access_level > 3;
     }
 
     /**

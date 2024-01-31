@@ -17,7 +17,7 @@ const getOutpatientsVisitTable = (tableId, filter) => {
         },
         columns: [
             {data: "came"},
-            {data: "patient"},
+            {data: row => `<div class="historyBtn" data-patientid="${row.patientId}">${row.patient}</div>`},
             {data: "doctor"},
             {data: "diagnosis"},
             {data: row => sponsorAndPayPercent(row)},
@@ -59,7 +59,7 @@ const getInpatientsVisitTable = (tableId, filter) => {
         },
         columns: [
             {data: "came"},
-            {data: "patient"},
+            {data: row => `<span class="btn historyBtn" data-id="${row.patientId}">${row.patient}</span>`},
             {data: "doctor"},
             {data: "diagnosis"},
             {data: row => sponsorAndPayPercent(row)},
@@ -101,7 +101,7 @@ const getAncPatientsVisitTable = (tableId, filter) => {
         },
         columns: [
             {data: "came"},
-            {data: "patient"},
+            {data: row => `<div class="btn historyBtn" data-id="${row.patientId}">${row.patient}</div>`},
             {data: "doctor"},
             {data: "diagnosis"},
             {data: row => sponsorAndPayPercent(row)},

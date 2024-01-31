@@ -6,13 +6,14 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Consultation;
+use App\Models\Patient;
 use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ConsultationService
 {
-    public function __construct(private readonly Consultation $consultation)
+    public function __construct(private readonly Consultation $consultation, private readonly Visit $visit)
     {
     }
 
@@ -72,5 +73,13 @@ class ConsultationService
                     ->orderBy('created_at', 'asc')
                     ->get();
        
+    }
+
+    public function getVisitsAndConsultations(Request $request, Patient $patient)
+    {
+        return $this->visit
+                    ->where('patient_id', $patient->id)
+                    ->orderBy('created_at', 'asc')
+                    ->get();
     }
 }

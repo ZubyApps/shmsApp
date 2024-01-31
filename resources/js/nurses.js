@@ -200,8 +200,8 @@ window.addEventListener('DOMContentLoaded', function () {
             if (dischargedBtn){
                 dischargedBtn.setAttribute('disabled', 'disabled')
                 populateDischargeModal(dischargeModal, dischargedBtn)
-                dischargedBtn.setAttribute('disabled', 'disabled')
                 dischargeModal.show()
+                setTimeout(()=>{dischargedBtn.removeAttribute('disabled')}, 1500)
             }
         })
     })
