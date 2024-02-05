@@ -1,5 +1,5 @@
 import { Modal} from "bootstrap";
-import { clearDivValues, clearItemsList, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, clearValidationErrors, openModals } from "./helpers"
+import { clearDivValues, getDivData, clearValidationErrors, openModals } from "./helpers"
 import http from "./http";
 import jQuery, { error } from "jquery";
 import { getAllStaffTable } from "./tables/usersTables";
@@ -9,6 +9,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const newStaffModal     = new Modal(document.getElementById('newStaffModal'))
     const editStaffModal    = new Modal(document.getElementById('editStaffModal'))
     const designationModal  = new Modal(document.getElementById('designationModal'))
+
+    const changePasswordDiv = editStaffModal._element.querySelector('.changePasswordDiv') 
+    const passwordDiv       = editStaffModal._element.querySelector('.passwordDiv') 
 
     const newStaffBtn       = document.getElementById('newStaffBtn')
     const registerStaffBtn  = document.getElementById('registerStaffBtn')
@@ -39,7 +42,8 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     saveStaffBtn.addEventListener('click', function (event) {
-        const staffId = event.currentTarget.getAttribute('data-id')
+        const staffId = saveStaffBtn.getAttribute('data-id')
+        console.log(staffId)
         saveStaffBtn.setAttribute('disabled', 'disabled')
         http.patch(`/users/${staffId}`, getDivData(editStaffModal._element), {"html": editStaffModal._element})
         .then((response) => {
@@ -58,7 +62,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     document.querySelector('#allStaffTable').addEventListener('click', function (event) {
-        const editBtn                    = event.target.closest('.updateBtn')
+        const editBtn                    = event.target.closest('.updateUserBtn')
         const deleteUserBtn              = event.target.closest('.deleteUserBtn')
         const designationBtn             = event.target.closest('.designationBtn')
         const deleteDesignationBtn       = event.target.closest('.deleteDesignationBtn')
@@ -74,8 +78,10 @@ window.addEventListener('DOMContentLoaded', function () {
                     editBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {
-                    alert(error)
+                    alert(error.response.data.message)
+                    editBtn.removeAttribute('disabled')
                 })
+                editBtn.removeAttribute('disabled')
         }
 
         if (deleteUserBtn){
@@ -138,13 +144,25 @@ window.addEventListener('DOMContentLoaded', function () {
         })
         .catch((error) => {
             designateBtn.removeAttribute('disabled')
+            console.log(error.response)
             if (error.response.status === 403){alert(error.response.data.message); designateBtn.removeAttribute('disabled')}
             console.log(error)
             // alert(error.response.status)
         })
     })
 
-    designationModal.addEventListener('hidden.bs.modal', function () {
+    changePasswordDiv.addEventListener('click', function () {
+        const radioBtn = changePasswordDiv.querySelector('#changePasswordRadioBtn')
+
+        if (radioBtn.checked){
+            passwordDiv.classList.remove('d-none')
+        } else if (!radioBtn.checked){
+            passwordDiv.classList.add('d-none')
+        }
+
+    })
+
+    designationModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(designationModal._element)
     })
 })

@@ -1,7 +1,7 @@
 
 import {Modal } from "bootstrap";
-import {getOrdinal, textareaHeightAdjustment, loadingSpinners, removeDisabled, resetFocusEndofLine} from "./helpers"
-import { getPatientsVisitByFilterTable, getPrescriptionsByConsultation } from "./tables/pharmacyTables";
+import {getOrdinal, textareaHeightAdjustment, loadingSpinners, removeDisabled, resetFocusEndofLine, getDatalistOptionId, clearValidationErrors, handleValidationErrors, clearDivValues, getDivData} from "./helpers"
+import { getBulkRequestTable, getExpirationStockTable , getPatientsVisitByFilterTable, getPrescriptionsByConsultation } from "./tables/pharmacyTables";
 import http from "./http";
 import $ from 'jquery';
 import { getLabTableByConsultation, getTreatmentTableByConsultation, getVitalSignsTableByVisit } from "./tables/doctorstables";
@@ -12,15 +12,23 @@ import { getbillingTableByVisit } from "./tables/billingTables";
 window.addEventListener('DOMContentLoaded', function () {
     const reviewDetailsModal        = new Modal(document.getElementById('treatmentDetailsModal'))
     const billingDispenseModal      = new Modal(document.getElementById('billingDispenseModal'))
+    const bulkRequestModal          = new Modal(document.getElementById('bulkRequestModal'))
+
+    const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
+    const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
 
     const treatmentDiv              = document.querySelector('#treatmentDiv')
 
-    const [outPatientsTab, inPatientsTab, ancPatientsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab')]
+    const filterListOption          = document.querySelector('#filterList')
+
+    const itemInput                 = bulkRequestModal._element.querySelector('#item')
+
+    const [outPatientsTab, inPatientsTab, ancPatientsTab, expirationStockTab, bulkRequestsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-expirationStock-tab'), document.querySelector('#nav-bulkRequests-tab')]
 
     const textareaHeight = 90;
     textareaHeightAdjustment(textareaHeight, document.getElementsByTagName("textarea"))
 
-    let inPatientsVisitTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable
+    let inPatientsVisitTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable
 
     const outPatientsTable = getPatientsVisitByFilterTable('outPatientsTable', 'Outpatient')
 
@@ -39,6 +47,22 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#ancPatientsTable').dataTable().fnDraw()
         } else {
             ancPatientsVisitTable = getPatientsVisitByFilterTable('ancPatientsTable', 'ANC')
+        }
+    })
+
+    expirationStockTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#expirationStockTable' )){
+            $('#expirationStockTable').dataTable().fnDraw()
+        } else {
+            expirationStockTable = getExpirationStockTable('expirationStockTable', 'expiration')
+        }
+    })
+
+    bulkRequestsTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#bulkRequestsTable' )){
+            $('#bulkRequestsTable').dataTable().fnDraw()
+        } else {
+            bulkRequestsTable = getBulkRequestTable('bulkRequestsTable', 'pharmacy')
         }
     })
 
@@ -106,6 +130,13 @@ window.addEventListener('DOMContentLoaded', function () {
                 billingDispenseModal.show()
             }
         })
+    })
+
+    filterListOption.addEventListener('change', function () {
+        if ($.fn.DataTable.isDataTable( '#expirationStockTable' )){
+            $('#expirationStockTable').dataTable().fnDestroy()
+        }
+        getExpirationStockTable('expirationStockTable', filterListOption.value)
     })
 
     document.querySelector('#visitPrescriptionsTable').addEventListener('click', function (event) {
@@ -210,19 +241,34 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     billingDispenseModal._element.addEventListener('hide.bs.modal', function () {
-        // treatmentDiv.innerHTML = ''
         outPatientsTable.draw()
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
     })
 
+    bulkRequestBtn.addEventListener('click', function () {
+        bulkRequestModal.show()
+    })
+
+    itemInput.addEventListener('input', function () {
+        const datalistEl = bulkRequestModal._element.querySelector(`#itemList`)
+            if (itemInput.value < 2) {
+            datalistEl.innerHTML = ''
+            }
+            if (itemInput.value.length > 2) {
+                http.get(`/resources/list/bulk`, {params: {resource: itemInput.value, dept: itemInput.dataset.dept}}).then((response) => {
+                    displayItemsList(datalistEl, response.data, 'itemOption')
+                })
+            }
+    })
+
     document.querySelector('#treatmentDiv').addEventListener('click', function (event) {
-        const collapseBtn = event.target.closest('.collapseBtn')
+        const collapseConsultationBtn = event.target.closest('.collapseConsultationBtn')
         const approvalBtn = event.target.closest('#approvalBtn')
         const viewer = 'hmo'
 
         if (collapseBtn) {
-            const gotoDiv = document.querySelector(collapseBtn.getAttribute('data-goto'))
+            const gotoDiv = document.querySelector(collapseConsultationBtn.getAttribute('data-goto'))
             const investigationTableId = gotoDiv.querySelector('.investigationTable').id
             console.log(investigationTableId)
             const treatmentTableId = gotoDiv.querySelector('.treatmentTable').id
@@ -237,7 +283,7 @@ window.addEventListener('DOMContentLoaded', function () {
             }
 
             const goto = () => {
-                location.href = collapseBtn.getAttribute('data-goto')
+                location.href = collapseConsultationBtn.getAttribute('data-goto')
                 window.history.replaceState({}, document.title, "/" + "pharmacy")
                 getLabTableByConsultation(investigationTableId, reviewDetailsModal._element, viewer, conId, null)
                 getTreatmentTableByConsultation(treatmentTableId, conId, reviewDetailsModal._element)
@@ -245,6 +291,38 @@ window.addEventListener('DOMContentLoaded', function () {
             setTimeout(goto, 300)
         }
     })
+
+    requestBulkBtn.addEventListener('click', function () {
+        requestBulkBtn.setAttribute('disabled', 'disabled')
+        console.log(getDivData(bulkRequestModal._element))
+        const itemId =  getDatalistOptionId(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList`))
+        if (!itemId) {
+            clearValidationErrors(bulkRequestModal._element)
+            const message = {"item": ["Please pick an item from the list"]}               
+            handleValidationErrors(message, bulkRequestModal._element)
+            requestBulkBtn.removeAttribute('disabled')
+            return
+        } else {clearValidationErrors(bulkRequestModal._element)}
+        
+        http.post(`/bulkrequests/${itemId}`, getDivData(bulkRequestModal._element), {"html": bulkRequestModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) {
+                clearDivValues(bulkRequestModal._element)
+                clearValidationErrors(bulkRequestModal._element)
+            }
+            requestBulkBtn.removeAttribute('disabled')
+            bulkRequestModal.hide()
+        })
+        .catch((error) => {
+            console.log(error)
+            requestBulkBtn.removeAttribute('disabled')
+        })
+    })
+
+    bulkRequestModal._element.addEventListener('hide.bs.modal', function () {
+        bulkRequestsTable ? bulkRequestsTable.draw() : ''
+    })
+
 
     reviewDetailsModal._element.addEventListener('hide.bs.modal',function () {
         treatmentDiv.innerHTML = ''

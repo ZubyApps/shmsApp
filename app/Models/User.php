@@ -141,6 +141,11 @@ class User extends Authenticatable
         return $this->hasOne(Designation::class);
     }
 
+    public function bulkRequests(): HasMany
+    {
+        return $this->HasMany(BulkRequest::class);
+    }
+
     public function nameInFull()
     {
         return $this->firstname.' '.$this->middlename.' '.$this->lastname;

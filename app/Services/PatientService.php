@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 class PatientService
 {
-    public function __construct(private readonly Patient $patient)
+    public function __construct(private readonly Patient $patient, private readonly HelperService $helperService)
     {
     }
 
@@ -127,7 +127,7 @@ class PatientService
                 'name'              => $patient->first_name.' '. $patient->middle_name.' '.$patient->last_name,
                 'phone'             => $patient->phone,
                 'sex'               => $patient->sex,
-                'age'               => $patient->age(),
+                'age'               => $this->helperService->twoPartDiffInTimePast($patient->date_of_birth),
                 'sponsor'           => $patient->sponsor->name,
                 'category'          => $patient->sponsor->sponsorCategory->name,
                 'createdAt'         => (new Carbon($patient->created_at))->format('d/m/Y'),

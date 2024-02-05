@@ -42,6 +42,11 @@ class Resource extends Model
         return $this->belongsTo(ResourceSupplier::class);
     }
 
+    public function bulkRequests() 
+    {
+        return $this->hasMany(BulkRequest::class);
+    }
+
     public function nameWithIndicators()
     {
         return $this->name.($this->expiry_date && $this->expiry_date < (new Carbon())->addMonths(3) ? ' - expiring soon - '.(new Carbon($this->expiry_date))->format('d/M/y') : '' );

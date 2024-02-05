@@ -78,7 +78,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #outstandingBillsTable').forEach(table => {
         table.addEventListener('click', function (event) {
-            const billingDetailsBtn = event.target.closest('.billingDetailsBtn')
+            const billingDetailsBtn = event.target.closest('.consultationDetailsBtn')
             
             if (billingDetailsBtn){
                 const visitId = billingDetailsBtn.getAttribute('data-id') 

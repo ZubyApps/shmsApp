@@ -32,7 +32,6 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        //return view('auth.register');
         return view('auth.newstaff');
     }
 
@@ -65,6 +64,9 @@ class RegisteredUserController extends Controller
 
     public function edit(User $user)
     {
+        if ($user->designation?->access_level > 4) {
+            return response()->json(['message' => 'You are not authorized'], 403);
+        }
         return new UserResource($user);
     }
 

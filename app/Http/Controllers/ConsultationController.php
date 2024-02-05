@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateConsultationRequest;
 use App\Http\Resources\ConsultationReviewCollection;
 use App\Http\Resources\LatestLmpResource;
 use App\Http\Resources\PatientBioResource;
+use App\Http\Resources\PatientHistoryBioResource;
 use App\Http\Resources\VisitCollection;
 use App\Models\Patient;
 use App\Models\Visit;
@@ -54,8 +55,8 @@ class ConsultationController extends Controller
     public function loadVisitsAndConsultations(Request $request, Patient $patient)
     {
         $visits = $this->consultationService->getVisitsAndConsultations($request, $patient);
-
-        return ["visits" => new VisitCollection($visits)];
+        
+        return ["visits" => new VisitCollection($visits), "bio" => new PatientHistoryBioResource($patient)];
 
     }
 

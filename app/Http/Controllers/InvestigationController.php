@@ -58,7 +58,12 @@ class InvestigationController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 
-    public function saveLabResult(SaveLabResultRequest $request, Prescription $prescription)
+    public function createLabResult(SaveLabResultRequest $request, Prescription $prescription)
+    {
+        return $this->investigationService->createLabResultRecord($request, $prescription, $request->user());
+    }
+
+    public function updateLabResult(SaveLabResultRequest $request, Prescription $prescription)
     {
         return $this->investigationService->updateLabResultRecord($request, $prescription, $request->user());
     }

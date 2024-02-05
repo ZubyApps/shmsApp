@@ -115,6 +115,8 @@ class PrescriptionService
        return  function (Prescription $prescription) {
             return [
                 'id'                => $prescription->id,
+                'patient'           => $prescription->visit->patient->patientId(),
+                'sponsor'           => $prescription->visit->sponsor->name,
                 'type'              => $prescription->resource->resourceSubCategory->name,
                 'requested'         => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                 'resource'          => $prescription->resource->name,
@@ -124,12 +126,15 @@ class PrescriptionService
                 'rejected'          => $prescription->rejected,
                 'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
                 'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
-                'diagnosis'         => $prescription->consultation->icd11_diagnosis,
+                'diagnosis'         => $prescription->consultation?->icd11_diagnosis ??
+                                       $prescription->consultation?->provisional_diagnosis ??
+                                       $prescription->consultation?->assessment,
                 'dr'                => $prescription->user->username,
+                'sample'            => $prescription->test_sample,
                 'result'            => $prescription->result,
                 'sent'              => $prescription->result_date ? (new Carbon($prescription->result_at))->format('d/m/y g:ia') : '',
                 'staff'             => $prescription->resultBy->username ?? '',
-                'doc'               => $prescription->doc ?? '',
+                'doc'               => $prescription->doc,
             ];
          };
     }

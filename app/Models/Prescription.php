@@ -79,8 +79,6 @@ class Prescription extends Model
                         $query->whereRelation('resource', 'category', 'Medications')
                               ->orWhereRelation('resource', 'category', 'Consumables');
                     })
-                    // ->where('qty_dispensed', null)
-                    // ->orderBy('created_at', 'desc')
                     ->get();
     }
 }

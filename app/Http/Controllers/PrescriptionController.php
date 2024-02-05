@@ -16,23 +16,7 @@ class PrescriptionController extends Controller
         private readonly DatatablesService $datatablesService,
         private readonly PrescriptionService $prescriptionService
     )
-    {
-        
-    }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+    {  
     }
 
     /**
@@ -42,7 +26,7 @@ class PrescriptionController extends Controller
     {
         $prescription = $this->prescriptionService->createFromDoctors($request, $request->user());
 
-        return $prescription->load('consultation');
+        return $prescription;
     }
 
     public function loadInitialTable(Request $request)
@@ -76,14 +60,6 @@ class PrescriptionController extends Controller
         $loadTransformer = $this->prescriptionService->getTreatmentTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePrescriptionRequest $request, Prescription $prescription)
-    {
-        //
     }
 
     /**

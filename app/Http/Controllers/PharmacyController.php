@@ -67,4 +67,14 @@ class PharmacyController extends Controller
         return $this->pharmacyService->saveDispenseComment($request, $prescription);
     }
 
+    public function expirationStock(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $expirationStock = $this->pharmacyService->getExpirationStock($params, $request);
+       
+        $transformer = $this->pharmacyService->getExpirationStockTransformer();
+
+        return $this->datatablesService->datatableResponse($transformer, $expirationStock, $params);  
+    }
 }

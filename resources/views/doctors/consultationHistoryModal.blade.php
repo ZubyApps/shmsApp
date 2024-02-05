@@ -22,11 +22,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="consultationHistoryDiv" data-bs-spy="scroll" tabindex="0" data-bs-smooth-scroll="true">
+                        <div id="visitHistoryDiv" data-bs-spy="scroll" tabindex="0" data-bs-smooth-scroll="true">
+                            
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer pe-4">    
+                <div class="modal-footer pe-4">
+                    <a type="button" target="_blank" id="moreHistoryBtn" class="btn btn-primary me-auto">
+                        More History
+                        <i class=" bi bi-arrow-up-right-circle-fill"></i>
+                    </a>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle me-1"></i>
                         Close

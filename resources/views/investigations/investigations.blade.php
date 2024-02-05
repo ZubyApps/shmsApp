@@ -4,9 +4,11 @@
 @vite(['resources/js/investigations.js'])
 
 @include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isAnc' => false, 'isLab' => true, 'isHmo' => false, 'id' => 'treatmentDetailsModal'])
+@include('nurses.treatmentDetailsModal', ['title' => 'ANC Treatment Details', 'isAnc' => true, 'isLab' => false, 'isHmo' => true, 'id' => 'ancTreatmentDetailsModal'])
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
 @include('investigations.addResultModal', ['title' => 'Update Result', 'isUpdate' => true, 'id' => 'updateResultModal'])
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
+@include('extras.bulkRequestModal', ['title' => 'Bulk Request', 'dept' => 'Lab', 'isPharmacy' => false, 'id' => 'bulkRequestModal'])
 
 
     <div class="container p-1 mt-5 bg-white">
@@ -59,6 +61,9 @@
 
                     <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients"
                         type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button>
+
+                    <button class="nav-link" id="nav-bulkRequests-tab" data-bs-toggle="tab" data-bs-target="#nav-bulkRequests"
+                        type="button" role="tab" aria-controls="nav-bulkRequests" aria-selected="false">Bulk Requests</button>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
@@ -116,6 +121,34 @@
                                     <th>Sponsor</th>
                                     <th>Investigations</th>
                                     <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- bulk request table -->
+                <div class="tab-pane fade" id="nav-bulkRequests" role="tabpanel" aria-labelledby="nav-bulkRequests-tab" tabindex="0">
+                    <div class="text-start py-4">
+                        <button type="button" id="newBulkRequestBtn" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i>
+                            Bulk Request
+                        </button>
+                    </div>
+                    <div class="pt-2 ">
+                        <table id="bulkRequestsTable" class="table table-hover align-middle table-sm bulkRequestsTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Dept</th>
+                                    <th>Requested By</th>
+                                    <th>Note</th>
+                                    <th>Approved By</th>
+                                    <th>Dispensed By</th>
+                                    <th>Dispensed</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>

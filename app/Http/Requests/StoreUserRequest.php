@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules;
+use Illuminate\Validation\Rules\Password;
 
 class StoreUserRequest extends FormRequest
 {
@@ -38,12 +38,11 @@ class StoreUserRequest extends FormRequest
             'stateOfOrigin'         => ['required', 'string', 'max:255'],
             'nextOfKin'             => ['required', 'string', 'max:255'],
             'nextOfKinPhone'        => ['required', 'numeric', 'digits:11'],
-            // 'nextOfKinPhone'        => ['required', 'numeric', 'min:11'],
             'nextOfKinRship'        => ['required', 'string'],
             'dateOfEmployment'      => ['required', 'nullable', 'date'],
             'dateOfExit'            => ['nullable', 'date'],
             'department'            => ['nullable', 'string'],
-            'password'              => ['required', 'confirmed', Rules\Password::defaults()],
+            'password'              => ['required', 'confirmed', Password::min(8)->mixedCase()],
         ];
     }
 }

@@ -27,7 +27,7 @@ class InvestigationService
     public function getpaginatedFilteredLabVisits(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
-        $orderDir   =  'desc';
+        $orderDir   =  'asc';
 
         if (! empty($params->searchTerm)) {
             return $this->visit
@@ -137,6 +137,7 @@ class InvestigationService
                         ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                         })
                     ->whereRelation('visit', 'consulted', '!=', null)
+                    ->where('result_date', null)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -193,35 +194,60 @@ class InvestigationService
                 'doctor'            => $prescription->user->username,
                 'patient'           => $prescription->visit->patient->patientId(),
                 'sponsor'           => $prescription->visit->patient->sponsor->name,
-                'diagnosis'         => $prescription->consultation->icd11_diagnosis,
+                'diagnosis'         => $prescription->consultation->icd11_diagnosis ??
+                                       $prescription->consultation->provisional_diagnosis ??
+                                       $prescription->consultation->assessment,
                 'resource'          => $prescription->resource->name,
                 'result'            => $prescription->result_date,
             ];
          };
     }
 
+    public function createLabResultRecord(Request $data, Prescription $prescription, User $user): Prescription
+    {
+        $resource = $prescription->resource;
+
+        $prescription->update([
+            'test_sample'    => $data->sample,
+            'result'         => $data->result,
+            'result_date'    => Carbon::now(),
+            'result_by'      => $user->id,
+            ]);
+        
+        $resource->update([
+            'stock_level' => $resource->stock_level - 1
+        ]);
+
+        return $prescription;
+    }
+
     public function updateLabResultRecord(Request $data, Prescription $prescription, User $user): Prescription
     {
-       $prescription->update([
-           'test_sample'    => $data->sample,
-           'result'         => $data->result,
-           'result_date'    => Carbon::now(),
-           'result_by'      => $user->id,
-
-        ]);
+        $prescription->update([
+            'test_sample'    => $data->sample,
+            'result'         => $data->result,
+            'result_date'    => Carbon::now(),
+            'result_by'      => $user->id,
+            ]);
 
         return $prescription;
     }
 
     public function removeLabResultRecord(Prescription $prescription): Prescription
     {
-       $prescription->update([
-        'test_sample'    => null,
-        'result'         => null,
-        'result_date'    => null,
-        'result_by'      => null,
+        $resource = $prescription->resource;
 
-        ]);
+        $prescription->update([
+            'test_sample'    => null,
+            'result'         => null,
+            'result_date'    => null,
+            'result_by'      => null,
+
+            ]);
+
+            $resource->update([
+                'stock_level' => $resource->stock_level + 1
+            ]);
 
         return  $prescription;
     }

@@ -166,4 +166,71 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
     return consultationItemsTable
 }
 
-export {getPatientsVisitByFilterTable, getPrescriptionsByConsultation}
+const getExpirationStockTable = (tableId, filter) => {
+    return new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax: {url: '/pharmacy/load/expiratonstock', data: {
+            'filterBy': filter
+        }},
+        orderMulti: true,
+        search:true,
+        language: {
+            emptyTable: 'No Medications'
+        },
+        columns: [
+            {data: "name"},
+            {data: row => () => {
+                if (row.stockLevel <= row.reOrderLevel) {
+                    return `<span class="text-danger fw-semibold">${row.stockLevel +' '+ row.description}</span>`
+                    }
+                return row.stockLevel +' '+ row.description
+                } },
+            {data: row => row.reOrderLevel +' '+ row.description},
+            {data: "sellingPrice"},
+            {data: row => () => {
+                if (row.expiring[0] < 2) {
+                    return `<span class="text-danger fw-semibold">${row.expiring}</span>`
+                    }
+                return row.expiring
+                } 
+            },
+            {data: "prescriptionFrequency"},
+            {data: "dispenseFrequency"},
+        ]
+    });
+}
+
+const getBulkRequestTable = (tableId, urlSuffix) => {
+    return new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax: `/bulkrequests/load/${urlSuffix}`,
+        orderMulti: true,
+        search:true,
+        language: {
+            emptyTable: 'No bulk requests'
+        },
+        columns: [
+            {data: "date"},
+            {data: "item"},
+            {data: "quantity"},
+            {data: "dept"},
+            {data: "requestedBy"},
+            {data: "note"},
+            {data: "approvedBy"},
+            {data: "dispensedBy"},
+            {data: "dispensed"},
+            {
+                sortable: false,
+                data: row =>  `
+                <div class="d-flex flex-">
+                    <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id}" data-patienttype="${row.patientType}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+                `      
+            },
+        ]
+    });
+}
+
+export {getPatientsVisitByFilterTable, getPrescriptionsByConsultation, getExpirationStockTable, getBulkRequestTable}

@@ -20,8 +20,8 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'firstname' => 'Admin',
-            'middlename' => 'Admin',
+            'firstname' => 'User',
+            'middlename' => 'Super',
             'lastname' => 'Admin',
             'email' => 'admin@example.com',
             'address' => '24 J.S Tarka Way, Wadata',
@@ -35,7 +35,6 @@ class UserFactory extends Factory
             'next_of_kin' => 'Nzube Okoye',
             'next_of_kin_rship' => 'Son',
             'next_of_kin_phone' => '08035999029',
-            'access_level'      => 4,
             'date_of_employment' => new DateTime('1982/06/28'),
             'password' => Hash::make('mylovelywife'), // password
         ];

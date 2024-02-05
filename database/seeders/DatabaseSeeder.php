@@ -213,6 +213,12 @@ class DatabaseSeeder extends Seeder
             'user_id'   => 1,
             'resource_category_id'   => 2
         ]);
+        // \App\Models\ResourceSubCategory::create([
+        //     'name' => 'Supplies',
+        //     'description' => 'All Items required for lab fucntions eg. test strips, reagents, etc',
+        //     'user_id'   => 1,
+        //     'resource_category_id'   => 2
+        // ]);
 
         //ResourceSubCategories for Resource Category 3
         \App\Models\ResourceSubCategory::create([
@@ -298,6 +304,13 @@ class DatabaseSeeder extends Seeder
             'description' => 'Home, Office or Out of Hospital Inverventions etc.',
             'user_id'   => 1,
             'resource_category_id'   => 6
+        ]);
+        //Designation for super admin
+        \App\Models\Designation::create([
+            'designation' => 'Admin',
+            'access_level'   => 5,
+            'designator'  => 'Super Admin',
+            'user_id'   => 1,
         ]);
     }
 }

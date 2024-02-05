@@ -24,6 +24,7 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->string('sex');
             $table->string('created_by')->nullable();
+            $table->string('special_note')->nullable();
             $table->string('marital_status');
             $table->string('state_of_origin');
             $table->string('next_of_kin')->nullable();

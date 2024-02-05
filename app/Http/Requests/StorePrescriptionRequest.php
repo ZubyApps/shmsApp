@@ -14,7 +14,7 @@ class StorePrescriptionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->designation?->designation == "Doctor" || $this->user()->designation?->access_level > 3;
     }
 
     /**

@@ -394,7 +394,7 @@ const getAncVitalSignsTable = (tableId, ancRegId, modal, viewer) => {
             {
                 sortable: false,
                 data: row =>  `
-                <div class="d-flex flex- ${viewer ? 'd-none' : ''}">
+                <div class="d-flex flex-">
                     <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id}" data-patienttype="${row.patientType}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>

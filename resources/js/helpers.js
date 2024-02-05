@@ -142,8 +142,7 @@ const getSelctedText = (selectEl) => {
 
 function displayList(dataListEl, optionsId, data) {
     dataListEl.innerHTML = ''
-    
-    
+        
     data.forEach(line => {
         const option = document.createElement("OPTION")
         option.setAttribute('id', optionsId)
@@ -167,6 +166,7 @@ function getDatalistOptionId(modal, inputEl, datalistEl) {
 
 function openModals(modal, button, {id, ...data}) {
     for (let name in data) {
+
         const nameInput = modal._element.querySelector(`[name="${ name }"]`)
         
         nameInput.value = data[name]
@@ -233,7 +233,7 @@ function loadingSpinners() {
 const detailsBtn = (row) => {
     return `
             <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patientType="${ row.patientType }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">Details</button>
+                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}">Details</button>
             </div>
             `      
 }
@@ -241,9 +241,21 @@ const detailsBtn = (row) => {
 const reviewBtn = (row) => {
     return `
             <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patientType="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">Review</button>
+                <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}">Review</button>
             </div>
             `      
+}
+
+const histroyBtn = (row) => {
+    return `<a class="historyBtn tooltip-test text-decoration-none text-dark" href="#" title="history" data-patientid="${row.patientId}" data-doctordone="${row.doctorDone}" data-patientType="${ row.patientType }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">${row.patient}</a>`
+}
+
+const displayConsultations = (div, displayFunction, iteration, getOrdinal, count, length, data, viewer, isDoctorDone) => {
+    div.innerHTML += displayFunction(iteration, getOrdinal, count, length, data, viewer, isDoctorDone)
+}
+
+const displayVisits = (div, displayFunction, iteration, getOrdinal, data, viewer, isDoctorDone, isAnc) => {
+    div.innerHTML += displayFunction(iteration, getOrdinal, data, viewer, isDoctorDone, isAnc)
 }
 
 const sponsorAndPayPercent = (row) => {
@@ -387,8 +399,6 @@ const populateConsultationModal = (modal, btn, visitId, ancRegId, patientType) =
 }
 
 const populateDischargeModal = (modal, btn) => {
-    // modal._element.querySelector('#patient').value = btn.getAttribute('data-patient')
-    // modal._element.querySelector('#sponsorName').value = btn.getAttribute('data-sponsor')
     populatePatientSponsor(modal, btn)
     modal._element.querySelector('#currentDiagnosis').value = btn.getAttribute('data-diagnosis')
     modal._element.querySelector('#admissionStatus').value = btn.getAttribute('data-admissionstatus')
@@ -409,4 +419,17 @@ const populateVitalsignsModal = (modal, btn, id) => {
     modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-ancregid', id)
 }
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator}    
+const displayItemsList = (datalistEl, data, optionName) => {
+    data.forEach(line => {
+        const option = document.createElement("OPTION")
+        option.setAttribute('id', optionName)
+        option.setAttribute('value', line.name)
+        option.setAttribute('data-id', line.id)
+        option.setAttribute('name', line.name)
+        option.setAttribute('data-cat', line.category)
+
+        !datalistEl.options.namedItem(line.name) ? datalistEl.appendChild(option) : ''
+    })
+}
+
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList}    

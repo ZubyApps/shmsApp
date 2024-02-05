@@ -3,7 +3,7 @@ import { deliveryNotes, surgeryNotes, updateAdmissionStatus, files, updateInvest
 const regularReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone) => {
 
     return `
-                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
+                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseConsultationBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
                     <span class="mx-2">${iteration > 1 && !line.specialistFlag ? count + numberConverter(count) + ' Review' : line.specialistFlag ? 'Specialist Consultation' : 'Initial Consultation'}</span>
                     <i class="bi bi-chevron-double-down text-primary"> </i>
                 </div>
@@ -13,8 +13,8 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                             ${iteration < 2 || line.specialistFlag ? consultation(line) :  review(count, line)}
                             ${ viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}
                             ${investigations(line, viewer)}
-                            ${viewer == '' ||  viewer == 'hmo' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
-                            ${!viewer ? updateInvestigationAndManagement(length, iteration, line, isDoctorDone) : ''}
+                            ${viewer == 'doctor' ||  viewer == 'hmo' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
+                            ${viewer == 'doctor' ? updateInvestigationAndManagement(length, iteration, line, isDoctorDone) : ''}
                             ${isDoctorDone ? '' :
                             `<div class="d-flex justify-content-start my-3 gap-2" >
                                 ${!viewer ? `
@@ -40,8 +40,8 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                                         ${ line.file === undefined ? '<td>No files</td>' : files(line.file)}
                                     </div>
                                 </div> ` : ''}
-                                ${viewer == 'nurse' || !viewer ? surgeryNotes(line) : ''}
-                                ${viewer == 'nurse' || !viewer ? deliveryNotes(line): ''}
+                                ${viewer == 'nurse' || viewer == 'doctor' ? surgeryNotes(line) : ''}
+                                ${viewer == 'nurse' || viewer == 'doctor' ? deliveryNotes(line): ''}
                                 ${length == iteration && viewer == '' ? 
                                 `<div class="d-flex justify-content-between my-2">
                                     <button type="button" id="closeVisitBtn" data-id="${line.id}" class="btn btn-outline-primary">
@@ -57,7 +57,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                         </div>
                     </div>
                     <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample">
-                    <span class="mx-2">Close ${iteration > 1 ? count + numberConverter(count) + ' Review' : 'Initial Consultation'}</span>
+                    <span class="mx-2">Close ${iteration > 1 && !line.specialistFlag ? count + numberConverter(count) + ' Review' : line.specialistFlag ? 'Specialist Consultation' : 'Initial Consultation'}</span>
                     <i class="bi bi-chevron-double-up text-primary"></i>
                     </div>
                 </div>
@@ -67,7 +67,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
 const AncPatientReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone) => {
 
     return `
-                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
+                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseConsultationBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
                     <span class="mx-2">${iteration > 1 ? count + numberConverter(count) + ' Review' : 'Initial Consultation'}</span>
                     <i class="bi bi-chevron-double-down text-primary"> </i>
                 </div>
@@ -78,8 +78,8 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
                             ${AncConsultation(line, iteration, count)}
                             ${ viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}
                             ${investigations(line)}
-                            ${viewer == '' ||  viewer == 'hmo' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
-                            ${!viewer ? updateInvestigationAndManagement(length, iteration, line, isDoctorDone) : ''}
+                            ${viewer == 'doctor' ||  viewer == 'hmo' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
+                            ${viewer == 'doctor' ? updateInvestigationAndManagement(length, iteration, line, isDoctorDone) : ''}
 
                             ${isDoctorDone ? '' :
                             `<div class="d-flex justify-content-start my-3 gap-2">
@@ -97,7 +97,7 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
                                             ${ line.file === undefined ? '<td>No files</td>' : files(line.file)}
                                         </div>
                                     </div>` : ''}
-                                ${length == iteration && viewer == '' ? 
+                                ${length == iteration && viewer == 'doctor' ? 
                                 `<div class="d-flex justify-content-between my-2">
                                     <button type="button" id="closeVisitBtn" data-id="${line.id}" class="btn btn-outline-primary">
                                         <i class="bi bi-trash"></i>

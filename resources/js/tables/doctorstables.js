@@ -2,7 +2,7 @@ import jQuery from "jquery";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, displayPaystatus, reviewBtn, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, displayPaystatus, histroyBtn, reviewBtn, sponsorAndPayPercent } from "../helpers";
 
 const getOutpatientsVisitTable = (tableId, filter) => {
     return new DataTable(tableId, {
@@ -17,14 +17,14 @@ const getOutpatientsVisitTable = (tableId, filter) => {
         },
         columns: [
             {data: "came"},
-            {data: row => `<div class="historyBtn" data-patientid="${row.patientId}">${row.patient}</div>`},
+            {data: row => histroyBtn(row)},
             {data: "doctor"},
             {data: "diagnosis"},
             {data: row => sponsorAndPayPercent(row)},
             {data: row =>  `
                         <div class="d-flex justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                            ${row.labDone}<i class="bi bi-eyedropper"></i>${row.labPrescribed}
+                             ${row.labPrescribed}<i class="bi bi-eyedropper"></i>${row.labDone}
                             </button>
                         </div>`                
             },
@@ -59,14 +59,14 @@ const getInpatientsVisitTable = (tableId, filter) => {
         },
         columns: [
             {data: "came"},
-            {data: row => `<span class="btn historyBtn" data-id="${row.patientId}">${row.patient}</span>`},
+            {data: row => histroyBtn(row)},
             {data: "doctor"},
             {data: "diagnosis"},
             {data: row => sponsorAndPayPercent(row)},
             {data: row =>  `
                         <div class="d-flex flex- justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                            ${row.labDone}<i class="bi bi-eyedropper"></i>${row.labPrescribed}
+                                ${row.labPrescribed}<i class="bi bi-eyedropper"></i>${row.labDone}
                             </button>
                         </div>`                
             },
@@ -101,14 +101,14 @@ const getAncPatientsVisitTable = (tableId, filter) => {
         },
         columns: [
             {data: "came"},
-            {data: row => `<div class="btn historyBtn" data-id="${row.patientId}">${row.patient}</div>`},
+            {data: row => histroyBtn(row)},
             {data: "doctor"},
             {data: "diagnosis"},
             {data: row => sponsorAndPayPercent(row)},
             {data: row =>  `
                         <div class="d-flex flex- justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                            ${row.labDone}<i class="bi bi-eyedropper"></i>${row.labPrescribed}
+                                ${row.labPrescribed}<i class="bi bi-eyedropper"></i>${row.labDone}
                             </button>
                         </div>`                
             },
@@ -270,7 +270,7 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
             {
                 sortable: false,
                 data: row =>  `
-                <div class="d-flex flex- ${viewer ? 'd-none' : ''}">
+                <div class="d-flex flex-">
                     <button type="submit" class="ms-1 btn btn-outline-primary ${modal._element.id == 'consultationReviewModal' ? 'd-none' : ''} deleteBtn tooltip-test" title="delete" data-id="${ row.id}" data-patienttype="${row.patientType}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>
@@ -351,22 +351,22 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
             {
                 sortable: false,
                 data: row =>  `
-                        <div class="dropdown ${viewer == 'nurse' || viewer == 'hmo' ? 'd-none' : ''}">
+                        <div class="dropdown ${viewer == 'lab' ? '' :'d-none'}">
                             <i class="btn btn-outline-primary bi bi-gear" role="button" data-bs-toggle="dropdown"></i>
 
                             <ul class="dropdown-menu">
                                 <li class="${row.sent ? 'd-none' : ''}">
-                                    <a class="btn btn-outline-primary dropdown-item addResultBtn" id="addResultBtn" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
+                                    <a class="btn btn-outline-primary dropdown-item addResultBtn" id="addResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-plus-square"></i> Add Result
                                     </a>
                                 </li>
                                 <li  class="${!row.sent ? 'd-none' : ''}">
-                                    <a class="btn btn-outline-primary dropdown-item updateResultBtn" id="updateResultBtn" data-investigation="${row.resource}" data-table="${tableId}" title="update result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
+                                    <a class="btn btn-outline-primary dropdown-item updateResultBtn" id="updateResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-table="${tableId}" title="update result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-pencil-fill"></i> Update Result
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="btn dropdown-item upload-result-btn" data-investigation="${row.resource}" data-table="${tableId}" title="edit result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
+                                    <a class="btn dropdown-item upload-result-btn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-table="${tableId}" title="edit result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-upload"></i> Upload Doc
                                     </a>
                                 </li>
@@ -390,6 +390,7 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                                             <thead >
                                                 <tr class="fw-semibold fs-italics">
                                                     <td> </td>
+                                                    <td class="text-secondary">Sample</td>
                                                     <td class="text-secondary">Result</td>
                                                     <td class="text-secondary">Entered By</td>
                                                     <td class="text-secondary">DateTime</td>
@@ -399,12 +400,13 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                                         <tbody>
                                              <tr>
                                                 <td> </td>
+                                                <td class="text-secondary">${data.sample}</td>
                                                 <td class="text-secondary">
                                                     <div>${data.result}</div>
                                                 </td>
                                                 <td class="text-secondary">${data.staff}</td>
                                                 <td class="text-secondary">${data.sent}</td>
-                                                <td class="text-secondary">Documents</td>
+                                                <td class="text-secondary">${data.doc ?? 'No files'}</td>
                                             </tr>   
                                      </tbody>
                                 </table>

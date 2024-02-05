@@ -1,7 +1,7 @@
 import { Modal, Collapse, Toast, Offcanvas } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, filterPatients, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, filterPatients, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
 import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable} from "./tables/doctorstables"
@@ -9,6 +9,7 @@ import { getAncVitalsignsChart, getVitalsignsChartByVisit } from "./charts/vital
 import $ from 'jquery';
 import { getbillingTableByVisit } from "./tables/billingTables"
 import { getAncVitalSignsTable, getDeliveryNoteTable } from "./tables/nursesTables"
+import { visitDetails } from "./dynamicHTMLfiles/visits"
 
 window.addEventListener('DOMContentLoaded', function () {
     const waitingListOffcanvas              = new Offcanvas(document.getElementById('waitingListOffcanvas1'))
@@ -34,6 +35,8 @@ window.addEventListener('DOMContentLoaded', function () {
     
     const regularConsultationReviewDiv      = consultationReviewModal._element.querySelector('#consultationReviewDiv')
     const ancConsultationReviewDiv          = ancConsultationReviewModal._element.querySelector('#consultationReviewDiv')
+    const visitHistoryDiv                   = consultationHistoryModal._element.querySelector('#visitHistoryDiv')
+    const consultationHistoryDiv            = consultationHistoryModal._element.querySelector('#consultationHistoryDiv')
     const knownClinicalInfoDiv              = document.querySelectorAll('#knownClinicalInfoDiv')
     const consultationDiv                   = document.querySelectorAll('#consultationDiv')
     const addResultDiv                      = addResultModal._element.querySelector('#resultDiv')
@@ -54,8 +57,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const clearDiagnosisBtns                = document.querySelectorAll('.clearDiagnosis')
     const createSurgeryNoteBtn              = newSurgeryModal._element.querySelector('#createSurgeryNoteBtn')
     const saveSurgeryNoteBtn                = updateSurgeryModal._element.querySelector('#saveSurgeryNoteBtn')
+    const moreHistoryBtn                    = consultationHistoryModal._element.querySelector('#moreHistoryBtn')
     const [outPatientsTab, ancPatientsTab, inPatientsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-inPatients-tab')]
-    const [resourceInput]  = [document.querySelectorAll('#resource')]
+    const [resourceInput]                   = [document.querySelectorAll('#resource')]
 
     bmiCalculator(document.querySelectorAll('#height, .weight'))
     lmpCalculator(document.querySelectorAll('#lmp'), consultationDiv)
@@ -114,10 +118,13 @@ window.addEventListener('DOMContentLoaded', function () {
             const investigationsBtn     = event.target.closest('.investigationsBtn')
             const dischargedBtn         = event.target.closest('.dischargedBtn')
             const historyBtn            = event.target.closest('.historyBtn')
+            const viewer                = 'doctor'
+            let iteration               = 0
+            let count                   = 0
     
             if (consultationReviewBtn) {
                 consultationReviewBtn.setAttribute('disabled', 'disabled')
-                const [visitId, patientType, ancRegId, isDoctorDone] = [consultationReviewBtn.dataset.id, consultationReviewBtn.dataset.patienttype, consultationReviewBtn.dataset.ancregid, consultationReviewBtn.dataset.doctor] 
+                const [visitId, patientType, ancRegId, isDoctorDone] = [consultationReviewBtn.dataset.id, consultationReviewBtn.dataset.patienttype, consultationReviewBtn.dataset.ancregid, consultationReviewBtn.dataset.doctordone] 
                 
                 const isAnc = patientType === 'ANC'
                 resourceInput.forEach(input => {input.setAttribute('data-sponsorcat', consultationReviewBtn.getAttribute('data-sponsorcat'))})
@@ -137,9 +144,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.get(`/consultation/consultations/${visitId}`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
-                        let iteration = 0
-                        let count = 0
-    
                         const consultations = response.data.consultations.data
                         const patientBio    = response.data.bio
                         const lmp           = response.data.latestLmp
@@ -149,7 +153,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         consultations.forEach(line => {
                             iteration++
                             iteration > 1 ? count++ : ''
-                            div.innerHTML += displayFunction(iteration, getOrdinal, count, consultations.length, line, '', isDoctorDone)
+                            displayConsultations(div, displayFunction, iteration, getOrdinal, count, consultations.length, line, viewer, isDoctorDone)
                         })
     
                         vitalSignsTable(`#vitalSignsConsultation${suffixId}`, id, modal)
@@ -198,7 +202,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const tableId = investigationsModal._element.querySelector('.investigationsTable').id
                 const visitId = investigationsBtn.getAttribute('data-id')
                 populatePatientSponsor(investigationsModal, investigationsBtn)
-                getLabTableByConsultation(tableId, investigationsModal._element, '', null, visitId)
+                getLabTableByConsultation(tableId, investigationsModal._element, viewer, null, visitId)
     
                 investigationsModal.show()
                 investigationsBtn.removeAttribute('disabled')
@@ -211,10 +215,22 @@ window.addEventListener('DOMContentLoaded', function () {
             }
 
             if (historyBtn){
-                const patientId = historyBtn.getAttribute('data-patientid')
+                const patientId     = historyBtn.getAttribute('data-patientid')
+                const isDoctorDone  = historyBtn.getAttribute('data-doctordone')
+                const isAnc         = historyBtn.getAttribute('data-patienttype') === 'ANC'
+                populatePatientSponsor(investigationAndManagementModal, historyBtn)
                 http.get(`/consultation/history/${patientId}`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
+                        const visits        = response.data.visits.data
+                        const patientBio    = response.data.bio
+                        openDoctorModals(consultationHistoryModal, moreHistoryBtn, patientBio)
+                        visits.forEach(line => {
+                            iteration++
+                            iteration > 1 ? count++ : ''
+                            displayVisits(visitHistoryDiv, visitDetails, iteration, getOrdinal, line, viewer, isDoctorDone, isAnc)
+                        })
+
                         consultationHistoryModal.show()
                     }
                 })
@@ -248,6 +264,11 @@ window.addEventListener('DOMContentLoaded', function () {
             saveDischargeBtn.removeAttribute('disabled')
         })
     })
+
+    // moreHistoryBtn.addEventListener('click', function () {
+    //     const cardNo = moreHistoryBtn.getAttribute('data-cardno')
+    //     moreHistoryBtn.href = 
+    // })
 
     document.querySelector('#waitingTable').addEventListener('click', function (event) {
         const consultBtn    = event.target.closest('.consultBtn')
@@ -339,8 +360,8 @@ window.addEventListener('DOMContentLoaded', function () {
      // manipulating all vital signs div
     addVitalsignsBtn.forEach(addBtn => {
         addBtn.addEventListener('click', () => {
-            const div       = addBtn.parentElement.parentElement.querySelector('#addVitalsignsDiv')
             addBtn.setAttribute('disabled', 'disabled')
+            const div       = addBtn.parentElement.parentElement.querySelector('#addVitalsignsDiv')
             const isAnc     = addBtn.getAttribute('data-patienttype') == 'ANC'
             const [visitId, tableId, ancRegId] = [addBtn.dataset.id, div.parentNode.parentNode.querySelector('.vitalsTable').id, addBtn.getAttribute('data-ancregid')]
             let data = {...getDivData(div), visitId, ancRegId}
@@ -564,7 +585,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     // review consultation loops
-    document.querySelectorAll('#consultationReviewDiv').forEach(div =>{
+    document.querySelectorAll('#consultationReviewDiv, #visitHistoryDiv').forEach(div =>{
         div.addEventListener('click', function (event) {
             const deleteConsultationBtn                 = event.target.closest('#deleteReviewConsultationBtn')
             const updateResourceListBtn                 = event.target.closest('#updateResourceListBtn')
@@ -572,12 +593,14 @@ window.addEventListener('DOMContentLoaded', function () {
             const SurgeryNoteBtn                        = event.target.closest('.updateSurgeryNoteBtn, .viewSurgeryNoteBtn')
             const deleteSurgeryNoteBtn                  = event.target.closest('.deleteSurgeryNoteBtn')
             const fileBtn                               = event.target.closest('#fileBtn')
-            const collapseBtn                           = event.target.closest('.collapseBtn')
+            const collapseConsultationBtn               = event.target.closest('.collapseConsultationBtn')
+            const collapseVisitBtn                      = event.target.closest('.collapseVisitBtn')
             const resultBtn                             = event.target.closest('#addResultBtn, #updateResultBtn')
             const deleteResultBtn                       = event.target.closest('.deleteResultBtn')
-    
-            if (collapseBtn) {
-                const gotoDiv = document.querySelector(collapseBtn.getAttribute('data-goto'))
+            const viewer                                = 'doctor'
+            if (collapseConsultationBtn) {
+                const gotoDiv = document.querySelector(collapseConsultationBtn.getAttribute('data-goto'))
+
                 const [investigationTableId, treatmentTableId]  = [gotoDiv.querySelector('.investigationTable').id, gotoDiv.querySelector('.treatmentTable').id] 
                 const conId                                     = gotoDiv.querySelector('.investigationTable').dataset.id
     
@@ -593,14 +616,35 @@ window.addEventListener('DOMContentLoaded', function () {
                 if ($.fn.DataTable.isDataTable( '#surgeryNoteTable'+conId )){
                     $('#surgeryNoteTable'+conId).dataTable().fnDestroy()
                 }
-    
+
                 const goto = () => {
-                    location.href = collapseBtn.getAttribute('data-goto')
+                    location.href = collapseConsultationBtn.getAttribute('data-goto')
                     window.history.replaceState({}, document.title, "/" + "doctors" )
-                    getLabTableByConsultation(investigationTableId, consultationReviewModal._element, '', conId, '')
+                    getLabTableByConsultation(investigationTableId, consultationReviewModal._element, 'lab', conId, '')
                     getTreatmentTableByConsultation(treatmentTableId, conId, consultationReviewModal._element)
                     getDeliveryNoteTable('deliveryNoteTable'+conId, conId, false)
                     getSurgeryNoteTable('surgeryNoteTable'+conId, conId, true)
+                }
+                setTimeout(goto, 300)
+            }
+
+            if (collapseVisitBtn) {
+                const visitId               = collapseVisitBtn.getAttribute('data-id')
+                const ancRegId              = collapseVisitBtn.getAttribute('data-ancregid')
+                const [getVitalsigns, id]   = collapseVisitBtn.getAttribute('data-anc') ? [getAncVitalSignsTable, ancRegId] : [getVitalSignsTableByVisit, visitId]
+
+                if ($.fn.DataTable.isDataTable('#vitalSignsHistory'+visitId)){
+                    $('#vitalSignsHistory'+visitId).dataTable().fnDestroy()
+                }
+                if ($.fn.DataTable.isDataTable('#billingTableHistory'+visitId)){
+                    $('#billingTableHistory'+visitId).dataTable().fnDestroy()
+                }
+
+                const goto = () => {
+                    location.href = collapseVisitBtn.getAttribute('data-gotovisit')
+                    window.history.replaceState({}, document.title, "/" + "doctors" )
+                    getVitalsigns('#vitalSignsHistory'+visitId, id, consultationHistoryModal)
+                    getbillingTableByVisit('billingTableHistory'+visitId, visitId, consultationHistoryModal._element)
                 }
                 setTimeout(goto, 300)
             }
@@ -620,7 +664,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 getPrescriptionTableByConsultation('prescriptionTableconReview', conId, investigationAndManagementModal._element)
                 investigationAndManagementModal.show()
                 setTimeout(()=> {updateResourceListBtn.removeAttribute('disabled')}, 1000)
-    
             }
     
             if (deleteConsultationBtn) {
@@ -685,7 +728,6 @@ window.addEventListener('DOMContentLoaded', function () {
                         deleteSurgeryNoteBtn.removeAttribute('disabled')
                     })
                 } deleteSurgeryNoteBtn.removeAttribute('disabled')
-
             }
     
             if (fileBtn) {
@@ -783,12 +825,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('#createResultBtn, #saveResultBtn').forEach(btn => {
         btn.addEventListener('click', function () {
-            const [resultDiv, modal] = btn.id == 'createResultBtn' ? [addResultDiv, addResultModal] : [updateResultDiv, updateResultModal]
+            const [resultDiv, modal, url] = btn.id == 'createResultBtn' ? [addResultDiv, addResultModal, 'create'] : [updateResultDiv, updateResultModal, 'update']
             const [prescriptionId, investigationTableId] = [btn.getAttribute('data-id'), btn.getAttribute('data-table')]
             btn.setAttribute('disabled', 'disabled')
             let data = { ...getDivData(resultDiv), prescriptionId }
     
-            http.patch(`/investigations/${prescriptionId}`, { ...data }, { "html": resultDiv })
+            http.patch(`/investigations/${url}/${prescriptionId}`, { ...data }, { "html": resultDiv })
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         clearDivValues(resultDiv)
@@ -809,10 +851,11 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     // tasks to run when closing review consultation modal
-    document.querySelectorAll('#consultationReviewModal, #ancConsultationReviewModal').forEach(modal => {
+    document.querySelectorAll('#consultationReviewModal, #ancConsultationReviewModal, #consultationHistoryModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function(event) {
             regularConsultationReviewDiv.innerHTML = ''
             ancConsultationReviewDiv.innerHTML = ''
+            visitHistoryDiv.innerHTML = ''
             outPatientsVisitTable.draw()
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
@@ -833,20 +876,26 @@ function displayResourceList(datalistEl, data) {
     })
 }
 
-function openDoctorModals(modal, button, {id, visitId, ancRegId, patientType, ...data}) {
+function openDoctorModals(modal, button, {id, visitId, ancRegId, patientType, cardNo, ...data}) {
     for (let name in data) {
         const nameInput = modal._element.querySelector(`[name="${ name }"]`)
         nameInput.value = data[name]
     }
-    modal._element.querySelector('#updateKnownClinicalInfoBtn').setAttribute('data-id', id)
-    modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
-    modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-ancregid', ancRegId)
-    modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-patienttype', patientType)
     
-    if (modal._element.id !== 'consultationReviewModal') {
-        button.setAttribute('data-id', visitId)
-        modal.show()
+    if (modal._element.id !== 'consultationHistoryModal'){
+        modal._element.querySelector('#updateKnownClinicalInfoBtn').setAttribute('data-id', id)
+        modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
+        modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-ancregid', ancRegId)
+        modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-patienttype', patientType)
+    
+        if (modal._element.id !== 'consultationReviewModal') {
+            button.setAttribute('data-id', visitId)
+            modal.show()
+        }
+    } else {
+        button.setAttribute('href', `https://portal.sandrahospitalmkd.com/Consultations/History?CardNumber=${cardNo}`)
     }
+    
 }
 
 function getSelectedResourceValues(modal, inputEl, datalistEl) {  

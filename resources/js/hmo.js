@@ -7,6 +7,7 @@ import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfile
 import { getLabTableByConsultation, getTreatmentTableByConsultation, getVitalSignsTableByVisit } from "./tables/doctorstables";
 import { getVitalsignsChartByVisit } from "./charts/vitalsignsCharts";
 import { getbillingTableByVisit } from "./tables/billingTables";
+import { getAncVitalSignsTable } from "./tables/nursesTables";
 
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -14,7 +15,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const hmoApprovalListCanvas        = new Offcanvas(document.getElementById('hmoApprovalListOffcanvas'))
     const nhisApprovalListCanvas        = new Offcanvas(document.getElementById('nhisApprovalListOffcanvas'))
 
-    const reviewDetailsModal        = new Modal(document.getElementById('treatmentDetailsModal'))
+    const treatmentDetailsModal     = new Modal(document.getElementById('treatmentDetailsModal'))
+    const ancTreatmentDetailsModal  = new Modal(document.getElementById('ancTreatmentDetailsModal'))
     const approvalModal             = new Modal(document.getElementById('approvalModal'))
     const verifyModal               = new Modal(document.getElementById('verifyModal'))
     const investigationsModal       = new Modal(document.getElementById('investigationsModal'))
@@ -23,8 +25,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const codeTextDiv               = verifyModal._element.querySelector('#codeTextDiv')
     const sponsorDetailsDiv         = changeSponsorModal._element.querySelector('#sponsorDetailsDiv')
-    const treatmentDiv              = document.querySelector('#treatmentDiv')
-    const approveDiv                = document.querySelector('#approveDiv')
+    const regularTreatmentDiv       = treatmentDetailsModal._element.querySelector('#treatmentDiv')
+    const ancTreatmentDiv           = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
     
     const waitingBtn                = document.querySelector('#waitingBtn')
     const hmoApprovalListBtn        = document.querySelector('#hmoApprovalListBtn')
@@ -85,17 +87,16 @@ window.addEventListener('DOMContentLoaded', function () {
             const consultationDetailsBtn    = event.target.closest('.consultationDetailsBtn')
             const patientBillBtn            = event.target.closest('.patientBillBtn')
             const investigationsBtn         = event.target.closest('.investigationsBtn')
-
-            const viewer = 'hmo'
+            const viewer                    = 'hmo'
     
             if (consultationDetailsBtn) {
                 consultationDetailsBtn.setAttribute('disabled', 'disabled')
                 const btnHtml = consultationDetailsBtn.innerHTML
                 consultationDetailsBtn.innerHTML = loadingSpinners()
     
-                const visitId = consultationDetailsBtn.getAttribute('data-id')
-                const patientType = consultationDetailsBtn.getAttribute('data-patientType')
-    
+                const [visitId, patientType, ancRegId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-patientType'), consultationDetailsBtn.getAttribute('data-ancregid')]
+                const isAnc = patientType === 'ANC'
+                const [modal, div, displayFunction, vitalSignsTable, id, suffixId] = isAnc ? [ancTreatmentDetailsModal, ancTreatmentDiv, AncPatientReviewDetails, getAncVitalSignsTable, ancRegId, 'AncConDetails'] : [treatmentDetailsModal, regularTreatmentDiv, regularReviewDetails, getVitalSignsTableByVisit, visitId, 'ConDetails']
                 http.get(`/consultation/consultations/${visitId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
@@ -105,23 +106,19 @@ window.addEventListener('DOMContentLoaded', function () {
                             const consultations = response.data.consultations.data
                             const patientBio = response.data.bio
     
-                            openHmoModals(reviewDetailsModal, treatmentDiv, patientBio)
+                            openHmoModals(modal, div, patientBio)
     
                             consultations.forEach(line => {
                                 iteration++
     
                                 iteration > 1 ? count++ : ''
-    
-                                if (patientType === 'ANC') {
-                                    treatmentDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
-                                } else {
-                                    treatmentDiv.innerHTML += regularReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
-                                }
+
+                                div.innerHTML += displayFunction(iteration, getOrdinal, count, consultations.length, line, viewer)
                             })
     
-                            getVitalSignsTableByVisit('#vitalSignsTableNurses', visitId, reviewDetailsModal, viewer)
-                            getbillingTableByVisit('billingTable', visitId, reviewDetailsModal._element)
-                            reviewDetailsModal.show()
+                            vitalSignsTable(`#vitalSignsTableNurses${suffixId}`, id, modal)
+                            getbillingTableByVisit(`billingTable${suffixId}`, visitId, modal._element)
+                            modal.show()
     
                         }
                         consultationDetailsBtn.innerHTML = btnHtml
@@ -149,7 +146,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const tableId = investigationsModal._element.querySelector('.investigationsTable').id
                 const visitId = investigationsBtn.getAttribute('data-id')
                 investigationsModal._element.querySelector('#patient').value = investigationsBtn.getAttribute('data-patient')
-                investigationsModal._element.querySelector('#sponsor').value = investigationsBtn.getAttribute('data-sponsor')
+                investigationsModal._element.querySelector('#sponsorName').value = investigationsBtn.getAttribute('data-sponsor')
     
                 getLabTableByConsultation(tableId, investigationsModal._element, viewer, null, visitId)
     
@@ -157,9 +154,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 investigationsBtn.removeAttribute('disabled')
             }
 
-            if (closeBtn) {
+            // if (closeBtn) {
 
-            }
+            // }
         })
 
     document.querySelectorAll('#hmoApprovalListTable, #nhisApprovalListTable').forEach(table => {
@@ -391,8 +388,15 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    reviewDetailsModal._element.addEventListener('hide.bs.modal', function () {
-        treatmentDiv.innerHTML = ''
+    // treatmentDetailsModal._element.addEventListener('hide.bs.modal', function () {
+    //     treatmentDiv.innerHTML = ''
+    // })
+
+    document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal').forEach(modal => {
+        modal.addEventListener('hide.bs.modal', function(event) {
+            regularTreatmentDiv.innerHTML = ''
+            ancTreatmentDiv.innerHTML = ''
+        })
     })
 
     verifyModal._element.addEventListener('hide.bs.modal', function () {
@@ -405,16 +409,14 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     document.querySelector('#treatmentDiv').addEventListener('click', function (event) {
-        const collapseBtn = event.target.closest('.collapseBtn')
+        const collapseConsultationBtn = event.target.closest('.collapseConsultationBtn')
         const approvalBtn = event.target.closest('#approvalBtn')
         const viewer = 'hmo'
 
-        if (collapseBtn) {
-            const gotoDiv = document.querySelector(collapseBtn.getAttribute('data-goto'))
+        if (collapseConsultationBtn) {
+            const gotoDiv = document.querySelector(collapseConsultationBtn.getAttribute('data-goto'))
             const investigationTableId = gotoDiv.querySelector('.investigationTable').id
-            console.log(investigationTableId)
             const treatmentTableId = gotoDiv.querySelector('.treatmentTable').id
-            console.log(treatmentTableId)
             const conId = gotoDiv.querySelector('.investigationTable').dataset.id
 
             if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
@@ -425,7 +427,7 @@ window.addEventListener('DOMContentLoaded', function () {
             }
 
             const goto = () => {
-                location.href = collapseBtn.getAttribute('data-goto')
+                location.href = collapseConsultationBtn.getAttribute('data-goto')
                 window.history.replaceState({}, document.title, "/" + "hmo")
                 getLabTableByConsultation(investigationTableId, reviewDetailsModal._element, viewer, conId, null)
                 getTreatmentTableByConsultation(treatmentTableId, conId, reviewDetailsModal._element)
@@ -436,7 +438,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 })
 
-function openHmoModals(modal, button, { id, visitId, ...data }) {
+function openHmoModals(modal, button, { id, visitId, ancRegId, patientType, ...data }) {
     for (let name in data) {
 
         const nameInput = modal._element.querySelector(`[name="${name}"]`)

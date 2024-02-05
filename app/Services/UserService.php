@@ -33,6 +33,7 @@ class UserService
             'date_of_birth'         => $data->dateOfBirth,
             'sex'                   => $data->sex,
             'marital_status'        => $data->maritalStatus,
+            'special_note'          => $data->specialNote,
             'state_of_origin'       => $data->stateOfOrigin,
             'next_of_kin'           => $data->nextOfKin,
             'next_of_kin_rship'     => $data->nextOfKinRship,
@@ -46,28 +47,50 @@ class UserService
 
     public function update(Request $data, User $user, User $updater): User
     {
-       $user->update([
-        'firstname'             => $data->firstName,
-        'middlename'            => $data->middleName,
-        'lastname'              => $data->lastName,
-        'username'              => $data->username,
-        'phone_number'          => $data->phoneNumber,
-        'email'                 => $data->email,
-        'address'               => $data->address,
-        'highest_qualification' => $data->highestQualification,
-        'date_of_birth'         => $data->dateOfBirth,
-        'sex'                   => $data->sex,
-        'marital_status'        => $data->maritalStatus,
-        'state_of_origin'       => $data->stateOfOrigin,
-        'next_of_kin'           => $data->nextOfKin,
-        'next_of_kin_rship'     => $data->nextOfKinRship,
-        'next_of_kin_phone'     => $data->nextOfKinPhone,
-        'date_of_employment'    => $data->dateOfEmployment,
-        'date_of_exit'          => $data->dateOfExit,
-        'password'              => Hash::make($data->password),
-        'created_by'            => $updater->username,
-
-        ]);
+        if ($data->password){
+            $user->update([
+             'firstname'             => $data->firstName1,
+             'middlename'            => $data->middleName1,
+             'lastname'              => $data->lastName1,
+             'username'              => $data->username1,
+             'phone_number'          => $data->phoneNumber1,
+             'email'                 => $data->email1,
+             'address'               => $data->address1,
+             'highest_qualification' => $data->highestQualification1,
+             'date_of_birth'         => $data->dateOfBirth1,
+             'sex'                   => $data->sex1,
+             'marital_status'        => $data->maritalStatus1,
+             'state_of_origin'       => $data->stateOfOrigin1,
+             'next_of_kin'           => $data->nextOfKin1,
+             'next_of_kin_rship'     => $data->nextOfKinRship1,
+             'next_of_kin_phone'     => $data->nextOfKinPhone1,
+             'date_of_employment'    => $data->dateOfEmployment1,
+             'date_of_exit'          => $data->dateOfExit1,
+             'password'              => Hash::make($data->password),
+             'created_by'            => $updater->username,
+             ]);
+        } else {
+            $user->update([
+                'firstname'             => $data->firstName1,
+                'middlename'            => $data->middleName1,
+                'lastname'              => $data->lastName1,
+                'username'              => $data->username1,
+                'phone_number'          => $data->phoneNumber1,
+                'email'                 => $data->email1,
+                'address'               => $data->address1,
+                'highest_qualification' => $data->highestQualification1,
+                'date_of_birth'         => $data->dateOfBirth1,
+                'sex'                   => $data->sex1,
+                'marital_status'        => $data->maritalStatus1,
+                'state_of_origin'       => $data->stateOfOrigin1,
+                'next_of_kin'           => $data->nextOfKin1,
+                'next_of_kin_rship'     => $data->nextOfKinRship1,
+                'next_of_kin_phone'     => $data->nextOfKinPhone1,
+                'date_of_employment'    => $data->dateOfEmployment1,
+                'date_of_exit'          => $data->dateOfExit1,
+                'created_by'            => $updater->username,
+                ]);
+        }
 
         return $user;
     }
@@ -88,7 +111,7 @@ class UserService
         }
 
         return $this->user
-                    ->where('id', '!=', 1)
+                    ->where('id', '!=', 0)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
@@ -117,6 +140,9 @@ class UserService
 
     public function designate(Request $data, User $user, User $designator)
     {
+        if($user->designation?->access_level > 4 && $designator->designation?->access_level < 5) {
+            return response()->json(['message' => 'You cannot perform this action'], 403 );
+        }
         return $this->designation->updateOrCreate(['user_id' => $user->id], 
         [
             'designation'  => $data->designation,

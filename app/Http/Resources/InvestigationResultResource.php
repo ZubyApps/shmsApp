@@ -18,7 +18,6 @@ class InvestigationResultResource extends JsonResource
             'id'        => $this->id,
             'sample'    => $this->test_sample,
             'result'    => $this->result,
-            // 'result_by' => $this->result_by,
         ];
     }
 }

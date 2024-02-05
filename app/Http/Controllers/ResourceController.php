@@ -41,6 +41,16 @@ class ResourceController extends Controller
 
     }
 
+    public function listBulk(Request $request)
+    {
+        $items = $this->resourceService->getBulkList($request);
+
+        $listTransformer = $this->resourceService->listTransformer();
+
+        return array_map($listTransformer, (array)$items->getIterator());
+
+    }
+
     /**
      * Store a newly created resource in storage.
      */

@@ -9,6 +9,7 @@ use App\Models\Resource;
 use App\Models\ResourceSubCategory;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class ResourceService
@@ -130,6 +131,34 @@ class ResourceService
                         ->get();
         }
            
+    }
+
+    public function getBulkList($data)
+    {
+        if (! empty($data->resource)){
+
+            if ($data->dept === 'Nurses') {
+                
+                return $this->resource
+                            ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
+                            ->where('category', 'Consumables')
+                            ->where('is_active', true)
+                            ->where('stock_level', '>', 0)
+                            ->orderBy('name', 'asc')
+                            ->get();
+            }
+
+            return $this->resource
+                            ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
+                            ->where(function(Builder $query) {
+                                $query->where('sub_category', 'Supplies')
+                                ->orWhere('category', 'Consumables');
+                            })
+                            ->where('is_active', true)
+                            ->where('stock_level', '>', 0)
+                            ->orderBy('name', 'asc')
+                            ->get();
+        }    
     }
 
     public function listTransformer()

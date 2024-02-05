@@ -16,14 +16,14 @@
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
                                     <x-input-span>Sponsor</x-input-span>
-                                    <x-form-input name="sponsor" value="" id="sponsor"/>
+                                    <x-form-input name="sponsorName" value="" id="sponsorName"/>
                                 </x-form-div>
                             </div>
                         </div>
-                        <div class="mb-2 form-control vitalsDiv">
+                        <div class="mb-2 form-control" id="investigationModalDiv">
                             <x-form-span>Investigations</x-form-span>
                             <div class="row overflow-auto my-3">
-                                <table id="investigationsTableShort" class="table table-hover align-middle table-sm investigationsTable">
+                                <table id="investigationsTableShort" class="table table-sm investigationsTable">
                                     <thead>
                                         <tr>
                                             <th>Type</th>

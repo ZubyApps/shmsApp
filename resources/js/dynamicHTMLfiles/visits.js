@@ -1,18 +1,30 @@
-import { regularReviewDetails } from "./consultations"
+import { AncPatientReviewDetails, regularReviewDetails } from "./consultations"
 
-const visitDetails = (visitIteration, iteration, numberConverter, visitCount, count, visitLength, length, visitLine, line, viewer, isDoctorDone, isAnc) => {
+const visitDetails = (visitIteration, numberConverter, visit, viewer, isDoctorDone, isAnc) => {
+                const displayfunction =  isAnc ? AncPatientReviewDetails : regularReviewDetails
+                const consultations = visit.consultations.data
+                let consultationIteration = 0
+                let consultationCount  = 0
+                let div = '' //regularReviewDetails(consultationIteration, numberConverter, consultationCount, consultations.length, consultations[0], viewer, isDoctorDone)
+
+                consultations.forEach(line => {
+                    consultationIteration++
+                    consultationIteration > 1 ? consultationCount++ : ''
+                    // div += regularReviewDetails(consultationIteration, numberConverter, consultationCount, consultations.length, line, viewer, isDoctorDone)
+                    div += displayfunction(consultationIteration, numberConverter, consultationCount, consultations.length, line, viewer, isDoctorDone);
+                })
     
     return `
-                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseVisitBtn" id="collapseVisit" data-bs-toggle="collapse" href="#collapseVisit${visitIteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${visitIteration}">
-                    <span class="mx-2">${count + numberConverter(count) + ' Visit' }</span>
-                    <i class="bi bi-chevron-double-down text-primary"> </i>
+                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseVisitBtn" id="collapseVisit" data-bs-toggle="collapse" href="#collapseVisit${visitIteration}" role="button" aria-expanded="true" aria-controls="collapseVisit" data-gotovisit="#gotovisit${visitIteration}" data-id="${visit.id}" data-isanc="${isAnc}">
+                    <span class="mx-2 fw-semibold">${visitIteration + numberConverter(visitIteration) + ' Visit' }</span>
+                    <i class="bi bi-chevron-double-down text-warning fw-semibold"> </i>
                 </div>
                 <div class="collapse mb-2 reviewDiv" id="collapseVisit${visitIteration}" style="">
                     <div class="card card-body">
-                            <div class="mb-2 form-control">
+                            <div class="mb-2 form-control" id="gotovisit${visitIteration}">
                                 <x-form-span>Vital Signs</x-form-span>
                                 <div class="row overflow-auto my-3">
-                                    <table id="vitalSignsConsultation${ isAnc ? 'AncConHistory' : 'ConHistory' }"
+                                    <table id="vitalSignsHistory${visit.id}"
                                         class="table table-hover align-middle table-sm vitalSignsTable">
                                         <thead>
                                             ${isAnc ? 
@@ -47,17 +59,16 @@ const visitDetails = (visitIteration, iteration, numberConverter, visitCount, co
                                     </table>
                                 </div>
                             </div>
-                        ${
-                            isAnc  ? 
-                            AncPatientReviewDetails(iteration, numberConverter, count, length, line, viewer, isDoctorDone) : 
-                            regularReviewDetails(iteration, numberConverter, count, length, line, viewer, isDoctorDone)
-                        }
-
+                            <div id=conDiv>
+                            ${div}
+                            </div>
+                            
+                            
                             <div "class" = "mb-2">
                                 <div class="mb-2 form-control">
                                     <x-form-label>Patient's Bill Details</x-form-label>
                                     <X-form-div class="my-4">
-                                        <table id="billingTable${ visitLine.id }" class="table align-middle">
+                                        <table id="billingTableHistory${ visit.id }" class="table align-middle">
                                             <thead>
                                                 <tr>
                                                     <th></th>
@@ -74,8 +85,8 @@ const visitDetails = (visitIteration, iteration, numberConverter, visitCount, co
                                 </div>
                             </div>
                     </div>
-                    <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample">
-                    <span class="mx-2">Close ${count + numberConverter(count) + ' Visit' }</span>
+                    <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseVisit" data-bs-toggle="collapse" href="#collapseVisit${visitIteration}" role="button" aria-expanded="true" aria-controls="collapseVisit">
+                    <span class="mx-2">Close ${visitIteration + numberConverter(visitIteration) + ' Visit' }</span>
                     <i class="bi bi-chevron-double-up text-primary"></i>
                     </div>
                 </div>

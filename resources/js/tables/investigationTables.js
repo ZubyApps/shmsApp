@@ -25,7 +25,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
             {data: row =>  `
                         <div class="d-flex flex-">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                            ${row.labDone}<i class="bi bi-eyedropper"></i>${row.labPrescribed}
+                                ${row.labPrescribed}<i class="bi bi-eyedropper"></i>${row.labDone}
                             </button>
                         </div>`                
             },

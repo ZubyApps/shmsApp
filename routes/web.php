@@ -6,6 +6,7 @@ use App\Http\Controllers\AncVitalSignsController;
 use App\Http\Controllers\AntenatalRegisterationController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\BulkRequestController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DeliveryNoteController;
 use App\Http\Controllers\DoctorController;
@@ -170,6 +171,7 @@ Route::middleware('auth')->group(function () {
         Route::post('', [ResourceController::class, 'store']);
         Route::get('/load', [ResourceController::class, 'load']);
         Route::get('/list', [ResourceController::class, 'list']);
+        Route::get('/list/bulk', [ResourceController::class, 'listBulk']);
         Route::get('/{resource}', [ResourceController::class, 'edit']);
         Route::get('/addstock/{resource}', [ResourceController::class, 'edit'])->name('Addstock');
         Route::delete('/{resource}', [ResourceController::class, 'destroy']);
@@ -224,7 +226,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/outpatients', [InvestigationController::class, 'loadOutpatientsLabTable']);
         Route::get('/{prescription}', [InvestigationController::class, 'edit']);
         Route::patch('/remove/{prescription}', [InvestigationController::class, 'removeLabResult']);
-        Route::patch('/{prescription}', [InvestigationController::class, 'saveLabResult']);
+        Route::patch('/create/{prescription}', [InvestigationController::class, 'createLabResult']);
+        Route::patch('/update/{prescription}', [InvestigationController::class, 'updateLabResult']);
     });
 
     Route::prefix('hmo')->group(function () {
@@ -248,6 +251,10 @@ Route::middleware('auth')->group(function () {
         Route::patch('/dispense/comment/{prescription}', [PharmacyController::class, 'dispenseComment']);
         Route::get('/load/visit/prescriptions', [PharmacyController::class, 'loadVisitPrescriptions']);
         Route::get('/load/consultation/prescriptions', [PharmacyController::class, 'loadConsultationPrescriptions']);
+        Route::get('/load/expiratonstock', [PharmacyController::class, 'expirationStock']);
+        Route::get('/load/bulkrequests/nurses', [PharmacyController::class, 'expirationStock']);
+        Route::get('/load/bulkrequests/lab', [PharmacyController::class, 'expirationStock']);
+        Route::get('/load/bulkrequests/pharmacy', [PharmacyController::class, 'expirationStock']);
     });
 
     Route::prefix('billing')->group(function () {
@@ -289,6 +296,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/table', [AncVitalSignsController::class, 'loadAncVitalSignsTableByVisit']);
         Route::get('/load/chart', [AncVitalSignsController::class, 'loadAncVitalSignsChartByVisit']);
         Route::delete('/{ancVitalSigns}', [AncVitalSignsController::class, 'destroy']);
+    });
+
+    Route::prefix('bulkrequests')->group(function () {
+        Route::post('/{resource}', [BulkRequestController::class, 'store']);
+        Route::get('/load/nurses', [BulkRequestController::class, 'nursesBulkRequests']);
+        Route::get('/load/lab', [BulkRequestController::class, 'labBulkRequests']);
+        Route::get('/load/pharmacy', [BulkRequestController::class, 'pharmacyBulkRequests']);
+        Route::delete('/{bulkRequest}', [BulkRequestController::class, 'destroy']);
     });
 });
 
