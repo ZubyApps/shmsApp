@@ -25,11 +25,11 @@ class StoreMedicationChartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'prescriptionId'    => ['required', 'numeric', 'exists:'.Prescription::class.',id'],
-            'conId'             => ['required', 'numeric', 'exists:'.Consultation::class.',id'],
-            'visitId'           => ['required', 'numeric', 'exists:'.Visit::class.',id'],
-            'dose'              => ['required'],
-            'days'              => ['required', 'numeric', 'min:1'],
+            'prescriptionId'    => ['required', 'integer', 'exists:'.Prescription::class.',id'],
+            'conId'             => ['required', 'integer', 'exists:'.Consultation::class.',id'],
+            'visitId'           => ['required', 'integer', 'exists:'.Visit::class.',id'],
+            'dose'              => ['required', 'integer', 'min:1'],
+            'days'              => ['required', 'integer', 'min:1'],
             'unit'              => ['required'],
             'frequency'         => ['required']
         ];

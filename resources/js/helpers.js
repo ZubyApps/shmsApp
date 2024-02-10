@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import { getAncPatientsVisitTable, getInpatientsVisitTable, getOutpatientsVisitTable } from './tables/doctorstables';
+import { Collapse } from 'bootstrap';
 
 function clearDivValues(div) {
     const tagName = div.querySelectorAll('input, select, textarea')
@@ -210,6 +211,11 @@ function getWeeksModulus(today, lmp) {
     return Math.round(Math.abs(today.getTime() - lmp.getTime())/daysCoverter);
 }
 
+function getMinsDiff(today, futureDate) {
+    const minsCoverter = 1000 * 60;
+    return (Math.floor(futureDate.getTime() - today.getTime())/minsCoverter).toFixed(1);
+}
+
 function getPatientSponsorDatalistOptionId(modal, inputEl, datalistEl) {  
     const selectedOption = datalistEl.options.namedItem(inputEl.value)
     
@@ -233,29 +239,61 @@ function loadingSpinners() {
 const detailsBtn = (row) => {
     return `
             <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationDetailsBtn" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}">Details</button>
+                <button class="btn btn-outline-primary tooltip-test consultationDetailsBtn" title="${row.closed ? 'record closed': ''}" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">Details${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}</button>
             </div>
             `      
+}
+
+const prescriptionStatusContorller = (row, tableId) => {
+    return `<span class="text-decoration-underline btn tootip-test ${row.doseComplete ? '' : 'discontinueBtn'}" title="${row.doseComplete ? 'completed' : 'discontinue'}" data-id="${row.id}"           data-table="${tableId}">
+                ${row.prescription} 
+            </span>`      
 }
 
 const reviewBtn = (row) => {
     return `
-            <div class="d-flex flex-">
-                <button class="btn btn-outline-primary consultationReviewBtn" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}">Review</button>
-            </div>
-            `      
+    <div class="dropdown">
+        <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown">
+            More${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
+        </a>
+            <ul class="dropdown-menu">
+            <li>
+                <a class=" btn btn-outline-primary dropdown-item consultationReviewBtn tooltip-test" title="details" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">
+                    Review
+                </a>
+                <a class="dropdown-item patientsBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-staff="${ row.staff }">
+                    More
+                </a>
+                <a class="dropdown-item btn tooltip-test" title="${row.closed ? 'open?': 'close?'}"  data-id="${ row.id }" id="${row.closed ? 'openVisitBtn' : 'closeVisitBtn'}">
+                ${row.closed ? 'Open? <i class="bi bi-unlock-fill"></i>': 'Close? <i class="bi bi-lock-fill"></i>'}
+                </a>
+            </li>
+        </ul>
+    </div>
+    `
 }
 
 const histroyBtn = (row) => {
-    return `<a class="historyBtn tooltip-test text-decoration-none text-dark" href="#" title="history" data-patientid="${row.patientId}" data-doctordone="${row.doctorDone}" data-patientType="${ row.patientType }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">${row.patient}</a>`
+    return `<a class="historyBtn tooltip-test text-decoration-none text-dark" href="#" title="history" data-patientid="${row.patientId}" data-patientType="${ row.patientType }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">${row.patient}</a>`
 }
 
-const displayConsultations = (div, displayFunction, iteration, getOrdinal, count, length, data, viewer, isDoctorDone) => {
-    div.innerHTML += displayFunction(iteration, getOrdinal, count, length, data, viewer, isDoctorDone)
+const displayConsultations = (div, displayFunction, iteration, getOrdinal, count, length, data, viewer, isDoctorDone, closed) => {
+    div.innerHTML += displayFunction(iteration, getOrdinal, count, length, data, viewer, isDoctorDone, closed)
 }
 
 const displayVisits = (div, displayFunction, iteration, getOrdinal, data, viewer, isDoctorDone, isAnc) => {
     div.innerHTML += displayFunction(iteration, getOrdinal, data, viewer, isDoctorDone, isAnc)
+}
+
+const closeReviewButtons = (modal, closed) => {
+    let reviewBtns = modal._element.querySelectorAll('.reviewConBtns')
+    reviewBtns.forEach(btn => {
+        if (closed){
+            btn.classList.add('d-none') 
+        } else {
+            btn.classList.remove('d-none')
+        }
+    })
 }
 
 const sponsorAndPayPercent = (row) => {
@@ -269,7 +307,7 @@ const sponsorAndPayPercent = (row) => {
     }
     return payPercent !== null ? 
             `<div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
-            <div class="progress-bar text-dark fs-6 px-1 overflow-visible bg-${payPercent <= 50 ? 'danger' : payPercent > 50 && payPercent < 100 ? 'warning' : 'primary'}" style="width: ${payPercent}%";>${row.sponsor+' '+payPercent+'%'}</div>
+            <div class="progress-bar text-dark fs-6 px-1 overflow-visible bg-${payPercent <= 50 ? 'danger' : payPercent > 50 && payPercent < 90 ? 'warning' : payPercent > 90 && payPercent < 100 ? 'primary-subtle' : 'primary'}" style="width: ${payPercent}%";>${row.sponsor+' '+payPercent+'%'}</div>
             </div>` : 
            row.sponsor
 }
@@ -432,4 +470,4 @@ const displayItemsList = (datalistEl, data, optionName) => {
     })
 }
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList}    
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff}    

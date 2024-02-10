@@ -108,8 +108,8 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                 sortable: false,
                 data: row => `
                 <div class="dropdown">
-                    <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="status" data-bs-toggle="dropdown">
-                        ${row.closed ? 'Closed': 'More'}
+                    <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown">
+                        More${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
                     </a>
                         <ul class="dropdown-menu">
                         <li>
@@ -119,8 +119,8 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                             <a class="dropdown-item patientBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
                                 Bill
                             </a>
-                            <a class="dropdown-item openCloseBtn btn tooltip-test" title="${row.closed ? 'open': 'close'}"  data-id="${ row.id }">
-                            ${row.closed ? 'Open': 'Close'}
+                            <a class="dropdown-item closeVisitBtn btn tooltip-test" title="${row.closed ? 'closed': 'close'}"  data-id="${ row.id }">
+                            ${row.closed ? '': 'Close'}
                             </a>
                         </li>
                     </ul>
@@ -196,6 +196,7 @@ const getApprovalListTable = (tableId, sponsor) => {
 }
 
 const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
+    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
     const visitPrescriptionsTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/load/visit/prescriptions', data: {
@@ -208,17 +209,17 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
         },
         drawCallback: function (settings) {
             var api = this.api()                
-                $( 'tr:eq(0) td:eq(7)', api.table().footer() ).html(api.column( 7, {page:'current'} ).data().sum());
-                $( 'tr:eq(0) td:eq(8)', api.table().footer() ).html( api.column(8, {page:'current'} ).data().sum());
+                $( 'tr:eq(0) td:eq(7)', api.table().footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
+                $( 'tr:eq(0) td:eq(8)', api.table().footer() ).html(account.format(api.column(8, {page:'current'} ).data().sum()));
                 
-                const value = (api.column( 8, {page:'current'} ).data().sum()) - (api.column( 7, {page:'current'} ).data().sum())
+                const value = (account.format(api.column( 8, {page:'current'} ).data().sum() - (api.column( 7, {page:'current'} ).data().sum())))
                 $( 'tr:eq(0) td:eq(9)', api.table().footer() ).html(`<span class="text-${value < 0 ? 'danger': value == 0 ? 'primary': 'success'}">Diff: ${value}</span>`);
                 
-                $( 'tr:eq(1) td:eq(7)', api.table().footer() ).html(api.data()[0].paidHms);
-                $( 'tr:eq(1) td:eq(8)', api.table().footer() ).html(api.data()[0].paidHms);
+                $( 'tr:eq(1) td:eq(7)', api.table().footer() ).html(account.format(api.data()[0].paidHms));
+                $( 'tr:eq(1) td:eq(8)', api.table().footer() ).html(account.format(api.data()[0].paidHms));
                 
-                $( 'tr:eq(2) td:eq(7)', api.table().footer() ).html((api.column( 7, {page:'current'} ).data().sum() - api.data()[0].paidHms));
-                $( 'tr:eq(2) td:eq(8)', api.table().footer() ).html((api.column( 8, {page:'current'} ).data().sum() - api.data()[0].paidHms));
+                $( 'tr:eq(2) td:eq(7)', api.table().footer() ).html(account.format((api.column( 7, {page:'current'} ).data().sum() - api.data()[0].paidHms)));
+                $( 'tr:eq(2) td:eq(8)', api.table().footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum() - api.data()[0].paidHms));
 
         },
         columns: [

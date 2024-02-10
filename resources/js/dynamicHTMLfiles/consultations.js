@@ -1,7 +1,6 @@
 import { deliveryNotes, surgeryNotes, updateAdmissionStatus, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses} from "./partialHTMLS"
 
-const regularReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone) => {
-
+const regularReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone, closed, isHistory) => {
     return `
                 <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseConsultationBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
                     <span class="mx-2">${iteration > 1 && !line.specialistFlag ? count + numberConverter(count) + ' Review' : line.specialistFlag ? 'Specialist Consultation' : 'Initial Consultation'}</span>
@@ -11,13 +10,13 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                     <div class="card card-body">
                         <div class="mb-2 form-control" id="goto${iteration}">
                             ${iteration < 2 || line.specialistFlag ? consultation(line) :  review(count, line)}
-                            ${ viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}
+                            ${closed ? '' : viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}
                             ${investigations(line, viewer)}
                             ${viewer == 'doctor' ||  viewer == 'hmo' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
-                            ${viewer == 'doctor' ? updateInvestigationAndManagement(length, iteration, line, isDoctorDone) : ''}
-                            ${isDoctorDone ? '' :
+                            ${viewer == 'doctor' ? updateInvestigationAndManagement(length, iteration, line, isDoctorDone, closed) : ''}
+                            ${isDoctorDone || closed ? '' :
                             `<div class="d-flex justify-content-start my-3 gap-2" >
-                                ${!viewer ? `
+                                ${viewer == 'doctor' ? `
                                 <button type="button" id="fileBtn" data-id="${line.id}" data-visitid="${line.visitId}" class="btn btn-outline-primary">
                                     File
                                     <i class="bi bi-file-earmark-medical"></i>
@@ -33,7 +32,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                                 </button>` : ''}
                             </div>` }
                             <div class="extraInfoDiv">
-                                ${!viewer ? `
+                                ${viewer == 'doctor' ? `
                                 <div class="my-2 form-control">
                                     <span class="fw-bold text-primary"> Other Documents </span>
                                     <div class="row overflow-auto m-1">
@@ -42,16 +41,14 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                                 </div> ` : ''}
                                 ${viewer == 'nurse' || viewer == 'doctor' ? surgeryNotes(line) : ''}
                                 ${viewer == 'nurse' || viewer == 'doctor' ? deliveryNotes(line): ''}
-                                ${length == iteration && viewer == '' ? 
-                                `<div class="d-flex justify-content-between my-2">
-                                    <button type="button" id="closeVisitBtn" data-id="${line.id}" class="btn btn-outline-primary">
+                                ${length == iteration && viewer == 'doctor' ? 
+                                `<div class="d-flex justify-content-end my-2">                                  
+                                    ${closed || isHistory ? '' : 
+                                        `<button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" data-patienttype="Regular" class="btn btn-outline-primary">
                                         <i class="bi bi-trash"></i>
-                                        Close Visit
-                                    </button>
-                                    <button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" data-patienttype="Regular" class="btn btn-outline-primary">
-                                        <i class="bi bi-trash"></i>
-                                        Delete
-                                    </button>
+                                            Delete
+                                        </button>`
+                                    }   
                                 </div>` : ''}
                             </div>
                         </div>
@@ -64,7 +61,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                 `
 }
 
-const AncPatientReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone) => {
+const AncPatientReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone, closed) => {
 
     return `
                 <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseConsultationBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
@@ -79,7 +76,7 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
                             ${ viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}
                             ${investigations(line)}
                             ${viewer == 'doctor' ||  viewer == 'hmo' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
-                            ${viewer == 'doctor' ? updateInvestigationAndManagement(length, iteration, line, isDoctorDone) : ''}
+                            ${viewer == 'doctor' ? updateInvestigationAndManagement(length, iteration, line, isDoctorDone, closed) : ''}
 
                             ${isDoctorDone ? '' :
                             `<div class="d-flex justify-content-start my-3 gap-2">
@@ -99,14 +96,15 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
                                     </div>` : ''}
                                 ${length == iteration && viewer == 'doctor' ? 
                                 `<div class="d-flex justify-content-between my-2">
-                                    <button type="button" id="closeVisitBtn" data-id="${line.id}" class="btn btn-outline-primary">
-                                        <i class="bi bi-trash"></i>
-                                        Close Visit
+                                    <button type="button" id="${closed ? 'open' : 'close'}VisitBtn" data-id="${line.id}" class="btn btn${closed ? '' : '-outline'}-primary">
+                                        ${closed ? 'Open Visit? <i class="bi bi-lock-fill"></i>' : 'Close Visit? <i class="bi bi-unlock-fill"></i>'}
                                     </button>
-                                    <button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" data-patienttype="ANC" class="btn btn-outline-primary">
+                                    ${closed ? '' : 
+                                    `<button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" data-patienttype="Regular" class="btn btn-outline-primary">
                                         <i class="bi bi-trash"></i>
                                         Delete
-                                    </button>
+                                    </button>`
+                                    }
                                 </div>`  : ''}
                             </div>
                         </div>

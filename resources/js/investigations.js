@@ -120,12 +120,6 @@ window.addEventListener('DOMContentLoaded', function () {
                                 iteration > 1 ? count++ : ''
 
                                 div.innerHTML += displayFunction(iteration, getOrdinal, count, consultations.length, line, viewer)
-    
-                                // if (patientType === 'ANC') {
-                                //     treatmentDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
-                                // } else {
-                                //     treatmentDiv.innerHTML += regularReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
-                                // }
                             })
     
                             modal.show()

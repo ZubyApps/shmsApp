@@ -25,7 +25,7 @@ class MedicationChartService
     {
         $tz = 'Africa/Lagos';
         $interval = CarbonInterval::hours($data->frequency);
-        $start = CarbonImmutable::now($tz)->addMinutes(10);
+        $start = CarbonImmutable::now($tz)->addMinutes(30);
         $end    = $start->addDays($data->days);
         $dates = new CarbonPeriod($start, $interval, $end, CarbonPeriod::EXCLUDE_END_DATE);
 
@@ -102,6 +102,7 @@ class MedicationChartService
                 'scheduledTime'     => (new Carbon($medicationChart->scheduled_time))->format('g:iA D dS'),
                 'chartedBy'         => $medicationChart->user->username,
                 'chartedAt'         => (new Carbon($medicationChart->created_at))->format('d/m/y g:ia'),
+                'given'             => $medicationChart->dose_given !== null
             ];
          };
     }
@@ -114,6 +115,10 @@ class MedicationChartService
         if (! empty($params->searchTerm)) {
             return $this->medicationChart
                         ->where('status', false)
+                        ->where(function (Builder $query){
+                            $query->whereRelation('consultation', 'admission_status', '=', 'Inpatient')
+                            ->orWhereRelation('visit.consultations', 'admission_status', '=','Observation');
+                        })
                         ->where(function (Builder $query) use($params) {
                             $query->WhereRelation('prescription.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -128,8 +133,11 @@ class MedicationChartService
 
         return $this->medicationChart
                     ->where('status', false)
-                    ->whereRelation('consultation', 'admission_status', '=', 'Inpatient')
-                    ->orWhereRelation('visit.consultations', 'admission_status', '=','Observation')
+                    ->whereRelation('prescription', 'discontinued', false)
+                    ->where(function (Builder $query){
+                        $query->whereRelation('consultation', 'admission_status', '=', 'Inpatient')
+                        ->orWhereRelation('visit.consultations', 'admission_status', '=','Observation');
+                    })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -149,7 +157,9 @@ class MedicationChartService
                 'date'              => (new Carbon($medicationChart->scheduled_time))->format('jS/M/y'),
                 'time'              => (new Carbon($medicationChart->scheduled_time))->format('g:iA'),
                 'doseCount'         => $medicationChart->dose_count,
-                'count'             => $medicationChart::where('prescription_id', $medicationChart->prescription->id)->count()
+                'count'             => $medicationChart::where('prescription_id', $medicationChart->prescription->id)->count(),
+                'discontinued'      => $medicationChart->prescription->discontinued,
+                'rawDateTime'       => $medicationChart->scheduled_time
             ];
          };
     }

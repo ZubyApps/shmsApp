@@ -42,7 +42,9 @@ return new class extends Migration
             $table->dateTime('result_date')->nullable();
             $table->foreignIdFor(User::class, 'result_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->string('paid')->nullable();
+            $table->boolean('chartable')->default(false);
             $table->boolean('discontinued')->default(false);
+            $table->foreignIdFor(User::class, 'discontinued_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(Resource::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Consultation::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();

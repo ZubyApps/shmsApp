@@ -1,17 +1,14 @@
 import { AncPatientReviewDetails, regularReviewDetails } from "./consultations"
 
-const visitDetails = (visitIteration, numberConverter, visit, viewer, isDoctorDone, isAnc) => {
+const visitDetails = (visitIteration, numberConverter, visit, viewer, isAnc) => {
                 const displayfunction =  isAnc ? AncPatientReviewDetails : regularReviewDetails
                 const consultations = visit.consultations.data
-                let consultationIteration = 0
-                let consultationCount  = 0
-                let div = '' //regularReviewDetails(consultationIteration, numberConverter, consultationCount, consultations.length, consultations[0], viewer, isDoctorDone)
-
+                let [consultationIteration, consultationCount, consultationsDiv, isDoctorDone, closed, isHistory] = [0, 0, '', true, true, true]
+                 
                 consultations.forEach(line => {
                     consultationIteration++
                     consultationIteration > 1 ? consultationCount++ : ''
-                    // div += regularReviewDetails(consultationIteration, numberConverter, consultationCount, consultations.length, line, viewer, isDoctorDone)
-                    div += displayfunction(consultationIteration, numberConverter, consultationCount, consultations.length, line, viewer, isDoctorDone);
+                    consultationsDiv += displayfunction(consultationIteration, numberConverter, consultationCount, consultations.length, line, viewer, isDoctorDone, closed, isHistory);
                 })
     
     return `
@@ -60,7 +57,7 @@ const visitDetails = (visitIteration, numberConverter, visit, viewer, isDoctorDo
                                 </div>
                             </div>
                             <div id=conDiv>
-                            ${div}
+                            ${consultationsDiv}
                             </div>
                             
                             

@@ -65,7 +65,27 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) =
             {data: row => admissionStatus(row)},
             {
                 sortable: false,
-                data: row => detailsBtn(row)},
+                data: row => `
+                <div class="dropdown">
+                    <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown">
+                        More${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
+                    </a>
+                        <ul class="dropdown-menu">
+                        <li>
+                            <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details"  data-id="${ row.id }" data-patientId="${ row.patient }" data-patientType="${ row.patientType }">
+                                Details
+                            </a>
+                            <a class="dropdown-item patientsBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-staff="${ row.staff }">
+                                Bill Summary
+                            </a>
+                            <a class="dropdown-item closeVisitBtn btn tooltip-test" title="${row.closed ? 'closed': 'close'}"  data-id="${ row.id }">
+                            ${row.closed ? '': 'Close'}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                `
+            },
         ]
     });
 }
@@ -73,10 +93,10 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) =
 const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
     const billingTable =  new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  {url: '/billing/load/bill', data: {
+        ajax:  {url: '/billing/bill', data: {
             'visitId': visitId,
         }},
-        orderMulti: true,
+        orderMulti: false,
         search:true,
         searching: false,
         lengthChange: false,
@@ -342,7 +362,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
 const getPaymentTableByVisit = (tableId, visitId, modal) => {
     const paymentTable =  new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  {url: '/billing/load/payment', data: {
+        ajax:  {url: '/billing/payment', data: {
             'visitId': visitId,
         }},
         orderMulti: true,
@@ -377,13 +397,17 @@ const getPaymentTableByVisit = (tableId, visitId, modal) => {
             },
             {
                 sortable: false,
-                data: row =>  `
-                <div class="d-flex flex-">
-                    <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
-                        <i class="bi bi-trash3-fill"></i>
-                    </button>
-                </div>
-                `      
+                data: row => () => {
+                    if (row.user){
+                        return `
+                        <div class="d-flex flex-">
+                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
+                        </div>
+                        `  
+                    }
+                }      
             },
         ]
     });
@@ -392,7 +416,61 @@ const getPaymentTableByVisit = (tableId, visitId, modal) => {
         paymentTable.destroy()
     })
     
-    return billingTable
+    return paymentTable
 }
 
-export {getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit}
+const getPatientsBill = (tableId, visitId, modal, type) => {
+    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
+    const billTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  {url: '/billing/summary', data: {
+            'visitId': visitId,
+            'type': type,
+        }},
+        orderMulti: false,
+        search: false,
+        searching: false,
+        lengthChange: false,
+        paging: false,
+        info: false,
+        language: {
+            emptyTable: 'No bill'
+        },
+        drawCallback: function (settings) {
+            var api = this.api()
+            
+                $( 'tr:eq(0) td:eq(3)', api.table().footer() ).html(account.format(api.data()[0].discount));
+                $( 'tr:eq(1) td:eq(3)', api.table().footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum() - api.data()[0].discount));
+                $( 'tr:eq(1) td:eq(4)', api.table().footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
+                $( 'tr:eq(1) td:eq(5)', api.table().footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum() - api.data()[0].discount - api.column( 4, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {
+                data: "service"
+            },
+            {
+                data: "types"
+            },
+            {
+                data: "quantity"
+            },
+            {
+                data: row => account.format(row.totalBill)
+            },
+            {
+                data: row => account.format(row.totalPaid)
+            },
+            {
+                data: row => account.format(row.totalBill - row.totalPaid)
+            },
+        ]
+    });
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        billTable.destroy()
+    })
+    
+    return billTable
+}
+
+export {getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill}

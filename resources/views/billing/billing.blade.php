@@ -7,6 +7,7 @@
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
 @include('billing.billingModal', ['title' => 'Billing Details', 'isUpdate' => false, 'id' => 'billingModal'])
 @include('billing.outstandingBillsModal', ['title' => "Patient's Outstanding Bills", 'isUpdate' => false, 'id' => 'outstandingBillsModal'])
+@include('billing.billModal', ['title' => "", 'isSummary' => true, 'id' => 'billModal'])
 
     <div class="container p-1 mt-5 bg-white">
 

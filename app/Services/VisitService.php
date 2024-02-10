@@ -14,6 +14,7 @@ use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class VisitService
 {
@@ -43,7 +44,7 @@ class VisitService
         if (! empty($params->searchTerm)) {
             return $this->visit
                         ->Where('consulted', null)
-                        ->where('closed', null)
+                        ->where('closed', false)
                         ->where(function (Builder $query) use($params) {
                             $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -58,7 +59,7 @@ class VisitService
         
         return $this->visit
                     ->where('consulted', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
@@ -247,5 +248,39 @@ class VisitService
         ]);
 
         return $visit;
+    }
+
+    public function close(User $user, Visit $visit)
+    {
+        return DB::transaction(function () use($user, $visit){
+            $visit->update([
+                'closed'            => true, 
+                'closed_opened_at'  => new Carbon(), 
+                'closed_opened_by'  => $user->id
+            ]);
+
+            $visit->patient()->update(['is_active' => false]);
+        });
+    }
+
+    public function open(User $user, Visit $visit)
+    {
+        return DB::transaction(function () use($user, $visit){
+            $visit->update([
+                'closed'            => false, 
+                'closed_opened_at'  => new Carbon(), 
+                'closed_opened_by'  => $user->id
+            ]);
+
+            $visit->patient()->update(['is_active' => false]);
+        });
+    }
+
+    public function delete($visit)
+    {
+        return DB::transaction(function() use($visit){
+            $visit->destroy($visit->id);
+            $visit->patient()->update(['is_active' => false]);
+        });
     }
 }

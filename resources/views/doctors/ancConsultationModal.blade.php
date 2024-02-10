@@ -159,7 +159,8 @@
                                     </div>
                                     <x-toast-successful  id="saveConsultationToast"></x-toast-successful>
                                 </div>
-                                <div class="d-none investigationAndManagementDiv" id="investigationAndManagementDiv{{ $isReview ? 'AncReview' : 'Anc' }}" {!! $isReview ? 'data-div="ancReview"' : 'data-div="anc"' !!}>
+                                @include('extras.investigationAndManagementDiv', ['type' => $isReview ? 'AncReview' : 'Anc'])
+                                {{-- <div class="d-none investigationAndManagementDiv" id="investigationAndManagementDiv{{ $isReview ? 'AncReview' : 'Anc' }}" {!! $isReview ? 'data-div="ancReview"' : 'data-div="anc"' !!}>
                                     <div class="mb-2 form-control">
                                         <x-form-span>Investigation & Management</x-form-span>
                                         <div class="row">
@@ -193,7 +194,7 @@
                                         <x-toast-successful  id="saveInvestigationAndManagementToast"></x-toast-successful>
                                     </div>
                                     <div class="mb-2 form-control">
-                                        <table id="prescriptionTable{{ $isReview ? 'ancReview' : 'anc' }}" class="table table-hover align-middle table-sm prescriptionTable">
+                                        <table id="prescriptionTable{{ $isReview ? 'AncReview' : 'Anc' }}" class="table table-hover align-middle table-sm prescriptionTable">
                                             <thead>
                                                 <tr>
                                                     <th>Prescribed</th>
@@ -208,7 +209,7 @@
                                             <tbody></tbody>
                                         </table>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>

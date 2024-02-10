@@ -86,7 +86,7 @@
                         </select>
                     </x-form-div>
                     <div class="py-4">
-                        <table id="outPatientsVisitTable" class="table table-hover table-sm">
+                        <table id="outPatientsVisitTable" class="table table-sm">
                             <thead>
                                 <tr>
                                     <th>Seen</th>
@@ -115,7 +115,7 @@
                         </select>
                     </x-form-div>
                     <div class="py-4">
-                        <table id="inPatientsVisitTable"  class="table table-hover align-middle table-sm">
+                        <table id="inPatientsVisitTable"  class="table align-middle table-sm">
                             <thead>
                                 <tr>
                                     <th>Seen</th>
@@ -144,7 +144,7 @@
                         </select>
                     </x-form-div>
                     <div class="py-4">
-                        <table id="ancPatientsVisitTable" class="table table-hover table-sm">
+                        <table id="ancPatientsVisitTable" class="table table-sm">
                             <thead>
                                 <tr>
                                     <th>Seen</th>

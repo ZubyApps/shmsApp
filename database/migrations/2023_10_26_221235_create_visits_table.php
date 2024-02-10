@@ -25,8 +25,9 @@ return new class extends Migration
             $table->dateTime('consulted')->nullable();
             $table->dateTime('viewed_at')->nullable();
             $table->foreignIdFor(User::class, 'viewed_by')->nullable()->constrained('users')->restrictOnDelete();
-            $table->dateTime('closed')->nullable();
-            $table->foreignIdFor(User::class, 'closed_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->dateTime('closed_opened_at')->nullable();
+            $table->boolean('closed')->default(false);
+            $table->foreignIdFor(User::class, 'closed_opened_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->string('discount')->nullable();
             $table->foreignIdFor(User::class, 'discount_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->string('total_bill')->default(0);
@@ -35,8 +36,6 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'doctor_done_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'nurse_done_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'pharmacy_done_by')->nullable()->constrained('users')->restrictOnDelete();
-            $table->foreignIdFor(User::class, 'lab_done_by')->nullable()->constrained('users')->restrictOnDelete();
-            $table->foreignIdFor(User::class, 'billing_done_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'hmo_done_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'doctor_id')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(Patient::class)->constrained()->restrictOnDelete();

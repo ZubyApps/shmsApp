@@ -4,7 +4,7 @@ import $ from 'jquery';
 import { consultationDetails, items } from "./data"
 import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, clearValidationErrors, resetFocusEndofLine} from "./helpers"
 import { InitialRegularConsultation, review } from "./dynamicHTMLfiles/treamentsInvestigations";
-import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit } from "./tables/billingTables";
+import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill } from "./tables/billingTables";
 import { getOutpatientsInvestigationTable } from "./tables/investigationTables";
 
 
@@ -12,6 +12,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const waitingListCanvas             = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
     const billingModal                  = new Modal(document.getElementById('billingModal'))
     const outstandingBillsModal         = new Modal(document.getElementById('outstandingBillsModal'))
+    const billModal                     = new Modal(document.getElementById('billModal'))
 
     const waitingBtn                    = document.querySelector('#waitingBtn')
     const outpatientsInvestigationBtn   = document.querySelector('#outpatientsInvestigationBtn')
@@ -19,6 +20,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const outPatientsTab                = document.querySelector('#nav-outPatients-tab')
     const inPatientsTab                 = document.querySelector('#nav-inPatients-tab')
     const ancPatientsTab                = document.querySelector('#nav-ancPatients-tab')
+    const changeBillSpan                = billModal._element.querySelector('.changeBill')
 
 
     let inPatientsVisitTable, ancPatientsVisitTable
@@ -79,6 +81,8 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #outstandingBillsTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const billingDetailsBtn = event.target.closest('.consultationDetailsBtn')
+            const patientsBillBtn   = event.target.closest('.patientsBillBtn')
+            const closeVisitBtn     = event.target.closest('.closeVisitBtn')
             
             if (billingDetailsBtn){
                 const visitId = billingDetailsBtn.getAttribute('data-id') 
@@ -87,8 +91,55 @@ window.addEventListener('DOMContentLoaded', function () {
                 outstandingBillsModal.hide()
                 billingModal.show()
             }
+
+            if (patientsBillBtn){
+                const visitId   = patientsBillBtn.getAttribute('data-id')
+                billModal._element.querySelector('.patient').innerHTML      = patientsBillBtn.getAttribute('data-patient')
+                billModal._element.querySelector('.billingStaff').innerHTML = patientsBillBtn.getAttribute('data-staff')
+                changeBillSpan.setAttribute('visitid', visitId)
+                getPatientsBill('billTable', visitId, billModal._element, 'category')
+                billModal.show()
+            }
+
+            if (closeVisitBtn){
+                if (confirm('Are you sure you want to close this Visit?')) {
+                    const visitId = closeVisitBtn.getAttribute('data-id')
+                    http.patch(`/visits/close/${visitId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            waitingTable.draw()
+                            outPatientsVisitTable.draw()
+                            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+                            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+                        }
+                    })
+                    .catch((error) => {
+                        if (error.response.status === 403){
+                            alert(error.response.data.message) 
+                        }
+                        console.log(error)
+                    })
+                }
+            }
         })
     })
+
+    changeBillSpan.addEventListener('click', function () {
+        const visitId = changeBillSpan.getAttribute('visitid')
+
+        if ($.fn.DataTable.isDataTable('#billTable')) {
+            $('#billTable').dataTable().fnDestroy()
+        }
+
+        if (changeBillSpan.innerHTML == 'Summary'){
+            changeBillSpan.innerHTML = 'Details'
+            getPatientsBill('billTable', visitId, billModal._element, 'name')
+        } else {
+            changeBillSpan.innerHTML = 'Summary'
+            getPatientsBill('billTable', visitId, billModal._element, 'category')
+        }
+    })
+
 
     document.querySelector('#billingTable').addEventListener('click',  function (event) {
             const payBtn = event.target.closest('.payBtn')
@@ -97,7 +148,6 @@ window.addEventListener('DOMContentLoaded', function () {
             const outstandingsBtn    = event.target.closest('.outstandingsBtn')
 
             if (payBtn) {
-                console.log(payBtn)
                 payBtn.setAttribute('disabled', 'disabled')
 
                 const visitId   = payBtn.getAttribute('data-id')
@@ -153,8 +203,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         if ($.fn.DataTable.isDataTable( '#billingTable' )){
                             $('#billingTable').dataTable().fnDraw()
                         }
-                    }
-                                    
+                    }                 
                 })
             }
 

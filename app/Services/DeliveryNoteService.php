@@ -89,7 +89,8 @@ Class DeliveryNoteService
                 'modeOfDelivery'    => $deliveryNote->mode_of_delivery,
                 'ebl'               => $deliveryNote->ebl,
                 'note'              => $deliveryNote->note,
-                'nurse'             => $deliveryNote->user->username
+                'nurse'             => $deliveryNote->user->username,
+                'closed'            => $deliveryNote->visit->closed
             ];
          };
     }

@@ -108,6 +108,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/consulted/', [VisitController::class, 'loadAllVisits']);
         Route::get('/load/consulted/inpatients', [VisitController::class, 'loadInpatientsVisits']);      
         Route::patch('discharge/{visit}', [VisitController::class, 'dischargePatient']);
+        Route::patch('/close/{visit}', [VisitController::class, 'closeVisit']);
+        Route::patch('/open/{visit}', [VisitController::class, 'openVisit']);
         Route::delete('/{visit}', [VisitController::class, 'destroy']);
     })->name('Visits');
     
@@ -198,11 +200,12 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('prescription')->group(function (){
         Route::get('', [PrescriptionController::class, 'index'])->name('Prescription');
-        Route::post('', [PrescriptionController::class, 'store']);
+        Route::post('{resource}', [PrescriptionController::class, 'store']);
         Route::get('/load/initial', [PrescriptionController::class, 'loadInitialTable']);
         Route::get('/load/lab', [PrescriptionController::class, 'loadLabTable']);
         Route::get('/load/treatment', [PrescriptionController::class, 'loadTreatmentTable']);
         Route::get('/list', [PrescriptionController::class, 'list']);
+        Route::patch('/{prescription}', [PrescriptionController::class, 'discontinuePrescription']);
         Route::delete('/{prescription}', [PrescriptionController::class, 'destroy']);
     })->name('Prescription');
 
@@ -260,8 +263,9 @@ Route::middleware('auth')->group(function () {
     Route::prefix('billing')->group(function () {
         Route::get('', [BillingController::class, 'index'])->name('Billing');
         Route::get('/load/consulted', [BillingController::class, 'loadVisitsByFilterBilling']);
-        Route::get('load/bill', [BillingController::class, 'loadPatientBillTable']);
-        Route::get('load/payment', [BillingController::class, 'loadPatientPaymentTable']);
+        Route::get('/bill', [BillingController::class, 'loadPatientBill']);
+        Route::get('/payment', [BillingController::class, 'loadPatientPayment']);
+        Route::get('/summary', [BillingController::class, 'loadBillSummary']);
         Route::post('/pay', [BillingController::class, 'store']);
         Route::patch('/discount/{visit}', [BillingController::class, 'saveDiscount']);
         Route::delete('/payment/delete/{payment}', [BillingController::class, 'destroy']);

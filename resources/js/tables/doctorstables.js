@@ -304,6 +304,7 @@ const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
             {data: "prescription"},
             {data: "quantity"},
             {data: "note"},
+            {data: "chartable"},
             {data: "by"},
             {
                 sortable: false,
@@ -317,7 +318,7 @@ const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
             },
         ]
     });
-
+    
     modal.addEventListener('hidden.bs.modal', function () {
         prescriptionTable.destroy()
     })
@@ -440,11 +441,12 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
     return investigationTable
 }
 
-const getTreatmentTableByConsultation = (tableId, conId, modal) => {
+const getTreatmentTableByConsultation = (tableId, conId, modal, visitId) => {
     const treatmentTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/prescription/load/treatment', data: {
             'conId': conId,
+            'visitId': visitId,
         }},
         paging: true,
         lengthChange: false,
@@ -459,7 +461,7 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
         },
         columns: [
             {data: row => `<i role="button" class="text-primary fs-5 bi bi-prescription2"></i>`},
-            {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) }</span>`},
+            {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) } ${(row.chartable ? `<span class="text-secondary">(${row.givenCount + '/' + row.doseCount})</span>` : '')}</span>`},
             {data: "prescription"},
             {data: "qtyBilled"},
             {data: "prescribedBy"},
@@ -470,12 +472,16 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
             {data:  row => () => {
                 return row.qtyDispensed ? '<i class=" text-primary bi bi-check-circle-fill"></i>' : '-'
             }},
+            {data: row => () => {
+                return row.doseComplete ? 'Complete' : row.discontinued ? 'Discontinued' : row.chart.length ? 'Charted' : row.chartable ? 'Uncharted' : 'N/A'}
+            } 
         ]
     });
 
     function format(data) {
-        const chart = data.chart
-                if (chart.length > 0) {
+        const chart = data?.chart
+        const discontinued = data?.discontinued
+                if (chart?.length > 0) {
                     let child = `<table class="table align-middle table-sm">
                                             <thead >
                                                 <tr class="fw-semibold fs-italics">
@@ -489,11 +495,12 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
                                                     <td class="text-secondary">Time Given</td>
                                                     <td class="text-secondary">Given By</td>
                                                     <td class="text-secondary">Note</td>
+                                                    <td class="text-secondary">Status</td>
                                                 </tr>
                                             </thead>
                                         <tbody>`
                             
-                                chart.forEach(line => {
+                                chart?.forEach(line => {
                                     child += `<tr>
                                                 <td> </td>
                                                 <td> </td>
@@ -505,6 +512,7 @@ const getTreatmentTableByConsultation = (tableId, conId, modal) => {
                                                 <td class="text-secondary">${line.timeGiven}</td>
                                                 <td class="text-secondary">${line.givenBy}</td>
                                                 <td class="text-secondary">${line.note}</td>
+                                                <td class="text-secondary">${line.status ? 'Given' : discontinued ? 'Discontined' : 'Not Given' }</td>
                                             </tr>   
                                     `
                                 })
@@ -559,7 +567,7 @@ const getSurgeryNoteTable = (tableId, conId, view) => {
             {data: "doctor"},
             {data: row => function () {
                 return `
-                <div class="d-flex flex- ${view ? '' : 'd-none'}">
+                <div class="d-flex flex- ${view || row.closed ? '' : 'd-none'}">
                     <button class=" btn btn-outline-primary viewSurgeryNoteBtn tooltip-test" title="view" id="viewSurgerNoteBtn" data-id="${row.id}" data-table="${tableId}">
                         <i class="bi bi-zoom-in"></i>
                     </button>

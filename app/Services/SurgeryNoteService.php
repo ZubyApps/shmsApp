@@ -141,7 +141,8 @@ Class SurgeryNoteService
                 'surgeon'           => $surgeryNote->surgeon,
                 'surgeonsNotes'     => $surgeryNote->surgeons_notes,
                 'postOpNotes'       => $surgeryNote->post_op_notes,
-                'doctor'            => $surgeryNote->user->username
+                'doctor'            => $surgeryNote->user->username,
+                'closed'            => $surgeryNote->visit->closed
             ];
          };
     }

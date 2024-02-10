@@ -99,21 +99,21 @@
                 </div>
                 <div class="modal-footer pe-4">
                     @if ($isAnc)
-                        <button type="button" id="reviewAncPatientBtn" class="btn btn-primary me-auto">
+                        <button type="button" id="reviewAncPatientBtn" class="btn btn-primary me-auto reviewConBtns">
                             <i class="bi bi-plus-circle me-1"></i>
                             Anc Review
                         </button>
                     @else
-                        <button type="button" id="reviewPatientBtn" class="btn btn-primary">
+                        <button type="button" id="reviewPatientBtn" class="btn btn-primary reviewConBtns">
                             <i class="bi bi-plus-circle me-1"></i>
                             Review
                         </button>
-                        <button type="button" id="specialistConsultationBtn" class="btn btn-primary me-auto">
+                        <button type="button" id="specialistConsultationBtn" class="btn btn-primary me-auto reviewConBtns">
                             <i class="bi bi-plus-circle me-1"></i>
                             Specialist Consultation
                         </button>
                     @endif
-                    <button type="button" id="dischargeBtn" class="btn btn-primary">
+                    <button type="button" id="dischargeBtn" class="btn btn-primary reviewConBtns">
                         <i class="ms-1 bi bi-arrow-up-right-circle-fill"></i>
                         Discharge
                     </button>    

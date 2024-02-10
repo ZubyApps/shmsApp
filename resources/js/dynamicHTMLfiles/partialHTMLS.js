@@ -359,13 +359,13 @@ const files = (line) => {
         </table>`
 }
 
-const updateInvestigationAndManagement = (length, iteration, line, isDoctorDone) => {
+const updateInvestigationAndManagement = (length, iteration, line, isDoctorDone, closed) => {
     return ` 
                 <div class="investigationAndManagmentDiv mt-2 active" data-div="${iteration}" data-goto=#gotoResource${iteration}>
                     <div class="d-flex justify-content-center">
-                        <button type="button" id="updateResourceListBtn" data-conid="${line.id}" data-visitid="${line.visitId}" data-btn="${iteration}" data-last="${length > iteration || isDoctorDone ? iteration : 'last'}" class="btn btn-primary">
+                        <button type="button" id="updateResourceListBtn" data-conid="${line.id}" data-visitid="${line.visitId}" data-btn="${iteration}" data-last="${length > iteration || isDoctorDone || closed ? '' : 'last'}" class="btn btn${length > iteration || isDoctorDone || closed ? '-outline' : ''}-primary">
                             Update Resources
-                            <i class="bi bi-prescription"></i>
+                            ${length > iteration || isDoctorDone || closed ? '<i class="bi bi-lock-fill tooltip-test" title="veiwing only"></i>' : '<i class="bi bi-prescription"></i>'}
                         </button>
                     </div>
                 </div>`
@@ -724,6 +724,7 @@ const medicationAndTreatment = (line) => {
                                 <th>Prescribed</th>
                                 <th>Billed</th>
                                 <th>Dispensed</th>
+                                <th>Chart</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -746,7 +747,9 @@ const medicationAndTreatmentNurses = (line) => {
                                 <th>Qty</th>
                                 <th>Dr</th>
                                 <th>Prescribed</th>
-                                <th>Create</th>
+                                <th>Note</th>
+                                <th>Chartable</th>
+                                <th>Chart</th>
                             </tr>
                         </thead>
                         <tbody></tbody>

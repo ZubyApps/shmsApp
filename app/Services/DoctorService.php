@@ -51,7 +51,7 @@ class DoctorService
             ->where('consulted', '!=', null)
             ->where('user_id', '=', $user->id)
             ->where('doctor_done_by', null)
-            ->where('closed', null)
+            ->where('closed', false)
             ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
@@ -61,7 +61,7 @@ class DoctorService
         return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('doctor_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
                     ->whereRelation('patient', 'patient_type', '!=', 'ANC')
                     ->where('user_id', '=', $user->id)
@@ -95,7 +95,7 @@ class DoctorService
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('doctor_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->where('user_id', '=', $user->id)
                     ->where(function (Builder $query) {
                         $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
@@ -108,7 +108,7 @@ class DoctorService
         return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('doctor_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->whereRelation('patient', 'patient_type', '!=', 'ANC')
                     ->where(function (Builder $query) {
                         $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
@@ -146,7 +146,7 @@ class DoctorService
                     ->where('doctor_done_by', null)
                     ->where('user_id', '=', $user->id)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -155,7 +155,7 @@ class DoctorService
                     ->where('consulted', '!=', null)
                     ->where('doctor_done_by', null)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -193,7 +193,8 @@ class DoctorService
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
                 'reason'            => $visit->discharge_reason,
                 'remark'            => $visit->discharge_remark ?? '',
-                'doctorDone'        => $visit->doctorDoneBy->username ?? ''
+                'doctorDone'        => $visit->doctorDoneBy->username ?? '',
+                'closed'            => $visit->closed
 
             ];
          };

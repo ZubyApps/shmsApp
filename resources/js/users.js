@@ -145,9 +145,11 @@ window.addEventListener('DOMContentLoaded', function () {
         .catch((error) => {
             designateBtn.removeAttribute('disabled')
             console.log(error.response)
-            if (error.response.status === 403){alert(error.response.data.message); designateBtn.removeAttribute('disabled')}
+            if (error.response.status === 403){
+                alert(error.response.data.message); 
+                designateBtn.removeAttribute('disabled')
+            }
             console.log(error)
-            // alert(error.response.status)
         })
     })
 

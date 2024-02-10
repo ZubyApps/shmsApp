@@ -41,7 +41,7 @@ class MedicationChartController extends Controller
     {
         $chart = $this->medicationChartService->create($request, $request->user());
 
-        return $chart->load('prescription');
+        return $chart;
     }
 
     public function loadMedicationChartByPrescription(Request $request)

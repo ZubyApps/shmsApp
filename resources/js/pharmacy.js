@@ -1,6 +1,6 @@
 
 import {Modal } from "bootstrap";
-import {getOrdinal, textareaHeightAdjustment, loadingSpinners, removeDisabled, resetFocusEndofLine, getDatalistOptionId, clearValidationErrors, handleValidationErrors, clearDivValues, getDivData} from "./helpers"
+import {getOrdinal, textareaHeightAdjustment, loadingSpinners, removeDisabled, resetFocusEndofLine, getDatalistOptionId, clearValidationErrors, handleValidationErrors, clearDivValues, getDivData, displayItemsList} from "./helpers"
 import { getBulkRequestTable, getExpirationStockTable , getPatientsVisitByFilterTable, getPrescriptionsByConsultation } from "./tables/pharmacyTables";
 import http from "./http";
 import $ from 'jquery';
@@ -10,14 +10,19 @@ import { getbillingTableByVisit } from "./tables/billingTables";
 
 
 window.addEventListener('DOMContentLoaded', function () {
-    const reviewDetailsModal        = new Modal(document.getElementById('treatmentDetailsModal'))
+    // const reviewDetailsModal        = new Modal(document.getElementById('treatmentDetailsModal'))
+    const treatmentDetailsModal     = new Modal(document.getElementById('treatmentDetailsModal'))
+    const ancTreatmentDetailsModal  = new Modal(document.getElementById('ancTreatmentDetailsModal'))
     const billingDispenseModal      = new Modal(document.getElementById('billingDispenseModal'))
     const bulkRequestModal          = new Modal(document.getElementById('bulkRequestModal'))
 
     const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
     const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
 
-    const treatmentDiv              = document.querySelector('#treatmentDiv')
+    // const treatmentDiv              = document.querySelector('#treatmentDiv')
+
+    const regularTreatmentDiv       = treatmentDetailsModal._element.querySelector('#treatmentDiv')
+    const ancTreatmentDiv           = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
 
     const filterListOption          = document.querySelector('#filterList')
 
@@ -78,8 +83,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 const btnHtml = consultationDetailsBtn.innerHTML
                 consultationDetailsBtn.innerHTML = loadingSpinners()
     
-                const visitId = consultationDetailsBtn.getAttribute('data-id')
-                const patientType = consultationDetailsBtn.getAttribute('data-patientType')
+                // const visitId = consultationDetailsBtn.getAttribute('data-id')
+                // const patientType = consultationDetailsBtn.getAttribute('data-patientType')
+                const [visitId, patientType, ancRegId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-patientType'), consultationDetailsBtn.getAttribute('data-ancregid')] 
+                const isAnc = patientType === 'ANC'
+                const [modal, div, displayFunction, vitalSignsTable, id, suffixId] = isAnc ? [ancTreatmentDetailsModal, ancTreatmentDiv, AncPatientReviewDetails, getAncVitalSignsTable, ancRegId, 'AncConDetails'] : [treatmentDetailsModal, regularTreatmentDiv, regularReviewDetails, getVitalSignsTableByVisit, visitId, 'ConDetails']
     
                 http.get(`/consultation/consultations/${visitId}`)
                     .then((response) => {
@@ -90,24 +98,28 @@ window.addEventListener('DOMContentLoaded', function () {
                             const consultations = response.data.consultations.data
                             const patientBio = response.data.bio
     
-                            openPharmacyModals(reviewDetailsModal, treatmentDiv, patientBio)
+                            openPharmacyModals(modal, div, patientBio)
     
                             consultations.forEach(line => {
                                 iteration++
     
                                 iteration > 1 ? count++ : ''
     
-                                if (patientType === 'ANC') {
-                                    treatmentDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
-                                } else {
-                                    treatmentDiv.innerHTML += regularReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
-                                }
+                                // if (patientType === 'ANC') {
+                                //     treatmentDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
+                                // } else {
+                                //     treatmentDiv.innerHTML += regularReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
+                                // }
+                                div.innerHTML += displayFunction(iteration, getOrdinal, count, consultations.length, line, viewer)
                             })
     
-                            getVitalSignsTableByVisit('#vitalSignsTableNurses', visitId, reviewDetailsModal, viewer)
-                            getbillingTableByVisit('billingTable', visitId, reviewDetailsModal._element)
-                            reviewDetailsModal.show()
+                            // getVitalSignsTableByVisit('#vitalSignsTableNurses', visitId, reviewDetailsModal, viewer)
+                            // getbillingTableByVisit('billingTable', visitId, reviewDetailsModal._element)
+                            // reviewDetailsModal.show()
     
+                            vitalSignsTable(`#vitalSignsTableNurses${suffixId}`, id, modal)
+                            getbillingTableByVisit(`billingTable${suffixId}`, visitId, modal._element)
+                            modal.show()
                         }
                         consultationDetailsBtn.innerHTML = btnHtml
                         consultationDetailsBtn.removeAttribute('disabled')
@@ -267,12 +279,10 @@ window.addEventListener('DOMContentLoaded', function () {
         const approvalBtn = event.target.closest('#approvalBtn')
         const viewer = 'hmo'
 
-        if (collapseBtn) {
+        if (collapseConsultationBtn) {
             const gotoDiv = document.querySelector(collapseConsultationBtn.getAttribute('data-goto'))
             const investigationTableId = gotoDiv.querySelector('.investigationTable').id
-            console.log(investigationTableId)
             const treatmentTableId = gotoDiv.querySelector('.treatmentTable').id
-            console.log(treatmentTableId)
             const conId = gotoDiv.querySelector('.investigationTable').dataset.id
 
             if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
@@ -285,8 +295,8 @@ window.addEventListener('DOMContentLoaded', function () {
             const goto = () => {
                 location.href = collapseConsultationBtn.getAttribute('data-goto')
                 window.history.replaceState({}, document.title, "/" + "pharmacy")
-                getLabTableByConsultation(investigationTableId, reviewDetailsModal._element, viewer, conId, null)
-                getTreatmentTableByConsultation(treatmentTableId, conId, reviewDetailsModal._element)
+                getLabTableByConsultation(investigationTableId, treatmentDetailsModal._element, viewer, conId, null)
+                getTreatmentTableByConsultation(treatmentTableId, conId, treatmentDetailsModal._element)
             }
             setTimeout(goto, 300)
         }
@@ -324,15 +334,18 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
 
-    reviewDetailsModal._element.addEventListener('hide.bs.modal',function () {
-        treatmentDiv.innerHTML = ''
-        outPatientsTable.draw()
-        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
-        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+    document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal').forEach(modal => {
+        modal.addEventListener('hide.bs.modal', function(event) {
+            regularTreatmentDiv.innerHTML = ''
+            ancTreatmentDiv.innerHTML = ''
+            outPatientsTable.draw()
+            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+        })
     })
 })
 
-function openPharmacyModals(modal, button, { id, visitId, ancRegId, ...data }) {
+function openPharmacyModals(modal, button, { id, visitId, ancRegId, patientType, ...data }) {
     for (let name in data) {
         
         const nameInput = modal._element.querySelector(`[name="${name}"]`)

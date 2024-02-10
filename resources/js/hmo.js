@@ -87,6 +87,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const consultationDetailsBtn    = event.target.closest('.consultationDetailsBtn')
             const patientBillBtn            = event.target.closest('.patientBillBtn')
             const investigationsBtn         = event.target.closest('.investigationsBtn')
+            const closeVisitBtn             = event.target.closest('.closeVisitBtn')
             const viewer                    = 'hmo'
     
             if (consultationDetailsBtn) {
@@ -154,9 +155,24 @@ window.addEventListener('DOMContentLoaded', function () {
                 investigationsBtn.removeAttribute('disabled')
             }
 
-            // if (closeBtn) {
-
-            // }
+            if (closeVisitBtn){
+                if (confirm('Are you sure you want to close this Visit?')) {
+                    const visitId = closeVisitBtn.getAttribute('data-id')
+                    http.patch(`/visits/close/${visitId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            waitingTable.draw()
+                            hmotreatmentsTable ? hmotreatmentsTable.draw() : ''
+                        }
+                    })
+                    .catch((error) => {
+                        if (error.response.status === 403){
+                            alert(error.response.data.message) 
+                        }
+                        console.log(error)
+                    })
+                }
+            }
         })
 
     document.querySelectorAll('#hmoApprovalListTable, #nhisApprovalListTable').forEach(table => {

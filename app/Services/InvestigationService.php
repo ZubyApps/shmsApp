@@ -50,8 +50,7 @@ class InvestigationService
         if ($data->filterBy == 'Outpatient'){
             return $this->visit
             ->where('consulted', '!=', null)
-            ->where('lab_done_by', null)
-            ->where('closed', null)
+            ->where('closed', false)
             ->whereRelation('prescriptions.resource', 'category', '=', 'Investigations')
             ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
@@ -62,8 +61,7 @@ class InvestigationService
         if ($data->filterBy == 'Inpatient'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('lab_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->whereRelation('prescriptions.resource', 'category', '=', 'Investigations')
                     ->where(function (Builder $query) {
                         $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
@@ -75,8 +73,7 @@ class InvestigationService
         if ($data->filterBy == 'ANC'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('lab_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->whereRelation('prescriptions.resource', 'category', '=', 'Investigations')
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->orderBy($orderBy, $orderDir)
@@ -85,8 +82,7 @@ class InvestigationService
 
         return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('lab_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -116,6 +112,7 @@ class InvestigationService
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
+                'closed'            => $visit->closed,
             ];
          };
     }

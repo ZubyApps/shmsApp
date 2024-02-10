@@ -56,7 +56,7 @@ class PharmacyService
             return $this->visit
             ->where('consulted', '!=', null)
             ->where('pharmacy_done_by', null)
-            ->where('closed', null)
+            ->where('closed', false)
             ->where(function(Builder $query) {
                 $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
                     ->orWhereRelation('prescriptions.resource', 'category', '=', 'Consumables');
@@ -71,7 +71,7 @@ class PharmacyService
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('pharmacy_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->where(function(Builder $query) {
                         $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
                             ->orWhereRelation('prescriptions.resource', 'category', '=', 'Consumables');
@@ -87,7 +87,7 @@ class PharmacyService
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('pharmacy_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->where(function(Builder $query) {
                         $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
                             ->orWhereRelation('prescriptions.resource', 'category', '=', 'Consumables');
@@ -100,7 +100,7 @@ class PharmacyService
         return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('pharmacy_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -143,6 +143,7 @@ class PharmacyService
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
+                'closed'            => $visit->closed,
             ];
          };
     }
@@ -248,6 +249,7 @@ class PharmacyService
                 'conId'                 => $consultation->id,
                 'sponsor'               => $consultation->visit->sponsor->name,
                 'sponsorCategoryClass'  => $consultation->visit->sponsor->sponsorCategory->pay_class,
+                'closed'                => $consultation->visit->closed,
                 'prescriptions'         => (new Prescription)->forPharmacy($consultation->id)->map(fn(Prescription $prescription)=> [
                     'id'                => $prescription->id ?? '',
                     'price'             => $prescription->resource?->selling_price ?? '',

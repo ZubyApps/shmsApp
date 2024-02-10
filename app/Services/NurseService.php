@@ -48,7 +48,7 @@ class NurseService
             return $this->visit
             ->where('consulted', '!=', null)
             ->where('nurse_done_by', null)
-            ->where('closed', null)
+            ->where('closed', false)
             ->where(function(Builder $query) {
                 $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
                     ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services');
@@ -63,7 +63,7 @@ class NurseService
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('nurse_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->where(function(Builder $query) {
                         $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
                             ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services');
@@ -77,13 +77,8 @@ class NurseService
         }
         if ($data->filterBy == 'ANC'){
             return $this->visit
-                    // ->where('consulted', null)
                     ->where('nurse_done_by', null)
-                    ->where('closed', null)
-                    // ->where(function(Builder $query) {
-                    //     $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
-                    //         ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services');
-                    // })
+                    ->where('closed', false)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -92,7 +87,7 @@ class NurseService
         return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('nurse_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -116,17 +111,20 @@ class NurseService
                 'patientType'       => $visit->patient->patient_type,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->patient->antenatalRegisteration?->ancVitalSigns->count(),
-                'prescriptionCount' => Prescription::where('visit_id', $visit->id)
-                                       ->whereRelation('resource', 'category', 'Medications')
-                                       ->orWhereRelation('resource', 'category', 'Medical Services')
-                                       ->count(),
+                'chartables'        => $visit->prescriptions->where('chartable', true)->count() - Prescription::where('visit_id', $visit->id)->where('chartable', true)->has('medicationCharts')->count(),// 'id', '=', null)->count(),
+                'chartables1'       => $visit->prescriptions->where('chartable', true)->count(),
+                'chartables2'       => $visit->prescriptions->where('chartable', true)->count(),
+                'doseCount'         => $visit->medicationCharts->count(),
+                'givenCount'        => $visit->medicationCharts->where('dose_given', '!=', null)->count(),
+                'viewed'            => !!$visit->viewed_at,
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
                 'reason'            => $visit->discharge_reason,
                 'remark'            => $visit->discharge_remark ?? '',
-                'doctor'            => $visit->doctorDoneBy->username ?? ''
+                'doctorDone'        => $visit->doctorDoneBy->username ?? '',
+                'closed'            => $visit->closed
             ];
          };
     }

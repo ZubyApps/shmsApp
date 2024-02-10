@@ -3,14 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ChangeSponsorRequest;
+use App\Http\Requests\CloseVisitRequest;
+use App\Http\Requests\OpenVisitRequest;
 use App\Models\Visit;
 use App\Http\Requests\StoreVisitRequest;
-use App\Http\Requests\UpdateVisitRequest;
-use App\Http\Requests\VerifyPatientRequest;
 use App\Services\DatatablesService;
 use App\Services\VisitService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class VisitController extends Controller
 {
@@ -25,7 +24,7 @@ class VisitController extends Controller
     {
         $visit = $this->visitService->create($request, $request->user());
         
-        return $visit->load('patient');
+        return $visit;
     }
 
     public function loadWaitingTable(Request $request)
@@ -74,13 +73,17 @@ class VisitController extends Controller
     /**
      * close a completed visit
      */
-    public function closeVisit(Request $request, Visit $visit)
+    public function closeVisit(CloseVisitRequest $request, Visit $visit)
     {
-        return DB::transaction(function () use($visit){
-                $visit->update(['closed' => true]);
-                $visit->patient()->update(['is_active' => false]);
-            });
+       return $this->visitService->close($request->user(), $visit);
+    }
 
+    /**
+     * open a close visit
+     */
+    public function openVisit(OpenVisitRequest $request, Visit $visit)
+    {
+       return $this->visitService->open($request->user(), $visit);
     }
 
     /**
@@ -88,9 +91,6 @@ class VisitController extends Controller
      */
     public function destroy(Visit $visit)
     {
-       return DB::transaction(function() use($visit){
-                $visit->destroy($visit->id);
-                $visit->patient()->update(['is_active' => false]);
-            });
+       return $this->visitService->delete($visit);
     }
 }

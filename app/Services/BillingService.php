@@ -8,6 +8,7 @@ use App\DataObjects\DataTableQueryParams;
 use App\Models\Consultation;
 use App\Models\Payment;
 use App\Models\Prescription;
+use App\Models\Resource;
 use App\Models\User;
 use App\Models\Visit;
 use Carbon\Carbon;
@@ -22,7 +23,8 @@ class BillingService
         private readonly Prescription $prescription,
         private readonly Payment $payment,
         private readonly PaymentService $paymentService,
-        private readonly PayPercentageService $payPercentageService
+        private readonly PayPercentageService $payPercentageService,
+        private readonly Resource $resource
         )
     {
         
@@ -54,8 +56,7 @@ class BillingService
         if ($data->filterBy == 'Outpatient'){
             return $this->visit
             ->where('consulted', '!=', null)
-            ->where('billing_done_by', null)
-            ->where('closed', null)
+            ->where('closed', false)
             ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
@@ -66,8 +67,7 @@ class BillingService
         if ($data->filterBy == 'Inpatient'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('billing_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->where(function (Builder $query) {
                         $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
                         ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
@@ -79,8 +79,7 @@ class BillingService
         if ($data->filterBy == 'ANC'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('billing_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
                     ->orderBy($orderBy, $orderDir)
@@ -89,8 +88,7 @@ class BillingService
 
         return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('billing_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -114,7 +112,9 @@ class BillingService
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
-                'discharged'        => true
+                'discharged'        => $visit->discharge_reason,
+                'closed'            => $visit->closed,
+                'staff'             => auth()->user()->username
             ];
          };
     }
@@ -215,6 +215,7 @@ class BillingService
                     'amount'        => $payment->amount_paid,
                     'payMethod'     => $payment->pay_method,
                     'comment'       => $payment->comment,
+                    'user'          => auth()->user()->designation->access_level > 3
             ];
          };
     }
@@ -253,5 +254,22 @@ class BillingService
                     ->whereColumn('total_bill', '!=', 'total_paid')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
+    public function getPatientBillSummaryTable($data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+
+        return DB::table('prescriptions')
+                        ->selectRaw('SUM(prescriptions.hms_bill) as totalBill, SUM(prescriptions.paid) as totalPaid, resources.'.$data->type.' as service, COUNT(resources.category) as types, SUM(prescriptions.qty_billed) as quantity, visits.discount as discount')
+                        ->leftJoin('resources', 'prescriptions.resource_id', '=', 'resources.id')
+                        ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
+                        ->where('visit_id', $data->visitId)
+                        ->groupBy('service', 'discount')
+                        ->orderBy('service')
+                        ->get()
+                        ->toArray();
+        
     }
 }

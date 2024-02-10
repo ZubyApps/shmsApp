@@ -8,14 +8,23 @@
                 <datalist name="resource" type="text" class="decoration-none resourceList" id="resourceList{{ strtolower($type) }}"></datalist>
             </x-form-div>
             <x-form-div class="col-xl-6 pres" id="pres">
-                <x-input-span id="prescriptionLabel">Prescription<x-required-span /></x-input-span>
-                <x-form-input type="text" name="prescription" id="prescription"
-                    placeholder="eg: 5mg BD x5/7" />
+                <x-input-span class="px-1">Dose</x-input-span>
+                <x-form-input name="dose" type="number" id="dose" placeholder="eg. 200"/>
+                <x-input-span class="px-1">Unit</x-input-span>
+                <x-select-unit aria-label="unit" name="unit" id="unit"></x-select-unit>
+                <x-input-span class="px-1">Freq</x-input-span>
+                <x-select-frequency-text aria-label="frequency" name="frequency" id="frequency"></x-select-frequency>
+                <x-input-span class="px-1">Day(s)</x-input-span>
+                <x-form-input type="number" name="days" id="days" value="1" />
             </x-form-div>
             <x-form-div class="col-xl-6 qty" id="qty">
                 <x-input-span id="quantityLabel">Quantity<x-required-span /></x-input-span>
                 <x-form-input type="number" name="quantity" id="quantity"
                     placeholder="" value="1"/>
+            </x-form-div>
+            <x-form-div class="col-xl-6 chartableDiv d-none" id="chartableDiv">
+                    <x-input-span id="chartableLabel" class="py-0">Chartable?</x-input-span>
+                    <x-form-input class="form-check-input py-3 mt-0" type="checkbox" id="chartable" />
             </x-form-div>
             <x-form-div class="col-xl-6">
                 <x-input-span id="noteLabel">Note</x-input-span>
@@ -39,6 +48,7 @@
                     <th>Prescription</th>
                     <th>Qty</th>
                     <th>Note</th>
+                    <th>Chartable</th>
                     <th>By</th>
                     <th>Action</th>
                 </tr>

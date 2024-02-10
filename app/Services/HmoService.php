@@ -120,7 +120,7 @@ class HmoService
         if ($data->filterBy == 'Outpatient'){
             return $this->visit
             ->where('consulted', '!=', null)
-            ->where('closed', null)
+            ->where('closed', false)
             ->where('hmo_done_by', null)
             ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
@@ -137,7 +137,7 @@ class HmoService
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('hmo_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
                         ->orWhereRelation('sponsor', 'category_name', 'NHIS')
@@ -154,7 +154,7 @@ class HmoService
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('hmo_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
@@ -168,7 +168,7 @@ class HmoService
         return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('hmo_done_by', null)
-                    ->where('closed', null)
+                    ->where('closed', false)
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
                         ->orWhereRelation('sponsor', 'category_name', 'NHIS')
@@ -205,6 +205,7 @@ class HmoService
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
                 '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
+                'closed'            => $visit->closed,
 
             ];
          };

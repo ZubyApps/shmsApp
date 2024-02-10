@@ -10,6 +10,7 @@ use App\Models\Patient;
 use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ConsultationService
 {
@@ -68,11 +69,18 @@ class ConsultationService
 
     public function getConsultations(Request $request, Visit $visit)
     {
-        return $this->consultation
-                    ->where('visit_id', $visit->id)
-                    ->orderBy('created_at', 'asc')
-                    ->get();
-       
+        return DB::transaction(function () use ($request, $visit) {
+
+            $visit->update([
+                'viewed_at' => new Carbon(),
+                'viewed_by' => $request->user()->id,
+            ]);
+
+            return $this->consultation
+                        ->where('visit_id', $visit->id)
+                        ->orderBy('created_at', 'asc')
+                        ->get();
+        });
     }
 
     public function getVisitsAndConsultations(Request $request, Patient $patient)

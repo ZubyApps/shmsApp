@@ -12,15 +12,34 @@
                             <div class="row">
                                 <x-form-div class="col-xl-6">
                                     <x-input-span>Patient</x-input-span>
-                                    <x-form-input name="patient" value="" id="patient" readonly/>
+                                    <x-form-input name="patient" value="" id="patient"/>
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
                                     <x-input-span>Sponsor</x-input-span>
-                                    <x-form-input name="sponsorName" value="" id="sponsorName" readonly/>
+                                    <x-form-input name="sponsorName" value="" id="sponsorName"/>
                                 </x-form-div>
                             </div>
                         </div>
-                        @include('extras.investigationAndManagementDiv', ['type' => 'ConReview'])
+                        <div class="my-2 form-control">
+                            <span class="fw-bold text-primary">Treatment & Medication</span>
+                            <div class="row overflow-auto m-1">
+                                <table id="medicationsTable" class="table table-sm medicationsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Treatment</th>
+                                            <th>Prescription</th>
+                                            <th>Qty</th>
+                                            <th>Dr</th>
+                                            <th>Prescribed</th>
+                                            <th>Note</th>
+                                            <th>Chartable</th>
+                                            <th>Chart</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer px-5">

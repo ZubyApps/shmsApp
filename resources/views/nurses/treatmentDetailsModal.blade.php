@@ -20,7 +20,7 @@
                         @if ($isAnc)
                             <x-current-lmp-calculation></x-current-lmp-calculation>  
                         @endif
-                        <div class="mb-2 form-control vitalsDiv {{ $isLab || $isHmo ? 'd-none' : '' }}">
+                        <div class="mb-2 form-control vitalsDiv {{ $isLab ? 'd-none' : '' }}">
                             <x-form-span>Vital Signs</x-form-span>
                             <div class="row overflow-auto my-3">
                                 <table id="vitalSignsTableNurses{{ $isAnc ? 'AncConDetails' : 'ConDetails' }}" class="table table-hover align-middle table-sm vitalsTable">
@@ -56,7 +56,7 @@
                                     <tbody></tbody>
                                 </table>
                             </div>
-                            <div class="row">
+                            <div class="row {{ $isLab || $isHmo ? 'd-none' : '' }} addVitalsignsDiv">
                                 <div id="addVitalsignsDiv"  data-div="{{ $isAnc ? 'ancConDetails' : 'conDetails' }}">
                                     @if ($isAnc)
                                         @include('vitalsigns.ancVitalsigns', ['sf' => 'ancConDetails'])

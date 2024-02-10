@@ -55,18 +55,32 @@ class BillingController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 
-    public function loadPatientBillTable(Request $request)
+    public function loadPatientBill(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $sponsors = $this->billingService->getPatientBillTable($params, $request);
+        $bills = $this->billingService->getPatientBillTable($params, $request);
        
         $loadTransformer = $this->billingService->getPatientBillTransformer();
 
-        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
+        return $this->datatablesService->datatableResponse($loadTransformer, $bills, $params);  
     }
 
-    public function loadPatientPaymentTable(Request $request)
+    public function loadBillSummary(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $billSummary = $this->billingService->getPatientBillSummaryTable($request);
+
+        return response()->json([
+            'data' => $billSummary,
+            'draw' => $params->draw,
+            'recordsTotal' => count($billSummary),
+            'recordsFiltered' => count($billSummary)
+        ]);
+    }
+
+    public function loadPatientPayment(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
