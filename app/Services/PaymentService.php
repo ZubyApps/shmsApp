@@ -21,7 +21,7 @@ Class PaymentService
         return DB::transaction(function () use($data, $user) {
             $payment = $user->payments()->create([
                 'amount_paid'   => $data->amount,
-                'pay_method'    => $data->payMethod,
+                'pay_method_id' => $data->payMethod,
                 'comment'       => $data->comment,
                 'patient_id'    => $data->patientId,
                 'visit_id'      => $data->visitId,

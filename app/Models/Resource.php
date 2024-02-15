@@ -49,6 +49,22 @@ class Resource extends Model
 
     public function nameWithIndicators()
     {
-        return $this->name.($this->expiry_date && $this->expiry_date < (new Carbon())->addMonths(3) ? ' - expiring soon - '.(new Carbon($this->expiry_date))->format('d/M/y') : '' );
+        return $this->name.$this->expiryDateChecker($this->expiry_date).$this->stockLevelChecker($this->stock_level, $this->unit_description);
+    }
+
+    public function expiryDateChecker($expiryDate)
+    { 
+        if ($expiryDate && $expiryDate <= new Carbon()){
+            return ' - expired - '.(new Carbon($this->expiry_date))->format('d/M/y');
+        }
+        if ($expiryDate && $expiryDate < (new Carbon())->addMonths(3)){
+            return ' - expiring soon - '.(new Carbon($this->expiry_date))->format('d/M/y');
+        }
+
+    }
+
+    public function stockLevelChecker($stockLevel, $unitDescription)
+    {
+        return $stockLevel < 1 ? ' - Not in Stock' : ' - '.$stockLevel.' '.$unitDescription.' left';
     }
 }

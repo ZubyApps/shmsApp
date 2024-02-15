@@ -2,7 +2,7 @@ import jQuery from "jquery";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, displayPaystatus, histroyBtn, reviewBtn, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, displayPaystatus, histroyBtn, prescriptionStatusContorller, reviewBtn, sponsorAndPayPercent } from "../helpers";
 
 const getOutpatientsVisitTable = (tableId, filter) => {
     return new DataTable(tableId, {
@@ -441,10 +441,10 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
     return investigationTable
 }
 
-const getTreatmentTableByConsultation = (tableId, conId, modal, visitId) => {
+const getMedicationsByFilter = (tableId, conId, modal, visitId) => {
     const treatmentTable =  new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  {url: '/prescription/load/treatment', data: {
+        ajax:  {url: '/prescription/load/medications', data: {
             'conId': conId,
             'visitId': visitId,
         }},
@@ -462,7 +462,7 @@ const getTreatmentTableByConsultation = (tableId, conId, modal, visitId) => {
         columns: [
             {data: row => `<i role="button" class="text-primary fs-5 bi bi-prescription2"></i>`},
             {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) } ${(row.chartable ? `<span class="text-secondary">(${row.givenCount + '/' + row.doseCount})</span>` : '')}</span>`},
-            {data: "prescription"},
+            {data: row => prescriptionStatusContorller(row, tableId)},
             {data: "qtyBilled"},
             {data: "prescribedBy"},
             {data: "prescribed"},
@@ -473,13 +473,13 @@ const getTreatmentTableByConsultation = (tableId, conId, modal, visitId) => {
                 return row.qtyDispensed ? '<i class=" text-primary bi bi-check-circle-fill"></i>' : '-'
             }},
             {data: row => () => {
-                return row.doseComplete ? 'Complete' : row.discontinued ? 'Discontinued' : row.chart.length ? 'Charted' : row.chartable ? 'Uncharted' : 'N/A'}
+                return row.doseComplete ? 'Complete' : row.discontinued ? 'Discontinued' : row.medicationCharts.length ? 'Charted' : row.chartable ? 'Uncharted' : 'N/A'}
             } 
         ]
     });
 
     function format(data) {
-        const chart = data?.chart
+        const chart = data?.medicationCharts
         const discontinued = data?.discontinued
                 if (chart?.length > 0) {
                     let child = `<table class="table align-middle table-sm">
@@ -513,6 +513,108 @@ const getTreatmentTableByConsultation = (tableId, conId, modal, visitId) => {
                                                 <td class="text-secondary">${line.givenBy}</td>
                                                 <td class="text-secondary">${line.note}</td>
                                                 <td class="text-secondary">${line.status ? 'Given' : discontinued ? 'Discontined' : 'Not Given' }</td>
+                                            </tr>   
+                                    `
+                                })
+                        child += ` </tbody>
+                        </table>`
+                    return (child);
+                } else {
+                   let noChild = ``
+                   return (noChild)
+                }
+            }
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        treatmentTable.destroy()
+    })
+
+    treatmentTable.on('click', 'tr', function (e) {
+        let tr = e.target.closest('tr');
+        let row = treatmentTable.row(tr);
+     
+        if (row.child.isShown()) {
+            row.child.hide();
+            treatmentTable.draw()
+        }
+        else {
+            row.child(format(row.data())).show();
+        }
+    });
+
+    return treatmentTable
+}
+
+const getOtherPrescriptionsByFilter = (tableId, conId, modal, visitId) => {
+    const treatmentTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  {url: '/prescription/load/others', data: {
+            'conId': conId,
+            'visitId': visitId,
+        }},
+        paging: true,
+        lengthChange: false,
+        searching: false,
+        orderMulti: false,
+        language: {
+            emptyTable: 'No other prescription'
+        },
+        rowCallback: (row, data) => {
+            row.classList.add('fw-semibold')
+        return row
+        },
+        columns: [
+            {data: row => `<i role="button" class="text-primary fs-5 bi bi-prescription2"></i>`},
+            {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) } ${(row.chartable ? `<span class="text-secondary">(${row.givenCount + '/' + row.doseCount})</span>` : '')}</span>`},
+            {data: row => prescriptionStatusContorller(row, tableId)},
+            {data: "qtyBilled"},
+            {data: "prescribedBy"},
+            {data: "prescribed"},
+            {data: row => () => {
+                    return row.qtyBilled ? '<i class=" text-primary bi bi-check-circle-fill"></i>' : '-'
+            } },
+            {data:  row => () => {
+                return row.qtyDispensed ? '<i class=" text-primary bi bi-check-circle-fill"></i>' : '-'
+            }},
+            {data: row => () => {
+                return row.doseComplete ? 'Complete' : row.discontinued ? 'Discontinued' : row.prescriptionCharts.length ? 'Charted' : row.chartable ? 'Uncharted' : 'N/A'}
+            } 
+        ]
+    });
+
+    function format(data) {
+        const chart = data?.prescriptionCharts
+        const discontinued = data?.discontinued
+                if (chart?.length > 0) {
+                    let child = `<table class="table align-middle table-sm">
+                                            <thead >
+                                                <tr class="fw-semibold fs-italics">
+                                                    <td> </td>
+                                                    <td> </td>
+                                                    <td class="text-secondary">Charted At</td>
+                                                    <td class="text-secondary">Charted By</td>
+                                                    <td class="text-secondary">Instruction</td>
+                                                    <td class="text-secondary">Schedule Time</td>
+                                                    <td class="text-secondary">Report</td>
+                                                    <td class="text-secondary">Time Done</td>
+                                                    <td class="text-secondary">Done By</td>
+                                                    <td class="text-secondary">Status</td>
+                                                </tr>
+                                            </thead>
+                                        <tbody>`
+                            
+                                chart?.forEach(line => {
+                                    child += `<tr>
+                                                <td> </td>
+                                                <td> </td>
+                                                <td class="text-secondary">${line.chartedAt}</td>                
+                                                <td class="text-secondary">${line.chartedBy}</td>                
+                                                <td class="text-secondary">${line.carePrescribed}</td>
+                                                <td class="text-secondary">${line.scheduledTime}</td>
+                                                <td class="text-secondary">${line.note}</td>
+                                                <td class="text-secondary">${line.timeDone}</td>
+                                                <td class="text-secondary">${line.doneBy}</td>
+                                                <td class="text-secondary">${line.status ? 'Done' : discontinued ? 'Discontined' : 'Not Done' }</td>
                                             </tr>   
                                     `
                                 })
@@ -585,4 +687,4 @@ const getSurgeryNoteTable = (tableId, conId, view) => {
     });
 }
 
-export {getOutpatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation, getSurgeryNoteTable}
+export {getOutpatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getSurgeryNoteTable}

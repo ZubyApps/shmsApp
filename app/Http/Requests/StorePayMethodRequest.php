@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreResourceStockDateRequest extends FormRequest
+class StorePayMethodRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,8 @@ class StoreResourceStockDateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'name'          => ['required'],
             'description'   => ['required'],
-            'date'          => ['required', 'date'],
         ];
     }
 }

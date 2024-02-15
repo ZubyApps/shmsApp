@@ -125,6 +125,11 @@ class Visit extends Model
         return $this->hasMany(AncVitalSigns::class);
     }
 
+    public function nursingCharts() 
+    {
+        return $this->hasMany(NursingChart::class);
+    }
+
     public function totalBills()
     {
         $totalBill = 0;

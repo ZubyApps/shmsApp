@@ -14,21 +14,15 @@ class ResourceCategoryController extends Controller
 {
     public function __construct(
         private readonly DatatablesService $datatablesService, 
-        private readonly ResourceCategoryService $resourceCategoryService)
+        private readonly ResourceCategoryService $resourceCategoryService
+        )
     {
         
-    }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
     }
 
     public function showAll(string ...$columns)
     {
-        return ResourceCategory::all($columns)->load('resourceSubCategories');
+        return ResourceCategory::all($columns);
     }
 
     /**
@@ -40,40 +34,22 @@ class ResourceCategoryController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreResourceCategoryRequest $request)
     {
-        $resourceCategory = $this->resourceCategoryService->create($request, $request->user());
-
-        return $resourceCategory->load('user');
+        return $this->resourceCategoryService->create($request, $request->user());
     }
 
     public function load(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $sponsors = $this->resourceCategoryService->getPaginatedResourceCategories($params);
+        $categories = $this->resourceCategoryService->getPaginatedResourceCategories($params);
        
         $loadTransformer = $this->resourceCategoryService->getLoadTransformer();
 
-        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(ResourceCategory $resourceCategory)
-    {
-        //
+        return $this->datatablesService->datatableResponse($loadTransformer, $categories, $params);  
     }
 
     /**

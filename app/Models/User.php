@@ -146,6 +146,16 @@ class User extends Authenticatable
         return $this->HasMany(BulkRequest::class);
     }
 
+    public function nursingCharts(): HasMany
+    {
+        return $this->hasMany(NursingChart::class);
+    }
+
+    public function payMethods(): HasMany
+    {
+        return $this->hasMany(PayMethod::class);
+    }
+
     public function nameInFull()
     {
         return $this->firstname.' '.$this->middlename.' '.$this->lastname;

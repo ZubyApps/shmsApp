@@ -14,7 +14,9 @@ use App\Http\Controllers\HmoController;
 use App\Http\Controllers\InvestigationController;
 use App\Http\Controllers\MedicationChartController;
 use App\Http\Controllers\NurseController;
+use App\Http\Controllers\NursingChartController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PayMethodController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\ProfileController;
@@ -203,7 +205,8 @@ Route::middleware('auth')->group(function () {
         Route::post('{resource}', [PrescriptionController::class, 'store']);
         Route::get('/load/initial', [PrescriptionController::class, 'loadInitialTable']);
         Route::get('/load/lab', [PrescriptionController::class, 'loadLabTable']);
-        Route::get('/load/treatment', [PrescriptionController::class, 'loadTreatmentTable']);
+        Route::get('/load/medications', [PrescriptionController::class, 'loadMedicationTable']);
+        Route::get('/load/others', [PrescriptionController::class, 'loadOtherPrescriptionsTable']);
         Route::get('/list', [PrescriptionController::class, 'list']);
         Route::patch('/{prescription}', [PrescriptionController::class, 'discontinuePrescription']);
         Route::delete('/{prescription}', [PrescriptionController::class, 'destroy']);
@@ -214,13 +217,22 @@ Route::middleware('auth')->group(function () {
         Route::post('', [MedicationChartController::class, 'store']);
         Route::get('/load/chart', [MedicationChartController::class, 'loadMedicationChartByPrescription']);
         Route::get('/load/upcoming', [MedicationChartController::class, 'loadUpcomingMedications']);
-        Route::get('/load/treatment', [MedicationChartController::class, 'loadTreatmentTable']);
-        Route::get('/list', [MedicationChartController::class, 'list']);
         Route::get('/{medicationChart}', [MedicationChartController::class, 'edit']);
         Route::delete('/{medicationChart}', [MedicationChartController::class, 'destroy']);
         Route::patch('/removegiven/{medicationChart}', [MedicationChartController::class, 'removeGivenData']);
         Route::patch('/{medicationChart}', [MedicationChartController::class, 'saveGivenData']);
     })->name('MedicationChart');
+
+    Route::prefix('nursingchart')->group(function (){
+        Route::get('', [NursingChartController::class, 'index'])->name('Nursingchart');
+        Route::post('', [NursingChartController::class, 'store']);
+        Route::get('/load/chart', [NursingChartController::class, 'loadNursingChartByPrescription']);
+        Route::get('/load/upcoming', [NursingChartController::class, 'loadUpcomingNursingCharts']);
+        Route::get('/{nursingChart}', [NursingChartController::class, 'edit']);
+        Route::delete('/{nursingChart}', [NursingChartController::class, 'destroy']);
+        Route::patch('/removedone/{nursingChart}', [NursingChartController::class, 'removeDoneData']);
+        Route::patch('/{nursingChart}', [NursingChartController::class, 'saveDoneData']);
+    })->name('NursingChart');
 
     Route::prefix('investigations')->group(function () {
         Route::get('', [InvestigationController::class, 'index'])->name('Investigations');
@@ -259,6 +271,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/bulkrequests/lab', [PharmacyController::class, 'expirationStock']);
         Route::get('/load/bulkrequests/pharmacy', [PharmacyController::class, 'expirationStock']);
     });
+
+    Route::prefix('paymethod')->group(function (){
+        Route::post('', [PayMethodController::class, 'store']);
+        Route::get('/load', [PayMethodController::class, 'load']);
+        Route::get('/methods', [PayMethodController::class, 'list']);
+        Route::get('/{payMethod}', [PayMethodController::class, 'edit']);
+        Route::delete('/{payMethod}', [PayMethodController::class, 'destroy']);
+        Route::patch('/{payMethod}', [PayMethodController::class, 'update']);
+    })->name('Pay Methods');
 
     Route::prefix('billing')->group(function () {
         Route::get('', [BillingController::class, 'index'])->name('Billing');
@@ -307,6 +328,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/nurses', [BulkRequestController::class, 'nursesBulkRequests']);
         Route::get('/load/lab', [BulkRequestController::class, 'labBulkRequests']);
         Route::get('/load/pharmacy', [BulkRequestController::class, 'pharmacyBulkRequests']);
+        Route::patch('/approve/{bulkRequest}', [BulkRequestController::class, 'toggleApproveBulkRequest']);
+        Route::patch('/dispense/{bulkRequest}', [BulkRequestController::class, 'dispenseBulkRequest']);
         Route::delete('/{bulkRequest}', [BulkRequestController::class, 'destroy']);
     });
 });

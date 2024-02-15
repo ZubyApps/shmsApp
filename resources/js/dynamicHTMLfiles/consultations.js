@@ -1,8 +1,9 @@
-import { deliveryNotes, surgeryNotes, updateAdmissionStatus, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses} from "./partialHTMLS"
+import { deliveryNotes, surgeryNotes, updateAdmissionStatus, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses, otherPrescriptions, otherPrescriptionsNurses} from "./partialHTMLS"
 
-const regularReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone, closed, isHistory) => {
+const regularReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone, closed, isHistory = 0) => {
+    console.log(isHistory)
     return `
-                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseConsultationBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
+                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseConsultationBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}" data-ishistory="${isHistory}">
                     <span class="mx-2">${iteration > 1 && !line.specialistFlag ? count + numberConverter(count) + ' Review' : line.specialistFlag ? 'Specialist Consultation' : 'Initial Consultation'}</span>
                     <i class="bi bi-chevron-double-down text-primary"> </i>
                 </div>
@@ -13,6 +14,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                             ${closed ? '' : viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}
                             ${investigations(line, viewer)}
                             ${viewer == 'doctor' ||  viewer == 'hmo' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
+                            ${viewer == 'doctor' ||  viewer == 'hmo' ? otherPrescriptions(line) : viewer == 'nurse' ? otherPrescriptionsNurses(line) : ''}
                             ${viewer == 'doctor' ? updateInvestigationAndManagement(length, iteration, line, isDoctorDone, closed) : ''}
                             ${isDoctorDone || closed ? '' :
                             `<div class="d-flex justify-content-start my-3 gap-2" >
@@ -76,6 +78,7 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
                             ${ viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}
                             ${investigations(line)}
                             ${viewer == 'doctor' ||  viewer == 'hmo' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
+                            ${viewer == 'doctor' ||  viewer == 'hmo' ? otherPrescriptions(line) : viewer == 'nurse' ? otherPrescriptionsNurses(line) : ''}
                             ${viewer == 'doctor' ? updateInvestigationAndManagement(length, iteration, line, isDoctorDone, closed) : ''}
 
                             ${isDoctorDone ? '' :

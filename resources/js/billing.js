@@ -1,9 +1,7 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { consultationDetails, items } from "./data"
 import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, clearValidationErrors, resetFocusEndofLine} from "./helpers"
-import { InitialRegularConsultation, review } from "./dynamicHTMLfiles/treamentsInvestigations";
 import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill } from "./tables/billingTables";
 import { getOutpatientsInvestigationTable } from "./tables/investigationTables";
 

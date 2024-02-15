@@ -53,13 +53,24 @@ class PrescriptionController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 
-    public function loadTreatmentTable(Request $request)
+    public function loadMedicationTable(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $sponsors = $this->prescriptionService->getPaginatedTreatmentRequests($params, $request);
+        $sponsors = $this->prescriptionService->getPaginatedMedications($params, $request);
        
-        $loadTransformer = $this->prescriptionService->getTreatmentTransformer();
+        $loadTransformer = $this->prescriptionService->getPrescriptionsTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
+    }
+
+    public function loadOtherPrescriptionsTable(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sponsors = $this->prescriptionService->getOtherPrescriptions($params, $request);
+       
+        $loadTransformer = $this->prescriptionService->getPrescriptionsTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }

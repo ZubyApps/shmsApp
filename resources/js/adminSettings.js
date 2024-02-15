@@ -14,7 +14,7 @@ import 'datatables.net-fixedcolumns-bs5';
 import 'datatables.net-fixedheader-bs5';
 import 'datatables.net-select-bs5';
 import 'datatables.net-staterestore-bs5';
-import { getResourceCategoryTable, getResourceStockDateTable, getSponsorCategoryTable } from "./tables/settingsTables";
+import { getPayMethodTable, getResourceCategoryTable, getResourceStockDateTable, getSponsorCategoryTable } from "./tables/settingsTables";
 
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -26,10 +26,14 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const newResourceCategoryModal          = new Modal(document.getElementById('newResourceCategoryModal'))
     const updateResourceCategoryModal       = new Modal(document.getElementById('updateResourceCategoryModal'))
+    
+    const newPayMethodModal                 = new Modal(document.getElementById('newPayMethodModal'))
+    const editPayMethodModal                = new Modal(document.getElementById('editPayMethodModal'))
 
     const addSponsorCategoryBtn             = document.querySelector('#addSponsnorCategoryBtn')
     const addResourceStockDateBtn           = document.querySelector('#addResourceStockDateBtn')
     const addResourceCategoryBtn            = document.querySelector('#addResourceCategoryBtn')
+    const addPayMethodBtn                   = document.querySelector('#addPayMethodBtn')
 
     const createSponsorCategoryBtn          = document.querySelector('#createSponsorCategoryBtn')
     const saveSponsorCategoryBtn            = document.querySelector('#saveSponsorCategoryBtn')
@@ -39,13 +43,16 @@ window.addEventListener('DOMContentLoaded', function () {
     
     const createResourceCategoryBtn         = document.querySelector('#createResourceCategoryBtn')
     const saveResourceCategoryBtn           = document.querySelector('#saveResourceCategoryBtn')
-
+    
+    const createPayMethodBtn                = document.querySelector('#createPayMethodBtn')
+    const savePayMethodBtn                  = document.querySelector('#savePayMethodBtn')
+    
     const sponsorCategoryTab                = document.querySelector('#nav-sponsorCategory-tab')
     const resourceStockDateTab              = document.querySelector('#nav-resourceStockDate-tab')
     const resourceCategoryTab               = document.querySelector('#nav-resourceCategory-tab')
-    const reportsTab                        = document.querySelector('#nav-reports-tab') 
+    const payMethodTab                      = document.querySelector('#nav-payMethod-tab') 
 
-    let resourceStockDateTable, resourceCategoryTable
+    let resourceStockDateTable, resourceCategoryTable, payMethodTable
 
     const sponsorCategoryTable = getSponsorCategoryTable('sponsorCategoryTable')
 
@@ -59,7 +66,6 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             resourceStockDateTable = getResourceStockDateTable('resourceStockDateTable')
         }
-        // resourceStockDateTable.draw()
     })
 
     resourceCategoryTab.addEventListener('click', function () {
@@ -68,7 +74,14 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             resourceCategoryTable = getResourceCategoryTable('resourceCategoryTable')
         }
-        // resourceCategoryTable.draw()
+    })
+
+    payMethodTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#payMethodTable' )){
+            $('#payMethodTable').dataTable().fnDraw()
+        } else {
+            payMethodTable = getPayMethodTable('payMethodTable')
+        }
     })
 
     document.querySelector('#sponsorCategoryTable').addEventListener('click', function (event) {
@@ -315,6 +328,81 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
+    addPayMethodBtn.addEventListener('click', function () {
+        newPayMethodModal.show()
+    })
+
+    document.querySelector('#payMethodTable').addEventListener('click', function (event) {
+        const editBtn    = event.target.closest('.updateBtn')
+        const deleteBtn  = event.target.closest('.deleteBtn')
+
+        if (editBtn) {
+            editBtn.setAttribute('disabled', 'disabled')
+            const payMethodId = editBtn.getAttribute('data-id')
+            http.get(`/paymethod/${ payMethodId }`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openModals(editPayMethodModal, savePayMethodBtn, response.data.data)
+                    }
+                    editBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    alert(error)
+                })
+        }
+
+        if (deleteBtn){
+            deleteBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Pay Method?')) {
+                const payMethodId = deleteBtn.getAttribute('data-id')
+                http.delete(`/paymethod/${payMethodId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            payMethodTable ? payMethodTable.draw() : ''
+                        }
+                        deleteBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                    })
+            }
+        }
+    })
+
+    createPayMethodBtn.addEventListener('click', function () {
+        createPayMethodBtn.setAttribute('disabled', 'disabled')
+        http.post('/paymethod', getDivData(newPayMethodModal._element), {"html": newPayMethodModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                    newPayMethodModal.hide()
+                    clearDivValues(newPayMethodModal._element)
+                    payMethodTable ? payMethodTable.draw() : ''
+                }
+                createPayMethodBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            alert(error.response.data.message)
+            createPayMethodBtn.removeAttribute('disabled')
+        })
+    })
+
+    savePayMethodBtn.addEventListener('click', function (event) {
+        const payMethodId = event.currentTarget.getAttribute('data-id')
+        savePayMethodBtn.setAttribute('disabled', 'disabled')
+        http.patch(`/paymethod/${payMethodId}`, getDivData(editPayMethodModal._element), {"html": editPayMethodModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                editPayMethodModal.hide()
+                payMethodTable ? payMethodTable.draw() : ''
+            }
+            savePayMethodBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            alert(error.response.data.message)
+            savePayMethodBtn.removeAttribute('disabled')
+        })
+    })
+
     newSponsorCategoryModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(newSponsorCategoryModal._element)
         sponsorCategoryTable.draw()
@@ -322,11 +410,11 @@ window.addEventListener('DOMContentLoaded', function () {
 
     newResourceStockDateModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(newResourceStockDateModal._element)
-        resourceStockDateTable.draw()
+        resourceStockDateTable ? resourceStockDateTable.draw() : ''
     })
 
     newResourceCategoryModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(newResourceCategoryModal._element)
-        resourceCategoryTable.draw()
+        resourceCategoryTable ? resourceCategoryTable.draw() : ''
     })
 })

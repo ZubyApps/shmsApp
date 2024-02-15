@@ -273,18 +273,20 @@
                         </button>
                     </div>
                     <div class="pt-2 ">
-                        <table id="bulkRequestsTable" class="table table-hover align-middle table-sm bulkRequestsTable">
+                        <table id="bulkRequestsTable" class="table table-sm bulkRequestsTable">
                             <thead>
                                 <tr>
                                     <th>Date</th>
                                     <th>Item</th>
-                                    <th>Quantity</th>
+                                    <th>Qty</th>
                                     <th>Dept</th>
-                                    <th>Requested By</th>
+                                    <th>Request By</th>
                                     <th>Note</th>
+                                    <th>Qty Approved</th>
                                     <th>Approved By</th>
-                                    <th>Dispensed By</th>
+                                    <th>Qty Dispensed</th>
                                     <th>Dispensed</th>
+                                    <th>Dispensed By</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>

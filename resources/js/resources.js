@@ -174,7 +174,7 @@ window.addEventListener('DOMContentLoaded', function () {
     newResourceCategoryInput.addEventListener('change', function() {
         if (newResourceCategoryInput.value) {
             http.get(`/resourcecategory/list_subcategories/${newResourceCategoryInput.value}`).then((response) => {
-                    displayList(newResourceSubCategoryDatalistEl, 'subCategoryOption' ,response.data)
+                    displayList(newResourceSubCategoryDatalistEl, 'subCategoryOption', response.data)
 
             })
         }

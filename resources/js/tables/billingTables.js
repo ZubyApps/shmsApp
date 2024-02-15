@@ -144,6 +144,11 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
         const NHIS = data.sponsorCategory == 'NHIS'
         const balance = data.sponsorCategory == 'NHIS' ? data.nhisBalance : data.balance
         const prescriptions = data.prescriptions
+        const payMethods = data.payMethods
+        let payMethodOptions = ''
+        payMethods.forEach(method => {
+            payMethodOptions += `<option value="${method.id}">${method.name}</option>`
+        })
         let count = 1
                 if (prescriptions.length > 0) {
                     let child = `<table class="table align-middle ">
@@ -284,11 +289,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             <li class="list-group-item border-0"> Amount <input class="ms-1 form-control amountInput" id="amount" name="amount"></li>
                                             <li class="list-group-item border-0">Pay Method
                                             <select class="form-select form-select-md payMethodInput" name="payMethod" id="payMethod">
-                                                <option value="Cash">Cash</option>
-                                                <option value="UBA">UBA Pos</option>
-                                                <option value="Union Pos">Union Pos</option>
-                                                <option value="Ecobank">Ecobank</option>
-                                                <option value="Surety">Surety</option>
+                                            ${payMethodOptions}
                                             </select>
                                             </li>
                                             <li class="list-group-item border-0">Comment <input class="ms-1 form-control commentInput" id="comment" name="comment"></li>
@@ -323,11 +324,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             <li class="list-group-item border-0"> Amount <input class="ms-1 form-control amountInput" id="amount" name="amount"></li>
                                             <li class="list-group-item border-0">Pay Method
                                             <select class="form-select form-select-md payMethodInput" name="payMethod" id="payMethod">
-                                                <option value="Cash">Cash</option>
-                                                <option value="UBA">UBA Pos</option>
-                                                <option value="Union Pos">Union Pos</option>
-                                                <option value="Ecobank">Ecobank</option>
-                                                <option value="Surety">Surety</option>
+                                            ${payMethodOptions}
                                             </select>
                                             </li>
                                             <li class="list-group-item border-0">Comment <input class="ms-1 form-control commentInput" id="comment" name="comment"></li>

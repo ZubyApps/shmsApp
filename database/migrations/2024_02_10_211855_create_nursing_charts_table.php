@@ -15,18 +15,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('medication_charts', function (Blueprint $table) {
+        Schema::create('nursing_charts', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Prescription::class)->constrained()->cascadeOnDelete();
-            $table->string('dose_prescribed');
+            $table->string('care_prescribed');
             $table->string('scheduled_time');
-            $table->string('dose_given')->nullable();
-            $table->string('not_given')->nullable();
-            $table->dateTime('time_given')->nullable();
+            $table->string('not_done')->nullable();
+            $table->dateTime('time_done')->nullable();
             $table->string('note')->nullable();
-            $table->foreignIdFor(User::class, 'given_by')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->foreignIdFor(User::class, 'done_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->boolean('status')->default(false);
-            $table->integer('dose_count');
+            $table->integer('schedule_count');
             $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Consultation::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();
@@ -39,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('medication_charts');
+        Schema::dropIfExists('nursing_charts');
     }
 };

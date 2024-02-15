@@ -4,7 +4,7 @@ import {getOrdinal, textareaHeightAdjustment, loadingSpinners, removeDisabled, r
 import { getBulkRequestTable, getExpirationStockTable , getPatientsVisitByFilterTable, getPrescriptionsByConsultation } from "./tables/pharmacyTables";
 import http from "./http";
 import $ from 'jquery';
-import { getLabTableByConsultation, getTreatmentTableByConsultation, getVitalSignsTableByVisit } from "./tables/doctorstables";
+import { getLabTableByConsultation, getMedicationsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getbillingTableByVisit } from "./tables/billingTables";
 
@@ -83,8 +83,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 const btnHtml = consultationDetailsBtn.innerHTML
                 consultationDetailsBtn.innerHTML = loadingSpinners()
     
-                // const visitId = consultationDetailsBtn.getAttribute('data-id')
-                // const patientType = consultationDetailsBtn.getAttribute('data-patientType')
                 const [visitId, patientType, ancRegId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-patientType'), consultationDetailsBtn.getAttribute('data-ancregid')] 
                 const isAnc = patientType === 'ANC'
                 const [modal, div, displayFunction, vitalSignsTable, id, suffixId] = isAnc ? [ancTreatmentDetailsModal, ancTreatmentDiv, AncPatientReviewDetails, getAncVitalSignsTable, ancRegId, 'AncConDetails'] : [treatmentDetailsModal, regularTreatmentDiv, regularReviewDetails, getVitalSignsTableByVisit, visitId, 'ConDetails']
@@ -105,17 +103,8 @@ window.addEventListener('DOMContentLoaded', function () {
     
                                 iteration > 1 ? count++ : ''
     
-                                // if (patientType === 'ANC') {
-                                //     treatmentDiv.innerHTML += AncPatientReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
-                                // } else {
-                                //     treatmentDiv.innerHTML += regularReviewDetails(iteration, getOrdinal, count, consultations.length, line, viewer)
-                                // }
                                 div.innerHTML += displayFunction(iteration, getOrdinal, count, consultations.length, line, viewer)
                             })
-    
-                            // getVitalSignsTableByVisit('#vitalSignsTableNurses', visitId, reviewDetailsModal, viewer)
-                            // getbillingTableByVisit('billingTable', visitId, reviewDetailsModal._element)
-                            // reviewDetailsModal.show()
     
                             vitalSignsTable(`#vitalSignsTableNurses${suffixId}`, id, modal)
                             getbillingTableByVisit(`billingTable${suffixId}`, visitId, modal._element)
@@ -159,35 +148,42 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (billQtySpan){
             const prescriptionId    = billQtySpan.getAttribute('data-id')
+            const stock             = +billQtySpan.getAttribute('data-stock')
             const div               = billQtySpan.parentElement
             const billQtyInput      = div.querySelector('.billQtyInput')
-            billQtySpan.classList.add('d-none')
-            billQtyInput.classList.remove('d-none')
 
-            resetFocusEndofLine(billQtyInput)
+            if (!stock){
+                alert('Resource is out of stock, please add to stock before billing')
+            } else {
+                billQtySpan.classList.add('d-none')
+                billQtyInput.classList.remove('d-none')
+
+                resetFocusEndofLine(billQtyInput)
             
-            billQtyInput.addEventListener('blur', function () {
-                billingDispenseFieldset.setAttribute('disabled', 'disabled')
-                http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value}, {'html' : div})
-                .then((response) => {
-                    if (response.status >= 200 || response.status <= 300) {
-                        visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
-                        visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                        billingTable ? billingTable.draw() : ''
-                    }
+                billQtyInput.addEventListener('blur', function () {
+                
+                    billingDispenseFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value}, {'html' : div})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
+                            visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                            billingTable ? billingTable.draw() : ''
+                        }
+                    })
+                    .catch((error) => {
+                        if (error.response.status == 422){
+                            removeDisabled(billingDispenseFieldset)
+                            console.log(error)
+                        } else{
+                            console.log(error)
+                            visitPrescriptionsTable.draw()
+                            visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                        }
+                    })
                 })
-                .catch((error) => {
-                    if (error.response.status == 422){
-                        removeDisabled(billingDispenseFieldset)
-                        console.log(error)
-                    } else{
-                        console.log(error)
-                        visitPrescriptionsTable.draw()
-                        visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                    }
-                }) 
+            }
                                
-            })
         }
 
         if (dispenseQtySpan){
@@ -252,6 +248,80 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    document.querySelector('#bulkRequestsTable').addEventListener('click', function (event) {
+        const approveRequestBtn    = event.target.closest('.approveRequestBtn')
+        const dispenseQtyBtn       = event.target.closest('.dispenseQtyBtn')
+        const deleteRequestBtn     = event.target.closest('.deleteRequestBtn')
+        // const makeBillFieldset  = document.querySelector('#makeBillFieldset')
+        if (approveRequestBtn){
+            const bulkRequestId     = approveRequestBtn.getAttribute('data-id')
+            const div               = approveRequestBtn.parentElement
+            const qtyApprovedInput  = div.querySelector('.qtyApprovedInput')
+            approveRequestBtn.classList.add('d-none')
+            qtyApprovedInput.classList.remove('d-none')
+            resetFocusEndofLine(qtyApprovedInput)
+            // qtyApprovedInput.focus()
+            
+            qtyApprovedInput.addEventListener('blur', function () {
+                // makeBillFieldset.setAttribute('disabled', 'disabled')
+                http.patch(`/bulkrequests/approve/${bulkRequestId}`, {qty: qtyApprovedInput.value}, {'html' : div})
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        bulkRequestsTable ?  bulkRequestsTable.draw() : ''
+                        // visitPrescriptionsTable.on('draw', removeDisabled(makeBillFieldset))
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    bulkRequestsTable ?  bulkRequestsTable.draw() : ''
+                    // visitPrescriptionsTable.on('draw', removeDisabled(makeBillFieldset))
+                })                
+            })
+        }
+
+        if (dispenseQtyBtn){
+            const bulkRequestId     = dispenseQtyBtn.getAttribute('data-id')
+            const div               = dispenseQtyBtn.parentElement
+            const qtyDispensedInput  = div.querySelector('.qtyDispensedInput')
+            dispenseQtyBtn.classList.add('d-none')
+            qtyDispensedInput.classList.remove('d-none')
+            resetFocusEndofLine(qtyApprovedInput)
+            
+            qtyDispensedInput.addEventListener('blur', function () {
+                // makeBillFieldset.setAttribute('disabled', 'disabled')
+                http.patch(`/bulkrequests/dispense/${bulkRequestId}`, {qty: qtyDispensedInput.value}, {'html' : div})
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        bulkRequestsTable ?  bulkRequestsTable.draw() : ''
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    bulkRequestsTable ?  bulkRequestsTable.draw() : ''
+                })                
+            })
+        }
+
+        if (deleteRequestBtn){
+            const bulkRequestId = deleteRequestBtn.getAttribute('data-id')
+            deleteRequestBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this request?')){
+                http.delete(`/bulkrequests/${bulkRequestId}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        bulkRequestsTable ?  bulkRequestsTable.draw() : ''
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    bulkRequestsTable ?  bulkRequestsTable.draw() : ''
+                })
+            }
+
+        }
+
+    })
+
     billingDispenseModal._element.addEventListener('hide.bs.modal', function () {
         outPatientsTable.draw()
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
@@ -296,7 +366,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 location.href = collapseConsultationBtn.getAttribute('data-goto')
                 window.history.replaceState({}, document.title, "/" + "pharmacy")
                 getLabTableByConsultation(investigationTableId, treatmentDetailsModal._element, viewer, conId, null)
-                getTreatmentTableByConsultation(treatmentTableId, conId, treatmentDetailsModal._element)
+                getMedicationsByFilter(treatmentTableId, conId, treatmentDetailsModal._element)
             }
             setTimeout(goto, 300)
         }
@@ -304,8 +374,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
     requestBulkBtn.addEventListener('click', function () {
         requestBulkBtn.setAttribute('disabled', 'disabled')
-        console.log(getDivData(bulkRequestModal._element))
         const itemId =  getDatalistOptionId(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList`))
+        console.log(itemId)
         if (!itemId) {
             clearValidationErrors(bulkRequestModal._element)
             const message = {"item": ["Please pick an item from the list"]}               

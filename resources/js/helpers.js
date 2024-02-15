@@ -246,7 +246,7 @@ const detailsBtn = (row) => {
 
 const prescriptionStatusContorller = (row, tableId) => {
     return `<span class="text-decoration-underline btn tootip-test ${row.doseComplete ? '' : 'discontinueBtn'}" title="${row.doseComplete ? 'completed' : 'discontinue'}" data-id="${row.id}"           data-table="${tableId}">
-                ${row.prescription} 
+                ${row.prescription == '' ? row.note ?? '' : row.prescription} 
             </span>`      
 }
 
@@ -392,7 +392,7 @@ const filterPatients = (elements) => {
 }
 
 const removeDisabled = (element) => {
-    setTimeout(() => element.removeAttribute('disabled'), 2000 ) 
+    setTimeout(() => element.removeAttribute('disabled'), 1500 ) 
 }
 
 const resetFocusEndofLine = (element) => {

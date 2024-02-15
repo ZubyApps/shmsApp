@@ -12,7 +12,7 @@ class UpdateMedicationChartRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->designation?->designation == 'Nurse' || $this->user()->designation?->access_level > 3;
     }
 
     /**
@@ -23,8 +23,9 @@ class UpdateMedicationChartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'doseGiven'             => ['required'],
-            'unit'                  => ['required'],
+            'doseGiven'             => ['required_if:notGiven,null'],
+            'unit'                  => ['required_if:notGiven,null'],
+            'notGiven'              => ['required_if:doseGiven,null'],
         ];
     }
 }

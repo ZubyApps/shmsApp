@@ -33,6 +33,7 @@ class StorePrescriptionRequest extends FormRequest
             'unit'          => ['required_if:resourceCategory,Medications'],
             'frequency'     => ['required_if:resourceCategory,Medications'],
             'quantity'      => ['required_unless:resourceCategory,Medications', 'nullable', 'integer', 'min:1'],
+            'note'          => ['required_if:chartable,true'],
         ];
     }
 }

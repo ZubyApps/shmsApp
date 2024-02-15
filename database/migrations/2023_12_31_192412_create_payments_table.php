@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Patient;
+use App\Models\PayMethod;
 use App\Models\User;
 use App\Models\Visit;
 use Illuminate\Database\Migrations\Migration;
@@ -17,8 +18,8 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('amount_paid');
-            $table->string('pay_method');
             $table->string('comment')->nullable();
+            $table->foreignIdFor(PayMethod::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Patient::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();

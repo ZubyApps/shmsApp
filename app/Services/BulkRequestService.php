@@ -117,10 +117,51 @@ class BulkRequestService
                 'dept'              => $bulkRequest->department,
                 'requestedBy'       => $bulkRequest->user->username,
                 'note'              => $bulkRequest->note,
+                'qtyApproved'       => $bulkRequest->qty_approved,
                 'approvedBy'        => $bulkRequest->approvedBy?->username,
+                'qtyDispensed'      => $bulkRequest->qty_dispensed,
                 'dispensedBy'       => $bulkRequest->dispensedBy?->username,
                 'dispensed'         => $bulkRequest->dispensed ? (new Carbon($bulkRequest->dispensed))->format('d/m/y g:ia'): $bulkRequest->dispensed,
+                'access'            => auth()->user()->designation->access_level > 3,
             ];
          };
+    }
+
+    public function toggleRequest(Request $data, BulkRequest $bulkRequest, User $user)
+    {
+        return $bulkRequest->update([
+            'qty_approved'  => $data->qty ? $data->qty : null,
+            'approved_by'   => $data->qty ? $user->id : null
+        ]);
+    }
+
+    public function dispenseRequest(Request $data, BulkRequest $bulkRequest, User $user)
+    {
+        return DB::transaction(function () use($data, $bulkRequest, $user) {
+            $resource = $bulkRequest->resource;
+            $qtyDispensed = $bulkRequest->qty_dispensed;
+
+            if ($data->qty){
+                if ($qtyDispensed){
+                    $resource->stock_level = $resource->stock_level + $qtyDispensed;
+                    $resource->save();
+                }
+                
+                $resource->stock_level = $resource->stock_level - $data->qty;
+                $resource->save();
+
+            } elseif (!$data->qty) {
+                if ($qtyDispensed){
+                    $resource->stock_level = $resource->stock_level + $qtyDispensed;
+                    $resource->save();
+                }
+            }
+
+            return $bulkRequest->update([
+                'qty_dispensed'     => $data->qty,
+                'dispensed'         => $data->qty ? new Carbon() : null,
+                'dispensed_by'      => $data->qty ? $user->id : null,
+            ]);
+        });
     }
 }

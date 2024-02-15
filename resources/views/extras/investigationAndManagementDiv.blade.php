@@ -27,7 +27,7 @@
                     <x-form-input class="form-check-input py-3 mt-0" type="checkbox" id="chartable" />
             </x-form-div>
             <x-form-div class="col-xl-6">
-                <x-input-span id="noteLabel">Note</x-input-span>
+                <x-input-span id="noteLabel">Note/Instruction</x-input-span>
                 <x-form-input type="text" name="note" id="note"/>
             </x-form-div>
         </div>

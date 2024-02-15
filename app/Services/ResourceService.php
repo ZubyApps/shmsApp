@@ -123,9 +123,9 @@ class ResourceService
         if (! empty($data->resource)){
             return $this->resource
                         ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
-                        ->where('expiry_date', '>', new Carbon())
+                        // ->where('expiry_date', '>', new Carbon())
                         ->where('is_active', true)
-                        ->where('stock_level', '>', 0)
+                        // ->where('stock_level', '>', 0)
                         ->whereNot('flag','LIKE', '%' . addcslashes($data->sponsorCat, '%_') . '%' )
                         ->orderBy('name', 'asc')
                         ->get();
@@ -167,6 +167,7 @@ class ResourceService
             return [
                 'id'        => $resource->id,
                 'name'      => $resource->nameWithIndicators(),
+                'plainName' => $resource->name,
                 'category'  => $resource->category
             ];
         };

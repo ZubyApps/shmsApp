@@ -7,6 +7,7 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Consultation;
 use App\Models\Payment;
+use App\Models\PayMethod;
 use App\Models\Prescription;
 use App\Models\Resource;
 use App\Models\User;
@@ -24,7 +25,8 @@ class BillingService
         private readonly Payment $payment,
         private readonly PaymentService $paymentService,
         private readonly PayPercentageService $payPercentageService,
-        private readonly Resource $resource
+        private readonly Resource $resource,
+        private readonly PayMethodService $payMethodService
         )
     {
         
@@ -165,6 +167,7 @@ class BillingService
                 'nhisBalance'           => $visit->sponsor->sponsorCategory->name == 'NHIS' ? (($visit->totalNhisBills() - $visit->discount)) - $visit->totalPayments() ?? 0 : 'N/A',
                 'outstandingBalance'    => $visit->patient->allBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
                 'outstandingNhisBalance'=> $visit->patient->allNhisBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
+                'payMethods'            => $this->payMethodService->list(),
                 'prescriptions'         => $visit->prescriptions->map(fn(Prescription $prescription) => [
                     'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                     'prescribedBy'      => $prescription->user->username,
@@ -213,7 +216,7 @@ class BillingService
                     'date'          => (new Carbon($payment->created_at))->format('d/m/y g:ia'),
                     'receivedBy'    => $payment->user->username,
                     'amount'        => $payment->amount_paid,
-                    'payMethod'     => $payment->pay_method,
+                    'payMethod'     => $payment->payMethod->name,
                     'comment'       => $payment->comment,
                     'user'          => auth()->user()->designation->access_level > 3
             ];

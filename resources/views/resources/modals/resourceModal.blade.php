@@ -22,7 +22,7 @@
                                 <select class="form-select form-select-md" name="resourceCategory" id="{{ $isUpdate ? 'updateResourceCategory' : 'newResourceCategory' }}">
                                     <option value="">Select Category</option>   
                                     @foreach ($categories as $category )
-                                        <option value="{{ $category->id}}" name="{{ $category->name }}">{{ $category->name }}</option>
+                                        <option value="{{ $category->id}}" name="{{ $category->name }}">{{ $category->name}}</option>
                                     @endforeach
                                 </select>
                             </x-form-div>

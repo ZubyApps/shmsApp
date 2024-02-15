@@ -67,6 +67,18 @@ const getResourceTable = (tableId) => {
             if ( !data.isActive) {
                 row.classList.add('table-danger')
             }
+            if ( !data.stock) {
+                row.classList.add('table-warning')
+            }
+            if ( data.stock <= data.reOrder) {
+                row.classList.add('table-info')
+            }
+            if ( data.expired == 'Soon') {
+                row.classList.add('table-secondary')
+            }
+            if ( data.expired == 'Yes') {
+                row.classList.add('table-dark')
+            }
 
             return row
         },

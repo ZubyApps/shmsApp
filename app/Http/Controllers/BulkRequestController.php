@@ -20,14 +20,6 @@ class BulkRequestController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreBulkRequestRequest $request, Resource $resource)
@@ -73,17 +65,17 @@ class BulkRequestController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(BulkRequest $bulkRequest)
+    public function toggleApproveBulkRequest(UpdateBulkRequestRequest $request, BulkRequest $bulkRequest)
     {
-        //
+        return $this->bulkRequestService->toggleRequest($request, $bulkRequest, $request->user());
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBulkRequestRequest $request, BulkRequest $bulkRequest)
+    public function dispenseBulkRequest(UpdateBulkRequestRequest $request, BulkRequest $bulkRequest)
     {
-        //
+        return $this->bulkRequestService->dispenseRequest($request, $bulkRequest, $request->user());
     }
 
     /**
@@ -91,6 +83,6 @@ class BulkRequestController extends Controller
      */
     public function destroy(BulkRequest $bulkRequest)
     {
-        //
+        return $bulkRequest->destroy($bulkRequest->id);
     }
 }

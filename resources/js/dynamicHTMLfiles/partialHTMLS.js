@@ -734,6 +734,32 @@ const medicationAndTreatment = (line) => {
         `
 }
 
+const otherPrescriptions = (line) => {
+    return `
+            <div class="my-2 form-control">
+                <span class="fw-bold text-primary">Other Prescriptions</span>
+                <div class="row overflow-auto m-1">
+                    <table id="otherPrescriptionsTable${line.id}" data-id="${line.id}" class="table table-sm otherPrescriptionsTable">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Item</th>
+                                <th>Note/Instruction</th>
+                                <th>Qty</th>
+                                <th>Dr</th>
+                                <th>Prescribed</th>
+                                <th>Billed</th>
+                                <th>Dispensed</th>
+                                <th>Chart</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        `
+}
+
 const medicationAndTreatmentNurses = (line) => {
     return `
             <div class="my-2 form-control">
@@ -748,6 +774,30 @@ const medicationAndTreatmentNurses = (line) => {
                                 <th>Dr</th>
                                 <th>Prescribed</th>
                                 <th>Note</th>
+                                <th>Chartable</th>
+                                <th>Chart</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        `
+}
+
+const otherPrescriptionsNurses = (line) => {
+    return `
+            <div class="my-2 form-control">
+                <span class="fw-bold text-primary">Other Prescriptions</span>
+                <div class="row overflow-auto m-1">
+                    <table id="otherPrescriptionsNursesTable${line.id}" data-id="${line.id}" class="table table-sm otherPrescriptionsNursesTable">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Note/Instruction</th>
+                                <th>Qty</th>
+                                <th>Dr</th>
+                                <th>Prescribed</th>
                                 <th>Chartable</th>
                                 <th>Chart</th>
                             </tr>
@@ -817,7 +867,7 @@ const updateAdmissionStatus = (line, iteration) => {
     </div>`
 }
 
-export {surgeryNotes, deliveryNotes, vitalsignsTable, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses, updateAdmissionStatus}
+export {surgeryNotes, deliveryNotes, vitalsignsTable, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, otherPrescriptions, medicationAndTreatmentNurses, otherPrescriptionsNurses,  updateAdmissionStatus}
 
 {/* <td><span class="position-relative"><a href="/transactions/11/receipts/15" target="blank" title="ABAGI Ernest_Nguevese.pdf"> *
                                     <i class="bi bi-file-earmark-text download-receipt text-primary fs-4"></i></a></span></td> */}

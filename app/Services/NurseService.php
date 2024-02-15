@@ -66,7 +66,8 @@ class NurseService
                     ->where('closed', false)
                     ->where(function(Builder $query) {
                         $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
-                            ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services');
+                            ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services')
+                            ->orWhereRelation('prescriptions', 'chartable', '=', '1');
                     })
                     ->where(function (Builder $query) {
                         $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
@@ -111,11 +112,12 @@ class NurseService
                 'patientType'       => $visit->patient->patient_type,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->patient->antenatalRegisteration?->ancVitalSigns->count(),
-                'chartables'        => $visit->prescriptions->where('chartable', true)->count() - Prescription::where('visit_id', $visit->id)->where('chartable', true)->has('medicationCharts')->count(),// 'id', '=', null)->count(),
-                'chartables1'       => $visit->prescriptions->where('chartable', true)->count(),
-                'chartables2'       => $visit->prescriptions->where('chartable', true)->count(),
+                'chartableMedications'  => (new Prescription())->prescriptionsCharted($visit->id),
+                'otherChartables'       => (new Prescription())->prescriptionsCharted($visit->id, '!'),
                 'doseCount'         => $visit->medicationCharts->count(),
                 'givenCount'        => $visit->medicationCharts->where('dose_given', '!=', null)->count(),
+                'scheduleCount'     => $visit->nursingCharts->count(),
+                'doneCount'         => $visit->nursingCharts->where('time_done', '!=', null)->count(),
                 'viewed'            => !!$visit->viewed_at,
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),

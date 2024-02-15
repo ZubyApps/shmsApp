@@ -72,6 +72,11 @@ class Prescription extends Model
         return $this->hasMany(MedicationChart::class);
     }
 
+    public function nursingCharts() 
+    {
+        return $this->hasMany(NursingChart::class);
+    }
+
     public function forPharmacy(int $conId)
     {
         return $this->where('consultation_id', $conId)
@@ -80,5 +85,16 @@ class Prescription extends Model
                               ->orWhereRelation('resource', 'category', 'Consumables');
                     })
                     ->get();
+    }
+
+    public function prescriptionsCharted($visiId, $not = '')
+    {
+        return $this->where('visit_id', $visiId)
+                    ->where('chartable', true)
+                    ->where(function(Builder $query) use($not) {
+                        $query->whereDoesntHave('medicationCharts')
+                              ->whereRelation('resource', 'category', $not.'Medications');
+                    })
+                    ->count();
     }
 }

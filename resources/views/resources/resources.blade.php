@@ -45,7 +45,7 @@
                         </button>
                     </div>
                     <div class="">
-                        <table id="resourceTable" class="table table-hover align-middle table-sm">
+                        <table id="resourceTable" class="table table-sm">
                             <thead>
                                 <tr>
                                     <th>Name</th>

@@ -5,23 +5,22 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
-use App\Models\MedicationChart;
+use App\Models\NursingChart;
 use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
-use DatePeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
-class MedicationChartService
+class NursingChartService
 {
-    public function __construct(private readonly MedicationChart $medicationChart)
+    public function __construct(private readonly NursingChart $nursingChart)
     {
     }
 
-    public function create(Request $data, User $user): MedicationChart
+    public function create(Request $data, User $user): NursingChart
     {
         $tz = 'Africa/Lagos';
         $interval = CarbonInterval::hours($data->frequency);
@@ -33,13 +32,13 @@ class MedicationChartService
         $iteration = 0;
         foreach ($dates as $date) {
             $iteration++;
-            $charts = $user->medicationCharts()->create([
+            $charts = $user->nursingCharts()->create([
                 'prescription_id'   => $data->prescriptionId,
                 'consultation_id'   => $data->conId,
                 'visit_id'          => $data->visitId,
-                'dose_prescribed'   => $data->dose.$data->unit,
+                'care_prescribed'   => $data->dose.$data->unit,
                 'scheduled_time'    => new Carbon($date, $tz),
-                'dose_count'        => $iteration
+                'schedule_count'    => $iteration
             ]);
         }
         
@@ -47,49 +46,49 @@ class MedicationChartService
         return $charts;
     }
 
-    public function updateRecord(Request $data, MedicationChart $medicationChart, User $user): MedicationChart
+    public function updateRecord(Request $data, NursingChart $nursingChart, User $user): NursingChart
     {
-       $medicationChart->update([
-           'dose_given' => $data->doseGiven.$data->unit,
-           'time_given' => Carbon::now(),
-           'not_given'  => $data->notGiven,
-           'given_by'   => $user->id,
+       $nursingChart->update([
+        //    'dose_given' => $data->doseGiven.$data->unit,
+           'time_done'  => Carbon::now(),
+           'not_done'   => $data->notDone,
+           'done_by'    => $user->id,
            'note'       => $data->note,       
            'status'     => true,
 
         ]);
 
-        return $medicationChart;
+        return $nursingChart;
     }
 
-    public function removeRecord(MedicationChart $medicationChart): MedicationChart
+    public function removeRecord(NursingChart $nursingChart): NursingChart
     {
-       $medicationChart->update([
-           'dose_given' => null,
-           'time_given' => null,
-           'not_given'  => null,
-           'given_by'   => null,
+       $nursingChart->update([
+        //    'dose_given' => null,
+           'time_done'  => null,
+           'not_done'   => null,
+           'done_by'    => null,
            'note'       => null,       
            'status'     => false,
 
         ]);
 
-        return $medicationChart;
+        return $nursingChart;
     }
 
-    public function getPaginatedMedicationCharts(DataTableQueryParams $params, $data)
+    public function getPaginatedNursingCharts(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'scheduled_time';
         $orderDir   =  'asc';
 
         if (! empty($params->searchTerm)) {
-            return $this->medicationChart
+            return $this->nursingChart
                         ->whereRelation('prescription.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->medicationChart
+        return $this->nursingChart
                     ->where('prescription_id', $data->prescriptionId)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -97,25 +96,25 @@ class MedicationChartService
 
     public function getLoadByPrescriptionsTransformer(): callable
     {
-       return  function (MedicationChart $medicationChart) {
+       return  function (NursingChart $nursingChart) {
             return [
-                'id'                => $medicationChart->id,
-                'dose'              => $medicationChart->dose_prescribed,
-                'scheduledTime'     => (new Carbon($medicationChart->scheduled_time))->format('g:iA D dS'),
-                'chartedBy'         => $medicationChart->user->username,
-                'chartedAt'         => (new Carbon($medicationChart->created_at))->format('d/m/y g:ia'),
-                'given'             => $medicationChart->status
+                'id'                => $nursingChart->id,
+                'care'              => $nursingChart->care_prescribed,
+                'scheduledTime'     => (new Carbon($nursingChart->scheduled_time))->format('g:iA D dS'),
+                'chartedBy'         => $nursingChart->user->username,
+                'chartedAt'         => (new Carbon($nursingChart->created_at))->format('d/m/y g:ia'),
+                'given'             => $nursingChart->status
             ];
          };
     }
 
-    public function getUpcomingMedications(DataTableQueryParams $params, $data)
+    public function getUpcomingNursingChart(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'scheduled_time';
         $orderDir   =  'asc';
 
         if (! empty($params->searchTerm)) {
-            return $this->medicationChart
+            return $this->nursingChart
                         ->where('status', false)
                         ->where(function (Builder $query){
                             $query->whereRelation('consultation', 'admission_status', '=', 'Inpatient')
@@ -133,7 +132,7 @@ class MedicationChartService
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->medicationChart
+        return $this->nursingChart
                     ->where('status', false)
                     ->whereRelation('prescription', 'discontinued', false)
                     ->where(function (Builder $query){
@@ -144,24 +143,23 @@ class MedicationChartService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
-    public function upcomingMedicationsTransformer(): callable
+    public function upcomingNursingChartsTransformer(): callable
     {
-       return  function (MedicationChart $medicationChart) {
+       return  function (NursingChart $nursingChart) {
             return [
-                'id'                => $medicationChart->id,
-                'patient'           => $medicationChart->visit->patient->card_no .' '. $medicationChart->visit->patient->first_name .' '. $medicationChart->visit->patient->middle_name .' '. $medicationChart->visit->patient->last_name,
-                'status'            => $medicationChart->consultation->admission_status,
-                'ward'              => $medicationChart->consultation->ward ?? '',
-                'treatment'         => $medicationChart->prescription->resource->name ?? '',
-                'prescription'      => $medicationChart->prescription->prescription ?? '',
-                'dose'              => $medicationChart->dose_prescribed ?? '',
-                'chartedBy'         => $medicationChart->user->username,
-                'date'              => (new Carbon($medicationChart->scheduled_time))->format('jS/M/y'),
-                'time'              => (new Carbon($medicationChart->scheduled_time))->format('g:iA'),
-                'doseCount'         => $medicationChart->dose_count,
-                'count'             => $medicationChart::where('prescription_id', $medicationChart->prescription->id)->count(),
-                'discontinued'      => $medicationChart->prescription->discontinued,
-                'rawDateTime'       => $medicationChart->scheduled_time
+                'id'                => $nursingChart->id,
+                'patient'           => $nursingChart->visit->patient->card_no .' '. $nursingChart->visit->patient->first_name .' '. $nursingChart->visit->patient->middle_name .' '. $nursingChart->visit->patient->last_name,
+                'status'            => $nursingChart->consultation->admission_status,
+                'ward'              => $nursingChart->consultation->ward ?? '',
+                'care'              => $nursingChart->prescription->resource->name ?? '',
+                'instruction'       => $nursingChart->prescription->note ?? '',
+                'chartedBy'         => $nursingChart->user->username,
+                'date'              => (new Carbon($nursingChart->scheduled_time))->format('jS/M/y'),
+                'time'              => (new Carbon($nursingChart->scheduled_time))->format('g:iA'),
+                'scheduleCount'     => $nursingChart->schedule_count,
+                'count'             => $nursingChart::where('prescription_id', $nursingChart->prescription->id)->count(),
+                'discontinued'      => $nursingChart->prescription->discontinued,
+                'rawDateTime'       => $nursingChart->scheduled_time
             ];
          };
     }

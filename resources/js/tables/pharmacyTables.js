@@ -93,7 +93,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 ${credit ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>` : ''}
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
-                                                        <span class="${p.qtyDispensed || closed ? '': 'billQtySpan'} btn btn-${p.qtyBilled ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}">${p.qtyBilled ? p.qtyBilled+' '+p.unit : 'Bill'}</span>
+                                                        <span class="${p.qtyDispensed || closed ? '': 'billQtySpan'} btn btn-${p.qtyBilled ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}" data-stock="${p.stock}">${p.qtyBilled ? p.qtyBilled+' '+p.unit : 'Bill'}</span>
                                                         <input class="ms-1 form-control billQtyInput d-none text-secondary" type="number" style="width:6rem;" id="billQtyInput" value="${p.qtyBilled ?? ''}" name="quantity" id="quantity">
                                                     </div>
                                                 </td>
@@ -217,14 +217,32 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
             {data: "dept"},
             {data: "requestedBy"},
             {data: "note"},
+            {
+                data: 'qtyApproved',
+                render: (data, type, row) => {
+                    return ` <div class="d-flex justify-content-center">
+                    <span class="${ row.qtyDispensed || !+row.access ? '' : 'approveRequestBtn'} btn ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${data ? data  : 'Approve'}</span>
+                    <input class="ms-1 form-control qtyApprovedInput d-none" id="qtyApprovedInput" value="${data ?? ''}">
+                </div>
+                `}
+            },
             {data: "approvedBy"},
-            {data: "dispensedBy"},
+            {
+                data: 'qtyDispensed',
+                render: (data, type, row) => {
+                    return ` <div class="d-flex justify-content-center">
+                    <span class="btn ${ row.qtyApproved && !data ? 'dispenseQtyBtn' : ''} ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${data ? data : 'Dispense'}</span>
+                    <input class="ms-1 form-control qtyDispensedInput d-none" id="qtyDispensedInput" value="${data ?? ''}">
+                </div>
+                `}
+            },
             {data: "dispensed"},
+            {data: "dispensedBy"},
             {
                 sortable: false,
                 data: row =>  `
                 <div class="d-flex flex-">
-                    <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id}" data-patienttype="${row.patientType}">
+                    <button type="submit" class="ms-1 btn btn-outline-primary ${row.dispensed && !+row.access ? 'd-none' : 'deleteRequestBtn'} tooltip-test" title="delete" data-id="${ row.id}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>
                 </div>

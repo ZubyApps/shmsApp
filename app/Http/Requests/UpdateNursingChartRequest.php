@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreResourceStockDateRequest extends FormRequest
+class UpdateNursingChartRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()->designation?->access_level > 3;
+        return $this->user()->designation?->designation == 'Nurse' || $this->user()->designation?->access_level > 3;
     }
 
     /**
@@ -22,8 +22,8 @@ class StoreResourceStockDateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'description'   => ['required'],
-            'date'          => ['required', 'date'],
+            'note'      => ['required_if:notDone,null'],
+            'notGiven'  => ['required_if:note,null'],
         ];
     }
 }

@@ -21,29 +21,13 @@ class ResourceSubCategoryController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreResourceSubCategoryRequest $request)
     {
         $resourceSubCategory = $this->resourceSubCategoryService->create($request, $request->user());
 
-        return $resourceSubCategory->load('user');
+        return $resourceSubCategory;
     }
 
     public function load(Request $request)
@@ -55,14 +39,6 @@ class ResourceSubCategoryController extends Controller
         $loadTransformer = $this->resourceSubCategoryService->getLoadTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(ResourceSubCategory $resourceSubCategory)
-    {
-        //
     }
 
     /**

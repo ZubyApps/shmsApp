@@ -256,6 +256,7 @@ class PharmacyService
                     'prescribedBy'      => $prescription->user?->username ?? '',
                     'prescribed'        => (new Carbon($prescription->created_at))->format('D/m/y g:ia') ?? '',
                     'item'              => $prescription->resource->nameWithIndicators(),
+                    'stock'             => $prescription->resource->stock_level,
                     'category'          => $prescription->resource->category,
                     'prescription'      => $prescription->prescription ?? '',
                     'qtyBilled'         => $prescription->qty_billed,

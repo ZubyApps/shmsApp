@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('note')->nullable();
             $table->string('cost_price');
             $table->string('selling_price');
+            $table->string('qty_approved')->nullable();
+            $table->string('qty_dispensed')->nullable();
             $table->dateTime('dispensed')->nullable();
             $table->foreignIdFor(User::class, 'approved_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'dispensed_by')->nullable()->constrained('users')->restrictOnDelete();

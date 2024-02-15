@@ -7,7 +7,7 @@ use App\Models\Prescription;
 use App\Models\Visit;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreMedicationChartRequest extends FormRequest
+class StoreNursingChartRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,10 +28,7 @@ class StoreMedicationChartRequest extends FormRequest
             'prescriptionId'    => ['required', 'integer', 'exists:'.Prescription::class.',id'],
             'conId'             => ['required', 'integer', 'exists:'.Consultation::class.',id'],
             'visitId'           => ['required', 'integer', 'exists:'.Visit::class.',id'],
-            'dose'              => ['required', 'integer', 'min:1'],
-            'days'              => ['required', 'integer', 'min:1'],
-            'unit'              => ['required'],
-            'frequency'         => ['required']
+            'service'           => ['required']
         ];
     }
 }

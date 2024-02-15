@@ -5,12 +5,12 @@
 
 @include('admin.modals.stockDateModal', ['title' => 'Create Stock Date', 'isUpdate' => false, 'id' => 'newResourceStockDateModal'])
 @include('admin.modals.stockDateModal', ['title' => 'Update Stock Date', 'isUpdate' => true, 'id' => 'updateResourceStockDateModal'])
-{{-- @include('hmo.treatmentDetailsModal', ['title' => 'Treatment Details', 'isUpdate' => false, 'id' => 'treatmentDetailsModal'])
-@include('hmo.approvalModal', ['title' => 'Approve Medication/Treatment', 'isUpdate' => false, 'id' => 'approvalModal']) --}}
 @include('admin.modals.sponsorCategoryModal', ['title' => 'New Sponsor Category', 'isUpdate' => false, 'id' => 'newSponsorCategoryModal'])
 @include('admin.modals.sponsorCategoryModal', ['title' => 'Edit Sponsor Category', 'isUpdate' => true, 'id' => 'updateSponsorCategoryModal'])
 @include('admin.modals.resourceCategoryModal', ['title' => 'New Resource Category', 'isUpdate' => false, 'id' => 'newResourceCategoryModal'])
 @include('admin.modals.resourceCategoryModal', ['title' => 'Edit Resource Category', 'isUpdate' => true, 'id' => 'updateResourceCategoryModal'])
+@include('admin.modals.payMethodModal', ['title' => 'New Pay Method', 'isUpdate' => false, 'id' => 'newPayMethodModal'])
+@include('admin.modals.payMethodModal', ['title' => 'Edit Pay Method', 'isUpdate' => true, 'id' => 'editPayMethodModal'])
 
     <div class="container mt-5 bg-white">
         <div>
@@ -26,8 +26,8 @@
                     <button class="nav-link" id="nav-resourceCategory-tab" data-bs-toggle="tab" data-bs-target="#nav-resourceCategory"
                         type="button" role="tab" aria-controls="nav-resourceCategory" aria-selected="false">Resource Category</button>
 
-                    {{-- <button class="nav-link" id="nav-reporst-tab" data-bs-toggle="tab" data-bs-target="#nav-reports"
-                        type="button" role="tab" aria-controls="nav-reports" aria-selected="false">Reports</button> --}}
+                    <button class="nav-link" id="nav-payMethod-tab" data-bs-toggle="tab" data-bs-target="#nav-payMethod"
+                        type="button" role="tab" aria-controls="nav-payMethod" aria-selected="false">Pay Methods</button>
                 </div>
             </nav>
             <div class="tab-content px-2" id="nav-tabContent">
@@ -114,57 +114,32 @@
                     </div>
                    
                 </div>
-                <!-- reports table -->
-                {{-- <div class="tab-pane fade" id="nav-reports" role="tabpanel" aria-labelledby="nav-reports-tab"
+                <!-- pay method table -->
+                <div class="tab-pane fade" id="nav-payMethod" role="tabpanel" aria-labelledby="nav-payMethod-tab"
                     tabindex="0">
-                    <div class="py-4 justify-content-center">
-                        <table id="reportsTable" class="table table-hover align-center table-sm">
+
+                    <div class="text-start my-4">
+                        <button class="btn btn-primary" type="button" id="addPayMethodBtn">
+                            <i class="bi bi-plus-circle"></i>
+                            Pay Method
+                        </button>
+                    </div>
+                    <div class="container">
+                        <table id="payMethodTable" class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Patient</th>
-                                    <th>Sponsor</th>
-                                    <th>Doctor</th>
-                                    <th>Diagnosis</th>
-                                    <th>Status</th>
-                                    <th>Verified</th>
-                                    <th>Treatment</th>
-                                    <th>Bill-Sent</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Created By</th>
+                                    <th>Created At</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>09/10/2023</td>
-                                    <td>SH21/4012 Josephine Ene Ode</td>
-                                    <td>Axe Mansard</td>
-                                    <td>Dr Toby</td>
-                                    <td>F12Z-Acute Spundolosis</td>
-                                    <td>Out-Patient</td>
-                                    <td class="fst-italic">Pending</td>
-                                    <td class="fst-italic">No Code</td>
-                                    <td class="fst-italic">Not Sent</td>
-                                    <td>
-                                        <button class="btn btn-outline-primary" id="treatmentDetailsBtn">Sent</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>08/10/2023</td>
-                                    <td>SH21/1403 Shine Ewara</td>
-                                    <td>Health Partners</td>
-                                    <td>Dr Tony</td>
-                                    <td>F12Z-Severe Malaria</td>
-                                    <td>In-Patient</td>
-                                    <td class="fst-italic">Verified</td>
-                                    <td class="fst-italic">HP-45srt6if1</td>
-                                    <td class="fst-italic">Sent</td>
-                                    <td>
-                                        <button class="btn btn-outline-primary" id="treatmentDetailsBtn">Sent</button>
-                                    </td>
-                                </tr>
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
-                </div> --}}
+                   
+                </div>
             </div>
         </div>
     </div>

@@ -3,15 +3,15 @@ import { AncPatientReviewDetails, regularReviewDetails } from "./consultations"
 const visitDetails = (visitIteration, numberConverter, visit, viewer, isAnc) => {
                 const displayfunction =  isAnc ? AncPatientReviewDetails : regularReviewDetails
                 const consultations = visit.consultations.data
-                let [consultationIteration, consultationCount, consultationsDiv, isDoctorDone, closed, isHistory] = [0, 0, '', true, true, true]
+                let [consultationIteration, consultationCount, consultationsDiv, isDoctorDone, closed, isHistory] = [0, 0, '', 1, 1, 1]
                  
                 consultations.forEach(line => {
                     consultationIteration++
                     consultationIteration > 1 ? consultationCount++ : ''
                     consultationsDiv += displayfunction(consultationIteration, numberConverter, consultationCount, consultations.length, line, viewer, isDoctorDone, closed, isHistory);
                 })
-    
-    return `
+
+            return `
                 <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseVisitBtn" id="collapseVisit" data-bs-toggle="collapse" href="#collapseVisit${visitIteration}" role="button" aria-expanded="true" aria-controls="collapseVisit" data-gotovisit="#gotovisit${visitIteration}" data-id="${visit.id}" data-isanc="${isAnc}">
                     <span class="mx-2 fw-semibold">${visitIteration + numberConverter(visitIteration) + ' Visit' }</span>
                     <i class="bi bi-chevron-double-down text-warning fw-semibold"> </i>

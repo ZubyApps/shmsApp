@@ -40,4 +40,9 @@ class Consultation extends Model
     {
         return $this->hasMany(SurgeryNote::class);
     }
+
+    public function nursingCharts() 
+    {
+        return $this->hasMany(NursingChart::class);
+    }
 }

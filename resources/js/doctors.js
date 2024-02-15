@@ -4,7 +4,7 @@ import "@whoicd/icd11ect/style.css"
 import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, filterPatients, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
-import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getTreatmentTableByConsultation, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable} from "./tables/doctorstables"
+import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable, getOtherPrescriptionsByFilter} from "./tables/doctorstables"
 import { getAncVitalsignsChart, getVitalsignsChartByVisit } from "./charts/vitalsignsCharts"
 import $ from 'jquery';
 import { getbillingTableByVisit } from "./tables/billingTables"
@@ -36,7 +36,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const regularConsultationReviewDiv      = consultationReviewModal._element.querySelector('#consultationReviewDiv')
     const ancConsultationReviewDiv          = ancConsultationReviewModal._element.querySelector('#consultationReviewDiv')
     const visitHistoryDiv                   = consultationHistoryModal._element.querySelector('#visitHistoryDiv')
-    const consultationHistoryDiv            = consultationHistoryModal._element.querySelector('#consultationHistoryDiv')
+    // const consultationHistoryDiv            = consultationHistoryModal._element.querySelector('#consultationHistoryDiv')
     const knownClinicalInfoDiv              = document.querySelectorAll('#knownClinicalInfoDiv')
     const consultationDiv                   = document.querySelectorAll('#consultationDiv')
     const addResultDiv                      = addResultModal._element.querySelector('#resultDiv')
@@ -220,18 +220,17 @@ window.addEventListener('DOMContentLoaded', function () {
                 populatePatientSponsor(investigationAndManagementModal, historyBtn)
                 http.get(`/consultation/history/${patientId}`)
                 .then((response) => {
-                    if (response.status >= 200 || response.status <= 300) {
-                        const visits        = response.data.visits.data
-                        const patientBio    = response.data.bio
-                        openDoctorModals(consultationHistoryModal, moreHistoryBtn, patientBio)
-                        visits.forEach(line => {
-                            iteration++
-                            iteration > 1 ? count++ : ''
-                            displayVisits(visitHistoryDiv, visitDetails, iteration, getOrdinal, line, viewer, isAnc)
-                        })
-
-                        consultationHistoryModal.show()
-                    }
+                if (response.status >= 200 || response.status <= 300) {
+                    const visits        = response.data.visits.data
+                    const patientBio    = response.data.bio
+                    openDoctorModals(consultationHistoryModal, moreHistoryBtn, patientBio)
+                    visits.forEach(line => {
+                        iteration++
+                        iteration > 1 ? count++ : ''
+                        displayVisits(visitHistoryDiv, visitDetails, iteration, getOrdinal, line, viewer, isAnc)
+                    })
+                    consultationHistoryModal.show()
+                }
                 })
             }
 
@@ -511,6 +510,7 @@ window.addEventListener('DOMContentLoaded', function () {
             }
             const selectedOption = datalistEl.options.namedItem(input.value)
             if (selectedOption){
+                input.setAttribute('data-resourcevalues', [selectedOption.getAttribute('data-id'), selectedOption.getAttribute('data-cat')])
                 if (selectedOption.getAttribute('data-cat') == 'Medications'){
                     div.querySelector('.qty').classList.add('d-none')
                     div.querySelector('#quantity').value = ''
@@ -522,6 +522,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     div.querySelector('#quantity').value = 1
                     div.querySelector('.pres').classList.add('d-none')
                 }
+                input.value = selectedOption.getAttribute('data-plainname')
             }
         })        
     })
@@ -531,11 +532,11 @@ window.addEventListener('DOMContentLoaded', function () {
         addBtn.addEventListener('click', () => {
             const div = addBtn.parentElement.parentElement.parentElement
             addBtn.setAttribute('disabled', 'disabled')
-            const resourceValues = getSelectedResourceValues(div, div.querySelector('.resource'), div.querySelector(`#resourceList${div.dataset.div}`))
+            const [resource, resourceCategory] = div.querySelector('.resource').getAttribute('data-resourcevalues').split(',')//getSelectedResourceValues(div, div.querySelector('.resource'), div.querySelector(`#resourceList${div.dataset.div}`))
             const [conId, visitId, divPrescriptionTableId, chartable] = [addBtn.dataset.conid, addBtn.dataset.visitid, '#'+div.querySelector('.prescriptionTable').id, div.querySelector('#chartable').checked]
-            let data = {...getDivData(div), ...resourceValues, conId, visitId, chartable}
+            let data = {...getDivData(div), resource, resourceCategory, conId, visitId, chartable}
             
-            http.post(`prescription/${data.resource}`, {...data}, {"html": div})
+            http.post(`prescription/${resource}`, {...data}, {"html": div})
             .then((response) => {
                 if (response.status >= 200 || response.status <= 300) {
                     new Toast(div.querySelector('#saveInvestigationAndManagementToast'), {delay:2000}).show()
@@ -550,6 +551,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 }
                 if ($.fn.DataTable.isDataTable( addBtn.dataset?.treatmenttable )){
                     $(addBtn.dataset?.treatmenttable).dataTable().fnDraw()
+                }
+                if ($.fn.DataTable.isDataTable( addBtn.dataset?.otherprescriptionstable )){
+                    $(addBtn.dataset?.otherprescriptionstable).dataTable().fnDraw()
                 }
                 if ($.fn.DataTable.isDataTable( '#billingTable' )){
                     $('#billingTable').dataTable().fnDraw()
@@ -614,15 +618,18 @@ window.addEventListener('DOMContentLoaded', function () {
             const viewer                                = 'doctor'
             if (collapseConsultationBtn) {
                 const gotoDiv = document.querySelector(collapseConsultationBtn.getAttribute('data-goto'))
-
-                const [investigationTableId, treatmentTableId]  = [gotoDiv.querySelector('.investigationTable').id, gotoDiv.querySelector('.treatmentTable').id] 
-                const conId                                     = gotoDiv.querySelector('.investigationTable').dataset.id
+                const [investigationTableId, treatmentTableId, otherPrescriptionsTableId]  = [gotoDiv.querySelector('.investigationTable').id, gotoDiv.querySelector('.treatmentTable').id, gotoDiv.querySelector('.otherPrescriptionsTable').id] 
+                const conId   = gotoDiv.querySelector('.investigationTable').dataset.id
+                const isHistory = +collapseConsultationBtn.getAttribute('data-ishistory')
     
                 if ($.fn.DataTable.isDataTable( '#'+investigationTableId )){
                     $('#'+investigationTableId).dataTable().fnDestroy()
                 }
                 if ($.fn.DataTable.isDataTable( '#'+treatmentTableId )){
                     $('#'+treatmentTableId).dataTable().fnDestroy()
+                }
+                if ($.fn.DataTable.isDataTable('#' + otherPrescriptionsTableId)) {
+                    $('#' + otherPrescriptionsTableId).dataTable().fnDestroy()
                 }
                 if ($.fn.DataTable.isDataTable( '#deliveryNoteTable'+conId )){
                     $('#deliveryNoteTable'+conId).dataTable().fnDestroy()
@@ -635,7 +642,8 @@ window.addEventListener('DOMContentLoaded', function () {
                     location.href = collapseConsultationBtn.getAttribute('data-goto')
                     window.history.replaceState({}, document.title, "/" + "doctors" )
                     getLabTableByConsultation(investigationTableId, consultationReviewModal._element, 'lab', conId, '')
-                    getTreatmentTableByConsultation(treatmentTableId, conId, consultationReviewModal._element)
+                    getMedicationsByFilter(treatmentTableId, conId, consultationReviewModal._element)
+                    getOtherPrescriptionsByFilter(otherPrescriptionsTableId, conId, consultationReviewModal._element)
                     getDeliveryNoteTable('deliveryNoteTable'+conId, conId, false)
                     getSurgeryNoteTable('surgeryNoteTable'+conId, conId, true)
                 }
@@ -675,6 +683,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 btn.setAttribute('data-last', updateResourceListBtn.dataset.last)
                 btn.setAttribute('data-investigationtable', '#investigationTable'+conId)
                 btn.setAttribute('data-treatmenttable', '#treatmentTable'+conId)
+                btn.setAttribute('data-otherprescriptionstable', '#otherPrescriptionsTable'+conId)
                 getPrescriptionTableByConsultation('prescriptionTableConReview', conId, investigationAndManagementModal._element)
                 investigationAndManagementModal.show()
                 setTimeout(()=> {updateResourceListBtn.removeAttribute('disabled')}, 1000)
@@ -886,6 +895,7 @@ function displayResourceList(datalistEl, data) {
         option.setAttribute('data-id', line.id)
         option.setAttribute('name', line.name)
         option.setAttribute('data-cat', line.category)
+        option.setAttribute('data-plainname', line.plainName)
 
         !datalistEl.options.namedItem(line.name) ? datalistEl.appendChild(option) : ''
     })
@@ -923,4 +933,6 @@ function getSelectedResourceValues(modal, inputEl, datalistEl) {
         } else {
             return ""
         }
-    }
+}
+
+export {openDoctorModals}
