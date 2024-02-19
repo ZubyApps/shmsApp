@@ -170,10 +170,12 @@ class DoctorService
                 'patient'           => $visit->patient->patientId(),
                 'ancRegId'          => $visit->patient->antenatalRegisteration?->id,
                 'age'               => $visit->patient->age(),
+                'sex'               => $visit->patient->sex,
                 'doctor'            => $visit->doctor->username,
                 'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
+                'conId'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->id,
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->category_name,
                 'vitalSigns'        => $visit->vitalSigns->count(),

@@ -9,6 +9,7 @@
 @include('investigations.addResultModal', ['title' => 'Update Result', 'isUpdate' => true, 'id' => 'updateResultModal'])
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
 @include('extras.bulkRequestModal', ['title' => 'Bulk Request', 'dept' => 'Lab', 'isPharmacy' => false, 'id' => 'bulkRequestModal'])
+@include('extras.labResultModal', ['title' => 'Lab Result', 'dept' => 'Lab', 'isPharmacy' => false, 'id' => 'labResultModal'])
 
 
     <div class="container p-1 mt-5 bg-white">

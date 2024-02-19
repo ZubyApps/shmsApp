@@ -156,6 +156,11 @@ class User extends Authenticatable
         return $this->hasMany(PayMethod::class);
     }
 
+    public function medicalReports() 
+    {
+        return $this->hasMany(MedicalReport::class);
+    }
+
     public function nameInFull()
     {
         return $this->firstname.' '.$this->middlename.' '.$this->lastname;

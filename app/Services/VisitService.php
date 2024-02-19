@@ -242,9 +242,9 @@ class VisitService
     public function discharge(Request $data, Visit $visit, User $user)
     {
         $visit->update([
-            "discharge_reason"  => $data->reason,
-            "discharge_remark"  => $data->remark,
-            "doctor_done_by"    => $user->id
+            "discharge_reason"  => $data->reason ? $data->reason : null,
+            "discharge_remark"  => $data->reason ? $data->remark : null,
+            "doctor_done_by"    => $data->reason ? $user->id : null,
         ]);
 
         return $visit;

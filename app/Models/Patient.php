@@ -41,14 +41,29 @@ class Patient extends Model
         return $this->hasOne(AntenatalRegisteration::class);
     }
 
+    public function medicalReports() 
+    {
+        return $this->hasMany(MedicalReport::class);
+    }
+
     public function patientId()
     {
         return $this->card_no.' '.$this->first_name.' '.$this->middle_name.' '.$this->last_name;
     }
 
+    public function fullName()
+    {
+        return $this->first_name.' '.$this->middle_name.' '.$this->last_name;
+    }
+
     public function age()
     {
         return str_replace(['a', 'g', 'o'], '', (new Carbon($this->date_of_birth))->diffForHumans(['other' => null, 'parts' => 2, 'short' => true]), );
+    }
+
+    public function identificationMarker()
+    {
+        return (int)str_replace(['SH'], '', $this->card_no) * $this->id;
     }
 
     public function allBills()

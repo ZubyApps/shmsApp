@@ -1,9 +1,10 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, clearValidationErrors, resetFocusEndofLine} from "./helpers"
+import { clearDivValues, getDivData, clearValidationErrors, resetFocusEndofLine} from "./helpers"
 import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill } from "./tables/billingTables";
 import { getOutpatientsInvestigationTable } from "./tables/investigationTables";
+import html2pdf  from "html2pdf.js"
 
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -19,6 +20,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const inPatientsTab                 = document.querySelector('#nav-inPatients-tab')
     const ancPatientsTab                = document.querySelector('#nav-ancPatients-tab')
     const changeBillSpan                = billModal._element.querySelector('.changeBill')
+    const downloadBillSummaryBtn        = billModal._element.querySelector('#downloadBillSummaryBtn')
+    const billSummaryBody               = billModal._element.querySelector('.billSummaryBody')
 
 
     let inPatientsVisitTable, ancPatientsVisitTable
@@ -256,5 +259,18 @@ window.addEventListener('DOMContentLoaded', function () {
         outPatientsVisitTable.draw()
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+    })
+
+    downloadBillSummaryBtn.addEventListener('click', function () {
+        const patient = billSummaryBody.querySelector('.patient').innerHTML
+
+        var opt = {
+        margin:       0.3,
+        filename:     patient + "'s Bill.pdf",
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 3 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(billSummaryBody).save()
     })
 })

@@ -189,7 +189,7 @@ const getExpirationStockTable = (tableId, filter) => {
             {data: row => row.reOrderLevel +' '+ row.description},
             {data: "sellingPrice"},
             {data: row => () => {
-                if (row.expiring[0] < 2) {
+                if (row.flag) {
                     return `<span class="text-danger fw-semibold">${row.expiring}</span>`
                     }
                 return row.expiring
@@ -221,7 +221,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
                 data: 'qtyApproved',
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
-                    <span class="${ row.qtyDispensed || !+row.access ? '' : 'approveRequestBtn'} btn ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${data ? data  : 'Approve'}</span>
+                    <span class="${ row.qtyDispensed || !+row.access ? '' : 'approveRequestBtn'} btn ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${ data ?? (urlSuffix !== 'pharmacy' ? 'Pendind' : 'Approve')}</span>
                     <input class="ms-1 form-control qtyApprovedInput d-none" id="qtyApprovedInput" value="${data ?? ''}">
                 </div>
                 `}
@@ -231,7 +231,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
                 data: 'qtyDispensed',
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
-                    <span class="btn ${ row.qtyApproved && !data ? 'dispenseQtyBtn' : ''} ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${data ? data : 'Dispense'}</span>
+                    <span class="btn ${ row.qtyApproved && !data ? 'dispenseQtyBtn' : ''} ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${data ?? (urlSuffix !== 'pharmacy' ? 'Pendind' : 'Dispense')}</span>
                     <input class="ms-1 form-control qtyDispensedInput d-none" id="qtyDispensedInput" value="${data ?? ''}">
                 </div>
                 `}

@@ -15,6 +15,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const updateResultModal         = new Modal(document.getElementById('updateResultModal'))
     const investigationsModal       = new Modal(document.getElementById('investigationsModal'))
     const bulkRequestModal          = new Modal(document.getElementById('bulkRequestModal'))
+    const labResultModal            = new Modal(document.getElementById('labResultModal'))
     const investigationsList        = new Offcanvas(document.getElementById('offcanvasInvestigations'))
 
     // const treatmentDiv              = document.querySelector('#treatmentDiv')
@@ -34,6 +35,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const inPatientsTab             = document.querySelector('#nav-inPatients-tab')
     const ancPatientsTab            = document.querySelector('#nav-ancPatients-tab')
     const bulkRequestsTab           = document.querySelector('#nav-bulkRequests-tab')
+
+    const testLabel                 = labResultModal._element.querySelector('.testLabel')
 
      // Auto textarea adjustment
      const textareaHeight = 90;
@@ -178,9 +181,10 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#treatmentDiv, #investigationModalDiv').forEach(div => {
         div.addEventListener('click', function (event) {
             const collapseConsultationBtn  = event.target.closest('.collapseConsultationBtn')
-            const addResultBtn = event.target.closest('#addResultBtn')
-            const updateResultBtn = event.target.closest('#updateResultBtn')
-            const deleteResultBtn = event.target.closest('.deleteResultBtn')
+            const addResultBtn             = event.target.closest('#addResultBtn')
+            const updateResultBtn          = event.target.closest('#updateResultBtn')
+            const downloadResultBtn        = event.target.closest('#downloadResultBtn')
+            const deleteResultBtn          = event.target.closest('.deleteResultBtn')
             const viewer = 'lab'
     
             if (collapseConsultationBtn) {
@@ -226,6 +230,14 @@ window.addEventListener('DOMContentLoaded', function () {
                 })
                 investigationsModal.hide()
             }
+
+            if (downloadResultBtn) {
+                labResultModal._element.querySelector('#test').innerHTML = downloadResultBtn.getAttribute('data-investigation')
+                labResultModal._element.querySelector('#patientsId').innerHTML = downloadResultBtn.getAttribute('data-patient')
+                labResultModal._element.querySelector('#result').innerHTML = downloadResultBtn.getAttribute('data-result')
+                labResultModal._element.querySelector('#StaffFullName').innerHTML = downloadResultBtn.getAttribute('data-stafffullname')
+                labResultModal.show()
+            }
     
             if (deleteResultBtn){
                 deleteResultBtn.setAttribute('disabled', 'disabled')
@@ -249,6 +261,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 }
             }
         })
+    })
+
+    testLabel.addEventListener('click', function () {
+        console.log(testLabel)
+        testLabel.setAttribute('contentEditable', 'true')
     })
 
     createResultBtn.addEventListener('click', function () {
@@ -334,7 +351,7 @@ window.addEventListener('DOMContentLoaded', function () {
         http.post(`/bulkrequests/${itemId}`, getDivData(bulkRequestModal._element), {"html": bulkRequestModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300) {
-                clearDivValues(bulkRequestModal._element)
+                clearDivValues(bulkRequestModal._element.querySelector('.valuesDiv'))
                 clearValidationErrors(bulkRequestModal._element)
             }
             requestBulkBtn.removeAttribute('disabled')

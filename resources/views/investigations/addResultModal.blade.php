@@ -34,7 +34,17 @@
                         <div class="row">
                             <x-form-div class="col-xl-12">
                                 <x-input-span>Sample</x-input-span>
-                                <x-form-input name="sample"> </x-form-input>
+                                <select class="form-select form-select-md" name="sample" id="sample">
+                                    <option value="Blood">Blood</option>
+                                    <option value="Urine">Urine</option>
+                                    <option value="Stool">Stool</option>
+                                    <option value="Sputum">Sputum</option>
+                                    <option value="Skin">Skin</option>
+                                    <option value="Semen">Semen</option>
+                                    <option value="Tissue">Tissue</option>
+                                    <option value="Hair">Hair</option>
+                                    <option value="Other">Other</option>
+                                </select>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="statusLabel">Result/Report<x-required-span /></x-input-span>

@@ -33,10 +33,10 @@ class BulkRequestService
                 'selling_price'     => $resource->selling_price * $data->quantity,
             ]);
 
-            if ($bulkRequest) {
-                $resource->stock_level = $resource->stock_level - $data->quantity;
-                $resource->save();
-            }
+            // if ($bulkRequest) {
+            //     $resource->stock_level = $resource->stock_level - $data->quantity;
+            //     $resource->save();
+            // }
 
             return $bulkRequest;
         });
@@ -162,6 +162,20 @@ class BulkRequestService
                 'dispensed'         => $data->qty ? new Carbon() : null,
                 'dispensed_by'      => $data->qty ? $user->id : null,
             ]);
+        });
+    }
+
+    public function processDeletion(BulkRequest $bulkRequest)
+    {
+        return DB::transaction(function () use( $bulkRequest) {
+            if ($bulkRequest->qty_dispensed){
+                $resource = $bulkRequest->resource;
+                $resource->stock_level = $resource->stock_level + $bulkRequest->qty_dispensed;
+    
+                $resource->save();
+            }
+    
+            return $bulkRequest->destroy($bulkRequest->id);
         });
     }
 }

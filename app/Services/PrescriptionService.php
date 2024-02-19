@@ -140,6 +140,7 @@ class PrescriptionService
                 'result'            => $prescription->result,
                 'sent'              => $prescription->result_date ? (new Carbon($prescription->result_at))->format('d/m/y g:ia') : '',
                 'staff'             => $prescription->resultBy->username ?? '',
+                'staffFullName'     => $prescription->resultBy?->nameInFull() ?? '',
                 'doc'               => $prescription->doc,
             ];
          };

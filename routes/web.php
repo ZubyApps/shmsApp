@@ -12,6 +12,7 @@ use App\Http\Controllers\DeliveryNoteController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HmoController;
 use App\Http\Controllers\InvestigationController;
+use App\Http\Controllers\MedicalReportController;
 use App\Http\Controllers\MedicationChartController;
 use App\Http\Controllers\NurseController;
 use App\Http\Controllers\NursingChartController;
@@ -298,7 +299,7 @@ Route::middleware('auth')->group(function () {
         Route::get('load/details', [SurgeryNoteController::class, 'loadSurgeryNoteTable']);
         Route::get('/{surgeryNote}', [SurgeryNoteController::class, 'edit']);
         Route::patch('/{surgeryNote}', [SurgeryNoteController::class, 'update']);
-        Route::delete('', [SurgeryNoteController::class, 'destroy']);
+        Route::delete('/{surgeryNote}', [SurgeryNoteController::class, 'destroy']);
     });
 
     Route::prefix('deliverynote')->group(function () {
@@ -306,7 +307,7 @@ Route::middleware('auth')->group(function () {
         Route::get('load/details', [DeliveryNoteController::class, 'loadDeliveryNoteTable']);
         Route::get('/{deliveryNote}', [DeliveryNoteController::class, 'edit']);
         Route::patch('/{deliveryNote}', [DeliveryNoteController::class, 'update']);
-        Route::delete('', [DeliveryNoteController::class, 'destroy']);
+        Route::delete('/{deliveryNote}', [DeliveryNoteController::class, 'destroy']);
     });
 
     Route::prefix('ancregisteration')->group(function () {
@@ -331,6 +332,15 @@ Route::middleware('auth')->group(function () {
         Route::patch('/approve/{bulkRequest}', [BulkRequestController::class, 'toggleApproveBulkRequest']);
         Route::patch('/dispense/{bulkRequest}', [BulkRequestController::class, 'dispenseBulkRequest']);
         Route::delete('/{bulkRequest}', [BulkRequestController::class, 'destroy']);
+    });
+
+    Route::prefix('medicalreports')->group(function () {
+        Route::post('', [MedicalReportController::class, 'store']);
+        Route::get('load', [MedicalReportController::class, 'loadMedicalReportTable']);
+        Route::patch('/{medicalReport}', [MedicalReportController::class, 'update']);
+        Route::delete('/{medicalReport}', [MedicalReportController::class, 'destroy']);
+        Route::get('/{medicalReport}', [MedicalReportController::class, 'edit']);
+        Route::get('display/{medicalReport}', [MedicalReportController::class, 'displayReport']);
     });
 });
 

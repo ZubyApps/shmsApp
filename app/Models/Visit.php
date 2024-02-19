@@ -130,6 +130,11 @@ class Visit extends Model
         return $this->hasMany(NursingChart::class);
     }
 
+    public function medicalReports() 
+    {
+        return $this->hasMany(MedicalReport::class);
+    }
+
     public function totalBills()
     {
         $totalBill = 0;

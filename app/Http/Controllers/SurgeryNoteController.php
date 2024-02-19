@@ -79,6 +79,6 @@ class SurgeryNoteController extends Controller
      */
     public function destroy(SurgeryNote $surgeryNote)
     {
-        //
+        return $surgeryNote->destroy($surgeryNote->id);
     }
 }

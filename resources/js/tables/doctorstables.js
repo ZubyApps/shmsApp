@@ -2,7 +2,7 @@ import jQuery from "jquery";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, displayPaystatus, histroyBtn, prescriptionStatusContorller, reviewBtn, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, displayPaystatus, histroyBtn, prescriptionOnLatestConsultation, prescriptionStatusContorller, reviewBtn, sponsorAndPayPercent } from "../helpers";
 
 const getOutpatientsVisitTable = (tableId, filter) => {
     return new DataTable(tableId, {
@@ -19,12 +19,12 @@ const getOutpatientsVisitTable = (tableId, filter) => {
             {data: "came"},
             {data: row => histroyBtn(row)},
             {data: "doctor"},
-            {data: "diagnosis"},
+            {data: row => prescriptionOnLatestConsultation(row)},
             {data: row => sponsorAndPayPercent(row)},
             {data: row =>  `
                         <div class="d-flex justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                             ${row.labPrescribed}<i class="bi bi-eyedropper"></i>${row.labDone}
+                                ${row.labPrescribed}<i class="bi bi-eyedropper"></i>${row.labDone}
                             </button>
                         </div>`                
             },
@@ -61,7 +61,7 @@ const getInpatientsVisitTable = (tableId, filter) => {
             {data: "came"},
             {data: row => histroyBtn(row)},
             {data: "doctor"},
-            {data: "diagnosis"},
+            {data: row => prescriptionOnLatestConsultation(row)},
             {data: row => sponsorAndPayPercent(row)},
             {data: row =>  `
                         <div class="d-flex flex- justify-content-center">
@@ -103,7 +103,7 @@ const getAncPatientsVisitTable = (tableId, filter) => {
             {data: "came"},
             {data: row => histroyBtn(row)},
             {data: "doctor"},
-            {data: "diagnosis"},
+            {data: row => prescriptionOnLatestConsultation(row)},
             {data: row => sponsorAndPayPercent(row)},
             {data: row =>  `
                         <div class="d-flex flex- justify-content-center">
@@ -364,6 +364,11 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                                 <li  class="${!row.sent ? 'd-none' : ''}">
                                     <a class="btn btn-outline-primary dropdown-item updateResultBtn" id="updateResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-table="${tableId}" title="update result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-pencil-fill"></i> Update Result
+                                    </a>
+                                </li>
+                                <li  class="${!row.sent ? 'd-none' : ''}">
+                                    <a class="btn btn-outline-primary dropdown-item downloadResultBtn" id="downloadResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-result="${ row.result }" data-table="${tableId}" title="download for print" data-id="${ row.id}" data-stafffullname="${ row.staffFullName}">
+                                        <i class="bi bi-download"></i> Download for Print
                                     </a>
                                 </li>
                                 <li>
@@ -687,4 +692,48 @@ const getSurgeryNoteTable = (tableId, conId, view) => {
     });
 }
 
-export {getOutpatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getSurgeryNoteTable}
+const getMedicalReportTable = (tableId, visitId, modal) => {
+    const medicalReportTable = new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:   {url: '/medicalreports/load', data: {
+            'visitId': visitId,
+        }},
+        orderMulti: true,
+        searching:true,
+        lengthChange: true,
+        language: {
+            emptyTable: 'No medical report'
+        },
+        columns: [
+            {data: "date"},
+            {data: "type"},
+            {data: "doctor"},
+            {data: "recipientsAddress"},
+            {data: "requestedBy"},
+            {data: row => function () {
+                return `
+                <div class="d-flex flex- ${row.closed ? 'd-none' : ''}">
+                    <button class=" btn btn-outline-primary viewMedicalReportBtn tooltip-test" title="view" id="viewMedicalReportBtn" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-zoom-in"></i>
+                    </button>
+                    <button class="ms-1 btn btn-outline-primary editMedicalReportBtn tooltip-test" title="update" id="editMedicalReportBtn" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button type="submit" class="ms-1 btn btn-outline-primary deleteMedicalReportBtn tooltip-test" title="delete" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+            `
+                }
+            },
+        ]
+    });
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        medicalReportTable.destroy()
+    })
+
+    return medicalReportTable
+}
+
+export {getOutpatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getSurgeryNoteTable, getMedicalReportTable}

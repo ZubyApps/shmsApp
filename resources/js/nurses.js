@@ -485,7 +485,7 @@ window.addEventListener('DOMContentLoaded', function () {
         http.post(`/bulkrequests/${itemId}`, getDivData(bulkRequestModal._element), {"html": bulkRequestModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300) {
-                clearDivValues(bulkRequestModal._element)
+                clearDivValues(bulkRequestModal._element.querySelector('.valuesDiv'))
                 clearValidationErrors(bulkRequestModal._element)
             }
             requestBulkBtn.removeAttribute('disabled')

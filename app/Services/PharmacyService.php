@@ -284,7 +284,7 @@ class PharmacyService
 
     public function getExpirationStock(DataTableQueryParams $params, $data)
     {
-        $orderBy    = 'name';
+        $orderBy    = 'expiry_date';
         $orderDir   =  'asc';
 
         if (! empty($params->searchTerm)) {
@@ -328,7 +328,8 @@ class PharmacyService
                 'sellingPrice'          => $resource->selling_price,
                 'expiring'              => $resource->expiry_date ? $this->helperService->twoPartDiffInTimeToCome($resource->expiry_date) : '',
                 'prescriptionFrequency' => $resource->prescriptions->where('created_at', '>', (new Carbon())->subDays(30))->count(),
-                'dispenseFrequency'     => $resource->prescriptions->where('dispense_date', '>', (new Carbon())->subDays(30))->count()
+                'dispenseFrequency'     => $resource->prescriptions->where('dispense_date', '>', (new Carbon())->subDays(30))->count(),
+                'flag'                  => $resource->expiry_date ? $this->helperService->flagExpired($resource->expiry_date) : '',
             ];
         };
     }

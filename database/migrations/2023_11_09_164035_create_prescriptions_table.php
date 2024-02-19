@@ -46,7 +46,7 @@ return new class extends Migration
             $table->boolean('discontinued')->default(false);
             $table->foreignIdFor(User::class, 'discontinued_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(Resource::class)->constrained()->restrictOnDelete();
-            $table->foreignIdFor(Consultation::class)->constrained()->restrictOnDelete();
+            $table->foreignIdFor(Consultation::class)->nullable()->constrained()->restrictOnDelete();
             $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();

@@ -1,28 +1,21 @@
 <div class="container">
     <div class="modal fade " id="{{ $id }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fs-4 text-primary">{{ $title }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body billSummaryBody overflow-auto">
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
                     <header class="d-flex flex-wrap justify-content-between align-items-top mb-4">
-                        {{-- <div class="">
-                            <img src="" width="128" height="128" alt="Sandra Hospital Logo"/>
-                        </div> --}}
                         <div class="text-left p-0">
                             <h4 class="">Sandra Hospital Makurdi</h4>
-                            <p>
-                                {{-- No. 24 J.S Tarka Way
-                                <br>
-                                Wadata, Makurdi
-                                <br>
-                                Benue State
-                                <br>
-                                E-mail: sandrahospital_mkd@yahoo.com --}}
-                                {{-- <br> --}}
-                                {{ date('g:ia F j, Y') }}</p>
+                            <p>{{ date('g:ia F j, Y') }}</p>
                         </div>
                     </header>
 
@@ -35,7 +28,7 @@
                             <span class="patient"></span>
                         </x-form-div>
                     </div>
-                    <div class="mb-2 form-control">
+                    <div class="mb-2 form-control overflow-auto">
                         <X-form-div class="mt-3">
                             <table id="billTable" class="table table-sm billTable">
                                 <thead>
@@ -82,8 +75,8 @@
                         <i class="bi bi-x-circle me-1"></i>
                         Close
                     </button>
-                    <button type="button" id="requestBulkBtn" class="btn btn-primary">
-                        <i class="bi bi-check-circle me-1"></i>
+                    <button type="button" id="downloadBillSummaryBtn" class="btn btn-primary">
+                        <i class="bi bi-download"></i>
                         Download
                     </button>
                 </div>

@@ -375,7 +375,6 @@ window.addEventListener('DOMContentLoaded', function () {
     requestBulkBtn.addEventListener('click', function () {
         requestBulkBtn.setAttribute('disabled', 'disabled')
         const itemId =  getDatalistOptionId(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList`))
-        console.log(itemId)
         if (!itemId) {
             clearValidationErrors(bulkRequestModal._element)
             const message = {"item": ["Please pick an item from the list"]}               

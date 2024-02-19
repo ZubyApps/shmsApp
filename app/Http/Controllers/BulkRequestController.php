@@ -83,6 +83,6 @@ class BulkRequestController extends Controller
      */
     public function destroy(BulkRequest $bulkRequest)
     {
-        return $bulkRequest->destroy($bulkRequest->id);
+        return $this->bulkRequestService->processDeletion($bulkRequest);
     }
 }

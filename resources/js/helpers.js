@@ -177,6 +177,31 @@ function openModals(modal, button, {id, ...data}) {
     modal.show()
 }
 
+function openMedicalReportModal(modal, button, {id, ...data}) {
+    for (let name in data) {
+
+        const nameInput = modal._element.querySelector(`[name="${ name }"]`)
+        if (name === 'report' || name === 'recipientsAddress'){
+            nameInput.innerHTML = data[name]
+        }
+        nameInput.value = data[name]
+    }
+    
+    button.setAttribute('data-id', id)
+    modal.show()
+}
+
+function displayMedicalReportModal(modal, {...data}) {
+    for (let name in data) {
+
+        const nameInput = modal._element.querySelector(`[name="${ name }"]`)
+        nameInput.innerHTML = data[name]
+    }
+    
+    
+    modal.show()
+}
+
 function doctorsModalClosingTasks(event, modal, textareaHeight){
     if (!confirm('Have you saved? You will loose all unsaved data')) {
         event.preventDefault()
@@ -250,7 +275,7 @@ const prescriptionStatusContorller = (row, tableId) => {
             </span>`      
 }
 
-const reviewBtn = (row) => {
+const reviewBtn1 = (row) => {
     return `
     <div class="dropdown">
         <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown">
@@ -265,6 +290,35 @@ const reviewBtn = (row) => {
                     More
                 </a>
                 <a class="dropdown-item btn tooltip-test" title="${row.closed ? 'open?': 'close?'}"  data-id="${ row.id }" id="${row.closed ? 'openVisitBtn' : 'closeVisitBtn'}">
+                ${row.closed ? 'Open? <i class="bi bi-unlock-fill"></i>': 'Close? <i class="bi bi-lock-fill"></i>'}
+                </a>
+            </li>
+        </ul>
+    </div>
+    `
+}
+
+const reviewBtn = (row) => {
+    return `
+    <div class="dropdown">
+        <a class="btn btn-outline-primary tooltip-test text-decoration-none " title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown" data-bs-auto-close='outside'>
+            More${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
+        </a>
+            <ul class="dropdown-menu">
+            <li>
+                <a class=" btn btn-outline-primary dropdown-item consultationReviewBtn tooltip-test" title="details" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">
+                    Review
+                </a>
+                <li class="dropdown dropend">
+                    <a class="dropdown-item btn btn-outline-primary dropdown-toggle patientsBillBtn btn tooltip-test" title="patient's bill" data-bs-auto-close='outside' data-bs-toggle="dropdown">
+                        More
+                    </a>
+                    <ul class="dropdown-menu">
+                        <a class="dropdown-item btn btn-outline-primary medicalReportBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-age="${ row.age }" data-sex="${ row.sex }">Report/Refer/Result</a>
+                        <a class="dropdown-item btn btn-outline-primary dischargedBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">${row.discharged ? 'Patient Discharged' : 'Discharge' }</a>
+                    </ul>
+                </li>
+                <a class="dropdown-item btn btn-outline-primary tooltip-test" title="${row.closed ? 'open?': 'close?'}"  data-id="${ row.id }" id="${row.closed ? 'openVisitBtn' : 'closeVisitBtn'}">
                 ${row.closed ? 'Open? <i class="bi bi-unlock-fill"></i>': 'Close? <i class="bi bi-lock-fill"></i>'}
                 </a>
             </li>
@@ -325,7 +379,7 @@ const admissionStatus = (row) => {
     `<div class="d-flex flex-">
         <button class="d-flex flex- btn fw-bold text-primary tooltip-test dischargedBtn" title="Inpatient" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">
         <i class="bi bi-hospital-fill"></i>
-        ${row.dicharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged"></i>` : ''}
+        ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged"></i>` : ''}
         </button>
     </div>` :
     `<div class="d-flex flex-">
@@ -334,6 +388,12 @@ const admissionStatus = (row) => {
         ${row.reason ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged"></i>` : ''}
         </button>
     </div>`
+}
+
+const prescriptionOnLatestConsultation = (row) => {
+    return `<div class="d-flex flex-">
+                <span class="btn" id="updateResourceListBtn" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">${row.diagnosis}</span>
+            </div>`
 }
 
 const bmiCalculator = (elements) => {
@@ -470,4 +530,4 @@ const displayItemsList = (datalistEl, data, optionName) => {
     })
 }
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff}    
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation}
