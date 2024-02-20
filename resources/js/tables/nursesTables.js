@@ -92,19 +92,17 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
             },
             {data: row => function () {
                 const chartables = row.otherChartables
-                if (row.patientType == 'ANC') {
+                const isAnc = row.patientType == 'ANC'
                         return `
                         <div class="d-flex flex" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }" data-patientid="${ row.patientId }" data-ancregid="${ row.ancRegId }">
-                                ${ row.ancRegId ? '<i class="btn btn-outline-primary bi bi-check-circle-fill tooltip-test" title="view" id="viewRegisterationBtn"></i> <i class="ms-1 btn btn-outline-primary bi bi-pencil-fill tooltip-test" title="edit" id="editRegisterationBtn"></i>': '<i class="btn btn-outline-primary bi bi-plus-square ancRegisterationBtn tooltip-test" title="register"></i>' }
+                                <button class=" btn btn${chartables < 1 ? '-outline' : ''}-primary viewOtherPrescriptionsBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }">
+                                    ${(chartables < 1 ? '' : chartables) + ' ' + row.doneCount + '/' + row.scheduleCount}
+                                </button>
+                                ${ row.ancRegId ? 
+                                    `<button class="${isAnc ? '' : 'd-none'} ms-1 btn btn-outline-primary bi bi-check-circle-fill tooltip-test" title="view" id="viewRegisterationBtn"></button> <button class="${isAnc ? '' : 'd-none'} ms-1 btn btn-outline-primary bi bi-pencil-fill tooltip-test" title="edit" id="editRegisterationBtn"></button>`: 
+                                    `<button class="${isAnc ? '' : 'd-none'} ms-1 btn btn-outline-primary bi bi-plus-square ancRegisterationBtn tooltip-test" title="register"></button>` }
                         </div>`
-                    } else {
-                        return `
-                        <div class="d-flex flex">
-                            <button class=" btn btn${chartables < 1 ? '-outline' : ''}-primary viewOtherPrescriptionsBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }">
-                                ${(chartables < 1 ? '' : chartables) + ' ' + row.doneCount + '/' + row.scheduleCount}
-                            </button>
-                        </div>`
-                    }
+                    // }
                 }
             },
             {data: row => function () {
@@ -112,14 +110,14 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                     if (row.ancVitalSigns < 1){
                         return `
                             <div class="d-flex flex-">
-                                <button class=" btn btn-outline-${row.ancRegId ? 'primary ancVitalSignsBtn' : 'secondary'}  tooltip-test" title="${row.ancRegId ? 'add vital signs' : 'no anc registeration'}" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-ancregid="${row.ancRegId}" id="ancVitalSignsBtn">
+                                <button class=" btn btn-outline-${row.ancRegId ? 'primary ancVitalSignsBtn' : 'secondary'}  tooltip-test" title="${row.ancRegId ? 'add vital signs' : 'no anc registeration'}" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-ancregid="${row.ancRegId}" data-patienttype="${ row.patientType }" id="ancVitalSignsBtn">
                                 ${ row.ancRegId ? '<i class="bi bi-plus-square-fill"></i>' :'<i class="bi bi-x-square-fill"></i>'}
                                 </button>
                             </div>`
                         } else {
                             return `
                             <div class="d-flex flex-">
-                                <button class=" btn btn-outline-primary ancVitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" id="ancVitalSignsBtn">
+                                <button class=" btn btn-outline-primary ancVitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-patienttype="${ row.patientType }" id="ancVitalSignsBtn">
                                 <i class="bi bi-check-circle-fill">${row.ancVitalSigns}</i>
                                 </button>
                             </div>`

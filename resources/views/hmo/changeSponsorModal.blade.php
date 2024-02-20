@@ -31,7 +31,7 @@
                     <div class="mt-4 form-control" id="sponsorDetailsDiv">
                         <x-form-span>Fill Information</x-form-span>
                         <div class="row">
-                            <x-form-div>
+                            <x-form-div class="col-xl-6">
                                 <x-input-span id="sponsorCategoryLabel">Sponsor Category<x-required-span /></x-input-span>
                                 <select class="form-select form-select-md" name="sponsorCategory" id="newSponsorCategory">
                                     <option value="">Select Category</option>
@@ -40,7 +40,7 @@
                                     @endforeach
                                 </select>
                             </x-form-div>
-                            <x-form-div class="sponsorNameDiv">
+                            <x-form-div class="col-xl-6 sponsorNameDiv">
                                 <x-input-span id="sponsorNameLabel">Sponsor<x-required-span /></x-input-span>
                                 <x-form-input type="search" name="sponsor" class="sponsorName categorySponsor" id="newPatientSponsor" placeholder="Search..." list="newSponsorList"/>
                                 <datalist name="sponsor" type="text" class="decoration-none bg-white sponsorList" id="newSponsorList"></datalist>

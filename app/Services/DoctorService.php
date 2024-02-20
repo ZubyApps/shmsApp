@@ -195,6 +195,7 @@ class DoctorService
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
                 'reason'            => $visit->discharge_reason,
                 'remark'            => $visit->discharge_remark ?? '',
+                '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
                 'doctorDone'        => $visit->doctorDoneBy->username ?? '',
                 'closed'            => $visit->closed
 

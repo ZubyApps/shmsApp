@@ -67,7 +67,7 @@ const getVerificationTable = (tableId) => {
             {data: row => 
                         `
                     <div class="d-flex flex-">
-                        <button class=" btn btn-outline-primary verifyPatientBtn tooltip-test" title="Verify" data-id="${ row.id }" data-patient="${ row.patient }" data-phone="${ row.phone }" data-sponsor="${ row.sponsor }" data-staffid="${ row.staffId }">
+                        <button class=" btn btn-outline-primary ${row.status == 'Verified' ? '' : 'verifyPatientBtn'} tooltip-test" title="${row.status ? row.status : 'verify'}" data-id="${ row.id }" data-patient="${ row.patient }" data-phone="${ row.phone }" data-sponsor="${ row.sponsor }" data-staffid="${ row.staffId }">
                             ${row.status ? row.status : 'Verify'}
                         </button>
                     </div>
@@ -116,8 +116,8 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                             <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
                                 Details
                             </a>
-                            <a class="dropdown-item patientBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                                Bill
+                            <a class="dropdown-item patientBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-hmodoneby="${ row.hmoDoneBy }">
+                                ${row.hmoDoneBy ? 'Bill sent <i class="bi bi-check-circle-fill tooltip-test text-primary" title="sent"></i>' : 'Make bill'}
                             </a>
                             <a class="dropdown-item closeVisitBtn btn tooltip-test" title="${row.closed ? 'closed': 'close'}"  data-id="${ row.id }">
                             ${row.closed ? '': 'Close'}
@@ -261,4 +261,40 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
     return visitPrescriptionsTable
 }
 
-export {getWaitingTable, getVerificationTable, getAllHmoPatientsVisitTable, getApprovalListTable, getVisitPrescriptionsTable}
+const getSentBillsTable = (tableId, startDate, endDate) => {
+    return new DataTable(tableId, {
+        serverSide: true,
+        ajax:  {url: '/hmo/load/sentbills/', data: {
+            'startDate' : startDate, 
+            'endDate'   : endDate, 
+        }},
+        orderMulti: true,
+        search:true,
+        language: {
+            emptyTable: "No patient"
+        },
+        columns: [
+            {data: "came"},
+            {data: "patient"},
+            {data: "doctor"},
+            {data: "diagnosis"},
+            {data: row => sponsorAndPayPercent(row)},
+            {data: "sentBy"},
+            {data: "30dayCount"},
+            {data: "totalHmsBill"},
+            {data: "totalHmoBill"},
+            {
+                sortable: false,
+                data: row => `
+                <div class="d-flex justify-content-center">
+                    <button class="ms-1 btn btn-outline-primary patientBillBtn tooltip-test" title="See bill" data-id="${ row.id }" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" >
+                        <i class="bi bi-eye-fill"></i>
+                    </button>   
+                </div>
+                `
+            },
+        ]
+    });
+}
+
+export {getWaitingTable, getVerificationTable, getAllHmoPatientsVisitTable, getApprovalListTable, getVisitPrescriptionsTable, getSentBillsTable}

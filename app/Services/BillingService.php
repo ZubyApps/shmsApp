@@ -158,14 +158,14 @@ class BillingService
                 'came'                  => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'discount'              => $visit->discount ?? '',
                 'discountBy'            => $visit->discountBy?->username ?? '',
-                'subTotal'              => $visit->totalBills() ?? 0,
+                'subTotal'              => $visit->totalHmsBills() ?? 0,
                 'nhisSubTotal'          => ($visit->totalNhisBills()) ?? 0,
                 'nhisNetTotal'          => ($visit->totalNhisBills() - $visit->discount)  ?? 0,
-                'netTotal'              => $visit->totalBills() - $visit->discount,
+                'netTotal'              => $visit->totalHmsBills() - $visit->discount,
                 'totalPaid'             => $visit->totalPayments() ?? 0,
-                'balance'               => $visit->totalBills() - $visit->discount - $visit->totalPayments() ?? 0,
+                'balance'               => $visit->totalHmsBills() - $visit->discount - $visit->totalPayments() ?? 0,
                 'nhisBalance'           => $visit->sponsor->sponsorCategory->name == 'NHIS' ? (($visit->totalNhisBills() - $visit->discount)) - $visit->totalPayments() ?? 0 : 'N/A',
-                'outstandingBalance'    => $visit->patient->allBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
+                'outstandingBalance'    => $visit->patient->allHmsBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
                 'outstandingNhisBalance'=> $visit->patient->allNhisBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
                 'payMethods'            => $this->payMethodService->list(),
                 'prescriptions'         => $visit->prescriptions->map(fn(Prescription $prescription) => [
@@ -226,7 +226,7 @@ class BillingService
     public function saveDiscount(Request $request, Visit $visit, User $user): Visit
     {
         $visit->update([
-            'total_bill'    => $visit->discount ? ($visit->total_bill + $visit->discount) - $request->discount : $visit->total_bill - $request->discount,
+            'total_hms_bill'    => $visit->discount ? ($visit->total_hms_bill + $visit->discount) - $request->discount : $visit->total_hms_bill - $request->discount,
             'discount'      => $request->discount,
             'discount_by'   => $user->id
         ]);
@@ -254,7 +254,7 @@ class BillingService
 
         return $this->visit
                     ->where('patient_id', $data->patientId)
-                    ->whereColumn('total_bill', '!=', 'total_paid')
+                    ->whereColumn('total_hms_bill', '!=', 'total_paid')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }

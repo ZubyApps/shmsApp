@@ -204,8 +204,8 @@
                                 <th>Doctor</th>
                                 <th>Current Diagnosis</th>
                                 <th>Sponsor</th>
-                                <th>Other</th>
-                                <th>Register</th>
+                                <th>Rx count</th>
+                                <th>Other/Register</th>
                                 <th>Vitals</th>
                                 <th>Status</th>
                                 <th>Actions</th>

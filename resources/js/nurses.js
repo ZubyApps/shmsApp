@@ -195,6 +195,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const [btn, modal, id, getTable] = isAnc ? [vitalsignsBtn, ancVitalsignsModal, vitalsignsBtn.getAttribute('data-ancregid'), getAncVitalSignsTable] : [vitalsignsBtn, vitalsignsModal, vitalsignsBtn.getAttribute('data-id'), getVitalSignsTableByVisit]
 
                 const tableId = '#' + modal._element.querySelector('.vitalsTable').id
+                modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-patienttype', vitalsignsBtn.getAttribute('data-patienttype'))
                 populateVitalsignsModal(modal, btn, id)
    
                 modal.show()
@@ -215,7 +216,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (viewMedicationBtn){
                 viewMedicationBtn.setAttribute('disabled', 'disabled')
                 const tableId = medicationPrescriptionsModal._element.querySelector('.medicationsTable').id
-                const visitId = viewMedicationBtn.getAttribute('data-visitid')
+                const visitId = viewMedicationBtn.getAttribute('data-visitid') ?? viewMedicationBtn.getAttribute('data-id')
                 populatePatientSponsor(medicationPrescriptionsModal, viewMedicationBtn)
                 getNurseMedicationsByFilter(tableId, null, medicationPrescriptionsModal._element, visitId)
     
@@ -426,6 +427,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     const isAnc     = addBtn.getAttribute('data-patienttype') == 'ANC'
                     const visitId   = addBtn.getAttribute('data-id')
                     const ancRegId  = addBtn.getAttribute('data-ancregid')
+                    console.log(ancRegId, isAnc)
                     const tableId   = div.parentNode.parentNode.querySelector('.vitalsTable').id
                     let data = { ...getDivData(div), visitId, ancRegId }
                     const url = isAnc ? '/ancvitalsigns' : '/vitalsigns'

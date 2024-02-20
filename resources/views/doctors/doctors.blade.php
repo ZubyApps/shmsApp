@@ -101,6 +101,7 @@
                                     <th>Doctor</th>
                                     <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
+                                    <th>Last 30days</th>
                                     <th>Investigations</th>
                                     <th>Vitals</th>
                                     <th>Status</th>
@@ -130,6 +131,7 @@
                                     <th>Doctor</th>
                                     <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
+                                    <th>Last 30days</th>
                                     <th>Investigations</th>
                                     <th>Vitals</th>
                                     <th>Status</th>
@@ -159,6 +161,7 @@
                                     <th>Doctor</th>
                                     <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
+                                    <th>Last 30days</th>
                                     <th>Investigations</th>
                                     <th>Vitals</th>
                                     <th>Status</th>

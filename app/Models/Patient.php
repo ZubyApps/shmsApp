@@ -61,16 +61,21 @@ class Patient extends Model
         return str_replace(['a', 'g', 'o'], '', (new Carbon($this->date_of_birth))->diffForHumans(['other' => null, 'parts' => 2, 'short' => true]), );
     }
 
-    public function identificationMarker()
-    {
-        return (int)str_replace(['SH'], '', $this->card_no) * $this->id;
-    }
-
-    public function allBills()
+    public function allHmsBills()
     {
         $allBills = 0;
         foreach($this->visits as $visit){
-            $allBills += $visit->totalBills();
+            $allBills += $visit->totalHmsBills();
+        }
+
+        return $allBills;
+    }
+
+    public function allHmoBills()
+    {
+        $allBills = 0;
+        foreach($this->visits as $visit){
+            $allBills += $visit->totalHmoBills();
         }
 
         return $allBills;

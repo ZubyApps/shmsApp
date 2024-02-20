@@ -50,7 +50,7 @@ class PrescriptionService
 
             $prescription->visit->update([
                 'viewed_at'     => null,
-                'total_bill'    => $data->quantity ? $prescription->visit->totalBills() : ($prescription->visit->totalBills() - $bill)
+                'total_hms_bill'    => $data->quantity ? $prescription->visit->totalHmsBills() : ($prescription->visit->totalHmsBills() - $bill)
             ]);
 
             if ($prescription->visit->sponsor->sponsorCategory->name == 'NHIS'){

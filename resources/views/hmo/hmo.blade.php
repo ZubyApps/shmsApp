@@ -132,8 +132,8 @@
                     <button class="nav-link" id="nav-treatments-tab" data-bs-toggle="tab" data-bs-target="#nav-treatments"
                         type="button" role="tab" aria-controls="nav-treatments" aria-selected="false">Treatments</button>
 
-                    <button class="nav-link" id="nav-billpatients-tab" data-bs-toggle="tab" data-bs-target="#nav-billpatients"
-                        type="button" role="tab" aria-controls="nav-billpatients" aria-selected="false">Bill</button>
+                    <button class="nav-link" id="nav-sentBills-tab" data-bs-toggle="tab" data-bs-target="#nav-sentBills"
+                        type="button" role="tab" aria-controls="nav-sentBills" aria-selected="false">Sent Bills</button>
 
                     <button class="nav-link" id="nav-reporst-tab" data-bs-toggle="tab" data-bs-target="#nav-reports"
                         type="button" role="tab" aria-controls="nav-reports" aria-selected="false">Reports</button>
@@ -193,34 +193,31 @@
                     </div>
                 </div>
                 <!-- bills table -->
-                <div class="tab-pane fade" id="nav-billpatients" role="tabpanel" aria-labelledby="nav-billpatients-tab"
-                    tabindex="0">
-                    <div class="py-4 ">
-                        <table id="billPatientsTable" class="table table-hover align-middle table-sm">
+                <div class="tab-pane fade" id="nav-sentBills" role="tabpanel" aria-labelledby="nav-sentBills-tab" tabindex="0">
+                    <x-form-div class="col-md-6 pt-3 datesDiv">
+                        <x-input-span class="">Start</x-input-span>
+                        <x-form-input type="date" name="startDate" id="startDate" />
+                        <x-input-span class="">End</x-input-span>
+                        <x-form-input type="date" name="endDate" id="endDate" />
+                        <button class="input-group-text searchWithDatesBtn">Serach</button>
+                    </x-form-div>
+                    <div class="pt-3 ">
+                        <table id="sentBillsTable" class="table table-hover align-middle table-sm sentBillsTable">
                             <thead>
                                 <tr>
-                                    <th>Seen</th>
+                                    <th>Came</th>
                                     <th>Patient</th>
                                     <th>Sponsor</th>
                                     <th>Doctor</th>
                                     <th>Diagnosis</th>
-                                    <th>Status</th>
-                                    <th>Make Bill</th>
+                                    <th>Sent By</th>
+                                    <th>Last 30days</th>
+                                    <th>Total HmsBill</th>
+                                    <th>Total HmoBill</th>
+                                    <th>Details</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {{-- <tr>
-                                    <td>09/10/2023</td>
-                                    <td>SH21/4012 Josephine Ene Ode</td>
-                                    <td>Axe Mansard</td>
-                                    <td>Dr Toby</td>
-                                    <td>F12Z-Acute Spundolosis</td>
-                                    <td>Out-Patient</td>
-                                    <td>
-                                        <button class="btn btn-outline-primary" id="treatmentDetailsBtn">Sent</button>
-                                        <button class="btn btn-outline-primary" id="reviewConsultationBtn">Approve</button>
-                                    </td>
-                                </tr> --}}
                             </tbody>
                         </table>
                     </div>

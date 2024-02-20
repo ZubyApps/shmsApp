@@ -102,4 +102,20 @@ class HmoController extends Controller
     {
         return $this->hmoService->saveBill($request, $prescription, $request->user());
     }
+
+    public function markBillAsSent(Request $request, Visit $visit)
+    {
+        return $this->hmoService->markAsSent($visit, $request->user());
+    }
+
+    public function sentBillsTable(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->hmoService->getSentBillsList($params, $request);
+       
+        $loadTransformer = $this->hmoService->getSentBillsTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
 }

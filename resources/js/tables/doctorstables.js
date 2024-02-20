@@ -21,6 +21,7 @@ const getOutpatientsVisitTable = (tableId, filter) => {
             {data: "doctor"},
             {data: row => prescriptionOnLatestConsultation(row)},
             {data: row => sponsorAndPayPercent(row)},
+            {data: "30dayCount"},
             {data: row =>  `
                         <div class="d-flex justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
@@ -63,6 +64,7 @@ const getInpatientsVisitTable = (tableId, filter) => {
             {data: "doctor"},
             {data: row => prescriptionOnLatestConsultation(row)},
             {data: row => sponsorAndPayPercent(row)},
+            {data: "30dayCount"},
             {data: row =>  `
                         <div class="d-flex flex- justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
@@ -105,6 +107,7 @@ const getAncPatientsVisitTable = (tableId, filter) => {
             {data: "doctor"},
             {data: row => prescriptionOnLatestConsultation(row)},
             {data: row => sponsorAndPayPercent(row)},
+            {data: "30dayCount"},
             {data: row =>  `
                         <div class="d-flex flex- justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
