@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AcknowledgePrescriptionRequest;
+use App\Http\Requests\ConfirmPrescriptionRequest;
 use App\Http\Requests\DiscontinuePrescriptionRequest;
 use App\Http\Requests\SaveLabResultRequest;
 use App\Models\Prescription;
@@ -73,6 +75,22 @@ class PrescriptionController extends Controller
         $loadTransformer = $this->prescriptionService->getPrescriptionsTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
+    }
+
+    public function loadEmergencyTable(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sponsors = $this->prescriptionService->getEmergencyPrescriptions($params, $request);
+       
+        $loadTransformer = $this->prescriptionService->getEmergencyPrescriptionsformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
+    }
+
+    public function confirmPrescription(ConfirmPrescriptionRequest $request, Prescription $prescription)
+    {
+        return $this->prescriptionService->confirm($request, $prescription);
     }
 
     public function discontinuePrescription(DiscontinuePrescriptionRequest $request, Prescription $prescription)

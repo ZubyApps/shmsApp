@@ -8,7 +8,7 @@ import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsu
 import { getAncVitalsignsChart, getVitalsignsChartByVisit } from "./charts/vitalsignsCharts"
 import $ from 'jquery';
 import { getbillingTableByVisit } from "./tables/billingTables"
-import { getAncVitalSignsTable, getDeliveryNoteTable } from "./tables/nursesTables"
+import { getAncVitalSignsTable, getDeliveryNoteTable, getEmergencyTable } from "./tables/nursesTables"
 import { visitDetails } from "./dynamicHTMLfiles/visits"
 import html2pdf  from "html2pdf.js"
 
@@ -74,7 +74,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const reportModalBody                   = viewMedicalReportModal._element.querySelector('.reportModalBody')
     const patientsFullName                  = viewMedicalReportModal._element.querySelector('#patientsFullName')
     const patientsInfo                      = viewMedicalReportModal._element.querySelector('#patientsInfo')
-    const [outPatientsTab, ancPatientsTab, inPatientsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-inPatients-tab')]
+    const [outPatientsTab, ancPatientsTab, inPatientsTab, emergencyTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-emergency-tab')]
     const [resourceInput]                   = [document.querySelectorAll('#resource')]
 
     bmiCalculator(document.querySelectorAll('#height, .weight'))
@@ -102,7 +102,7 @@ window.addEventListener('DOMContentLoaded', function () {
     // ICD11 handler
     ECT.Handler.configure(mySettings, myCallbacks)
     //visit Tables and consultations that are active
-    let inPatientsVisitTable, ancPatientsVisitTable, prescriptionTable, medicalReportTable
+    let inPatientsVisitTable, ancPatientsVisitTable, prescriptionTable, medicalReportTable, emergencyTable
 
     const outPatientsVisitTable = getOutpatientsVisitTable('#outPatientsVisitTable', 'My Patients')
     const waitingTable = getWaitingTable('#waitingTable')
@@ -122,6 +122,14 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#inPatientsVisitTable').dataTable().fnDraw()
         } else {
             inPatientsVisitTable = getInpatientsVisitTable('#inPatientsVisitTable', 'My Patients')
+        }
+    })
+
+    emergencyTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#emergencyTable' )){
+            $('#emergencyTable').dataTable().fnDraw()
+        } else {
+            emergencyTable = getEmergencyTable('emergencyTable', 'doctor')
         }
     })
     
@@ -203,7 +211,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 populatePatientSponsor(investigationAndManagementModal, updateResourceListBtn)
                 btn.setAttribute('data-conid', conId)
                 btn.setAttribute('data-visitid', visitId)
-                getPrescriptionTableByConsultation('prescriptionTableConReview', conId, investigationAndManagementModal._element)
+                getPrescriptionTableByConsultation('prescriptionTableConReview', conId, null, investigationAndManagementModal._element)
                 investigationAndManagementModal.show()
                 setTimeout(()=> {updateResourceListBtn.removeAttribute('disabled')}, 1000)
             }
@@ -564,9 +572,10 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelectorAll('#prescriptionTableNew, #prescriptionTableSpecialist, #prescriptionTableAnc, #prescriptionTableAncReview, #prescriptionTableConReview').forEach(table => {
+    document.querySelectorAll('#prescriptionTableNew, #prescriptionTableSpecialist, #prescriptionTableAnc, #prescriptionTableAncReview, #prescriptionTableConReview, #emergencyTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const deleteBtn  = event.target.closest('.deleteBtn')
+            const confirmBtn  = event.target.closest('.confirmBtn')
             if (deleteBtn){
                 deleteBtn.setAttribute('disabled', 'disabled')
                 if (confirm('Are you sure you want to delete this prescription?')) {
@@ -590,7 +599,30 @@ window.addEventListener('DOMContentLoaded', function () {
                             alert(error)
                             deleteBtn.removeAttribute('disabled')
                         })
-                }       
+                }      
+            }
+
+            if (confirmBtn){
+                confirmBtn.setAttribute('disabled', 'disabled')
+                if (confirm('Are you sure you want to confirm this prescription?')) {
+                    const id = confirmBtn.getAttribute('data-id')
+                    http.patch(`/prescription/confirm/${id}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300){
+                                if ($.fn.DataTable.isDataTable('#'+table.id)){
+                                $('#'+table.id).dataTable().fnDraw()
+                                }
+                            }
+                            confirmBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {
+                            if (error.response.status === 403){
+                                alert(error.response.data) 
+                            }
+                            console.log(error)
+                            confirmBtn.removeAttribute('disabled')
+                        })
+                }
             }
         })
     })
@@ -619,7 +651,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     window.history.replaceState({}, document.title, "/" + "doctors" )
 
                     new Toast(div.querySelector('#saveConsultationToast'), {delay:2000}).show()
-                    getPrescriptionTableByConsultation(tableId, response.data.id, modal)
+                    getPrescriptionTableByConsultation(tableId, response.data.id, null, modal)
                     waitingTable.draw()
                     outPatientsVisitTable.draw()
                     ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
@@ -633,8 +665,8 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-     // All consultation resource inputs
-     resourceInput.forEach(input => {
+    // All consultation resource inputs
+    resourceInput.forEach(input => {
         input.addEventListener('input', function () {
             const div = input.parentElement.parentElement.parentElement.parentElement.parentElement
             const datalistEl = div.querySelector(`#resourceList${div.dataset.div}`)
@@ -822,7 +854,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 btn.setAttribute('data-investigationtable', '#investigationTable'+conId)
                 btn.setAttribute('data-treatmenttable', '#treatmentTable'+conId)
                 btn.setAttribute('data-otherprescriptionstable', '#otherPrescriptionsTable'+conId)
-                getPrescriptionTableByConsultation('prescriptionTableConReview', conId, investigationAndManagementModal._element)
+                getPrescriptionTableByConsultation('prescriptionTableConReview', conId, null, investigationAndManagementModal._element)
                 investigationAndManagementModal.show()
                 setTimeout(()=> {updateResourceListBtn.removeAttribute('disabled')}, 1000)
             }

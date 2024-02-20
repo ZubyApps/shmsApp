@@ -4,7 +4,7 @@ import $ from 'jquery';
 import { clearDivValues, getOrdinal, getDivData, clearValidationErrors, loadingSpinners, removeDisabled, displayList, getPatientSponsorDatalistOptionId} from "./helpers"
 import { getAllHmoPatientsVisitTable, getApprovalListTable, getVerificationTable, getVisitPrescriptionsTable, getWaitingTable } from "./tables/hmoTables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
-import { getLabTableByConsultation, getTreatmentTableByConsultation, getVitalSignsTableByVisit } from "./tables/doctorstables";
+import { getLabTableByConsultation, getMedicationsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
 import { getVitalsignsChartByVisit } from "./charts/vitalsignsCharts";
 import { getbillingTableByVisit } from "./tables/billingTables";
 import { getAncVitalSignsTable } from "./tables/nursesTables";
@@ -445,8 +445,8 @@ window.addEventListener('DOMContentLoaded', function () {
             const goto = () => {
                 location.href = collapseConsultationBtn.getAttribute('data-goto')
                 window.history.replaceState({}, document.title, "/" + "hmo")
-                getLabTableByConsultation(investigationTableId, reviewDetailsModal._element, viewer, conId, null)
-                getTreatmentTableByConsultation(treatmentTableId, conId, reviewDetailsModal._element)
+                getLabTableByConsultation(investigationTableId, treatmentDetailsModal._element, viewer, conId, null)
+                getMedicationsByFilter(treatmentTableId, conId, treatmentDetailsModal._element)
             }
             setTimeout(goto, 300)
         }

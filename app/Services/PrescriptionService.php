@@ -43,8 +43,9 @@ class PrescriptionService
                 'hms_bill'          => $bill,
                 'hms_bill_date'     => $bill ? new Carbon() : null,
                 'hms_bill_by'       => $bill ? $user->id : null,
-                'chartable'         => $resource->sub_category == 'Injectable' ? true : $data->chartable,
-                'note'              => $data->note
+                'chartable'         => $resource->sub_category == 'Injectable' ? true : $data->chartable ?? false,
+                'note'              => $data->note,
+                'doctor_on_call'    => $data->doc
             ]);
 
             $prescription->visit->update([
@@ -81,7 +82,7 @@ class PrescriptionService
         }
 
         return $this->prescription
-                    ->where('consultation_id', $data->conId)
+                    ->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
@@ -217,7 +218,7 @@ class PrescriptionService
                 'qtyBilled'             => $prescription->qty_billed,
                 'qtyDispensed'          => $prescription->qty_dispensed,
                 'note'                  => $prescription->note,
-                'conId'                 => $prescription->consultation->id,
+                'conId'                 => $prescription->consultation?->id,
                 'visitId'               => $prescription->visit->id,
                 'patient'               => $prescription->visit->patient->patientId(),
                 'sponsor'               => $prescription->visit->sponsor->name,
@@ -288,8 +289,8 @@ class PrescriptionService
     {
         return DB::transaction(function () use ($params, $data) {
             if ($data->visitId){
-
                 $visit = Visit::find($data->visitId);
+                dd($visit);
 
                 if ($visit->viewed_at == null){
                     $visit->update([
@@ -312,6 +313,75 @@ class PrescriptionService
                         })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        });
+    }
+
+    public function getEmergencyPrescriptions(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+
+        if (! empty($params->searchTerm)) {
+            return $this->prescription
+                        ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return $this->prescription
+                    ->where('consultation_id', null)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+
+    }
+
+    public function getEmergencyPrescriptionsformer(): callable
+    {
+       return  function (Prescription $prescription) {
+            return [
+                'id'                => $prescription->id,
+                'visitId'           => $prescription->visit->id,
+                'patient'           => $prescription->visit->patient->patientId(),
+                'sponsor'           => $prescription->visit->sponsor->name,
+                'sponsorCategory'   => $prescription->visit->sponsor->sponsorCategory->name,
+                'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
+                'item'              => $prescription->resource->name,
+                'prescription'      => $prescription->prescription,
+                'quantity'          => $prescription->qty_billed,
+                'prescribedBy'      => $prescription->user->username,
+                'doc'               => $prescription->doctorOnCall?->username,
+                'note'              => $prescription->note,
+                'prescribedFormatted'   => (new Carbon($prescription->created_at))->format('Y-m-d\TH:i'),
+                'chartable'             => $prescription->chartable,
+                'doseCount'             => $doseCount = $prescription->medicationCharts->count(),
+                'givenCount'            => $givenCount = $prescription->medicationCharts->where('dose_given', '!=', null)->count(),
+                'doseComplete'          => $this->completed($doseCount, $givenCount),
+                'medicationCharts'      => $prescription->medicationCharts
+            ];
+         };
+    }
+
+    public function confirm(Request $request, Prescription $prescription)
+    {
+        return DB::transaction(function () use( $prescription) {
+            $conId = $prescription->visit->consultations->sortByDesc('id')->first()?->id;
+            if (!$conId){
+                return response('Cannot confirm! A Doctor must consult first!', 403);
+            }
+    
+            $prescription->update([
+                'consultation_id' => $conId,
+            ]);
+
+            $medicationCharts = $prescription->medicationCharts;
+            if ($medicationCharts){
+                foreach ($medicationCharts as $medicationChart){
+                    $medicationChart->update([
+                        'consultation_id' => $conId
+                    ]);
+                }
+            }
         });
     }
 

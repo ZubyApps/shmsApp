@@ -13,20 +13,30 @@
                 <x-input-span class="px-1">Unit</x-input-span>
                 <x-select-unit aria-label="unit" name="unit" id="unit"></x-select-unit>
                 <x-input-span class="px-1">Freq</x-input-span>
-                <x-select-frequency-text aria-label="frequency" name="frequency" id="frequency"></x-select-frequency>
+                <x-select-frequency-text aria-label="frequency" name="frequency" id="frequency" :hidden="$isNurse"></x-select-frequency>
                 <x-input-span class="px-1">Day(s)</x-input-span>
                 <x-form-input type="number" name="days" id="days" value="1" />
             </x-form-div>
             <x-form-div class="col-xl-6 qty" id="qty">
                 <x-input-span id="quantityLabel">Quantity<x-required-span /></x-input-span>
-                <x-form-input type="number" name="quantity" id="quantity"
-                    placeholder="" value="1"/>
+                <x-form-input type="number" name="quantity" id="quantity" placeholder="" value="1"/>
             </x-form-div>
-            <x-form-div class="col-xl-6 chartableDiv d-none" id="chartableDiv">
-                    <x-input-span id="chartableLabel" class="py-0">Chartable?</x-input-span>
-                    <x-form-input class="form-check-input py-3 mt-0" type="checkbox" id="chartable" />
-            </x-form-div>
-            <x-form-div class="col-xl-6">
+            @if ($isNurse)
+                <x-form-div class="col-xl-6">
+                    <x-input-span id="docLabel">DOC</x-input-span>
+                    <select type="text" name="doc" id="doc" class="form-select form-select-md">
+                        @foreach ($doctors as $doctor)
+                            <option value="{{ $doctor->id }}" name="{{ $doctor->username }}">{{ $doctor->username }}</option>
+                        @endforeach
+                    </select>
+                </x-form-div>
+            @else
+                <x-form-div class="col-xl-6 chartableDiv d-none" id="chartableDiv">
+                        <x-input-span id="chartableLabel" class="py-0">Chartable?</x-input-span>
+                        <x-form-input class="form-check-input py-3 mt-0" type="checkbox" id="chartable" />
+                </x-form-div>
+            @endif
+            <x-form-div class="col-xl-{{ $isNurse ? '12' : '6' }}">
                 <x-input-span id="noteLabel">Note/Instruction</x-input-span>
                 <x-form-input type="text" name="note" id="note"/>
             </x-form-div>

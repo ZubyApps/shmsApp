@@ -62,6 +62,11 @@ class Prescription extends Model
         return $this->belongsTo(User::class, 'rejected_by');
     }
 
+    public function doctorOnCall()
+    {
+        return $this->belongsTo(User::class, 'doctor_on_call');
+    }
+
     public function payment()
     {
         return $this->belongsTo(Payment::class);

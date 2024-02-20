@@ -3,11 +3,11 @@
 @section('content')
 @vite(['resources/js/doctors.js'])
 
-@include('doctors.consultationModal', ['title' => 'New Consultation', 'isSpecialist' => false, 'id' => 'newConsultationModal'])
-@include('doctors.consultationModal', ['title' => 'New Specialist Consultation', 'isSpecialist' => true, 'id' => 'specialistConsultationModal'])
+@include('doctors.consultationModal', ['title' => 'New Consultation', 'isSpecialist' => false, 'isNurse' => false, 'id' => 'newConsultationModal'])
+@include('doctors.consultationModal', ['title' => 'New Specialist Consultation', 'isSpecialist' => true, 'isNurse' => false, 'id' => 'specialistConsultationModal'])
 
-@include('doctors.ancConsultationModal', ['title' => 'New ANC Consultation', 'isReview' => false, 'id' => 'ancConsultationModal'])
-@include('doctors.ancConsultationModal', ['title' => 'New ANC Review', 'isReview' => true, 'id' => 'ancReviewModal'])
+@include('doctors.ancConsultationModal', ['title' => 'New ANC Consultation', 'isReview' => false, 'isNurse' => false, 'id' => 'ancConsultationModal'])
+@include('doctors.ancConsultationModal', ['title' => 'New ANC Review', 'isReview' => true, 'isNurse' => false, 'id' => 'ancReviewModal'])
 
 @include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isAnc' => false, 'id' => 'consultationReviewModal'])
 @include('doctors.consultationHistoryModal', ['title' => 'Consultation History', 'isAnc' => false, 'id' => 'consultationHistoryModal'])
@@ -17,13 +17,13 @@
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
 @include('investigations.addResultModal', ['title' => 'Update Result', 'isUpdate' => true, 'id' => 'updateResultModal'])
-@include('extras.investigationAndManagementModal', ['title' => 'Update Investigation and Management', 'id' => 'investigationAndManagementModal'])
+@include('extras.investigationAndManagementModal', ['title' => 'Update Investigation and Management', 'isNurse' => false, 'id' => 'investigationAndManagementModal'])
 @include('doctors.dischargeModal', ['title' => 'Discharge Patient', 'isNurses' => false, 'id' => 'dischargeModal'])
 @include('doctors.surgeryModal', ['title' => 'New Surgery', 'isUpdate' => false, 'isView' => false, 'id' => 'newSurgeryModal'])
 @include('doctors.surgeryModal', ['title' => 'Update Surgery', 'isUpdate' => true, 'isView' => false, 'id' => 'updateSurgeryModal'])
 @include('doctors.surgeryModal', ['title' => 'View Surgery', 'isUpdate' => false, 'isView' => true, 'id' => 'viewSurgeryModal'])
 @include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
-@include('doctors.newReviewModal', ['title' => 'New Review', 'isUpdate' => false, 'id' => 'newReviewModal'])
+@include('doctors.newReviewModal', ['title' => 'New Review', 'isUpdate' => false, 'isNurse' => false, 'id' => 'newReviewModal'])
 @include('extras.medicalReportListModal', ['title' => 'Medical Report List', 'isUpdate' => false, 'id' => 'medicalReportListModal' ])
 @include('extras.medicalReportTemplateModal', ['title' => 'New Medical Report', 'isUpdate' => false, 'id' => 'newMedicalReportTemplateModal' ])
 @include('extras.medicalReportTemplateModal', ['title' => 'Edit Medical Report', 'isUpdate' => true, 'id' => 'editMedicalReportTemplateModal' ])
@@ -76,6 +76,9 @@
 
                     <button class="nav-link" id="nav-ancPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-ancPatients"
                     type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button>
+
+                    <button class="nav-link" id="nav-emergency-tab" data-bs-toggle="tab" data-bs-target="#nav-emergency"
+                    type="button" role="tab" aria-controls="nav-emergency" aria-selected="false">Emergency</button>
                     
                 </div>
             </nav>
@@ -166,7 +169,29 @@
                         </table>
                     </div>
                 </div>
-                
+
+                <!-- emergency medication table -->
+                <div class="tab-pane fade" id="nav-emergency" role="tabpanel" aria-labelledby="nav-emergency-tab" tabindex="0">
+                    <div class="py-4 ">
+                        <table id="emergencyTable" class="table table-hover align-middle table-sm emergencyTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Patient</th>
+                                    <th>Sponsor</th>
+                                    <th>Item</th>
+                                    <th>Prescription</th>
+                                    <th>Qty</th>
+                                    <th>Prescribed By</th>
+                                    <th>Note</th>
+                                    <th>DOC</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

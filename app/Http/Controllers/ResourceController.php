@@ -41,6 +41,16 @@ class ResourceController extends Controller
 
     }
 
+    public function emergencyList(Request $request)
+    {
+        $resources = $this->resourceService->getEmergencyList($request);
+
+        $listTransformer = $this->resourceService->listTransformer();
+
+        return array_map($listTransformer, (array)$resources->getIterator());
+
+    }
+
     public function listBulk(Request $request)
     {
         $items = $this->resourceService->getBulkList($request);

@@ -23,7 +23,7 @@ class DoctorController extends Controller
      */
     public function index()
     {
-        return view('doctors.doctors');
+        return view('doctors.doctors', ['doctors' => []]);
     }
 
     /**

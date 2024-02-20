@@ -7,6 +7,7 @@ import $ from 'jquery';
 import { getLabTableByConsultation, getMedicationsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getbillingTableByVisit } from "./tables/billingTables";
+import { getEmergencyTable } from "./tables/nursesTables";
 
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -28,12 +29,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
 
-    const [outPatientsTab, inPatientsTab, ancPatientsTab, expirationStockTab, bulkRequestsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-expirationStock-tab'), document.querySelector('#nav-bulkRequests-tab')]
+    const [outPatientsTab, inPatientsTab, ancPatientsTab, expirationStockTab, bulkRequestsTab, emergencyTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-expirationStock-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-emergency-tab')]
 
     const textareaHeight = 90;
     textareaHeightAdjustment(textareaHeight, document.getElementsByTagName("textarea"))
 
-    let inPatientsVisitTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable
+    let inPatientsVisitTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable, emergencyTable
 
     const outPatientsTable = getPatientsVisitByFilterTable('outPatientsTable', 'Outpatient')
 
@@ -68,6 +69,14 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#bulkRequestsTable').dataTable().fnDraw()
         } else {
             bulkRequestsTable = getBulkRequestTable('bulkRequestsTable', 'pharmacy')
+        }
+    })
+
+    emergencyTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#emergencyTable' )){
+            $('#emergencyTable').dataTable().fnDraw()
+        } else {
+            emergencyTable = getEmergencyTable('emergencyTable', 'pharmacy')
         }
     })
 

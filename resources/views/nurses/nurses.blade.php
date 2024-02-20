@@ -22,6 +22,7 @@
 @include('nurses.serviceDoneModal')
 @include('doctors.dischargeModal', ['title' => 'Discharge Patient', 'isNurses' => true, 'id' => 'dischargeModal'])
 @include('extras.bulkRequestModal', ['title' => 'Bulk Request', 'dept' => 'Nurses', 'isPharmacy' => false, 'id' => 'bulkRequestModal'])
+@include('extras.investigationAndManagementModal', ['title' => 'Emergency Management', 'isNurse' => true, 'id' => 'investigationAndManagementModal'])
 
 <div class="container p-1 mt-5">
     <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="upcomingMedicationsoffcanvas"
@@ -96,6 +97,7 @@
                             <th>Came</th>
                             <th>Dr</th>
                             <th>Vitals</th>
+                            <th>Emerg</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -138,6 +140,9 @@
 
                 <button class="nav-link" id="nav-bulkRequests-tab" data-bs-toggle="tab" data-bs-target="#nav-bulkRequests"
                     type="button" role="tab" aria-controls="nav-bulkRequests" aria-selected="false">Bulk Requests</button>
+
+                <button class="nav-link" id="nav-emergency-tab" data-bs-toggle="tab" data-bs-target="#nav-emergency"
+                    type="button" role="tab" aria-controls="nav-emergency" aria-selected="false">Emergency</button>
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
@@ -234,6 +239,28 @@
                                 <th>Dispensed</th>
                                 <th>Dispensed By</th>
                                 <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- emergency medication table -->
+            <div class="tab-pane fade" id="nav-emergency" role="tabpanel" aria-labelledby="nav-emergency-tab" tabindex="0">
+                <div class="py-4 ">
+                    <table id="emergencyTable" class="table table-hover align-middle table-sm emergencyTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Patient</th>
+                                <th>Sponsor</th>
+                                <th>Item</th>
+                                <th>Prescription</th>
+                                <th>Qty</th>
+                                <th>Prescribed By</th>
+                                <th>Note</th>
+                                <th>DOC</th>
+                                <th>Chart</th>
                             </tr>
                         </thead>
                         <tbody></tbody>

@@ -287,11 +287,12 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
     return vitalSignsByVisit
 }
 
-const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
+const getPrescriptionTableByConsultation = (tableId, conId, visitId, modal) => {
     const prescriptionTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/prescription/load/initial', data: {
             'conId': conId,
+            'visitId': visitId,
         }},
         orderMulti: true,
         search:true,
@@ -309,7 +310,7 @@ const getPrescriptionTableByConsultation = (tableId, conId, modal) => {
             {
                 sortable: false,
                 data: row =>  `
-                <div class="d-flex flex-">
+                <div class="d-flex flex- ${visitId ? 'd-none': ''}">
                     <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}" data-conid="${conId}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>

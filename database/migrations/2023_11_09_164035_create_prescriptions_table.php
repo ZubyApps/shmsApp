@@ -45,6 +45,7 @@ return new class extends Migration
             $table->boolean('chartable')->default(false);
             $table->boolean('discontinued')->default(false);
             $table->foreignIdFor(User::class, 'discontinued_by')->nullable()->constrained('users')->restrictOnDelete();
+            $table->foreignIdFor(User::class, 'doctor_on_call')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(Resource::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Consultation::class)->nullable()->constrained()->restrictOnDelete();
             $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();

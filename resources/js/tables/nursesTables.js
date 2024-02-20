@@ -41,17 +41,24 @@ const getWaitingTable = (tableId) => {
                                     <ul class="dropdown-menu">
                                     <li>
                                         <a role="button" class="dropdown-item vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                                        <i class="bi bi-plus-square-fill text-primary"></i> Add
+                                            <i class="bi bi-plus-square-fill text-primary"></i> Add
                                         </a>
                                     </li>
                                 </ul>
                             </div>
                             `
                         }
-
                     }
                 }
             },
+            {data: row => `
+                            <div class="d-flex flex-">
+                                <button class=" btn btn-outline-primary addPrescriptionBtn tooltip-test ms-1" title="add emergency item" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${ row.sponsorCategory }">
+                                    <i class="bi bi-prescription"></i>
+                                </button>
+                            </div>
+                        `
+            }
         ]
     });
 }
@@ -145,7 +152,6 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
 }
 
 const getNurseMedicationsByFilter = (tableId, conId, modal, visitId, isHistory) => {
-    console.log(isHistory)
     const medicationTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/prescription/load/medications', data: {
@@ -697,4 +703,55 @@ const getAncVitalSignsTable = (tableId, ancRegId, modal, viewer) => {
     return vitalSignsByVisit
 }
 
-export {getWaitingTable, getPatientsVisitsByFilterTable, getNurseMedicationsByFilter, getMedicationChartByPrescription, getPrescriptionChartByPrescription, getOtherPrescriptionsByFilterNurses, getUpcomingMedicationsTable, getDeliveryNoteTable, getAncVitalSignsTable, getUpcomingNursingChartsTable}
+const getEmergencyTable = (tableId, viewer) => {
+    return new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax: `/prescription/load/emergency`,
+        orderMulti: true,
+        search:true,
+        language: {
+            emptyTable: 'No pending emergency prescriptions'
+        },
+        columns: [
+            {data: "prescribed"},
+            {data: "patient"},
+            {data: "sponsor"},
+            {data: row => 
+                    `
+                        <div class="d-flex flex">
+                            <button class=" btn btn${row.medicationCharts.length > 0 ? '-outline-primary viewMedicationBtn' : ''} tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-visitid="${ row.visitId }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }">
+                                ${row.item} ${ row.doseComplete ? '<i class="bi bi-check-circle-fill tooltip-test" title="complete"></i>' : ''}
+                            </button>
+                        </div>
+                    `
+            },
+            {data: "prescription"},
+            {data: "quantity"},
+            {data: "prescribedBy"},
+            {data: "note"},
+            {data: "doc"},
+            {
+                sortable: false,
+                data: row =>  `
+                <div class="d-flex flex- ${viewer === 'doctor' ? '' : 'd-none'}">
+                    <button class="ms-1 btn btn-outline-primary tooltip-test confirmBtn" title="confirm" data-id="${ row.id}" data-tableid="${tableId}">
+                        <i class="bi bi-arrow-down-square-fill"></i>
+                    </button>
+                    <button class="ms-1 btn btn-outline-primary tooltip-test deleteBtn" title="delete" data-id="${ row.id}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+                <div class="d-flex flex- ${row.closed || !row.chartable || viewer !== 'nurse' ? 'd-none' : ''}">
+                    ${row.doseComplete ? 'Complete' : row.discontinued ? 'Discontinued' : `
+                        <button type="button" id="chartMedicationBtn" class="btn btn${row.medicationCharts.length ? '' : '-outline'}-primary chatMedicationBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}", data-resource="${row.item}" data-prescription="${row.prescription}" data-prescribedBy="${row.prescribedBy}" data-patient="${row.patient}" data-sponsor="${row.sponsor}" data-prescribed="${row.prescribedFormatted}" data-consultation="${''}" data-visit="${row.visitId}">
+                            ${row.medicationCharts.length ? row.doseComplete ? 'Complete' : 'Charted' : 'Create'}
+                        </button>`
+                    }
+                </div>
+                `      
+            },
+        ]
+    });
+}
+
+export {getWaitingTable, getPatientsVisitsByFilterTable, getNurseMedicationsByFilter, getMedicationChartByPrescription, getPrescriptionChartByPrescription, getOtherPrescriptionsByFilterNurses, getUpcomingMedicationsTable, getDeliveryNoteTable, getAncVitalSignsTable, getUpcomingNursingChartsTable, getEmergencyTable}

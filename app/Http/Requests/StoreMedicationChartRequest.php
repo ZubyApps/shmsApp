@@ -26,7 +26,7 @@ class StoreMedicationChartRequest extends FormRequest
     {
         return [
             'prescriptionId'    => ['required', 'integer', 'exists:'.Prescription::class.',id'],
-            'conId'             => ['required', 'integer', 'exists:'.Consultation::class.',id'],
+            'conId'             => ['sometimes', 'nullable','integer', 'exists:'.Consultation::class.',id'],
             'visitId'           => ['required', 'integer', 'exists:'.Visit::class.',id'],
             'dose'              => ['required', 'integer', 'min:1'],
             'days'              => ['required', 'integer', 'min:1'],

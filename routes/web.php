@@ -176,6 +176,7 @@ Route::middleware('auth')->group(function () {
         Route::post('', [ResourceController::class, 'store']);
         Route::get('/load', [ResourceController::class, 'load']);
         Route::get('/list', [ResourceController::class, 'list']);
+        Route::get('/list/emergency', [ResourceController::class, 'emergencyList']);
         Route::get('/list/bulk', [ResourceController::class, 'listBulk']);
         Route::get('/{resource}', [ResourceController::class, 'edit']);
         Route::get('/addstock/{resource}', [ResourceController::class, 'edit'])->name('Addstock');
@@ -205,10 +206,12 @@ Route::middleware('auth')->group(function () {
         Route::get('', [PrescriptionController::class, 'index'])->name('Prescription');
         Route::post('{resource}', [PrescriptionController::class, 'store']);
         Route::get('/load/initial', [PrescriptionController::class, 'loadInitialTable']);
+        Route::get('/load/emergency', [PrescriptionController::class, 'loadEmergencyTable']);
         Route::get('/load/lab', [PrescriptionController::class, 'loadLabTable']);
         Route::get('/load/medications', [PrescriptionController::class, 'loadMedicationTable']);
         Route::get('/load/others', [PrescriptionController::class, 'loadOtherPrescriptionsTable']);
         Route::get('/list', [PrescriptionController::class, 'list']);
+        Route::patch('/confirm/{prescription}', [PrescriptionController::class, 'confirmPrescription']);
         Route::patch('/{prescription}', [PrescriptionController::class, 'discontinuePrescription']);
         Route::delete('/{prescription}', [PrescriptionController::class, 'destroy']);
     })->name('Prescription');

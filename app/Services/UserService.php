@@ -150,4 +150,16 @@ class UserService
             'designator'   => $designator->username
         ]);
     }
+
+    public function listStaff(String $designation)
+    {
+        $orderBy    = 'username';
+        $orderDir   =  'desc';
+
+        return $this->user
+                    ->whereRelation('designation', 'designation', '=', $designation)
+                    ->orderBy($orderBy, $orderDir)
+                    ->get(['id', 'username']);
+                    // ->toArray();   
+    }
 }

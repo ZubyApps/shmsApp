@@ -38,27 +38,27 @@ class VisitController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 
-    public function loadAllVisits(Request $request)
-    {
-        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    // public function loadAllVisits(Request $request)
+    // {
+    //     $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $visits = $this->visitService->getPaginatedAllConsultedVisits($params, $request);
+    //     $visits = $this->visitService->getPaginatedAllConsultedVisits($params, $request);
        
-        $loadTransformer = $this->visitService->getRegularConsultedVisitsTransformer();
+    //     $loadTransformer = $this->visitService->getRegularConsultedVisitsTransformer();
 
-        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
-    }
+    //     return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    // }
 
-    public function loadInpatientsVisits(Request $request)
-    {
-        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    // public function loadInpatientsVisits(Request $request)
+    // {
+    //     $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $visits = $this->visitService->getPaginatedInpatientVisits($params);
+    //     $visits = $this->visitService->getPaginatedInpatientVisits($params);
        
-        $loadTransformer = $this->visitService->getInpatientsVisitsTransformer();
+    //     $loadTransformer = $this->visitService->getInpatientsVisitsTransformer();
 
-        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
-    }
+    //     return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    // }
 
     public function changeSponsor(ChangeSponsorRequest $request, Visit $visit)
     {

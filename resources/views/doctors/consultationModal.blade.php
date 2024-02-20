@@ -141,7 +141,7 @@
                                     </div>
                                     <x-toast-successful  id="saveConsultationToast"></x-toast-successful>
                                 </div>
-                                @include('extras.investigationAndManagementDiv', ['type' => $isSpecialist ? 'Specialist' : 'New'])
+                                @include('extras.investigationAndManagementDiv', ['type' => $isSpecialist ? 'Specialist' : 'New', 'isNurse' => '$isNurse'])
                             </div>
                         </div>
                     </div>

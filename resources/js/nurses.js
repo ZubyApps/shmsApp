@@ -3,8 +3,8 @@ import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, get
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
-import { getWaitingTable, getPatientsVisitsByFilterTable, getNurseMedicationsByFilter, getMedicationChartByPrescription, getUpcomingMedicationsTable, getDeliveryNoteTable, getAncVitalSignsTable, getUpcomingNursingChartsTable, getOtherPrescriptionsByFilterNurses, getPrescriptionChartByPrescription } from "./tables/nursesTables";
-import { getVitalSignsTableByVisit, getLabTableByConsultation, getSurgeryNoteTable } from "./tables/doctorstables";
+import { getWaitingTable, getPatientsVisitsByFilterTable, getNurseMedicationsByFilter, getMedicationChartByPrescription, getUpcomingMedicationsTable, getDeliveryNoteTable, getAncVitalSignsTable, getUpcomingNursingChartsTable, getOtherPrescriptionsByFilterNurses, getPrescriptionChartByPrescription, getEmergencyTable } from "./tables/nursesTables";
+import { getVitalSignsTableByVisit, getLabTableByConsultation, getSurgeryNoteTable, getPrescriptionTableByConsultation } from "./tables/doctorstables";
 import { getbillingTableByVisit } from "./tables/billingTables";
 import { getBulkRequestTable } from "./tables/pharmacyTables";
 import { visitDetails } from "./dynamicHTMLfiles/visits";
@@ -33,6 +33,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const viewAncRegisterationModal    = new Modal(document.getElementById('viewAncRegisterationModal'))
     const dischargeModal               = new Modal(document.getElementById('dischargeModal'))
     const bulkRequestModal             = new Modal(document.getElementById('bulkRequestModal'))
+    const investigationAndManagementModal   = new Modal(document.getElementById('investigationAndManagementModal'))
 
     const visitHistoryDiv           = consultationHistoryModal._element.querySelector('#visitHistoryDiv')
     const addVitalsignsDiv          = document.querySelectorAll('#addVitalsignsDiv')
@@ -59,14 +60,16 @@ window.addEventListener('DOMContentLoaded', function () {
     const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
     const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
     const moreHistoryBtn            = consultationHistoryModal._element.querySelector('#moreHistoryBtn')
+    const resourceInput             = document.querySelector('#resource')
+    const addInvestigationAndManagmentBtn   = investigationAndManagementModal._element.querySelector('#addInvestigationAndManagementBtn')
 
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
-    const [outPatientsTab, inPatientsTab, ancPatientsTab, bulkRequestsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-bulkRequests-tab')]
+    const [outPatientsTab, inPatientsTab, ancPatientsTab, bulkRequestsTab, emergencyTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-emergency-tab')]
     
     bmiCalculator(document.querySelectorAll('#height, .weight'))
     lmpCalculator(document.querySelectorAll('#lmp'), document.querySelectorAll('#registerationDiv'))
 
-    let inPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable
+    let inPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable, emergencyTable
 
     const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient')
     const waitingTable = getWaitingTable('waitingTable')
@@ -99,6 +102,14 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    emergencyTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#emergencyTable' )){
+            $('#emergencyTable').dataTable().fnDraw()
+        } else {
+            emergencyTable = getEmergencyTable('emergencyTable', 'nurse')
+        }
+    })
+
     waitingBtn.addEventListener('click', function () {
         waitingTable.draw()
     })
@@ -125,7 +136,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #waitingTable').forEach(table => {
+    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #waitingTable, #emergencyTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const consultationDetailsBtn    = event.target.closest('.consultationDetailsBtn')
             const vitalsignsBtn             = event.target.closest('.vitalSignsBtn, .ancVitalSignsBtn')
@@ -135,6 +146,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const historyBtn                = event.target.closest('.historyBtn')
             const viewMedicationBtn         = event.target.closest('.viewMedicationBtn')
             const viewOtherPrescriptionsBtn = event.target.closest('.viewOtherPrescriptionsBtn')
+            const addPrescriptionBtn        = event.target.closest('.addPrescriptionBtn')
             const viewer = 'nurse'
             let [iteration, count]        = [0, 0]
     
@@ -203,7 +215,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (viewMedicationBtn){
                 viewMedicationBtn.setAttribute('disabled', 'disabled')
                 const tableId = medicationPrescriptionsModal._element.querySelector('.medicationsTable').id
-                const visitId = viewMedicationBtn.getAttribute('data-id')
+                const visitId = viewMedicationBtn.getAttribute('data-visitid')
                 populatePatientSponsor(medicationPrescriptionsModal, viewMedicationBtn)
                 getNurseMedicationsByFilter(tableId, null, medicationPrescriptionsModal._element, visitId)
     
@@ -266,6 +278,20 @@ window.addEventListener('DOMContentLoaded', function () {
                     }
                 })
             }
+
+            if (addPrescriptionBtn){
+                addPrescriptionBtn.setAttribute('disabled', 'disabled')
+                resourceInput.setAttribute('data-sponsorcat', addPrescriptionBtn.getAttribute('data-sponsorcat'))
+                investigationAndManagementModal._element.querySelector('.investigationAndManagementDiv').classList.remove('d-none')
+                const btn = investigationAndManagementModal._element.querySelector('#addInvestigationAndManagementBtn')
+                const visitId =  addPrescriptionBtn.dataset?.id
+                const conId = null
+                populatePatientSponsor(investigationAndManagementModal, addPrescriptionBtn)
+                btn.setAttribute('data-visitid', visitId)
+                getPrescriptionTableByConsultation('prescriptionTableConReview', conId, visitId, investigationAndManagementModal._element)
+                investigationAndManagementModal.show()
+                setTimeout(()=> {addPrescriptionBtn.removeAttribute('disabled')}, 1000)
+            }
         })
     })
 
@@ -326,14 +352,68 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal, #medicationPrescriptionsModal, #consultationHistoryModal').forEach(modal => {
+    // All consultation resource inputs
+    resourceInput.addEventListener('input', function () {
+            const div = resourceInput.parentElement.parentElement.parentElement.parentElement.parentElement
+            const datalistEl = div.querySelector(`#resourceList${div.dataset.div}`)
+            if (resourceInput.value.length > 2) {
+                http.get(`/resources/list/emergency`, {params: {resource: resourceInput.value, sponsorCat: resourceInput.dataset.sponsorcat}}).then((response) => {
+                    displayResourceList(datalistEl, response.data)
+                })
+            }
+            const selectedOption = datalistEl.options.namedItem(resourceInput.value)
+            if (selectedOption){
+                resourceInput.setAttribute('data-resourcevalues', [selectedOption.getAttribute('data-id'), selectedOption.getAttribute('data-cat')])
+                if (selectedOption.getAttribute('data-cat') == 'Medications'){
+                    div.querySelector('.pres').classList.remove('d-none')
+                } else {
+                    div.querySelector('.qty').classList.remove('d-none')
+                    div.querySelector('#quantity').value = 1
+                    div.querySelector('.pres').classList.add('d-none')
+                }
+                resourceInput.value = selectedOption.getAttribute('data-plainname')
+            }
+        })
+        
+        addInvestigationAndManagmentBtn.addEventListener('click', () => {
+                const div = addInvestigationAndManagmentBtn.parentElement.parentElement.parentElement
+                addInvestigationAndManagmentBtn.setAttribute('disabled', 'disabled')
+                const [resource, resourceCategory] = div.querySelector('.resource').getAttribute('data-resourcevalues').split(',')
+                const [visitId, divPrescriptionTableId, conId] = [addInvestigationAndManagmentBtn.dataset?.visitid, '#'+div.querySelector('.prescriptionTable').id, null]
+                let data = {...getDivData(div), resource, resourceCategory, visitId, conId}
+                
+                http.post(`prescription/${resource}`, {...data}, {"html": div})
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        new Toast(div.querySelector('#saveInvestigationAndManagementToast'), {delay:2000}).show()
+                        clearDivValues(div)
+                        clearValidationErrors(div)
+                    }
+                    if ($.fn.DataTable.isDataTable( divPrescriptionTableId )){
+                        $(divPrescriptionTableId).dataTable().fnDraw()
+                    }
+
+                    div.querySelector('#quantity').value = 1
+                    addInvestigationAndManagmentBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    console.log(error)
+                    addInvestigationAndManagmentBtn.removeAttribute('disabled')
+                }) 
+            })
+    
+
+    document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal, #medicationPrescriptionsModal, #consultationHistoryModal, #investigationAndManagementModal, #bulkRequestModal, #vitalsignsModal, #ancVitalsignsModal, #chartMedicationModal').forEach(modal => {
             modal.addEventListener('hide.bs.modal', function(event) {
             regularTreatmentDiv.innerHTML = ''
             ancTreatmentDiv.innerHTML = ''
             visitHistoryDiv.innerHTML = ''
             outPatientsVisitTable.draw()
+            waitingTable.draw()
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+            bulkRequestsTable ? bulkRequestsTable.draw() : ''
+            emergencyTable ? emergencyTable.draw() : ''
         })
     })
 
@@ -346,7 +426,6 @@ window.addEventListener('DOMContentLoaded', function () {
                     const isAnc     = addBtn.getAttribute('data-patienttype') == 'ANC'
                     const visitId   = addBtn.getAttribute('data-id')
                     const ancRegId  = addBtn.getAttribute('data-ancregid')
-                    console.log(isAnc, ancRegId)
                     const tableId   = div.parentNode.parentNode.querySelector('.vitalsTable').id
                     let data = { ...getDivData(div), visitId, ancRegId }
                     const url = isAnc ? '/ancvitalsigns' : '/vitalsigns'
@@ -498,7 +577,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     // review consultation loops
-    document.querySelectorAll('#treatmentDiv, #medicationPrescriptionsModal, #otherPrescriptionsModal, #visitHistoryDiv').forEach(div => {
+    document.querySelectorAll('#treatmentDiv, #medicationPrescriptionsModal, #otherPrescriptionsModal, #visitHistoryDiv, #emergencyTable').forEach(div => {
         div.addEventListener('click', function (event) {
             const collapseConsultationBtn   = event.target.closest('.collapseConsultationBtn')
             const collapseVisitBtn          = event.target.closest('.collapseVisitBtn')
@@ -914,18 +993,14 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    bulkRequestModal._element.addEventListener('hide.bs.modal', function () {
-        bulkRequestsTable ? bulkRequestsTable.draw() : ''
-    })
-
-    document.querySelectorAll('#vitalsignsModal, #ancVitalsignsModal').forEach(modal => {
-        modal.addEventListener('hide.bs.modal', function(event) {
-            outPatientsVisitTable.draw()
-            waitingTable.draw()
-            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-        })
-    })
+    // document.querySelectorAll('#vitalsignsModal, #ancVitalsignsModal').forEach(modal => {
+    //     modal.addEventListener('hide.bs.modal', function(event) {
+    //         outPatientsVisitTable.draw()
+    //         waitingTable.draw()
+    //         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+    //         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+    //     })
+    // })
 })
 
 function openNurseModals(modal, button, { id, visitId, ancRegId, patientType, ...data }) {
@@ -962,8 +1037,18 @@ function openNurseModals1(modal, button, { id, visitId, ancRegId, patientType, c
     } else {
         button.setAttribute('href', `https://portal.sandrahospitalmkd.com/Consultations/History?CardNumber=${cardNo}`)
     }
+}
 
-    // modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
-    // modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-ancregid', ancRegId)
-    // modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-patienttype', patientType)
+function displayResourceList(datalistEl, data) {
+    data.forEach(line => {
+        const option = document.createElement("OPTION")
+        option.setAttribute('id', 'resourceOption')
+        option.setAttribute('value', line.name)
+        option.setAttribute('data-id', line.id)
+        option.setAttribute('name', line.name)
+        option.setAttribute('data-cat', line.category)
+        option.setAttribute('data-plainname', line.plainName)
+
+        !datalistEl.options.namedItem(line.name) ? datalistEl.appendChild(option) : ''
+    })
 }
