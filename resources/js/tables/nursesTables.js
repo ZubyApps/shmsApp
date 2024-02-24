@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, detailsBtn, displayPaystatus, getMinsDiff, histroyBtn, prescriptionStatusContorller, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, detailsBtn, detailsBtn1, displayPaystatus, getMinsDiff, histroyBtn, prescriptionStatusContorller, sponsorAndPayPercent } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     return new DataTable('#'+tableId, {
@@ -84,7 +84,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                 const chartables = row.chartableMedications
                     return `
                     <div class="d-flex flex">
-                        <button class=" btn btn${chartables < 1 ? '-outline' : ''}-primary viewMedicationBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }">
+                        <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewMedicationBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }">
                             ${(chartables < 1 ? '' : chartables) + ' ' + row.givenCount + '/' + row.doseCount}
                         </button>
                     </div>`
@@ -95,14 +95,13 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                 const isAnc = row.patientType == 'ANC'
                         return `
                         <div class="d-flex flex" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }" data-patientid="${ row.patientId }" data-ancregid="${ row.ancRegId }">
-                                <button class=" btn btn${chartables < 1 ? '-outline' : ''}-primary viewOtherPrescriptionsBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }">
+                                <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewOtherPrescriptionsBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }">
                                     ${(chartables < 1 ? '' : chartables) + ' ' + row.doneCount + '/' + row.scheduleCount}
                                 </button>
                                 ${ row.ancRegId ? 
                                     `<button class="${isAnc ? '' : 'd-none'} ms-1 btn btn-outline-primary bi bi-check-circle-fill tooltip-test" title="view" id="viewRegisterationBtn"></button> <button class="${isAnc ? '' : 'd-none'} ms-1 btn btn-outline-primary bi bi-pencil-fill tooltip-test" title="edit" id="editRegisterationBtn"></button>`: 
                                     `<button class="${isAnc ? '' : 'd-none'} ms-1 btn btn-outline-primary bi bi-plus-square ancRegisterationBtn tooltip-test" title="register"></button>` }
                         </div>`
-                    // }
                 }
             },
             {data: row => function () {
@@ -117,7 +116,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                         } else {
                             return `
                             <div class="d-flex flex-">
-                                <button class=" btn btn-outline-primary ancVitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-patienttype="${ row.patientType }" id="ancVitalSignsBtn">
+                                <button class=" btn btn-outline-primary ancVitalSignsBtn tooltip-test px-2" title="Add Vitals Signs" data-id="${ row.id }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-patienttype="${ row.patientType }" id="ancVitalSignsBtn">
                                 <i class="bi bi-check-circle-fill">${row.ancVitalSigns}</i>
                                 </button>
                             </div>`
@@ -133,7 +132,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                             } else {
                                 return `
                                 <div class="d-flex flex-">
-                                    <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                                    <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test px-2" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
                                     <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
                                     </button>
                                 </div>`
@@ -144,7 +143,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
             {data: row => admissionStatus(row)},
             {
                 sortable: false,
-                data: row => detailsBtn(row)},
+                data: row => tableId === 'inPatientsVisitTable' ? detailsBtn1(row) : detailsBtn(row)},
         ]
     });
 }
@@ -288,7 +287,6 @@ const getNurseMedicationsByFilter = (tableId, conId, modal, visitId, isHistory) 
 }
 
 const getOtherPrescriptionsByFilterNurses = (tableId, conId, modal, visitId, isHistory) => {
-    console.log(isHistory)
     const medicationTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/prescription/load/others', data: {
@@ -319,7 +317,7 @@ const getOtherPrescriptionsByFilterNurses = (tableId, conId, modal, visitId, isH
                 `
                 <div class="d-flex flex- ${row.closed || !row.chartable ? 'd-none' : ''}">
                     ${row.doseComplete ? 'Complete' : row.discontinued ? 'Discontinued' : `
-                        <button type="button" id="chartPrescriptionBtn" class="btn btn${row.prescriptionCharts.length ? '' : '-outline'}-primary chartPrescriptionBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}", data-resource="${row.resource}" data-prescription="${row.prescription}" data-prescribedBy="${row.prescribedBy}" data-patient="${row.patient}" data-sponsor="${row.sponsor}" data-prescribed="${row.prescribedFormatted}" data-consultation="${row.conId}" data-visit="${row.visitId}">
+                        <button type="button" id="chartPrescriptionBtn" class="btn btn${row.prescriptionCharts.length ? '' : '-outline'}-primary chartPrescriptionBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}", data-resource="${row.resource}" data-prescription="${row.note}" data-prescribedBy="${row.prescribedBy}" data-patient="${row.patient}" data-sponsor="${row.sponsor}" data-prescribed="${row.prescribedFormatted}" data-consultation="${row.conId}" data-visit="${row.visitId}">
                             ${row.prescriptionCharts.length ? row.doseComplete ? 'Complete' : 'Charted' : 'Create'}
                         </button>`
                     }
@@ -507,7 +505,8 @@ const getPrescriptionChartByPrescription = (tableId, prescriptionId, modal) => {
     return medicationChartTable
 }
 
-const getUpcomingMedicationsTable = (tableId, bsComponent, type) => {
+const getUpcomingMedicationsTable = (tableId, bsComponent, type, button, span) => {
+    let [diffCount1, diffCount2] = [[], []]
     const allMedicationChartTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax: '/medicationchart/load/upcoming',
@@ -517,14 +516,30 @@ const getUpcomingMedicationsTable = (tableId, bsComponent, type) => {
             emptyTable: 'No medication has been charted'
         },
         rowCallback: (row, data) => {
-            const diff = getMinsDiff(new Date(), new Date(data.rawDateTime))
-            if (diff > 15 && diff < 30){
-                setInterval(() => {row.classList.toggle('table-warning')}, 1000)
-            } 
-            if (diff < 15){
-                setInterval(() => {row.classList.toggle('table-danger')}, 500)
+                const diff = getMinsDiff(new Date(), new Date(data.rawDateTime))
+                if (diff > 15 && diff < 30){
+                    row.classList.add('table-warning')
+                    button.classList.remove('btn-primary')
+                    button.classList.add('colour-change')
+                    diffCount1.push(diff)
+                } else if (diff < 15){
+                    row.classList.add('table-danger')
+                    button.classList.remove('btn-primary')
+                    button.classList.add('colour-change1')
+                    diffCount2.push(diff)
+                }         
+            },
+        drawCallback: function (settings) {
+            if (diffCount1.length || diffCount2.length){
+                span.innerHTML = diffCount1.length + diffCount2.length
+                diffCount1 = []
+                diffCount2 = []
+            } else {
+                span.innerHTML = ''
+                button.classList.add('btn-primary')
+                button.classList.remove('colour-change', 'colour-change1')
             }
-    },
+        },
         columns: [
             {data: "patient"},
             {data: row => () => {
@@ -543,7 +558,7 @@ const getUpcomingMedicationsTable = (tableId, bsComponent, type) => {
                 data: row =>  `
                 <div class="d-flex flex-">
                 ${row.discontinued ? 'Discontinued' : `
-                    <button type="submit" id="giveMedicationBtn" class="ms-1 btn btn-primary giveMedicationBtn tooltip-test" data-table="${tableId}" title="give medication" data-id="${ row.id}" data-dose="${row.dose}" data-prescription="${row.prescription}" data-patient="${row.patient}" data-treatment="${row.treatment}">
+                    <button type="submit" id="giveMedicationBtn" class="ms-1 btn btn-primary giveMedicationBtn tooltip-test px-1" data-table="${tableId}" title="give medication" data-id="${ row.id}" data-dose="${row.dose}" data-prescription="${row.prescription}" data-patient="${row.patient}" data-treatment="${row.treatment}">
                     ${row.doseCount}<i class="bi bi-clipboard-plus"></i>${row.count}
                     </button>`
                 }
@@ -552,16 +567,11 @@ const getUpcomingMedicationsTable = (tableId, bsComponent, type) => {
             },
         ]
     });
-
-    bsComponent.addEventListener(`hidden.bs.${type}`, function () {
-        for (var i = 1; i < 99999; i++)
-        window.clearInterval(i);
-    })
-
+    // console.log(diffCount)
     return allMedicationChartTable
 }
 
-const getUpcomingNursingChartsTable = (tableId, bsComponent, type) => {
+const getUpcomingNursingChartsTable = (tableId, bsComponent, type, button) => {
     const allNursingChartsTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax: '/nursingchart/load/upcoming',
@@ -573,10 +583,13 @@ const getUpcomingNursingChartsTable = (tableId, bsComponent, type) => {
         rowCallback: (row, data) => {
             const diff = getMinsDiff(new Date(), new Date(data.rawDateTime))
             if (diff > 15 && diff < 30){
-                setInterval(() => {row.classList.toggle('table-warning')}, 1000)
-            } 
-            if (diff < 15){
-                setInterval(() => {row.classList.toggle('table-danger')}, 500)
+                row.classList.add('table-danger')
+                button.classList.remove('btn-primary')
+                button.classList.add('colour-change')
+            } else if (diff < 15){
+                row.classList.add('table-danger')
+                button.classList.remove('btn-primary')
+                button.classList.add('colour-change1')
             }
     },
         columns: [
@@ -597,7 +610,7 @@ const getUpcomingNursingChartsTable = (tableId, bsComponent, type) => {
                 data: row =>  `
                 <div class="d-flex flex-">
                 ${row.discontinued ? 'Discontinued' : `
-                    <button type="submit" id="reportServiceBtn" class="ms-1 btn btn-primary reportServiceBtn tooltip-test" data-table="${tableId}" title="Report Service" data-id="${ row.id}" data-dose="${row.dose}" data-instruction="${row.instruction}" data-patient="${row.patient}" data-care="${row.care}">
+                    <button type="submit" id="reportServiceBtn" class="ms-1 btn btn-primary reportServiceBtn tooltip-test px-1" data-table="${tableId}" title="Report Service" data-id="${ row.id}" data-dose="${row.dose}" data-instruction="${row.instruction}" data-patient="${row.patient}" data-care="${row.care}">
                     ${row.scheduleCount}<i class="bi bi-clipboard-plus"></i>${row.count}
                     </button>`
                 }
@@ -606,11 +619,6 @@ const getUpcomingNursingChartsTable = (tableId, bsComponent, type) => {
             },
         ]
     });
-
-    bsComponent.addEventListener(`hidden.bs.${type}`, function () {
-        for (var i = 1; i < 99999; i++)
-        window.clearInterval(i);
-    })
 
     return allNursingChartsTable
 }
@@ -752,4 +760,43 @@ const getEmergencyTable = (tableId, viewer) => {
     });
 }
 
-export {getWaitingTable, getPatientsVisitsByFilterTable, getNurseMedicationsByFilter, getMedicationChartByPrescription, getPrescriptionChartByPrescription, getOtherPrescriptionsByFilterNurses, getUpcomingMedicationsTable, getDeliveryNoteTable, getAncVitalSignsTable, getUpcomingNursingChartsTable, getEmergencyTable}
+const getNursesReportTable = (tableId, visitId, modal) => {
+    const nursesRportTable = new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:   {url: '/nursesreport/load/', data: {
+            'visitId': visitId,
+        }},
+        orderMulti: true,
+        // searching:false,
+        // lengthChange: false,
+        language: {
+            emptyTable: 'No Report'
+        },
+        columns: [
+            {data: "date"},
+            {data: "report"},
+            {data: "writtenBy"},
+            {data: row => function () {
+                return `
+                <div class="d-flex flex- ${ row.closed ? 'd-none' : ''}">
+                    <button class="ms-1 btn btn-outline-primary editNursesReportBtn tooltip-test" title="edit report" id="editNursesReportBtn" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button type="submit" class="ms-1 btn btn-outline-primary deleteNursesReportBtn tooltip-test" title="delete" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+            `
+                }
+            },
+        ]
+    });
+
+    modal._element.addEventListener('hidden.bs.modal', function () {
+        nursesRportTable.destroy()
+    })
+
+    return nursesRportTable
+}
+
+export {getWaitingTable, getPatientsVisitsByFilterTable, getNurseMedicationsByFilter, getMedicationChartByPrescription, getPrescriptionChartByPrescription, getOtherPrescriptionsByFilterNurses, getUpcomingMedicationsTable, getDeliveryNoteTable, getAncVitalSignsTable, getUpcomingNursingChartsTable, getEmergencyTable, getNursesReportTable}

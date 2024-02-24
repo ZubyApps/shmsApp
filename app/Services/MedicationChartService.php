@@ -50,7 +50,7 @@ class MedicationChartService
     public function updateRecord(Request $data, MedicationChart $medicationChart, User $user): MedicationChart
     {
        $medicationChart->update([
-           'dose_given' => $data->doseGiven.$data->unit,
+           'dose_given' => $data->doseGiven ? $data->doseGiven.$data->unit : null,
            'time_given' => Carbon::now(),
            'not_given'  => $data->notGiven,
            'given_by'   => $user->id,

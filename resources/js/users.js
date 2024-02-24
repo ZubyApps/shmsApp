@@ -2,7 +2,7 @@ import { Modal} from "bootstrap";
 import { clearDivValues, getDivData, clearValidationErrors, openModals } from "./helpers"
 import http from "./http";
 import jQuery, { error } from "jquery";
-import { getAllStaffTable } from "./tables/usersTables";
+import { getActiveStaffTable, getAllStaffTable } from "./tables/usersTables";
 
 window.addEventListener('DOMContentLoaded', function () {
 
@@ -14,6 +14,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const passwordDiv       = editStaffModal._element.querySelector('.passwordDiv') 
 
     const newStaffBtn       = document.getElementById('newStaffBtn')
+    const activeUsersBtn    = document.getElementById('activeUsersBtn')
     const registerStaffBtn  = document.getElementById('registerStaffBtn')
     const saveStaffBtn      = document.getElementById('saveStaffBtn')
     const designateBtn      = document.getElementById('designateBtn')
@@ -23,6 +24,11 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     const allStaffTable = getAllStaffTable('allStaffTable')
+    const activeStaffTable = getActiveStaffTable('activeStaffTable')
+
+    activeUsersBtn.addEventListener('click', function () {
+        activeStaffTable.draw()
+    })
 
     registerStaffBtn.addEventListener('click', function () {
         registerStaffBtn.setAttribute('disabled', 'disabled')

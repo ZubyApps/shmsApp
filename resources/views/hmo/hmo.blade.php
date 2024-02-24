@@ -10,6 +10,10 @@
 @include('hmo.approvalModal', ['title' => 'Approve Medication/Treatment', 'isUpdate' => false, 'id' => 'approvalModal'])
 @include('hmo.makeBillModal', ['title' => "Make Patient's Bill", 'isEdit' => false, 'id' => 'makeBillModal'])
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
+@include('extras.labResultModal', ['title' => 'Lab Result', 'dept' => 'Lab', 'isPharmacy' => false, 'id' => 'labResultModal'])
+@include('hmo.reconciliationModal', ['title' => 'Reconciliation', 'id' => 'reconciliationModal'])
+@include('extras.medicalReportListModal', ['title' => 'Medical Report List', 'isDoctor' => false, 'id' => 'medicalReportListModal' ])
+@include('extras.viewMedicalReportModal', ['title' => '', 'isUpdate' => true, 'id' => 'viewMedicalReportModal' ])
 
 
 
@@ -110,15 +114,17 @@
                 <i class="bi bi-list-check"></i>
                 Waiting List
             </button>
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="hmoApprovalListBtn"
+            <button class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas" id="hmoApprovalListBtn"
                 data-bs-target="#hmoApprovalListOffcanvas" aria-controls="hmoApprovalListOffcanvas">
                 <i class="bi bi-list-check"></i>
-                PHIS Approval List
+                PHIS Approval List <span class="badge text-bg-danger" id="hmoApprovalListCount"></span>
+                {{-- <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="hmoApprovalListCount"></span> --}}
             </button>
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="nhisApprovalListBtn"
+            <button class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas" id="nhisApprovalListBtn"
                 data-bs-target="#nhisApprovalListOffcanvas" aria-controls="nhisApprovalListOffcanvas">
                 <i class="bi bi-list-check"></i>
-                NHIS Approval List
+                NHIS Approval List <span class="badge text-bg-danger" id="nhisApprovalListCount"></span>
+                {{-- <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="nhisApprovalListCount"></span> --}}
             </button>
         </div>
 
@@ -135,8 +141,8 @@
                     <button class="nav-link" id="nav-sentBills-tab" data-bs-toggle="tab" data-bs-target="#nav-sentBills"
                         type="button" role="tab" aria-controls="nav-sentBills" aria-selected="false">Sent Bills</button>
 
-                    <button class="nav-link" id="nav-reporst-tab" data-bs-toggle="tab" data-bs-target="#nav-reports"
-                        type="button" role="tab" aria-controls="nav-reports" aria-selected="false">Reports</button>
+                    <button class="nav-link" id="nav-hmoReports-tab" data-bs-toggle="tab" data-bs-target="#nav-hmoReports"
+                        type="button" role="tab" aria-controls="nav-hmoReports" aria-selected="false">Reports</button>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
@@ -211,7 +217,7 @@
                                     <th>Doctor</th>
                                     <th>Diagnosis</th>
                                     <th>Sent By</th>
-                                    <th>Last 30days</th>
+                                    {{-- <th>Last 30days</th> --}}
                                     <th>Total HmsBill</th>
                                     <th>Total HmoBill</th>
                                     <th>Details</th>
@@ -219,57 +225,67 @@
                             </thead>
                             <tbody>
                             </tbody>
+                            <tfoot>
+                                <tr class="">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
                 <!-- reports table -->
-                <div class="tab-pane fade" id="nav-reports" role="tabpanel" aria-labelledby="nav-reports-tab"
+                <div class="tab-pane fade" id="nav-hmoReports" role="tabpanel" aria-labelledby="nav-hmoReports-tab"
                     tabindex="0">
-                    <div class="py-4 justify-content-center">
-                        <table id="reportsTable" class="table table-hover align-center table-sm">
+                    <x-form-div class="col-xl-8 pt-2 reportsDatesDiv">
+                        <x-input-span id="filterListLabel">Category List<x-required-span /></x-input-span>
+                        <select class="form-select form-select-md" name="category" id="category">
+                            <option value="">All</option>
+                            <option value="HMO">HMO</option>
+                            <option value="NHIS">NHIS</option>
+                            <option value="Retainership">Retainership</option>
+                        </select>
+                        <x-input-span class="">Start</x-input-span>
+                        <x-form-input type="date" name="startDate" id="startDate" />
+                        <x-input-span class="">End</x-input-span>
+                        <x-form-input type="date" name="endDate" id="endDate" />
+                        <button class="input-group-text searchReportsBtn">Serach</button>
+                    </x-form-div>
+                    <div class="py-2 justify-content-center">
+                        <table id="hmoReportsTable" class="table table-sm hmoReportsTable">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Patient</th>
                                     <th>Sponsor</th>
-                                    <th>Doctor</th>
-                                    <th>Diagnosis</th>
-                                    <th>Status</th>
-                                    <th>Verified</th>
-                                    <th>Treatment</th>
-                                    <th>Bill-Sent</th>
+                                    <th>Visits</th>
+                                    <th>Bills Sent</th>
+                                    <th>HMS Bill</th>
+                                    <th>Bill Difference</th>
+                                    <th>Total Paid</th>
+                                    <th>Paid - Bills Sent</th>
+                                    <th>Paid - HMS Bill</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>09/10/2023</td>
-                                    <td>SH21/4012 Josephine Ene Ode</td>
-                                    <td>Axe Mansard</td>
-                                    <td>Dr Toby</td>
-                                    <td>F12Z-Acute Spundolosis</td>
-                                    <td>Out-Patient</td>
-                                    <td class="fst-italic">Pending</td>
-                                    <td class="fst-italic">No Code</td>
-                                    <td class="fst-italic">Not Sent</td>
-                                    {{-- <td>
-                                        <button class="btn btn-outline-primary" id="treatmentDetailsBtn">Sent</button>
-                                    </td> --}}
-                                </tr>
-                                <tr>
-                                    <td>08/10/2023</td>
-                                    <td>SH21/1403 Shine Ewara</td>
-                                    <td>Health Partners</td>
-                                    <td>Dr Tony</td>
-                                    <td>F12Z-Severe Malaria</td>
-                                    <td>In-Patient</td>
-                                    <td class="fst-italic">Verified</td>
-                                    <td class="fst-italic">HP-45srt6if1</td>
-                                    <td class="fst-italic">Sent</td>
-                                    {{-- <td>
-                                        <button class="btn btn-outline-primary" id="treatmentDetailsBtn">Sent</button>
-                                    </td> --}}
-                                </tr>
                             </tbody>
+                            <tfoot> class="fw-semibold"
+                                <tr class="">
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>

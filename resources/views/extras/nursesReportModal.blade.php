@@ -18,35 +18,23 @@
                                     <x-input-span>Sponsor</x-input-span>
                                     <x-form-input name="sponsorName" value="" id="sponsorName" readonly/>
                                 </x-form-div>
-                                <x-form-div class="col-xl-6">
-                                    <x-input-span>Age</x-input-span>
-                                    <x-form-input name="age" value="" id="age" readonly/>
-                                </x-form-div>
-                                <x-form-div class="col-xl-6">
-                                    <x-input-span>Sex</x-input-span>
-                                    <x-form-input name="sex" value="" id="sex" readonly/>
-                                </x-form-div>
                             </div>
                         </div>
                         <div class="mb-2 form-control">
-                            <x-form-span class="fs-5">Medical Reports</x-form-span>
+                            <x-form-span class="fs-5">Nurses Report</x-form-span>
                             <div class="text-start py-4">
-                                @if ($isDoctor)
-                                <button type="button" id="newMedicalReportBtn" class="btn btn-primary">
+                                <button type="button" id="newNursesReportBtn" class="btn btn-primary">
                                     <i class="bi bi-plus-circle me-1"></i>
-                                    New Medical report
+                                    New Report
                                 </button>
-                                @endif
                             </div>
                             <div class="row overflow-auto my-3">
-                                <table id="medicalReportTable" class="table table-sm medicalReportTable">
+                                <table id="nursesReportTable" class="table table-sm nursesReportTable">
                                     <thead>
                                         <tr>
                                             <th>Date</th>
-                                            <th>Type</th>
-                                            <th>Doctor</th>
-                                            <th>Recipient</th>
-                                            <th>Requested by</th>
+                                            <th>Report</th>
+                                            <th>Written By</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>

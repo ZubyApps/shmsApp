@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, detailsBtn, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
 
 const getPatientsVisitsByFilterTable = (tableId, filter) => {
     return new DataTable('#'+tableId, {
@@ -38,7 +38,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
     });
 }
 
-const getInpatientsInvestigationsTable = (tableId) => {
+const getInpatientsInvestigationsTable = (tableId, notLab) => {
     const investigationsTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  '/investigations/load/inpatients',
@@ -53,25 +53,19 @@ const getInpatientsInvestigationsTable = (tableId) => {
             {data: "doctor"},
             {data: "patient"},
             {data: "diagnosis"},
-            {data: row => `<span class="text-primary fw-semibold">${row.resource}</span>`},
+            {data: row => function () {
+                const credit = row.sponsorCategoryClass == 'Credit'
+                const NHIS = row.sponsorCategory == 'NHIS'
+                return `<span class="text-primary fw-semibold">${row.resource +' '+ displayPaystatus(row, credit, NHIS)}</span>`
+                }
+            },
             {
                 sortable: false,
                 data: row =>  `
-                        <div class="dropdown">
-                            <i class="btn btn-outline-primary bi bi-gear" role="button" data-bs-toggle="dropdown"></i>
-
-                            <ul class="dropdown-menu">
-                                <li class="">
-                                    <a class="btn btn-outline-primary dropdown-item addResultBtn" id="addResultBtn" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                                        <i class="bi bi-plus-square"></i> Add Result
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="btn dropdown-item edit-result-btn" data-investigation="${row.resource}" data-table="${tableId}" title="edit result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
-                                        <i class="bi bi-upload"></i> Upload Doc
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="d-flex flex- ${notLab ? 'd-none' : ''}">
+                            <button class=" btn btn-primary border-0 addResultBtn tooltip-test" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                                <i class="bi bi-plus-square"></i> Add Result
+                            </button>
                         </div>
                 `      
             },
@@ -81,10 +75,12 @@ const getInpatientsInvestigationsTable = (tableId) => {
     return investigationsTable
 }
 
-const getOutpatientsInvestigationTable = (tableId) => {
+const getOutpatientsInvestigationTable = (tableId, notLab) => {
     const investigationsTable =  new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  '/investigations/load/outpatients',
+        ajax:  {url: '/investigations/load/outpatients', data: {
+            'notLab': notLab
+        }},
         paging: true,
         orderMulti: false,
         language: {
@@ -96,19 +92,30 @@ const getOutpatientsInvestigationTable = (tableId) => {
             {data: "doctor"},
             {data: "patient"},
             {data: "diagnosis"},
-            {data: row => `<span class="text-primary fw-semibold">${row.resource}</span>`},
+            {data: row => function () {
+                const credit = row.sponsorCategoryClass == 'Credit'
+                const NHIS = row.sponsorCategory == 'NHIS'
+                return `<span class="text-primary fw-semibold">${row.resource +' '+ displayPaystatus(row, credit, NHIS)}</span>`
+                }
+            },
             {
                 sortable: false,
                 data: row => function () {
                     if (row.result){
                         return `
                             <div class="d-flex flex-">
-                                <button class=" btn btn-outline-primary border-0 vitalSignsBtn tooltip-test" title="result added">
+                                <button class=" btn btn-primary border-0 resultAddedBtn tooltip-test" title="result added">
                                 <i class="bi bi-check-circle-fill"></i>
                                 </button>
                             </div>`
                         } else {
-                            return ``
+                            return `
+                            <div class="d-flex flex- ${notLab ? 'd-none' : ''}">
+                                <button class=" btn btn-primary border-0 addResultBtn tooltip-test" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                                    <i class="bi bi-plus-square"></i> Add Result
+                                </button>
+                            </div>
+                            `
                         }
                     }  
             },

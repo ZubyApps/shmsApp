@@ -43,28 +43,28 @@
                                 <x-input-span>Email</x-input-span>
                                 <x-form-input name="email{{ $isUpdate ? 1 : '' }}" autocomplete="username" id="email{{ $isUpdate ? 1 : '' }}"/>
                             </x-form-div>
-                        </div>
+                        {{-- </div>
 
-                        <div class="row">
+                        <div class="row"> --}}
                             <x-form-div>
-                                <x-input-span>Address</x-input-span>
+                                <x-input-span>Address<x-required-span /></x-input-span>
                                 <x-form-textarea name="address{{ $isUpdate ? 1 : '' }}" id="address{{ $isUpdate ? 1 : '' }}" rows="1"></x-form-textarea>
                             </x-form-div>
 
                             <x-form-div>
-                                <x-input-span>Highest Qaulification</x-input-span>
+                                <x-input-span>Highest Qaulification<x-required-span /></x-input-span>
                                 <x-form-input name="highestQualification{{ $isUpdate ? 1 : '' }}" id="highestQualification{{ $isUpdate ? 1 : '' }}"/>
                             </x-form-div>
 
                             <x-form-div>
-                                <x-input-span>Date Of Birth</x-input-span>
+                                <x-input-span>Date Of Birth<x-required-span /></x-input-span>
                                 <x-form-input type="date" name="dateOfBirth{{ $isUpdate ? 1 : '' }}" id="dateOfBirth{{ $isUpdate ? 1 : '' }}"/>
                             </x-form-div>
-                        </div>
+                        {{-- </div> --}}
 
-                        <div class="row">
+                        {{-- <div class="row"> --}}
                             <x-form-div>
-                                <x-input-span>Sex</x-input-span>
+                                <x-input-span>Sex<x-required-span /></x-input-span>
                                 <select class="form-select form-select-md" name="sex{{ $isUpdate ? 1 : '' }}" id="sex{{ $isUpdate ? 1 : '' }}">
                                     <option value="">Select Sex</option>
                                     <option value="female">Female</option>
@@ -86,31 +86,31 @@
                             </x-form-div>
 
                             <x-form-div>
-                                <x-input-span>State of Origin</x-input-span>
+                                <x-input-span>State of Origin<x-required-span /></x-input-span>
                                 <x-select-states name="stateOfOrigin{{ $isUpdate ? 1 : '' }}" id="stateOfOrigin{{ $isUpdate ? 1 : '' }}"></x-select-states>
                             </x-form-div>
-                        </div>
+                        {{-- </div> --}}
 
-                        <div class="row">
+                        {{-- <div class="row"> --}}
                             <x-form-div>
-                                <x-input-span>Next of Kin</x-input-span>
+                                <x-input-span>Next of Kin<x-required-span /></x-input-span>
                                 <x-form-input name="nextOfKin{{ $isUpdate ? 1 : '' }}" id="nextOfKin{{ $isUpdate ? 1 : '' }}"/>
                             </x-form-div>
 
                             <x-form-div>
-                                <x-input-span>Next of Kin Relationship</x-input-span>
+                                <x-input-span>Next of Kin Relationship<x-required-span /></x-input-span>
                                 <x-select-nok name="nextOfKinRship{{ $isUpdate ? 1 : '' }}" id="nextOfKinRship{{ $isUpdate ? 1 : '' }}"></x-select-nok>
                             </x-form-div>
 
                             <x-form-div>
-                                <x-input-span>Next of Kin Phone</x-input-span>
+                                <x-input-span>Next of Kin Phone<x-required-span /></x-input-span>
                                 <x-form-input type="number" name="nextOfKinPhone{{ $isUpdate ? 1 : '' }}" id="nextOfKinPhone{{ $isUpdate ? 1 : '' }}"/>
                             </x-form-div>
-                        </div>
+                        {{-- </div> --}}
 
-                        <div class="row">
+                        {{-- <div class="row"> --}}
                             <x-form-div>
-                                <x-input-span>Date of Employment</x-input-span>
+                                <x-input-span>Date of Employment<x-required-span /></x-input-span>
                                 <x-form-input type="datetime-local" name="dateOfEmployment{{ $isUpdate ? 1 : '' }}" id="dateOfEmployment{{ $isUpdate ? 1 : '' }}"/>
                             </x-form-div>
 
@@ -123,23 +123,23 @@
                                 <x-input-span>Special Note</x-input-span>
                                 <x-form-input name="specialNote{{ $isUpdate ? 1 : '' }}" id="specialNote{{ $isUpdate ? 1 : '' }}"/>
                             </x-form-div>
-                        </div>
+                        {{-- </div> --}}
 
-                        <div class="row">
-                            <div class="m-2 form-switch hover changePasswordDiv {{ $isUpdate ? '' : 'd-none' }}">
+                        {{-- <div class="row"> --}}
+                            <x-form-div class="m-2 form-switch hover changePasswordDiv {{ $isUpdate ? '' : 'd-none' }}">
                                 <input class="form-check-input" id="changePasswordRadioBtn" type="checkbox" role="switch" name="changePassword" value="" id="changePassword">
-                                <label class="form-check-label" for="changePassword">
+                                <label class="form-check-label ms-1" for="changePassword">
                                     Change Password?
                                 </label>
-                            </div>
-                            <div class="passwordDiv {{ $isUpdate ? 'd-none' : '' }}">
+                            </x-form-div>
+                            <div class="passwordDiv {{ $isUpdate ? 'd-none' : '' }} row p-0 m-0">
                                 <x-form-div>
-                                    <x-input-span>Password</x-input-span>
+                                    <x-input-span>Password<x-required-span /></x-input-span>
                                     <x-form-input type="password" name="password" autocomplete="new-password"/>
                                 </x-form-div>
     
                                 <x-form-div>
-                                    <x-input-span>Confirm Password</x-input-span>
+                                    <x-input-span>Confirm Password<x-required-span /></x-input-span>
                                     <x-form-input type="password" name="password_confirmation" />
                                 </x-form-div>
                             </div>

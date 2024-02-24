@@ -28,7 +28,8 @@ class StoreNursingChartRequest extends FormRequest
             'prescriptionId'    => ['required', 'integer', 'exists:'.Prescription::class.',id'],
             'conId'             => ['required', 'integer', 'exists:'.Consultation::class.',id'],
             'visitId'           => ['required', 'integer', 'exists:'.Visit::class.',id'],
-            'service'           => ['required']
+            'service'           => ['required'],
+            'frequency'         => ['required']
         ];
     }
 }

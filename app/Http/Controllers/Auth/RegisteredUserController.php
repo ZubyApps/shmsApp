@@ -55,11 +55,22 @@ class RegisteredUserController extends Controller
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $sponsors = $this->userService->getPaginatedUsers($params);
+        $allSaff = $this->userService->getAllstaffList($params);
        
-        $loadTransformer = $this->userService->getLoadTransformer();
+        $loadTransformer = $this->userService->getAllStaffTransformer();
 
-        return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
+        return $this->datatablesService->datatableResponse($loadTransformer, $allSaff, $params);  
+    }
+
+    public function loadActiveUsers(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $activeStaffList = $this->userService->getActiveStaffList($params);
+       
+        $loadTransformer = $this->userService->getActiveStaffListTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $activeStaffList, $params);  
     }
 
     public function edit(User $user)

@@ -135,6 +135,11 @@ class Visit extends Model
         return $this->hasMany(MedicalReport::class);
     }
 
+    public function nursesReport() 
+    {
+        return $this->hasMany(NursesReport::class);
+    }
+
     public function totalHmsBills()
     {
         $totalBill = 0;
@@ -183,5 +188,15 @@ class Visit extends Model
         }
         
         return $totalPayment;
+    }
+
+    public function totalPaidPrescriptions()
+    {
+        $totalPayments = 0;
+        foreach($this->prescriptions as $prescription){
+            $totalPayments += $prescription->paid;
+        }
+        
+        return $totalPayments;
     }
 }

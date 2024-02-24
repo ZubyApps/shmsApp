@@ -38,7 +38,7 @@
                         </div>
                         <div class="mb-2 form-control">
                             <X-form-div class="py-4">
-                                <table id="prescriptionChartTable" class="table table-hover align-middle table-sm table-striped">
+                                <table id="nursingChartTable" class="table table-hover align-middle table-sm table-striped">
                                     <thead>
                                         <tr>
                                             <th>Service</th>

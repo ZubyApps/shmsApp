@@ -1,11 +1,11 @@
 import { Modal } from "bootstrap"
-import { MaskInput } from "maska"
 import { getDivData, clearDivValues, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, getPatientSponsorDatalistOptionId } from "./helpers"
 import http from "./http"
-import jQuery, { error } from "jquery";
+import $ from 'jquery';
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
+import { getAllPatientsTable, getSponsorsTable } from "./tables/patientsTables";
 
 
 window.addEventListener('DOMContentLoaded', function(){
@@ -32,6 +32,9 @@ window.addEventListener('DOMContentLoaded', function(){
     const patientsTab                       = document.querySelector('#nav-patients-tab')
     const sponsorsTab                       = document.querySelector('#nav-sponsors-tab')
 
+    let sponsorsTable
+
+    const allPatientsTable = getAllPatientsTable('allPatientsTable')
 
     newSponsorBtn.addEventListener('click', function() {
         newSponsorModal.show()
@@ -42,53 +45,12 @@ window.addEventListener('DOMContentLoaded', function(){
         newPatientModal.show()
     })
 
-    updatePatientModal._element.addEventListener('show.bs.modal', function () {
-        
-    })
-
-    const sponsorsTable = new DataTable('#sponsorsTable', {
-        serverSide: true,
-        ajax:  '/sponsors/load',
-        orderMulti: true,
-        search:true,
-        columns: [
-            {data: "name"},
-            {data: "phone"},
-            {data: "email"},
-            {data: "category"},
-            {data: row => () =>{
-                if (row.approval == 'false'){
-                    return 'No'
-                } else {
-                    return 'Yes'
-                }
-                }},
-            {data: "registrationBill"},
-            {data: "createdAt"},
-            {
-                sortable: false,
-                data: row => function () {
-                    if (row.count < 1) {
-                        return `
-                        <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                            <i class="bi bi-pencil-fill"></i>
-                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
-                            <i class="bi bi-trash3-fill"></i>
-                        </button>
-                        </div>
-                    `
-                    } else {
-                        return `
-                        <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary updateBtn" data-id="${ row.id }">
-                            <i class="bi bi-pencil-fill"></i>
-                        </button>
-                        </div>
-                    `
-                    }
-                }}
-        ]
+    sponsorsTab.addEventListener('click', function() {
+        if ($.fn.DataTable.isDataTable( '#sponsorsTable' )){
+            $('#sponsorsTable').dataTable().fnDraw()
+        } else {
+            sponsorsTable = getSponsorsTable('sponsorsTable')
+        }
     })
 
 
@@ -166,53 +128,6 @@ window.addEventListener('DOMContentLoaded', function(){
         })
     })
 
-    const allPatientsTable = new DataTable('#allPatientsTable', {
-        serverSide: true,
-        ajax:  '/patients/load',
-        orderMulti: true,
-        search:true,
-        columns: [
-            {data: "card"},
-            {data: "name"},
-            {data: "phone"},
-            {data: "sex"},
-            {data: "age"},
-            {data: "sponsor"},
-            {data: "category"},
-            {data: "createdAt"},
-            {
-                sortable: false,
-                data: row => function () {
-                    if (row.count < 1) {
-                        return `
-                        <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary initiateVisitBtn tooltip-test ${row.active > 0 ? 'd-none' : ''}" title="initiate visit" data-id="${ row.id }" data-patient="${ row.patient }">
-                            <i class="bi bi-arrow-up-right-square-fill"></i>
-                            </button>
-                            <button class="ms-1 btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                            <i class="bi bi-pencil-fill"></i>
-                            </button>
-                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
-                            <i class="bi bi-trash3-fill"></i>
-                            </button>
-                        </div>
-                    `
-                    } else {
-                        return `
-                        <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary initiateVisitBtn tooltip-test ${row.active > 0 ? 'd-none' : ''}" title="initiate visit" data-id="${ row.id }" data-patient="${ row.patient }">
-                                <i class="bi bi-arrow-up-right-square-fill"></i>
-                            </button>
-                            <button class="ms-1 btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                                <i class="bi bi-pencil-fill"></i>
-                            </button>
-                        </div>
-                    `
-                    } 
-                }}
-        ]
-    })
-
     document.querySelector('#allPatientsTable').addEventListener('click', function (event) {
         const updateBtn    = event.target.closest('.updateBtn')
         const deleteBtn  = event.target.closest('.deleteBtn')
@@ -263,10 +178,6 @@ window.addEventListener('DOMContentLoaded', function(){
 
     patientsTab.addEventListener('click', function() {
         allPatientsTable.draw()
-    })
-
-    sponsorsTab.addEventListener('click', function() {
-        sponsorsTable.draw()
     })
 
     registerPatientBtn.addEventListener('click', function () {

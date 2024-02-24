@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('apgar_score');
             $table->string('birth_weight');
             $table->string('mode_of_delivery');
-            $table->string('length_of_parity');
+            $table->string('parity');
             $table->string('head_circumference');
             $table->string('sex');
             $table->string('ebl');

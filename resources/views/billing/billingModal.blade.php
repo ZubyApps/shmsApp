@@ -13,7 +13,7 @@
                             <table id="billingTable" class="table align-middle">
                                 <thead>
                                     <tr>
-                                        <th></th>
+                                        <th>Date</th>
                                         <th></th>
                                         <th></th>
                                         <th></th>

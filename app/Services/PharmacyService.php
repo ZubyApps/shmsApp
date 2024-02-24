@@ -143,6 +143,8 @@ class PharmacyService
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
+                'discharged'        => $visit->discharge_reason,
+                'reason'            => $visit->discharge_reason,
                 'closed'            => $visit->closed,
             ];
          };

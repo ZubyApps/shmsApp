@@ -161,6 +161,11 @@ class User extends Authenticatable
         return $this->hasMany(MedicalReport::class);
     }
 
+    public function nursesReport() 
+    {
+        return $this->hasMany(NursesReport::class);
+    }
+
     public function nameInFull()
     {
         return $this->firstname.' '.$this->middlename.' '.$this->lastname;

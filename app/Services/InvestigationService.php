@@ -112,6 +112,8 @@ class InvestigationService
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
+                'discharged'        => $visit->discharge_reason,
+                'reason'            => $visit->discharge_reason,
                 'closed'            => $visit->closed,
             ];
          };
@@ -125,6 +127,7 @@ class InvestigationService
         if (! empty($params->searchTerm)) {
             return $this->prescription
                     ->whereRelation('resource', 'category', 'Investigations')
+                    ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
                     ->where(function (Builder $query) use($params) {
                         $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -141,6 +144,7 @@ class InvestigationService
 
         return $this->prescription
                     ->whereRelation('resource', 'category', 'Investigations')
+                    ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
                     ->whereRelation('visit', 'consulted', '!=', null)
                     ->where(function (Builder $query) {
                         $query->whereRelation('consultation', 'admission_status', '=', 'Inpatient')
@@ -159,6 +163,7 @@ class InvestigationService
         if (! empty($params->searchTerm)) {
             return $this->prescription
                         ->whereRelation('resource', 'category', 'Investigations')
+                        ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
                         ->where(function (Builder $query) use($params) {
                             $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -172,11 +177,24 @@ class InvestigationService
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->prescription
+        if ($data->notLab){
+            return $this->prescription
                     ->whereRelation('resource', 'category', 'Investigations')
+                    ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
                     ->whereRelation('visit', 'consulted', '!=', null)
                     ->whereRelation('consultation', 'admission_status', '=', 'Outpatient')
                     ->where('created_at', '>', (new Carbon)->subDays(2))
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return $this->prescription
+                    ->whereRelation('resource', 'category', 'Investigations')
+                    ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
+                    ->whereRelation('visit', 'consulted', '!=', null)
+                    ->whereRelation('consultation', 'admission_status', '=', 'Outpatient')
+                    ->where('result_date', null)
+                    // ->where('created_at', '>', (new Carbon)->subDays(2))
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -196,6 +214,12 @@ class InvestigationService
                                        $prescription->consultation->assessment,
                 'resource'          => $prescription->resource->name,
                 'result'            => $prescription->result_date,
+                'sponsorCategory'       => $prescription->visit->sponsor->sponsorCategory->name,
+                'sponsorCategoryClass'  => $prescription->visit->sponsor->sponsorCategory->pay_class,
+                'approved'          => $prescription->approved,
+                'rejected'          => $prescription->rejected,
+                'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
+                'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
             ];
          };
     }

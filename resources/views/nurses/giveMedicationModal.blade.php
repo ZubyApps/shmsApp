@@ -38,12 +38,12 @@
                             <x-select-unit aria-label="unit" name="unit" id="unit"></x-select-unit>
                         </x-form-div>
                         <x-form-div class="col-xl-6">
-                            <x-input-span>Not Given?</x-input-span>
-                            <x-select-not-given aria-label="notDone" name="notGiven" id="notGiven"></x-select-not-given>
-                        </x-form-div>
-                        <x-form-div class="col-xl-6">
                             <x-input-span>Notes</x-input-span>
                             <x-form-input name="note" id="note"/>
+                        </x-form-div>
+                        <x-form-div class="col-xl-6">
+                            <x-input-span>Not Given?</x-input-span>
+                            <x-select-not-given aria-label="notDone" name="notGiven" id="notGiven"></x-select-not-given>
                         </x-form-div>
                     </div>
                 </div>

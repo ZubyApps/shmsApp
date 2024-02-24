@@ -3,22 +3,22 @@ import $ from 'jquery';
 import http from "./http";
 import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, loadingSpinners, clearValidationErrors, openModals, populatePatientSponsor, displayItemsList, getDatalistOptionId, handleValidationErrors} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations";
-import { getPatientsVisitsByFilterTable, getInpatientsInvestigationsTable } from "./tables/investigationTables";
+import { getPatientsVisitsByFilterTable, getInpatientsInvestigationsTable, getOutpatientsInvestigationTable } from "./tables/investigationTables";
 import { getLabTableByConsultation } from "./tables/doctorstables";
 import { getBulkRequestTable } from "./tables/pharmacyTables";
+import { forEach } from "jszip";
 
 window.addEventListener('DOMContentLoaded', function () {
-    // const reviewDetailsModal        = new Modal(document.getElementById('treatmentDetailsModal'))
-    const treatmentDetailsModal     = new Modal(document.getElementById('treatmentDetailsModal'))
-    const ancTreatmentDetailsModal  = new Modal(document.getElementById('ancTreatmentDetailsModal'))
-    const addResultModal            = new Modal(document.getElementById('addResultModal'))
-    const updateResultModal         = new Modal(document.getElementById('updateResultModal'))
-    const investigationsModal       = new Modal(document.getElementById('investigationsModal'))
-    const bulkRequestModal          = new Modal(document.getElementById('bulkRequestModal'))
-    const labResultModal            = new Modal(document.getElementById('labResultModal'))
-    const investigationsList        = new Offcanvas(document.getElementById('offcanvasInvestigations'))
+    const treatmentDetailsModal         = new Modal(document.getElementById('treatmentDetailsModal'))
+    const ancTreatmentDetailsModal      = new Modal(document.getElementById('ancTreatmentDetailsModal'))
+    const addResultModal                = new Modal(document.getElementById('addResultModal'))
+    const updateResultModal             = new Modal(document.getElementById('updateResultModal'))
+    const investigationsModal           = new Modal(document.getElementById('investigationsModal'))
+    const bulkRequestModal              = new Modal(document.getElementById('bulkRequestModal'))
+    const labResultModal                = new Modal(document.getElementById('labResultModal'))
+    const inpatientsInvestigationsList  = new Offcanvas(document.getElementById('offcanvasInvestigations'))
+    const outpatientsInvestigationsList = new Offcanvas(document.getElementById('offcanvasOutpatientsInvestigations'))
 
-    // const treatmentDiv              = document.querySelector('#treatmentDiv')
     const regularTreatmentDiv       = treatmentDetailsModal._element.querySelector('#treatmentDiv')
     const ancTreatmentDiv           = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
     const addResultDiv              = addResultModal._element.querySelector('#resultDiv')
@@ -36,7 +36,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const ancPatientsTab            = document.querySelector('#nav-ancPatients-tab')
     const bulkRequestsTab           = document.querySelector('#nav-bulkRequests-tab')
 
-    const testLabel                 = labResultModal._element.querySelector('.testLabel')
+    const testListDiv               = labResultModal._element.querySelector('.testListDiv')
 
      // Auto textarea adjustment
      const textareaHeight = 90;
@@ -45,6 +45,7 @@ window.addEventListener('DOMContentLoaded', function () {
     let inPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable
 
     const inpatientsInvestigationsTale = getInpatientsInvestigationsTable('inpatientInvestigationsTable')
+    const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable')
 
     const outPatientsVisitsTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient')
 
@@ -74,9 +75,15 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    investigationsList._element.addEventListener('show.bs.offcanvas', function () {inpatientsInvestigationsTale.draw()})
+    document.querySelectorAll('#offcanvasInvestigations, #offcanvasOutpatientsInvestigations').forEach(canvas => {
+        canvas.addEventListener('show.bs.offcanvas', function () {
+            inpatientsInvestigationsTale.draw()
+            outpatientInvestigationTable.draw()
+        })
 
-    investigationsList._element.addEventListener('hide.bs.offcanvas', function () {
+    })
+
+    inpatientsInvestigationsList._element.addEventListener('hide.bs.offcanvas', function () {
         outPatientsVisitsTable.draw()
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
@@ -93,9 +100,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 const btnHtml = consultationDetailsBtn.innerHTML
                 consultationDetailsBtn.innerHTML = loadingSpinners()
     
-                // const visitId = consultationDetailsBtn.getAttribute('data-id')
-                // const patientType = consultationDetailsBtn.getAttribute('data-patientType')
-
                 const [visitId, patientType, ancRegId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-patientType'), consultationDetailsBtn.getAttribute('data-ancregid')]
                 const isAnc = patientType === 'ANC'
                 const [modal, div, displayFunction] = isAnc ? [ancTreatmentDetailsModal, ancTreatmentDiv, AncPatientReviewDetails] : [treatmentDetailsModal, regularTreatmentDiv, regularReviewDetails]
@@ -164,18 +168,20 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelector('#inpatientInvestigationsTable').addEventListener('click', (event) => {
-        const addResultBtn      = event.target.closest('#addResultBtn')
-
-        if (addResultBtn) {
-            createResultBtn.setAttribute('data-id', addResultBtn.getAttribute('data-id'))
-            createResultBtn.setAttribute('data-table', addResultBtn.getAttribute('data-table'))
-            addResultModal._element.querySelector('#patient').value = addResultBtn.getAttribute('data-patient')
-            addResultModal._element.querySelector('#sponsorName').value = addResultBtn.getAttribute('data-sponsor')
-            addResultModal._element.querySelector('#diagnosis').value = addResultBtn.getAttribute('data-diagnosis')
-            addResultModal._element.querySelector('#investigation').value = addResultBtn.getAttribute('data-investigation')
-            addResultModal.show()
-        }
+    document.querySelectorAll('#inpatientInvestigationsTable, #outpatientInvestigationsTable').forEach(table => {
+        table.addEventListener('click', (event) => {
+            const addResultBtn      = event.target.closest('#addResultBtn')
+    
+            if (addResultBtn) {
+                createResultBtn.setAttribute('data-id', addResultBtn.getAttribute('data-id'))
+                createResultBtn.setAttribute('data-table', addResultBtn.getAttribute('data-table'))
+                addResultModal._element.querySelector('#patient').value = addResultBtn.getAttribute('data-patient')
+                addResultModal._element.querySelector('#sponsorName').value = addResultBtn.getAttribute('data-sponsor')
+                addResultModal._element.querySelector('#diagnosis').value = addResultBtn.getAttribute('data-diagnosis')
+                addResultModal._element.querySelector('#investigation').value = addResultBtn.getAttribute('data-investigation')
+                addResultModal.show()
+            }
+        })
     })
 
     document.querySelectorAll('#treatmentDiv, #investigationModalDiv').forEach(div => {
@@ -235,6 +241,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 labResultModal._element.querySelector('#test').innerHTML = downloadResultBtn.getAttribute('data-investigation')
                 labResultModal._element.querySelector('#patientsId').innerHTML = downloadResultBtn.getAttribute('data-patient')
                 labResultModal._element.querySelector('#result').innerHTML = downloadResultBtn.getAttribute('data-result')
+                labResultModal._element.querySelector('#resultDate').innerHTML = downloadResultBtn.getAttribute('data-sent')
                 labResultModal._element.querySelector('#StaffFullName').innerHTML = downloadResultBtn.getAttribute('data-stafffullname')
                 labResultModal.show()
             }
@@ -263,9 +270,8 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    testLabel.addEventListener('click', function () {
-        console.log(testLabel)
-        testLabel.setAttribute('contentEditable', 'true')
+    testListDiv.addEventListener('click', function () {
+        testListDiv.setAttribute('contentEditable', 'true')
     })
 
     createResultBtn.addEventListener('click', function () {

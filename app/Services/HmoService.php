@@ -11,7 +11,9 @@ use App\Models\User;
 use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HmoService
 {
@@ -185,6 +187,8 @@ class HmoService
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
+                'age'               => $visit->patient->age(),
+                'sex'               => $visit->patient->sex,
                 'doctor'            => $visit->doctor->username,
                 'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
@@ -205,6 +209,8 @@ class HmoService
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
                 '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
+                'discharged'        => $visit->discharge_reason,
+                'reason'            => $visit->discharge_reason,
                 'hmoDoneBy'         => $visit->hmoDoneBy?->username,
                 'closed'            => $visit->closed,
 
@@ -286,6 +292,7 @@ class HmoService
                 'rejected'          => $prescription->rejected,
                 'rejectedBy'        => $prescription->rejectedBy?->username,
                 'dispensed'         => $prescription->dispensed,
+                'hmoDoneBy'         => $prescription->visit->hmoDoneBy?->username
             ];
          };
     }
@@ -393,12 +400,10 @@ class HmoService
         }
 
         if ($data->startDate && $data->endDate){
-            // dd($data->startDate, $data->endDate);
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('hmo_done_by', '!=', null)
-                    ->where('created_at', '>=', $data->startDate)
-                    ->where('created_at', '<=', $data->endDate)
+                    ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
                         ->orWhereRelation('sponsor', 'category_name', 'NHIS')
@@ -440,9 +445,177 @@ class HmoService
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
-                '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
+                // '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
 
             ];
         };
+    }
+
+    public function getReportSummaryTable(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+        $current    = Carbon::now();
+
+        if (! empty($params->searchTerm)) {
+            return DB::table('visits')
+                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount')
+                        ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                        ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                        ->where('visits.hmo_done_by', '!=', null)
+                        ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->groupBy('sponsor')
+                        ->orderBy('sponsor')
+                        ->orderBy('visitsCount')
+                        ->get()
+                        ->toArray();
+        }
+
+        if ($data->category){
+            if ($data->startDate && $data->endDate){
+                return DB::table('visits')
+                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount')
+                            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                            ->where('sponsors.category_name', $data->category)
+                            ->WhereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                            ->where('visits.hmo_done_by', '!=', null)
+                            ->groupBy('sponsor')
+                            ->orderBy('sponsor')
+                            ->orderBy('visitsCount')
+                            ->get()
+                            ->toArray();
+            }
+            return DB::table('visits')
+                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount')
+                            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                            ->where('sponsors.category_name', $data->category)
+                            ->where('visits.hmo_done_by', '!=', null)
+                            ->groupBy('sponsor')
+                            ->orderBy('sponsor')
+                            ->orderBy('visitsCount')
+                            ->get()
+                            ->toArray();
+        }
+
+        if ($data->startDate && $data->endDate){
+            return DB::table('visits')
+                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount')
+                        ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                        ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                        ->WhereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                        ->where('visits.hmo_done_by', '!=', null)
+                        ->groupBy('sponsor')
+                        ->orderBy('sponsor')
+                        ->orderBy('visitsCount')
+                        ->get()
+                        ->toArray();
+        }
+
+        return DB::table('visits')
+                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount')
+                        ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                        ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                        ->whereMonth('visits.created_at', $current->month)
+                        ->whereYear('visits.created_at', $current->year)
+                        ->where('visits.hmo_done_by', '!=', null)
+                        ->groupBy('sponsor')
+                        ->orderBy('sponsor')
+                        ->orderBy('visitsCount')
+                        ->get()
+                        ->toArray();   
+    }
+
+    public function getVisitsForReconciliation(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'asc';
+
+            if (! empty($params->searchTerm)) {
+                return $this->visit
+                            ->where('sponsor_id', $data->sponsorId)
+                            ->where('consulted', '!=', null)
+                            ->where(function (Builder $query) use($params) {
+                                $query->where('icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
+                                ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescriptions.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            if ($data->from && $data->to){
+                return $this->visit
+                        ->where('sponsor_id', $data->sponsorId)
+                        ->where('consulted', '!=', null)
+                        ->WhereBetween('created_at', [$data->from.' 00:00:00', $data->to.' 23:59:59'])
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+        return $this->visit
+                ->where('sponsor_id', $data->sponsorId)
+                ->where('consulted', '!=', null)
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
+    public function getVisitsForReconciliationTransformer(): callable
+    {
+       return  function (Visit $visit) {
+            return [
+                'id'                    => $visit->id,
+                'came'                  => (new Carbon($visit->created_at))->format('D/m/y g:ia'),                
+                'patient'               => $visit->patient->patientId(),
+                'consultBy'             => $visit->doctor->username,
+                'diagnosis'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
+                                           Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
+                                           Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment, 
+                'sponsorCategory'       => $visit->sponsor->category_name,
+                'sponsorCategoryClass'  => $visit->sponsor->sponsorCategory->pay_class,
+                'closed'                => $visit->closed,
+                'totalHmsBill'          => $visit->total_hms_bill,
+                'totalHmoBill'          => $visit->total_hmo_bill,
+                'totalPaid'             => $visit->total_paid,
+                'prescriptions'         => $visit->prescriptions->map(fn(Prescription $prescription)=> [
+                    'id'                => $prescription->id ?? '',
+                    'prescribed'        => (new Carbon($prescription->created_at))->format('D/m/y g:ia') ?? '',
+                    'item'              => $prescription->resource->name,
+                    'prescription'      => $prescription->prescription ?? '',
+                    'qtyBilled'         => $prescription->qty_billed,
+                    'unit'              => $prescription->resource->unit_description,
+                    'hmoBill'           => $prescription->hmo_bill ?? '',
+                    'hmsBill'           => $prescription->hms_bill ?? '',
+                    'approved'          => $prescription->approved, 
+                    'rejected'          => $prescription->rejected,
+                    'hmoNote'           => $prescription->hmo_note ?? '',
+                    'statusBy'          => $prescription->approvedBy?->username ?? $prescription->rejectedBy?->username ?? '',
+                    'note'              => $prescription->note ?? '',
+                    'status'            => $prescription->status ?? '',
+                    'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
+                    'paid'              => $prescription->paid ?? '',
+                ]),
+            ];
+         };
+    }
+
+    public function savePayment(Request $data, Prescription $prescription, User $user)
+    {
+        
+        return DB::transaction(function () use($data, $prescription, $user) {
+            
+            $prescription->update([
+                'paid'      => $data->amountPaid,
+                'paid_by'   => $user->id
+            ]);
+            
+            $prescription->visit->total_paid = $prescription->visit->totalPaidPrescriptions() + $prescription->visit->totalPayments();
+            $prescription->visit->save();
+
+            return $prescription;
+        });
     }
 }

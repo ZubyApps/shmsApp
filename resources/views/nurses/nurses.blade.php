@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-@vite(['resources/js/nurses.js'])
+@vite(['resources/css/colourblink.scss', 'resources/js/nurses.js'])
 
 @include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isAnc' => false, 'isLab' => false, 'isHmo' => false, 'id' => 'treatmentDetailsModal'])
 @include('doctors.consultationHistoryModal', ['title' => 'Consultation History', 'isAnc' => false, 'id' => 'consultationHistoryModal'])
@@ -23,6 +23,9 @@
 @include('doctors.dischargeModal', ['title' => 'Discharge Patient', 'isNurses' => true, 'id' => 'dischargeModal'])
 @include('extras.bulkRequestModal', ['title' => 'Bulk Request', 'dept' => 'Nurses', 'isPharmacy' => false, 'id' => 'bulkRequestModal'])
 @include('extras.investigationAndManagementModal', ['title' => 'Emergency Management', 'isNurse' => true, 'id' => 'investigationAndManagementModal'])
+@include('extras.nursesReportModal', ['title' => 'Nurses Report', 'isNurses' => true, 'id' => 'nursesReportModal'])
+@include('extras.nursesReportTemplateModal', ['title' => 'New Report', 'isUpdate' => false, 'id' => 'newNursesReportTemplateModal' ])
+@include('extras.nursesReportTemplateModal', ['title' => 'Edit Report', 'isUpdate' => true, 'id' => 'editNursesReportTemplateModal' ])
 
 <div class="container p-1 mt-5">
     <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="upcomingMedicationsoffcanvas"
@@ -33,7 +36,7 @@
         </div>
         <div class="offcanvas-body">
             <div class="py-4 ">
-                <table id="upcomingMedicationsTable" class="table table-hover align-middle table-sm">
+                <table id="upcomingMedicationsTable" class="table align-middle table-sm">
                     <thead>
                         <tr>
                             <th>Patient</th>
@@ -114,15 +117,13 @@
             <i class="bi bi-list-check"></i>
             Waiting List
         </button>
-        <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas"
-            data-bs-target="#upcomingMedicationsoffcanvas" aria-controls="upcomingMedicationsoffcanvas">
+        <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="inpatientsMedChartBtn" data-bs-target="#upcomingMedicationsoffcanvas" aria-controls="upcomingMedicationsoffcanvas">
             <i class="bi bi-list-check"></i>
-            Inpatients Medication Chart
+            Inpatients Medication Chart <span class="badge text-bg-danger" id="inpatientMedicationBadgeSpan"></span>
         </button>
-        <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas"
-            data-bs-target="#upcomingNursingChartsoffcanvas" aria-controls="upcomingNursingChartsoffcanvas">
+        <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="nursingChartBtn" data-bs-target="#upcomingNursingChartsoffcanvas" aria-controls="upcomingNursingChartsoffcanvas">
             <i class="bi bi-list-check"></i>
-            Inpatients Nursing Chart
+            Inpatients Nursing Chart <span class="badge text-bg-danger" id="inpatientNursingBadgeSpan"></span>
         </button>
     </div>
 

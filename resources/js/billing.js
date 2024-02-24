@@ -28,7 +28,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient', 'consulted')
     const waitingTable = getWaitingTable('waitingTable')
-    const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable')
+    const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable', true)
 
     outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw()})
 

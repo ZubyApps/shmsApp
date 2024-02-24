@@ -46,6 +46,11 @@ class Patient extends Model
         return $this->hasMany(MedicalReport::class);
     }
 
+    public function nursesReport() 
+    {
+        return $this->hasMany(NursesReport::class);
+    }
+
     public function patientId()
     {
         return $this->card_no.' '.$this->first_name.' '.$this->middle_name.' '.$this->last_name;

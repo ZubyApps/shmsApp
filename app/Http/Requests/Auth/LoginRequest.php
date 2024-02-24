@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use Carbon\Carbon;
 use DateTime;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
@@ -49,7 +50,10 @@ class LoginRequest extends FormRequest
             ]);
         }
 
-        request()->user()->update(['login' => new DateTime()]);
+        request()->user()->update([
+            'login'     => new Carbon(),
+            'is_active' => true,
+        ]);
         
         RateLimiter::clear($this->throttleKey());
     }

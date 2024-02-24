@@ -47,6 +47,7 @@ class DoctorService
         }
 
         if ($data->filterBy == 'My Patients'){
+            // dd($data->filerBy);
             return $this->visit
             ->where('consulted', '!=', null)
             ->where('user_id', '=', $user->id)
@@ -64,7 +65,7 @@ class DoctorService
                     ->where('closed', false)
                     ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
                     ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-                    ->where('user_id', '=', $user->id)
+                    // ->where('user_id', '=', $user->id)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -193,6 +194,7 @@ class DoctorService
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
+                'discharged'        => $visit->discharge_reason,
                 'reason'            => $visit->discharge_reason,
                 'remark'            => $visit->discharge_remark ?? '',
                 '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',

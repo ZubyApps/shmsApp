@@ -309,7 +309,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 editMedicalReportTemplateModal._element.querySelector('#patient').value = medicalReportBtn.getAttribute('data-patient')
                 editMedicalReportTemplateModal._element.querySelector('#age').value = medicalReportBtn.getAttribute('data-age')
                 editMedicalReportTemplateModal._element.querySelector('#sex').value = medicalReportBtn.getAttribute('data-sex')
-                medicalReportTable = getMedicalReportTable('medicalReportTable', visitId, medicalReportListModal._element)
+                medicalReportTable = getMedicalReportTable('medicalReportTable', visitId, medicalReportListModal._element, true)
                 medicalReportListModal.show()
             }
         })

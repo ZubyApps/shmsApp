@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, displayPaystatus, sponsorAndPayPercent } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     return new DataTable('#'+tableId, {
@@ -67,7 +67,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) =
                 sortable: false,
                 data: row => `
                 <div class="dropdown">
-                    <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown">
+                    <a class="btn btn-outline-primary tooltip-test text-decoration-none ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown">
                         More${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
                     </a>
                         <ul class="dropdown-menu">
@@ -96,7 +96,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
         ajax:  {url: '/billing/bill', data: {
             'visitId': visitId,
         }},
-        orderMulti: false,
+        orderMulti: true,
         search:true,
         searching: false,
         lengthChange: false,
@@ -109,7 +109,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
         },
         columns: [
             {
-                sortable: false,
+                sortable: true,
                 data: "came"
             },
             {

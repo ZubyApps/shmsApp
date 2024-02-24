@@ -264,7 +264,7 @@ function loadingSpinners() {
 const detailsBtn = (row) => {
     return `
             <div class="d-flex flex-">
-                <button class="btn btn-outline-primary tooltip-test consultationDetailsBtn" title="${row.closed ? 'record closed': ''}" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">Details${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}</button>
+                <button class="btn btn-outline-primary tooltip-test consultationDetailsBtn ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed': ''}" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">Details${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}</button>
             </div>
             `      
 }
@@ -275,22 +275,19 @@ const prescriptionStatusContorller = (row, tableId) => {
             </span>`      
 }
 
-const reviewBtn1 = (row) => {
+const detailsBtn1 = (row) => {
     return `
     <div class="dropdown">
-        <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown">
+        <a class="btn btn-outline-primary tooltip-test text-decoration-none ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown">
             More${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
         </a>
             <ul class="dropdown-menu">
             <li>
-                <a class=" btn btn-outline-primary dropdown-item consultationReviewBtn tooltip-test" title="details" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">
-                    Review
+                <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">
+                    Details
                 </a>
-                <a class="dropdown-item patientsBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-staff="${ row.staff }">
-                    More
-                </a>
-                <a class="dropdown-item btn tooltip-test" title="${row.closed ? 'open?': 'close?'}"  data-id="${ row.id }" id="${row.closed ? 'openVisitBtn' : 'closeVisitBtn'}">
-                ${row.closed ? 'Open? <i class="bi bi-unlock-fill"></i>': 'Close? <i class="bi bi-lock-fill"></i>'}
+                <a class="dropdown-item reportsListBtn btn tooltip-test" title="write report"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                    Report
                 </a>
             </li>
         </ul>
@@ -301,7 +298,7 @@ const reviewBtn1 = (row) => {
 const reviewBtn = (row) => {
     return `
     <div class="dropdown">
-        <a class="btn btn-outline-primary tooltip-test text-decoration-none " title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown" data-bs-auto-close='outside'>
+        <a class="btn btn-outline-primary tooltip-test text-decoration-none ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown" data-bs-auto-close='outside'>
             More${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
         </a>
             <ul class="dropdown-menu">
@@ -368,9 +365,9 @@ const sponsorAndPayPercent = (row) => {
 
 const displayPaystatus = (row, credit, NHIS) => {
     if (credit || NHIS){
-        return  `<i class="bi ${row.approved ? 'bi-check-circle-fill text-primary' : row.rejected ? 'bi-x-circle-fill text-danger' : 'bi-dash-circle-fill text-secondary'} tooltip-test" title=${row.approved ? 'approved' : row.rejected ? 'rejected' : 'not-processed'}></i> ${row.paid || row.paidNhis ? '<i class="bi bi-p-circle-fill text-primary tooltip-test" title="paid"></i>': ''} `
+        return  `<i class="bi ${+row.approved ? 'bi-check-circle-fill text-primary' : row.rejected ? 'bi-x-circle-fill text-danger' : 'bi-dash-circle-fill text-secondary'} tooltip-test" title=${row.approved ? 'approved' : row.rejected ? 'rejected' : 'not processed'}></i> ${row.paid || row.paidNhis ? '<i class="bi bi-p-circle-fill text-primary tooltip-test" title="paid"></i>': ''} `
     } else {
-        return  row.paid ? '<i class="bi bi-p-circle-fill tooltip-test text-primary" title="paid"></i>' : ''
+        return  row.paid ? '<i class="bi bi-p-circle-fill tooltip-test text-primary" title="paid"></i>' : '<i class="bi bi-dash-circle-fill text-secondary tooltip-test" title="not processed"></i>'
     }
 }
 
@@ -530,4 +527,4 @@ const displayItemsList = (datalistEl, data, optionName) => {
     })
 }
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation}
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1}

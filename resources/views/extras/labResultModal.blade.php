@@ -18,18 +18,18 @@
                     <br>
                     <header class="d-flex flex-wrap justify-content-end align-items-top mb-4 px-4">
                         <div class="text-right p-0">
-                            <p>{{ date('F j, Y') }}</p>
+                            <p id="resultDate"></p>
                         </div>
                     </header>
                     <div class="px-4">
                         {{-- <p class="fs-6" name="recipientsAddress" id="recipientsAddress"></p> --}}
                         <span class="fw-semibold">Patient:</span> <span class="text-decoration-underline" name="patientsId" id="patientsId"></span>
                         <div class="text-center">
-                            <div for="basic-url" class="form-label fs-4 fw-semibold testLabel" name="test" id="test"></div>
+                            <div for="basic-url" class="form-label fs-4 mainLabel" name="mainLabel" id="mainLabel">Laboratory Test Result(s)</div>
                         </div>
                         <div class="" id="medicalReportDiv">
-                            <div class="row overflow-auto my-2">
-                                <p class="" id="result" name="result"></p>
+                            <div class="row overflow-auto my-2 testListDiv">
+                                <div class="fw-semibold" name="test" id="test"></div> </span><p class="" id="result" name="result"></p>
                             </div>
                         </div>
                         <div class="row mt-3">

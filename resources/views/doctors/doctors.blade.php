@@ -24,7 +24,7 @@
 @include('doctors.surgeryModal', ['title' => 'View Surgery', 'isUpdate' => false, 'isView' => true, 'id' => 'viewSurgeryModal'])
 @include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
 @include('doctors.newReviewModal', ['title' => 'New Review', 'isUpdate' => false, 'isNurse' => false, 'id' => 'newReviewModal'])
-@include('extras.medicalReportListModal', ['title' => 'Medical Report List', 'isUpdate' => false, 'id' => 'medicalReportListModal' ])
+@include('extras.medicalReportListModal', ['title' => 'Medical Report List', 'isDoctor' => true, 'id' => 'medicalReportListModal' ])
 @include('extras.medicalReportTemplateModal', ['title' => 'New Medical Report', 'isUpdate' => false, 'id' => 'newMedicalReportTemplateModal' ])
 @include('extras.medicalReportTemplateModal', ['title' => 'Edit Medical Report', 'isUpdate' => true, 'id' => 'editMedicalReportTemplateModal' ])
 @include('extras.viewMedicalReportModal', ['title' => '', 'isUpdate' => true, 'id' => 'viewMedicalReportModal' ])

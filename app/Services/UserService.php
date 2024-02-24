@@ -95,7 +95,7 @@ class UserService
         return $user;
     }
 
-    public function getPaginatedUsers(DataTableQueryParams $params)
+    public function getAllstaffList(DataTableQueryParams $params)
     {
         $orderBy    = 'firstname';
         $orderDir   =  'desc';
@@ -118,7 +118,7 @@ class UserService
        
     }
 
-    public function getLoadTransformer(): callable
+    public function getAllStaffTransformer(): callable
     {
        return  function (User $user) {
             return [
@@ -128,10 +128,11 @@ class UserService
                 'employed'          => $user->date_of_employment ? (new Carbon($user->date_of_employment))->format('d/m/Y g:ia') : '',
                 'designation'       => $user?->designation?->designation,
                 'lastLogin'         => $user->login ? (new Carbon($user->login))->format('d/m/Y g:ia') : '',
+                'lastLogout'        => $user->logout ? (new Carbon($user->logout))->format('d/m/Y g:ia') : '',
                 'qualification'     => $user->highest_qualification,
                 'username'          => $user->username,
                 'phone'             => $user->phone_number,
-                'address'           => $user->address,
+                // 'address'           => $user->address,
                 'createdAt'         => (new Carbon($user->created_at))->format('d/m/Y'),
                 'count'             => $user->patients()->count() 
             ];
@@ -161,5 +162,49 @@ class UserService
                     ->orderBy($orderBy, $orderDir)
                     ->get(['id', 'username']);
                     // ->toArray();   
+    }
+
+    public function getActiveStaffList(DataTableQueryParams $params)
+    {
+        $orderBy    = 'firstname';
+        $orderDir   =  'desc';
+
+        if (! empty($params->searchTerm)) {
+            return $this->user
+                        ->where('isActive', true)
+                        ->where('firstname', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('middlename', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('lastname', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->whereRelation('designation', 'access_level', '<', 5)
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return $this->user
+                    ->where('is_active', true)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+
+       
+    }
+
+    public function getActiveStaffListTransformer(): callable
+    {
+       return  function (User $user) {
+            return [
+                'id'                => $user->id,
+                'loggedIn'          => (new Carbon($user->login))->format('d/m/Y g:ia'),
+                'name'              => $user->nameInFull(),
+                // 'employed'          => $user->date_of_employment ? (new Carbon($user->date_of_employment))->format('d/m/Y g:ia') : '',
+                'designation'       => $user?->designation?->designation,
+                // 'lastLogin'         => $user->login ? (new Carbon($user->login))->format('d/m/Y g:ia') : '',
+                // 'qualification'     => $user->highest_qualification,
+                // 'username'          => $user->username,
+                'phone'             => $user->phone_number,
+                // 'address'           => $user->address,
+                // 'createdAt'         => (new Carbon($user->created_at))->format('d/m/Y'),
+                'count'             => $user->patients()->count() 
+            ];
+         };
     }
 }

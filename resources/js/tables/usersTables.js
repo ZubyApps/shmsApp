@@ -6,7 +6,7 @@ import DataTable from 'datatables.net-bs5';
 const getAllStaffTable = (tableId) => {
     const allStaffTable = new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  '/users/load',
+        ajax:  '/users/allstaff',
         orderMulti: true,
         search:true,
         columns: [
@@ -14,10 +14,11 @@ const getAllStaffTable = (tableId) => {
             {data: "employed"},
             {data: row =>  `<span class="btn p-0 border-0 deleteDesignationBtn" data-id="${row.designationId}" >${row.designation ?? ''}</span>` },
             {data: "lastLogin"},
+            {data: "lastLogout"},
             {data: "qualification"},
             {data: "username"},
             {data: "phone"},
-            {data: "address"},
+            // {data: "address"},
             {data: "createdAt"},
             {
                 sortable: false,
@@ -43,7 +44,7 @@ const getAllStaffTable = (tableId) => {
                             <button class=" btn btn-outline-primary designationBtn tooltip-test" title="designation" data-id="${ row.id }" data-name="${row.name}">
                                 <i class="bi bi-arrow-left-circle-fill"></i>
                             </button>
-                            <button class="ms-1 btn btn-outline-primary updateBtn" data-id="${ row.id }">
+                            <button class="ms-1 btn btn-outline-primary updateUserBtn" data-id="${ row.id }">
                                 <i class="bi bi-pencil-fill"></i>
                             </button>
                         </div>
@@ -53,6 +54,53 @@ const getAllStaffTable = (tableId) => {
         ]
     });
     return allStaffTable
+}
+
+const getActiveStaffTable = (tableId) => {
+    const activeStaffTable = new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  '/users/activestaff',
+        orderMulti: true,
+        search:true,
+        columns: [
+            {data: "loggedIn"},
+            {data: "name"},
+            {data: "designation"},
+            {data: "phone"},
+            // {
+            //     sortable: false,
+            //     data: row => function () {
+            //         if (row.count < 1) {
+            //             return `
+            //             <div class="d-flex flex-">
+            //                 <button class=" btn btn-outline-primary designationBtn tooltip-test" title="designation" data-id="${ row.id }" data-name="${row.name}">
+            //                     <i class="bi bi-arrow-left-circle-fill"></i>
+            //                 </button>
+            //                 <button class="ms-1 btn btn-outline-primary updateUserBtn tooltip-test" title="update" data-id="${ row.id }">
+            //                     <i class="bi bi-pencil-fill"></i>
+            //                 </button>
+            //                 <button type="button" class="ms-1 btn btn-outline-primary deleteUserBtn tooltip-test" title="delete" data-id="${ row.id }">
+            //                     <i class="bi bi-trash3-fill"></i>
+            //                 </button>
+            //             </div>
+            //         `
+            //         } else {
+            //             return `
+                        
+            //             <div class="d-flex flex-">
+            //                 <button class=" btn btn-outline-primary designationBtn tooltip-test" title="designation" data-id="${ row.id }" data-name="${row.name}">
+            //                     <i class="bi bi-arrow-left-circle-fill"></i>
+            //                 </button>
+            //                 <button class="ms-1 btn btn-outline-primary updateUserBtn" data-id="${ row.id }">
+            //                     <i class="bi bi-pencil-fill"></i>
+            //                 </button>
+            //             </div>
+            //         `
+            //         }
+            //     }}
+        ]
+    });
+    return activeStaffTable
 }
 
 const getResourceStockDateTable = (tableId) => {
@@ -132,4 +180,4 @@ const getResourceCategoryTable = () => {
     return resourceCategoryTable
 }
 
-export {getAllStaffTable, getResourceStockDateTable, getResourceCategoryTable}
+export {getAllStaffTable, getResourceStockDateTable, getResourceCategoryTable, getActiveStaffTable}

@@ -15,6 +15,7 @@ use App\Http\Controllers\InvestigationController;
 use App\Http\Controllers\MedicalReportController;
 use App\Http\Controllers\MedicationChartController;
 use App\Http\Controllers\NurseController;
+use App\Http\Controllers\NursesReportController;
 use App\Http\Controllers\NursingChartController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PayMethodController;
@@ -67,7 +68,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('users')->group(function () {
         Route::get('', [RegisteredUserController::class, 'create'])->name('users');
         Route::post('', [RegisteredUserController::class, 'store'])->name('register');
-        Route::get('/load', [RegisteredUserController::class, 'loadAllUsers']);
+        Route::get('/allstaff', [RegisteredUserController::class, 'loadAllUsers']);
+        Route::get('/activestaff', [RegisteredUserController::class, 'loadActiveUsers']);
         Route::get('/{user}', [RegisteredUserController::class, 'edit']);
         Route::delete('/{user}', [RegisteredUserController::class, 'destroy']);
         Route::delete('/designate/{designation}', [RegisteredUserController::class, 'removeDesignation']);
@@ -261,7 +263,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/visit/prescriptions', [HmoController::class, 'loadVisitPrescriptions']);
         Route::patch('/bill/{prescription}', [HmoController::class, 'saveHmoBill']);
         Route::patch('/markassent/{visit}', [HmoController::class, 'markBillAsSent']);
-        Route::get('/load/sentbills/', [HmoController::class, 'sentBillsTable']);
+        Route::get('/load/sentbills', [HmoController::class, 'sentBillsTable']);
+        Route::get('/load/summary', [HmoController::class, 'loadReportSummary']);
+        Route::get('/load/reconciliation', [HmoController::class, 'loadReconciliationTable']);
+        Route::patch('/pay/{prescription}', [HmoController::class, 'reconciliationPayments']);
 
     });
 
@@ -347,6 +352,15 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{medicalReport}', [MedicalReportController::class, 'destroy']);
         Route::get('/{medicalReport}', [MedicalReportController::class, 'edit']);
         Route::get('display/{medicalReport}', [MedicalReportController::class, 'displayReport']);
+    });
+
+    Route::prefix('nursesreport')->group(function () {
+        Route::post('/{visit}', [NursesReportController::class, 'store']);
+        Route::get('load', [NursesReportController::class, 'loadNursesReportTable']);
+        Route::patch('/{nursesReport}', [NursesReportController::class, 'update']);
+        Route::delete('/{nursesReport}', [NursesReportController::class, 'destroy']);
+        Route::get('/{nursesReport}', [NursesReportController::class, 'edit']);
+        Route::get('display/{nursesReport}', [NursesReportController::class, 'displayReport']);
     });
 });
 

@@ -36,7 +36,7 @@ class NursingChartService
                 'prescription_id'   => $data->prescriptionId,
                 'consultation_id'   => $data->conId,
                 'visit_id'          => $data->visitId,
-                'care_prescribed'   => $data->dose.$data->unit,
+                'care_prescribed'   => $data->service,
                 'scheduled_time'    => new Carbon($date, $tz),
                 'schedule_count'    => $iteration
             ]);
@@ -99,7 +99,7 @@ class NursingChartService
        return  function (NursingChart $nursingChart) {
             return [
                 'id'                => $nursingChart->id,
-                'care'              => $nursingChart->care_prescribed,
+                'service'           => $nursingChart->care_prescribed,
                 'scheduledTime'     => (new Carbon($nursingChart->scheduled_time))->format('g:iA D dS'),
                 'chartedBy'         => $nursingChart->user->username,
                 'chartedAt'         => (new Carbon($nursingChart->created_at))->format('d/m/y g:ia'),

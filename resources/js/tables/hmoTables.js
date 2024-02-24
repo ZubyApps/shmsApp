@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, detailsBtn, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     return new DataTable('#'+tableId, {
@@ -108,7 +108,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                 sortable: false,
                 data: row => `
                 <div class="dropdown">
-                    <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown">
+                    <a class="btn btn-outline-primary tooltip-test text-decoration-none ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown">
                         More${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
                     </a>
                         <ul class="dropdown-menu">
@@ -119,6 +119,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                             <a class="dropdown-item patientBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-hmodoneby="${ row.hmoDoneBy }">
                                 ${row.hmoDoneBy ? 'Bill sent <i class="bi bi-check-circle-fill tooltip-test text-primary" title="sent"></i>' : 'Make bill'}
                             </a>
+                            <a class="dropdown-item btn btn-outline-primary medicalReportBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-age="${ row.age }" data-sex="${ row.sex }">Report/Refer/Result</a>
                             <a class="dropdown-item closeVisitBtn btn tooltip-test" title="${row.closed ? 'closed': 'close'}"  data-id="${ row.id }">
                             ${row.closed ? '': 'Close'}
                             </a>
@@ -139,8 +140,12 @@ const getApprovalListTable = (tableId, sponsor) => {
         }},
         orderMulti: true,
         search:true,
+        lengthMenu:[25, 40, 80, 200],
         language: {
             emptyTable: 'No items for approval'
+        },
+        drawCallback: function (settings) {
+            var api = this.api() 
         },
         columns: [
             {data: "patient"},
@@ -205,7 +210,7 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
         orderMulti: true,
         search:true,
         language: {
-            emptyTable: "No patient"
+            emptyTable: "No Bills"
         },
         drawCallback: function (settings) {
             var api = this.api()                
@@ -245,7 +250,7 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
                 data: 'hmoBill',
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
-                    <span class="${ row.rejected ? '' : 'hmoBillSpan'} btn btn-white" data-id="${row.id}">${row.rejected ? 'Not approved' : data ?? 'Bill'}</span>
+                    <span class="${row.hmoDoneBy ? 'unmarkSent' : 'hmoBillSpan'} btn btn-white" data-id="${row.id}" data-hmodone"${row.hmoDoneBy}">${row.rejected && !data ? 'Not approved' : data ?? 'Bill'}</span>
                     <input class="ms-1 form-control hmoBillInput d-none" id="hmoBillInput" value="${data ?? ''}">
                 </div>
                 `}
@@ -262,6 +267,7 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
 }
 
 const getSentBillsTable = (tableId, startDate, endDate) => {
+    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
     return new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/load/sentbills/', data: {
@@ -273,14 +279,19 @@ const getSentBillsTable = (tableId, startDate, endDate) => {
         language: {
             emptyTable: "No patient"
         },
+        drawCallback: function (settings) {
+            var api = this.api()
+            $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
+            $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
+        },
         columns: [
             {data: "came"},
             {data: "patient"},
+            {data: row => sponsorAndPayPercent(row)},
             {data: "doctor"},
             {data: "diagnosis"},
-            {data: row => sponsorAndPayPercent(row)},
             {data: "sentBy"},
-            {data: "30dayCount"},
+            // {data: "30dayCount"},
             {data: "totalHmsBill"},
             {data: "totalHmoBill"},
             {
@@ -297,4 +308,173 @@ const getSentBillsTable = (tableId, startDate, endDate) => {
     });
 }
 
-export {getWaitingTable, getVerificationTable, getAllHmoPatientsVisitTable, getApprovalListTable, getVisitPrescriptionsTable, getSentBillsTable}
+const getHmoReportsTable = (tableId, category, startDate, endDate) => {
+    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
+    const reportSummayTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  {url: '/hmo/load/summary', data: {
+            'category': category,
+            'startDate': startDate,
+            'endDate': endDate,
+        }},
+        orderMulti: false,
+        language: {
+            emptyTable: 'No report'
+        },
+        drawCallback: function (settings) {
+            var api = this.api()
+                $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
+                $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
+                $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
+                $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
+                $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
+                $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
+                $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {data: row => `<span class="btn text-decoration-underline showVisitisBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}">${row.sponsor}</span>`},
+            {data: "visitsCount"},
+            {data: row => account.format(row.totalHmoBill)},
+            {data: row => account.format(row.totalHmsBill)},
+            {data: row => account.format(row.totalHmoBill - row.totalHmsBill)},
+            {data: row => account.format(row.totalPaid)},
+            {data: row => account.format(row.totalPaid - row.totalHmoBill)},
+            {data: row => account.format(row.totalPaid - row.totalHmsBill)},
+        ]
+    });
+    
+    return reportSummayTable
+}
+
+const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to) => {
+    const reconciliationTable =  new DataTable(tableId, {
+        serverSide: true,
+        ajax:  {url: '/hmo/load/reconciliation', data: {
+            'sponsorId': sponsorId,
+            'from': from,
+            'to': to,
+        }},
+        paging: true,
+        orderMulti: false,
+        language: {
+            emptyTable: 'No Visits'
+        },
+        rowCallback: (row, data) => {
+                row.classList.add('table-light')
+            return row
+        },
+        columns: [
+            {data: "came"},
+            {data: "patient"},
+            {data: "consultBy"},
+            {data: row =>  `<span class="text-primary fw-semibold">${row.diagnosis}</span>`},
+            {data: "totalHmoBill"},
+            {data: "totalHmsBill"},
+            {data: "totalPaid"},
+        ]
+    });
+
+    function format(data, tableId) {
+        // `d` is the original data object for the row
+        const credit = data?.sponsorCategoryClass == 'Credit'
+        const NHIS = data?.sponsorCategory == 'NHIS'
+        const prescriptions = data?.prescriptions
+        let count = 1
+                if (prescriptions?.length > 0) {
+                    let child = `<table class="table align-middle ">
+                                            <thead >
+                                                <tr class="fw-semibold fs-italics">
+                                                    <td class="text-secondary">S/N</td>
+                                                    <td class="text-secondary">Prescribed</td>
+                                                    <td class="text-secondary">Item</td>
+                                                    <td class="text-secondary">Prescription</td>
+                                                    <td class="text-secondary">Qty</td>
+                                                    <td class="text-secondary">Note</td>
+                                                    <td class="text-secondary">HMO Staff</td>
+                                                    <td class="text-secondary">HMO Bill</td>
+                                                    <td class="text-secondary">HMS Bill</td>
+                                                    <td class="text-secondary">Paid</td>
+                                                </tr>
+                                            </thead>
+                                        <tbody>`
+                                prescriptions.forEach(p => {
+                                        child += `
+                                            <tr>
+                                                <td class="text-secondary">${count++}</td>
+                                                <td class="text-secondary">${p.prescribed}</td>                
+                                                <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold">${p.item +' '+ displayPaystatus(p, credit, NHIS)}</td>                
+                                                <td class="text-secondary">${p.prescription}</td>                
+                                                <td class="text-secondary">${p.qtyBilled+' '+p.unit}</td>
+                                                <td class="text-secondary">${p.note}</td>
+                                                <td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>
+                                                <td class="text-secondary fw-semibold">${p.hmoBill}</td>
+                                                <td class="text-secondary fw-semibold">${p.hmsBill}</td>
+                                                <td class="text-secondary"> 
+                                                    <div class="d-flex text-secondary">
+                                                        <span class="btn payBtnSpan" data-id="${p.id}">${p.paid ? p.paid : 'Pay'}</span>
+                                                        <input class="ms-1 form-control payInput d-none text-secondary" type="number" style="width:6rem;" value="${p.paid ?? ''}" name="amountPaid" id="amountPaid">
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            `
+                                    })
+                            child += `</tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td></td>
+                                            <td class="text-secondary fw-bold"></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>`
+                    return (child);
+                } else {
+                   let noChild = `
+                   <table class="table align-middle table-sm">
+                        <tr>
+                            <td align="center" colspan="8" class="text-secondary">
+                                No prescriptions
+                            </td>
+                        </tr>
+                    </table>
+                   `
+                   return (noChild)
+                }
+    }
+
+    modal._element.addEventListener('hidden.bs.modal', function () {
+        reconciliationTable.destroy()
+    })
+
+    reconciliationTable.on('draw', function() {
+        // const tableId = reconciliationTable.table().container().id.split('_')[0]
+        reconciliationTable.rows().every(function () {
+            let tr = $(this.node())
+            let row = this.row(tr);
+            this.child(format(row.data(), tableId)).show()
+        })
+    })
+
+    reconciliationTable.on('click', 'tr', function (e) {
+        let tr = e.target.closest('tr');
+        let row = reconciliationTable.row(tr);
+     
+        if (row.child.isShown()) {
+            row.child.hide();
+            // reconciliationTable.draw()
+        }
+        else {
+            row.child(format(row.data()), tableId).show();
+        }
+    });
+    
+    return reconciliationTable
+}
+
+export {getWaitingTable, getVerificationTable, getAllHmoPatientsVisitTable, getApprovalListTable, getVisitPrescriptionsTable, getSentBillsTable, getHmoReportsTable, getHmoReconciliationTable}

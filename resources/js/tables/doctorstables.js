@@ -356,31 +356,31 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
             {
                 sortable: false,
                 data: row =>  `
-                        <div class="dropdown ${viewer == 'lab' ? '' :'d-none'}">
+                        <div class="dropdown">
                             <i class="btn btn-outline-primary bi bi-gear" role="button" data-bs-toggle="dropdown"></i>
 
                             <ul class="dropdown-menu">
-                                <li class="${row.sent ? 'd-none' : ''}">
+                                <li class="${row.sent || viewer !== 'lab' ? 'd-none' : ''}">
                                     <a class="btn btn-outline-primary dropdown-item addResultBtn" id="addResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-plus-square"></i> Add Result
                                     </a>
                                 </li>
-                                <li  class="${!row.sent ? 'd-none' : ''}">
+                                <li  class="${!row.sent || viewer !== 'lab' ? 'd-none' : ''}">
                                     <a class="btn btn-outline-primary dropdown-item updateResultBtn" id="updateResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-table="${tableId}" title="update result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-pencil-fill"></i> Update Result
                                     </a>
                                 </li>
                                 <li  class="${!row.sent ? 'd-none' : ''}">
-                                    <a class="btn btn-outline-primary dropdown-item downloadResultBtn" id="downloadResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-result="${ row.result }" data-table="${tableId}" title="download for print" data-id="${ row.id}" data-stafffullname="${ row.staffFullName}">
+                                    <a class="btn btn-outline-primary dropdown-item downloadResultBtn" id="downloadResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-result="${ row.result }" data-sent="${ row.sent }" data-table="${tableId}" title="download for print" data-id="${ row.id}" data-stafffullname="${ row.staffFullName}">
                                         <i class="bi bi-download"></i> Download for Print
                                     </a>
                                 </li>
-                                <li>
+                                <li class="${!row.sent || viewer !== 'lab' ? 'd-none' : ''}">
                                     <a class="btn dropdown-item upload-result-btn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-table="${tableId}" title="edit result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-upload"></i> Upload Doc
                                     </a>
                                 </li>
-                                <li>
+                                <li class="${!row.sent || viewer !== 'lab' ? 'd-none' : ''}">
                                     <a class="btn dropdown-item deleteResultBtn" data-table="${tableId}" title="delete" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-trash3-fill"></i> Delete Result
                                     </a>
@@ -696,7 +696,7 @@ const getSurgeryNoteTable = (tableId, conId, view) => {
     });
 }
 
-const getMedicalReportTable = (tableId, visitId, modal) => {
+const getMedicalReportTable = (tableId, visitId, modal, isDoctor) => {
     const medicalReportTable = new DataTable('#'+tableId, {
         serverSide: true,
         ajax:   {url: '/medicalreports/load', data: {
@@ -720,10 +720,10 @@ const getMedicalReportTable = (tableId, visitId, modal) => {
                     <button class=" btn btn-outline-primary viewMedicalReportBtn tooltip-test" title="view" id="viewMedicalReportBtn" data-id="${row.id}" data-table="${tableId}">
                         <i class="bi bi-zoom-in"></i>
                     </button>
-                    <button class="ms-1 btn btn-outline-primary editMedicalReportBtn tooltip-test" title="update" id="editMedicalReportBtn" data-id="${row.id}" data-table="${tableId}">
+                    <button class="ms-1 btn btn-outline-primary editMedicalReportBtn tooltip-test ${isDoctor ? '' : 'd-none'}" title="update" id="editMedicalReportBtn" data-id="${row.id}" data-table="${tableId}">
                         <i class="bi bi-pencil-fill"></i>
                     </button>
-                    <button type="submit" class="ms-1 btn btn-outline-primary deleteMedicalReportBtn tooltip-test" title="delete" data-id="${row.id}" data-table="${tableId}">
+                    <button type="submit" class="ms-1 btn btn-outline-primary deleteMedicalReportBtn tooltip-test ${isDoctor ? '' : 'd-none'}" title="delete" data-id="${row.id}" data-table="${tableId}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>
                 </div>

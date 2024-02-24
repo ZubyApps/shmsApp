@@ -1,0 +1,25 @@
+.colour-change {
+    animation:colour-blink 1s infinite;
+}
+
+@keyframes colour-blink {
+    100% {
+      background-color: #0d6efd;
+    }
+    100% {
+      background-color: #ffc107;
+    }
+  }
+
+.colour-change1 {
+  animation:colour-blink1 1s infinite;
+}
+
+@keyframes colour-blink1 {
+  100% {
+    background-color: #0d6efd;
+  }
+  100% {
+    background-color: #dc3545;
+  }
+}

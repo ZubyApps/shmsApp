@@ -37,7 +37,7 @@
                     </button>
                 </div>
                 <div class="py-2">
-                    <table id="allPatientsTable" class="table table-hover align-middle table-striped table-sm">
+                    <table id="allPatientsTable" class="table table-striped table-sm">
                         <thead>
                             <tr>
                                 <th>Card</th>
@@ -56,7 +56,7 @@
                 </div>
             </div>
             <!-- sponsors table -->
-            <div class="tab-pane fade active" id="nav-sponsors" role="tabpanel" aria-labelledby="nav-sponsors-tab" tabindex="0">
+            <div class="tab-pane fade" id="nav-sponsors" role="tabpanel" aria-labelledby="nav-sponsors-tab" tabindex="0">
                 <div class="text-start py-3">
                     <button type="button" id="newSponsor" class="btn btn-primary text-white">
                         <i class="bi bi-plus-circle me-1"></i>
@@ -64,7 +64,7 @@
                     </button>
                 </div>
                 <div class="py-2 ">
-                    <table id="sponsorsTable" class="table table-hover align-middle table-sm">
+                    <table id="sponsorsTable" class="table table-striped table-sm">
                         <thead>
                             <tr>
                                 <th>Sponsor Name</th>

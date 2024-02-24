@@ -24,7 +24,7 @@
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Apgar Score<x-required-span /></x-input-span>
-                            <x-form-input type="number" name="apgarScore" :readonly="$isView"/>
+                            <x-form-input type="text" name="apgarScore" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Birth Weight<x-required-span /></x-input-span>
@@ -39,8 +39,8 @@
                             </select>
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Lenght of Parity<x-required-span /></x-input-span>
-                            <x-form-input name="lengthOfParity" id="lengthOfParity" :readonly="$isView"/>
+                            <x-input-span>Parity<x-required-span /></x-input-span>
+                            <x-form-input name="parity" id="parity" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Head Circumference<x-required-span /></x-input-span>
@@ -48,7 +48,7 @@
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Sex<x-required-span /></x-input-span>
-                            <select class = "form-select form-select-md" name="sex" :readonly="$isView">
+                            <select class = "form-select form-select-md" name="sex" :readonly="$isView" multiple>
                                 <option value="">Select</option>
                                 <option value="Spontenous Delivery">Female</option>
                                 <option value="Cesarean section">Male</option>

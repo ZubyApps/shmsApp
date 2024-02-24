@@ -17,7 +17,7 @@
         <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="offcanvasInvestigations"
             aria-labelledby="offcanvasInvestigationsLabel">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title text-primary" id="offcanvasInvestigations">Investigation Table</h5>
+                <h5 class="offcanvas-title text-primary" id="offcanvasInvestigations">Inpatient Investigations</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas2-body">
@@ -43,11 +43,44 @@
             </div>
         </div>
 
+        <div class="offcanvas offcanvas-bottom" data-bs-scroll="true" tabindex="-1" id="offcanvasOutpatientsInvestigations"
+            aria-labelledby="offcanvasOutpatientsInvestigationsLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-primary" id="offcanvasOutpatientsInvestigations">OutPatient Investigations</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas2-body">
+                <div class="my-2 form-control">
+                    <span class="fw-bold text-primary"> Outpatient's Investigations </span>
+                    <div class="row overflow-auto m-1">
+                        <table id="outpatientInvestigationsTable" class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Doctor</th>
+                                    <th>Patient</th>
+                                    <th>Diagnosis</th>
+                                    <th>Investigation</th>
+                                    <th>Result</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="text-start mb-4">
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas"
-                data-bs-target="#offcanvasInvestigations" aria-controls="offcanvasInvestigations">
+            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasInvestigations" aria-controls="offcanvasInvestigations">
                 <i class="bi bi-list-check"></i>
                 Inpatient's Investigation Table
+            </button>
+            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="outpatientsInvestigationBtn"
+                data-bs-target="#offcanvasOutpatientsInvestigations" aria-controls="offcanvasOutpatientsInvestigations">
+                <i class="bi bi-list-check"></i>
+                Outpatient's Investigation Table
             </button>
         </div>
 

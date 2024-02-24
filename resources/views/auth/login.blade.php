@@ -15,7 +15,7 @@
                     @csrf
 
                     <div class="form-floating mb-3">
-                        <input type="email" name="email" class="form-control" id="floatingInput"
+                        <input type="text" name="email" class="form-control" id="floatingInput"
                             autocomplete="email" autofocus required>
                         <label for="floatingInput">Email or Phone</label>
                     </div>

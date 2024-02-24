@@ -18,14 +18,14 @@
         </div>
         <div class="offcanvas-body">
             <div class="py-4 ">
-                <table id="activeTable" class="table table-hover align-middle table-sm bg-primary">
+                <table id="activeStaffTable" class="table table-sm">
                     <thead>
                         <tr>
                             <th>Logged in</th>
                             <th>Name</th>
                             <th>Designation</th>
-                            <th>Department</th>
-                            <th>Action</th>
+                            <th>Phone</th>
+                            {{-- <th>Action</th> --}}
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -77,7 +77,7 @@
                     type="button" role="tab" aria-controls="nav-outPatients" aria-selected="true">All Staff</button>
 
                 <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients"
-                    type="button" role="tab" aria-controls="nav-inPatients" aria-selected="false">Ex-Staff</button>
+                    type="button" role="tab" aria-controls="nav-inPatients" aria-selected="false">Staff Aggregation</button>
 
                 {{-- <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients"
                     type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button> --}}
@@ -101,10 +101,11 @@
                                 <th>Employed</th>
                                 <th>Designation</th>
                                 <th>Last Login</th>
+                                <th>Last Logout</th>
                                 <th>Qualification</th>
                                 <th>Username</th>
                                 <th>Phone</th>
-                                <th>Address</th>
+                                {{-- <th>Address</th> --}}
                                 <th>Created</th>
                                 <th>Actions</th>
                             </tr>
@@ -114,14 +115,14 @@
                 </div>
             </div>
             <!-- inpatients table -->
-            {{-- <div class="tab-pane fade" id="nav-inPatients" role="tabpanel" aria-labelledby="nav-inPatients-tab"
+            <div class="tab-pane fade" id="nav-inPatients" role="tabpanel" aria-labelledby="nav-inPatients-tab"
                 tabindex="0">
                 <div class="py-4 ">
                     <table id="inPatientsVisitTable" class="table table-hover align-middle table-sm">
                         <thead>
                             <tr>
-                                <th>Seen</th>
-                                <th>Patient</th>
+                                <th>Designation</th>
+                                <th>Number of Staff</th>
                                 <th>Doctor</th>
                                 <th>Current Diagnosis</th>
                                 <th>Sponsor</th>
@@ -132,7 +133,7 @@
                         <tbody></tbody>
                     </table>
                 </div>
-            </div> --}}
+            </div>
             <!-- Anc table -->
             {{-- <div class="tab-pane fade" id="nav-ancPatients" role="tabpanel" aria-labelledby="nav-ancPatients-tab"
                 tabindex="0">

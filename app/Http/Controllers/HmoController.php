@@ -118,4 +118,34 @@ class HmoController extends Controller
 
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
+
+    public function loadReportSummary(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $billSummary = $this->hmoService->getReportSummaryTable($params, $request);
+
+        return response()->json([
+            'data' => $billSummary,
+            'draw' => $params->draw,
+            'recordsTotal' => count($billSummary),
+            'recordsFiltered' => count($billSummary)
+        ]);
+    }
+
+    public function loadReconciliationTable(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->hmoService->getVisitsForReconciliation($params, $request);
+       
+        $loadTransformer = $this->hmoService->getVisitsForReconciliationTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
+
+    public function reconciliationPayments(Request $request, Prescription $prescription)
+    {
+        return $this->hmoService->savePayment($request, $prescription, $request->user());
+    }
 }
