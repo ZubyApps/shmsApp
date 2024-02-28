@@ -69,7 +69,7 @@ class VisitService
             return [
                 'id'                => $visit->id,
                 'patientId'         => $visit->patient->id,
-                'ancRegId'          => $visit->patient->antenatalRegisteration?->id,
+                'ancRegId'          => $visit->antenatalRegisteration?->id,
                 'patient'           => $visit->patient->patientId(),
                 'sex'               => $visit->patient->sex,
                 'age'               => $visit->patient->age(),
@@ -80,7 +80,8 @@ class VisitService
                 'patientType'       => $visit->patient->patient_type,
                 'status'            => $visit->status,
                 'vitalSigns'        => $visit->vitalSigns->count(),
-                'ancVitalSigns'     => $visit->patient->antenatalRegisteration?->ancVitalSigns->count()
+                'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
+                'emergency'         => $visit->prescriptions->where('consultation_id', null)->count()
             ];
          };
     }
@@ -127,7 +128,6 @@ class VisitService
                 'closed_opened_at'  => new Carbon(), 
                 'closed_opened_by'  => $user->id
             ]);
-
             $visit->patient()->update(['is_active' => false]);
         });
     }
@@ -135,8 +135,8 @@ class VisitService
     public function delete($visit)
     {
         return DB::transaction(function() use($visit){
-            $visit->destroy($visit->id);
             $visit->patient()->update(['is_active' => false]);
+            $visit->destroy($visit->id);
         });
     }
 }

@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-@vite(['resources/js/doctors.js'])
+@vite(['resources/css/colourblink.scss', 'resources/js/doctors.js'])
 
 @include('doctors.consultationModal', ['title' => 'New Consultation', 'isSpecialist' => false, 'isNurse' => false, 'id' => 'newConsultationModal'])
 @include('doctors.consultationModal', ['title' => 'New Specialist Consultation', 'isSpecialist' => true, 'isNurse' => false, 'id' => 'specialistConsultationModal'])
@@ -10,8 +10,8 @@
 @include('doctors.ancConsultationModal', ['title' => 'New ANC Review', 'isReview' => true, 'isNurse' => false, 'id' => 'ancReviewModal'])
 
 @include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isAnc' => false, 'id' => 'consultationReviewModal'])
-@include('doctors.consultationHistoryModal', ['title' => 'Consultation History', 'isAnc' => false, 'id' => 'consultationHistoryModal'])
 @include('doctors.consultationReviewModal', ['title' => 'ANC Consultation Review', 'isAnc' => true, 'id' => 'ancConsultationReviewModal'])
+@include('doctors.consultationHistoryModal', ['title' => 'Consultation History', 'isAnc' => false, 'id' => 'consultationHistoryModal'])
 @include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isDoctor' => true, 'id' => 'vitalsignsModal'])
 @include('vitalsigns.ancVitalsignsModal', ['title' => 'Anc Vital Signs', 'isDoctor' => true, 'id' => 'ancVitalsignsModal', ])
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
@@ -47,6 +47,7 @@
                                 <th>Sponsor</th>
                                 <th>Came</th>
                                 <th>Vitals</th>
+                                <th>Emerg</th>
                                 <th>Action</th>
                             </tr>
                         </thead>

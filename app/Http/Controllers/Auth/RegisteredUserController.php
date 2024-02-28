@@ -97,6 +97,11 @@ class RegisteredUserController extends Controller
         return $designation->destroy($designation->id);
     }
 
+    public function logStaffOut(Request $request, User $user)
+    {
+        return $this->userService->logout($request, $user);
+    }
+
     public function destroy(User $user)
     {
         return $user->destroy($user->id);

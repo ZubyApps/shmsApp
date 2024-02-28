@@ -34,6 +34,19 @@
     </x-form-div>
     <x-form-div class="staffIdDiv">
         <x-input-span>Staff ID/No.</x-input-span>
-        <x-form-input name="staffId" class="staffId" />
+        <x-form-input name="staffId" class="staffId" readonly />
     </x-form-div>
+    <x-form-div>
+        <x-input-span>Blood Group</x-input-span>
+        <x-form-input name="bloodGroup" class="bloodGroup" readonly />
+    </x-form-div>
+    <x-form-div>
+        <x-input-span>Genotype</x-input-span>
+        <x-form-input name="genotype" class="genotype" readonly />
+    </x-form-div>
+    <x-form-div>
+        <x-input-span>Known <br> Conditions</x-input-span>
+        <x-form-textarea name="knownConditions" class="knownConditions text-danger fw-bold" readonly ></x-form-textarea>
+    </x-form-div>
+    
 </div>

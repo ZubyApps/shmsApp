@@ -22,6 +22,7 @@ class SaveLabResultRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'sample' => ['required'],
             'result' => ['required']
         ];
     }

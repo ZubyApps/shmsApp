@@ -65,7 +65,6 @@ class DoctorService
                     ->where('closed', false)
                     ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
                     ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-                    // ->where('user_id', '=', $user->id)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -169,7 +168,7 @@ class DoctorService
                 'patientId'         => $visit->patient->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
-                'ancRegId'          => $visit->patient->antenatalRegisteration?->id,
+                'ancRegId'          => $visit->antenatalRegisteration?->id,
                 'age'               => $visit->patient->age(),
                 'sex'               => $visit->patient->sex,
                 'doctor'            => $visit->doctor->username,
@@ -180,8 +179,10 @@ class DoctorService
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->category_name,
                 'vitalSigns'        => $visit->vitalSigns->count(),
-                'ancVitalSigns'     => $visit->patient->antenatalRegisteration?->ancVitalSigns->count(),
+                'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
+                'ward'              => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->ward,
+                'bedNo'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->bed_no,
                 'patientType'       => $visit->patient->patient_type,
                 'labPrescribed'     => Prescription::where('visit_id', $visit->id)
                                         ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')

@@ -405,6 +405,7 @@ const deliveryNotes = (line) => {
                                     <th>Time of Admission</th>
                                     <th>Time of Delivery</th>
                                     <th>Mode of Delivery</th>
+                                    <th>Sex</th>
                                     <th>EBL</th>
                                     <th>Nurse</th>
                                     <th>Actions</th>

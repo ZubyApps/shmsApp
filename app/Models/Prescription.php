@@ -92,12 +92,12 @@ class Prescription extends Model
                     ->get();
     }
 
-    public function prescriptionsCharted($visiId, $comparism = '=')
+    public function prescriptionsCharted($visiId, $chartTable, $comparism = '=')
     {
         return $this->where('visit_id', $visiId)
                     ->where('chartable', true)
-                    ->where(function(Builder $query) use($comparism) {
-                        $query->whereDoesntHave('medicationCharts')
+                    ->where(function(Builder $query) use($chartTable, $comparism) {
+                        $query->whereDoesntHave($chartTable)
                               ->whereRelation('resource', 'category', $comparism ,'Medications');
                     })
                     ->count();

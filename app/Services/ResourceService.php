@@ -11,6 +11,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ResourceService
 {
@@ -183,7 +184,17 @@ class ResourceService
                 'plainName' => $resource->name,
                 'category'  => $resource->category
             ];
+        };   
+    }
+
+    public function listTransformer1()
+    {
+        return function (Resource $resource){
+            return [
+                'id'        => $resource->id,
+                'name'      => $resource->name,
+                'category'  => $resource->category
+            ];
         };
-        
     }
 }

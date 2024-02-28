@@ -62,6 +62,7 @@ class BillingService
             ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+            ->whereColumn('total_hms_bill', '>', 'total_paid')
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -75,6 +76,7 @@ class BillingService
                         ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
                     })
                     ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
+                    ->whereColumn('total_hms_bill', '>', 'total_paid')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -84,6 +86,7 @@ class BillingService
                     ->where('closed', false)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
+                    ->whereColumn('total_hms_bill', '>', 'total_paid')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -117,7 +120,9 @@ class BillingService
                 'discharged'        => $visit->discharge_reason,
                 'reason'            => $visit->discharge_reason,
                 'closed'            => $visit->closed,
-                'staff'             => auth()->user()->username
+                'staff'             => auth()->user()->username,
+                'total_bill'        => $visit->total_hms_bill,
+                'total_paid'        => $visit->total_paid,
             ];
          };
     }

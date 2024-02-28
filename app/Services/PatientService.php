@@ -84,11 +84,10 @@ class PatientService
 
     public function updateKnownClinicalInfo(Request $data, Patient $patient, User $user): Patient
     {
-        $patient->update([
-                "blood_group"           => $data->bloodGroup,
-                "genotype"              => $data->genotype,
-                "known_conditions"      => $data->knownConditions,
-            ]);
+        $data->bloodGroup ? $patient->update(["blood_group" => $data->bloodGroup]) : '';
+        $data->genotype ? $patient->update(["genotype" => $data->genotype]): '';
+        $data->knownConditions ? $patient->update(["known_conditions" => $patient->known_conditions . ', '.$data->knownConditions]) : '';
+        
         return $patient;
     }
 

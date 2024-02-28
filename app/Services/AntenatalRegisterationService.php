@@ -72,6 +72,7 @@ Class AntenatalRegisterationService
             'ant_mal_and_specific_therapies' => $data->antiMalAndSpecificTherapies,
             'pelvic_assessment'         => $data->pelvicAssessment,
             'instr_for_delivery'        => $data->instructionsForDelivery,
+            'visit_id'                  => $data->visitId,
             'patient_id'                => $data->patientId,
         ]);
 

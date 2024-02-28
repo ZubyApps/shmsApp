@@ -63,7 +63,7 @@ function getOrdinal(n) {
 
     fields.forEach(select => {
         select.hasAttribute('name') ?
-            data[select.name] = select.hasAttribute('multiple') ? $('#'+ select.id).val().toString(): select.value : ''
+            data[select.name] = select.value : ''
     })
 
     return data
@@ -110,6 +110,7 @@ function dispatchEvent(tag, event) {
 function handleValidationErrors(errors, domElement) {
     let elementId = []
     for (const name in errors) {
+        console.log(name)
         const element = domElement.querySelector(`[name="${ name }"]`)
         
         elementId.push(element.id)
@@ -156,8 +157,7 @@ function displayList(dataListEl, optionsId, data) {
     }
 
 function getDatalistOptionId(modal, inputEl, datalistEl) {    
-    const selectedOption = datalistEl.options.namedItem(inputEl.value)
-    
+    const selectedOption = datalistEl.options.namedItem(inputEl.value)    
         if (selectedOption) {
             return selectedOption.getAttribute('data-id')
         } else {
@@ -374,10 +374,42 @@ const displayPaystatus = (row, credit, NHIS) => {
 const admissionStatus = (row) => {
     return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
     `<div class="d-flex flex-">
-        <button class="d-flex flex- btn fw-bold text-primary tooltip-test dischargedBtn" title="Inpatient" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">
-        <i class="bi bi-hospital-fill"></i>
-        ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged"></i>` : ''}
+        <div class="dropdown">
+            <a class="d-flex flex- btn tooltip-test text-decoration-none text-primary ${row.ward && row.bedNo ? '' : 'colour-change'} tooltip-test" title="Inpatient" data-bs-toggle="dropdown" href="" >
+                <i class="bi bi-hospital-fill"></i>
+                ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged"></i>` : ''}
+            </a>
+                <ul class="dropdown-menu">
+                <li>
+                    <a role="button" class="dropdown-item wardBedBtn" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-updatedby="${row.updatedBy}" data-doctor="${row.doctor}" data-ward="${row.ward}" data-bedno="${row.bedNo}">
+                        Update Ward & Bed
+                    </a>
+                </li>
+                <li>
+                    <a role="button" class="dropdown-item dischargedBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">
+                        Discharge Details ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}"></i>` : ''}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>` :
+    `<div class="d-flex flex-">
+        <button class="d-flex flex- btn fw-bold tooltip-test dischargedBtn" title="Outpatient" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">
+        <i class="bi bi-hospital"></i>
+        ${row.reason ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged"></i>` : ''}
         </button>
+    </div>`
+}
+
+const admissionStatusX = (row) => {
+    return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
+    `<div class="d-flex flex-">
+        <div class="dropdown">
+            <a class="d-flex flex- btn tooltip-test text-decoration-none text-primary tooltip-test" title="Inpatient" data-bs-toggle="dropdown" href="" >
+                <i class="bi bi-hospital-fill"></i>
+                ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged"></i>` : ''}
+            </a>
+        </div>
     </div>` :
     `<div class="d-flex flex-">
         <button class="d-flex flex- btn fw-bold tooltip-test dischargedBtn" title="Outpatient" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">
@@ -389,7 +421,7 @@ const admissionStatus = (row) => {
 
 const prescriptionOnLatestConsultation = (row) => {
     return `<div class="d-flex flex-">
-                <span class="btn" id="updateResourceListBtn" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">${row.diagnosis}</span>
+                <span class="btn" id="${row.closed ? '' : 'updateResourceListBtn'}" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">${row.diagnosis}</span>
             </div>`
 }
 
@@ -430,19 +462,21 @@ const lmpCurrentCalculator = (value, div) => {
 }
 
 const filterPatients = (elements) => {
+    console.log(elements)
     elements.forEach(filterInput => {
         filterInput.addEventListener('change', function () {
+            console.log(filterInput.value)
             if (filterInput.id == 'filterListOutPatients'){
                 $.fn.DataTable.isDataTable( '#outPatientsVisitTable' ) ? $('#outPatientsVisitTable').dataTable().fnDestroy() : ''
-                getOutpatientsVisitTable('#outPatientsVisitTable', filterInput.value)
+                return getOutpatientsVisitTable('#outPatientsVisitTable', filterInput.value)
             }
             if (filterInput.id == 'filterListInPatients'){
                 $.fn.DataTable.isDataTable( '#inPatientsVisitTable' ) ? $('#inPatientsVisitTable').dataTable().fnDestroy() : ''
-                getInpatientsVisitTable('#inPatientsVisitTable', filterInput.value)
+                return getInpatientsVisitTable('#inPatientsVisitTable', filterInput.value)
             }
             if (filterInput.id == 'filterListAncPatients'){
                 $.fn.DataTable.isDataTable( '#ancPatientsVisitTable' ) ? $('#ancPatientsVisitTable').dataTable().fnDestroy() : ''
-                getAncPatientsVisitTable('#ancPatientsVisitTable', filterInput.value)
+                return getAncPatientsVisitTable('#ancPatientsVisitTable', filterInput.value)
             }
         })
     })
@@ -503,6 +537,18 @@ const populateDischargeModal = (modal, btn) => {
     modal._element.querySelector('#saveDischargeBtn').setAttribute('data-id', btn.getAttribute('data-id'))
 }
 
+const populateWardAndBedModal = (modal, btn) => {
+    populatePatientSponsor(modal, btn)
+    modal._element.querySelector('#currentDiagnosis').value = btn.getAttribute('data-diagnosis')
+    modal._element.querySelector('#admissionStatus').value = btn.getAttribute('data-admissionstatus')
+    modal._element.querySelector('#admit').value = btn.getAttribute('data-admissionstatus')
+    modal._element.querySelector('#ward').value = btn.getAttribute('data-ward')
+    modal._element.querySelector('#bedNumber').value = btn.getAttribute('data-bedno')
+    modal._element.querySelector('#doctor').innerHTML = btn.getAttribute('data-doctor')
+    modal._element.querySelector('#updatedBy').innerHTML = btn.getAttribute('data-updatedby')
+    modal._element.querySelector('#saveWardAndBedBtn').setAttribute('data-id', btn.getAttribute('data-conid'))
+}
+
 const populatePatientSponsor = (modal, btn) => {
     modal._element.querySelector('#patient').value = btn.getAttribute('data-patient')
     modal._element.querySelector('#sponsorName').value = btn.getAttribute('data-sponsor')
@@ -522,9 +568,10 @@ const displayItemsList = (datalistEl, data, optionName) => {
         option.setAttribute('data-id', line.id)
         option.setAttribute('name', line.name)
         option.setAttribute('data-cat', line.category)
+        // option.setAttribute('data-plainname', line.plainName)
 
         !datalistEl.options.namedItem(line.name) ? datalistEl.appendChild(option) : ''
     })
 }
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1}
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal}

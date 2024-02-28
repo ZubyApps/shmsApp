@@ -18,6 +18,7 @@ class ConsultationReviewResource extends JsonResource
         return [
             "id"                            => $this->id,
             "visitId"                       => $this->visit_id,
+            'date'                          => (new Carbon($this->created_at))->format('D jS M Y - g:ia'),
             "presentingComplain"            => $this->p_complain ?? '',
             "historyOfPresentingComplain"   => $this->hop_complain ?? '',
             "pastMedicalHistory"            => $this->med_surg_history ?? '',

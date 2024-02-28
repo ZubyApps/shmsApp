@@ -45,7 +45,7 @@ class ResourceController extends Controller
     {
         $resources = $this->resourceService->getEmergencyList($request);
 
-        $listTransformer = $this->resourceService->listTransformer();
+        $listTransformer = $this->resourceService->listTransformer1();
 
         return array_map($listTransformer, (array)$resources->getIterator());
 
@@ -55,7 +55,7 @@ class ResourceController extends Controller
     {
         $items = $this->resourceService->getBulkList($request);
 
-        $listTransformer = $this->resourceService->listTransformer();
+        $listTransformer = $this->resourceService->listTransformer1();
 
         return array_map($listTransformer, (array)$items->getIterator());
 

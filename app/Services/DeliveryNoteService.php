@@ -87,6 +87,7 @@ Class DeliveryNoteService
                 'timeAdmitted'      => (new Carbon($deliveryNote->time_of_admission))->format('d/m/y g:ia'),
                 'timeDelivered'     => (new Carbon($deliveryNote->time_of_delivery))->format('d/m/y g:ia'),
                 'modeOfDelivery'    => $deliveryNote->mode_of_delivery,
+                'sex'               => $deliveryNote->sex,
                 'ebl'               => $deliveryNote->ebl,
                 'note'              => $deliveryNote->note,
                 'nurse'             => $deliveryNote->user->username,

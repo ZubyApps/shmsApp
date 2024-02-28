@@ -15,9 +15,9 @@
                     @csrf
 
                     <div class="form-floating mb-3">
-                        <input type="text" name="email" class="form-control" id="floatingInput"
-                            autocomplete="email" autofocus required>
-                        <label for="floatingInput">Email or Phone</label>
+                        <input type="text" name="phone_number" class="form-control" id="floatingInput"
+                            autocomplete="phone" autofocus required>
+                        <label for="floatingInput">Phone</label>
                     </div>
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     <div class="form-floating mb-3">

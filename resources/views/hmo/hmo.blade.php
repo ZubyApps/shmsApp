@@ -179,7 +179,7 @@
                         </select>
                     </x-form-div>
                     <div class="py-2">
-                        <table id="hmoTreatmentsTable" class="table table-hover table-sm">
+                        <table id="hmoTreatmentsTable" class="table table-sm">
                             <thead>
                                 <tr>
                                     <th>Seen</th>

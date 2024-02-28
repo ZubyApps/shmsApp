@@ -71,18 +71,11 @@ class AncVitalSignsService
             return [
                 'id'                                => $ancVitalSigns->id,
                 'created_at'                        => (new Carbon($ancVitalSigns->created_at))->format('d/m/y g:ia'),
-                // 'heightOfFundus'                    => $ancVitalSigns->ho_fundus,
-                // 'presentationAndPosition'           => $ancVitalSigns->p_position,
-                // 'relationOfPresentingPartToBrim'    => $ancVitalSigns->roppt_brim,
-                // 'fetalHeartRate'                    => $ancVitalSigns->height,
                 'urineProtein'                      => $ancVitalSigns->urine_protein,
                 'urineGlucose'                      => $ancVitalSigns->urine_glucose,
                 'bloodPressure'                     => $ancVitalSigns->blood_pressure,
                 'weight'                            => $ancVitalSigns->weight,
-                // 'hb'                                => $ancVitalSigns->user->hb,
-                // 'oedema'                            => $ancVitalSigns->user->oedema,
                 'remarks'                           => $ancVitalSigns->remarks,
-                // 'return'                            => $ancVitalSigns->return,
                 'by'                                => $ancVitalSigns->user->username,
                 'patientType'                       => $ancVitalSigns->antenatalRegisteration->patient->patient_type
             ];

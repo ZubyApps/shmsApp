@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/activestaff', [RegisteredUserController::class, 'loadActiveUsers']);
         Route::get('/{user}', [RegisteredUserController::class, 'edit']);
         Route::delete('/{user}', [RegisteredUserController::class, 'destroy']);
+        Route::post('/logout/{user}', [RegisteredUserController::class, 'logStaffOut']);
         Route::delete('/designate/{designation}', [RegisteredUserController::class, 'removeDesignation']);
         Route::patch('/{user}', [RegisteredUserController::class, 'update']);
         Route::post('/designate/{user}', [RegisteredUserController::class, 'assignDesignation']);
@@ -114,6 +115,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/consulted/inpatients', [VisitController::class, 'loadInpatientsVisits']);      
         Route::patch('discharge/{visit}', [VisitController::class, 'dischargePatient']);
         Route::patch('/close/{visit}', [VisitController::class, 'closeVisit']);
+        Route::patch('/delete/{visit}', [VisitController::class, 'destroy']);
         Route::patch('/open/{visit}', [VisitController::class, 'openVisit']);
         Route::delete('/{visit}', [VisitController::class, 'destroy']);
     })->name('Visits');
@@ -236,8 +238,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/upcoming', [NursingChartController::class, 'loadUpcomingNursingCharts']);
         Route::get('/{nursingChart}', [NursingChartController::class, 'edit']);
         Route::delete('/{nursingChart}', [NursingChartController::class, 'destroy']);
-        Route::patch('/removedone/{nursingChart}', [NursingChartController::class, 'removeDoneData']);
-        Route::patch('/{nursingChart}', [NursingChartController::class, 'saveDoneData']);
+        Route::patch('/removeservice/{nursingChart}', [NursingChartController::class, 'removeServiceData']);
+        Route::patch('/{nursingChart}', [NursingChartController::class, 'saveServiceData']);
     })->name('NursingChart');
 
     Route::prefix('investigations')->group(function () {

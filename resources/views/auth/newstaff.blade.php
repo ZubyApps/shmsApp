@@ -25,7 +25,7 @@
                             <th>Name</th>
                             <th>Designation</th>
                             <th>Phone</th>
-                            {{-- <th>Action</th> --}}
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>

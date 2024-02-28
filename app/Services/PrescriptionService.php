@@ -398,4 +398,35 @@ class PrescriptionService
             return $prescription->destroy($prescription->id);
         });
     }
+
+    public function getReportSummaryTable(DataTableQueryParams $params, $data)
+    {
+        if ($data->category){
+            if ($data->startDate && $data->endDate){
+                return DB::table('prescriptions')
+                            ->selectRaw('SUM(prescriptions.hms_bill) as totalHmsBill, SUM(prescriptions.hmo_bill) as totalHmoBill, SUM(prescriptions.paid) as totalPaid, resources.name as rescource, resources.id as id, sponsor_categories.name as category, COUNT(resources.id) as resourceCount')
+                            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                            ->where('sponsors.category_name', $data->category)
+                            ->WhereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                            ->where('visits.hmo_done_by', '!=', null)
+                            ->groupBy('sponsor')
+                            ->orderBy('sponsor')
+                            ->orderBy('visitsCount')
+                            ->get()
+                            ->toArray();
+            }
+            return DB::table('prescriptions')
+                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount')
+                            ->leftJoin('resources', 'prescriptions.resource_id', '=', 'resources.id')
+                            // ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                            ->where('sponsors.category_name', $data->category)
+                            // ->where('visits.hmo_done_by', '!=', null)
+                            ->groupBy('sponsor')
+                            ->orderBy('sponsor')
+                            ->orderBy('visitsCount')
+                            ->get()
+                            ->toArray();
+        }
+    }
 }

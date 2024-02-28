@@ -22,6 +22,11 @@ class AntenatalRegisteration extends Model
         return $this->belongsTo(Patient::class);
     }
 
+    public function visit(): BelongsTo
+    {
+        return $this->belongsTo(Visit::class);
+    }
+
     public function ancVitalSigns() 
     {
         return $this->hasMany(AncVitalSigns::class);

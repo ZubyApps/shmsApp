@@ -30,6 +30,28 @@ window.addEventListener('DOMContentLoaded', function () {
         activeStaffTable.draw()
     })
 
+    document.querySelector('#activeStaffTable').addEventListener('click', function (event) {
+        const logStaffOutBtn    = event.target.closest('.logStaffOutBtn')
+
+        if(logStaffOutBtn){
+            if (confirm('Are you sure you want to log this Staff out?')) {
+                logStaffOutBtn.setAttribute('disabled', 'disabled')
+                const staffId = logStaffOutBtn.getAttribute('data-id')
+                http.post(`/users/logout/${staffId}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300){
+                        activeStaffTable.draw()
+                    }
+                    logStaffOutBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    logStaffOutBtn.removeAttribute('disabled')
+                    console.log(error)
+                })
+            }
+        }
+    })
+
     registerStaffBtn.addEventListener('click', function () {
         registerStaffBtn.setAttribute('disabled', 'disabled')
         http.post('/users', getDivData(newStaffModal._element), {"html": newStaffModal._element})

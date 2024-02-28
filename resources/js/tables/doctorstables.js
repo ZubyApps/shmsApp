@@ -188,6 +188,14 @@ const getWaitingTable = (tableId) => {
                     }
                 }
             },
+            {data: row => `
+                            <div class="d-flex flex-">
+                                <button class=" btn btn-outline-primary emergencyBtn tooltip-test ms-1" title="emergency items" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${ row.sponsorCategory }">
+                                    <i class="bi bi-prescription">${row.emergency ? row.emergency : ''}</i>
+                                </button>
+                            </div>
+                        `
+            },
             {data: row => function () {
                 if (row.doctor === ''){
                     return `
@@ -195,9 +203,23 @@ const getWaitingTable = (tableId) => {
                             <button class=" btn btn-outline-primary consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}">
                                 <i class="bi bi-clipboard2-plus-fill"></i>
                             </button>
-                            <button class="ms-1 btn btn-outline-primary removeBtn tooltip-test" title="remove" data-id="${ row.id }">
-                                <i class="bi bi-x-circle-fill"></i>
-                            </button>
+                            <div class="dropdown ms-1">
+                                        <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="registered" data-bs-toggle="dropdown" href="" >
+                                        <i class="bi bi-file-minus-fill"></i>
+                                        </a>
+                                            <ul class="dropdown-menu">
+                                            <li>
+                                                <a role="button" class="dropdown-item closeVisitBtn tooltip-test" title="close visits" id="closeVisitBtn" data-id="${ row.id }">
+                                                    <i class="bi bi-lock-fill text-primary"></i> Close Visit
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a role="button" class="dropdown-item deleteVisitBtn tooltip-test" title="delete visit" id="deleteVisitBtn" data-id="${ row.id }">
+                                                    <i class="bi bi-x-circle-fill text-primary"></i> Delete Visit
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                         </div>`
                     } else {
                         return `
@@ -211,8 +233,11 @@ const getWaitingTable = (tableId) => {
                                     <a class="dropdown-item consultBtn btn tooltip-test" title="consult"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}">
                                         <i class="bi bi-clipboard2-plus-fill text-primary"></i> Consult
                                     </a>
-                                    <a class="dropdown-item removeBtn btn tooltip-test" title="remove"  data-id="${ row.id }">
-                                        <i class="bi bi-x-circle-fill text-primary"></i> Remove
+                                    <a class="dropdown-item closeVisitBtn btn tooltip-test" title="close" id="closeVisitBtn"  data-id="${ row.id }">
+                                        <i class="bi bi-lock-fill text-primary"></i> Close Visit
+                                    </a>
+                                    <a class="dropdown-item deleteVisitBtn btn tooltip-test" title="delete" id="deleteVisitBtn"  data-id="${ row.id }">
+                                        <i class="bi bi-x-circle-fill text-primary"></i> Delete Visit
                                     </a>
                                 </li>
                             </ul>
@@ -360,12 +385,12 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                             <i class="btn btn-outline-primary bi bi-gear" role="button" data-bs-toggle="dropdown"></i>
 
                             <ul class="dropdown-menu">
-                                <li class="${row.sent || viewer !== 'lab' ? 'd-none' : ''}">
+                                <li class="${row.sent || (viewer !== 'lab' && viewer !== 'doctor') ? 'd-none' : ''}">
                                     <a class="btn btn-outline-primary dropdown-item addResultBtn" id="addResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-plus-square"></i> Add Result
                                     </a>
                                 </li>
-                                <li  class="${!row.sent || viewer !== 'lab' ? 'd-none' : ''}">
+                                <li  class="${!row.sent || (viewer !== 'lab' && viewer !== 'doctor') ? 'd-none' : ''}">
                                     <a class="btn btn-outline-primary dropdown-item updateResultBtn" id="updateResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-table="${tableId}" title="update result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-pencil-fill"></i> Update Result
                                     </a>
@@ -375,12 +400,12 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                                         <i class="bi bi-download"></i> Download for Print
                                     </a>
                                 </li>
-                                <li class="${!row.sent || viewer !== 'lab' ? 'd-none' : ''}">
+                                <li class="${!row.sent ||(viewer !== 'lab' && viewer !== 'doctor') ? 'd-none' : ''}">
                                     <a class="btn dropdown-item upload-result-btn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-table="${tableId}" title="edit result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-upload"></i> Upload Doc
                                     </a>
                                 </li>
-                                <li class="${!row.sent || viewer !== 'lab' ? 'd-none' : ''}">
+                                <li class="${!row.sent || (viewer !== 'lab' && viewer !== 'doctor') ? 'd-none' : ''}">
                                     <a class="btn dropdown-item deleteResultBtn" data-table="${tableId}" title="delete" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-trash3-fill"></i> Delete Result
                                     </a>

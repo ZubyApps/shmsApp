@@ -50,12 +50,12 @@ class NursingChartController extends Controller
         return $this->datatablesService->datatableResponse($transformer, $upcomingMedications, $params);  
     }
 
-    public function saveDoneData(UpdateNursingChartRequest $request, NursingChart $nursingChart)
+    public function saveServiceData(UpdateNursingChartRequest $request, NursingChart $nursingChart)
     {
         return $this->nursingChartService->updateRecord($request, $nursingChart, $request->user());
     }
 
-    public function removeDoneData(NursingChart $nursingChart)
+    public function removeServiceData(NursingChart $nursingChart)
     {
         return $this->nursingChartService->removeRecord($nursingChart);
     }

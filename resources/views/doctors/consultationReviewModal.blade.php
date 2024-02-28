@@ -14,13 +14,13 @@
                             </div>
                             <div class="mb-2 form-control">
                                 <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
-                                <div id="knownClinicalInfoDiv" data-div="conReview">
+                                <div id="knownClinicalInfoDiv" data-div="{{ $isAnc ? 'ancConReview' : 'conReview' }}">
                                     <x-toast-successful class="col-xl-12"  id="knownClinicalInfoToast"></x-toast-successful>
                                     <div class="row">
                                         @include('patients.partials.known-clinical-info', ['disabled' => true])
                                         <div class="d-flex justify-content-center">
                                             <button type="button" id="updateKnownClinicalInfoBtn"
-                                            class="btn bg-primary text-white" data-btn="conReview">
+                                            class="btn bg-primary text-white" data-btn="{{ $isAnc ? 'ancConReview' : 'conReview' }}">
                                             Update
                                             </button>
                                         </div>

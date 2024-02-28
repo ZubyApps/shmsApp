@@ -24,7 +24,7 @@
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Apgar Score<x-required-span /></x-input-span>
-                            <x-form-input type="text" name="apgarScore" :readonly="$isView"/>
+                            <x-form-input type="text" name="apgarScore" id="apgarScore" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Birth Weight<x-required-span /></x-input-span>
@@ -47,12 +47,8 @@
                             <x-form-input name="headCircumference" id="headCircumference" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Sex<x-required-span /></x-input-span>
-                            <select class = "form-select form-select-md" name="sex" :readonly="$isView" multiple>
-                                <option value="">Select</option>
-                                <option value="Spontenous Delivery">Female</option>
-                                <option value="Cesarean section">Male</option>
-                            </select>
+                            <x-input-span>Sex (fill it manually)<x-required-span /></x-input-span>
+                            <x-form-textarea type="text" name="sex" id="sex" :readonly="$isView"></x-form-textarea>
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>EBL<x-required-span /></x-input-span>

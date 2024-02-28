@@ -11,12 +11,12 @@
                         <div class="mb-2 form-control">
                             @include('patients.partials.patientBio')
                         </div>
-                        <div class="mb-2 form-control">
+                        {{-- <div class="mb-2 form-control">
                             <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
                             <div class="row knownClinicalInfoDiv">
                                 @include('patients.partials.known-clinical-info', ['disabled' => true])
                             </div>
-                        </div>
+                        </div> --}}
                         <div id="treatmentDiv">
                         </div>
                     </div>

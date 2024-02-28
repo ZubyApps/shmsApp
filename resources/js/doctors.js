@@ -104,7 +104,7 @@ window.addEventListener('DOMContentLoaded', function () {
     //visit Tables and consultations that are active
     let inPatientsVisitTable, ancPatientsVisitTable, prescriptionTable, medicalReportTable, emergencyTable
 
-    const outPatientsVisitTable = getOutpatientsVisitTable('#outPatientsVisitTable', 'My Patients')
+    let outPatientsVisitTable = getOutpatientsVisitTable('#outPatientsVisitTable', 'My Patients')
     const waitingTable = getWaitingTable('#waitingTable')
 
     outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw()})
@@ -133,7 +133,22 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
     
-    filterPatients(document.querySelectorAll('#filterListOutPatients, #filterListInPatients, #filterListAncPatients'))
+    document.querySelectorAll('#filterListOutPatients, #filterListInPatients, #filterListAncPatients').forEach(filterInput => {
+            filterInput.addEventListener('change', function () {
+                if (filterInput.id == 'filterListOutPatients'){
+                    $.fn.DataTable.isDataTable( '#outPatientsVisitTable' ) ? $('#outPatientsVisitTable').dataTable().fnDestroy() : ''
+                    outPatientsVisitTable = getOutpatientsVisitTable('#outPatientsVisitTable', filterInput.value)
+                }
+                if (filterInput.id == 'filterListInPatients'){
+                    $.fn.DataTable.isDataTable( '#inPatientsVisitTable' ) ? $('#inPatientsVisitTable').dataTable().fnDestroy() : ''
+                    inPatientsVisitTable = getInpatientsVisitTable('#inPatientsVisitTable', filterInput.value)
+                }
+                if (filterInput.id == 'filterListAncPatients'){
+                    $.fn.DataTable.isDataTable( '#ancPatientsVisitTable' ) ? $('#ancPatientsVisitTable').dataTable().fnDestroy() : ''
+                    ancPatientsVisitTable = getAncPatientsVisitTable('#ancPatientsVisitTable', filterInput.value)
+                }
+            })
+    })
     
     document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable').forEach(table => {
         table.addEventListener('click', function (event) {
@@ -430,7 +445,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelector('#waitingTable').addEventListener('click', function (event) {
         const consultBtn    = event.target.closest('.consultBtn')
-        const removeBtn     = event.target.closest('.removeBtn')
+        const removeBtn     = event.target.closest('.closeVisitBtn, .deleteVisitBtn')
+        const emergencyBtn  = event.target.closest('.emergencyBtn')
 
         if (consultBtn) {
             consultBtn.setAttribute('disabled', 'disabled')
@@ -457,21 +473,26 @@ window.addEventListener('DOMContentLoaded', function () {
                 })
         }
 
-        if (removeBtn){
-            removeBtn.setAttribute('disabled', 'disabled')
-            if (confirm('Are you sure you want to delete this Visit?')) {
-                const visitId = removeBtn.getAttribute('data-id')
-                http.delete(`/visits/${visitId}`)
+        if (emergencyBtn){
+            waitingListOffcanvas.hide()
+            emergencyTab.click()
+        }
+
+        if (removeBtn){                
+            const [visitId, string]  = [removeBtn.getAttribute('data-id'), removeBtn.id == 'closeVisitBtn' ? 'close' : 'delete']
+            if (confirm(`Are you sure you want to ${string} the Visit?`)) {
+                http.patch(`/visits/${string}/${visitId}`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300){
                         waitingTable.draw()
                     }
-                    removeBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {
-
+                    if (error.response.status === 403){
+                        alert(error.response.data.message); 
+                    }
                 })
-            }  
+            }
         }
     })
 
@@ -484,9 +505,9 @@ window.addEventListener('DOMContentLoaded', function () {
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
     })
 
-    document.querySelectorAll('#dischargeModal, #vitalsignsModal, #ancVitalsignsModal').forEach(modal => {
-        modal.addEventListener('hide.bs.modal', () => {
-            outPatientsVisitTable.draw()
+    document.querySelectorAll('#dischargeModal, #vitalsignsModal, #ancVitalsignsModal, #investigationAndManagementModal').forEach(modal => {
+        modal.addEventListener('hidden.bs.modal', () => {
+            outPatientsVisitTable ? outPatientsVisitTable.draw() : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
         })
@@ -497,6 +518,7 @@ window.addEventListener('DOMContentLoaded', function () {
         updateBtn.addEventListener('click', function () {
             knownClinicalInfoDiv.forEach(div => {
                 if (div.dataset.div === updateBtn.dataset.btn) {
+                    console.log(div.dataset.div, updateBtn.dataset.btn, div)
                     toggleAttributeLoop(querySelectAllTags(div, ['input, select, textarea']), 'disabled', '')        
                     updateBtn.textContent === "Done" ? updateBtn.innerHTML = `Update` : updateBtn.textContent = "Done"
                     if (updateBtn.textContent === 'Update'){
@@ -785,6 +807,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const collapseVisitBtn                      = event.target.closest('.collapseVisitBtn')
             const resultBtn                             = event.target.closest('#addResultBtn, #updateResultBtn')
             const deleteResultBtn                       = event.target.closest('.deleteResultBtn')
+            const discontinueBtn                        = event.target.closest('.discontinueBtn')
             const viewer                                = 'doctor'
             if (collapseConsultationBtn) {
                 const gotoDiv = document.querySelector(collapseConsultationBtn.getAttribute('data-goto'))
@@ -877,6 +900,27 @@ window.addEventListener('DOMContentLoaded', function () {
                         })
                 }
                 deleteConsultationBtn.removeAttribute('disabled')
+            }
+
+            if (discontinueBtn){
+                if (confirm('Are you sure you want to discontinue prescription?')) {
+                    const prescriptionId = discontinueBtn.getAttribute('data-id')
+                    const treatmentTableId = discontinueBtn.getAttribute('data-table')
+                    http.patch(`/prescription/${prescriptionId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {
+                                $('#' + treatmentTableId).dataTable().fnDraw()
+                            }
+                        }
+                    })
+                    .catch((error) => {
+                        if (error.response.status === 403){
+                            alert(error.response.data.message); 
+                        }
+                        console.log(error)
+                    })
+                }
             }
     
             if (newSurgeryBtn) {
@@ -1045,8 +1089,8 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     // tasks to run when closing review consultation modal
-    document.querySelectorAll('#consultationReviewModal, #ancConsultationReviewModal, #consultationHistoryModal, #investigationAndManagementModal').forEach(modal => {
-        modal.addEventListener('hide.bs.modal', function(event) {
+    document.querySelectorAll('#consultationReviewModal, #ancConsultationReviewModal, #consultationHistoryModal').forEach(modal => {
+        modal.addEventListener('hidden.bs.modal', function(event) {
             regularConsultationReviewDiv.innerHTML = ''
             ancConsultationReviewDiv.innerHTML = ''
             visitHistoryDiv.innerHTML = ''

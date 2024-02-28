@@ -445,8 +445,7 @@ class HmoService
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
-                // '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
-
+                'closed'            => $visit->closed
             ];
         };
     }

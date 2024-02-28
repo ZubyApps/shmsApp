@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enum\VerificationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Visit extends Model
 {
@@ -138,6 +139,11 @@ class Visit extends Model
     public function nursesReport() 
     {
         return $this->hasMany(NursesReport::class);
+    }
+
+    public function antenatalRegisteration(): HasOne
+    {
+        return $this->hasOne(AntenatalRegisteration::class);
     }
 
     public function totalHmsBills()

@@ -68,7 +68,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
     hmoApprovalListTable.on('draw.init', function() {
         const count = hmoApprovalListTable.rows().count()
-        console.log(count)
         if (count > 0 ){
             hmoApprovalListCount.innerHTML = count
         } else {
@@ -97,7 +96,11 @@ window.addEventListener('DOMContentLoaded', function () {
         nhisApprovalListTable.draw()
     })
 
-    verificationTab.addEventListener('click', function() {verificationTable.draw()})
+    verificationTab.addEventListener('click', function() {
+        verificationTable.draw()
+        hmoApprovalListTable.draw()
+        nhisApprovalListTable.draw()
+    })
 
     treatmentsTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#hmoTreatmentsTable' )){
@@ -135,6 +138,15 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    filterListOption.addEventListener('change', function () {
+        if ($.fn.DataTable.isDataTable( '#hmoTreatmentsTable' )){
+            $('#hmoTreatmentsTable').dataTable().fnDestroy()
+        }
+        hmotreatmentsTable = getAllHmoPatientsVisitTable('#hmoTreatmentsTable', filterListOption.value)
+        hmoApprovalListTable.draw()
+        nhisApprovalListTable.draw()
+    })
+
     document.querySelectorAll('#hmoApprovalListOffcanvas, #nhisApprovalListOffcanvas, waitingListOffcanvas2').forEach(table => {
         table.addEventListener('hide.bs.offcanvas', function() {
             verificationTable.draw()
@@ -144,17 +156,6 @@ window.addEventListener('DOMContentLoaded', function () {
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
         })
-    })
-
-    hmoApprovalListCanvas._element.addEventListener('hide.bs.offcanvas', function() {
-        verificationTable.draw()
-        hmotreatmentsTable ? hmotreatmentsTable.draw() : ''
-    })
-
-    nhisApprovalListCanvas._element.addEventListener('hide.bs.offcanvas', function() {
-        verificationTable.draw()
-        hmotreatmentsTable ? hmotreatmentsTable.draw() : ''
-        hmoApprovalListTable.draw()
     })
     
     document.querySelectorAll('#hmoTreatmentsTable, #sentBillsTable').forEach(table => {
@@ -337,8 +338,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                 table.on('draw', removeDisabled(approvalFieldset))
                                 
                             })
-                        })
-                         
+                        })          
                 }
         
                 if (rejectBtn) {
@@ -389,14 +389,6 @@ window.addEventListener('DOMContentLoaded', function () {
                     })
                 }
             })
-    })
-
-    filterListOption.addEventListener('change', function () {
-        if ($.fn.DataTable.isDataTable( '#hmoTreatmentsTable' )){
-            $('#hmoTreatmentsTable').dataTable().fnDestroy()
-        }
-        getAllHmoPatientsVisitTable('#hmoTreatmentsTable', filterListOption.value)
-        hmoApprovalListTable.draw()
     })
 
     searchWithDatesBtn.addEventListener('click', function () {
@@ -614,25 +606,28 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal, #makeBillModal, #reconciliationModal').forEach(modal => {
+    document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal, #makeBillModal, #reconciliationModal, #investigationsModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function(event) {
             regularTreatmentDiv.innerHTML = ''
             ancTreatmentDiv.innerHTML = ''
             hmotreatmentsTable ?  hmotreatmentsTable.draw() : ''
             sentBillsTable ?  sentBillsTable.draw() : ''
             hmoApprovalListTable.draw()
+            nhisApprovalListTable.draw()
         })
     })
 
     verifyModal._element.addEventListener('hide.bs.modal', function () {
         verificationTable.draw()
         hmoApprovalListTable.draw()
+        nhisApprovalListTable.draw()
     })
 
     waitingListCanvas._element.addEventListener('hide.bs.offcanvas', function () {
         verificationTable.draw()
         hmotreatmentsTable ?hmotreatmentsTable.draw() : ''
         hmoApprovalListTable.draw()
+        nhisApprovalListTable.draw()
     })
 
     document.querySelectorAll('#treatmentDiv, #investigationModalDiv').forEach(table => {

@@ -57,14 +57,19 @@ class ConsultationService
 
     public function updateAdmissionStatus(Consultation $consultation, Request $data, User $user)
     {
-        $updatedConsultation = $consultation->update([
-            "admission_status"          => $data->admit,
+        if ($data->admit){
+           return $consultation->update([
+                "admission_status"          => $data->admit,
+                "ward"                      => $data->ward,
+                "bed_no"                    => $data->bedNumber,
+                "updated_by"                => $user->id
+            ]);
+        }
+        return $consultation->update([
             "ward"                      => $data->ward,
             "bed_no"                    => $data->bedNumber,
             "updated_by"                => $user->id
         ]);
-
-        return $updatedConsultation;
     }
 
     public function getConsultations(Request $request, Visit $visit)

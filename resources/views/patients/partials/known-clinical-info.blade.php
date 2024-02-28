@@ -13,8 +13,16 @@
         </select>
     </x-form-div>
 
-    <x-form-div>
-        <x-input-span>Known <br> Conditions</x-input-span>
-        <x-form-textarea name="knownConditions" class="knownConditions" cols="auto" rows="auto"
-            placeholder="eg: Diabetic, Hypertension, Atopy" value="Hypertensive" :disabled="$disabled"></x-form-textarea>
-    </x-form-div>
+    @if (Auth::user()->designation->designation !== 'Doctor' || Auth::user()->designation->access_level > 3)
+        <x-form-div>
+            <x-input-span>Known <br> Conditions</x-input-span>
+            <x-form-textarea name="knownConditions" class="knownConditions" cols="auto" rows="auto"
+                placeholder="" value="Hypertensive" :disabled="$disabled"></x-form-textarea>
+        </x-form-div>
+    @else
+        <x-form-div>
+            <x-input-span>Known <br> Conditions</x-input-span>
+            <x-form-textarea name="knownConditions" class="knownConditions" cols="auto" rows="auto"
+                placeholder="" value="Hypertensive" :disabled="$disabled" readonly></x-form-textarea>
+        </x-form-div>
+    @endif

@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, admissionStatusX, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
 
 const getPatientsVisitByFilterTable = (tableId, filter) => {
     return new DataTable('#'+tableId, {
@@ -29,7 +29,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
                             </button>
                         </div>`                
             },
-            {data: row => admissionStatus(row)},
+            {data: row => admissionStatusX(row)},
             {
                 sortable: false,
                 data: row => detailsBtn(row) 

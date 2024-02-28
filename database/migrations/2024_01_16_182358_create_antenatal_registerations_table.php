@@ -2,6 +2,7 @@
 
 use App\Models\Patient;
 use App\Models\User;
+use App\Models\Visit;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -69,6 +70,7 @@ return new class extends Migration
             $table->string('pelvic_assessment')->nullable();
             $table->string('instr_for_delivery')->nullable();
             $table->foreignIdFor(Patient::class)->constrained()->restrictOnDelete();
+            $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();
         });

@@ -30,7 +30,7 @@ class StoreDeliveryNoteRequest extends FormRequest
             'apgarScore'        => ['required'],
             'birthWeight'       => ['required'],
             'modeOfDelivery'    => ['required'],
-            'lengthOfParity'    => ['required'],
+            'parity'            => ['required'],
             'headCircumference' => ['required'],
             'sex'               => ['required'],
             'ebl'               => ['required'],

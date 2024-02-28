@@ -67,37 +67,17 @@ const getActiveStaffTable = (tableId) => {
             {data: "name"},
             {data: "designation"},
             {data: "phone"},
-            // {
-            //     sortable: false,
-            //     data: row => function () {
-            //         if (row.count < 1) {
-            //             return `
-            //             <div class="d-flex flex-">
-            //                 <button class=" btn btn-outline-primary designationBtn tooltip-test" title="designation" data-id="${ row.id }" data-name="${row.name}">
-            //                     <i class="bi bi-arrow-left-circle-fill"></i>
-            //                 </button>
-            //                 <button class="ms-1 btn btn-outline-primary updateUserBtn tooltip-test" title="update" data-id="${ row.id }">
-            //                     <i class="bi bi-pencil-fill"></i>
-            //                 </button>
-            //                 <button type="button" class="ms-1 btn btn-outline-primary deleteUserBtn tooltip-test" title="delete" data-id="${ row.id }">
-            //                     <i class="bi bi-trash3-fill"></i>
-            //                 </button>
-            //             </div>
-            //         `
-            //         } else {
-            //             return `
-                        
-            //             <div class="d-flex flex-">
-            //                 <button class=" btn btn-outline-primary designationBtn tooltip-test" title="designation" data-id="${ row.id }" data-name="${row.name}">
-            //                     <i class="bi bi-arrow-left-circle-fill"></i>
-            //                 </button>
-            //                 <button class="ms-1 btn btn-outline-primary updateUserBtn" data-id="${ row.id }">
-            //                     <i class="bi bi-pencil-fill"></i>
-            //                 </button>
-            //             </div>
-            //         `
-            //         }
-            //     }}
+            {
+                sortable: false,
+                data: row => function () {
+                        return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary logStaffOutBtn tooltip-test" title="logout" data-id="${ row.id }">
+                                <i class="bi bi-box-arrow-right"></i>
+                            </button>
+                        </div>
+                    `
+                }}
         ]
     });
     return activeStaffTable

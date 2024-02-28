@@ -51,7 +51,10 @@ class InvestigationService
             return $this->visit
             ->where('consulted', '!=', null)
             ->where('closed', false)
-            ->whereRelation('prescriptions.resource', 'category', '=', 'Investigations')
+            ->whereHas('prescriptions', function(Builder $query){
+                $query->where('result', '=', null)
+                ->whereRelation('resource', 'category', '=', 'Investigations');
+            })
             ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
@@ -62,7 +65,10 @@ class InvestigationService
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('closed', false)
-                    ->whereRelation('prescriptions.resource', 'category', '=', 'Investigations')
+                    ->whereHas('prescriptions', function(Builder $query){
+                            $query->where('result', '=', null)
+                            ->whereRelation('resource', 'category', '=', 'Investigations');
+                        })
                     ->where(function (Builder $query) {
                         $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
                         ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
@@ -74,7 +80,10 @@ class InvestigationService
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('closed', false)
-                    ->whereRelation('prescriptions.resource', 'category', '=', 'Investigations')
+                    ->whereHas('prescriptions', function(Builder $query){
+                        $query->where('result', '=', null)
+                        ->whereRelation('resource', 'category', '=', 'Investigations');
+                    })
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));

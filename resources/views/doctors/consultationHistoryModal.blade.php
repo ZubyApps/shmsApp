@@ -14,7 +14,7 @@
                             </div>
                             <div class="mb-2 form-control">
                                 <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
-                                <div id="knownClinicalInfoDiv" data-div="conReview">
+                                <div>
                                     <x-toast-successful class="col-xl-12"  id="knownClinicalInfoToast"></x-toast-successful>
                                     <div class="row">
                                         @include('patients.partials.known-clinical-info', ['disabled' => true])

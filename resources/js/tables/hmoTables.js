@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, admissionStatusX, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     return new DataTable('#'+tableId, {
@@ -103,7 +103,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                             </button>
                         </div>`                
             },
-            {data: row => admissionStatus(row)},
+            {data: row => admissionStatusX(row)},
             {
                 sortable: false,
                 data: row => `
@@ -154,9 +154,9 @@ const getApprovalListTable = (tableId, sponsor) => {
             {data: "prescribed"},
             {data: "diagnosis"},
             {data:row => () => {
-                return row.approved ? row.resource + `<i class="ms-1 text-primary bi bi-check-circle-fill"></i>` : 
-                       row.rejected ? row.resource + `<i class="ms-1 text-danger bi bi-x-circle-fill"></i>` :
-                       row.resource
+                return `<span class="text-primary fw-semibold">${row.resource}</span> ${row.approved ? 
+                    `<i class="ms-1 text-primary bi bi-check-circle-fill"></i>` : row.rejected ? 
+                    `<i class="ms-1 text-danger bi bi-x-circle-fill"></i>` : ''}`
             }},
             {data: "prescription"},
             {data: "quantity"},
@@ -291,15 +291,17 @@ const getSentBillsTable = (tableId, startDate, endDate) => {
             {data: "doctor"},
             {data: "diagnosis"},
             {data: "sentBy"},
-            // {data: "30dayCount"},
             {data: "totalHmsBill"},
             {data: "totalHmoBill"},
             {
                 sortable: false,
                 data: row => `
                 <div class="d-flex justify-content-center">
-                    <button class="ms-1 btn btn-outline-primary patientBillBtn tooltip-test" title="See bill" data-id="${ row.id }" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" >
+                    <button class="ms-1 btn btn-outline-primary patientBillBtn tooltip-test" title="See bill" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" >
                         <i class="bi bi-eye-fill"></i>
+                    </button>   
+                    <button class="ms-1 btn btn-outline-primary closeVisitBtn tooltip-test" title="${row.closed ? 'closed': 'close'}" data-id="${ row.id }">
+                    ${row.closed ? '<i class="bi bi-lock-fill"></i>': 'Close'}
                     </button>   
                 </div>
                 `

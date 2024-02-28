@@ -11,6 +11,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserService
@@ -195,16 +196,27 @@ class UserService
                 'id'                => $user->id,
                 'loggedIn'          => (new Carbon($user->login))->format('d/m/Y g:ia'),
                 'name'              => $user->nameInFull(),
-                // 'employed'          => $user->date_of_employment ? (new Carbon($user->date_of_employment))->format('d/m/Y g:ia') : '',
                 'designation'       => $user?->designation?->designation,
-                // 'lastLogin'         => $user->login ? (new Carbon($user->login))->format('d/m/Y g:ia') : '',
-                // 'qualification'     => $user->highest_qualification,
-                // 'username'          => $user->username,
                 'phone'             => $user->phone_number,
-                // 'address'           => $user->address,
-                // 'createdAt'         => (new Carbon($user->created_at))->format('d/m/Y'),
                 'count'             => $user->patients()->count() 
             ];
          };
+    }
+
+    public function logout(Request $request, User $userToLogOut)
+    {
+        $ses1 = session($userToLogOut->name);
+        $ses2 = $request->session($userToLogOut->name);
+        dd($ses1, $ses2);
+
+        $userToLogOut->update([
+            'is_active' => false,
+            'logout'    => new Carbon()
+        ]);
+        // $user = Auth::user();
+        // Auth::setUser($userToLogOut);
+        // Auth::logout();
+        // Auth::setUser($user);
+        return;
     }
 }

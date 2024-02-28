@@ -26,6 +26,7 @@
 @include('extras.nursesReportModal', ['title' => 'Nurses Report', 'isNurses' => true, 'id' => 'nursesReportModal'])
 @include('extras.nursesReportTemplateModal', ['title' => 'New Report', 'isUpdate' => false, 'id' => 'newNursesReportTemplateModal' ])
 @include('extras.nursesReportTemplateModal', ['title' => 'Edit Report', 'isUpdate' => true, 'id' => 'editNursesReportTemplateModal' ])
+@include('nurses.wardAndBedModal', ['title' => 'Update Admission Details', 'isNurses' => true, 'id' => 'wardAndBedModal'])
 
 <div class="container p-1 mt-5">
     <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="upcomingMedicationsoffcanvas"
@@ -130,11 +131,12 @@
     <div>
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <button class="nav-link active" id="nav-outPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-outPatients" 
+                <button class="nav-link active" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients"
+                    type="button" role="tab" aria-controls="nav-inPatients" aria-selected="false">Inpatients</button>
+
+                <button class="nav-link" id="nav-outPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-outPatients" 
                     type="button" role="tab" aria-controls="nav-outPatients" aria-selected="true">OutPatients</button>
 
-                <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients"
-                    type="button" role="tab" aria-controls="nav-inPatients" aria-selected="false">Inpatients</button>
 
                 <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients"
                     type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button>
@@ -147,11 +149,11 @@
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
-            <!-- patients table -->
-            <div class="tab-pane fade show active" id="nav-outPatients" role="tabpanel"
-                aria-labelledby="nav-outPatients-tab" tabindex="0">
-                <div class="py-4">
-                    <table id="outPatientsVisitTable" class="table table-hover align-middle table-sm">
+            <!-- inpatients table -->
+            <div class="tab-pane fade show active" id="nav-inPatients" role="tabpanel" aria-labelledby="nav-inPatients-tab"
+                tabindex="0">
+                <div class="py-4 ">
+                    <table id="inPatientsVisitTable" class="table table-hover align-middle table-sm">
                         <thead>
                             <tr>
                                 <th>Seen</th>
@@ -170,11 +172,10 @@
                     </table>
                 </div>
             </div>
-            <!-- inpatients table -->
-            <div class="tab-pane fade" id="nav-inPatients" role="tabpanel" aria-labelledby="nav-inPatients-tab"
-                tabindex="0">
-                <div class="py-4 ">
-                    <table id="inPatientsVisitTable" class="table table-hover align-middle table-sm">
+             <!-- outpatients table -->
+            <div class="tab-pane fade" id="nav-outPatients" role="tabpanel" aria-labelledby="nav-outPatients-tab" tabindex="0">
+                <div class="py-4">
+                    <table id="outPatientsVisitTable" class="table table-hover align-middle table-sm">
                         <thead>
                             <tr>
                                 <th>Seen</th>

@@ -22,7 +22,7 @@ class DeliveryNoteResource extends JsonResource
             'apgarScore'        => $this->apgar_score,
             'birthWeight'       => $this->birth_weight,
             'modeOfDelivery'    => $this->mode_of_delivery,
-            'lengthOfParity'    => $this->length_of_parity,
+            'parity'            => $this->parity,
             'headCircumference' => $this->head_circumference,
             'sex'               => $this->sex,
             'ebl'               => $this->ebl,

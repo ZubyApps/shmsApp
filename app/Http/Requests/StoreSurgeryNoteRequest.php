@@ -31,6 +31,7 @@ class StoreSurgeryNoteRequest extends FormRequest
             'scrubNurse'        => ['required'],
             'surgicalProcedure' => ['required'],
             'surgeonsNotes'     => ['required'],
+            'aneasthetistsNotes'=> ['required'],
             'postOperationNotes'=> ['required'],
             'immediatePostOp'   => ['required'],
             'conId'             => ['required', 'numeric', 'exists:'.Consultation::class.',id'],

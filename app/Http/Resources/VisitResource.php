@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,7 +18,7 @@ class VisitResource extends JsonResource
         return [
             'id'            => $this->id,
             'ancRegId'      => $this->patient->antenatalRegisteration?->id,
-            'came'          => $this->created_at,
+            'came'          => (new Carbon($this->created_at))->format('D jS M Y - g:ia'),
             'consultations' => new ConsultationReviewCollection($this->consultations)
         ];
     }

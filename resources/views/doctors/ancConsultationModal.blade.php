@@ -14,14 +14,16 @@
                         </div>
                         <div class="mb-2 form-control">
                             <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>
-                            <x-toast-successful class="col-xl-12"  id="knownClinicalInfoToast"></x-toast-successful>
-                            <div class="row" id="knownClinicalInfoDiv" {!! $isReview ? 'data-div="ancReview"' : 'data-div="anc"' !!}>
-                                @include('patients.partials.known-clinical-info', ['disabled' => true])
-                                <div class="d-flex justify-content-center">
-                                    <button type="button" id="updateKnownClinicalInfoBtn" class="btn bg-primary text-white" {!! $isReview ? 'data-btn="ancReview"' : 'data-btn="anc"' !!}>
-                                        <i class="bi bi-arrow-up-circle"></i>
-                                        Update
-                                    </button>
+                            <div id="knownClinicalInfoDiv" {!! $isReview ? 'data-div="ancReview"' : 'data-div="anc"' !!}>
+                                <x-toast-successful class="col-xl-12"  id="knownClinicalInfoToast"></x-toast-successful>
+                                <div class="row">
+                                    @include('patients.partials.known-clinical-info', ['disabled' => true])
+                                    <div class="d-flex justify-content-center">
+                                        <button type="button" id="updateKnownClinicalInfoBtn" class="btn bg-primary text-white" {!! $isReview ? 'data-btn="ancReview"' : 'data-btn="anc"' !!}>
+                                            <i class="bi bi-arrow-up-circle"></i>
+                                            Update
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
