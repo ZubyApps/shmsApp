@@ -152,6 +152,7 @@ class MedicationChartService
                 'patient'           => $medicationChart->visit->patient->card_no .' '. $medicationChart->visit->patient->first_name .' '. $medicationChart->visit->patient->middle_name .' '. $medicationChart->visit->patient->last_name,
                 'status'            => $medicationChart->consultation->admission_status,
                 'ward'              => $medicationChart->consultation->ward ?? '',
+                'bedNo'             => $medicationChart->consultation->bed_no ?? '',
                 'treatment'         => $medicationChart->prescription->resource->name ?? '',
                 'prescription'      => $medicationChart->prescription->prescription ?? '',
                 'dose'              => $medicationChart->dose_prescribed ?? '',

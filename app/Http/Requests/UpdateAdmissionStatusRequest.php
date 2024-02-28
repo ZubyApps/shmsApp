@@ -6,9 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateAdmissionStatusRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
@@ -22,7 +19,6 @@ class UpdateAdmissionStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'admit'             => ['required'],
             'ward'              => ['required_if:admit,Inpatient,admit,Observation,'],
             'bedNumber'         => ['required_if:admit,=,Inpatient,admit,=,Observation'],
         ];

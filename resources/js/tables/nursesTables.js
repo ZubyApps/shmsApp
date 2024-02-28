@@ -565,7 +565,7 @@ const getUpcomingMedicationsTable = (tableId, button, span) => {
                 `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
                 `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
             } },
-            {data: "ward"},
+            {data: row => row.ward + '-' + row.bedNo},
             {data: "treatment"},
             {data: "prescription"},
             {data: "chartedBy"},
@@ -630,7 +630,7 @@ const getUpcomingNursingChartsTable = (tableId, button, span) => {
                 `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
                 `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
             } },
-            {data: "ward"},
+            {data: row => row.ward + '-' + row.bedNo},
             {data: "care"},
             {data: "instruction"},
             {data: "chartedBy"},

@@ -151,6 +151,7 @@ class NursingChartService
                 'patient'           => $nursingChart->visit->patient->card_no .' '. $nursingChart->visit->patient->first_name .' '. $nursingChart->visit->patient->middle_name .' '. $nursingChart->visit->patient->last_name,
                 'status'            => $nursingChart->consultation->admission_status,
                 'ward'              => $nursingChart->consultation->ward ?? '',
+                'bedNo'             => $nursingChart->consultation->bed_no ?? '',
                 'care'              => $nursingChart->prescription->resource->name ?? '',
                 'instruction'       => $nursingChart->prescription->note ?? '',
                 'chartedBy'         => $nursingChart->user->username,
