@@ -19,7 +19,7 @@
                             <option value="Doctor">Doctor</option>
                             <option value="Nurse">Nurse</option>
                             <option value="LabTech">LabTech</option>
-                            <option value="Pharmacy Officer">Pharmacy Officer</option>
+                            <option value="Pharmacy Tech">Pharmacy Tech</option>
                             <option value="Bill Officer">Bill Officer</option>
                             <option value="HMO Officer">HMO Officer</option>
                             <option value="Admin">Admin</option>
