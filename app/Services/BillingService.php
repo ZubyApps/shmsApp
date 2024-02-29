@@ -7,7 +7,6 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Consultation;
 use App\Models\Payment;
-use App\Models\PayMethod;
 use App\Models\Prescription;
 use App\Models\Resource;
 use App\Models\User;

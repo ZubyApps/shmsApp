@@ -15,7 +15,7 @@ Class PayPercentageService
 
     public function individual_Family(Visit $visit): int|float|null
     {
-        return $visit->totalHmsBills() ? round((float)($visit->totalPayments() / ($visit->totalHmsBills() - $visit->discount)) * 100) : null;
+        return $visit->totalHmsBills() ? round((float)($visit->totalPayments() / ($visit->totalHmsBills() - $visit->discount)) * 100, 2) : null;
     }
 
     public function hmo_Retainership(Visit $visit): int|float|null
@@ -25,6 +25,6 @@ Class PayPercentageService
 
     public function nhis(Visit $visit): int|float|null
     {
-        return $visit->totalHmsBills() ? round((float)($visit->totalPayments() / ($visit->totalNhisBills() - $visit->discount)) * 100) : null;
+        return $visit->totalHmsBills() ? round((float)($visit->totalPayments() / ($visit->totalNhisBills() - $visit->discount)) * 100, 2) : null;
     }
 }
