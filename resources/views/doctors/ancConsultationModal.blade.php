@@ -162,56 +162,6 @@
                                     <x-toast-successful  id="saveConsultationToast"></x-toast-successful>
                                 </div>
                                 @include('extras.investigationAndManagementDiv', ['type' => $isReview ? 'AncReview' : 'Anc'])
-                                {{-- <div class="d-none investigationAndManagementDiv" id="investigationAndManagementDiv{{ $isReview ? 'AncReview' : 'Anc' }}" {!! $isReview ? 'data-div="ancReview"' : 'data-div="anc"' !!}>
-                                    <div class="mb-2 form-control">
-                                        <x-form-span>Investigation & Management</x-form-span>
-                                        <div class="row">
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="resourceLabel">Medical Resources</x-input-span>
-                                                <input class="form-control resource" type="search" name="resource" id="resource" {!! $isReview ? 'data-input="ancReview"' : 'data-input="anc"' !!} list="resourceList{{ $isReview ? 'ancReview' : 'anc' }}"
-                                                    placeholder="search" />
-                                                <datalist name="resource" type="text" class="decoration-none resourceList" id="resourceList{{ $isReview ? 'ancReview' : 'anc' }}"></datalist>
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-6 pres" id="pres">
-                                                <x-input-span id="prescriptionLabel">Prescription</x-input-span>
-                                                <x-form-input type="text" name="prescription" id="prescription"
-                                                    placeholder="eg: 5mg BD x5" />
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-6 qty" id="qty">
-                                                <x-input-span id="quantityLabel">Quantity</x-input-span>
-                                                <x-form-input type="number" name="quantity" id="quantity" placeholder="" />
-                                            </x-form-div>
-                                            <x-form-div class="col-xl-6">
-                                                <x-input-span id="notesLabel">Note</x-input-span>
-                                                <x-form-input type="text" name="note" id="note"/>
-                                            </x-form-div>
-                                        </div>
-                                        <div class="d-flex justify-content-center">
-                                            <button type="button" id="addInvestigationAndManagementBtn" {!! $isReview ? 'data-btn="ancReview"' : 'data-btn="anc"' !!}
-                                                class="btn btn-primary">
-                                                add
-                                                <i class="bi bi-prescription"></i>
-                                            </button>
-                                        </div>
-                                        <x-toast-successful  id="saveInvestigationAndManagementToast"></x-toast-successful>
-                                    </div>
-                                    <div class="mb-2 form-control">
-                                        <table id="prescriptionTable{{ $isReview ? 'AncReview' : 'Anc' }}" class="table table-hover align-middle table-sm prescriptionTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Prescribed</th>
-                                                    <th>Resource</th>
-                                                    <th>Prescription</th>
-                                                    <th>Qty</th>
-                                                    <th>Note</th>
-                                                    <th>By</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody></tbody>
-                                        </table>
-                                    </div>
-                                </div> --}}
                             </div>
                         </div>
                     </div>

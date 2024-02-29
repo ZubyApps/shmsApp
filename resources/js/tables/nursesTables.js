@@ -64,17 +64,7 @@ const getWaitingTable = (tableId) => {
 }
 
 const getPatientsVisitsByFilterTable = (tableId, filter) => {
-    return new DataTable('#'+tableId, {
-        serverSide: true,
-        ajax:  {url: '/nurses/load/consulted/nurses', data: {
-            'filterBy': filter
-        }},
-        orderMulti: true,
-        search:true,
-        language: {
-            emptyTable: 'No patient record'
-        },
-        columns: [
+    const preparedColumns = [
             {data: "came"},
             {data: row => histroyBtn(row)},
             {data: "doctor"},
@@ -161,9 +151,27 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
             {data: row => admissionStatus(row)},
             {
                 sortable: false,
-                data: row => tableId === 'inPatientsVisitTable' ? detailsBtn1(row) : detailsBtn(row)},
-        ]
+                data: row => tableId === 'inPatientsVisitTable' ? detailsBtn1(row) : detailsBtn(row)}
+    ]
+
+    filter === 'Inpatient' ? preparedColumns.splice(9, 0, {data: row => `<small>${row.ward + '-' + row.bedNo}</small>`},) : ''
+
+    const allPatientsTable = new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  {url: '/nurses/load/consulted/nurses', data: {
+            'filterBy': filter
+        }},
+        orderMulti: true,
+        search:true,
+        language: {
+            emptyTable: 'No patient record'
+        },
+        columns: preparedColumns
     });
+
+    allPatientsTable
+
+    return allPatientsTable
 }
 
 const getNurseMedicationsByFilter = (tableId, conId, modal, visitId, isHistory) => {

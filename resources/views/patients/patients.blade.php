@@ -48,6 +48,7 @@
                                 <th>Sponsor</th>
                                 <th>Category</th>
                                 <th>Created</th>
+                                <th>CreatedBy</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>

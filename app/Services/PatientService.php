@@ -130,6 +130,7 @@ class PatientService
                 'sponsor'           => $patient->sponsor->name,
                 'category'          => $patient->sponsor->sponsorCategory->name,
                 'createdAt'         => (new Carbon($patient->created_at))->format('d/m/Y'),
+                'createdBy'         => $patient->user->username,
                 'active'            => $patient->is_active,
                 'count'             => $patient->visits()->count(),
                 'patient'           => $patient->patientId()

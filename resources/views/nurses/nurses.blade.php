@@ -165,6 +165,7 @@
                                 <th>Other</th>
                                 <th>Vitals</th>
                                 <th>Status</th>
+                                <th>Ward</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>

@@ -68,6 +68,7 @@ const getAllPatientsTable = (tableId) => {
             {data: "sponsor"},
             {data: "category"},
             {data: "createdAt"},
+            {data: "createdBy"},
             {
                 sortable: false,
                 data: row => function () {
