@@ -28,11 +28,11 @@ return new class extends Migration
             $table->dateTime('closed_opened_at')->nullable();
             $table->boolean('closed')->default(false);
             $table->foreignIdFor(User::class, 'closed_opened_by')->nullable()->constrained('users')->restrictOnDelete();
-            $table->string('discount')->nullable();
+            $table->integer('discount')->nullable();
             $table->foreignIdFor(User::class, 'discount_by')->nullable()->constrained('users')->restrictOnDelete();
-            $table->string('total_hms_bill')->default(0);
-            $table->string('total_hmo_bill')->default(0);
-            $table->string('total_paid')->default(0);
+            $table->integer('total_hms_bill')->default(0);
+            $table->integer('total_hmo_bill')->default(0);
+            $table->integer('total_paid')->default(0);
             $table->foreignIdFor(User::class, 'sponsor_changed_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'doctor_done_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'nurse_done_by')->nullable()->constrained('users')->restrictOnDelete();

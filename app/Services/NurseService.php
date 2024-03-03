@@ -10,6 +10,7 @@ use App\Models\Prescription;
 use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 class NurseService
 {

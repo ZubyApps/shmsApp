@@ -508,26 +508,24 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     document.querySelector('#waitingTable').addEventListener('click', function (event) {
-        const removeBtn  = event.target.closest('.removeBtn')
+        const removeBtn     = event.target.closest('.closeVisitBtn, .deleteVisitBtn')
 
-        if (removeBtn){
-            removeBtn.setAttribute('disabled', 'disabled')
-            if (confirm('Are you sure you want to delete this Visit?')) {
-                const visitId = removeBtn.getAttribute('data-id')
-                http.delete(`/visits/${visitId}`)
+        if (removeBtn){                
+            const [visitId, string]  = [removeBtn.getAttribute('data-id'), removeBtn.id == 'closeVisitBtn' ? 'close' : 'delete']
+            if (confirm(`Are you sure you want to ${string} the Visit?`)) {
+                http.patch(`/visits/${string}/${visitId}`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300){
                         waitingTable.draw()
                     }
-                    removeBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {
-                    console.log(error)
-                    removeBtn.removeAttribute('disabled')
+                    if (error.response.status === 403){
+                        alert(error.response.data.message); 
+                    }
                 })
-            }  
+            }
         }
-    
     })
 
     document.querySelector('#hmoReportsTable').addEventListener('click', function (event) {

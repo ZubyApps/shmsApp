@@ -49,8 +49,9 @@ class PrescriptionService
             ]);
 
             $prescription->visit->update([
-                'viewed_at'     => null,
-                'total_hms_bill'    => $data->quantity ? $prescription->visit->totalHmsBills() : ($prescription->visit->totalHmsBills() - $bill)
+                'viewed_at'         => null,
+                'total_hms_bill'    => $data->quantity ? $prescription->visit->totalHmsBills() : ($prescription->visit->totalHmsBills() - $bill),
+                'pharmacy_done_by'  => $resource->category == 'Medications' || $resource->category == 'Consumables' ? null : $prescription->visit->pharmacy_done_by,
             ]);
 
             if ($prescription->visit->sponsor->sponsorCategory->name == 'NHIS'){

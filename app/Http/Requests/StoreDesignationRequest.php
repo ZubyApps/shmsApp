@@ -11,7 +11,7 @@ class StoreDesignationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->designation?->access_level > 3;
+        return $this->user()->designation?->access_level > 5;
     }
 
     /**
@@ -24,7 +24,7 @@ class StoreDesignationRequest extends FormRequest
         return [
             'fullName'    => ['required'],
             'designation' => ['required', 'string'],
-            'accessLevel' => ['required', 'integer', 'between:0,4'],
+            'accessLevel' => ['required', 'integer', 'between:0,5'],
         ];
     }
 }

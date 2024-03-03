@@ -1,5 +1,5 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
-import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, openMedicalReportModal, populateWardAndBedModal } from "./helpers"
+import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, openMedicalReportModal, populateWardAndBedModal, clearItemsList, getSelectedResourceValues } from "./helpers"
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
@@ -483,14 +483,17 @@ window.addEventListener('DOMContentLoaded', function () {
     resourceInput.addEventListener('input', function () {
             const div = resourceInput.parentElement.parentElement.parentElement.parentElement.parentElement
             const datalistEl = div.querySelector(`#resourceList${div.dataset.div}`)
+            if (resourceInput.value < 2) {
+                datalistEl.innerHTML = ''
+                }
             if (resourceInput.value.length > 2) {
-                http.get(`/resources/list/emergency`, {params: {resource: resourceInput.value, sponsorCat: resourceInput.dataset.sponsorcat}}).then((response) => {
+                http.get(`/nurses/list/emergency`, {params: {resource: resourceInput.value, sponsorCat: resourceInput.dataset.sponsorcat}}).then((response) => {
                     displayResourceList(datalistEl, response.data)
                 })
             }
             const selectedOption = datalistEl.options.namedItem(resourceInput.value)
             if (selectedOption){
-                resourceInput.setAttribute('data-resourcevalues', [selectedOption.getAttribute('data-id'), selectedOption.getAttribute('data-cat')])
+                clearValidationErrors(div)
                 if (selectedOption.getAttribute('data-cat') == 'Medications'){
                     div.querySelector('.pres').classList.remove('d-none')
                 } else {
@@ -504,16 +507,17 @@ window.addEventListener('DOMContentLoaded', function () {
         addInvestigationAndManagmentBtn.addEventListener('click', () => {
                 const div = addInvestigationAndManagmentBtn.parentElement.parentElement.parentElement
                 addInvestigationAndManagmentBtn.setAttribute('disabled', 'disabled')
-                const [resource, resourceCategory] = div.querySelector('.resource').getAttribute('data-resourcevalues').split(',')
+                const resourcevalues = getSelectedResourceValues(div, div.querySelector('.resource'), div.querySelector(`#resourceList${div.dataset.div}`))
                 const [visitId, divPrescriptionTableId, conId] = [addInvestigationAndManagmentBtn.dataset?.visitid, '#'+div.querySelector('.prescriptionTable').id, null]
-                let data = {...getDivData(div), resource, resourceCategory, visitId, conId}
-                
-                http.post(`prescription/${resource}`, {...data}, {"html": div})
+                if (!resourcevalues){const message = {"resource": ["Please pick an from the list"]}; handleValidationErrors(message, div); addBtn.removeAttribute('disabled'); return}
+                let data = {...getDivData(div), ...resourcevalues, visitId, conId}
+                http.post(`prescription/${resourcevalues.resource}`, {...data}, {"html": div})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         new Toast(div.querySelector('#saveInvestigationAndManagementToast'), {delay:2000}).show()
                         clearDivValues(div)
                         clearValidationErrors(div)
+                        clearItemsList(div.querySelector(`#resourceList${div.dataset.div}`))
                     }
                     if ($.fn.DataTable.isDataTable( divPrescriptionTableId )){
                         $(divPrescriptionTableId).dataTable().fnDraw()
@@ -684,7 +688,7 @@ window.addEventListener('DOMContentLoaded', function () {
             datalistEl.innerHTML = ''
             }
             if (itemInput.value.length > 2) {
-                http.get(`/resources/list/bulk`, {params: {resource: itemInput.value, dept: itemInput.dataset.dept}}).then((response) => {
+                http.get(`/bulkrequests/list/bulk`, {params: {resource: itemInput.value, dept: itemInput.dataset.dept}}).then((response) => {
                     displayItemsList(datalistEl, response.data, 'itemOption')
                 })
             }

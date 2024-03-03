@@ -29,6 +29,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
     const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
 
+    const inpatientsInvestigationCount      = document.querySelector('#inpatientsInvestigationCount')
+    const outpatientsInvestigationCount      = document.querySelector('#outpatientsInvestigationCount')
+
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
 
     const outPatientsTab            = document.querySelector('#nav-outPatients-tab')
@@ -44,10 +47,28 @@ window.addEventListener('DOMContentLoaded', function () {
 
     let inPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable
 
-    const inpatientsInvestigationsTale = getInpatientsInvestigationsTable('inpatientInvestigationsTable')
+    const inpatientsInvestigationsTable = getInpatientsInvestigationsTable('inpatientInvestigationsTable')
     const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable')
 
     const outPatientsVisitsTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient')
+
+    inpatientsInvestigationsTable.on('draw.init', function() {
+        const count = inpatientsInvestigationsTable.rows().count()
+        if (count > 0 ){
+            inpatientsInvestigationCount.innerHTML = count
+        } else {
+            inpatientsInvestigationCount.innerHTML = ''
+        }
+    })
+
+    outpatientInvestigationTable.on('draw.init', function() {
+        const count = outpatientInvestigationTable.rows().count()
+        if (count > 0 ){
+            outpatientsInvestigationCount.innerHTML = count
+        } else {
+            outpatientsInvestigationCount.innerHTML = ''
+        }
+    })
 
     outPatientsTab.addEventListener('click', function() {outPatientsVisitsTable.draw()})
 
@@ -77,7 +98,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('#offcanvasInvestigations, #offcanvasOutpatientsInvestigations').forEach(canvas => {
         canvas.addEventListener('show.bs.offcanvas', function () {
-            inpatientsInvestigationsTale.draw()
+            inpatientsInvestigationsTable.draw()
             outpatientInvestigationTable.draw()
         })
 
@@ -338,7 +359,7 @@ window.addEventListener('DOMContentLoaded', function () {
             datalistEl.innerHTML = ''
             }
             if (itemInput.value.length > 2) {
-                http.get(`/resources/list/bulk`, {params: {resource: itemInput.value, dept: itemInput.dataset.dept}}).then((response) => {
+                http.get(`/bulkrequests/list/bulk`, {params: {resource: itemInput.value, dept: itemInput.dataset.dept}}).then((response) => {
                     displayItemsList(datalistEl, response.data, 'itemOption')
                 })
             }

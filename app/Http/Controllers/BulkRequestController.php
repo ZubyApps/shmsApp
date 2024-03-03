@@ -8,15 +8,27 @@ use App\Http\Requests\UpdateBulkRequestRequest;
 use App\Models\Resource;
 use App\Services\BulkRequestService;
 use App\Services\DatatablesService;
+use App\Services\ResourceService;
 use Illuminate\Http\Request;
 
 class BulkRequestController extends Controller
 {
     public function __construct(
         private readonly DatatablesService $datatablesService,
-        private readonly BulkRequestService $bulkRequestService
+        private readonly BulkRequestService $bulkRequestService,
+        private readonly ResourceService $resourceService
     )
     {  
+    }
+
+    public function listBulk(Request $request)
+    {
+        $items = $this->resourceService->getBulkList($request);
+
+        $listTransformer = $this->resourceService->listTransformer1();
+
+        return array_map($listTransformer, (array)$items->getIterator());
+
     }
 
     /**
@@ -67,6 +79,9 @@ class BulkRequestController extends Controller
      */
     public function toggleApproveBulkRequest(UpdateBulkRequestRequest $request, BulkRequest $bulkRequest)
     {
+        if ($request->user()->designation?->access_level < 5) {
+            return response()->json(['message' => 'You are not authorized'], 403);
+        }
         return $this->bulkRequestService->toggleRequest($request, $bulkRequest, $request->user());
     }
 
@@ -81,8 +96,11 @@ class BulkRequestController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(BulkRequest $bulkRequest)
+    public function destroy(Request $request, BulkRequest $bulkRequest)
     {
+        if ($request->user()->designation?->access_level < 5) {
+            return response()->json(['message' => 'You are not authorized'], 403);
+        }
         return $this->bulkRequestService->processDeletion($bulkRequest);
     }
 }

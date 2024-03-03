@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDesignationRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\DesignationResource;
 use App\Http\Resources\UserResource;
 use App\Models\Designation;
 use App\Models\User;
@@ -75,7 +76,7 @@ class RegisteredUserController extends Controller
 
     public function edit(User $user)
     {
-        if ($user->designation?->access_level > 4) {
+        if ($user->designation?->access_level > 5) {
             return response()->json(['message' => 'You are not authorized'], 403);
         }
         return new UserResource($user);
@@ -85,6 +86,14 @@ class RegisteredUserController extends Controller
     {        
         return $this->userService->update($request, $user, $request->user());
 
+    }
+
+    public function designation(Request $request, User $user)
+    {
+        if ($request->user()->designation?->access_level < 5) {
+            return response()->json(['message' => 'You are not authorized'], 403);
+        }
+        return New DesignationResource($user);
     }
 
     public function assignDesignation(StoreDesignationRequest $request, User $user)
@@ -99,7 +108,7 @@ class RegisteredUserController extends Controller
 
     public function logStaffOut(Request $request, User $user)
     {
-        return $this->userService->logout($request, $user);
+        return $this->userService->markForLogout($request, $user);
     }
 
     public function destroy(User $user)

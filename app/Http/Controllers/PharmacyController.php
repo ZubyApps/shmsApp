@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pharmacy;
 use App\Models\Prescription;
+use App\Models\Visit;
 use App\Services\DatatablesService;
 use App\Services\PharmacyService;
 use Illuminate\Http\Request;
@@ -76,5 +76,10 @@ class PharmacyController extends Controller
         $transformer = $this->pharmacyService->getExpirationStockTransformer();
 
         return $this->datatablesService->datatableResponse($transformer, $expirationStock, $params);  
+    }
+
+    public function pharmacyDone(Request $request, Visit $visit)
+    {
+        return $this->pharmacyService->done($visit, $request->user());
     }
 }

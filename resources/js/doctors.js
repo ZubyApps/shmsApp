@@ -1,7 +1,7 @@
 import { Modal, Collapse, Toast, Offcanvas } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, filterPatients, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, filterPatients, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
 import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable, getOtherPrescriptionsByFilter, getMedicalReportTable} from "./tables/doctorstables"
@@ -696,13 +696,13 @@ window.addEventListener('DOMContentLoaded', function () {
             datalistEl.innerHTML = ''
             }
             if (input.value.length > 2) {
-                http.get(`/resources/list`, {params: {resource: input.value, sponsorCat: input.dataset.sponsorcat}}).then((response) => {
+                http.get(`/doctors/list`, {params: {resource: input.value, sponsorCat: input.dataset.sponsorcat}}).then((response) => {
                     displayResourceList(datalistEl, response.data)
                 })
             }
             const selectedOption = datalistEl.options.namedItem(input.value)
             if (selectedOption){
-                input.setAttribute('data-resourcevalues', [selectedOption.getAttribute('data-id'), selectedOption.getAttribute('data-cat')])
+                clearValidationErrors(div)
                 if (selectedOption.getAttribute('data-cat') == 'Medications'){
                     div.querySelector('.qty').classList.add('d-none')
                     div.querySelector('#quantity').value = ''
@@ -715,6 +715,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     div.querySelector('.pres').classList.add('d-none')
                 }
                 input.value = selectedOption.getAttribute('data-plainname')
+                selectedOption.setAttribute('name', selectedOption.getAttribute('data-plainname'))
             }
         })        
     })
@@ -724,16 +725,18 @@ window.addEventListener('DOMContentLoaded', function () {
         addBtn.addEventListener('click', () => {
             const div = addBtn.parentElement.parentElement.parentElement
             addBtn.setAttribute('disabled', 'disabled')
-            const [resource, resourceCategory] = div.querySelector('.resource').getAttribute('data-resourcevalues').split(',')//getSelectedResourceValues(div, div.querySelector('.resource'), div.querySelector(`#resourceList${div.dataset.div}`))
+            const resourcevalues = getSelectedResourceValues(div, div.querySelector('.resource'), div.querySelector(`#resourceList${div.dataset.div}`)) // div.querySelector('.resource').getAttribute('data-resourcevalues').split(',')
+            if (!resourcevalues){const message = {"resource": ["Please pick an from the list"]}; handleValidationErrors(message, div); addBtn.removeAttribute('disabled'); return}
             const [conId, visitId, divPrescriptionTableId, chartable] = [addBtn.dataset.conid, addBtn.dataset.visitid, '#'+div.querySelector('.prescriptionTable').id, div.querySelector('#chartable').checked]
-            let data = {...getDivData(div), resource, resourceCategory, conId, visitId, chartable}
+            let data = {...getDivData(div), ...resourcevalues, conId, visitId, chartable}
             
-            http.post(`prescription/${resource}`, {...data}, {"html": div})
+            http.post(`prescription/${resourcevalues.resource}`, {...data}, {"html": div})
             .then((response) => {
                 if (response.status >= 200 || response.status <= 300) {
                     new Toast(div.querySelector('#saveInvestigationAndManagementToast'), {delay:2000}).show()
                     clearDivValues(div)
                     clearValidationErrors(div)
+                    clearItemsList(div.querySelector(`#resourceList${div.dataset.div}`))
                 }
                 if ($.fn.DataTable.isDataTable( divPrescriptionTableId )){
                     $(divPrescriptionTableId).dataTable().fnDraw()
@@ -795,7 +798,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     // review consultation loops
-    document.querySelectorAll('#consultationReviewDiv, #visitHistoryDiv').forEach(div =>{
+    document.querySelectorAll('#consultationReviewDiv, #visitHistoryDiv, #investigationsModal').forEach(div =>{
         div.addEventListener('click', function (event) {
             const deleteConsultationBtn                 = event.target.closest('#deleteReviewConsultationBtn')
             const updateResourceListBtn                 = event.target.closest('#updateResourceListBtn')
@@ -1122,13 +1125,13 @@ function displayResourceList(datalistEl, data) {
     data.forEach(line => {
         const option = document.createElement("OPTION")
         option.setAttribute('id', 'resourceOption')
-        option.setAttribute('value', line.name)
+        option.setAttribute('value', line.nameWithIndicators)
         option.setAttribute('data-id', line.id)
-        option.setAttribute('name', line.name)
+        option.setAttribute('name', line.nameWithIndicators)
         option.setAttribute('data-cat', line.category)
-        option.setAttribute('data-plainname', line.plainName)
+        option.setAttribute('data-plainname', line.name)
 
-        !datalistEl.options.namedItem(line.name) ? datalistEl.appendChild(option) : ''
+        !datalistEl.options.namedItem(line.nameWithIndicators) ? datalistEl.appendChild(option) : ''
     })
 }
 

@@ -75,12 +75,11 @@
         <div class="text-start mb-4">
             <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasInvestigations" aria-controls="offcanvasInvestigations">
                 <i class="bi bi-list-check"></i>
-                Inpatient's Investigation Table
+                Inpatient's Investigation Table <span class="badge text-bg-danger" id="inpatientsInvestigationCount"></span>
             </button>
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="outpatientsInvestigationBtn"
-                data-bs-target="#offcanvasOutpatientsInvestigations" aria-controls="offcanvasOutpatientsInvestigations">
+            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="outpatientsInvestigationBtn" data-bs-target="#offcanvasOutpatientsInvestigations" aria-controls="offcanvasOutpatientsInvestigations">
                 <i class="bi bi-list-check"></i>
-                Outpatient's Investigation Table
+                Outpatient's Investigation Table <span class="badge text-bg-danger" id="outpatientsInvestigationCount"></span>
             </button>
         </div>
 
@@ -135,6 +134,7 @@
                                     <th>Sponsor</th>
                                     <th>Investigations</th>
                                     <th>Status</th>
+                                    <th>Ward</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>

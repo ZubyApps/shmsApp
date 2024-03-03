@@ -36,6 +36,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\LogUserOut::class,
         ],
 
         'api' => [
@@ -64,5 +65,13 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'strict'   => \App\Http\Middleware\Strictest::class,
+        'doctor'  => \App\Http\Middleware\DoctorsOnly::class,
+        'nurse'  => \App\Http\Middleware\DoctorsAndNurses::class,
+        'lab'  => \App\Http\Middleware\DoctorsAndLab::class,
+        'pharmacy'  => \App\Http\Middleware\PharmacyOnly::class,
+        'hmo'  => \App\Http\Middleware\HmoOnly::class,
+        'billing'  => \App\Http\Middleware\BillingOnly::class,
+        'patients'  => \App\Http\Middleware\Patients::class,
     ];
 }

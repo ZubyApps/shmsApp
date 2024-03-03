@@ -133,7 +133,6 @@ class UserService
                 'qualification'     => $user->highest_qualification,
                 'username'          => $user->username,
                 'phone'             => $user->phone_number,
-                // 'address'           => $user->address,
                 'createdAt'         => (new Carbon($user->created_at))->format('d/m/Y'),
                 'count'             => $user->patients()->count() 
             ];
@@ -142,7 +141,7 @@ class UserService
 
     public function designate(Request $data, User $user, User $designator)
     {
-        if($user->designation?->access_level > 4 && $designator->designation?->access_level < 5) {
+        if($user->designation?->access_level > 5 && $designator->designation?->access_level < 6) {
             return response()->json(['message' => 'You cannot perform this action'], 403 );
         }
         return $this->designation->updateOrCreate(['user_id' => $user->id], 
@@ -162,7 +161,6 @@ class UserService
                     ->whereRelation('designation', 'designation', '=', $designation)
                     ->orderBy($orderBy, $orderDir)
                     ->get(['id', 'username']);
-                    // ->toArray();   
     }
 
     public function getActiveStaffList(DataTableQueryParams $params)
@@ -203,20 +201,12 @@ class UserService
          };
     }
 
-    public function logout(Request $request, User $userToLogOut)
+    public function markForLogout(Request $request, User $userToLogOut)
     {
-        $ses1 = session($userToLogOut->name);
-        $ses2 = $request->session($userToLogOut->name);
-        dd($ses1, $ses2);
-
         $userToLogOut->update([
             'is_active' => false,
             'logout'    => new Carbon()
         ]);
-        // $user = Auth::user();
-        // Auth::setUser($userToLogOut);
-        // Auth::logout();
-        // Auth::setUser($user);
         return;
     }
 }

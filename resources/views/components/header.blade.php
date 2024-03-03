@@ -1,4 +1,8 @@
 @vite(['resources/css/header.scss', 'resources/js/app.js'])
+<?php 
+    $staffD = Auth::user()->designation->designation; 
+    $staffA = Auth::user()->designation->access_level; 
+?>
 <div class="container bg-white">
     <header class="border-bottom lh-1 py-3">
         <div class="row flex-nowrap justify-content-between align-items-center">
@@ -61,24 +65,20 @@
 
     <div class="nav-scroller py-1 mb-3 border-bottom">
         <nav class="nav nav-underline justify-content-between fs-5 fw-semibold">
-            <a href="/patients"
+            <a href="{{ $staffD === 'Bill Officer' || $staffD === 'HMO Officer' || $staffD === 'Nurse' || $staffD === 'Doctor' || $staffA > 4 ? '/patients' : '' }}"
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Patients') ? 'active text-primary' : '' }}">Patients</a>
-            <a href="/doctors"
+            <a href="{{ $staffD === 'Doctor' || $staffA > 4 ? '/doctors' : '' }}"
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Doctors') ? 'active text-primary' : '' }}">Doctors</a>
-            <a href="/nurses" 
+            <a href="{{ $staffD === 'Doctor' || $staffD === 'Nurse' || $staffA > 4 ? '/nurses' : '' }}" 
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Nurses') ? 'active text-primary' : '' }}">Nurses</a>
-            <a href="/investigations"
+            <a href="{{ $staffD === 'Doctor' || $staffD === 'LabTech' || $staffA > 4 ? '/investigations' : '' }}"
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Investigations') ? 'active text-primary' : '' }}">Investigations</a>
-            <a href="/pharmacy"
+            <a href="{{ $staffD === 'Pharmacy Tech' || $staffA > 4 ? '/pharmacy' : '' }}"
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Pharmacy') ? 'active text-primary' : '' }}">Pharmacy</a>
-            <a href="/hmo"
+            <a href="{{ $staffD === 'HMO Officer' || $staffA > 4 ? '/hmo' : '' }}"
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Hmo') ? 'active text-primary' : '' }}">HMO</a>
-            <a href="/billing"
+            <a href="{{ $staffD === 'Bill Officer' || $staffA > 4 ? '/billing' : '' }}"
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Billing') ? 'active text-primary' : '' }}">Billing</a>
-            {{-- <a class="nav-item nav-link link-body-emphasis" href="#">Resources</a>
-            <a class="nav-item nav-link link-body-emphasis" href="#">Admin</a>
-            <a class="nav-item nav-link link-body-emphasis" href="#">Reports</a>
-            <a class="nav-item nav-link link-body-emphasis" href="#">More</a> --}}
         </nav>
     </div>
 </div>

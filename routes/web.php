@@ -57,25 +57,191 @@ Route::get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
     // Route::get('users', [RegisteredUserController::class, 'create'])->name('users');
     // Route::post('register', [RegisteredUserController::class, 'store'])->name('register');
+    // Route::get('/billing', [BillingController::class, 'index'])->name('Billing');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/billing', [BillingController::class, 'index'])->name('Billing');
-    Route::get('/admin', [AdminController::class, 'index'])->name('Admin');
-    Route::get('/admin/settings', [AdminController::class, 'settings'])->name('Settings');
+    
+    Route::middleware('strict')->group(function () {
+        Route::get('/admin', [AdminController::class, 'index'])->name('Admin');
+        Route::get('/admin/settings', [AdminController::class, 'settings'])->name('Settings');
 
-    Route::prefix('users')->group(function () {
-        Route::get('', [RegisteredUserController::class, 'create'])->name('users');
-        Route::post('', [RegisteredUserController::class, 'store'])->name('register');
-        Route::get('/allstaff', [RegisteredUserController::class, 'loadAllUsers']);
-        Route::get('/activestaff', [RegisteredUserController::class, 'loadActiveUsers']);
-        Route::get('/{user}', [RegisteredUserController::class, 'edit']);
-        Route::delete('/{user}', [RegisteredUserController::class, 'destroy']);
-        Route::post('/logout/{user}', [RegisteredUserController::class, 'logStaffOut']);
-        Route::delete('/designate/{designation}', [RegisteredUserController::class, 'removeDesignation']);
-        Route::patch('/{user}', [RegisteredUserController::class, 'update']);
-        Route::post('/designate/{user}', [RegisteredUserController::class, 'assignDesignation']);
+        Route::prefix('users')->group(function () {
+            Route::get('', [RegisteredUserController::class, 'create'])->name('users');
+            Route::post('', [RegisteredUserController::class, 'store'])->name('register');
+            Route::get('/allstaff', [RegisteredUserController::class, 'loadAllUsers']);
+            Route::get('/activestaff', [RegisteredUserController::class, 'loadActiveUsers']);
+            Route::get('/{user}', [RegisteredUserController::class, 'edit']);
+            Route::get('designation/{user}', [RegisteredUserController::class, 'designation']);
+            Route::delete('/{user}', [RegisteredUserController::class, 'destroy']);
+            Route::post('/logout/{user}', [RegisteredUserController::class, 'logStaffOut']);
+            Route::delete('/designate/{designation}', [RegisteredUserController::class, 'removeDesignation']);
+            Route::patch('/{user}', [RegisteredUserController::class, 'update']);
+            Route::post('/designate/{user}', [RegisteredUserController::class, 'assignDesignation']);
+        });
+
+        Route::prefix('resourcestockdate')->group(function (){
+            Route::post('', [ResourceStockDateController::class, 'store']);
+            Route::get('/load', [ResourceStockDateController::class, 'load']);
+            Route::get('/{resourceStockDate}', [ResourceStockDateController::class, 'edit']);
+            Route::post('/resetstock/{resourceStockDate}', [ResourceStockDateController::class, 'processReset']);
+            Route::delete('/{resourceStockDate}', [ResourceStockDateController::class, 'destroy']);
+            Route::post('/{resourceStockDate}', [ResourceStockDateController::class, 'update']);
+        })->name('Stock Date');
+    
+        Route::prefix('resourcecategory')->group(function (){
+            Route::post('', [ResourceCategoryController::class, 'store']);
+            Route::get('/load', [ResourceCategoryController::class, 'load']);
+            Route::get('/list_subcategories/{resourceCategory}', [ResourceCategoryController::class, 'list']);
+            Route::get('/{resourceCategory}', [ResourceCategoryController::class, 'edit']);
+            Route::delete('/{resourceCategory}', [ResourceCategoryController::class, 'destroy']);
+            Route::post('/{resourceCategory}', [ResourceCategoryController::class, 'update']);
+        })->name('Resource Category');
+    
+        Route::prefix('resourcesubcategory')->group(function (){
+            Route::post('', [ResourceSubCategoryController::class, 'store']);
+            Route::get('/load', [ResourceSubCategoryController::class, 'load']);
+            Route::get('/{resourceSubCategory}', [ResourceSubCategoryController::class, 'edit']);
+            Route::delete('/{resourceSubCategory}', [ResourceSubCategoryController::class, 'destroy']);
+            Route::post('/{resourceSubCategory}', [ResourceSubCategoryController::class, 'update']);
+        })->name('Resource SubCategory');
+
+        Route::prefix('resources')->group(function (){
+            Route::get('', [ResourceController::class, 'index'])->name('Resources');
+            Route::post('', [ResourceController::class, 'store']);
+            Route::get('/load', [ResourceController::class, 'load']);
+            Route::get('/list', [ResourceController::class, 'list']);
+            Route::get('/list/bulk', [ResourceController::class, 'listBulk']);
+            Route::get('/{resource}', [ResourceController::class, 'edit']);
+            Route::get('/addstock/{resource}', [ResourceController::class, 'edit'])->name('Addstock');
+            Route::delete('/{resource}', [ResourceController::class, 'destroy']);
+            Route::post('/{resource}', [ResourceController::class, 'update']);
+            Route::post('toggle/{resource}', [ResourceController::class, 'toggleIsActive']);
+        })->name('Resources');
+    
+        Route::prefix('addresourcestock')->group(function (){
+            Route::post('', [AddResourceStockController::class, 'store']);
+            Route::get('/load', [AddResourceStockController::class, 'load']);
+            Route::get('/{addResourceStock}', [AddResourceStockController::class, 'edit']);
+            Route::delete('/{addResourceStock}', [AddResourceStockController::class, 'destroy']);
+            Route::post('/{addResourceStock}', [AddResourceStockController::class, 'update']);
+        })->name('AddStock');
+    
+        Route::prefix('resourcesupplier')->group(function (){
+            Route::post('', [ResourceSupplierController::class, 'store']);
+            Route::get('/load', [ResourceSupplierController::class, 'load']);
+            Route::get('/list', [ResourceSupplierController::class, 'list']);
+            Route::get('/{resourceSupplier}', [ResourceSupplierController::class, 'edit']);
+            Route::delete('/{resourceSupplier}', [ResourceSupplierController::class, 'destroy']);
+            Route::post('/{resourceSupplier}', [ResourceSupplierController::class, 'update']);
+        })->name('Resource Supplier');
+    
+        Route::prefix('paymethod')->group(function (){
+            Route::post('', [PayMethodController::class, 'store']);
+            Route::get('/load', [PayMethodController::class, 'load']);
+            Route::get('/methods', [PayMethodController::class, 'list']);
+            Route::get('/{payMethod}', [PayMethodController::class, 'edit']);
+            Route::delete('/{payMethod}', [PayMethodController::class, 'destroy']);
+            Route::patch('/{payMethod}', [PayMethodController::class, 'update']);
+        })->name('Pay Methods');
+    });
+
+    Route::middleware('doctor')->group(function () {
+        Route::prefix('doctors')->group(function () {
+            Route::get('/list', [DoctorController::class, 'list']);
+            Route::get('', [DoctorController::class, 'index'])->name('Doctors');
+            Route::post('/consult/{visit}', [DoctorController::class, 'consult']);
+            Route::get('/load/consulted/outpatient', [DoctorController::class, 'loadOutpatientVisits']);
+            Route::get('/load/consulted/inpatient', [DoctorController::class, 'loadInpatientVisits']);
+            Route::get('/load/consulted/anc', [DoctorController::class, 'loadAncPatientVisits']);
+        });
+    });
+
+    Route::middleware('nurse')->group(function () {
+        Route::prefix('nurses')->group(function () {
+            Route::get('', [NurseController::class, 'index'])->name('Nurses');
+            Route::get('/load/consulted/nurses', [NurseController::class, 'loadVisitsNurses']);
+            Route::get('/list/emergency', [NurseController::class, 'emergencyList']);
+        });
+    });
+
+    Route::middleware('lab')->group(function () {
+        Route::prefix('investigations')->group(function () {
+            Route::get('', [InvestigationController::class, 'index'])->name('Investigations');
+            Route::get('/load/consulted', [InvestigationController::class, 'loadVisitsByFilterLab']);
+            Route::get('/load/inpatients', [InvestigationController::class, 'loadInpatientsLabTable']);
+            Route::get('/load/outpatients', [InvestigationController::class, 'loadOutpatientsLabTable'])->withoutMiddleware('lab');
+            Route::get('/{prescription}', [InvestigationController::class, 'edit']);
+            Route::patch('/remove/{prescription}', [InvestigationController::class, 'removeLabResult']);
+            Route::patch('/create/{prescription}', [InvestigationController::class, 'createLabResult']);
+            Route::patch('/update/{prescription}', [InvestigationController::class, 'updateLabResult']);
+        });
+    });
+
+    Route::middleware('pharmacy')->group(function () {
+        Route::prefix('pharmacy')->group(function () {
+            Route::get('', [PharmacyController::class, 'index'])->name('Pharmacy');
+            Route::get('/load/consulted', [PharmacyController::class, 'loadVisitsByFilterPharmacy']);
+            Route::patch('/bill/{prescription}', [PharmacyController::class, 'billPrescription']);
+            Route::patch('/dispense/{prescription}', [PharmacyController::class, 'dispensePrescription']);
+            Route::patch('/dispense/comment/{prescription}', [PharmacyController::class, 'dispenseComment']);
+            Route::get('/load/visit/prescriptions', [PharmacyController::class, 'loadVisitPrescriptions']);
+            Route::get('/load/consultation/prescriptions', [PharmacyController::class, 'loadConsultationPrescriptions']);
+            Route::get('/load/expiratonstock', [PharmacyController::class, 'expirationStock']);
+            Route::get('/load/bulkrequests/nurses', [PharmacyController::class, 'expirationStock']);
+            Route::get('/load/bulkrequests/lab', [PharmacyController::class, 'expirationStock']);
+            Route::get('/load/bulkrequests/pharmacy', [PharmacyController::class, 'expirationStock']);
+            Route::patch('/done/{visit}', [PharmacyController::class, 'pharmacyDone']);
+        });
+    });
+
+    Route::middleware('hmo')->group(function () {
+        Route::prefix('hmo')->group(function () {
+            Route::get('', [HmoController::class, 'index'])->name('Hmo');
+            Route::post('/verify/{visit}', [HmoController::class, 'verifyPatient']);
+            Route::get('/load/consulted/', [HmoController::class, 'loadVisitsByFilterHmo']);
+            Route::get('/load/verification/list', [HmoController::class, 'loadVerificationListTable']);
+            Route::get('/load/approval/list', [HmoController::class, 'loadHmoApprovalListTable']);
+            Route::patch('/approve/{prescription}', [HmoController::class, 'approveItem']);
+            Route::patch('/reject/{prescription}', [HmoController::class, 'rejectItem']);
+            Route::patch('/reset/{prescription}', [HmoController::class, 'resetItem']);
+            Route::get('/load/visit/prescriptions', [HmoController::class, 'loadVisitPrescriptions']);
+            Route::patch('/bill/{prescription}', [HmoController::class, 'saveHmoBill']);
+            Route::patch('/markassent/{visit}', [HmoController::class, 'markBillAsSent']);
+            Route::get('/load/sentbills', [HmoController::class, 'sentBillsTable']);
+            Route::get('/load/summary', [HmoController::class, 'loadReportSummary']);
+            Route::get('/load/reconciliation', [HmoController::class, 'loadReconciliationTable']);
+            Route::patch('/pay/{prescription}', [HmoController::class, 'reconciliationPayments']);
+    
+        });
+    });
+
+    Route::middleware('billing')->group(function () {
+        Route::prefix('billing')->group(function () {
+            Route::get('', [BillingController::class, 'index'])->name('Billing');
+            Route::get('/load/consulted', [BillingController::class, 'loadVisitsByFilterBilling']);
+            Route::get('/bill', [BillingController::class, 'loadPatientBill'])->withoutMiddleware('billing');
+            Route::get('/payment', [BillingController::class, 'loadPatientPayment']);
+            Route::get('/summary', [BillingController::class, 'loadBillSummary']);
+            Route::post('/pay', [BillingController::class, 'store']);
+            Route::patch('/discount/{visit}', [BillingController::class, 'saveDiscount']);
+            Route::delete('/payment/delete/{payment}', [BillingController::class, 'destroy']);
+            Route::get('/load/outstandings', [BillingController::class, 'loadVisitsWithOutstandingBills']);
+        });
+    });
+
+    Route::middleware('patients')->group(function () {
+        Route::prefix('patients')->group(function () {
+            Route::get('', [PatientController::class, 'index'])->name('Patients');
+            Route::post('', [PatientController::class, 'store']);
+            Route::get('/load', [PatientController::class, 'load']);
+            Route::get('/{patient}', [PatientController::class, 'edit']);
+            Route::delete('/{patient}', [PatientController::class, 'destroy']);
+            Route::post('/{patient}', [PatientController::class, 'update']);
+            Route::post('/initiate/{patient}', [PatientController::class, 'confirmVisit']);
+            Route::patch('/knownclinicalinfo/{patient}', [PatientController::class, 'updateKnownClinicalInfo'])->withoutMiddleware('patients');
+        })->name('Patients');
     });
 
     Route::prefix('sponsorcategory')->group(function () {
@@ -96,17 +262,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/{sponsor}', [SponsorController::class, 'update']);
     })->name('Sponsors');
 
-    Route::prefix('patients')->group(function () {
-        Route::get('', [PatientController::class, 'index'])->name('Patients');
-        Route::post('', [PatientController::class, 'store']);
-        Route::get('/load', [PatientController::class, 'load']);
-        Route::get('/{patient}', [PatientController::class, 'edit']);
-        Route::delete('/{patient}', [PatientController::class, 'destroy']);
-        Route::post('/{patient}', [PatientController::class, 'update']);
-        Route::post('/initiate/{patient}', [PatientController::class, 'confirmVisit']);
-        Route::patch('/knownclinicalinfo/{patient}', [PatientController::class, 'updateKnownClinicalInfo']);
-    })->name('Patients');
-
     Route::prefix('visits')->group(function () {
         Route::post('', [VisitController::class, 'storeVisit']);
         Route::patch('changesponsor/{visit}', [VisitController::class, 'changeSponsor']);
@@ -119,19 +274,6 @@ Route::middleware('auth')->group(function () {
         Route::patch('/open/{visit}', [VisitController::class, 'openVisit']);
         Route::delete('/{visit}', [VisitController::class, 'destroy']);
     })->name('Visits');
-    
-    Route::prefix('doctors')->group(function () {
-        Route::get('', [DoctorController::class, 'index'])->name('Doctors');
-        Route::post('/consult/{visit}', [DoctorController::class, 'consult']);
-        Route::get('/load/consulted/outpatient', [DoctorController::class, 'loadOutpatientVisits']);
-        Route::get('/load/consulted/inpatient', [DoctorController::class, 'loadInpatientVisits']);
-        Route::get('/load/consulted/anc', [DoctorController::class, 'loadAncPatientVisits']);
-    });
-
-    Route::prefix('nurses')->group(function () {
-        Route::get('', [NurseController::class, 'index'])->name('Nurses');
-        Route::get('/load/consulted/nurses', [NurseController::class, 'loadVisitsNurses']);
-    });
 
     Route::prefix('consultation')->group(function () {
         Route::post('', [ConsultationController::class, 'store']);
@@ -148,64 +290,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/chart', [VitalSignsController::class, 'loadVitalSignsChartByVisit']);
         Route::delete('/{vitalSigns}', [VitalSignsController::class, 'destroy']);
     });
-
-    Route::prefix('resourcestockdate')->group(function (){
-        Route::post('', [ResourceStockDateController::class, 'store']);
-        Route::get('/load', [ResourceStockDateController::class, 'load']);
-        Route::get('/{resourceStockDate}', [ResourceStockDateController::class, 'edit']);
-        Route::post('/resetstock/{resourceStockDate}', [ResourceStockDateController::class, 'processReset']);
-        Route::delete('/{resourceStockDate}', [ResourceStockDateController::class, 'destroy']);
-        Route::post('/{resourceStockDate}', [ResourceStockDateController::class, 'update']);
-    })->name('Stock Date');
-
-    Route::prefix('resourcecategory')->group(function (){
-        Route::post('', [ResourceCategoryController::class, 'store']);
-        Route::get('/load', [ResourceCategoryController::class, 'load']);
-        Route::get('/list_subcategories/{resourceCategory}', [ResourceCategoryController::class, 'list']);
-        Route::get('/{resourceCategory}', [ResourceCategoryController::class, 'edit']);
-        Route::delete('/{resourceCategory}', [ResourceCategoryController::class, 'destroy']);
-        Route::post('/{resourceCategory}', [ResourceCategoryController::class, 'update']);
-    })->name('Resource Category');
-
-    Route::prefix('resourcesubcategory')->group(function (){
-        Route::post('', [ResourceSubCategoryController::class, 'store']);
-        Route::get('/load', [ResourceSubCategoryController::class, 'load']);
-        Route::get('/{resourceSubCategory}', [ResourceSubCategoryController::class, 'edit']);
-        Route::delete('/{resourceSubCategory}', [ResourceSubCategoryController::class, 'destroy']);
-        Route::post('/{resourceSubCategory}', [ResourceSubCategoryController::class, 'update']);
-    })->name('Resource SubCategory');
-
-    Route::prefix('resources')->group(function (){
-        Route::get('', [ResourceController::class, 'index'])->name('Resources');
-        Route::post('', [ResourceController::class, 'store']);
-        Route::get('/load', [ResourceController::class, 'load']);
-        Route::get('/list', [ResourceController::class, 'list']);
-        Route::get('/list/emergency', [ResourceController::class, 'emergencyList']);
-        Route::get('/list/bulk', [ResourceController::class, 'listBulk']);
-        Route::get('/{resource}', [ResourceController::class, 'edit']);
-        Route::get('/addstock/{resource}', [ResourceController::class, 'edit'])->name('Addstock');
-        Route::delete('/{resource}', [ResourceController::class, 'destroy']);
-        Route::post('/{resource}', [ResourceController::class, 'update']);
-        Route::post('toggle/{resource}', [ResourceController::class, 'toggleIsActive']);
-    })->name('Resources');
     
-    Route::prefix('addresourcestock')->group(function (){
-        Route::post('', [AddResourceStockController::class, 'store']);
-        Route::get('/load', [AddResourceStockController::class, 'load']);
-        Route::get('/{addResourceStock}', [AddResourceStockController::class, 'edit']);
-        Route::delete('/{addResourceStock}', [AddResourceStockController::class, 'destroy']);
-        Route::post('/{addResourceStock}', [AddResourceStockController::class, 'update']);
-    })->name('AddStock');
-
-    Route::prefix('resourcesupplier')->group(function (){
-        Route::post('', [ResourceSupplierController::class, 'store']);
-        Route::get('/load', [ResourceSupplierController::class, 'load']);
-        Route::get('/list', [ResourceSupplierController::class, 'list']);
-        Route::get('/{resourceSupplier}', [ResourceSupplierController::class, 'edit']);
-        Route::delete('/{resourceSupplier}', [ResourceSupplierController::class, 'destroy']);
-        Route::post('/{resourceSupplier}', [ResourceSupplierController::class, 'update']);
-    })->name('Resource Supplier');
-
     Route::prefix('prescription')->group(function (){
         Route::get('', [PrescriptionController::class, 'index'])->name('Prescription');
         Route::post('{resource}', [PrescriptionController::class, 'store']);
@@ -242,71 +327,6 @@ Route::middleware('auth')->group(function () {
         Route::patch('/{nursingChart}', [NursingChartController::class, 'saveServiceData']);
     })->name('NursingChart');
 
-    Route::prefix('investigations')->group(function () {
-        Route::get('', [InvestigationController::class, 'index'])->name('Investigations');
-        Route::get('/load/consulted', [InvestigationController::class, 'loadVisitsByFilterLab']);
-        Route::get('/load/inpatients', [InvestigationController::class, 'loadInpatientsLabTable']);
-        Route::get('/load/outpatients', [InvestigationController::class, 'loadOutpatientsLabTable']);
-        Route::get('/{prescription}', [InvestigationController::class, 'edit']);
-        Route::patch('/remove/{prescription}', [InvestigationController::class, 'removeLabResult']);
-        Route::patch('/create/{prescription}', [InvestigationController::class, 'createLabResult']);
-        Route::patch('/update/{prescription}', [InvestigationController::class, 'updateLabResult']);
-    });
-
-    Route::prefix('hmo')->group(function () {
-        Route::get('', [HmoController::class, 'index'])->name('Hmo');
-        Route::post('/verify/{visit}', [HmoController::class, 'verifyPatient']);
-        Route::get('/load/consulted/', [HmoController::class, 'loadVisitsByFilterHmo']);
-        Route::get('/load/verification/list', [HmoController::class, 'loadVerificationListTable']);
-        Route::get('/load/approval/list', [HmoController::class, 'loadHmoApprovalListTable']);
-        Route::patch('/approve/{prescription}', [HmoController::class, 'approveItem']);
-        Route::patch('/reject/{prescription}', [HmoController::class, 'rejectItem']);
-        Route::patch('/reset/{prescription}', [HmoController::class, 'resetItem']);
-        Route::get('/load/visit/prescriptions', [HmoController::class, 'loadVisitPrescriptions']);
-        Route::patch('/bill/{prescription}', [HmoController::class, 'saveHmoBill']);
-        Route::patch('/markassent/{visit}', [HmoController::class, 'markBillAsSent']);
-        Route::get('/load/sentbills', [HmoController::class, 'sentBillsTable']);
-        Route::get('/load/summary', [HmoController::class, 'loadReportSummary']);
-        Route::get('/load/reconciliation', [HmoController::class, 'loadReconciliationTable']);
-        Route::patch('/pay/{prescription}', [HmoController::class, 'reconciliationPayments']);
-
-    });
-
-    Route::prefix('pharmacy')->group(function () {
-        Route::get('', [PharmacyController::class, 'index'])->name('Pharmacy');
-        Route::get('/load/consulted', [PharmacyController::class, 'loadVisitsByFilterPharmacy']);
-        Route::patch('/bill/{prescription}', [PharmacyController::class, 'billPrescription']);
-        Route::patch('/dispense/{prescription}', [PharmacyController::class, 'dispensePrescription']);
-        Route::patch('/dispense/comment/{prescription}', [PharmacyController::class, 'dispenseComment']);
-        Route::get('/load/visit/prescriptions', [PharmacyController::class, 'loadVisitPrescriptions']);
-        Route::get('/load/consultation/prescriptions', [PharmacyController::class, 'loadConsultationPrescriptions']);
-        Route::get('/load/expiratonstock', [PharmacyController::class, 'expirationStock']);
-        Route::get('/load/bulkrequests/nurses', [PharmacyController::class, 'expirationStock']);
-        Route::get('/load/bulkrequests/lab', [PharmacyController::class, 'expirationStock']);
-        Route::get('/load/bulkrequests/pharmacy', [PharmacyController::class, 'expirationStock']);
-    });
-
-    Route::prefix('paymethod')->group(function (){
-        Route::post('', [PayMethodController::class, 'store']);
-        Route::get('/load', [PayMethodController::class, 'load']);
-        Route::get('/methods', [PayMethodController::class, 'list']);
-        Route::get('/{payMethod}', [PayMethodController::class, 'edit']);
-        Route::delete('/{payMethod}', [PayMethodController::class, 'destroy']);
-        Route::patch('/{payMethod}', [PayMethodController::class, 'update']);
-    })->name('Pay Methods');
-
-    Route::prefix('billing')->group(function () {
-        Route::get('', [BillingController::class, 'index'])->name('Billing');
-        Route::get('/load/consulted', [BillingController::class, 'loadVisitsByFilterBilling']);
-        Route::get('/bill', [BillingController::class, 'loadPatientBill']);
-        Route::get('/payment', [BillingController::class, 'loadPatientPayment']);
-        Route::get('/summary', [BillingController::class, 'loadBillSummary']);
-        Route::post('/pay', [BillingController::class, 'store']);
-        Route::patch('/discount/{visit}', [BillingController::class, 'saveDiscount']);
-        Route::delete('/payment/delete/{payment}', [BillingController::class, 'destroy']);
-        Route::get('/load/outstandings', [BillingController::class, 'loadVisitsWithOutstandingBills']);
-    });
-
     Route::prefix('surgerynote')->group(function () {
         Route::post('', [SurgeryNoteController::class, 'store']);
         Route::get('load/details', [SurgeryNoteController::class, 'loadSurgeryNoteTable']);
@@ -338,6 +358,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('bulkrequests')->group(function () {
+        Route::get('/list/bulk', [BulkRequestController::class, 'listBulk']);
         Route::post('/{resource}', [BulkRequestController::class, 'store']);
         Route::get('/load/nurses', [BulkRequestController::class, 'nursesBulkRequests']);
         Route::get('/load/lab', [BulkRequestController::class, 'labBulkRequests']);

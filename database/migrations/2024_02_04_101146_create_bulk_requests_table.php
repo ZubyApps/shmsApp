@@ -15,13 +15,13 @@ return new class extends Migration
     {
         Schema::create('bulk_requests', function (Blueprint $table) {
             $table->id();
-            $table->string('quantity');
+            $table->integer('quantity');
             $table->string('department');
             $table->string('note')->nullable();
-            $table->string('cost_price');
-            $table->string('selling_price');
-            $table->string('qty_approved')->nullable();
-            $table->string('qty_dispensed')->nullable();
+            $table->integer('cost_price')->default(0);
+            $table->integer('selling_price')->default(0);
+            $table->integer('qty_approved')->default(0);
+            $table->integer('qty_dispensed')->default(0);
             $table->dateTime('dispensed')->nullable();
             $table->foreignIdFor(User::class, 'approved_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(User::class, 'dispensed_by')->nullable()->constrained('users')->restrictOnDelete();

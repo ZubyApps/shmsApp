@@ -7,6 +7,7 @@ function clearDivValues(div) {
 
         tagName.forEach(tag => {
             tag.value = ''
+            tag.checked = false
         });        
 }
 
@@ -110,7 +111,6 @@ function dispatchEvent(tag, event) {
 function handleValidationErrors(errors, domElement) {
     let elementId = []
     for (const name in errors) {
-        console.log(name)
         const element = domElement.querySelector(`[name="${ name }"]`)
         
         elementId.push(element.id)
@@ -574,4 +574,16 @@ const displayItemsList = (datalistEl, data, optionName) => {
     })
 }
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal}
+function getSelectedResourceValues(modal, inputEl, datalistEl) {  
+    const selectedOption = datalistEl.options.namedItem(inputEl.value)
+        if (selectedOption) {
+            return {
+                resource : selectedOption.getAttribute('data-id'),
+                resourceCategory : selectedOption.getAttribute('data-cat'),              
+            }
+        } else {
+            return ""
+        }
+}
+
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues}

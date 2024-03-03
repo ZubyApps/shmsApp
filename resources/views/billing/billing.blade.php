@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-@vite(['resources/js/billing.js'])
+@vite(['resources/css/colourblink.scss', 'resources/js/billing.js'])
 
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
 @include('billing.billingModal', ['title' => 'Billing Details', 'isUpdate' => false, 'id' => 'billingModal'])
@@ -126,6 +126,7 @@
                                     <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
                                     <th>Status</th>
+                                    <th>Ward</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>

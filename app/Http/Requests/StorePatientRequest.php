@@ -28,7 +28,7 @@ class StorePatientRequest extends FormRequest
             "sponsorCategory"   => ['required'],
             "address"           => ['nullable', 'max:500'],
             "bloodGroup"        => ['nullable'],
-            "cardNumber"        => ['required', 'unique:'.Patient::class.',card_no'],
+            "cardNumber"        => ['required', 'unique:'.Patient::class.',card_no', 'min:9'],
             "dateOfBirth"       => ['required'],
             "email"             => ['nullable'],
             "ethnicGroup"       => ['nullable'],

@@ -117,12 +117,11 @@ class BulkRequestService
                 'dept'              => $bulkRequest->department,
                 'requestedBy'       => $bulkRequest->user->username,
                 'note'              => $bulkRequest->note,
-                'qtyApproved'       => $bulkRequest->qty_approved,
+                'qtyApproved'       => $bulkRequest->qty_approved < 1 ? null : $bulkRequest->qty_approved,
                 'approvedBy'        => $bulkRequest->approvedBy?->username,
-                'qtyDispensed'      => $bulkRequest->qty_dispensed,
+                'qtyDispensed'      => $bulkRequest->qty_dispensed < 1 ? null : $bulkRequest->qty_dispensed,
                 'dispensedBy'       => $bulkRequest->dispensedBy?->username,
                 'dispensed'         => $bulkRequest->dispensed ? (new Carbon($bulkRequest->dispensed))->format('d/m/y g:ia'): $bulkRequest->dispensed,
-                'access'            => auth()->user()->designation->access_level > 3,
             ];
          };
     }

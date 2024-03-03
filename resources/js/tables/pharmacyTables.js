@@ -6,6 +6,28 @@ import DataTable from 'datatables.net-bs5';
 import { admissionStatus, admissionStatusX, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
 
 const getPatientsVisitByFilterTable = (tableId, filter) => {
+    const preparedColumns = [
+        {data: "came"},
+        {data: "patient"},
+        {data: "doctor"},
+        {data: "diagnosis"},
+        {data: row => sponsorAndPayPercent(row)},
+        {data: row =>  `
+                    <div class="d-flex flex-">
+                        <button class=" btn btn-${row.countPrescribed > row.countBilled ? 'primary' : 'outline-primary'} billingDispenseBtn tooltip-test" title="Billing/Dispense" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                        ${row.countPrescribed} - ${row.countBilled} - ${row.countDispensed}
+                        </button>
+                    </div>`                
+        },
+        {data: row => admissionStatusX(row)},
+        {
+            sortable: false,
+            data: row => detailsBtn(row) 
+        },
+    ]
+    
+    filter === 'Inpatient' ? preparedColumns.splice(7, 0, {data: row => `<small>${row.ward + '-' + row.bedNo}</small>`},) : ''
+
     return new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/pharmacy/load/consulted',  data: {
@@ -16,25 +38,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
         language: {
             emptyTable: 'No patient record'
         },
-        columns: [
-            {data: "came"},
-            {data: "patient"},
-            {data: "doctor"},
-            {data: "diagnosis"},
-            {data: row => sponsorAndPayPercent(row)},
-            {data: row =>  `
-                        <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary billingDispenseBtn tooltip-test" title="Billing/Dispense" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-                            ${row.countPrescribed} - ${row.countBilled} - ${row.countDispensed}
-                            </button>
-                        </div>`                
-            },
-            {data: row => admissionStatusX(row)},
-            {
-                sortable: false,
-                data: row => detailsBtn(row) 
-            },
-        ]
+        columns: preparedColumns
     });
 }
 
@@ -221,7 +225,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
                 data: 'qtyApproved',
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
-                    <span class="${ row.qtyDispensed || !+row.access ? '' : 'approveRequestBtn'} btn ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${ data ?? (urlSuffix !== 'pharmacy' ? 'Pendind' : 'Approve')}</span>
+                    <span class="${ row.qtyDispensed ? '' : 'approveRequestBtn'} btn ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${ data ?? (urlSuffix !== 'pharmacy' ? 'Pendind' : 'Approve')}</span>
                     <input class="ms-1 form-control qtyApprovedInput d-none" id="qtyApprovedInput" value="${data ?? ''}">
                 </div>
                 `}
@@ -231,7 +235,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
                 data: 'qtyDispensed',
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
-                    <span class="btn ${ row.qtyApproved && !data ? 'dispenseQtyBtn' : ''} ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${data ?? (urlSuffix !== 'pharmacy' ? 'Pendind' : 'Dispense')}</span>
+                    <span class="btn ${ row.qtyApproved && !data ? 'dispenseQtyBtn' : ''} ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}" data-qtyapproved="${row.qtyApproved}">${data ?? (urlSuffix !== 'pharmacy' ? 'Pendind' : 'Dispense')}</span>
                     <input class="ms-1 form-control qtyDispensedInput d-none" id="qtyDispensedInput" value="${data ?? ''}">
                 </div>
                 `}
@@ -242,7 +246,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
                 sortable: false,
                 data: row =>  `
                 <div class="d-flex flex-">
-                    <button type="submit" class="ms-1 btn btn-outline-primary ${row.dispensed && !+row.access ? 'd-none' : 'deleteRequestBtn'} tooltip-test" title="delete" data-id="${ row.id}">
+                    <button type="submit" class="ms-1 btn btn-outline-primary ${row.dispensed || urlSuffix !== 'pharmacy' ? 'd-none' : 'deleteRequestBtn'} tooltip-test" title="delete" data-id="${ row.id}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>
                 </div>

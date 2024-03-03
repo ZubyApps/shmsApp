@@ -73,20 +73,19 @@
     <div>
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <button class="nav-link active" id="nav-users-tab" data-bs-toggle="tab" data-bs-target="#nav-users" 
-                    type="button" role="tab" aria-controls="nav-outPatients" aria-selected="true">All Staff</button>
+                <button class="nav-link active" id="nav-allStaff-tab" data-bs-toggle="tab" data-bs-target="#nav-allStaff" 
+                    type="button" role="tab" aria-controls="nav-allStaff" aria-selected="true">All Staff</button>
 
-                <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients"
-                    type="button" role="tab" aria-controls="nav-inPatients" aria-selected="false">Staff Aggregation</button>
+                {{-- <button class="nav-link" id="nav-staffAggregation-tab" data-bs-toggle="tab" data-bs-target="#nav-staffAggregation"
+                    type="button" role="tab" aria-controls="nav-staffAggregation" aria-selected="false">Staff Aggregation</button> --}}
 
                 {{-- <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients"
                     type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button> --}}
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
-            <!-- patients table -->
-            <div class="tab-pane fade show active" id="nav-outPatients" role="tabpanel"
-                aria-labelledby="nav-outPatients-tab" tabindex="0">
+            <!-- all staff table -->
+            <div class="tab-pane fade show active" id="nav-allStaff" role="tabpanel" aria-labelledby="nav-allStaff-tab" tabindex="0">
                 <div class="text-start py-3">
                     <button type="button" id="newStaffBtn" class="btn btn-primary">
                         <i class="bi bi-plus-circle me-1"></i>
@@ -105,7 +104,6 @@
                                 <th>Qualification</th>
                                 <th>Username</th>
                                 <th>Phone</th>
-                                {{-- <th>Address</th> --}}
                                 <th>Created</th>
                                 <th>Actions</th>
                             </tr>
@@ -115,10 +113,11 @@
                 </div>
             </div>
             <!-- inpatients table -->
-            <div class="tab-pane fade" id="nav-inPatients" role="tabpanel" aria-labelledby="nav-inPatients-tab"
+            {{-- <div class="tab-pane fade" id="nav-staffAggregation" role="tabpanel" aria-labelledby="nav-staffAggregation-tab"
                 tabindex="0">
                 <div class="py-4 ">
-                    <table id="inPatientsVisitTable" class="table table-hover align-middle table-sm">
+                    <table id="staffAggregation
+                    Table" class="table table-hover align-middle table-sm">
                         <thead>
                             <tr>
                                 <th>Designation</th>
@@ -133,7 +132,7 @@
                         <tbody></tbody>
                     </table>
                 </div>
-            </div>
+            </div> --}}
             <!-- Anc table -->
             {{-- <div class="tab-pane fade" id="nav-ancPatients" role="tabpanel" aria-labelledby="nav-ancPatients-tab"
                 tabindex="0">

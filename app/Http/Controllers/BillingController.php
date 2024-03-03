@@ -96,8 +96,11 @@ class BillingController extends Controller
         return $this->billingService->saveDiscount($request, $visit, $request->user());
     }
 
-    public function destroy(Payment $payment)
+    public function destroy(Request $request, Payment $payment)
     {
+        if ($request->user()->designation?->access_level < 4) {
+            return response()->json(['message' => 'You are not authorized'], 403);
+        }
         return $this->billingService->processPaymentDestroy($payment);
     }
 

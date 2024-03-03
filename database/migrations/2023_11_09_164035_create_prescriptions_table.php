@@ -20,15 +20,15 @@ return new class extends Migration
             $table->id();
             $table->text('prescription')->nullable();
             $table->text('note')->nullable();
-            $table->string('qty_billed')->nullable();
-            $table->string('hms_bill')->nullable();
+            $table->integer('qty_billed')->nullable();
+            $table->integer('hms_bill')->nullable();
             $table->dateTime('hms_bill_date')->nullable();
             $table->foreignIdFor(User::class, 'hms_bill_by')->nullable()->constrained('users')->restrictOnDelete();
-            $table->string('hmo_bill')->nullable();
+            $table->integer('hmo_bill')->nullable();
             $table->dateTime('hmo_bill_date')->nullable();
             $table->string('hmo_bill_note')->nullable();
             $table->foreignIdFor(User::class, 'hmo_bill_by')->nullable()->constrained('users')->restrictOnDelete();
-            $table->string('qty_dispensed')->nullable();
+            $table->integer('qty_dispensed')->nullable();
             $table->dateTime('dispense_date')->nullable();
             $table->string('dispense_comment')->nullable();
             $table->foreignIdFor(User::class, 'dispensed_by')->nullable()->constrained('users')->restrictOnDelete();
@@ -41,7 +41,7 @@ return new class extends Migration
             $table->string('result')->nullable();
             $table->dateTime('result_date')->nullable();
             $table->foreignIdFor(User::class, 'result_by')->nullable()->constrained('users')->restrictOnDelete();
-            $table->string('paid')->nullable();
+            $table->integer('paid')->nullable();
             $table->foreignIdFor(User::class, 'paid_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->boolean('chartable')->default(false);
             $table->boolean('discontinued')->default(false);

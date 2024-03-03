@@ -41,25 +41,25 @@ class ResourceController extends Controller
 
     }
 
-    public function emergencyList(Request $request)
-    {
-        $resources = $this->resourceService->getEmergencyList($request);
+    // public function emergencyList(Request $request)
+    // {
+    //     $resources = $this->resourceService->getEmergencyList($request);
 
-        $listTransformer = $this->resourceService->listTransformer1();
+    //     $listTransformer = $this->resourceService->listTransformer1();
 
-        return array_map($listTransformer, (array)$resources->getIterator());
+    //     return array_map($listTransformer, (array)$resources->getIterator());
 
-    }
+    // }
 
-    public function listBulk(Request $request)
-    {
-        $items = $this->resourceService->getBulkList($request);
+    // public function listBulk(Request $request)
+    // {
+    //     $items = $this->resourceService->getBulkList($request);
 
-        $listTransformer = $this->resourceService->listTransformer1();
+    //     $listTransformer = $this->resourceService->listTransformer1();
 
-        return array_map($listTransformer, (array)$items->getIterator());
+    //     return array_map($listTransformer, (array)$items->getIterator());
 
-    }
+    // }
 
     /**
      * Store a newly created resource in storage.

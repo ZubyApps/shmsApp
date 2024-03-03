@@ -136,23 +136,9 @@ class ResourceService
     {
         if (! empty($data->resource)){
 
-            if ($data->dept === 'Nurses') {
-                
-                return $this->resource
-                            ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
-                            ->where('category', 'Consumables')
-                            ->where('is_active', true)
-                            ->where('stock_level', '>', 0)
-                            ->orderBy('name', 'asc')
-                            ->get();
-            }
-
             return $this->resource
                             ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
-                            ->where(function(Builder $query) {
-                                $query->where('sub_category', 'Supplies')
-                                ->orWhere('category', 'Consumables');
-                            })
+                            ->where('category', 'Consumables')
                             ->where('is_active', true)
                             ->where('stock_level', '>', 0)
                             ->orderBy('name', 'asc')
@@ -179,10 +165,10 @@ class ResourceService
     {
         return function (Resource $resource){
             return [
-                'id'        => $resource->id,
-                'name'      => $resource->nameWithIndicators(),
-                'plainName' => $resource->name,
-                'category'  => $resource->category
+                'id'                    => $resource->id,
+                'nameWithIndicators'    => $resource->nameWithIndicators(),
+                'name'                  => $resource->name,
+                'category'              => $resource->category
             ];
         };   
     }

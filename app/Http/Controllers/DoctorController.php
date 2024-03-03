@@ -6,13 +6,16 @@ use App\Models\Doctor;
 use App\Models\Visit;
 use App\Services\DatatablesService;
 use App\Services\DoctorService;
+use App\Services\ResourceService;
 use Illuminate\Http\Request;
 
 class DoctorController extends Controller
 {
     public function __construct(
         private readonly DatatablesService $datatablesService, 
-        private readonly DoctorService $doctorService)
+        private readonly DoctorService $doctorService,
+        private readonly ResourceService $resourceService
+        )
     {
         
     }
@@ -26,17 +29,16 @@ class DoctorController extends Controller
         return view('doctors.doctors', ['doctors' => []]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function list(Request $request)
     {
-        //
+        $resources = $this->resourceService->getFormattedList($request);
+
+        $listTransformer = $this->resourceService->listTransformer();
+
+        return array_map($listTransformer, (array)$resources->getIterator());
+
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         //

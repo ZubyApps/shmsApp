@@ -132,10 +132,18 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (designationBtn){
             designationBtn.setAttribute('disabled', 'disabled')
-            designationModal._element.querySelector('#designateBtn').setAttribute('data-id', designationBtn.getAttribute('data-id'))
-            designationModal._element.querySelector('#fullName').value = designationBtn.getAttribute('data-name')
-            designationModal.show()
-            setTimeout(()=>{designationBtn.removeAttribute('disabled')}, 1500)
+            http.get(`/users/designation/${designationBtn.getAttribute('data-id')}`)
+            .then((response) => {
+                if (response.status >= 200 || response.status <= 300){
+                    openModals(designationModal, designationModal._element.querySelector('#designateBtn'), response.data.data)
+                    designationModal.show()
+                }
+                designationBtn.removeAttribute('disabled')
+            })
+            .catch((error) => {
+                if (error.response.status === 403){alert(error.response.data.message); designationBtn.removeAttribute('disabled')}
+                console.log(error)
+            })
         }
 
         if (deleteDesignationBtn){

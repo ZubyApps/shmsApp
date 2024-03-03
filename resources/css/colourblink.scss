@@ -23,3 +23,16 @@
     background-color: #dc3545;
   }
 }
+
+.colour-change2 {
+  animation:colour-blink2 1s infinite;
+}
+
+@keyframes colour-blink2 {
+  100% {
+    color: #202020;
+  }
+  100% {
+    color: #ffc107;
+  }
+}

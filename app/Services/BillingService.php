@@ -58,10 +58,10 @@ class BillingService
             return $this->visit
             ->where('consulted', '!=', null)
             ->where('closed', false)
+            ->whereColumn('total_hms_bill', '>', 'total_paid')
             ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-            ->whereColumn('total_hms_bill', '>', 'total_paid')
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -111,6 +111,8 @@ class BillingService
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
                 'sponsor'           => $visit->sponsor->name,
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
+                'ward'              => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->ward ?? '',
+                'bedNo'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->bed_no ?? '',
                 'patientType'       => $visit->patient->patient_type,
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
@@ -173,6 +175,7 @@ class BillingService
                 'outstandingBalance'    => $visit->patient->allHmsBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
                 'outstandingNhisBalance'=> $visit->patient->allNhisBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
                 'payMethods'            => $this->payMethodService->list(),
+                'notBilled'             => $visit->prescriptions->where('qty_billed', null)->count(),
                 'prescriptions'         => $visit->prescriptions->map(fn(Prescription $prescription) => [
                     'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                     'prescribedBy'      => $prescription->user->username,

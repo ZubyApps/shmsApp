@@ -6,10 +6,10 @@ namespace Database\Seeders;
 
 use App\Enum\PayClass;
 use App\Models\Patient;
-use App\Models\Sponsor;
-use App\Models\SponsorCategory;
 use App\Models\User;
+use DateTime;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,6 +21,45 @@ class DatabaseSeeder extends Seeder
          User::factory(1)->create();
         //  SponsorCategory::factory(1)->create();
         //  Sponsor::factory(1)->create();
+
+        User::create([
+            'firstname' => 'User',
+            'middlename' => 'Super',
+            'lastname' => 'Admin',
+            'email' => 'admin@example.com',
+            'address' => '24 J.S Tarka Way, Wadata',
+            'date_of_birth' => new DateTime('1982/06/28'),
+            'highest_qualification' => 'MBBS',
+            'sex' => 'male',
+            'marital_status' => 'Married',
+            'username' => 'Admin User',
+            'phone_number' => '09022812281',
+            'state_of_origin' => 'Anambra',
+            'next_of_kin' => 'Nzube Okoye',
+            'next_of_kin_rship' => 'Son',
+            'next_of_kin_phone' => '08035999029',
+            'date_of_employment' => new DateTime('1982/06/28'),
+            'password' => Hash::make('mylovelywife'), // password
+        ]);
+        User::create([
+            'firstname' => 'Stephnie',
+            'middlename' => 'Iniobong',
+            'lastname' => 'Nkonim',
+            'email' => 'nkonim@example.com',
+            'address' => 'Demekpe way, Demekpe Mkd',
+            'date_of_birth' => new DateTime('1996/03/10'),
+            'highest_qualification' => 'Btech',
+            'sex' => 'female',
+            'marital_status' => 'Single',
+            'username' => 'Steph IT',
+            'phone_number' => '09023185763',
+            'state_of_origin' => 'Akwa Ibom',
+            'next_of_kin' => 'Emmanuel Nkonim',
+            'next_of_kin_rship' => 'Father',
+            'next_of_kin_phone' => '08136196683',
+            'date_of_employment' => new DateTime('2020/06/31'),
+            'password' => Hash::make('Stephanie'), // password
+        ]);
 
          //Sponsor Categories
          \App\Models\SponsorCategory::create([
@@ -308,9 +347,15 @@ class DatabaseSeeder extends Seeder
         //Designation for super admin
         \App\Models\Designation::create([
             'designation' => 'Admin',
-            'access_level'   => 5,
+            'access_level'   => 6,
             'designator'  => 'Super Admin',
             'user_id'   => 1,
+        ]);
+        \App\Models\Designation::create([
+            'designation' => 'IT Officer',
+            'access_level'   => 5,
+            'designator'  => 'Super Admin',
+            'user_id'   => 2,
         ]);
     }
 }

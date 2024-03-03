@@ -19,6 +19,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
     const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
+    const markDoneBtn               = billingDispenseModal._element.querySelector('#markDoneBtn')
 
     // const treatmentDiv              = document.querySelector('#treatmentDiv')
 
@@ -133,13 +134,32 @@ window.addEventListener('DOMContentLoaded', function () {
                 const visitId = billingDispenseBtn.getAttribute('data-id')
                 billingDispenseModal._element.querySelector('#patient').value = billingDispenseBtn.getAttribute('data-patient')
                 billingDispenseModal._element.querySelector('#sponsor').value = billingDispenseBtn.getAttribute('data-sponsor')
-                billingDispenseModal._element.querySelector('#markDoneBtn').setAttribute('data-id', visitId)
+                markDoneBtn.setAttribute('data-id', visitId)
     
                 visitPrescriptionsTable = getPrescriptionsByConsultation(tableId, visitId, billingDispenseModal)
                 billingTable = getbillingTableByVisit('billingTable1', visitId, billingDispenseModal._element)
                 billingDispenseModal.show()
             }
         })
+    })
+
+    markDoneBtn.addEventListener('click', function(){
+        if (confirm("Are you sure you are done with this Patient's Prescriptions?")){
+            markDoneBtn.setAttribute('disabled', 'disabled')
+            const visitId = markDoneBtn.getAttribute('data-id')
+            http.patch(`/pharmacy/done/${visitId}`)
+            .then((response) => {
+                if (response.status >= 200 || response.status <= 300) {
+                    billingDispenseModal.hide()
+                }
+                markDoneBtn.removeAttribute('disabled')
+            })
+            .catch((error) => {
+                console.log(error)
+                markDoneBtn.removeAttribute('disabled')
+            })
+        }
+
     })
 
     filterListOption.addEventListener('change', function () {
@@ -261,7 +281,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const approveRequestBtn    = event.target.closest('.approveRequestBtn')
         const dispenseQtyBtn       = event.target.closest('.dispenseQtyBtn')
         const deleteRequestBtn     = event.target.closest('.deleteRequestBtn')
-        // const makeBillFieldset  = document.querySelector('#makeBillFieldset')
+
         if (approveRequestBtn){
             const bulkRequestId     = approveRequestBtn.getAttribute('data-id')
             const div               = approveRequestBtn.parentElement
@@ -269,21 +289,20 @@ window.addEventListener('DOMContentLoaded', function () {
             approveRequestBtn.classList.add('d-none')
             qtyApprovedInput.classList.remove('d-none')
             resetFocusEndofLine(qtyApprovedInput)
-            // qtyApprovedInput.focus()
             
             qtyApprovedInput.addEventListener('blur', function () {
-                // makeBillFieldset.setAttribute('disabled', 'disabled')
                 http.patch(`/bulkrequests/approve/${bulkRequestId}`, {qty: qtyApprovedInput.value}, {'html' : div})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         bulkRequestsTable ?  bulkRequestsTable.draw() : ''
-                        // visitPrescriptionsTable.on('draw', removeDisabled(makeBillFieldset))
                     }
                 })
                 .catch((error) => {
-                    console.log(error)
+                    if (error.response.status === 403){
+                        alert(error.response.data.message); 
+                    }
                     bulkRequestsTable ?  bulkRequestsTable.draw() : ''
-                    // visitPrescriptionsTable.on('draw', removeDisabled(makeBillFieldset))
+                    console.log(error)
                 })                
             })
         }
@@ -291,13 +310,18 @@ window.addEventListener('DOMContentLoaded', function () {
         if (dispenseQtyBtn){
             const bulkRequestId     = dispenseQtyBtn.getAttribute('data-id')
             const div               = dispenseQtyBtn.parentElement
+            const qtyApproved       = dispenseQtyBtn.getAttribute('data-qtyapproved')
             const qtyDispensedInput  = div.querySelector('.qtyDispensedInput')
             dispenseQtyBtn.classList.add('d-none')
             qtyDispensedInput.classList.remove('d-none')
-            resetFocusEndofLine(qtyApprovedInput)
+            resetFocusEndofLine(qtyDispensedInput)
             
             qtyDispensedInput.addEventListener('blur', function () {
-                // makeBillFieldset.setAttribute('disabled', 'disabled')
+                if (qtyDispensedInput.value != +qtyApproved){
+                    alert('Quantity to be dispensed should equal to Quantity approved')
+                    resetFocusEndofLine(qtyDispensedInput)
+                    return
+                }
                 http.patch(`/bulkrequests/dispense/${bulkRequestId}`, {qty: qtyDispensedInput.value}, {'html' : div})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
@@ -322,6 +346,9 @@ window.addEventListener('DOMContentLoaded', function () {
                     }
                 })
                 .catch((error) => {
+                    if (error.response.status === 403){
+                        alert(error.response.data.message); 
+                    }
                     console.log(error)
                     bulkRequestsTable ?  bulkRequestsTable.draw() : ''
                 })
@@ -347,7 +374,7 @@ window.addEventListener('DOMContentLoaded', function () {
             datalistEl.innerHTML = ''
             }
             if (itemInput.value.length > 2) {
-                http.get(`/resources/list/bulk`, {params: {resource: itemInput.value, dept: itemInput.dataset.dept}}).then((response) => {
+                http.get(`/bulkrequests/list/bulk`, {params: {resource: itemInput.value, dept: itemInput.dataset.dept}}).then((response) => {
                     displayItemsList(datalistEl, response.data, 'itemOption')
                 })
             }

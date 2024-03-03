@@ -32,10 +32,22 @@ const getWaitingTable = (tableId) => {
             },
             {data: row => 
                         `
-                    <div class="d-flex flex-">
-                        <button class="ms-1 btn btn-outline-primary removeBtn tooltip-test" title="remove" data-id="${ row.id }">
-                                <i class="bi bi-x-circle-fill"></i>
-                        </button>
+                    <div class="dropdown ms-1">
+                        <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="remove" data-bs-toggle="dropdown" href="" >
+                            <i class="bi bi-file-minus-fill"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a role="button" class="dropdown-item closeVisitBtn tooltip-test" title="close visits" id="closeVisitBtn" data-id="${ row.id }">
+                                    <i class="bi bi-lock-fill text-primary"></i> Close Visit
+                                </a>
+                            </li>
+                            <li>
+                                <a role="button" class="dropdown-item deleteVisitBtn tooltip-test" title="delete visit" id="deleteVisitBtn" data-id="${ row.id }">
+                                    <i class="bi bi-x-circle-fill text-primary"></i> Delete Visit
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                         `
                 

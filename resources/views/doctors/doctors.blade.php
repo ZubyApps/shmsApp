@@ -133,9 +133,10 @@
                                     <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
                                     <th>Last 30days</th>
-                                    <th>Investigations</th>
+                                    <th>Lab Test</th>
                                     <th>Vitals</th>
                                     <th>Status</th>
+                                    <th>Ward</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>

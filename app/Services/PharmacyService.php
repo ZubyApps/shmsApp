@@ -55,14 +55,22 @@ class PharmacyService
         if ($data->filterBy == 'Outpatient'){
             return $this->visit
             ->where('consulted', '!=', null)
-            ->where('pharmacy_done_by', null)
             ->where('closed', false)
-            ->where(function(Builder $query) {
-                $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
-                    ->orWhereRelation('prescriptions.resource', 'category', '=', 'Consumables');
+            ->where('pharmacy_done_by', null)
+            ->where(function (Builder $query) {
+                $query->whereHas('prescriptions', function(Builder $query){
+                    $query->where('qty_dispensed', '=', null)
+                    ->where(function (Builder $query) {
+                        $query->whereRelation('resource', 'category', '=', 'Medications')
+                        ->orWhereRelation('resource', 'category', '=', 'Consumables');
+    
+                    });
+                });
             })
-            ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
-            ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+           
+            ->where(function (Builder $query) {
+                $query->whereRelation('consultations', 'admission_status', '=', 'Outpatient');
+            })
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -70,16 +78,21 @@ class PharmacyService
         if ($data->filterBy == 'Inpatient'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('pharmacy_done_by', null)
                     ->where('closed', false)
-                    ->where(function(Builder $query) {
-                        $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
-                            ->orWhereRelation('prescriptions.resource', 'category', '=', 'Consumables');
+                    ->where('pharmacy_done_by', null)
+                    ->whereHas('prescriptions', function(Builder $query){
+                        $query->where('qty_dispensed', '=', null)
+                        ->where(function (Builder $query) {
+                            $query->whereRelation('resource', 'category', '=', 'Medications')
+                            ->orWhereRelation('resource', 'category', '=', 'Consumables');
+        
+                        });
                     })
                     ->where(function (Builder $query) {
                         $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
                         ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
                     })
+                    ->whereRelation('patient', 'patient_type', '!=', 'ANC')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -91,6 +104,14 @@ class PharmacyService
                     ->where(function(Builder $query) {
                         $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
                             ->orWhereRelation('prescriptions.resource', 'category', '=', 'Consumables');
+                    })
+                    ->whereHas('prescriptions', function(Builder $query){
+                        $query->where('qty_dispensed', '=', null)
+                        ->where(function (Builder $query) {
+                            $query->whereRelation('resource', 'category', '=', 'Medications')
+                            ->orWhereRelation('resource', 'category', '=', 'Consumables');
+        
+                        });
                     })
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->orderBy($orderBy, $orderDir)
@@ -118,6 +139,8 @@ class PharmacyService
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
                 'sponsor'           => $visit->sponsor->name,
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
+                'ward'              => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->ward ?? '',
+                'bedNo'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->bed_no ?? '',
                 'patientType'       => $visit->patient->patient_type,
                 'countPrescribed'   => Prescription::where('visit_id', $visit->id)
                                         ->where(function (Builder $query) {
@@ -334,5 +357,12 @@ class PharmacyService
                 'flag'                  => $resource->expiry_date ? $this->helperService->flagExpired($resource->expiry_date) : '',
             ];
         };
+    }
+
+    public function done(Visit $visit, User $user)
+    {
+        return $visit->update([
+            'pharmacy_done_by' => $user->id
+        ]);
     }
 }

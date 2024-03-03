@@ -109,6 +109,8 @@ class InvestigationService
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
                 'sponsor'           => $visit->sponsor->name,
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
+                'ward'              => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->ward ?? '',
+                'bedNo'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->bed_no ?? '',
                 'patientType'       => $visit->patient->patient_type,
                 'labPrescribed'     => Prescription::where('visit_id', $visit->id)
                                         ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')

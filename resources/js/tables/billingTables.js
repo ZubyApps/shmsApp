@@ -3,7 +3,9 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, admissionStatusX, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import {admissionStatusX, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+
+const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
 const getWaitingTable = (tableId) => {
     return new DataTable('#'+tableId, {
@@ -32,10 +34,22 @@ const getWaitingTable = (tableId) => {
             },
             {data: row => 
                         `
-                    <div class="d-flex flex-">
-                        <button class="ms-1 btn btn-outline-primary removeBtn tooltip-test" title="remove" data-id="${ row.id }">
-                                <i class="bi bi-x-circle-fill"></i>
-                        </button>
+                    <div class="dropdown ms-1">
+                        <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="remove" data-bs-toggle="dropdown" href="" >
+                            <i class="bi bi-file-minus-fill"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a role="button" class="dropdown-item closeVisitBtn tooltip-test" title="close visits" id="closeVisitBtn" data-id="${ row.id }">
+                                    <i class="bi bi-lock-fill text-primary"></i> Close Visit
+                                </a>
+                            </li>
+                            <li>
+                                <a role="button" class="dropdown-item deleteVisitBtn tooltip-test" title="delete visit" id="deleteVisitBtn" data-id="${ row.id }">
+                                    <i class="bi bi-x-circle-fill text-primary"></i> Delete Visit
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                         `
                 
@@ -45,19 +59,8 @@ const getWaitingTable = (tableId) => {
 }
 
 const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) => {
-    return new DataTable('#'+tableId, {
-        serverSide: true,
-        ajax:  {url: `/billing/load/${urlSuffix}`, data: {
-            'filterBy': filter,
-            'patientId': patientId
-        }},
-        orderMulti: true,
-        search:true,
-        language: {
-            emptyTable: 'No patient record'
-        },
-        columns: [
-            {data: "came"},
+    const preparedColumns = [
+        {data: "came"},
             {data: "patient"},
             {data: "doctor"},
             {data: "diagnosis"},
@@ -86,7 +89,21 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) =
                 </div>
                 `
             },
-        ]
+    ]
+    filter === 'Inpatient' ? preparedColumns.splice(6, 0, {data: row => `<small>${row.ward + '-' + row.bedNo}</small>`},) : ''
+
+    return new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  {url: `/billing/load/${urlSuffix}`, data: {
+            'filterBy': filter,
+            'patientId': patientId
+        }},
+        orderMulti: true,
+        search:true,
+        language: {
+            emptyTable: 'No patient record'
+        },
+        columns: preparedColumns
     });
 }
 
@@ -139,12 +156,12 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
     });
 
     function format(data, tableId) {
-        // const HMO = data.sponsorCategory == 'HMO'
         const credit = data.sponsorCategoryClass == 'Credit'
         const NHIS = data.sponsorCategory == 'NHIS'
         const balance = data.sponsorCategory == 'NHIS' ? data.nhisBalance : data.balance
         const prescriptions = data.prescriptions
         const payMethods = data.payMethods
+        const notBilled = data.notBilled
         let payMethodOptions = ''
         payMethods.forEach(method => {
             payMethodOptions += `<option value="${method.id}">${method.name}</option>`
@@ -176,10 +193,10 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                                     ${p.item +' '+ displayPaystatus(p, credit, NHIS)}
                                                 </td>
                                                 ${credit || NHIS ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>` : ''}                
-                                                <td class="">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(p.unitPrice)}</td>
+                                                <td class="">${account.format(p.unitPrice)}</td>
                                                 <td class="">${p.quantity}</td>
-                                                <td class="text-secondary">${p.description}</td>                
-                                                <td>${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(p.bill)}</td>
+                                                <td class="${p.quantity ? 'text-secondary' : 'colour-change2 fw-bold'}">${p.description}</td>                
+                                                <td>${account.format(p.bill)}</td>
                                             </tr>
                                             `
                                     })
@@ -194,7 +211,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             <td></td>
                                             <td></td>
                                             <td class="text-secondary">Sub total</td>
-                                            <td class="text-secondary">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(data.subTotal)}</td>
+                                            <td class="text-secondary">${account.format(data.subTotal)}</td>
                                         </tr>
                                         ${NHIS ?
                                          `  <tr>
@@ -206,7 +223,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                                 <td></td>
                                                 <td></td>
                                                 <td class="text-secondary">NHIS Sub total (10%)</td>
-                                                <td class="text-secondary">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(data.nhisSubTotal)}</td>
+                                                <td class="text-secondary">${account.format(data.nhisSubTotal)}</td>
                                             </tr>` :
                                          ''}
                                         <tr>
@@ -226,7 +243,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             </td>
                                             <td class="text-secondary">${data.discountBy}</td>
                                             <td class="text-secondary">Discount</td>
-                                            <td class="text-secondary">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(data.discount)}</td>
+                                            <td class="text-secondary">${account.format(data.discount)}</td>
                                         </tr>
                                         <tr>
                                             <td></td>
@@ -237,7 +254,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             ${credit || NHIS ? `<td></td>` : ''}
                                             <td></td>
                                             <td class="text-secondary fw-bold">Net total</td>
-                                            <td class="text-secondary fw-bold">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(data.netTotal)}</td>
+                                            <td class="text-secondary fw-bold">${account.format(data.netTotal)}</td>
                                         </tr>
                                         ${NHIS ?
                                          `  <tr>
@@ -249,7 +266,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                                 <td></td>
                                                 <td></td>
                                                 <td class="text-secondary">NHIS Net total (10%)</td>
-                                                <td class="text-secondary">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(data.nhisNetTotal)}</td>
+                                                <td class="text-secondary">${account.format(data.nhisNetTotal)}</td>
                                             </tr>` :
                                          ''}
                                         <tr>
@@ -262,7 +279,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             <td></td>
                                             <td></td>
                                             <td class="text-secondary">Paid</td>
-                                            <td class="text-secondary">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(data.totalPaid)}</td>
+                                            <td class="text-secondary">${account.format(data.totalPaid)}</td>
                                         </tr>
                                         <tr>
                                             <td></td>
@@ -270,10 +287,10 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             <td></td>
                                             <td></td>
                                             ${credit || NHIS ? `<td></td>` : ''}
-                                            <td></td>
+                                            <td class="${notBilled ? 'colour-change2 fw-bold' : ''}">${notBilled ? 'Incomplete Billing' : ''}</td>
                                             <td></td>
                                             <td class="text-${balance > 0 ? 'danger' : balance == 0 ? 'secondary' : 'success'} fw-bold">Balance</td>
-                                            <td class="text-${balance > 0 ? 'danger' : balance == 0 ? 'secondary' : 'success'} fw-bold">${new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(balance)}</td>
+                                            <td class="text-${balance > 0 ? 'danger' : balance == 0 ? 'secondary' : 'success'} fw-bold">${account.format(balance)}</td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -372,7 +389,7 @@ const getPaymentTableByVisit = (tableId, visitId, modal) => {
         drawCallback: function () {
             var api = this.api()
             
-                $( api.column(4).footer() ).html( new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(
+                $( api.column(4).footer() ).html(account.format(
                     api.column( 4, {page:'current'} ).data().sum())
                 );
         },
@@ -390,7 +407,7 @@ const getPaymentTableByVisit = (tableId, visitId, modal) => {
                 data: "comment"
             },
             {
-                data: row => new Intl.NumberFormat('en-US', {currencySign: 'accounting'}).format(row.amount)
+                data: row => account.format(row.amount)
             },
             {
                 sortable: false,
@@ -417,7 +434,6 @@ const getPaymentTableByVisit = (tableId, visitId, modal) => {
 }
 
 const getPatientsBill = (tableId, visitId, modal, type) => {
-    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
     const billTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/billing/summary', data: {

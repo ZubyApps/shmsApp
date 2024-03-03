@@ -17,7 +17,7 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('amount_paid');
+            $table->integer('amount_paid');
             $table->string('comment')->nullable();
             $table->foreignIdFor(PayMethod::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Patient::class)->constrained()->restrictOnDelete();
