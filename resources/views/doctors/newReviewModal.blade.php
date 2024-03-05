@@ -98,7 +98,7 @@
                                             <x-input-span id="diagnosisLabel">Selected <br />ICD11
                                                 Diagnosis<x-required-span /><i class="bi bi-arrow-clockwise btn form-control clearDiagnosis"></i></x-input-span>
                                             <x-form-textarea type="text" name="selectedDiagnosis" id="selectedDiagnosis"
-                                                class="selectedDiagnosis-2" ></x-form-textarea>
+                                                class="selectedDiagnosis-2" readonly></x-form-textarea>
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="diagnosisLabel">Provisional <br /> Diagnosis</x-input-span>
@@ -119,7 +119,7 @@
                                     <div class="row my-2">
                                         <x-form-div class="col-xl-4">
                                             <x-input-span id="admitLabel">Admit?</x-input-span>
-                                            <x-select-admit name="admit" :disabled="false"></x-select-admit>
+                                            <x-select-admit name="admit" id="admit" :disabled="false"></x-select-admit>
                                         </x-form-div>
                                         <x-form-div class="col-xl-4">
                                             <x-input-span id="wardLabel">Ward</x-input-span>

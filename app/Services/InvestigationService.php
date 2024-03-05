@@ -55,7 +55,8 @@ class InvestigationService
                 $query->where('result', '=', null)
                 ->whereRelation('resource', 'category', '=', 'Investigations');
             })
-            ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
+            // ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
+            ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -69,9 +70,13 @@ class InvestigationService
                             $query->where('result', '=', null)
                             ->whereRelation('resource', 'category', '=', 'Investigations');
                         })
+                    // ->where(function (Builder $query) {
+                    //     $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
+                    //     ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
+                    // })
                     ->where(function (Builder $query) {
-                        $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
-                        ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
+                        $query->where('admission_status', '=', 'Inpatient')
+                        ->orWhere('admission_status', '=', 'Observation');
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));

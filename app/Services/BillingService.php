@@ -59,7 +59,8 @@ class BillingService
             ->where('consulted', '!=', null)
             ->where('closed', false)
             ->whereColumn('total_hms_bill', '>', 'total_paid')
-            ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
+            // ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
+            ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
@@ -70,9 +71,13 @@ class BillingService
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('closed', false)
+                    // ->where(function (Builder $query) {
+                    //     $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
+                    //     ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
+                    // })
                     ->where(function (Builder $query) {
-                        $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
-                        ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
+                        $query->where('admission_status', '=', 'Inpatient')
+                        ->orWhere('admission_status', '=', 'Observation');
                     })
                     ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
                     ->whereColumn('total_hms_bill', '>', 'total_paid')

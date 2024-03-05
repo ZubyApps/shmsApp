@@ -20,6 +20,9 @@ return new class extends Migration
             $table->string('verification_status')->nullable();
             $table->string('discharge_reason')->nullable();
             $table->text('discharge_remark')->nullable();
+            $table->string('admission_status')->nullable();
+            $table->string('ward')->nullable();
+            $table->string('bed_no')->nullable();
             $table->dateTime('verified_at')->nullable();
             $table->foreignIdFor(User::class, 'verified_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->dateTime('consulted')->nullable();

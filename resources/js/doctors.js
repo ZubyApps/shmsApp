@@ -169,9 +169,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 
                 const isAnc = patientType === 'ANC'
                 resourceInput.forEach(input => {input.setAttribute('data-sponsorcat', consultationReviewBtn.getAttribute('data-sponsorcat'))})
-                populateConsultationModal(newReviewModal, reviewPatientbtn, visitId, ancRegId, patientType)
-                populateConsultationModal(specialistConsultationModal, specialistConsultationbtn, visitId, ancRegId, patientType)
-                populateConsultationModal(ancReviewModal, reviewAncPatientbtn, visitId, ancRegId, patientType)
+                populateConsultationModal(newReviewModal, reviewPatientbtn, visitId, ancRegId, patientType, consultationReviewBtn)
+                populateConsultationModal(specialistConsultationModal, specialistConsultationbtn, visitId, ancRegId, patientType, consultationReviewBtn)
+                populateConsultationModal(ancReviewModal, reviewAncPatientbtn, visitId, ancRegId, patientType, consultationReviewBtn)
                 
                 populateDischargeModal(dischargeModal, consultationReviewBtn, visitId)
                 
@@ -327,6 +327,17 @@ window.addEventListener('DOMContentLoaded', function () {
                 medicalReportTable = getMedicalReportTable('medicalReportTable', visitId, medicalReportListModal._element, true)
                 medicalReportListModal.show()
             }
+        })
+    })
+
+    document.querySelectorAll('#admit').forEach(selectEl => {
+        selectEl.addEventListener('change', function(){
+            const div = selectEl.parentElement
+            const status = selectEl.getAttribute('data-admissionstatus')
+            const statuses = ['Inpatient', 'Observation']
+            if (statuses.includes(statuses) && !statuses.includes(selectEl.value)){
+                const message = {"admit": [`Pls note that this patient's status was "${status}". You may cause confusion with their medication schedule if you change to outpatient.`]}; handleValidationErrors(message, div)
+            } else {clearValidationErrors(div)}
         })
     })
 
@@ -773,7 +784,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const modal = btn.id == 'reviewPatientBtn' ?  newReviewModal : isAnc ? ancReviewModal : specialistConsultationModal
             const [getVitalsigns, tableId, id] = isAnc ? [getAncVitalSignsTable, '#'+modal._element.querySelector('.vitalsTable').id, ancRegId] : [getVitalSignsTableByVisit, '#'+modal._element.querySelector('.vitalsTable').id, visitId]
             
-            http.post(`/doctors/consult/${ visitId }`, {patientType})
+            http.post(`/doctors/review/${ visitId }`, {patientType})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         openDoctorModals(modal, modal._element.querySelector('#saveConsultationBtn'), response.data)

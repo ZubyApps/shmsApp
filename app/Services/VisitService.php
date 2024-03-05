@@ -128,7 +128,7 @@ class VisitService
                 'closed_opened_at'  => new Carbon(), 
                 'closed_opened_by'  => $user->id
             ]);
-            $visit->patient()->update(['is_active' => false]);
+            $visit->patient()->update(['is_active' => true]);
         });
     }
 

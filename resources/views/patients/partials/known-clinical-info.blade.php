@@ -13,7 +13,7 @@
         </select>
     </x-form-div>
 
-    @if (Auth::user()->designation->designation !== 'Doctor' || Auth::user()->designation->access_level > 3)
+    @if (Auth::user()->designation->designation == 'Doctor' || Auth::user()->designation->access_level > 4)
         <x-form-div>
             <x-input-span>Known <br> Conditions</x-input-span>
             <x-form-textarea name="knownConditions" class="knownConditions" cols="auto" rows="auto"

@@ -214,6 +214,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     addStockBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {
+                    addStockBtn.removeAttribute('disabled')
                     alert(error)
                 })
         }

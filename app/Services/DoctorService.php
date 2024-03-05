@@ -49,10 +49,10 @@ class DoctorService
         if ($data->filterBy == 'My Patients'){
             return $this->visit
             ->where('consulted', '!=', null)
-            ->where('user_id', '=', $user->id)
+            ->where('doctor_id', '=', $user->id)
             ->where('doctor_done_by', null)
             ->where('closed', false)
-            ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
+            ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -62,7 +62,7 @@ class DoctorService
                     ->where('consulted', '!=', null)
                     ->where('doctor_done_by', null)
                     ->where('closed', false)
-                    ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
+                    ->where('admission_status', '=', 'Outpatient')
                     ->whereRelation('patient', 'patient_type', '!=', 'ANC')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -95,10 +95,10 @@ class DoctorService
                     ->where('consulted', '!=', null)
                     ->where('doctor_done_by', null)
                     ->where('closed', false)
-                    ->where('user_id', '=', $user->id)
+                    ->where('doctor_id', '=', $user->id)
                     ->where(function (Builder $query) {
-                        $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
-                        ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
+                        $query->where('admission_status', '=', 'Inpatient')
+                        ->orWhere('admission_status', '=', 'Observation');
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -110,8 +110,8 @@ class DoctorService
                     ->where('closed', false)
                     ->whereRelation('patient', 'patient_type', '!=', 'ANC')
                     ->where(function (Builder $query) {
-                        $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
-                        ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
+                        $query->where('admission_status', '=', 'Inpatient')
+                        ->orWhere('admission_status', '=', 'Observation');
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -143,7 +143,7 @@ class DoctorService
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('doctor_done_by', null)
-                    ->where('user_id', '=', $user->id)
+                    ->where('doctor_id', '=', $user->id)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
@@ -173,15 +173,17 @@ class DoctorService
                 'doctor'            => $visit->doctor->username,
                 'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
+                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment ?? '',
+                'selectedDiagnosis'     => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? '',
+                'provisionalDiagnosis'  => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? '',
                 'conId'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->id,
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->category_name,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
-                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
-                'ward'              => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->ward ?? '',
-                'bedNo'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->bed_no ?? '',
+                'admissionStatus'   => $visit->admission_status,
+                'ward'              => $visit->ward ?? '',
+                'bedNo'             => $visit->bed_no ?? '',
                 'patientType'       => $visit->patient->patient_type,
                 'labPrescribed'     => Prescription::where('visit_id', $visit->id)
                                         ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
@@ -211,6 +213,11 @@ class DoctorService
             'doctor_id'    =>  $request->user()->id
         ]);
 
+        return response()->json(new PatientBioResource($visit));
+    }
+
+    public function initiateReview(Visit $visit, Request $request) 
+    {
         return response()->json(new PatientBioResource($visit));
     }
 }

@@ -181,11 +181,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal, #investigationsModal, #addResultModal, #updateResultModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function () {
+            console.log('ran')
             outPatientsVisitsTable.draw()
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-            treatmentDetailsModal.innerHTML = ''
-            ancTreatmentDetailsModal.innerHTML = ''
+            regularTreatmentDiv.innerHTML = ''
+            ancTreatmentDiv.innerHTML = ''
         })
     })
 

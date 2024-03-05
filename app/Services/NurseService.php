@@ -10,7 +10,6 @@ use App\Models\Prescription;
 use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 
 class NurseService
 {
@@ -54,7 +53,7 @@ class NurseService
                 $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
                     ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services');
             })
-            ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
+            ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -71,8 +70,8 @@ class NurseService
                             ->orWhereRelation('prescriptions', 'chartable', '=', '1');
                     })
                     ->where(function (Builder $query) {
-                        $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
-                        ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
+                        $query->where('admission_status', '=', 'Inpatient')
+                        ->orWhere('admission_status', '=', 'Observation');
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -109,9 +108,9 @@ class NurseService
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
                 'sponsor'           => $visit->sponsor->name,
-                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
-                'ward'              => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->ward ?? '',
-                'bedNo'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->bed_no ?? '',
+                'admissionStatus'   => $visit->admission_status,//Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
+                'ward'              => $visit->ward ?? '',
+                'bedNo'             => $visit->bed_no ?? '',
                 'updatedBy'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->updatedBy?->username ?? 'Nurse...',
                 'conId'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->id,
                 'patientType'       => $visit->patient->patient_type,

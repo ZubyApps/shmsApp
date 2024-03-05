@@ -479,6 +479,17 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    document.querySelectorAll('#admit').forEach(selectEl => {
+        selectEl.addEventListener('change', function(){
+            const div = selectEl.parentElement
+            const status = selectEl.getAttribute('data-admissionstatus')
+            const statuses = ['Inpatient', 'Observation']
+            if (!statuses.includes(selectEl.value)){
+                const message = {"admit": [`Pls note that this patient's status was "${status}". You may cause confusion with their medication schedule if you change to outpatient.`]}; handleValidationErrors(message, div)
+            } else {clearValidationErrors(div)}
+        })
+    })
+
     // All consultation resource inputs
     resourceInput.addEventListener('input', function () {
             const div = resourceInput.parentElement.parentElement.parentElement.parentElement.parentElement

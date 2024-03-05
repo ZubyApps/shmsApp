@@ -20,6 +20,8 @@ class ConsultationService
 
     public function create(Request $data, User $user): Consultation
     {
+        return DB::transaction(function () use ($data, $user) {
+
             $consultation = $user->consultations()->create([
                 "visit_id"                  => $data->visitId,
                 "p_complain"                => $data->presentingComplain,
@@ -48,28 +50,49 @@ class ConsultationService
                 "specialist_consultation"   => $data->specialConsultation
             ]);  
 
-            $consultation->visit()->update([
-                'consulted'    => new Carbon(),
-            ]);
+            if ($consultation->visit->consulted){
+                $consultation->visit()->update([
+                    'admission_status'  => $data->admit,
+                    'ward'              => $data->ward,
+                    'bed_no'            => $data->bedNumber,
+                ]);
+            } else {
+                $consultation->visit()->update([
+                    'consulted'         => new Carbon(),
+                    'admission_status'  => $data->admit,
+                    'ward'              => $data->ward,
+                    'bed_no'            => $data->bedNumber,
+                ]);
+            }
             
         return $consultation;
+        });
     }
 
     public function updateAdmissionStatus(Consultation $consultation, Request $data, User $user)
     {
-        if ($data->admit){
-           return $consultation->update([
-                "admission_status"          => $data->admit,
+        return DB::transaction(function () use ($data, $consultation, $user) {
+            
+            if ($data->admit){
+                $consultation->update([
+                    "admission_status"          => $data->admit,
+                    "ward"                      => $data->ward,
+                    "bed_no"                    => $data->bedNumber,
+                    "updated_by"                => $user->id
+                ]);
+            }
+            $consultation->update([
                 "ward"                      => $data->ward,
                 "bed_no"                    => $data->bedNumber,
                 "updated_by"                => $user->id
             ]);
-        }
-        return $consultation->update([
-            "ward"                      => $data->ward,
-            "bed_no"                    => $data->bedNumber,
-            "updated_by"                => $user->id
-        ]);
+    
+            return $consultation->visit()->update([
+                'admission_status'  => $data->admit,
+                'ward'              => $data->ward,
+                'bed_no'            => $data->bedNumber,
+            ]);
+        });
     }
 
     public function getConsultations(Request $request, Visit $visit)

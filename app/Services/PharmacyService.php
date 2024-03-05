@@ -67,10 +67,8 @@ class PharmacyService
                     });
                 });
             })
-           
-            ->where(function (Builder $query) {
-                $query->whereRelation('consultations', 'admission_status', '=', 'Outpatient');
-            })
+            // ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
+            ->where('admission_status', '=', 'Outpatient')
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -88,9 +86,13 @@ class PharmacyService
         
                         });
                     })
+                    // ->where(function (Builder $query) {
+                    //     $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
+                    //     ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
+                    // })
                     ->where(function (Builder $query) {
-                        $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
-                        ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
+                        $query->where('admission_status', '=', 'Inpatient')
+                        ->orWhere('admission_status', '=', 'Observation');
                     })
                     ->whereRelation('patient', 'patient_type', '!=', 'ANC')
                     ->orderBy($orderBy, $orderDir)

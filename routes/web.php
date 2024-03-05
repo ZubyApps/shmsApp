@@ -152,6 +152,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/list', [DoctorController::class, 'list']);
             Route::get('', [DoctorController::class, 'index'])->name('Doctors');
             Route::post('/consult/{visit}', [DoctorController::class, 'consult']);
+            Route::post('/review/{visit}', [DoctorController::class, 'review']);
             Route::get('/load/consulted/outpatient', [DoctorController::class, 'loadOutpatientVisits']);
             Route::get('/load/consulted/inpatient', [DoctorController::class, 'loadInpatientVisits']);
             Route::get('/load/consulted/anc', [DoctorController::class, 'loadAncPatientVisits']);

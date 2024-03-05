@@ -303,7 +303,7 @@ const reviewBtn = (row) => {
         </a>
             <ul class="dropdown-menu">
             <li>
-                <a class=" btn btn-outline-primary dropdown-item consultationReviewBtn tooltip-test" title="details" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">
+                <a class=" btn btn-outline-primary dropdown-item consultationReviewBtn tooltip-test" title="details" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}" data-selecteddiagnosis="${row.selectedDiagnosis}" data-provisionaldiagnosis="${row.provisionalDiagnosis}">
                     Review
                 </a>
                 <li class="dropdown dropend">
@@ -520,11 +520,14 @@ const dischargeColour = (reason) => {
       }
 }
 
-const populateConsultationModal = (modal, btn, visitId, ancRegId, patientType) => {
+const populateConsultationModal = (modal, btn, visitId, ancRegId, patientType, conbtn) => {
     btn.setAttribute('data-id', visitId)
     btn.setAttribute('data-ancregid', ancRegId)
     btn.setAttribute('data-patientType', patientType)
     modal._element.querySelector('#saveConsultationBtn').setAttribute('data-patientType', patientType)
+    modal._element.querySelector('#admit').setAttribute('data-admissionstatus', conbtn.getAttribute('data-admissionstatus'))
+    modal._element.querySelector('#selectedDiagnosis').value = conbtn.getAttribute('data-selecteddiagnosis')
+    modal._element.querySelector('#provisionalDiagnosis').value = conbtn.getAttribute('data-provisionaldiagnosis')
 }
 
 const populateDischargeModal = (modal, btn) => {
@@ -542,6 +545,7 @@ const populateWardAndBedModal = (modal, btn) => {
     modal._element.querySelector('#currentDiagnosis').value = btn.getAttribute('data-diagnosis')
     modal._element.querySelector('#admissionStatus').value = btn.getAttribute('data-admissionstatus')
     modal._element.querySelector('#admit').value = btn.getAttribute('data-admissionstatus')
+    modal._element.querySelector('#admit').setAttribute('data-admissionstatus', btn.getAttribute('data-admissionstatus'))
     modal._element.querySelector('#ward').value = btn.getAttribute('data-ward')
     modal._element.querySelector('#bedNumber').value = btn.getAttribute('data-bedno')
     modal._element.querySelector('#doctor').innerHTML = btn.getAttribute('data-doctor')

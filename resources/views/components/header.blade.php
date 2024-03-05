@@ -71,7 +71,7 @@
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Doctors') ? 'active text-primary' : '' }}">Doctors</a>
             <a href="{{ $staffD === 'Doctor' || $staffD === 'Nurse' || $staffA > 4 ? '/nurses' : '' }}" 
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Nurses') ? 'active text-primary' : '' }}">Nurses</a>
-            <a href="{{ $staffD === 'Doctor' || $staffD === 'LabTech' || $staffA > 4 ? '/investigations' : '' }}"
+            <a href="{{ $staffD === 'Doctor' || $staffD === 'LabTech' || $staffD === 'HMO Officer' || $staffA > 4 ? '/investigations' : '' }}"
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Investigations') ? 'active text-primary' : '' }}">Investigations</a>
             <a href="{{ $staffD === 'Pharmacy Tech' || $staffA > 4 ? '/pharmacy' : '' }}"
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Pharmacy') ? 'active text-primary' : '' }}">Pharmacy</a>

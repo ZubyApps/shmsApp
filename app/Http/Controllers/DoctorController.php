@@ -81,4 +81,9 @@ class DoctorController extends Controller
     {
         return $this->doctorService->initiateConsultation($visit, $request);
     }
+
+    public function review(Visit $visit, Request $request)
+    {
+        return $this->doctorService->initiateReview($visit, $request);
+    }
 }

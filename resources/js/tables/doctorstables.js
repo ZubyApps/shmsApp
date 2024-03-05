@@ -398,7 +398,12 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                                 </li>
                                 <li  class="${!row.sent ? 'd-none' : ''}">
                                     <a class="btn btn-outline-primary dropdown-item downloadResultBtn" id="downloadResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-result="${ row.result }" data-sent="${ row.sent }" data-table="${tableId}" title="download for print" data-id="${ row.id}" data-stafffullname="${ row.staffFullName}">
-                                        <i class="bi bi-download"></i> Download for Print
+                                        <i class="bi bi-download"></i> Print This
+                                    </a>
+                                </li>
+                                <li  class="${!row.sent ? 'd-none' : ''}">
+                                    <a class="btn btn-outline-primary dropdown-item downloadResultBtn" id="downloadResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-result="${ row.result }" data-sent="${ row.sent }" data-table="${tableId}" title="download for print" data-id="${ row.id}" data-stafffullname="${ row.staffFullName}">
+                                        <i class="bi bi-download"></i> Print All
                                     </a>
                                 </li>
                                 <li class="${!row.sent ||(viewer !== 'lab' && viewer !== 'doctor') ? 'd-none' : ''}">

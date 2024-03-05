@@ -33,7 +33,6 @@ class HmoService
 
         if (! empty($params->searchTerm)) {
             return $this->visit
-                        // ->Where('verified_at', null)
                         ->where(function (Builder $query) use($params) {
                             $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -123,8 +122,9 @@ class HmoService
             return $this->visit
             ->where('consulted', '!=', null)
             ->where('closed', false)
-            // ->where('hmo_done_by', null)
-            ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
+            ->where('hmo_done_by', null)
+            // ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
+            ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->where(function (Builder $query) {
                 $query->whereRelation('sponsor', 'category_name', 'HMO')
@@ -138,16 +138,20 @@ class HmoService
         if ($data->filterBy == 'Inpatient'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    // ->where('hmo_done_by', null)
+                    ->where('hmo_done_by', null)
                     ->where('closed', false)
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
                         ->orWhereRelation('sponsor', 'category_name', 'NHIS')
                         ->orWhereRelation('sponsor', 'category_name', 'Retainership');
                     })
+                    // ->where(function (Builder $query) {
+                    //     $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
+                    //     ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
+                    // })
                     ->where(function (Builder $query) {
-                        $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
-                        ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
+                        $query->where('admission_status', '=', 'Inpatient')
+                        ->orWhere('admission_status', '=', 'Observation');
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -155,7 +159,7 @@ class HmoService
         if ($data->filterBy == 'ANC'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    // ->where('hmo_done_by', null)
+                    ->where('hmo_done_by', null)
                     ->where('closed', false)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->where(function (Builder $query) {
@@ -169,7 +173,7 @@ class HmoService
 
         return $this->visit
                     ->where('consulted', '!=', null)
-                    // ->where('hmo_done_by', null)
+                    ->where('hmo_done_by', null)
                     ->where('closed', false)
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
