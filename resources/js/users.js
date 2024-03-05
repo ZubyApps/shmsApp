@@ -132,6 +132,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (designationBtn){
             designationBtn.setAttribute('disabled', 'disabled')
+            console.log(designationBtn.getAttribute('data-id'))
             http.get(`/users/designation/${designationBtn.getAttribute('data-id')}`)
             .then((response) => {
                 if (response.status >= 200 || response.status <= 300){
@@ -167,6 +168,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     designateBtn.addEventListener('click', function (event) {
         const staffId = event.currentTarget.getAttribute('data-id')
+        console.log(staffId)
         designateBtn.setAttribute('disabled', 'disabled')
         http.post(`/users/designate/${staffId}`, getDivData(designationModal._element), {"html": designationModal._element})
         .then((response) => {

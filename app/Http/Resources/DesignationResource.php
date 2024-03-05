@@ -15,10 +15,10 @@ class DesignationResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'            => $this->designation->id,
+            'id'            => $this->id,
             'fullName'      => $this->nameInFull(),
-            'designation'   => $this->designation->designation,
-            'accessLevel'   => $this->designation->access_level,
+            'designation'   => $this?->designation?->designation,
+            'accessLevel'   => $this?->designation?->access_level,
         ];
     }
 }

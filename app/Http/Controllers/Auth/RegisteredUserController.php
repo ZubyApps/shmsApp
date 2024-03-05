@@ -93,6 +93,7 @@ class RegisteredUserController extends Controller
         if ($request->user()->designation?->access_level < 5) {
             return response()->json(['message' => 'You are not authorized'], 403);
         }
+        // dd($user);
         return New DesignationResource($user);
     }
 

@@ -211,7 +211,8 @@ window.addEventListener('DOMContentLoaded', function () {
             const collapseConsultationBtn  = event.target.closest('.collapseConsultationBtn')
             const addResultBtn             = event.target.closest('#addResultBtn')
             const updateResultBtn          = event.target.closest('#updateResultBtn')
-            const downloadResultBtn        = event.target.closest('#downloadResultBtn')
+            const printThisBtn             = event.target.closest('#printThisBtn')
+            const printAllBtn              = event.target.closest('#printAllBtn')
             const deleteResultBtn          = event.target.closest('.deleteResultBtn')
             const viewer = 'lab'
     
@@ -259,13 +260,17 @@ window.addEventListener('DOMContentLoaded', function () {
                 investigationsModal.hide()
             }
 
-            if (downloadResultBtn) {
-                labResultModal._element.querySelector('#test').innerHTML = downloadResultBtn.getAttribute('data-investigation')
-                labResultModal._element.querySelector('#patientsId').innerHTML = downloadResultBtn.getAttribute('data-patient')
-                labResultModal._element.querySelector('#result').innerHTML = downloadResultBtn.getAttribute('data-result')
-                labResultModal._element.querySelector('#resultDate').innerHTML = downloadResultBtn.getAttribute('data-sent')
-                labResultModal._element.querySelector('#StaffFullName').innerHTML = downloadResultBtn.getAttribute('data-stafffullname')
+            if (printThisBtn) {
+                labResultModal._element.querySelector('#test').innerHTML = printThisBtn.getAttribute('data-investigation')
+                labResultModal._element.querySelector('#patientsId').innerHTML = printThisBtn.getAttribute('data-patient')
+                labResultModal._element.querySelector('#result').innerHTML = printThisBtn.getAttribute('data-result')
+                labResultModal._element.querySelector('#resultDate').innerHTML = printThisBtn.getAttribute('data-sent')
+                labResultModal._element.querySelector('#StaffFullName').innerHTML = printThisBtn.getAttribute('data-stafffullname')
                 labResultModal.show()
+            }
+
+            if (printAllBtn){
+
             }
     
             if (deleteResultBtn){
@@ -274,19 +279,19 @@ window.addEventListener('DOMContentLoaded', function () {
                 if (confirm('Are you sure you want to delete this result?')) {
                     const prescriptionId = deleteResultBtn.getAttribute('data-id')
                     http.patch(`/investigations/remove/${prescriptionId}`)
-                        .then((response) => {
-                            if (response.status >= 200 || response.status <= 300) {
-                                
-                                if ($.fn.DataTable.isDataTable('#' + prescriptionTableId)) {
-                                    $('#' + prescriptionTableId).dataTable().fnDraw()
-                                }
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            
+                            if ($.fn.DataTable.isDataTable('#' + prescriptionTableId)) {
+                                $('#' + prescriptionTableId).dataTable().fnDraw()
                             }
-                            deleteResultBtn.removeAttribute('disabled')
-                        })
-                        .catch((error) => {
-                            alert(error)
-                            deleteResultBtn.removeAttribute('disabled')
-                        })
+                        }
+                        deleteResultBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                        deleteResultBtn.removeAttribute('disabled')
+                    })
                 }
             }
         })
@@ -304,23 +309,23 @@ window.addEventListener('DOMContentLoaded', function () {
         let data = { ...getDivData(addResultDiv), prescriptionId }
 
         http.patch(`/investigations/create/${prescriptionId}`, { ...data }, { "html": addResultDiv })
-            .then((response) => {
-                if (response.status >= 200 || response.status <= 300) {
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) {
 
-                    clearDivValues(addResultDiv)
-                    clearValidationErrors(addResultDiv)
+                clearDivValues(addResultDiv)
+                clearValidationErrors(addResultDiv)
 
-                    if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
-                        $('#' + investigationTableId).dataTable().fnDraw()
-                    }
+                if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
+                    $('#' + investigationTableId).dataTable().fnDraw()
                 }
-                createResultBtn.removeAttribute('disabled')
-                addResultModal.hide()
-            })
-            .catch((error) => {
-                console.log(error)
-                createResultBtn.removeAttribute('disabled')
-            })
+            }
+            createResultBtn.removeAttribute('disabled')
+            addResultModal.hide()
+        })
+        .catch((error) => {
+            console.log(error)
+            createResultBtn.removeAttribute('disabled')
+        })
     })
 
     saveResultBtn.addEventListener('click', function () {
@@ -331,23 +336,23 @@ window.addEventListener('DOMContentLoaded', function () {
         let data = { ...getDivData(updateResultDiv), prescriptionId }
 
         http.patch(`/investigations/update/${prescriptionId}`, { ...data }, { "html": updateResultDiv })
-            .then((response) => {
-                if (response.status >= 200 || response.status <= 300) {
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) {
 
-                    clearDivValues(updateResultDiv)
-                    clearValidationErrors(updateResultDiv)
+                clearDivValues(updateResultDiv)
+                clearValidationErrors(updateResultDiv)
 
-                    if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
-                        $('#' + investigationTableId).dataTable().fnDraw()
-                    }
+                if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
+                    $('#' + investigationTableId).dataTable().fnDraw()
                 }
-                saveResultBtn.removeAttribute('disabled')
-                updateResultModal.hide()
-            })
-            .catch((error) => {
-                console.log(error)
-                saveResultBtn.removeAttribute('disabled')
-            })
+            }
+            saveResultBtn.removeAttribute('disabled')
+            updateResultModal.hide()
+        })
+        .catch((error) => {
+            console.log(error)
+            saveResultBtn.removeAttribute('disabled')
+        })
     })
 
     bulkRequestBtn.addEventListener('click', function () {
