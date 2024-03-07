@@ -174,7 +174,7 @@ class UserService
                         ->where('firstname', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('middlename', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('lastname', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->whereRelation('designation', 'access_level', '<', 5)
+                        ->whereRelation('designation', 'access_level', '<', 6)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
