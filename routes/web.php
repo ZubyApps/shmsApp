@@ -177,6 +177,7 @@ Route::middleware('auth')->group(function () {
             Route::patch('/remove/{prescription}', [InvestigationController::class, 'removeLabResult']);
             Route::patch('/create/{prescription}', [InvestigationController::class, 'createLabResult']);
             Route::patch('/update/{prescription}', [InvestigationController::class, 'updateLabResult']);
+            Route::get('/printall/{prescription}', [InvestigationController::class, 'getAllTestsAndResults']);
         });
     });
 
@@ -237,6 +238,9 @@ Route::middleware('auth')->group(function () {
             Route::get('', [PatientController::class, 'index'])->name('Patients');
             Route::post('', [PatientController::class, 'store']);
             Route::get('/load', [PatientController::class, 'load']);
+            Route::get('/load/summary/sponsor', [PatientController::class, 'loadSummaryBySponsor']);
+            Route::get('/load/summary/sex', [PatientController::class, 'loadSummaryBySex']);
+            Route::get('/load/summary/age', [PatientController::class, 'loadSummaryByAge']);
             Route::get('/{patient}', [PatientController::class, 'edit']);
             Route::delete('/{patient}', [PatientController::class, 'destroy']);
             Route::post('/{patient}', [PatientController::class, 'update']);

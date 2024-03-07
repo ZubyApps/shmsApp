@@ -12,6 +12,7 @@ use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InvestigationService
 {
@@ -289,4 +290,15 @@ class InvestigationService
         return  $prescription;
     }
 
+    public function getAllPatientsVisitsTests(Visit $visit)
+    {   
+            return $this->prescription
+                        ->where('visit_id', $visit->id)
+                        ->whereRelation('resource', 'category', 'Investigations')
+                        ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
+                        ->whereRelation('visit', 'consulted', '!=', null)
+                        ->where('result_date', '!=', null)
+                        ->orderBy('created_at', 'asc')
+                        ->get();
+    }
 }

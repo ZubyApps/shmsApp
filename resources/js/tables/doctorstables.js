@@ -397,12 +397,12 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                                     </a>
                                 </li>
                                 <li  class="${!row.sent ? 'd-none' : ''}">
-                                    <a class="btn btn-outline-primary dropdown-item printThisBtn" id="printThisBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-result="${ row.result }" data-sent="${ row.sent }" data-table="${tableId}" title="download for print" data-id="${ row.id}" data-stafffullname="${ row.staffFullName}">
+                                    <a class="btn btn-outline-primary dropdown-item printThisBtn" id="printThisBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-result="${ row.result }" data-sent="${ row.sent }" data-table="${tableId}" title="print this" data-id="${ row.id}" data-stafffullname="${ row.staffFullName}">
                                         <i class="bi bi-download"></i> Print This
                                     </a>
                                 </li>
                                 <li  class="${!row.sent ? 'd-none' : ''}">
-                                    <a class="btn btn-outline-primary dropdown-item printAllBtn" id="printAllBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-result="${ row.result }" data-sent="${ row.sent }" data-table="${tableId}" title="download for print" data-id="${ row.id}" data-stafffullname="${ row.staffFullName}">
+                                    <a class="btn btn-outline-primary dropdown-item printAllBtn" id="printAllBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-result="${ row.result }" data-sent="${ row.sent }" data-table="${tableId}" title="print all" data-id="${ row.id}" data-stafffullname="${ row.staffFullName}">
                                         <i class="bi bi-download"></i> Print All
                                     </a>
                                 </li>

@@ -5,7 +5,7 @@ import $ from 'jquery';
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { getAllPatientsTable, getSponsorsTable } from "./tables/patientsTables";
+import { getAgeAggregateTable, getAllPatientsTable, getSexAggregateTable, getSponsorsTable, getTotalPatientsTable } from "./tables/patientsTables";
 
 
 window.addEventListener('DOMContentLoaded', function(){
@@ -31,8 +31,9 @@ window.addEventListener('DOMContentLoaded', function(){
 
     const patientsTab                       = document.querySelector('#nav-patients-tab')
     const sponsorsTab                       = document.querySelector('#nav-sponsors-tab')
+    const summariesTab                      = document.querySelector('#nav-summaries-tab')
 
-    let sponsorsTable
+    let sponsorsTable, totalPatientsTable, sexAggregateTable
 
     const allPatientsTable = getAllPatientsTable('allPatientsTable')
 
@@ -53,6 +54,23 @@ window.addEventListener('DOMContentLoaded', function(){
         }
     })
 
+    summariesTab.addEventListener('click', function() {
+        if ($.fn.DataTable.isDataTable( '#totalPatientsTable' )){
+            $('#totalPatientsTable').dataTable().fnDraw()
+        } else {
+            totalPatientsTable = getTotalPatientsTable('totalPatientsTable')
+        }
+        if ($.fn.DataTable.isDataTable( '#sexAggregateTable' )){
+            $('#sexAggregateTable').dataTable().fnDraw()
+        } else {
+            sexAggregateTable = getSexAggregateTable('sexAggregateTable')
+        }
+        if ($.fn.DataTable.isDataTable( '#ageAggregateTable' )){
+            $('#ageAggregateTable').dataTable().fnDraw()
+        } else {
+            sexAggregateTable = getAgeAggregateTable('ageAggregateTable')
+        }
+    })
 
     document.querySelector('#sponsorsTable').addEventListener('click', function (event) {
         const editBtn    = event.target.closest('.updateBtn')

@@ -38,7 +38,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'rejected_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->string('hmo_note')->nullable();
             $table->string('test_sample')->nullable();
-            $table->string('result')->nullable();
+            $table->text('result')->nullable();
             $table->dateTime('result_date')->nullable();
             $table->foreignIdFor(User::class, 'result_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->integer('paid')->nullable();

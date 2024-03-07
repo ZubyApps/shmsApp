@@ -105,4 +105,85 @@ const getAllPatientsTable = (tableId) => {
     return allPatientsTable
 }
 
-export {getSponsorsTable, getAllPatientsTable}
+const getTotalPatientsTable = (tableId) => {
+    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
+
+    const totalPatientsTable = new DataTable(`#${tableId}`, {
+        serverSide: true,
+        ajax:  '/patients/load/summary/sponsor',
+        orderMulti: true,
+        search:true,
+        lengthMenu:[40, 80, 120, 160, 200],
+        drawCallback: function (settings) {
+            var api = this.api()
+            $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
+            // $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {data: row =>  `<span class="btn text-decoration-underline showVisitisBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}">${row.sponsor}</span>`},
+            {data: "patientsCount"},
+            {data: "category"},
+        ]
+    })
+
+    return totalPatientsTable
+}
+
+const getSexAggregateTable = (tableId) => {
+    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
+
+    const totalPatientsTable = new DataTable(`#${tableId}`, {
+        serverSide: true,
+        ajax:  '/patients/load/summary/sex',
+        orderMulti: true,
+        search:false,
+        searching:false,
+        lengthMenu:[40, 80, 120, 160, 200],
+        drawCallback: function (settings) {
+            var api = this.api()
+            $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
+            // $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {data: "sex"},
+            {data: "patientsCount"},
+            // {data: "category"},
+        ]
+    })
+
+    return totalPatientsTable
+}
+const getAgeAggregateTable = (tableId) => {
+    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
+
+    const totalPatientsTable = new DataTable(`#${tableId}`, {
+        serverSide: true,
+        ajax:  '/patients/load/summary/age',
+        orderMulti: true,
+        search:false,
+        searching:false,
+        lengthMenu:[40, 80, 120, 160, 200],
+        drawCallback: function (settings) {
+            var api = this.api()
+            $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
+            $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
+            $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
+            $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
+            $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
+            $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {data: "sex"},
+            {data: "under5"},
+            {data: "fiveTo12"},
+            {data: "thirteenTo18"},
+            {data: "eighteenTo50"},
+            {data: "above50"},
+            {data: row => +row.under5 + +row.fiveTo12 + +row.thirteenTo18 + +row.eighteenTo50 + +row.above50}
+        ]
+    })
+
+    return totalPatientsTable
+}
+
+export {getSponsorsTable, getAllPatientsTable, getTotalPatientsTable, getSexAggregateTable, getAgeAggregateTable}

@@ -6,7 +6,7 @@ import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfile
 import { getPatientsVisitsByFilterTable, getInpatientsInvestigationsTable, getOutpatientsInvestigationTable } from "./tables/investigationTables";
 import { getLabTableByConsultation } from "./tables/doctorstables";
 import { getBulkRequestTable } from "./tables/pharmacyTables";
-import { forEach } from "jszip";
+import html2pdf  from "html2pdf.js"
 
 window.addEventListener('DOMContentLoaded', function () {
     const treatmentDetailsModal         = new Modal(document.getElementById('treatmentDetailsModal'))
@@ -28,6 +28,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveResultBtn             = updateResultModal._element.querySelector('#saveResultBtn')
     const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
     const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
+    const downloadResultBtn         = labResultModal._element.querySelector('#downloadResultBtn')
 
     const inpatientsInvestigationCount      = document.querySelector('#inpatientsInvestigationCount')
     const outpatientsInvestigationCount      = document.querySelector('#outpatientsInvestigationCount')
@@ -40,6 +41,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const bulkRequestsTab           = document.querySelector('#nav-bulkRequests-tab')
 
     const testListDiv               = labResultModal._element.querySelector('.testListDiv')
+    const multipleTestsListDiv      = labResultModal._element.querySelector('.multipleTestsListDiv')
 
      // Auto textarea adjustment
      const textareaHeight = 90;
@@ -270,6 +272,20 @@ window.addEventListener('DOMContentLoaded', function () {
             }
 
             if (printAllBtn){
+                const id = printAllBtn.getAttribute('data-id')
+                labResultModal._element.querySelector('#patientsId').innerHTML = printAllBtn.getAttribute('data-patient')
+                labResultModal._element.querySelector('#resultDate').innerHTML = new Date().toLocaleDateString('en-GB')
+                http.get(`/investigations/printall/${id}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openLabResultModal(labResultModal, labResultModal._element.querySelector('.multipleTestsListDiv'), response.data.tests.data)
+                    }
+                    printAllBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    alert(error)
+                    printAllBtn.removeAttribute('disabled')
+                })
 
             }
     
@@ -299,6 +315,16 @@ window.addEventListener('DOMContentLoaded', function () {
 
     testListDiv.addEventListener('click', function () {
         testListDiv.setAttribute('contentEditable', 'true')
+    })
+
+    multipleTestsListDiv.addEventListener('click', function () {
+        multipleTestsListDiv.setAttribute('contentEditable', 'true')
+    })
+
+    labResultModal._element.addEventListener('hide.bs.modal', function (){
+        testListDiv.querySelector('#test').innerHTML = ''
+        testListDiv.querySelector('#result').innerHTML = ''
+        multipleTestsListDiv.innerHTML = ''
     })
 
     createResultBtn.addEventListener('click', function () {
@@ -400,6 +426,20 @@ window.addEventListener('DOMContentLoaded', function () {
         bulkRequestsTable ? bulkRequestsTable.draw() : ''
     })
 
+    downloadResultBtn.addEventListener('click', function () {
+        const patientFullName = labResultModal._element.querySelector('#patientsId').innerHTML
+        const resultModalBody = labResultModal._element.querySelector('.resultModalBody')
+
+        var opt = {
+        margin:       0.5,
+        filename:     patientFullName + `'s result.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 3 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(resultModalBody).save()
+    })
+
 })
 
 function openLabModals(modal, button, { id, visitId, ancRegId, patientType, ...data }) {
@@ -411,4 +451,13 @@ function openLabModals(modal, button, { id, visitId, ancRegId, patientType, ...d
     }
 
     modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
+}
+
+function openLabResultModal(modal, div, data) {
+
+    data.forEach(test => {
+        div.innerHTML += `<div class="fw-semibold" name="test" id="test">${test.test}</div> <p class="" id="result" name="result">${test.result}</p>`
+    })
+
+    modal.show() 
 }

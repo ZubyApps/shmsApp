@@ -6,7 +6,7 @@
                     <h5 class="modal-title fs-4 text-primary">{{ $title }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body reportModalBody">
+                <div class="modal-body resultModalBody">
                     <br>
                     <br>
                     <br>
@@ -29,12 +29,13 @@
                         </div>
                         <div class="" id="medicalReportDiv">
                             <div class="row overflow-auto my-2 testListDiv">
-                                <div class="fw-semibold" name="test" id="test"></div> </span><p class="" id="result" name="result"></p>
+                                <div class="fw-semibold" name="test" id="test"></div> <p class="" id="result" name="result"></p>
                             </div>
+                            <div class="row overflow-auto my-2 multipleTestsListDiv"></div>
                         </div>
                         <div class="row mt-3">
                             <div class="">
-                                <x-form-span class="fw-semibold">Signed By</x-form-span><br><br><br>
+                                <x-form-span class="fw-semibold">Signed By</x-form-span><br><br>
                                 <span class="staffFullName fw-semibold" name="StaffFullName" id="StaffFullName"></span><br>
                                 <span>Laboratory Technician</span>
                             </div>

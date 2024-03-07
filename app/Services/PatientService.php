@@ -9,6 +9,7 @@ use App\Models\Patient;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PatientService
 {
@@ -136,5 +137,67 @@ class PatientService
                 'patient'           => $patient->patientId()
             ];
          };
+    }
+
+    public function getSummaryBySex(DataTableQueryParams $params, $data)
+    {
+        return DB::table('patients')
+            ->selectRaw('sex, COUNT(patients.id) as patientsCount')
+            ->groupBy('sex')
+            ->orderBy('patientsCount', 'desc')
+            ->get()
+            ->toArray();
+
+    }
+
+    public function getSummaryBySponsor(DataTableQueryParams $params, $data)
+    {
+        $current = Carbon::now();
+
+        if (! empty($params->searchTerm)) {
+            return DB::table('patients')
+            ->selectRaw('sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(patients.id) as patientsCount')
+            ->leftJoin('sponsors', 'patients.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+            ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            ->whereMonth('patients.created_at', $current->month)
+            ->whereYear('patients.created_at', $current->year)
+            ->groupBy('sponsor')
+            ->orderBy('sponsor')
+            ->orderBy('patientsCount')
+            ->get()
+            ->toArray();
+        }
+
+        return DB::table('patients')
+            ->selectRaw('sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(patients.id) as patientsCount')
+            ->leftJoin('sponsors', 'patients.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+            ->whereMonth('patients.created_at', $current->month)
+            ->whereYear('patients.created_at', $current->year)
+            ->groupBy('sponsor')
+            ->orderBy('sponsor')
+            ->orderBy('patientsCount')
+            ->get()
+            ->toArray();
+    }
+
+    public function getSummaryByAge(DataTableQueryParams $params, $data)
+    {
+        $current1 = Carbon::now();
+        $current2 = Carbon::now();
+        $current3 = Carbon::now();
+        $current4 = Carbon::now();
+        $current5 = Carbon::now();
+        $current6 = Carbon::now();
+        $current7 = Carbon::now();
+        $current8 = Carbon::now();
+        
+        return DB::table('patients')
+            ->selectRaw("SUM(CASE WHEN YEAR(date_of_birth) > {$current1->subYears(5)->year} THEN 1 ELSE 0 END) AS under5, SUM(CASE WHEN (YEAR(date_of_birth) <= {$current2->subYears(5)->year} AND YEAR(date_of_birth) >= {$current3->subYears(12)->year}) THEN 1 ELSE 0 END) AS fiveTo12, SUM(CASE WHEN (YEAR(date_of_birth) < {$current4->subYears(12)->year} AND YEAR(date_of_birth) >= {$current5->subYears(18)->year}) THEN 1 ELSE 0 END) AS thirteenTo18, SUM(CASE WHEN (YEAR(date_of_birth) < {$current6->subYears(18)->year} AND YEAR(date_of_birth) > {$current7->subYears(50)->year}) THEN 1 ELSE 0 END) AS eighteenTo50, SUM(CASE WHEN (YEAR(date_of_birth) < {$current8->subYears(50)->year}) THEN 1 ELSE 0 END) AS above50, sex"
+            )
+            ->groupBy('sex')
+            ->get()
+            ->toArray();
     }
 }

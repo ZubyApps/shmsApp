@@ -22,9 +22,9 @@
                 <button class="nav-link"  id="nav-sponsors-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-sponsors" type="button" role="tab" aria-controls="nav-sponsors"
                     aria-selected="false">Sponsors</button>
-                <button class="nav-link"   id="nav-contact-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact"
-                    aria-selected="false">Active</button>
+                <button class="nav-link"   id="nav-summaries-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-summaries" type="button" role="tab" aria-controls="nav-summaries"
+                    aria-selected="false">Summaries</button>
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
@@ -83,35 +83,116 @@
                 </div>
             </div>
             <!-- active table -->
-            <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0">
+            <div class="tab-pane fade" id="nav-summaries" role="tabpanel" aria-labelledby="nav-summaries-tab" tabindex="0">
                 <div class="py-4">
-                    <table  id="ActivePatientsTable" class="table table-hover table-sm">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Phone</th>
-                                <th>Sex</th>
-                                <th>DOB</th>
-                                <th>Sponsor Cat</th>
-                                <th>Sponsor</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                        <tfoot class="fw-bolder text-primary">
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                    <div class="row">
+                        <div class="col-xl-6 mb-2">
+                          <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">All Patients by Sex</h5>
+                                <table  id="sexAggregateTable" class="table table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Sex</th>
+                                            <th>Count</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot class="fw-bolder text-primary">
+                                        <tr>
+                                            <td class="text-center">Total</td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-xl-6">
+                          <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">All Patients by Age</h5>
+                                <table  id="ageAggregateTable" class="table table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Sex</th>
+                                            <th>Under 5</th>
+                                            <th>5-12</th>
+                                            <th>12-18</th>
+                                            <th>18-50</th>
+                                            <th>Above 50</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot class="fw-bolder text-primary">
+                                        <tr>
+                                            <td class="text-center">Totals</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+                <div class="py-4">
+                    <div class="row">
+                        <div class="col-xl-6 mb-2">
+                          <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">New Registerations by Sponsor</h5>
+                                <table  id="totalPatientsTable" class="table table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Sponsor</th>
+                                            <th>Count</th>
+                                            <th>Category</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot class="fw-bolder text-primary">
+                                        <tr>
+                                            <td class="text-center">Total</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-xl-6">
+                          <div class="card">
+                            <div class="card-body">
+                            <h5 class="card-title">New Registerations by Sponsor</h5>
+                            <table  id="totalPatientsTable" class="table table-hover table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Sponsor</th>
+                                        <th>Count</th>
+                                        <th>Category</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot class="fw-bolder text-primary">
+                                    <tr>
+                                        <td class="text-center">Total</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                 </div>
             </div>
         </div>

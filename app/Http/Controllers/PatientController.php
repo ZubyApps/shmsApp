@@ -32,14 +32,6 @@ class PatientController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function sponsorCategoryOptions()
-    {
-
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StorePatientRequest $request)
@@ -58,14 +50,6 @@ class PatientController extends Controller
         $loadTransformer = $this->patientService->getLoadTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsorCategories, $params);  
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Patient $patient)
-    {
-        //
     }
 
     /**
@@ -95,6 +79,48 @@ class PatientController extends Controller
                 'blood_group' , 
                 'genotype', 
                 'known_conditions']);
+    }
+
+    public function loadSummaryBySponsor(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sponsors = $this->patientService->getSummaryBySponsor($params, $request);
+
+        return response()->json([
+            'data' => $sponsors,
+            'draw' => $params->draw,
+            'recordsTotal' => count($sponsors),
+            'recordsFiltered' => count($sponsors)
+        ]);
+    }
+
+    public function loadSummaryBySex(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sexes = $this->patientService->getSummaryBySex($params, $request);
+
+        return response()->json([
+            'data' => $sexes,
+            'draw' => $params->draw,
+            'recordsTotal' => count($sexes),
+            'recordsFiltered' => count($sexes)
+        ]);
+    }
+
+    public function loadSummaryByAge(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $sexes = $this->patientService->getSummaryByAge($params, $request);
+
+        return response()->json([
+            'data' => $sexes,
+            'draw' => $params->draw,
+            'recordsTotal' => count($sexes),
+            'recordsFiltered' => count($sexes)
+        ]);
     }
 
     /**

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SaveLabResultRequest;
 use App\Http\Resources\InvestigationResultResource;
+use App\Http\Resources\PrintLabTestsCollection;
 use App\Models\Prescription;
+use App\Models\Visit;
 use App\Services\DatatablesService;
 use App\Services\InvestigationService;
 use Illuminate\Http\Request;
@@ -76,5 +78,12 @@ class InvestigationController extends Controller
     public function edit(Prescription $prescription)
     {
         return new InvestigationResultResource($prescription);
+    }
+
+    public function getAllTestsAndResults(Request $request, Prescription $prescription)
+    {
+        $prescriptions = $this->investigationService->getAllPatientsVisitsTests($prescription->visit);
+
+        return ['tests' => New PrintLabTestsCollection($prescriptions)];
     }
 }

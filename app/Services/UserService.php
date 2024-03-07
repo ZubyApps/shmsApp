@@ -170,7 +170,7 @@ class UserService
 
         if (! empty($params->searchTerm)) {
             return $this->user
-                        ->where('isActive', true)
+                        ->where('is_active', true)
                         ->where('firstname', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('middlename', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('lastname', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
