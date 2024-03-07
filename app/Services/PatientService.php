@@ -8,6 +8,7 @@ use App\DataObjects\DataTableQueryParams;
 use App\Models\Patient;
 use App\Models\User;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -192,9 +193,10 @@ class PatientService
         $current6 = Carbon::now();
         $current7 = Carbon::now();
         $current8 = Carbon::now();
+        $currentYear = new CarbonImmutable();
         
         return DB::table('patients')
-            ->selectRaw("SUM(CASE WHEN YEAR(date_of_birth) > {$current1->subYears(5)->year} THEN 1 ELSE 0 END) AS under5, SUM(CASE WHEN (YEAR(date_of_birth) <= {$current2->subYears(5)->year} AND YEAR(date_of_birth) >= {$current3->subYears(12)->year}) THEN 1 ELSE 0 END) AS fiveTo12, SUM(CASE WHEN (YEAR(date_of_birth) < {$current4->subYears(12)->year} AND YEAR(date_of_birth) >= {$current5->subYears(18)->year}) THEN 1 ELSE 0 END) AS thirteenTo18, SUM(CASE WHEN (YEAR(date_of_birth) < {$current6->subYears(18)->year} AND YEAR(date_of_birth) > {$current7->subYears(50)->year}) THEN 1 ELSE 0 END) AS eighteenTo50, SUM(CASE WHEN (YEAR(date_of_birth) < {$current8->subYears(50)->year}) THEN 1 ELSE 0 END) AS above50, sex"
+            ->selectRaw("SUM(CASE WHEN YEAR(date_of_birth) > {$currentYear->subYears(5)->year} THEN 1 ELSE 0 END) AS under5, SUM(CASE WHEN (YEAR(date_of_birth) <= {$currentYear->subYears(5)->year} AND YEAR(date_of_birth) >= {$currentYear->subYears(12)->year}) THEN 1 ELSE 0 END) AS fiveTo12, SUM(CASE WHEN (YEAR(date_of_birth) < {$currentYear->subYears(12)->year} AND YEAR(date_of_birth) >= {$currentYear->subYears(18)->year}) THEN 1 ELSE 0 END) AS thirteenTo18, SUM(CASE WHEN (YEAR(date_of_birth) < {$currentYear->subYears(18)->year} AND YEAR(date_of_birth) > {$currentYear->subYears(50)->year}) THEN 1 ELSE 0 END) AS eighteenTo50, SUM(CASE WHEN (YEAR(date_of_birth) < {$currentYear->subYears(50)->year}) THEN 1 ELSE 0 END) AS above50, sex"
             )
             ->groupBy('sex')
             ->get()

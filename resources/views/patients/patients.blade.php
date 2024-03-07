@@ -111,7 +111,7 @@
                         <div class="col-xl-6">
                           <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">All Patients by Age</h5>
+                                <h5 class="card-title">All Patients by Age and Sex</h5>
                                 <table  id="ageAggregateTable" class="table table-hover table-sm">
                                     <thead>
                                         <tr>

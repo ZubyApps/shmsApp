@@ -201,10 +201,10 @@ const getWaitingTable = (tableId) => {
                 if (row.doctor === ''){
                     return `
                         <div class="d-flex flex-">
+                        ${row.closed ? `<i class="ms-1 btn btn-outline-primary bi bi-lock-fill openVisitBtn" id="openVisitBtn" data-id="${row.id}"></i>` : `
                             <button class=" btn btn-outline-primary consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}">
                                 <i class="bi bi-clipboard2-plus-fill"></i>
                             </button>
-                            ${row.closed ? `<i class="ms-1 btn btn-outline-primary bi bi-lock-fill openVisitBtn" id="openVisitBtn" data-id="${row.id}"></i>` : `
                                 <div class="dropdown ms-1">
                                     <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="remove" data-bs-toggle="dropdown" href="" >
                                     <i class="bi bi-file-minus-fill"></i>
