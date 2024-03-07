@@ -51,7 +51,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Aneasthetist's Notes</x-input-span>
-                                <x-form-textarea name="aneasthetistsNotes" :readonly="$isView"></x-form-textarea>
+                                <x-form-textarea name="aneasthetistsNotes" id="aneasthetistsNotes" :readonly="$isView"></x-form-textarea>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Post Operarion <br> Notes<x-required-span /></x-input-span>

@@ -41,7 +41,7 @@ class VisitService
         if (! empty($params->searchTerm)) {
             return $this->visit
                         ->Where('consulted', null)
-                        ->where('closed', false)
+                        // ->where('closed', false)
                         ->where(function (Builder $query) use($params) {
                             $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -81,7 +81,8 @@ class VisitService
                 'status'            => $visit->status,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
-                'emergency'         => $visit->prescriptions->where('consultation_id', null)->count()
+                'emergency'         => $visit->prescriptions->where('consultation_id', null)->count(),
+                'closed'            => $visit->closed,
             ];
          };
     }

@@ -11,7 +11,7 @@ class UpdateSurgeryNoteRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -27,10 +27,10 @@ class UpdateSurgeryNoteRequest extends FormRequest
             'typeOfAneasthesia' => ['required'],
             'surgeon'           => ['required'],
             'assistantSurgeon'  => ['required'],
-            'scrubNurses'       => ['required'],
+            'scrubNurse'        => ['required'],
             'surgicalProcedure' => ['required'],
             'surgeonsNotes'     => ['required'],
-            'postOpNotes'       => ['required'],
+            'postOperationNotes'=> ['required'],
             'immediatePostOp'   => ['required']
         ];
     }

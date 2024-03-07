@@ -298,6 +298,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             outPatientsVisitTable.draw()
                             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
                             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+                            waitingTable.draw()
                         }
                     })
                     .catch((error) => {
@@ -394,8 +395,9 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     document.querySelector('#medicalReportTable').addEventListener('click', function (event) {
-        const medicalReportBtn    = event.target.closest('.editMedicalReportBtn')
-        const viewMedicalReportbtn = event.target.closest('.viewMedicalReportBtn')
+        const medicalReportBtn          = event.target.closest('.editMedicalReportBtn')
+        const viewMedicalReportbtn      = event.target.closest('.viewMedicalReportBtn')
+        const deleteMedicalReportBtn    = event.target.closest('.deleteMedicalReportBtn')
 
         if (medicalReportBtn) {
             medicalReportBtn.setAttribute('disabled', 'disabled')
@@ -424,6 +426,26 @@ window.addEventListener('DOMContentLoaded', function () {
                 console.log(error)
             })
             setTimeout(()=>{viewMedicalReportbtn.removeAttribute('disabled')}, 2000)
+        }
+
+        if (deleteMedicalReportBtn){
+            deleteMedicalReportBtn.setAttribute('disabled', 'disabled')
+                if (confirm('Are you sure you want to delete this record?')) {
+                    const id = deleteMedicalReportBtn.getAttribute('data-id')
+                    http.delete(`/medicalreports/${id}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            if ($.fn.DataTable.isDataTable( '#'+this.id )){
+                            $('#'+this.id).dataTable().fnDraw()
+                            }
+                        }
+                        deleteMedicalReportBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        deleteMedicalReportBtn.removeAttribute('disabled')
+                    })
+                }  
         }
     })
 
@@ -458,6 +480,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const consultBtn    = event.target.closest('.consultBtn')
         const removeBtn     = event.target.closest('.closeVisitBtn, .deleteVisitBtn')
         const emergencyBtn  = event.target.closest('.emergencyBtn')
+        const openVisitBtn  = event.target.closest('.openVisitBtn')
 
         if (consultBtn) {
             consultBtn.setAttribute('disabled', 'disabled')
@@ -504,6 +527,23 @@ window.addEventListener('DOMContentLoaded', function () {
                     }
                 })
             }
+        }
+
+        if (openVisitBtn){
+            const visitId  = openVisitBtn.getAttribute('data-id')
+                if (confirm(`Are you sure you want to open this Visit?`)) {
+                    http.patch(`/visits/open/${visitId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            waitingTable.draw()
+                        }
+                    })
+                    .catch((error) => {
+                        if (error.response.status === 403){
+                            alert(error.response.data.message); 
+                        }
+                    })
+                }
         }
     })
 
@@ -640,21 +680,21 @@ window.addEventListener('DOMContentLoaded', function () {
                 if (confirm('Are you sure you want to confirm this prescription?')) {
                     const id = confirmBtn.getAttribute('data-id')
                     http.patch(`/prescription/confirm/${id}`)
-                        .then((response) => {
-                            if (response.status >= 200 || response.status <= 300){
-                                if ($.fn.DataTable.isDataTable('#'+table.id)){
-                                $('#'+table.id).dataTable().fnDraw()
-                                }
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            if ($.fn.DataTable.isDataTable('#'+table.id)){
+                            $('#'+table.id).dataTable().fnDraw()
                             }
-                            confirmBtn.removeAttribute('disabled')
-                        })
-                        .catch((error) => {
-                            if (error.response.status === 403){
-                                alert(error.response.data) 
-                            }
-                            console.log(error)
-                            confirmBtn.removeAttribute('disabled')
-                        })
+                        }
+                        confirmBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        if (error.response.status === 403){
+                            alert(error.response.data) 
+                        }
+                        console.log(error)
+                        confirmBtn.removeAttribute('disabled')
+                    })
                 }
             }
         })
@@ -1042,6 +1082,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                 newSurgeryModal.hide()
                 clearDivValues(newSurgeryModal._element)
+                clearValidationErrors(newSurgeryModal._element)
                 if ($.fn.DataTable.isDataTable('#surgeryNoteTable' + conId)) {
                     $('#surgeryNoteTable' + conId).dataTable().fnDraw()
                 }
@@ -1059,9 +1100,10 @@ window.addEventListener('DOMContentLoaded', function () {
         const id        = saveSurgeryNoteBtn.dataset.id
         const tableId   = '#'+saveSurgeryNoteBtn.dataset.table
 
-        http.patch(`/deliverynote/${id}`, getDivData(updateSurgeryModal._element), {"html": updateSurgeryModal._element})
+        http.patch(`/surgerynote/${id}`, getDivData(updateSurgeryModal._element), {"html": updateSurgeryModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
+                clearValidationErrors(updateSurgeryModal._element)
                 updateSurgeryModal.hide()
                 if ($.fn.DataTable.isDataTable(tableId)) {
                     $(tableId).dataTable().fnDraw()

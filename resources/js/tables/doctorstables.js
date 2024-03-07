@@ -204,23 +204,25 @@ const getWaitingTable = (tableId) => {
                             <button class=" btn btn-outline-primary consultBtn tooltip-test" title="consult" data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}">
                                 <i class="bi bi-clipboard2-plus-fill"></i>
                             </button>
-                            <div class="dropdown ms-1">
-                                <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="remove" data-bs-toggle="dropdown" href="" >
-                                <i class="bi bi-file-minus-fill"></i>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a role="button" class="dropdown-item closeVisitBtn tooltip-test" title="close visits" id="closeVisitBtn" data-id="${ row.id }">
-                                            <i class="bi bi-lock-fill text-primary"></i> Close Visit
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a role="button" class="dropdown-item deleteVisitBtn tooltip-test" title="delete visit" id="deleteVisitBtn" data-id="${ row.id }">
-                                            <i class="bi bi-x-circle-fill text-primary"></i> Delete Visit
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
+                            ${row.closed ? `<i class="ms-1 btn btn-outline-primary bi bi-lock-fill openVisitBtn" id="openVisitBtn" data-id="${row.id}"></i>` : `
+                                <div class="dropdown ms-1">
+                                    <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="remove" data-bs-toggle="dropdown" href="" >
+                                    <i class="bi bi-file-minus-fill"></i>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a role="button" class="dropdown-item closeVisitBtn tooltip-test" title="close visits" id="closeVisitBtn" data-id="${ row.id }">
+                                                <i class="bi bi-lock-fill text-primary"></i> Close Visit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a role="button" class="dropdown-item deleteVisitBtn tooltip-test" title="delete visit" id="deleteVisitBtn" data-id="${ row.id }">
+                                                <i class="bi bi-x-circle-fill text-primary"></i> Delete Visit
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            `}
                         </div>`
                     } else {
                         return `
@@ -230,17 +232,19 @@ const getWaitingTable = (tableId) => {
                                 <i class="bi bi-chevron-double-down"> </i>
                             </a>
                                 <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item consultBtn btn tooltip-test" title="consult"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}">
-                                        <i class="bi bi-clipboard2-plus-fill text-primary"></i> Consult
-                                    </a>
-                                    <a class="dropdown-item closeVisitBtn btn tooltip-test" title="close" id="closeVisitBtn"  data-id="${ row.id }">
-                                        <i class="bi bi-lock-fill text-primary"></i> Close Visit
-                                    </a>
-                                    <a class="dropdown-item deleteVisitBtn btn tooltip-test" title="delete" id="deleteVisitBtn"  data-id="${ row.id }">
-                                        <i class="bi bi-x-circle-fill text-primary"></i> Delete Visit
-                                    </a>
-                                </li>
+                                    ${row.closed ? `<a class="dropdown-item openVisitBtn btn tooltip-test" data-id="${row.id}"><i class="bi bi-lock-fill text-primary" id="openVisitBtn"></i> Closed </a>` : `
+                                        <li>
+                                            <a class="dropdown-item consultBtn btn tooltip-test" title="consult"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}">
+                                                <i class="bi bi-clipboard2-plus-fill text-primary"></i> Consult
+                                            </a>
+                                            <a class="dropdown-item closeVisitBtn btn tooltip-test" title="close" id="closeVisitBtn"  data-id="${ row.id }">
+                                                <i class="bi bi-lock-fill text-primary"></i> Close Visit
+                                            </a>
+                                            <a class="dropdown-item deleteVisitBtn btn tooltip-test" title="delete" id="deleteVisitBtn"  data-id="${ row.id }">
+                                                <i class="bi bi-x-circle-fill text-primary"></i> Delete Visit
+                                            </a>
+                                        </li>
+                                    `}
                             </ul>
                         </div>
                         `

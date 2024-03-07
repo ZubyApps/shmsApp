@@ -298,7 +298,7 @@ const detailsBtn1 = (row) => {
 const reviewBtn = (row) => {
     return `
     <div class="dropdown">
-        <a class="btn btn-outline-primary tooltip-test text-decoration-none ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown" data-bs-auto-close='outside'>
+        <a class="btn btn-outline-primary tooltip-test text-decoration-none ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown">
             More${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
         </a>
             <ul class="dropdown-menu">
@@ -306,15 +306,11 @@ const reviewBtn = (row) => {
                 <a class=" btn btn-outline-primary dropdown-item consultationReviewBtn tooltip-test" title="details" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}" data-selecteddiagnosis="${row.selectedDiagnosis}" data-provisionaldiagnosis="${row.provisionalDiagnosis}">
                     Review
                 </a>
-                <li class="dropdown dropend">
-                    <a class="dropdown-item btn btn-outline-primary dropdown-toggle patientsBillBtn btn tooltip-test" title="patient's bill" data-bs-auto-close='outside' data-bs-toggle="dropdown">
-                        More
-                    </a>
-                    <ul class="dropdown-menu">
-                        <a class="dropdown-item btn btn-outline-primary medicalReportBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-age="${ row.age }" data-sex="${ row.sex }">Report/Refer/Result</a>
-                        <a class="dropdown-item btn btn-outline-primary dischargedBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">${row.discharged ? 'Patient Discharged' : 'Discharge' }</a>
-                    </ul>
-                </li>
+                
+                <a class="dropdown-item btn btn-outline-primary medicalReportBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-age="${ row.age }" data-sex="${ row.sex }">Report/Refer/Result</a>
+
+                <a class="dropdown-item btn btn-outline-primary dischargedBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">${row.discharged ? 'Patient Discharged' : 'Discharge' }</a>
+                    
                 <a class="dropdown-item btn btn-outline-primary tooltip-test" title="${row.closed ? 'open?': 'close?'}"  data-id="${ row.id }" id="${row.closed ? 'openVisitBtn' : 'closeVisitBtn'}">
                 ${row.closed ? 'Open? <i class="bi bi-unlock-fill"></i>': 'Close? <i class="bi bi-lock-fill"></i>'}
                 </a>

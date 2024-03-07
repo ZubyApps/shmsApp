@@ -2,8 +2,8 @@ import { deliveryNotes, surgeryNotes, updateAdmissionStatus, files, updateInvest
 
 const regularReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone, closed, isHistory = 0) => {
     return `
-                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseConsultationBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}" data-ishistory="${isHistory}">
-                    <span class="mx-2">${iteration > 1 && !line.specialistFlag ? count + numberConverter(count) + ' Review ' : line.specialistFlag ? 'Specialist Consultation ' : 'Initial Consultation '} ${ `(${line.date})`}</span>
+                <div class="btn btn-primary d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseConsultationBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}" data-ishistory="${isHistory}">
+                    <span class="mx-2 fw-semibold">${iteration > 1 && !line.specialistFlag ? count + numberConverter(count) + ' Review ' : line.specialistFlag ? 'Specialist Consultation ' : 'Initial Consultation '} ${ `(${line.date})`}</span>
                     <i class="bi bi-chevron-double-down text-primary"> </i>
                 </div>
                 <div class="collapse mb-2 reviewDiv" id="collapseExample${iteration}" style="">
