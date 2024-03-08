@@ -117,7 +117,6 @@ const getTotalPatientsTable = (tableId) => {
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
-            // $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: row =>  `<span class="btn text-decoration-underline showPatientsBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}">${row.sponsor}</span>`},
@@ -142,12 +141,10 @@ const getSexAggregateTable = (tableId) => {
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
-            // $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: "sex"},
             {data: "patientsCount"},
-            // {data: "category"},
         ]
     })
 
@@ -245,4 +242,58 @@ const getPatientsBySponsorTable = (tableId, sponsorId, modal) => {
     return patientsBySponsorTable
 }
 
-export {getSponsorsTable, getAllPatientsTable, getTotalPatientsTable, getSexAggregateTable, getAgeAggregateTable, getVisitsSummaryTable, getPatientsBySponsorTable}
+const getVisitsTable = (tableId) => {
+    const visitsTable = new DataTable(`#${tableId}`, {
+        serverSide: true,
+        ajax:  '/patients/load/visits',
+        orderMulti: true,
+        search:true,
+        lengthMenu:[20, 40, 80, 160, 200],
+        dom: 'l<"my-1 text-center "B>frtip',
+        buttons: [
+            {
+                extend:'colvis',
+                text:'Show/Hide',
+                className:'btn btn-primary'       
+            }
+        ],
+        columns: [
+            {data: "came"},
+            {
+                visible: false,
+                data: "seen"
+            },
+            {data: "patientType"},
+            {data: "patient"},
+            {data: "phone"},
+            {data: "address"},
+            {
+                visible: false,
+                data: "state"
+            },
+            {data: "sex"},
+            {data: "age"},
+            {data: "nok"},
+            {data: "nokPhone"},
+            {data: "status"},
+            {
+                visible: false,
+                data: "sponsor"
+            },
+            {
+                visible: false,
+                data: "sponsorCategory"
+            },
+            {data: "doctor"},
+            {data: row => `
+                        <a class="consultationDetailsBtn tooltip-test text-dark" title="details" href="#"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }" data-ancregid="${row.ancRegId}">
+                            ${row.diagnosis}
+                        </a>
+                `},
+        ]
+    })
+
+    return visitsTable
+}
+
+export {getSponsorsTable, getAllPatientsTable, getTotalPatientsTable, getSexAggregateTable, getAgeAggregateTable, getVisitsSummaryTable, getPatientsBySponsorTable, getVisitsTable}

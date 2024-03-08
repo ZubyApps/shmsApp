@@ -151,6 +151,17 @@ class PatientController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
+    public function loadVisit(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->visitService->getVisits($params, $request);
+
+        $loadTransformer = $this->visitService->getVisitsTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
     /**
      * Remove the specified resource from storage.
      */

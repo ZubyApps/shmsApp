@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, admissionStatusX, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, admissionStatusX, detailsBtn, displayPaystatus, getOrdinal, sponsorAndPayPercent } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     return new DataTable('#'+tableId, {
@@ -107,7 +107,11 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
             {data: "doctor"},
             {data: "diagnosis"},
             {data: row => sponsorAndPayPercent(row)},
-            {data: "30dayCount"},
+            {data: row => () => {
+                console.log(row.patientType, row.thirtyDayCount)
+                return row.patientType == "ANC" ? row.thirtyDayCount+getOrdinal(row.thirtyDayCount)+' ANC' : row.thirtyDayCount
+                }
+            },
             {data: row =>  `
                         <div class="d-flex justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
@@ -125,7 +129,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                     </a>
                         <ul class="dropdown-menu">
                         <li>
-                            <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }">
+                            <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }" data-ancregid="${row.ancRegId}">
                                 Details
                             </a>
                             <a class="dropdown-item patientBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-hmodoneby="${ row.hmoDoneBy }">

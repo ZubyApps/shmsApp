@@ -368,11 +368,12 @@ const displayPaystatus = (row, credit, NHIS) => {
 }
 
 const admissionStatus = (row) => {
+    console.log(row.ancCount)
     return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
     `<div class="d-flex flex-">
         <div class="dropdown">
             <a class="d-flex flex- btn tooltip-test text-decoration-none text-primary ${row.ward && row.bedNo ? '' : 'colour-change'} tooltip-test" title="Inpatient" data-bs-toggle="dropdown" href="" >
-                <i class="bi bi-hospital-fill"></i>
+            <i class="bi bi-hospital-fill"></i>
                 ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged"></i>` : ''}
             </a>
                 <ul class="dropdown-menu">

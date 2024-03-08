@@ -225,7 +225,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
                 data: 'qtyApproved',
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
-                    <span class="${ row.qtyDispensed ? '' : 'approveRequestBtn'} btn ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${ data ?? (urlSuffix !== 'pharmacy' ? 'Pendind' : 'Approve')}</span>
+                    <span class="${ row.qtyDispensed ? '' : 'approveRequestBtn'} btn ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${ data ?? (urlSuffix !== 'pharmacy' ? 'Pending' : 'Approve')}</span>
                     <input class="ms-1 form-control qtyApprovedInput d-none" id="qtyApprovedInput" value="${data ?? ''}">
                 </div>
                 `}
@@ -235,7 +235,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
                 data: 'qtyDispensed',
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
-                    <span class="btn ${ row.qtyApproved && !data ? 'dispenseQtyBtn' : ''} ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}" data-qtyapproved="${row.qtyApproved}">${data ?? (urlSuffix !== 'pharmacy' ? 'Pendind' : 'Dispense')}</span>
+                    <span class="btn ${ row.qtyApproved && !data ? 'dispenseQtyBtn' : ''} ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}" data-qtyapproved="${row.qtyApproved}">${data ?? (urlSuffix !== 'pharmacy' ? 'Pending' : 'Dispense')}</span>
                     <input class="ms-1 form-control qtyDispensedInput d-none" id="qtyDispensedInput" value="${data ?? ''}">
                 </div>
                 `}

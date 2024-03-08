@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
+use App\Models\Consultation;
 use App\Models\Patient;
 use App\Models\User;
 use App\Models\Visit;
@@ -174,5 +175,66 @@ class VisitService
             ->orderBy('patientsCount')
             ->get()
             ->toArray();
+    }
+
+    public function getVisits(DataTableQueryParams $params)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'asc';
+        $current = Carbon::now();
+
+        if (! empty($params->searchTerm)) {
+            return $this->visit
+                        ->Where('consulted', '!=', null)
+                        ->whereDay('created_at', $current->yesterday())
+                        ->where(function (Builder $query) use($params) {
+                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        
+        return $this->visit
+                    ->Where('consulted', '!=', null)
+                    ->whereDay('created_at', $current->today())
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+
+       
+    }
+
+    public function getVisitsTransformer(): callable
+    {
+       return  function (Visit $visit) {
+            return [
+                'id'                => $visit->id,
+                'came'              => (new Carbon($visit->created_at))->format('d/M/y g:ia'),
+                'seen'              => (new Carbon($visit->consulted))->format('d/M/y g:ia'),
+                'patientType'       => explode(".", $visit->patient->patient_type)[0],
+                'doctor'            => $visit->doctor->username ?? '',
+                'ancRegId'          => $visit->antenatalRegisteration?->id,
+                'patient'           => $visit->patient->patientId(),
+                'phone'             => $visit->patient->phone,
+                'address'           => $visit->patient->address,
+                'state'             => $visit->patient->state_of_residence,
+                'sex'               => $visit->patient->sex,
+                'age'               => $visit->patient->age(),
+                'nok'               => $visit->patient->next_of_kin,
+                'nokPhone'          => $visit->patient->next_of_kin_phone,
+                'sponsor'           => $visit->sponsor->name,
+                'sponsorCategory'   => $visit->sponsor->category_name,
+                'status'            => $visit->admission_status,
+                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
+                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
+                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
+                'ancCount'          => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : '',
+                'closed'            => true//$visit->closed,
+            ];
+         };
     }
 }

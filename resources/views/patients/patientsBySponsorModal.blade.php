@@ -33,8 +33,6 @@
                                                 <th>Sex</th>
                                                 <th>Age</th>
                                                 <th>Total Visits</th>
-                                                {{-- <th>Total Hms Bill</th>
-                                                <th>Total Paid</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody></tbody>

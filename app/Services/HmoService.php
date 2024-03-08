@@ -194,6 +194,7 @@ class HmoService
                 'age'               => $visit->patient->age(),
                 'sex'               => $visit->patient->sex,
                 'doctor'            => $visit->doctor->username,
+                'ancRegId'          => $visit->antenatalRegisteration?->id,
                 'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
@@ -212,7 +213,7 @@ class HmoService
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
-                '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
+                'thirtyDayCount'    => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
                 'discharged'        => $visit->discharge_reason,
                 'reason'            => $visit->discharge_reason,
                 'hmoDoneBy'         => $visit->hmoDoneBy?->username,

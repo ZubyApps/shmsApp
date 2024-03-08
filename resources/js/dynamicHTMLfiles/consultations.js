@@ -1,4 +1,4 @@
-import { deliveryNotes, surgeryNotes, updateAdmissionStatus, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses, otherPrescriptions, otherPrescriptionsNurses} from "./partialHTMLS"
+import { deliveryNotes, surgeryNotes, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses, otherPrescriptions, otherPrescriptionsNurses} from "./partialHTMLS"
 
 const regularReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone, closed, isHistory = 0) => {
     return `
@@ -10,7 +10,6 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                     <div class="card card-body">
                         <div class="mb-2 form-control" id="goto${iteration}">
                             ${iteration < 2 || line.specialistFlag ? consultation(line) :  review(count, line)}
-                            ${closed ? '' : viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}
                             ${investigations(line, viewer)}
                             ${viewer == 'doctor' ||  viewer == 'hmo' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
                             ${viewer == 'doctor' ||  viewer == 'hmo' ? otherPrescriptions(line) : viewer == 'nurse' ? otherPrescriptionsNurses(line) : ''}
@@ -65,7 +64,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
 const AncPatientReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone, closed) => {
 
     return `
-                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseConsultationBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
+                <div class="btn btn-primary d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseConsultationBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
                     <span class="mx-2">${iteration > 1 ? count + numberConverter(count) + ' Review' : 'Initial Consultation'}</span>
                     <i class="bi bi-chevron-double-down text-primary"> </i>
                 </div>
@@ -74,7 +73,6 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
                         
                         <div class="mb-2 form-control" id="goto${iteration}">
                             ${AncConsultation(line, iteration, count)}
-                            ${ viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}
                             ${investigations(line)}
                             ${viewer == 'doctor' ||  viewer == 'hmo' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
                             ${viewer == 'doctor' ||  viewer == 'hmo' ? otherPrescriptions(line) : viewer == 'nurse' ? otherPrescriptionsNurses(line) : ''}
@@ -120,3 +118,5 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
 }
 
 export{regularReviewDetails, AncPatientReviewDetails}
+
+// ${closed ? '' : viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}

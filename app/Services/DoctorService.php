@@ -201,6 +201,7 @@ class DoctorService
                 'remark'            => $visit->discharge_remark ?? '',
                 '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
                 'doctorDone'        => $visit->doctorDoneBy->username ?? '',
+                'ancCount'          => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : '',
                 'closed'            => $visit->closed
 
             ];

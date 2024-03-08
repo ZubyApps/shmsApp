@@ -4,10 +4,10 @@ import $ from 'jquery';
 import { clearDivValues, getOrdinal, getDivData, clearValidationErrors, loadingSpinners, removeDisabled, displayList, getPatientSponsorDatalistOptionId, resetFocusEndofLine, displayMedicalReportModal} from "./helpers"
 import { getAllHmoPatientsVisitTable, getApprovalListTable, getHmoReconciliationTable, getHmoReportsTable, getSentBillsTable, getVerificationTable, getVisitPrescriptionsTable, getWaitingTable } from "./tables/hmoTables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
-import { getLabTableByConsultation, getMedicalReportTable, getMedicationsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
+import { getLabTableByConsultation, getMedicalReportTable, getMedicationsByFilter, getOtherPrescriptionsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
 import { getVitalsignsChartByVisit } from "./charts/vitalsignsCharts";
 import { getbillingTableByVisit } from "./tables/billingTables";
-import { getAncVitalSignsTable } from "./tables/nursesTables";
+import { getAncVitalSignsTable, getOtherPrescriptionsByFilterNurses } from "./tables/nursesTables";
 import html2pdf  from "html2pdf.js"
 
 
@@ -165,7 +165,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 const investigationsBtn         = event.target.closest('.investigationsBtn')
                 const closeVisitBtn             = event.target.closest('.closeVisitBtn')
                 const medicalReportBtn          = event.target.closest('.medicalReportBtn')
-
                 const viewer                    = 'hmo'
         
                 if (consultationDetailsBtn) {
@@ -639,6 +638,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const gotoDiv = document.querySelector(collapseConsultationBtn.getAttribute('data-goto'))
                 const investigationTableId = gotoDiv.querySelector('.investigationTable').id
                 const treatmentTableId = gotoDiv.querySelector('.treatmentTable').id
+                const otherPrescriptionsTableId = gotoDiv.querySelector('.otherPrescriptionsTable').id
                 const conId = gotoDiv.querySelector('.investigationTable').dataset.id
     
                 if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
@@ -653,6 +653,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     window.history.replaceState({}, document.title, "/" + "hmo")
                     getLabTableByConsultation(investigationTableId, treatmentDetailsModal._element, viewer, conId, null)
                     getMedicationsByFilter(treatmentTableId, conId, treatmentDetailsModal._element)
+                    getOtherPrescriptionsByFilter(otherPrescriptionsTableId, conId, treatmentDetailsModal._element, null, null)
                 }
                 setTimeout(goto, 300)
             }

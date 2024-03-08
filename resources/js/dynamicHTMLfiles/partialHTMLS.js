@@ -810,65 +810,65 @@ const otherPrescriptionsNurses = (line) => {
         `
 }
 
-const updateAdmissionStatus = (line, iteration) => {
-    return     `
-    <div class="my-2 form-control" id="wardAndBedDiv" data-div="${iteration}">
-        <span class="fw-bold text-primary">Update Patient's Admission Status </span>
-        <div class="row mt-2">
-            <div class="col-xl-4 themed-grid-col col-xl-4">
-                <div class="input-group mb-1">
-                    <span class="input-group-text" id="admitLabel">Admit?</span>
-                    <select class="form-select form-select-md" name="admit" id="admit">
-                        <option value="">Select</option>
-                        <option value="Outpatient">No</option>
-                        <option value="Observation">Observation</option>
-                        <option value="Inpatient">Yes</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-xl-4 themed-grid-col col-xl-4">
-                <div class="input-group mb-1">
-                    <span class="input-group-text" id="wardTypeLabel"> Ward Type </span>
-                    <select class="form-select form-select-md" name="ward" id="ward">
-                        <option value="">Select Ward</option>
-                        <option value="FW">Female Ward</option>
-                        <option value="MW">Male Ward</option>
-                        <option value="PW 1">Private Ward 1</option>
-                        <option value="PW 2">Private Ward 2</option>
-                        <option value="PW 3">Private Ward 3</option>
-                        <option value="PW 4">Private Ward 4</option>
-                        <option value="PW 5">Private Ward 5</option>
-                        <option value="PW 6">Private Ward 6</option>
-                        <option value="Old Ward">Old Ward</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-xl-4 themed-grid-col col-xl-4">
-                <div class="input-group mb-1">
-                    <span class="input-group-text" id="bedNumberLabel"> Bed Number </span>
-                    <select class="form-select form-select-md" name="bedNumber" id="bedNumber">
-                        <option value="">Select Bed</option>
-                        <option value="Bed 1">Bed 1</option>
-                        <option value="Bed 2">Bed 2</option>
-                        <option value="Bed 3">Bed 3</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="toast align-items-center shadow-none border-0" id="saveUpdateAdmissionStatusToast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-body">
-                <h6 class="text-primary">Successful</h6>
-            </div>  
-        </div>
-        <div class="d-flex justify-content-center mt-2">
-            <button type="button" id="saveWardAndBedBtn" data-id="${line.id}" data-btn="${iteration}" class="btn btn-primary">
-                save
-            </button>
-        </div>
-    </div>`
-}
+// const updateAdmissionStatus = (line, iteration) => {
+//     return     `
+//     <div class="my-2 form-control" id="wardAndBedDiv" data-div="${iteration}">
+//         <span class="fw-bold text-primary">Update Patient's Admission Status </span>
+//         <div class="row mt-2">
+//             <div class="col-xl-4 themed-grid-col col-xl-4">
+//                 <div class="input-group mb-1">
+//                     <span class="input-group-text" id="admitLabel">Admit?</span>
+//                     <select class="form-select form-select-md" name="admit" id="admit">
+//                         <option value="">Select</option>
+//                         <option value="Outpatient">No</option>
+//                         <option value="Observation">Observation</option>
+//                         <option value="Inpatient">Yes</option>
+//                     </select>
+//                 </div>
+//             </div>
+//             <div class="col-xl-4 themed-grid-col col-xl-4">
+//                 <div class="input-group mb-1">
+//                     <span class="input-group-text" id="wardTypeLabel"> Ward Type </span>
+//                     <select class="form-select form-select-md" name="ward" id="ward">
+//                         <option value="">Select Ward</option>
+//                         <option value="FW">Female Ward</option>
+//                         <option value="MW">Male Ward</option>
+//                         <option value="PW 1">Private Ward 1</option>
+//                         <option value="PW 2">Private Ward 2</option>
+//                         <option value="PW 3">Private Ward 3</option>
+//                         <option value="PW 4">Private Ward 4</option>
+//                         <option value="PW 5">Private Ward 5</option>
+//                         <option value="PW 6">Private Ward 6</option>
+//                         <option value="Old Ward">Old Ward</option>
+//                     </select>
+//                 </div>
+//             </div>
+//             <div class="col-xl-4 themed-grid-col col-xl-4">
+//                 <div class="input-group mb-1">
+//                     <span class="input-group-text" id="bedNumberLabel"> Bed Number </span>
+//                     <select class="form-select form-select-md" name="bedNumber" id="bedNumber">
+//                         <option value="">Select Bed</option>
+//                         <option value="Bed 1">Bed 1</option>
+//                         <option value="Bed 2">Bed 2</option>
+//                         <option value="Bed 3">Bed 3</option>
+//                     </select>
+//                 </div>
+//             </div>
+//         </div>
+//         <div class="toast align-items-center shadow-none border-0" id="saveUpdateAdmissionStatusToast" role="alert" aria-live="assertive" aria-atomic="true">
+//             <div class="toast-body">
+//                 <h6 class="text-primary">Successful</h6>
+//             </div>  
+//         </div>
+//         <div class="d-flex justify-content-center mt-2">
+//             <button type="button" id="saveWardAndBedBtn" data-id="${line.id}" data-btn="${iteration}" class="btn btn-primary">
+//                 save
+//             </button>
+//         </div>
+//     </div>`
+// }
 
-export {surgeryNotes, deliveryNotes, vitalsignsTable, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, otherPrescriptions, medicationAndTreatmentNurses, otherPrescriptionsNurses,  updateAdmissionStatus}
+export {surgeryNotes, deliveryNotes, vitalsignsTable, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, otherPrescriptions, medicationAndTreatmentNurses, otherPrescriptionsNurses}
 
 {/* <td><span class="position-relative"><a href="/transactions/11/receipts/15" target="blank" title="ABAGI Ernest_Nguevese.pdf"> *
                                     <i class="bi bi-file-earmark-text download-receipt text-primary fs-4"></i></a></span></td> */}

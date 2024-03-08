@@ -218,10 +218,9 @@ class PatientService
         
         return $this->patient
                 ->where('sponsor_id', $data->sponsorId)
-                // ->where('consulted', '!=', null)
+                ->where('consulted', '!=', null)
                 ->whereMonth('created_at', $current->month)
                 ->whereYear('created_at', $current->year)
-                // ->WhereBetween('created_at', [$data->from.' 00:00:00', $data->to.' 23:59:59'])
                 ->orderBy($orderBy, $orderDir)
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }

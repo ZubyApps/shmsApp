@@ -1,5 +1,5 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
-import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, openMedicalReportModal, populateWardAndBedModal, clearItemsList, getSelectedResourceValues } from "./helpers"
+import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, populateWardAndBedModal, clearItemsList, getSelectedResourceValues } from "./helpers"
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
@@ -975,30 +975,30 @@ window.addEventListener('DOMContentLoaded', function () {
                 } deleteDeliveryNoteBtn.removeAttribute('disabled')
             }
     
-            if (saveWardAndBedBtn) {
-                wardAndBedDiv.forEach(div => {
-                    if (div.dataset.div === saveWardAndBedBtn.dataset.btn) {
-                        console.log(div.dataset.div, saveWardAndBedBtn.dataset.btn)
-                        saveWardAndBedBtn.setAttribute('disabled', 'disabled')
-                        const conId = saveWardAndBedBtn.dataset.id
+            // if (saveWardAndBedBtn) {
+            //     wardAndBedDiv.forEach(div => {
+            //         if (div.dataset.div === saveWardAndBedBtn.dataset.btn) {
+            //             console.log(div.dataset.div, saveWardAndBedBtn.dataset.btn)
+            //             saveWardAndBedBtn.setAttribute('disabled', 'disabled')
+            //             const conId = saveWardAndBedBtn.dataset.id
     
-                        http.post(`consultation/${conId}`, { ...getDivData(div) }, { "html": div })
-                        .then((response) => {
-                            if (response.status >= 200 || response.status <= 300) {
-                                new Toast(div.querySelector('#saveUpdateAdmissionStatusToast'), { delay: 2000 }).show()
-                                clearDivValues(div)
-                                clearValidationErrors(div)
-                                wardAndBedModal ? wardAndBedModal.hide() : ''
-                            }
-                            saveWardAndBedBtn.removeAttribute('disabled')
-                        })
-                        .catch((error) => {
-                            console.log(error)
-                            saveWardAndBedBtn.removeAttribute('disabled')
-                        })
-                    }
-                })
-            }
+            //             http.post(`consultation/${conId}`, { ...getDivData(div) }, { "html": div })
+            //             .then((response) => {
+            //                 if (response.status >= 200 || response.status <= 300) {
+            //                     new Toast(div.querySelector('#saveUpdateAdmissionStatusToast'), { delay: 2000 }).show()
+            //                     clearDivValues(div)
+            //                     clearValidationErrors(div)
+            //                     wardAndBedModal ? wardAndBedModal.hide() : ''
+            //                 }
+            //                 saveWardAndBedBtn.removeAttribute('disabled')
+            //             })
+            //             .catch((error) => {
+            //                 console.log(error)
+            //                 saveWardAndBedBtn.removeAttribute('disabled')
+            //             })
+            //         }
+            //     })
+            // }
         })
     })
 

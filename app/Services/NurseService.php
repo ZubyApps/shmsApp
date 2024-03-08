@@ -131,6 +131,7 @@ class NurseService
                 'reason'            => $visit->discharge_reason,
                 'remark'            => $visit->discharge_remark ?? '',
                 'doctorDone'        => $visit->doctorDoneBy->username ?? '',
+                'ancCount'          => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : '',
                 'closed'            => $visit->closed
             ];
          };

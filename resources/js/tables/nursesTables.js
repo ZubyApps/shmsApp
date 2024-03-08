@@ -3,7 +3,7 @@ import $ from 'jquery';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, detailsBtn, detailsBtn1, displayPaystatus, getMinsDiff, histroyBtn, prescriptionStatusContorller, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, detailsBtn, detailsBtn1, displayPaystatus, getMinsDiff, getOrdinal, histroyBtn, prescriptionStatusContorller, sponsorAndPayPercent } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     return new DataTable('#'+tableId, {
@@ -90,8 +90,8 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                                 </button>
                                 ${ row.ancRegId ? 
                                     `<div class="dropdown ${isAnc ? '' : 'd-none'}">
-                                        <a class="text-black tooltip-test text-decoration-none ms-1" title="registered" data-bs-toggle="dropdown" href="" >
-                                        <i class="btn btn-outline-primary bi bi-check-circle-fill"></i>
+                                        <a class="text-black tooltip-test text-decoration-none ms-1" title="registered (${row.ancCount+getOrdinal(row.ancCount)+" anc encounter"})" data-bs-toggle="dropdown" href="" >
+                                        <i class="btn btn-outline-primary bi bi-check-circle-fill">${row.ancCount}</i>
                                         </a>
                                             <ul class="dropdown-menu">
                                             <li>

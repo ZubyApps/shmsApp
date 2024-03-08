@@ -12,6 +12,8 @@
 
 @include('patients.initiatePatientModal', ['title' => "Initiate Patient's Visit", 'id' => 'initiatePatientModal'])
 @include('patients.patientsBySponsorModal', ['title' => 'Patients', 'id' => 'patientsBySponsorModal'])
+@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isAnc' => false, 'isLab' => false, 'isHmo' => true, 'id' => 'treatmentDetailsModal'])
+@include('nurses.treatmentDetailsModal', ['title' => 'ANC Treatment Details', 'isAnc' => true, 'isLab' => false, 'isHmo' => true, 'id' => 'ancTreatmentDetailsModal'])
 
 <div class="container mt-5">
     <div>
@@ -23,6 +25,9 @@
                 <button class="nav-link"  id="nav-sponsors-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-sponsors" type="button" role="tab" aria-controls="nav-sponsors"
                     aria-selected="false">Sponsors</button>
+                <button class="nav-link"  id="nav-visits-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-visits" type="button" role="tab" aria-controls="nav-visits"
+                    aria-selected="false">Visits</button>
                 <button class="nav-link"   id="nav-summaries-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-summaries" type="button" role="tab" aria-controls="nav-summaries"
                     aria-selected="false">Summaries</button>
@@ -83,7 +88,35 @@
                     </table>
                 </div>
             </div>
-            <!-- active table -->
+            <!-- Visit Details table -->
+            <div class="tab-pane fade" id="nav-visits" role="tabpanel" aria-labelledby="nav-visits-tab" tabindex="0">
+                <div class="py-2 ">
+                    <table id="visitsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th>Came</th>
+                                <th>Seen</th>
+                                <th>Type</th>
+                                <th>Patient</th>
+                                <th><i class="bi bi-telephone-outbound-fill text-primary"></th>
+                                <th>Address</th>
+                                <th>State</th>
+                                <th>Sex</th>
+                                <th>Age</th>
+                                <th>N.O.K</th>
+                                <th>N.O.K <i class="bi bi-telephone-outbound-fill text-primary"></th>
+                                <th>Status</th>
+                                <th>Sponsor</th>
+                                <th>Category</th>
+                                <th>Doctor</th>
+                                <th>Diagnosis</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- summaries tables -->
             <div class="tab-pane fade" id="nav-summaries" role="tabpanel" aria-labelledby="nav-summaries-tab" tabindex="0">
                 <div class="py-4">
                     <div class="row">
@@ -178,7 +211,7 @@
                         <div class="col-xl-6">
                           <div class="card">
                             <div class="card-body">
-                            <h5 class="card-title">Visits Summary by Sponsor</h5>
+                            <h5 class="card-title">Visits Summary by Sponsor This Month</h5>
                             <table  id="visitsSummaryTable" class="table table-hover table-sm">
                                 <thead>
                                     <tr>

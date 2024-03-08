@@ -1,11 +1,14 @@
 import { Modal } from "bootstrap"
-import { getDivData, clearDivValues, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, getPatientSponsorDatalistOptionId } from "./helpers"
+import { getDivData, clearDivValues, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, getPatientSponsorDatalistOptionId, getOrdinal } from "./helpers"
 import http from "./http"
 import $ from 'jquery';
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { getAgeAggregateTable, getAllPatientsTable, getPatientsBySponsorTable, getSexAggregateTable, getSponsorsTable, getTotalPatientsTable, getVisitsSummaryTable } from "./tables/patientsTables";
+import { getAgeAggregateTable, getAllPatientsTable, getPatientsBySponsorTable, getSexAggregateTable, getSponsorsTable, getTotalPatientsTable, getVisitsSummaryTable, getVisitsTable } from "./tables/patientsTables";
+import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
+import { getAncVitalSignsTable, getOtherPrescriptionsByFilterNurses } from "./tables/nursesTables";
+import { getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
 
 
 window.addEventListener('DOMContentLoaded', function(){
@@ -14,7 +17,12 @@ window.addEventListener('DOMContentLoaded', function(){
     const newPatientModal                   = new Modal(document.getElementById('newPatientModal'))
     const updatePatientModal                = new Modal(document.getElementById('updatePatientModal'))
     const initiatePatientModal              = new Modal(document.getElementById('initiatePatientModal'))
-    const patientsBySponsorModal              = new Modal(document.getElementById('patientsBySponsorModal'))
+    const patientsBySponsorModal            = new Modal(document.getElementById('patientsBySponsorModal'))
+    const treatmentDetailsModal             = new Modal(document.getElementById('treatmentDetailsModal'))
+    const ancTreatmentDetailsModal          = new Modal(document.getElementById('ancTreatmentDetailsModal'))
+
+    const regularTreatmentDiv               = treatmentDetailsModal._element.querySelector('#treatmentDiv')
+    const ancTreatmentDiv                   = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
 
     const newSponsorBtn                     = document.getElementById('newSponsor')
     const createSponsorBtn                  = document.querySelector('#createSponsorBtn')
@@ -32,9 +40,10 @@ window.addEventListener('DOMContentLoaded', function(){
 
     const patientsTab                       = document.querySelector('#nav-patients-tab')
     const sponsorsTab                       = document.querySelector('#nav-sponsors-tab')
+    const visitsTab                         = document.querySelector('#nav-visits-tab')
     const summariesTab                      = document.querySelector('#nav-summaries-tab')
 
-    let sponsorsTable, totalPatientsTable, sexAggregateTable, visitsSummaryTable, patientsBySponsorTable
+    let sponsorsTable, visitsTable, totalPatientsTable, sexAggregateTable, patientsBySponsorTable, visitsSummaryTable
 
     const allPatientsTable = getAllPatientsTable('allPatientsTable')
 
@@ -56,6 +65,14 @@ window.addEventListener('DOMContentLoaded', function(){
         }
     })
 
+    visitsTab.addEventListener('click', function() {
+        if ($.fn.DataTable.isDataTable( '#visitsTable' )){
+            $('#visitsTable').dataTable().fnDraw()
+        } else {
+            visitsTable = getVisitsTable('visitsTable')
+        }
+    })
+
     summariesTab.addEventListener('click', function() {
         if ($.fn.DataTable.isDataTable( '#totalPatientsTable' )){
             $('#totalPatientsTable').dataTable().fnDraw()
@@ -70,7 +87,7 @@ window.addEventListener('DOMContentLoaded', function(){
         if ($.fn.DataTable.isDataTable( '#ageAggregateTable' )){
             $('#ageAggregateTable').dataTable().fnDraw()
         } else {
-            sexAggregateTable = getAgeAggregateTable('ageAggregateTable')
+            patientsBySponsorTable = getAgeAggregateTable('ageAggregateTable')
         }
         if ($.fn.DataTable.isDataTable( '#visitsSummaryTable' )){
             $('#visitsSummaryTable').dataTable().fnDraw()
@@ -266,8 +283,6 @@ window.addEventListener('DOMContentLoaded', function(){
 
     document.querySelector('#totalPatientsTable').addEventListener('click', function (event) {
         const showPatientsBtn   = event.target.closest('.showPatientsBtn')
-        // const from              = reportDatesDiv.querySelector('#startDate').value
-        // const to                = reportDatesDiv.querySelector('#endDate').value
 
         if (showPatientsBtn){
             const id = showPatientsBtn.getAttribute('data-id')
@@ -276,6 +291,90 @@ window.addEventListener('DOMContentLoaded', function(){
             patientsBySponsorTable = getPatientsBySponsorTable('patientsBySponsorTable', id, patientsBySponsorModal)
             patientsBySponsorModal.show()
         }
+    })
+
+    document.querySelector('#visitsTable').addEventListener('click', function (event) {
+        const consultationDetailsBtn    = event.target.closest('.consultationDetailsBtn')
+        const viewer                    = 'hmo'
+        
+        if (consultationDetailsBtn) {
+            consultationDetailsBtn.setAttribute('disabled', 'disabled')
+
+            const [visitId, patientType, ancRegId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-patientType'), consultationDetailsBtn.getAttribute('data-ancregid')]
+            const isAnc = patientType === 'ANC'
+            const [modal, div, displayFunction, vitalSignsTable, id, suffixId] = isAnc ? [ancTreatmentDetailsModal, ancTreatmentDiv, AncPatientReviewDetails, getAncVitalSignsTable, ancRegId, 'AncConDetails'] : [treatmentDetailsModal, regularTreatmentDiv, regularReviewDetails, getVitalSignsTableByVisit, visitId, 'ConDetails']
+            http.get(`/consultation/consultations/${visitId}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        let iteration = 0
+                        let count = 0
+
+                        const consultations = response.data.consultations.data
+                        const patientBio = response.data.bio
+
+                        openHmoModals(modal, div, patientBio)
+
+                        consultations.forEach(line => {
+                            iteration++
+
+                            iteration > 1 ? count++ : ''
+
+                            div.innerHTML += displayFunction(iteration, getOrdinal, count, consultations.length, line, viewer)
+                        })
+
+                        vitalSignsTable(`#vitalSignsTableNurses${suffixId}`, id, modal)
+                        modal.show()
+
+                    }
+                    consultationDetailsBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    consultationDetailsBtn.removeAttribute('disabled')
+                    console.log(error)
+                })
+        }
+    })
+
+    document.querySelectorAll('#treatmentDiv').forEach(div => {
+        div.addEventListener('click', function (event) {
+            const collapseConsultationBtn   = event.target.closest('.collapseConsultationBtn')
+            const viewer = 'hmo'
+    
+            if (collapseConsultationBtn) {
+                const gotoDiv = document.querySelector(collapseConsultationBtn.getAttribute('data-goto'))
+                const investigationTableId = gotoDiv.querySelector('.investigationTable').id
+                const treatmentTableId = gotoDiv.querySelector('.treatmentTable').id
+                const otherPrescriptionsTableId = gotoDiv.querySelector('.otherPrescriptionsTable').id
+                const conId = gotoDiv.querySelector('.investigationTable').dataset.id
+    
+                if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
+                    $('#' + investigationTableId).dataTable().fnDestroy()
+                }
+                if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {
+                    $('#' + treatmentTableId).dataTable().fnDestroy()
+                }
+                if ($.fn.DataTable.isDataTable('#' + otherPrescriptionsTableId)) {
+                    $('#' + otherPrescriptionsTableId).dataTable().fnDestroy()
+                }
+    
+                const goto = () => {
+                    location.href = collapseConsultationBtn.getAttribute('data-goto')
+                    window.history.replaceState({}, document.title, "/" + "patients")
+                    getLabTableByConsultation(investigationTableId, treatmentDetailsModal._element, viewer, conId, null)
+                    getMedicationsByFilter(treatmentTableId, conId, treatmentDetailsModal._element)
+                    getOtherPrescriptionsByFilter(otherPrescriptionsTableId, conId, treatmentDetailsModal._element, null, null)
+                }
+                setTimeout(goto, 300)
+            }
+        })
+    })
+
+    document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal').forEach(modal => {
+        modal.addEventListener('hide.bs.modal', function(event) {
+            regularTreatmentDiv.innerHTML = ''
+            ancTreatmentDiv.innerHTML = ''
+            visitsTable ? visitsTable.draw() : ''
+        })
     })
     
     newSponsorModal._element.addEventListener('hidden.bs.modal', function () {
@@ -320,4 +419,15 @@ function openPatientModal(modal, button, {id, sponsorId, sponsorCategoryId, ...d
 
     button.setAttribute('data-id', id)
     modal.show()
+}
+
+function openHmoModals(modal, button, { id, visitId, ancRegId, patientType, ...data }) {
+    for (let name in data) {
+
+        const nameInput = modal._element.querySelector(`[name="${name}"]`)
+
+        nameInput.value = data[name]
+    }
+
+    modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
 }

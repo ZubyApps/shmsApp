@@ -2,7 +2,7 @@ import jQuery from "jquery";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, displayPaystatus, histroyBtn, prescriptionOnLatestConsultation, prescriptionStatusContorller, reviewBtn, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, displayPaystatus, getOrdinal, histroyBtn, prescriptionOnLatestConsultation, prescriptionStatusContorller, reviewBtn, sponsorAndPayPercent } from "../helpers";
 
 const getOutpatientsVisitTable = (tableId, filter) => {
     return new DataTable(tableId, {
@@ -108,7 +108,7 @@ const getAncPatientsVisitTable = (tableId, filter) => {
             {data: "doctor"},
             {data: row => prescriptionOnLatestConsultation(row)},
             {data: row => sponsorAndPayPercent(row)},
-            {data: "30dayCount"},
+            {data: row => row.ancCount+getOrdinal(row.ancCount)},
             {data: row =>  `
                         <div class="d-flex flex- justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
