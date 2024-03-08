@@ -51,10 +51,10 @@ class MedicationChartService
     {
        $medicationChart->update([
            'dose_given' => $data->doseGiven ? $data->doseGiven.$data->unit : null,
-           'time_given' => Carbon::now(),
+           'time_given' => $data->notGiven ? Carbon::now() : null,
            'not_given'  => $data->notGiven,
            'given_by'   => $user->id,
-           'note'       => $data->note,       
+           'note'       => $data->note,
            'status'     => true,
 
         ]);

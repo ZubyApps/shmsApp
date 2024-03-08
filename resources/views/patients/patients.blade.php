@@ -11,6 +11,7 @@
 @include('sponsors.sponsorModal', ['title' => 'Update Sponsor', 'isUpdate' => true, 'id' => 'updateSponsorModal'])
 
 @include('patients.initiatePatientModal', ['title' => "Initiate Patient's Visit", 'id' => 'initiatePatientModal'])
+@include('patients.patientsBySponsorModal', ['title' => 'Patients', 'id' => 'patientsBySponsorModal'])
 
 <div class="container mt-5">
     <div>
@@ -116,11 +117,14 @@
                                     <thead>
                                         <tr>
                                             <th>Sex</th>
-                                            <th>Under 5</th>
-                                            <th>5-12</th>
-                                            <th>12-18</th>
-                                            <th>18-50</th>
-                                            <th>Above 50</th>
+                                            <th>0-3m</th>
+                                            <th>3-12m</th>
+                                            <th>1-5y</th>
+                                            <th>5-13y</th>
+                                            <th>13-18y</th>
+                                            <th>18-48y</th>
+                                            <th>48-63y</th>
+                                            <th>63</th>
                                             <th>Total</th>
                                         </tr>
                                     </thead>
@@ -128,6 +132,9 @@
                                     <tfoot class="fw-bolder text-primary">
                                         <tr>
                                             <td class="text-center">Totals</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
@@ -147,7 +154,7 @@
                         <div class="col-xl-6 mb-2">
                           <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">New Registerations by Sponsor</h5>
+                                <h5 class="card-title">New Registrations by Sponsor This Month</h5>
                                 <table  id="totalPatientsTable" class="table table-hover table-sm">
                                     <thead>
                                         <tr>
@@ -171,19 +178,23 @@
                         <div class="col-xl-6">
                           <div class="card">
                             <div class="card-body">
-                            <h5 class="card-title">New Registerations by Sponsor</h5>
-                            <table  id="totalPatientsTable" class="table table-hover table-sm">
+                            <h5 class="card-title">Visits Summary by Sponsor</h5>
+                            <table  id="visitsSummaryTable" class="table table-hover table-sm">
                                 <thead>
                                     <tr>
                                         <th>Sponsor</th>
-                                        <th>Count</th>
-                                        <th>Category</th>
+                                        <th>Outpatients</th>
+                                        <th>Inpatients</th>
+                                        <th>Observations</th>
+                                        <th>Total</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
                                 <tfoot class="fw-bolder text-primary">
                                     <tr>
                                         <td class="text-center">Total</td>
+                                        <td></td>
+                                        <td></td>
                                         <td></td>
                                         <td></td>
                                     </tr>

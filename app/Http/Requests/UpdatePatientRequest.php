@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Patient;
 use App\Models\Sponsor;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePatientRequest extends FormRequest
@@ -28,7 +29,7 @@ class UpdatePatientRequest extends FormRequest
                 "sponsorCategory"   => ['required'],
                 "address"           => ['nullable', 'max:500'],
                 "bloodGroup"        => ['nullable'],
-                "dateOfBirth"       => ['required'],
+                "dateOfBirth"       => ['required', 'before_or_equal:'.Carbon::today()],
                 "ethnicGroup"       => ['nullable'],
                 "firstName"         => ['required'],
                 "genotype"          => ['nullable'],

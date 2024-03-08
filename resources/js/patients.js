@@ -5,7 +5,7 @@ import $ from 'jquery';
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { getAgeAggregateTable, getAllPatientsTable, getSexAggregateTable, getSponsorsTable, getTotalPatientsTable } from "./tables/patientsTables";
+import { getAgeAggregateTable, getAllPatientsTable, getPatientsBySponsorTable, getSexAggregateTable, getSponsorsTable, getTotalPatientsTable, getVisitsSummaryTable } from "./tables/patientsTables";
 
 
 window.addEventListener('DOMContentLoaded', function(){
@@ -14,6 +14,7 @@ window.addEventListener('DOMContentLoaded', function(){
     const newPatientModal                   = new Modal(document.getElementById('newPatientModal'))
     const updatePatientModal                = new Modal(document.getElementById('updatePatientModal'))
     const initiatePatientModal              = new Modal(document.getElementById('initiatePatientModal'))
+    const patientsBySponsorModal              = new Modal(document.getElementById('patientsBySponsorModal'))
 
     const newSponsorBtn                     = document.getElementById('newSponsor')
     const createSponsorBtn                  = document.querySelector('#createSponsorBtn')
@@ -33,7 +34,7 @@ window.addEventListener('DOMContentLoaded', function(){
     const sponsorsTab                       = document.querySelector('#nav-sponsors-tab')
     const summariesTab                      = document.querySelector('#nav-summaries-tab')
 
-    let sponsorsTable, totalPatientsTable, sexAggregateTable
+    let sponsorsTable, totalPatientsTable, sexAggregateTable, visitsSummaryTable, patientsBySponsorTable
 
     const allPatientsTable = getAllPatientsTable('allPatientsTable')
 
@@ -42,7 +43,8 @@ window.addEventListener('DOMContentLoaded', function(){
     })
 
     newPatientBtn.addEventListener('click', function() {
-
+        let date = new Date().toISOString().split('T')[0]
+        newPatientModal._element.querySelector('[name="dateOfBirth"]').setAttribute('max', date)
         newPatientModal.show()
     })
 
@@ -69,6 +71,11 @@ window.addEventListener('DOMContentLoaded', function(){
             $('#ageAggregateTable').dataTable().fnDraw()
         } else {
             sexAggregateTable = getAgeAggregateTable('ageAggregateTable')
+        }
+        if ($.fn.DataTable.isDataTable( '#visitsSummaryTable' )){
+            $('#visitsSummaryTable').dataTable().fnDraw()
+        } else {
+            visitsSummaryTable = getVisitsSummaryTable('visitsSummaryTable')
         }
     })
 
@@ -215,7 +222,7 @@ window.addEventListener('DOMContentLoaded', function(){
             registerPatientBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            alert(error.response.data.message)
+            // alert(error.response.data.message)
             registerPatientBtn.removeAttribute('disabled')
         })
     })
@@ -256,6 +263,20 @@ window.addEventListener('DOMContentLoaded', function(){
             confirmVisitBtn.removeAttribute('disabled')
         })
     })
+
+    document.querySelector('#totalPatientsTable').addEventListener('click', function (event) {
+        const showPatientsBtn   = event.target.closest('.showPatientsBtn')
+        // const from              = reportDatesDiv.querySelector('#startDate').value
+        // const to                = reportDatesDiv.querySelector('#endDate').value
+
+        if (showPatientsBtn){
+            const id = showPatientsBtn.getAttribute('data-id')
+            patientsBySponsorModal._element.querySelector('#sponsor').value = showPatientsBtn.getAttribute('data-sponsor') 
+            patientsBySponsorModal._element.querySelector('#category').value = showPatientsBtn.getAttribute('data-category')
+            patientsBySponsorTable = getPatientsBySponsorTable('patientsBySponsorTable', id, patientsBySponsorModal)
+            patientsBySponsorModal.show()
+        }
+    })
     
     newSponsorModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(newSponsorModal._element)
@@ -289,6 +310,8 @@ function openPatientModal(modal, button, {id, sponsorId, sponsorCategoryId, ...d
     if (modal._element.id === 'updatePatientModal'){    
         modal._element.querySelector('#updatePatientSponsor').setAttribute('data-id', sponsorId)
         const dataListEl = modal._element.querySelector('#updateSponsorList')
+        let date = new Date().toISOString().split('T')[0]
+        modal._element.querySelector('[name="dateOfBirth"]').setAttribute('max', date)
 
         http.get(`/sponsorcategory/list_sponsors/${sponsorCategoryId}`).then((response) => {
             displayList(dataListEl, 'sponsorOption', response.data)

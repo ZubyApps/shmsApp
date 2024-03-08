@@ -120,7 +120,7 @@ const getTotalPatientsTable = (tableId) => {
             // $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: row =>  `<span class="btn text-decoration-underline showVisitisBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}">${row.sponsor}</span>`},
+            {data: row =>  `<span class="btn text-decoration-underline showPatientsBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}">${row.sponsor}</span>`},
             {data: "patientsCount"},
             {data: "category"},
         ]
@@ -171,19 +171,78 @@ const getAgeAggregateTable = (tableId) => {
             $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
             $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
             $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
+            $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
+            $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
+            $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: "sex"},
-            {data: "under5"},
-            {data: "fiveTo12"},
-            {data: "thirteenTo18"},
-            {data: "eighteenTo50"},
-            {data: "above50"},
-            {data: row => +row.under5 + +row.fiveTo12 + +row.thirteenTo18 + +row.eighteenTo50 + +row.above50}
+            {data: "zeroTo3m"},
+            {data: "threeTo12m"},
+            {data: "oneTo5yrs"},
+            {data: "fiveto13yrs"},
+            {data: "thirteenTo18yrs"},
+            {data: "eighteenTo48yrs"},
+            {data: "fortyEightTo63yrs"},
+            {data: "above63yrs"},
+            {data: row => +row.zeroTo3m + +row.threeTo12m + +row.oneTo5yrs + +row.fiveto13yrs + +row.thirteenTo18yrs + +row.eighteenTo48yrs + +row.fortyEightTo63yrs + +row.above63yrs}
         ]
     })
 
     return totalPatientsTable
 }
 
-export {getSponsorsTable, getAllPatientsTable, getTotalPatientsTable, getSexAggregateTable, getAgeAggregateTable}
+const getVisitsSummaryTable = (tableId) => {
+    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
+
+    const visitsSummaryTable = new DataTable(`#${tableId}`, {
+        serverSide: true,
+        ajax:  '/patients/load/summary/visits',
+        orderMulti: true,
+        search:true,
+        lengthMenu:[40, 80, 120, 160, 200],
+        drawCallback: function (settings) {
+            var api = this.api()
+            $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
+            $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
+            $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
+            $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {data: row =>  `<span class="btn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}">${row.sponsor}</span>`},
+            {data: "outpatients"},
+            {data: "inpatients"},
+            {data: "observations"},
+            {data: "patientsCount"},
+        ]
+    })
+
+    return visitsSummaryTable
+}
+
+const getPatientsBySponsorTable = (tableId, sponsorId, modal) => {
+    const patientsBySponsorTable = new DataTable(`#${tableId}`, {
+        serverSide: true,
+        ajax:  {url: '/patients/load/bysponsor', data: {
+            'sponsorId': sponsorId,
+        }},
+        orderMulti: true,
+        search:true,
+        columns: [
+            {data: "card"},
+            {data: "name"},
+            {data: "phone"},
+            {data: "sex"},
+            {data: "age"},
+            {data: "count"},
+        ]
+    })
+
+    modal._element.addEventListener('hidden.bs.modal', function () {
+        patientsBySponsorTable.destroy()
+    })
+
+    return patientsBySponsorTable
+}
+
+export {getSponsorsTable, getAllPatientsTable, getTotalPatientsTable, getSexAggregateTable, getAgeAggregateTable, getVisitsSummaryTable, getPatientsBySponsorTable}

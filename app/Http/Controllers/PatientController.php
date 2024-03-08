@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Requests\UpdatePatientRequest;
-use App\Http\Resources\PatientIdResource;
 use App\Http\Resources\PatientResource;
 use App\Models\Patient;
 use App\Services\DatatablesService;
 use App\Services\PatientService;
+use App\Services\VisitService;
 use Illuminate\Http\Request;
 
 class PatientController extends Controller
@@ -16,7 +16,9 @@ class PatientController extends Controller
     public function __construct(
         private readonly SponsorCategoryController $sponsorCategoryController, 
         private readonly DatatablesService $datatablesService, 
-        private readonly PatientService $patientService)
+        private readonly PatientService $patientService,
+        private readonly VisitService $visitService
+        )
     {
         
     }
@@ -26,6 +28,7 @@ class PatientController extends Controller
      */
     public function index()
     {
+        // dd($this->visitService->getVisitSummaryBySponsor('name'));
         return view('patients.patients', 
         ['categories' => $this->sponsorCategoryController->showAll('id', 'name')]
         );
@@ -85,7 +88,7 @@ class PatientController extends Controller
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $sponsors = $this->patientService->getSummaryBySponsor($params, $request);
+        $sponsors = $this->patientService->getNewRegistrationSummaryBySponsor($params, $request);
 
         return response()->json([
             'data' => $sponsors,
@@ -113,14 +116,39 @@ class PatientController extends Controller
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $sexes = $this->patientService->getSummaryByAge($params, $request);
+        $ages = $this->patientService->getSummaryByAge($params, $request);
 
         return response()->json([
-            'data' => $sexes,
+            'data' => $ages,
             'draw' => $params->draw,
-            'recordsTotal' => count($sexes),
-            'recordsFiltered' => count($sexes)
+            'recordsTotal' => count($ages),
+            'recordsFiltered' => count($ages)
         ]);
+    }
+
+    public function loadVisitSummaryBySponsor(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->visitService->getVisitSummaryBySponsor($params, $request);
+        
+        return response()->json([
+            'data' => $visits,
+            'draw' => $params->draw,
+            'recordsTotal' => count($visits),
+            'recordsFiltered' => count($visits)
+        ]);
+    }
+    
+    public function loadPatientsBySponsor(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->patientService->getPatientsBySponsor($params, $request);
+
+        $loadTransformer = $this->patientService->getLoadTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
     /**

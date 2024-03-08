@@ -9,6 +9,7 @@ use App\Models\Patient;
 use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -125,7 +126,7 @@ class PatientService
             return [
                 'id'                => $patient->id,
                 'card'              => $patient->card_no,
-                'name'              => $patient->first_name.' '. $patient->middle_name.' '.$patient->last_name,
+                'name'              => $patient->fullName(),
                 'phone'             => $patient->phone,
                 'sex'               => $patient->sex,
                 'age'               => $this->helperService->twoPartDiffInTimePast($patient->date_of_birth),
@@ -151,7 +152,19 @@ class PatientService
 
     }
 
-    public function getSummaryBySponsor(DataTableQueryParams $params, $data)
+    public function getSummaryByAge(DataTableQueryParams $params, $data)
+    {
+        $currentDate = new CarbonImmutable();
+        
+        return DB::table('patients')
+            ->selectRaw("SUM(CASE WHEN DATE(date_of_birth) >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) THEN 1 ELSE 0 END) AS zeroTo3m, SUM(CASE WHEN (DATE(date_of_birth) < DATE_SUB(CURDATE(), INTERVAL 3 MONTH) AND DATE(date_of_birth) >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)) THEN 1 ELSE 0 END) AS threeTo12m, SUM(CASE WHEN (YEAR(date_of_birth) < {$currentDate->subYears(1)->year} AND YEAR(date_of_birth) >= {$currentDate->subYears(5)->year}) THEN 1 ELSE 0 END) AS oneTo5yrs, SUM(CASE WHEN (YEAR(date_of_birth) < {$currentDate->subYears(5)->year} AND YEAR(date_of_birth) > {$currentDate->subYears(13)->year}) THEN 1 ELSE 0 END) AS fiveto13yrs, SUM(CASE WHEN (YEAR(date_of_birth) < {$currentDate->subYears(13)->year} AND YEAR(date_of_birth) >= {$currentDate->subYears(18)->year}) THEN 1 ELSE 0 END) AS thirteenTo18yrs, SUM(CASE WHEN (YEAR(date_of_birth) < {$currentDate->subYears(18)->year} AND YEAR(date_of_birth) >= {$currentDate->subYears(48)->year}) THEN 1 ELSE 0 END) AS eighteenTo48yrs, SUM(CASE WHEN (YEAR(date_of_birth) < {$currentDate->subYears(48)->year} AND YEAR(date_of_birth) >= {$currentDate->subYears(63)->year}) THEN 1 ELSE 0 END) AS fortyEightTo63yrs, SUM(CASE WHEN (YEAR(date_of_birth) < {$currentDate->subYears(63)->year}) THEN 1 ELSE 0 END) AS above63yrs , sex"
+            )
+            ->groupBy('sex')
+            ->get()
+            ->toArray();
+    }
+
+    public function getNewRegistrationSummaryBySponsor(DataTableQueryParams $params, $data)
     {
         $current = Carbon::now();
 
@@ -183,23 +196,33 @@ class PatientService
             ->toArray();
     }
 
-    public function getSummaryByAge(DataTableQueryParams $params, $data)
+    public function getPatientsBySponsor(DataTableQueryParams $params, $data)
     {
-        $current1 = Carbon::now();
-        $current2 = Carbon::now();
-        $current3 = Carbon::now();
-        $current4 = Carbon::now();
-        $current5 = Carbon::now();
-        $current6 = Carbon::now();
-        $current7 = Carbon::now();
-        $current8 = Carbon::now();
-        $currentYear = new CarbonImmutable();
+        $orderBy    = 'created_at';
+        $orderDir   =  'asc';
+        $current = Carbon::now();
+
+        if (! empty($params->searchTerm)) {
+            return $this->patient
+                        ->where('sponsor_id', $data->sponsorId)
+                        ->where('first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('phone', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('sex', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
         
-        return DB::table('patients')
-            ->selectRaw("SUM(CASE WHEN YEAR(date_of_birth) > {$currentYear->subYears(5)->year} THEN 1 ELSE 0 END) AS under5, SUM(CASE WHEN (YEAR(date_of_birth) <= {$currentYear->subYears(5)->year} AND YEAR(date_of_birth) >= {$currentYear->subYears(12)->year}) THEN 1 ELSE 0 END) AS fiveTo12, SUM(CASE WHEN (YEAR(date_of_birth) < {$currentYear->subYears(12)->year} AND YEAR(date_of_birth) >= {$currentYear->subYears(18)->year}) THEN 1 ELSE 0 END) AS thirteenTo18, SUM(CASE WHEN (YEAR(date_of_birth) < {$currentYear->subYears(18)->year} AND YEAR(date_of_birth) > {$currentYear->subYears(50)->year}) THEN 1 ELSE 0 END) AS eighteenTo50, SUM(CASE WHEN (YEAR(date_of_birth) < {$currentYear->subYears(50)->year}) THEN 1 ELSE 0 END) AS above50, sex"
-            )
-            ->groupBy('sex')
-            ->get()
-            ->toArray();
+        return $this->patient
+                ->where('sponsor_id', $data->sponsorId)
+                // ->where('consulted', '!=', null)
+                ->whereMonth('created_at', $current->month)
+                ->whereYear('created_at', $current->year)
+                // ->WhereBetween('created_at', [$data->from.' 00:00:00', $data->to.' 23:59:59'])
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 }

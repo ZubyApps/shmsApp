@@ -241,6 +241,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/load/summary/sponsor', [PatientController::class, 'loadSummaryBySponsor']);
             Route::get('/load/summary/sex', [PatientController::class, 'loadSummaryBySex']);
             Route::get('/load/summary/age', [PatientController::class, 'loadSummaryByAge']);
+            Route::get('/load/summary/visits', [PatientController::class, 'loadVisitSummaryBySponsor']);
+            Route::get('/load/bysponsor', [PatientController::class, 'loadPatientsBySponsor']);
             Route::get('/{patient}', [PatientController::class, 'edit']);
             Route::delete('/{patient}', [PatientController::class, 'destroy']);
             Route::post('/{patient}', [PatientController::class, 'update']);

@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Patient;
 use App\Models\Sponsor;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePatientRequest extends FormRequest
@@ -29,7 +30,7 @@ class StorePatientRequest extends FormRequest
             "address"           => ['nullable', 'max:500'],
             "bloodGroup"        => ['nullable'],
             "cardNumber"        => ['required', 'unique:'.Patient::class.',card_no', 'min:9'],
-            "dateOfBirth"       => ['required'],
+            "dateOfBirth"       => ['required', 'before_or_equal:'.Carbon::today()],
             "email"             => ['nullable'],
             "ethnicGroup"       => ['nullable'],
             "firstName"         => ['required'],

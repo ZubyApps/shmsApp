@@ -140,4 +140,39 @@ class VisitService
             $visit->destroy($visit->id);
         });
     }
+
+    public function getVisitSummaryBySponsor(DataTableQueryParams $params, $data)
+    {
+        $current = Carbon::now();
+
+        if (! empty($params->searchTerm)) {
+            return DB::table('visits')
+            ->selectRaw('sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(patients.id) as patientsCount')
+            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+            ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
+            ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            ->whereMonth('visits.created_at', $current->month)
+            ->whereYear('visits.created_at', $current->year)
+            ->groupBy('sponsor')
+            ->orderBy('sponsor')
+            ->orderBy('patientsCount')
+            ->get()
+            ->toArray();
+        }
+
+        return DB::table('visits')
+            ->selectRaw('sponsors.name as sponsor, COUNT(patients.id) as patientsCount, SUM(CASE WHEN admission_status = "Outpatient" THEN 1 ELSE 0 END) AS outpatients, SUM(CASE WHEN admission_status = "Inpatient" THEN 1 ELSE 0 END) AS inpatients, SUM(CASE WHEN admission_status = "Observation" THEN 1 ELSE 0 END) AS observations')
+            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+            ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
+            ->where('consulted', '!=', null)
+            ->whereMonth('visits.created_at', $current->month)
+            ->whereYear('visits.created_at', $current->year)
+            ->groupBy('sponsor')
+            ->orderBy('sponsor')
+            ->orderBy('patientsCount')
+            ->get()
+            ->toArray();
+    }
 }
