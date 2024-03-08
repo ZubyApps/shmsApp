@@ -244,7 +244,7 @@ class PrescriptionService
                     'givenDose'         => $medicationChart->dose_given ?? 'Not given' ?? '',
                     'timeGiven'         => $medicationChart->time_given ? (new Carbon($medicationChart->time_given))->format('g:ia D jS') : '',
                     'givenBy'           => $medicationChart->givenBy->username ?? '',
-                    'note'              => $medicationChart->not_given ? $medicationChart->not_given.' - '.$medicationChart->note ?? '' : $medicationChart->note ,
+                    'note'              => $medicationChart->not_given ? $medicationChart->not_given.' - '.$medicationChart->note ?? '' : $medicationChart->note ?? '' ,
                     'status'            => $medicationChart->status ?? '',
                     'doseCount'         => $medicationChart->dose_count,
                     'count'             => $medicationChart::where('prescription_id', $medicationChart->prescription->id)->count(),
