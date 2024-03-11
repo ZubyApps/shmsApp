@@ -206,7 +206,7 @@ const getVisitsSummaryTable = (tableId) => {
             $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: row =>  `<span class="btn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}">${row.sponsor}</span>`},
+            {data: "sponsor"},
             {data: "outpatients"},
             {data: "inpatients"},
             {data: "observations"},

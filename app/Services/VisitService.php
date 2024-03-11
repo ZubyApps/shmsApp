@@ -42,7 +42,6 @@ class VisitService
         if (! empty($params->searchTerm)) {
             return $this->visit
                         ->Where('consulted', null)
-                        // ->where('closed', false)
                         ->where(function (Builder $query) use($params) {
                             $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
