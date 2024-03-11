@@ -21,7 +21,7 @@ const getDistribution1Table = (tableId) => {
             $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: row =>  `<span class="btn text-decoration-underline showPatientsBtn" data-id="${row.id}" data-category="${row.category}">${row.category}</span>`},
+            {data: "category"},
             {data: "sponsorCount"},
             {data: "female"},
             {data: "male"},
