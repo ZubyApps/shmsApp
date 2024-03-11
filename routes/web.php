@@ -22,6 +22,7 @@ use App\Http\Controllers\PayMethodController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResourceCategoryController;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\ResourcesController;
@@ -145,6 +146,17 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{payMethod}', [PayMethodController::class, 'destroy']);
             Route::patch('/{payMethod}', [PayMethodController::class, 'update']);
         })->name('Pay Methods');
+
+        Route::prefix('reports')->group(function (){
+            Route::get('', [ReportController::class, 'index'])->name('Reports');
+            Route::get('/patients', [ReportController::class, 'indexPatients'])->name('Patients Reports');
+            Route::get('/patients/dist1', [ReportController::class, 'loadPatientsDistribution1']);
+            Route::get('/patients/dist2', [ReportController::class, 'loadPatientsDistribution2']);
+            Route::get('/patients/bysponsor', [ReportController::class, 'loadBySponsor']);
+            Route::get('/patients/bysponsormonth', [ReportController::class, 'loadBySponsorMonth']);
+            Route::get('/patients/frequency', [ReportController::class, 'loadPatientFrequency']);
+            Route::get('/patients/regsummary', [ReportController::class, 'loadRegSummary']);
+        });
     });
 
     Route::middleware('doctor')->group(function () {
@@ -238,7 +250,7 @@ Route::middleware('auth')->group(function () {
             Route::get('', [PatientController::class, 'index'])->name('Patients');
             Route::post('', [PatientController::class, 'store']);
             Route::get('/load', [PatientController::class, 'load']);
-            Route::get('/load/summary/sponsor', [PatientController::class, 'loadSummaryBySponsor']);
+            Route::get('/load/summary/sponsor', [PatientController::class, 'loadRegSummaryBySponsor']);
             Route::get('/load/summary/sex', [PatientController::class, 'loadSummaryBySex']);
             Route::get('/load/summary/age', [PatientController::class, 'loadSummaryByAge']);
             Route::get('/load/summary/visits', [PatientController::class, 'loadVisitSummaryBySponsor']);

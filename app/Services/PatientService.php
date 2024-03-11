@@ -9,7 +9,6 @@ use App\Models\Patient;
 use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -164,7 +163,7 @@ class PatientService
             ->toArray();
     }
 
-    public function getNewRegistrationSummaryBySponsor(DataTableQueryParams $params, $data)
+    public function getNewRegSummaryBySponsor(DataTableQueryParams $params, $data)
     {
         $current = Carbon::now();
 
@@ -218,7 +217,6 @@ class PatientService
         
         return $this->patient
                 ->where('sponsor_id', $data->sponsorId)
-                ->where('consulted', '!=', null)
                 ->whereMonth('created_at', $current->month)
                 ->whereYear('created_at', $current->year)
                 ->orderBy($orderBy, $orderDir)

@@ -276,7 +276,7 @@ window.addEventListener('DOMContentLoaded', function () {
             createResourceBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            alert(error.response.data.message)
+            // alert(error.response.data.message)
             createResourceBtn.removeAttribute('disabled')
         })
 

@@ -2,86 +2,103 @@
 
 
 @section('content')
-@vite(['resources/js/patients.js'])
+@vite(['resources/js/patientReports.js'])
 
-@include('patients.patientModal', ['title' => 'New Patient', 'isUpdate' => false, 'id' => 'newPatientModal'])
-@include('patients.patientModal', ['title' => 'Update Patient', 'isUpdate' => true, 'id' => 'updatePatientModal'])
-
-@include('sponsors.sponsorModal', ['title' => 'New Sponsor', 'isUpdate' => false, 'id' => 'newSponsorModal'])
-@include('sponsors.sponsorModal', ['title' => 'Update Sponsor', 'isUpdate' => true, 'id' => 'updateSponsorModal'])
-
-@include('patients.initiatePatientModal', ['title' => "Initiate Patient's Visit", 'id' => 'initiatePatientModal'])
-@include('patients.patientsBySponsorModal', ['title' => 'Patients', 'id' => 'patientsBySponsorModal'])
-@include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isAnc' => false, 'isLab' => false, 'isHmo' => true, 'id' => 'treatmentDetailsModal'])
-@include('nurses.treatmentDetailsModal', ['title' => 'ANC Treatment Details', 'isAnc' => true, 'isLab' => false, 'isHmo' => true, 'id' => 'ancTreatmentDetailsModal'])
+@include('reports.modals.bySponsorModal', ['title' => 'Patients', 'id' => 'bySponsorModal'])
 
 <div class="container mt-5">
     <div>
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <button class="nav-link active"  id="nav-patients-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-patients" type="button" role="tab" aria-controls="nav-patients"
-                    aria-selected="true">Patients</button>
-                <button class="nav-link"  id="nav-sponsors-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-sponsors" type="button" role="tab" aria-controls="nav-sponsors"
-                    aria-selected="false">Sponsors</button>
-                <button class="nav-link"  id="nav-visits-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-visits" type="button" role="tab" aria-controls="nav-visits"
-                    aria-selected="false">Visits</button>
-                <button class="nav-link"   id="nav-summaries-tab" data-bs-toggle="tab"
+                <button class="nav-link active"  id="nav-distribution1-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-distribution1" type="button" role="tab" aria-controls="nav-distribution1"
+                    aria-selected="true">Distribution 1</button>
+                <button class="nav-link"  id="nav-distribution2-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-distribution2" type="button" role="tab" aria-controls="nav-distribution2"
+                    aria-selected="true">Distribution 2</button>
+                <button class="nav-link"  id="nav-frequency-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-frequency" type="button" role="tab" aria-controls="nav-frequency"
+                    aria-selected="false">Frequency</button>
+                <button class="nav-link"  id="nav-registrations-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-registrations" type="button" role="tab" aria-controls="nav-registrations"
+                    aria-selected="false">Registrations</button>
+                {{-- <button class="nav-link"   id="nav-summaries-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-summaries" type="button" role="tab" aria-controls="nav-summaries"
-                    aria-selected="false">Summaries</button>
+                    aria-selected="false">Summaries</button> --}}
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
-            <!-- patients table -->
-            <div class="tab-pane fade show active" id="nav-patients" role="tabpanel" aria-labelledby="nav-patients-tab" tabindex="0">
-                <div class="text-start py-3">
-                    <button type="button" id="newPatient" class="btn btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i>
-                        Patient
-                    </button>
-                </div>
+            <!-- Distribution 1 table -->
+            <div class="tab-pane fade show active" id="nav-distribution1" role="tabpanel" aria-labelledby="nav-distribution1-tab" tabindex="0">
                 <div class="py-2">
-                    <table id="allPatientsTable" class="table table-striped table-sm">
+                    <h5 class="card-title py-4">Patient Distribution by Sponsor Category</h5>
+                    <table  id="distribution1Table" class="table table-hover table-sm">
                         <thead>
                             <tr>
-                                <th>Card</th>
-                                <th>Patient Name</th>
-                                <th><i class="bi bi-telephone-outbound-fill text-primary"></th>
-                                <th>Sex</th>
-                                <th>Age</th>
-                                <th>Sponsor</th>
                                 <th>Category</th>
-                                <th>Created</th>
-                                <th>CreatedBy</th>
-                                <th>Actions</th>
+                                <th>Sponsors</th>
+                                <th>Female</th>
+                                <th>Male</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
+                        <tfoot class="fw-bolder text-primary">
+                            <tr>
+                                <td class="text-center">Total</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
-            <!-- sponsors table -->
-            <div class="tab-pane fade" id="nav-sponsors" role="tabpanel" aria-labelledby="nav-sponsors-tab" tabindex="0">
-                <div class="text-start py-3">
-                    <button type="button" id="newSponsor" class="btn btn-primary text-white">
-                        <i class="bi bi-plus-circle me-1"></i>
-                        Sponsor
-                    </button>
-                </div>
-                <div class="py-2 ">
-                    <table id="sponsorsTable" class="table table-striped table-sm">
+            <!-- Distribution 2 table -->
+            <div class="tab-pane fade" id="nav-distribution2" role="tabpanel" aria-labelledby="nav-distribution2-tab" tabindex="0">
+                <div class="py-2">
+                    <h5 class="card-title py-4">Patient Distribution by Sponsor</h5>
+                    <table  id="distribution2Table" class="table table-hover table-sm">
                         <thead>
                             <tr>
-                                <th>Sponsor Name</th>
-                                <th> <i class="bi bi-telephone-outbound-fill text-primary"></i></th>
-                                <th> <i class="bi bi-envelope-at-fill text-primary"></i> </th>
+                                <th>Sponsor</th>
+                                <th>Female</th>
+                                <th>Male</th>
+                                <th>Total</th>
                                 <th>Category</th>
-                                <th>Approval</th>
-                                <th>Registration Bill</th>
-                                <th>Created</th>
-                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot class="fw-bolder text-primary">
+                            <tr>
+                                <td class="text-center">Total</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <!-- frequency table -->
+            <div class="tab-pane fade" id="nav-frequency" role="tabpanel" aria-labelledby="nav-frequency-tab" tabindex="0">
+                <div class="py-2">
+                    <h5 class="card-title py-4">Patients by highest Paid/Visit</h5>
+                    <table id="frequencyTable" class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>age</th>
+                                <th> <i class="bi bi-telephone-outbound-fill text-primary"></i></th>
+                                <th>Sponsor</th>
+                                <th>Category</th>
+                                <th>Visits</th>
+                                <th>HMS Bill</th>
+                                <th>HMO Bill</th>
+                                <th>NHIS Bill</th>
+                                <th>Total Paid</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -89,42 +106,41 @@
                 </div>
             </div>
             <!-- Visit Details table -->
-            <div class="tab-pane fade" id="nav-visits" role="tabpanel" aria-labelledby="nav-visits-tab" tabindex="0">
-                <x-form-div class="col-xl-6 pt-3 datesDiv">
+            <div class="tab-pane fade" id="nav-registrations" role="tabpanel" aria-labelledby="nav-registrations-tab" tabindex="0">
+                <h5 class="card-title py-4">Registration Summary by Dates <small>(Default: This Month)</small></h5>
+                <x-form-div class="col-xl-6 py-3 datesDiv">
                     <x-input-span class="">Start</x-input-span>
                     <x-form-input type="date" name="startDate" id="startDate" />
                     <x-input-span class="">End</x-input-span>
                     <x-form-input type="date" name="endDate" id="endDate" />
-                    <button class="input-group-text searchVisitsWithDatesBtn">Serach</button>
+                    <button class="input-group-text searchRegWithDatesBtn">Serach</button>
                 </x-form-div>
                 <div class="py-2 ">
-                    <table id="visitsTable" class="table">
+                    <table  id="registerationsTable" class="table table-hover table-sm">
                         <thead>
                             <tr>
-                                <th>Came</th>
-                                <th>Seen</th>
-                                <th>Type</th>
-                                <th>Patient</th>
-                                <th><i class="bi bi-telephone-outbound-fill text-primary"></th>
-                                <th>Address</th>
-                                <th>State</th>
-                                <th>Sex</th>
-                                <th>Age</th>
-                                <th>N.O.K</th>
-                                <th>N.O.K <i class="bi bi-telephone-outbound-fill text-primary"></th>
-                                <th>Status</th>
                                 <th>Sponsor</th>
                                 <th>Category</th>
-                                <th>Doctor</th>
-                                <th>Diagnosis</th>
+                                <th>Female</th>
+                                <th>Male</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
+                        <tfoot class="fw-bolder text-primary">
+                            <tr>
+                                <td class="text-center">Total</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
             <!-- summaries tables -->
-            <div class="tab-pane fade" id="nav-summaries" role="tabpanel" aria-labelledby="nav-summaries-tab" tabindex="0">
+            {{-- <div class="tab-pane fade" id="nav-summaries" role="tabpanel" aria-labelledby="nav-summaries-tab" tabindex="0">
                 <div class="py-4">
                     <div class="row">
                         <div class="col-xl-6 mb-2">
@@ -245,7 +261,7 @@
                         </div>
                       </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
     

@@ -23,6 +23,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
     const regularTreatmentDiv               = treatmentDetailsModal._element.querySelector('#treatmentDiv')
     const ancTreatmentDiv                   = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
+    const datesDiv                          = document.querySelector('.datesDiv')
 
     const newSponsorBtn                     = document.getElementById('newSponsor')
     const createSponsorBtn                  = document.querySelector('#createSponsorBtn')
@@ -37,6 +38,8 @@ window.addEventListener('DOMContentLoaded', function(){
 
     const newPatientSponsorDatalistEl       = document.querySelector('#newSponsorList')
     const updatePatientSponsorDatalistEl    = document.querySelector('#updateSponsorList')
+
+    const searchVisitsWithDatesBtn          = document.querySelector('.searchVisitsWithDatesBtn')
 
     const patientsTab                       = document.querySelector('#nav-patients-tab')
     const sponsorsTab                       = document.querySelector('#nav-sponsors-tab')
@@ -55,6 +58,10 @@ window.addEventListener('DOMContentLoaded', function(){
         let date = new Date().toISOString().split('T')[0]
         newPatientModal._element.querySelector('[name="dateOfBirth"]').setAttribute('max', date)
         newPatientModal.show()
+    })
+
+    patientsTab.addEventListener('click', function() {
+        allPatientsTable.draw()
     })
 
     sponsorsTab.addEventListener('click', function() {
@@ -218,10 +225,6 @@ window.addEventListener('DOMContentLoaded', function(){
         }
     })
 
-    patientsTab.addEventListener('click', function() {
-        allPatientsTable.draw()
-    })
-
     registerPatientBtn.addEventListener('click', function () {
         const sponsor = getPatientSponsorDatalistOptionId(newPatientModal, newPatientSponsorInputEl, newPatientSponsorDatalistEl)
         registerPatientBtn.setAttribute('disabled', 'disabled')
@@ -279,6 +282,16 @@ window.addEventListener('DOMContentLoaded', function(){
         }).catch((error) => {
             confirmVisitBtn.removeAttribute('disabled')
         })
+    })
+
+    searchVisitsWithDatesBtn.addEventListener('click', function () {
+        if (!datesDiv.querySelector('#startDate').value && !datesDiv.querySelector('#endDate').value){
+            return alert('Please pick valid dates')
+        }
+        if ($.fn.DataTable.isDataTable( '#visitsTable' )){
+            $('#visitsTable').dataTable().fnDestroy()
+        }
+        visitsTable = getVisitsTable('visitsTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value)
     })
 
     document.querySelector('#totalPatientsTable').addEventListener('click', function (event) {

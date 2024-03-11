@@ -15,7 +15,7 @@
                             class="fw-bold">M</span>anagement <span class="fw-bold">S</span>ystem</p>
                     <div class="">
                         <a href="{{ $staffD === 'Bill Officer' || $staffD === 'HMO Officer' || $staffD === 'Nurse ' || $staffD === 'Doctor' || $staffA > 4 ? '/patients' : '' }}" class="btn btn-outline-primary mx-1"><i class="bi bi-people-fill"> Patients</i></a>
-                        <a href="{{ $staffD === 'Doctor' || $staffA > 4 ? '/doctors' : '' }}" class="btn btn-outline-primary mx-1"><i class="bi bi-lungs-fill" aria-hidden="true"> Doctors</i></a>
+                        <a href="{{ $staffD === 'Doctor' || $staffA > 4 ? '/doctors' : '' }}" class="btn btn-outline-primary mx-1"><i class="bi bi-lungs-fill"> Doctors</i></a>
                         <a href="{{ $staffD === 'Doctor' || $staffD === 'Nurse' || $staffA > 4 ? '/nurses' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-thermometer-low"> Nurses</i></a>
                         <br>
                         <a href="{{ $staffD === 'Doctor' || $staffD === 'LabTech' || $staffD === 'HMO Officer' || $staffA > 4 ? '/investigations' : '' }}" class="btn btn-outline-primary mx-1"><i class="bi bi-eyedropper" aria-hidden="true"> Investigations</i></a>

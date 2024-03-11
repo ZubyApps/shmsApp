@@ -33,7 +33,7 @@ class BillingService
 
     public function getpaginatedFilteredBillingVisits(DataTableQueryParams $params, $data)
     {
-        $orderBy    = 'created_at';
+        $orderBy    = 'consulted';
         $orderDir   =  'desc';
 
         if (! empty($params->searchTerm)) {

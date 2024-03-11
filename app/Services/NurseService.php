@@ -23,7 +23,7 @@ class NurseService
 
     public function getpaginatedFilteredNurseVisits(DataTableQueryParams $params, $data)
     {
-        $orderBy    = 'created_at';
+        $orderBy    = 'consulted';
         $orderDir   =  'desc';
 
         if (! empty($params->searchTerm)) {

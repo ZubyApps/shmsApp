@@ -397,7 +397,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#sentBillsTable' )){
             $('#sentBillsTable').dataTable().fnDestroy()
         }
-        getSentBillsTable('#sentBillsTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value)
+        sentBillsTable = getSentBillsTable('#sentBillsTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value)
     })
 
     searchReportsBtn.addEventListener('click', function () {
@@ -407,7 +407,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#hmoReportsTable' )){
             $('#hmoReportsTable').dataTable().fnDestroy()
         }
-        getHmoReportsTable('hmoReportsTable', reportDatesDiv.querySelector('#category').value, reportDatesDiv.querySelector('#startDate').value, reportDatesDiv.querySelector('#endDate').value)
+        hmoReportsTable = getHmoReportsTable('hmoReportsTable', reportDatesDiv.querySelector('#category').value, reportDatesDiv.querySelector('#startDate').value, reportDatesDiv.querySelector('#endDate').value)
     })
 
     markAsSentBtn.addEventListener('click', function() {

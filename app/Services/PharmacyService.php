@@ -32,7 +32,7 @@ class PharmacyService
 
     public function getpaginatedFilteredPharmacyVisits(DataTableQueryParams $params, $data)
     {
-        $orderBy    = 'created_at';
+        $orderBy    = 'consulted';
         $orderDir   =  'desc';
 
         if (! empty($params->searchTerm)) {
@@ -226,8 +226,8 @@ class PharmacyService
 
             return $prescription->update([
                 'qty_dispensed'     => $data->quantity,
-                'dispense_date'     => $data->quantity ? new Carbon() : null,
-                'dispensed_by'      => $data->quantity ? $user->id : null,
+                'dispense_date'     => new Carbon(),
+                'dispensed_by'      => $user->id
             ]);
         });
     }
@@ -276,6 +276,7 @@ class PharmacyService
                 'consulted'             => (new Carbon($consultation->created_at))->format('D/m/y g:ia'),                
                 'conId'                 => $consultation->id,
                 'sponsor'               => $consultation->visit->sponsor->name,
+                'sponsorCategory'       => $consultation->visit->sponsor->sponsorCategory->name,
                 'sponsorCategoryClass'  => $consultation->visit->sponsor->sponsorCategory->pay_class,
                 'closed'                => $consultation->visit->closed,
                 'prescriptions'         => (new Prescription)->forPharmacy($consultation->id)->map(fn(Prescription $prescription)=> [

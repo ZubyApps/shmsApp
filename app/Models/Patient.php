@@ -68,22 +68,22 @@ class Patient extends Model
 
     public function allHmsBills()
     {
-        $allBills = 0;
+        $allHmsBills = 0;
         foreach($this->visits as $visit){
-            $allBills += $visit->totalHmsBills();
+            $allHmsBills += $visit->totalHmsBills();
         }
 
-        return $allBills;
+        return $allHmsBills;
     }
 
     public function allHmoBills()
     {
-        $allBills = 0;
+        $allHmoBills = 0;
         foreach($this->visits as $visit){
-            $allBills += $visit->totalHmoBills();
+            $allHmoBills += $visit->totalHmoBills();
         }
 
-        return $allBills;
+        return $allHmoBills;
     }
 
     public function allNhisBills()
@@ -104,6 +104,16 @@ class Patient extends Model
         }
 
         return $allPayments;
+    }
+
+    public function allPaid()
+    {
+        $allPaid = 0;
+        foreach($this->visits as $visit){
+            $allPaid += $visit->total_paid;
+        }
+
+        return $allPaid;
     }
 
     public function allDiscounts()

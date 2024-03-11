@@ -26,6 +26,7 @@ export default defineConfig({
                 'resources/js/vitalSignsMasks.js',
                 'resources/js/users.js',
                 'resources/js/deliveryNoteMasks.js',
+                'resources/js/patientReports.js',
             ],
             refresh: true,
         }),

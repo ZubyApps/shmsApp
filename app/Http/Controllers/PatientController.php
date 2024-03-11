@@ -84,11 +84,11 @@ class PatientController extends Controller
                 'known_conditions']);
     }
 
-    public function loadSummaryBySponsor(Request $request)
+    public function loadRegSummaryBySponsor(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $sponsors = $this->patientService->getNewRegistrationSummaryBySponsor($params, $request);
+        $sponsors = $this->patientService->getNewRegSummaryBySponsor($params, $request);
 
         return response()->json([
             'data' => $sponsors,

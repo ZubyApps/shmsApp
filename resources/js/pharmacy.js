@@ -133,7 +133,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const tableId = '#' + billingDispenseModal._element.querySelector('.visitPrescriptionsTable').id
                 const visitId = billingDispenseBtn.getAttribute('data-id')
                 billingDispenseModal._element.querySelector('#patient').value = billingDispenseBtn.getAttribute('data-patient')
-                billingDispenseModal._element.querySelector('#sponsor').value = billingDispenseBtn.getAttribute('data-sponsor')
+                billingDispenseModal._element.querySelector('#sponsor').value = billingDispenseBtn.getAttribute('data-sponsor') +' - '+ billingDispenseBtn.getAttribute('data-sponsorcat')
                 markDoneBtn.setAttribute('data-id', visitId)
     
                 visitPrescriptionsTable = getPrescriptionsByConsultation(tableId, visitId, billingDispenseModal)

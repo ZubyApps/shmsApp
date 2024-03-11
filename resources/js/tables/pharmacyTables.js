@@ -14,7 +14,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
         {data: row => sponsorAndPayPercent(row)},
         {data: row =>  `
                     <div class="d-flex flex-">
-                        <button class=" btn btn-${row.countPrescribed > row.countBilled ? 'primary' : 'outline-primary'} billingDispenseBtn tooltip-test" title="Billing/Dispense" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                        <button class=" btn btn-${row.countPrescribed > row.countBilled ? 'primary' : 'outline-primary'} billingDispenseBtn tooltip-test" title="Billing/Dispense" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${ row.sponsorCategory }">
                         ${row.countPrescribed} - ${row.countBilled} - ${row.countDispensed}
                         </button>
                     </div>`                
@@ -66,6 +66,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
         const NHIS = data.sponsorCategory == 'NHIS'
         const prescriptions = data.prescriptions
         const closed = +data.closed
+        console.log(credit, NHIS, closed)
         let count = 1
                 if (prescriptions.length > 0) {
                     let totalBill = 0
@@ -110,7 +111,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-secondary">Time: ${p.billed}</td>
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
-                                                        <span class="${closed ? '' : p.qtyBilled ? 'dispenseQtySpan' : ''} btn btn-${p.dispensed ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}" data-qtybilled="${p.qtyBilled}">${p.qtyDispensed ? 'Dispensed: '+p.qtyDispensed : 'Dispense'}</span>
+                                                        <span class="${closed ? '' : p.qtyBilled ? 'dispenseQtySpan' : ''} btn btn-${p.qtyDispensed ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}" data-qtybilled="${p.qtyBilled}">${p.qtyDispensed ? 'Dispensed: '+p.qtyDispensed : 'Dispense'}</span>
                                                         <input class="ms-1 form-control dispenseQtyInput d-none text-secondary" type="number" style="width:6rem;" value="${p.qtyDispensed ?? ''}" name="quantity" id="quantity">
                                                     </div>
                                                 </td>

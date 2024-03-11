@@ -26,7 +26,7 @@ class DoctorService
 
     public function getPaginatedOutpatientConsultedVisits($data, DataTableQueryParams $params, User $user)
     {
-        $orderBy    = 'created_at';
+        $orderBy    = 'consulted';
         $orderDir   =  'desc';
 
         if (! empty($params->searchTerm)) {
@@ -70,7 +70,7 @@ class DoctorService
 
     public function getPaginatedInpatientConsultedVisits($data, DataTableQueryParams $params, User $user)
     {
-        $orderBy    = 'created_at';
+        $orderBy    = 'consulted';
         $orderDir   =  'desc';
 
         if (! empty($params->searchTerm)) {
@@ -119,7 +119,7 @@ class DoctorService
 
     public function getPaginatedAncConsultedVisits($data, DataTableQueryParams $params, User $user)
     {
-        $orderBy    = 'created_at';
+        $orderBy    = 'consulted';
         $orderDir   =  'desc';
 
         if (! empty($params->searchTerm)) {

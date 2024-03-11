@@ -200,7 +200,7 @@
                 </div>
                 <!-- bills table -->
                 <div class="tab-pane fade" id="nav-sentBills" role="tabpanel" aria-labelledby="nav-sentBills-tab" tabindex="0">
-                    <x-form-div class="col-md-6 pt-3 datesDiv">
+                    <x-form-div class="col-xl-6 pt-3 datesDiv">
                         <x-input-span class="">Start</x-input-span>
                         <x-form-input type="date" name="startDate" id="startDate" />
                         <x-input-span class="">End</x-input-span>
