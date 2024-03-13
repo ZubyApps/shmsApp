@@ -108,7 +108,6 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
             {data: "diagnosis"},
             {data: row => sponsorAndPayPercent(row)},
             {data: row => () => {
-                console.log(row.patientType, row.thirtyDayCount)
                 return row.patientType == "ANC" ? row.thirtyDayCount+getOrdinal(row.thirtyDayCount)+' ANC' : row.thirtyDayCount
                 }
             },

@@ -609,6 +609,7 @@ window.addEventListener('DOMContentLoaded', function () {
             ancTreatmentDiv.innerHTML = ''
             hmotreatmentsTable ?  hmotreatmentsTable.draw() : ''
             sentBillsTable ?  sentBillsTable.draw() : ''
+            hmoReportsTable ?  hmoReportsTable.draw() : ''
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
         })

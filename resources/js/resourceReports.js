@@ -29,10 +29,10 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     searchWithDatesBtn.addEventListener('click', function () {
-        if ($.fn.DataTable.isDataTable( '#summaryTable' )){
-            $('#summaryTable').dataTable().fnDestroy()
+        if ($.fn.DataTable.isDataTable( '#usedSummaryTable' )){
+            $('#usedSummaryTable').dataTable().fnDestroy()
         }
-        resourceValuesTable = getInvestigationsSummaryTable('summaryTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value)
+        usedSummaryTable = getUsedResourcesSummaryTable('usedSummaryTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value)
     })
 
     document.querySelector('#summaryTable').addEventListener('click', function (event) {
