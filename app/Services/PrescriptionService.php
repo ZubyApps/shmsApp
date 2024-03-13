@@ -30,6 +30,7 @@ class PrescriptionService
     {
         return DB::transaction(function () use($data, $resource, $user) {
             $bill = null;
+            $nhisBill = fn($value)=>$value/10;
             if ($data->quantity){
                 $bill = $resource->selling_price * $data->quantity;
             }
@@ -49,12 +50,12 @@ class PrescriptionService
                 'doctor_on_call'    => $data->doc
             ]);
 
-            $prescription->update(['nhis_bill' => $bill ? $bill/10 : 0]);
+            $prescription->update(['nhis_bill' => $bill ? $nhisBill($bill) : 0]);
 
             $prescription->visit->update([
                 'viewed_at'         => null,
                 'total_hms_bill'    => $data->quantity ? $prescription->visit->totalHmsBills() : ($prescription->visit->totalHmsBills() - $bill),
-                'total_nhis_bill'    => $data->quantity ? $prescription->visit->totalNhisBills() : ($prescription->visit->totalNhisBills() - $bill ? $bill/10 : 0),
+                'total_nhis_bill'    => $data->quantity ? $prescription->visit->totalNhisBills() : ($prescription->visit->totalNhisBills() - $bill ? $nhisBill($bill) : 0),
                 'pharmacy_done_by'  => $resource->category == 'Medications' || $resource->category == 'Consumables' ? null : $prescription->visit->pharmacy_done_by,
             ]);
 

@@ -85,7 +85,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                             </thead>
                                         <tbody>`
                                 prescriptions.forEach(p => {
-                                        totalBill += +p.bill
+                                        totalBill += NHIS ? +p.nhisBill : +p.hmsBill
                                         child += `
                                             <tr>
                                                 <td class="text-secondary">${count++}</td>
@@ -104,8 +104,8 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-secondary"></td>
                                             </tr>
                                             <tr class="${p.qtyBilled ? '' : 'd-none'}">
-                                                <td class="text-secondary">Price: ${p.bill ? p.price : ''}</td>
-                                                <td class="text-secondary fw-semibold">Bill: ${p.bill} (paid: ${p.amountPaid})</td>
+                                                <td class="text-secondary">Price: ${p.hmsBill ? p.price : ''}</td>
+                                                <td class="text-secondary fw-semibold">${NHIS && p.approved ? 'NHIS Bill: ' + p.nhisBill : 'Bill ' + p.hmsBill} (paid: ${p.amountPaid})</td>
                                                 <td class="text-secondary">Bill by: ${p.hmsBillBy}</td>
                                                 <td class="text-secondary">Time: ${p.billed}</td>
                                                 <td class="text-secondary"> 

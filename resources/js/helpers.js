@@ -368,7 +368,6 @@ const displayPaystatus = (row, credit, NHIS) => {
 }
 
 const admissionStatus = (row) => {
-    console.log(row.ancCount)
     return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
     `<div class="d-flex flex-">
         <div class="dropdown">

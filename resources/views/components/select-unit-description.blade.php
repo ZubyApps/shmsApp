@@ -5,6 +5,7 @@
     <option value="Box(es)">Box(es)</option>
     <option value="Capsule(s)">Capsule(s)</option>
     <option value="Cards(s)">Card(s)</option>
+    <option value="Copy(ies)">Copy(ies)</option>
     <option value="Infusion(s)">Infusion(s)</option>
     <option value="Operation(s)">Operation(s)</option>
     <option value="Packs">Pack(s)</option>

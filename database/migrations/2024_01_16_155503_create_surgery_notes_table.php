@@ -48,7 +48,8 @@ return new class extends Migration
             $table->dateTime('tourniquet_time')->nullable();
             $table->dateTime('tourniquet_out')->nullable();
             $table->dateTime('baby_out')->nullable();
-            $table->string('sex')->nullable();
+            $table->integer('female')->nullable();
+            $table->integer('male')->nullable();
             $table->string('apgar_score')->nullable();
             $table->string('weight')->nullable();
             $table->string('cs_surgeon')->nullable();

@@ -59,11 +59,9 @@ class BillingService
             ->where('consulted', '!=', null)
             ->where('closed', false)
             ->where(function (Builder $query){
-                $query->whereColumn('total_hms_bill', '>', 'total_paid');
-                    // ->orWhereColumn('total_nhis_bill', '>', 'total_paid');
-
+                $query->whereColumn('total_hms_bill', '>', 'total_paid')
+                    ->orWhereColumn('total_nhis_bill', '>', 'total_paid');
             })
-            // ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
@@ -75,10 +73,10 @@ class BillingService
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('closed', false)
-                    // ->where(function (Builder $query) {
-                    //     $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
-                    //     ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
-                    // })
+                    ->where(function (Builder $query){
+                        $query->whereColumn('total_hms_bill', '>', 'total_paid')
+                            ->whereColumn('total_nhis_bill', '>', 'total_paid');
+                    })
                     ->where(function (Builder $query) {
                         $query->where('admission_status', '=', 'Inpatient')
                         ->orWhere('admission_status', '=', 'Observation');
@@ -94,7 +92,10 @@ class BillingService
                     ->where('closed', false)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
-                    ->whereColumn('total_hms_bill', '>', 'total_paid')
+                    ->where(function (Builder $query){
+                        $query->whereColumn('total_hms_bill', '>', 'total_paid')
+                            ->whereColumn('total_nhis_bill', '>', 'total_paid');
+                    })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -192,7 +193,8 @@ class BillingService
                     'item'              => $prescription->resource->name,
                     'unitPrice'         => $prescription->resource->selling_price,
                     'quantity'          => $prescription->qty_billed ?? '',
-                    'bill'              => $prescription->hms_bill ?? '',
+                    'hmsBill'           => $prescription->hms_bill ?? '',
+                    'nhisBill'          => $prescription->nhis_bill ?? '',
                     'approved'          => $prescription->approved,
                     'rejected'          => $prescription->rejected,
                     'hmoNote'           => $prescription->hmo_note ?? '',
@@ -244,8 +246,9 @@ class BillingService
     {
         $visit->update([
             'total_hms_bill'    => $visit->discount ? ($visit->total_hms_bill + $visit->discount) - $request->discount : $visit->total_hms_bill - $request->discount,
-            'discount'      => $request->discount,
-            'discount_by'   => $user->id
+            'total_nhis_bill'   => $visit->discount ? ($visit->total_nhis_bill + $visit->discount) - $request->discount : $visit->total_nhis_bill - $request->discount,
+            'discount'          => $request->discount,
+            'discount_by'       => $user->id
         ]);
 
         return $visit;

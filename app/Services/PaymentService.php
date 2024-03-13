@@ -30,7 +30,9 @@ Class PaymentService
             $totalPayments = $payment->visit->totalPayments();
 
             $payment->visit->update([
-                'total_paid' => $totalPayments
+                'total_paid'        => $totalPayments,
+                'total_hms_bill'    => $payment->visit->totalHmsBills(),
+                'total_nhis_bill'   => $payment->visit->totalNhisBills(),
             ]);
 
             $prescriptions = $payment->visit->prescriptions;
@@ -77,8 +79,13 @@ Class PaymentService
 
             $totalPayments = $payment->visit->totalPayments();
 
+            // $payment->visit->update([
+            //     'total_paid' => $totalPayments
+            // ]);
             $payment->visit->update([
-                'total_paid' => $totalPayments
+                'total_paid'        => $totalPayments,
+                'total_hms_bill'    => $payment->visit->totalHmsBills(),
+                'total_nhis_bill'   => $payment->visit->totalNhisBills(),
             ]);
 
             $prescriptions = $payment->visit->prescriptions;

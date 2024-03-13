@@ -196,7 +196,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                                 <td class="">${account.format(p.unitPrice)}</td>
                                                 <td class="">${p.quantity}</td>
                                                 <td class="${p.quantity ? 'text-secondary' : 'colour-change2 fw-bold'}">${p.description}</td>                
-                                                <td>${account.format(p.bill)}</td>
+                                                <td>${account.format(p.hmsBill)}</td>
                                             </tr>
                                             `
                                     })
