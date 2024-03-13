@@ -47,8 +47,11 @@
                             <x-form-input name="headCircumference" id="headCircumference" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
-                            <x-input-span>Sex (fill it manually)<x-required-span /></x-input-span>
-                            <x-form-textarea type="text" name="sex" id="sex" :readonly="$isView"></x-form-textarea>
+                            <x-input-span>Sex<x-required-span /></x-input-span>
+                            <x-input-span class="">Female</x-input-span>
+                            <x-form-input type="number" name="female" id="female" :readonly="$isView"/>
+                            <x-input-span class="">Male</x-input-span>
+                            <x-form-input type="number" name="male" id="male" :readonly="$isView"/>
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>EBL<x-required-span /></x-input-span>

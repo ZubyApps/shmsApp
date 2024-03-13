@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Services\DatatablesService;
+use App\Services\HospitalAndOthersReportService;
+use App\Services\InvestigationReportService;
+use App\Services\MedReportService;
 use App\Services\PatientReportService;
+use App\Services\PharmacyReportService;
+use App\Services\ResourceReportService;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
@@ -12,7 +17,11 @@ class ReportController extends Controller
         private readonly SponsorCategoryController $sponsorCategoryController, 
         private readonly DatatablesService $datatablesService, 
         private readonly PatientReportService $PatientReportService,
-        // private readonly VisitService $visitService
+        private readonly MedReportService $medReportService,
+        private readonly InvestigationReportService $investigationReportService,
+        private readonly PharmacyReportService $pharmacyReportService,
+        private readonly HospitalAndOthersReportService $hospitalAndOthersReportService,
+        private readonly ResourceReportService $resourceReportService,
         )
     {
         
@@ -23,6 +32,7 @@ class ReportController extends Controller
         return view('reports.reports');
     }
 
+    /** Patients reports */    
     public function indexPatients()
     {
         return view('reports.patients');
@@ -98,5 +108,121 @@ class ReportController extends Controller
         $loadTransformer = $this->PatientReportService->getRegTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $summary, $params);
+    }
+
+    /** Medical Services Report */
+    public function indexMedServices()
+    {
+        return view('reports.medServices');
+    }
+
+    public function loadMedServicesSummary(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->medReportService->getMedServicesSummary($params, $request);
+
+        $loadTransformer = $this->medReportService->getMedServicesTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    public function loadByResource(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->medReportService->getPatientsByResource($params, $request);
+
+        $loadTransformer = $this->medReportService->getByResourceTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    /** Medical Services Report */
+    public function indexInvestigations()
+    {
+        return view('reports.investigations');
+    }
+
+    public function loadInvestigationsSummary(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->investigationReportService->getInvestigationsSummary($params, $request);
+
+        $loadTransformer = $this->investigationReportService->getInvestigationsTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    /** Medical Services Report */
+    public function indexPharmacy()
+    {
+        return view('reports.pharmacy');
+    }
+
+    public function loadPharmacySummary(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->pharmacyReportService->getPharmacySummary($params, $request);
+
+        $loadTransformer = $this->pharmacyReportService->getPharmacyTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    /** Medical Services Report */
+    public function indexHospitalAndOthers()
+    {
+        return view('reports.hospitalAndOthers');
+    }
+
+    public function loadHospitalAndOthersSummary(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->hospitalAndOthersReportService->getHospitalAndOthersSummary($params, $request);
+
+        $loadTransformer = $this->hospitalAndOthersReportService->getHospitalAndOthersTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    public function indexResources()
+    {
+        return view('reports.resources');
+    }
+
+    public function loadResourceValueSummary(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $resources = $this->resourceReportService->getResourceValueSummary($params, $request);
+
+        return response()->json([
+            'data' => $resources,
+            'draw' => $params->draw,
+            'recordsTotal' => count($resources),
+            'recordsFiltered' => count($resources)
+        ]);
+    }
+
+    public function loadUsedResourcesSummary(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $categories = $this->resourceReportService->getUsedResourcesSummary($params, $request);
+
+        // $loadTransformer = $this->resourceReportService->getUsedResourcesTransformer();
+
+        return response()->json([
+            'data' => $categories,
+            'draw' => $params->draw,
+            'recordsTotal' => count($categories),
+            'recordsFiltered' => count($categories)
+        ]);
+
+        // return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 }

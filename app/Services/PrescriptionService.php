@@ -40,6 +40,7 @@ class PrescriptionService
                 'consultation_id'   => $data->conId,
                 'visit_id'          => $data->visitId,
                 'qty_billed'        => $data->quantity,
+                'qty_dispensed'     => $this->determineDispense($resource, $data),
                 'hms_bill'          => $bill,
                 'hms_bill_date'     => $bill ? new Carbon() : null,
                 'hms_bill_by'       => $bill ? $user->id : null,
@@ -48,9 +49,12 @@ class PrescriptionService
                 'doctor_on_call'    => $data->doc
             ]);
 
+            $prescription->update(['nhis_bill' => $bill ? $bill/10 : 0]);
+
             $prescription->visit->update([
                 'viewed_at'         => null,
                 'total_hms_bill'    => $data->quantity ? $prescription->visit->totalHmsBills() : ($prescription->visit->totalHmsBills() - $bill),
+                'total_nhis_bill'    => $data->quantity ? $prescription->visit->totalNhisBills() : ($prescription->visit->totalNhisBills() - $bill ? $bill/10 : 0),
                 'pharmacy_done_by'  => $resource->category == 'Medications' || $resource->category == 'Consumables' ? null : $prescription->visit->pharmacy_done_by,
             ]);
 
@@ -67,6 +71,15 @@ class PrescriptionService
 
     public function arrangePrescription($data){
         return $data->dose ? $data->dose.$data->unit.' '.$data->frequency.' for '.$data->days.'day(s)' : null;
+    }
+
+    public function determineDispense(Resource $resource, $data){
+        if ($resource->category == 'Medications' || $resource->category == 'Consumables' || $resource->sub_category == 'Investigations'){
+            return null;
+        }
+        $resource->stock_level = $resource->stock_level - $data->quantity; 
+        $resource->save();
+        return $data->quantity;
     }
 
     public function getPaginatedInitialPrescriptions(DataTableQueryParams $params, $data)
@@ -133,7 +146,7 @@ class PrescriptionService
                 'approved'          => $prescription->approved,
                 'rejected'          => $prescription->rejected,
                 'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
-                'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
+                'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
                 'diagnosis'         => $prescription->consultation?->icd11_diagnosis ??
                                        $prescription->consultation?->provisional_diagnosis ??
                                        $prescription->consultation?->assessment,
@@ -230,7 +243,7 @@ class PrescriptionService
                 'chartable'             => $prescription->chartable,
                 'discontinued'          => $prescription->discontinued,
                 'paid'                  => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
-                'paidNhis'              => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
+                'paidNhis'              => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
                 'doseCount'             => $doseCount = $prescription->medicationCharts->count(),
                 'givenCount'            => $givenCount = $prescription->medicationCharts->where('dose_given', '!=', null)->count(),
                 'doseComplete'          => $this->completed($doseCount, $givenCount),
@@ -388,7 +401,7 @@ class PrescriptionService
 
     public function processDeletion(Prescription $prescription)
     {
-        return DB::transaction(function () use( $prescription) {
+        return DB::transaction(function () use($prescription) {
             if ($prescription->qty_dispensed){
                 $resource = $prescription->resource;
                 $resource->stock_level = $resource->stock_level + $prescription->qty_dispensed;
@@ -405,7 +418,7 @@ class PrescriptionService
         if ($data->category){
             if ($data->startDate && $data->endDate){
                 return DB::table('prescriptions')
-                            ->selectRaw('SUM(prescriptions.hms_bill) as totalHmsBill, SUM(prescriptions.hmo_bill) as totalHmoBill, SUM(prescriptions.paid) as totalPaid, resources.name as rescource, resources.id as id, sponsor_categories.name as category, COUNT(resources.id) as resourceCount')
+                            ->selectRaw('SUM(prescriptions.hms_bill) as totalHmsBill, SUM(prescriptions.hmo_bill) as totalHmoBill, SUM(prescriptions.nhis_bill) as totalNhisBill, SUM(prescriptions.paid) as totalPaid, resources.name as rescource, resources.id as id, sponsor_categories.name as category, COUNT(resources.id) as resourceCount')
                             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                             ->where('sponsors.category_name', $data->category)
@@ -418,7 +431,7 @@ class PrescriptionService
                             ->toArray();
             }
             return DB::table('prescriptions')
-                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount')
+                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(prescriptions.nhis_bill) as totalNhisBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount')
                             ->leftJoin('resources', 'prescriptions.resource_id', '=', 'resources.id')
                             // ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                             ->where('sponsors.category_name', $data->category)

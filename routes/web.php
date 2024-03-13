@@ -156,6 +156,21 @@ Route::middleware('auth')->group(function () {
             Route::get('/patients/bysponsormonth', [ReportController::class, 'loadBySponsorMonth']);
             Route::get('/patients/frequency', [ReportController::class, 'loadPatientFrequency']);
             Route::get('/patients/regsummary', [ReportController::class, 'loadRegSummary']);
+            Route::get('/medservices', [ReportController::class, 'indexMedServices'])->name('Medical Services');
+            Route::get('/medservices/summary', [ReportController::class, 'loadMedServicesSummary']);
+            Route::get('/medservices/byresource', [ReportController::class, 'loadByResource']);
+            Route::get('/investigations', [ReportController::class, 'indexInvestigations'])->name('Investigation Reports');
+            Route::get('/investigations/summary', [ReportController::class, 'loadInvestigationsSummary']);
+            Route::get('/investigations/byresource', [ReportController::class, 'loadByResource']);
+            Route::get('/pharmacy', [ReportController::class, 'indexPharmacy'])->name('Pharmacy Reports');
+            Route::get('/pharmacy/summary', [ReportController::class, 'loadPharmacySummary']);
+            Route::get('/pharmacy/byresource', [ReportController::class, 'loadByResource']);
+            Route::get('/hospitalandothers', [ReportController::class, 'indexHospitalAndOthers'])->name('Hospital Services Reports');
+            Route::get('/hospitalandothers/summary', [ReportController::class, 'loadHospitalAndOthersSummary']);
+            Route::get('/hospitalandothers/byresource', [ReportController::class, 'loadByResource']);
+            Route::get('/resources', [ReportController::class, 'indexResources'])->name('Resource Reports');
+            Route::get('/resources/summary', [ReportController::class, 'loadResourceValueSummary']);
+            Route::get('/resources/usedsummary', [ReportController::class, 'loadUsedResourcesSummary']);
         });
     });
 

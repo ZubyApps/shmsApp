@@ -561,6 +561,7 @@ window.addEventListener('DOMContentLoaded', function () {
             outPatientsVisitTable ? outPatientsVisitTable.draw() : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+            clearValidationErrors(modal)
         })
     })
 

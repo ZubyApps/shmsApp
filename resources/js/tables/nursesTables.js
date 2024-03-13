@@ -679,7 +679,8 @@ const getDeliveryNoteTable = (tableId, conId, view) => {
             {data: "timeAdmitted"},
             {data: "timeDelivered"},
             {data: "modeOfDelivery"},
-            {data: "sex"},
+            {data: "male"},
+            {data: "female"},
             {data: "ebl"},
             {data: "nurse"},
             {data: row => function () {

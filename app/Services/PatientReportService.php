@@ -97,7 +97,7 @@ class PatientReportService
     public function getPatientsDistribution1(DataTableQueryParams $params, $data)
     {
         return DB::table('patients')
-            ->selectRaw('COUNT(sponsors.id) as sponsorCount, sponsor_categories.name as category, COUNT(patients.id) as patientsCount, SUM(CASE WHEN sex = "Female" THEN 1 ELSE 0 END) AS female, SUM(CASE WHEN sex = "Male" THEN 1 ELSE 0 END) AS male')
+            ->selectRaw('COUNT(DISTINCT(sponsors.id)) as sponsorCount, sponsor_categories.name as category, COUNT(patients.id) as patientsCount, SUM(CASE WHEN sex = "Female" THEN 1 ELSE 0 END) AS female, SUM(CASE WHEN sex = "Male" THEN 1 ELSE 0 END) AS male')
             ->leftJoin('sponsors', 'patients.sponsor_id', '=', 'sponsors.id')
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->groupBy('category')
@@ -275,6 +275,7 @@ class PatientReportService
                                 ->orderBy('created_at');
                             } else {
                                 $query->whereMonth('created_at', $current->month)
+                                      ->whereYear('created_at', $current->year)
                                 ->orderBy('created_at');
                             }
                         }

@@ -24,7 +24,8 @@ class DeliveryNoteResource extends JsonResource
             'modeOfDelivery'    => $this->mode_of_delivery,
             'parity'            => $this->parity,
             'headCircumference' => $this->head_circumference,
-            'sex'               => $this->sex,
+            'female'            => $this->female,
+            'male'              => $this->male,
             'ebl'               => $this->ebl,
             'note'              => $this->note,
         ];

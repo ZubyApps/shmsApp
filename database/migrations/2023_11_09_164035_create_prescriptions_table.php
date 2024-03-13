@@ -22,6 +22,7 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->integer('qty_billed')->nullable();
             $table->integer('hms_bill')->nullable();
+            $table->integer('nhis_bill')->nullable();
             $table->dateTime('hms_bill_date')->nullable();
             $table->foreignIdFor(User::class, 'hms_bill_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->integer('hmo_bill')->nullable();

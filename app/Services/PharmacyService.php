@@ -186,6 +186,7 @@ class PharmacyService
             $prescription->update([
                 'qty_billed'        => $data->quantity,
                 'hms_bill'          => $bill,
+                'nhis_bill'         => $bill/10,
                 'hms_bill_date'     => $bill ? new Carbon() : null,
                 'hms_bill_by'       => $bill ? $user->id : null,
             ]);
@@ -283,7 +284,7 @@ class PharmacyService
                     'id'                => $prescription->id ?? '',
                     'price'             => $prescription->resource?->selling_price ?? '',
                     'prescribedBy'      => $prescription->user?->username ?? '',
-                    'prescribed'        => (new Carbon($prescription->created_at))->format('D/m/y g:ia') ?? '',
+                    'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia') ?? '',
                     'item'              => $prescription->resource->nameWithIndicators(),
                     'stock'             => $prescription->resource->stock_level,
                     'category'          => $prescription->resource->category,

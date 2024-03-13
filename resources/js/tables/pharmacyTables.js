@@ -66,7 +66,6 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
         const NHIS = data.sponsorCategory == 'NHIS'
         const prescriptions = data.prescriptions
         const closed = +data.closed
-        console.log(credit, NHIS, closed)
         let count = 1
                 if (prescriptions.length > 0) {
                     let totalBill = 0

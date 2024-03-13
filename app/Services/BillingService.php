@@ -58,7 +58,11 @@ class BillingService
             return $this->visit
             ->where('consulted', '!=', null)
             ->where('closed', false)
-            ->whereColumn('total_hms_bill', '>', 'total_paid')
+            ->where(function (Builder $query){
+                $query->whereColumn('total_hms_bill', '>', 'total_paid');
+                    // ->orWhereColumn('total_nhis_bill', '>', 'total_paid');
+
+            })
             // ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
@@ -194,7 +198,7 @@ class BillingService
                     'hmoNote'           => $prescription->hmo_note ?? '',
                     'statusBy'          => $prescription->approvedBy?->username ?? $prescription->rejectedBy?->username ?? '',
                     'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
-                    'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
+                    'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
                 ]),
                 
             ];

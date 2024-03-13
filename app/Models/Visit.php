@@ -170,7 +170,7 @@ class Visit extends Model
     {
         $totalNhisBill = 0;
          foreach($this->prescriptions as $prescription){
-            $totalNhisBill += $prescription->approved ? ($prescription->hms_bill/10) : $prescription->hms_bill;
+            $totalNhisBill += $prescription->approved ? $prescription->nhis_bill : $prescription->hms_bill;
          }
 
          return $totalNhisBill;
