@@ -982,7 +982,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const treatmentTableId = saveMedicationChartBtn.getAttribute('data-table')
         const conId = saveMedicationChartBtn.getAttribute('data-consultation')
         const visitId = saveMedicationChartBtn.getAttribute('data-visit')
-        conId == 'null' ? alert('This prescription has not been confirmed by the Dr. You can only chat from emergency') : ''
+        conId == 'null' ? alert('This prescription has not been confirmed by the Doctor. Ask the doctor to confirm it or chat this medication from the emergency module') : ''
         saveMedicationChartBtn.setAttribute('disabled', 'disabled')
 
         let data = { ...getDivData(medicationChartDiv), prescriptionId, conId, visitId }
