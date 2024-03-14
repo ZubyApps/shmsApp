@@ -274,7 +274,7 @@
                             </thead>
                             <tbody>
                             </tbody>
-                            <tfoot> class="fw-semibold"
+                            <tfoot>
                                 <tr class="">
                                     <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>

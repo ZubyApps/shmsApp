@@ -114,4 +114,15 @@ class BillingController extends Controller
 
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
+
+    public function loadAllOpenVisits(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->billingService->getpaginatedFilteredBillingVisits($params, $request);
+       
+        $loadTransformer = $this->billingService->getVisitsBillingTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
 }

@@ -7,6 +7,7 @@
 @include('reports.modals.byResourceModal', ['title' => 'Patients', 'id' => 'byResourceModal'])
 
 <div class="container mt-5">
+    @include('reports.reportGrid')
     <div>
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -72,7 +73,6 @@
                         <thead>
                             <tr>
                                 <th>Category</th>
-                                {{-- <th>Subcategory</th> --}}
                                 <th>Resources</th>
                                 <th>Prescriptions</th>
                                 <th>Expected Cost</th>
@@ -80,7 +80,8 @@
                                 <th>Expected Income</th>
                                 <th>Dispensed Income</th>
                                 <th>Actual Income</th>
-                                <th>Deficit(Actual - Expected)</th>
+                                <th>Actual - Ex Cost</th>
+                                <th>Actual - Expected</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -95,7 +96,7 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                {{-- <td></td> --}}
+                                <td></td>
                             </tr>
                         </tfoot>
                     </table>

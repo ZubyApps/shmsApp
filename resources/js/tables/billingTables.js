@@ -101,7 +101,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) =
         orderMulti: true,
         search:true,
         language: {
-            emptyTable: 'No patient record'
+            emptyTable: urlSuffix == 'openvisits' ? 'No open visits' : 'No patient record'
         },
         columns: preparedColumns
     });

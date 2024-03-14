@@ -7,6 +7,7 @@
 @include('reports.modals.byResourceModal', ['title' => 'Patients', 'id' => 'byResourceModal'])
 
 <div class="container mt-5">
+    @include('reports.reportGrid')
     <div>
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">

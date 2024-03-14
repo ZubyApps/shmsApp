@@ -974,31 +974,6 @@ window.addEventListener('DOMContentLoaded', function () {
                         })
                 } deleteDeliveryNoteBtn.removeAttribute('disabled')
             }
-    
-            // if (saveWardAndBedBtn) {
-            //     wardAndBedDiv.forEach(div => {
-            //         if (div.dataset.div === saveWardAndBedBtn.dataset.btn) {
-            //             console.log(div.dataset.div, saveWardAndBedBtn.dataset.btn)
-            //             saveWardAndBedBtn.setAttribute('disabled', 'disabled')
-            //             const conId = saveWardAndBedBtn.dataset.id
-    
-            //             http.post(`consultation/${conId}`, { ...getDivData(div) }, { "html": div })
-            //             .then((response) => {
-            //                 if (response.status >= 200 || response.status <= 300) {
-            //                     new Toast(div.querySelector('#saveUpdateAdmissionStatusToast'), { delay: 2000 }).show()
-            //                     clearDivValues(div)
-            //                     clearValidationErrors(div)
-            //                     wardAndBedModal ? wardAndBedModal.hide() : ''
-            //                 }
-            //                 saveWardAndBedBtn.removeAttribute('disabled')
-            //             })
-            //             .catch((error) => {
-            //                 console.log(error)
-            //                 saveWardAndBedBtn.removeAttribute('disabled')
-            //             })
-            //         }
-            //     })
-            // }
         })
     })
 
@@ -1007,7 +982,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const treatmentTableId = saveMedicationChartBtn.getAttribute('data-table')
         const conId = saveMedicationChartBtn.getAttribute('data-consultation')
         const visitId = saveMedicationChartBtn.getAttribute('data-visit')
-
+        !conId ? alert('This prescription has not been confirmed by the Dr. You can only chat from emergency') : ''
         saveMedicationChartBtn.setAttribute('disabled', 'disabled')
 
         let data = { ...getDivData(medicationChartDiv), prescriptionId, conId, visitId }

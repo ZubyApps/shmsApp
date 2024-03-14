@@ -5,18 +5,18 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
+use App\Models\PayMethod;
 use App\Models\Prescription;
-use App\Models\Resource;
 use App\Models\ResourceCategory;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
-class ResourceReportService
+class AccountsReportService
 {
     public function __construct(
-        private readonly Resource $resource, 
+        private readonly PayMethod $payMethod, 
         private readonly ResourceCategory $resourceCategory, 
         private readonly HelperService $helperService,
         private readonly Prescription $prescription,
@@ -24,14 +24,28 @@ class ResourceReportService
     {
     }
 
-    public function getResourceValueSummary(DataTableQueryParams $params, $data)
+    public function getPaymethodsSummary(DataTableQueryParams $params, $data)
     {
-        return DB::table('resources')
-        ->selectRaw('COUNT(DISTINCT(resource_sub_categories.id)) as subCategoryCount, resource_categories.name AS rCategory, COUNT(resources.id) as resourceCount, SUM(purchase_price * stock_level) as purchacedValue, SUM(selling_price * stock_level) as sellValue, SUM(stock_level) as stockLevel')
-            ->leftJoin('resource_sub_categories', 'resources.resource_sub_category_id', '=', 'resource_sub_categories.id')
-            ->leftJoin('resource_categories', 'resource_sub_categories.resource_category_id', '=', 'resource_categories.id')
-            ->groupBy('rCategory')
-            ->orderBy('resourceCount', 'desc')
+        $current = new CarbonImmutable();
+
+        if ($data->startDate && $data->endDate){
+        return DB::table('pay_methods')
+            ->selectRaw('COUNT(DISTINCT(payments.id)) as paymentCount, pay_methods.name AS pMethods, SUM(payments.amount_paid) as amountPaid')
+            ->leftJoin('payments', 'pay_methods.id', '=', 'payments.pay_method_id')
+            ->whereBetween('payments.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+            ->groupBy('pMethods')
+            ->orderBy('paymentCount', 'desc')
+            ->get()
+            ->toArray();
+        }
+
+        return DB::table('pay_methods')
+            ->selectRaw('COUNT(DISTINCT(payments.id)) as paymentCount, pay_methods.name AS pMethods, pay_methods.id, SUM(payments.amount_paid) as amountPaid')
+            ->leftJoin('payments', 'pay_methods.id', '=', 'payments.pay_method_id')
+            ->whereMonth('payments.created_at', $current->month)
+            ->whereYear('payments.created_at', $current->year)
+            ->groupBy('pMethods', 'id')
+            ->orderBy('paymentCount', 'desc')
             ->get()
             ->toArray();
     }
@@ -49,7 +63,6 @@ class ResourceReportService
                 ->leftJoin('resource_sub_categories', 'resource_categories.id', '=', 'resource_sub_categories.resource_category_id')
                 ->leftJoin('resources', 'resource_sub_categories.id', '=', 'resources.resource_sub_category_id')
                 ->leftJoin('prescriptions', 'resources.id', '=', 'prescriptions.resource_id')
-                // ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
                 ->whereBetween('prescriptions.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                 ->groupBy('rCategory')
                 ->orderBy('rCategory', 'desc')
@@ -63,7 +76,6 @@ class ResourceReportService
             ->leftJoin('resource_sub_categories', 'resource_categories.id', '=', 'resource_sub_categories.resource_category_id')
             ->leftJoin('resources', 'resource_sub_categories.id', '=', 'resources.resource_sub_category_id')
             ->leftJoin('prescriptions', 'resources.id', '=', 'prescriptions.resource_id')
-            // ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
             ->whereMonth('prescriptions.created_at', $current->month)
             ->whereYear('prescriptions.created_at', $current->year)
             ->groupBy('rCategory')
@@ -86,7 +98,7 @@ class ResourceReportService
          };
     }
 
-    public function getPatientsByResource(DataTableQueryParams $params, $data)
+    public function getVisitsByPayMethod(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
@@ -94,7 +106,7 @@ class ResourceReportService
 
         if (! empty($params->searchTerm)) {
             if ($data->startDate && $data->endDate){
-                return $this->prescription
+                return $this->visit
                             ->whereRelation('resource', 'id', '=', $data->resourceId)
                             ->where(function (Builder $query) use($params) {
                                 $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )

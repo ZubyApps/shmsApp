@@ -28,7 +28,7 @@
 @include('extras.nursesReportTemplateModal', ['title' => 'Edit Report', 'isUpdate' => true, 'id' => 'editNursesReportTemplateModal' ])
 @include('nurses.wardAndBedModal', ['title' => 'Update Admission Details', 'isNurses' => true, 'id' => 'wardAndBedModal'])
 
-<div class="container p-1 mt-5">
+<div class="container mt-5">
     <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="upcomingMedicationsoffcanvas"
         aria-labelledby="upcomingMedicationsoffcanvasLabel">
         <div class="offcanvas-header">

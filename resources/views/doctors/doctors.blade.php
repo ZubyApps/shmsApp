@@ -29,7 +29,7 @@
 @include('extras.medicalReportTemplateModal', ['title' => 'Edit Medical Report', 'isUpdate' => true, 'id' => 'editMedicalReportTemplateModal' ])
 @include('extras.viewMedicalReportModal', ['title' => '', 'isUpdate' => true, 'id' => 'viewMedicalReportModal' ])
 
-    <div class="container p-1 mt-5">
+    <div class="container mt-5">
         <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas1"
             aria-labelledby="waitingListOffcanvasLabel">
             <div class="offcanvas-header">

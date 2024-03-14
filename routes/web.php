@@ -171,6 +171,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/resources', [ReportController::class, 'indexResources'])->name('Resource Reports');
             Route::get('/resources/summary', [ReportController::class, 'loadResourceValueSummary']);
             Route::get('/resources/usedsummary', [ReportController::class, 'loadUsedResourcesSummary']);
+            Route::get('/accounts', [ReportController::class, 'indexAccounts'])->name('Account Reports');
+            Route::get('/accounts/summary', [ReportController::class, 'loadPayMethodsSummary']);
         });
     });
 
@@ -250,6 +252,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('billing')->group(function () {
             Route::get('', [BillingController::class, 'index'])->name('Billing');
             Route::get('/load/consulted', [BillingController::class, 'loadVisitsByFilterBilling']);
+            Route::get('/load/openvisits', [BillingController::class, 'loadAllOpenVisits']);
             Route::get('/bill', [BillingController::class, 'loadPatientBill'])->withoutMiddleware('billing');
             Route::get('/payment', [BillingController::class, 'loadPatientPayment']);
             Route::get('/summary', [BillingController::class, 'loadBillSummary']);

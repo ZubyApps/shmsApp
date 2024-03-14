@@ -3,12 +3,12 @@ import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 
-const getResourceValueSummaryTable = (tableId, startDate, endDate) => {
+const getAccountsSummaryTable = (tableId, startDate, endDate) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
     const summaryTable = new DataTable(`#${tableId}`, {
         serverSide: true,
-        ajax:  {url: '/reports/resources/summary', data: {
+        ajax:  {url: '/reports/accounts/summary', data: {
             'startDate' : startDate, 
             'endDate'   : endDate,
             }
@@ -20,17 +20,11 @@ const getResourceValueSummaryTable = (tableId, startDate, endDate) => {
             var api = this.api()
             $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
             $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
-            $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
-            $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
-            $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: "rCategory"},
-            {data: "subCategoryCount"},
-            {data: "resourceCount"},
-            {data: "stockLevel"},
-            {data: row => account.format(row.purchacedValue)},
-            {data: row => account.format(row.sellValue)},
+            {data: row => `<span class="btn text-decoration-underline showPatientsBtn tooltip-test" title="show patients" data-id="${row.id}">${row.pMethods}</span>`},
+            {data: "paymentCount"},
+            {data: row => account.format(row.amountPaid)},
         ]
     })
 
@@ -93,7 +87,7 @@ const getUsedResourcesSummaryTable = (tableId, startDate, endDate) => {
     return usedSummaryTable
 }
 
-const getByResourceTable = (tableId, resourceId, modal, startDate, endDate) => {
+const getByPayMethosTable = (tableId, resourceId, modal, startDate, endDate) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
     const patientsByResourceTable = new DataTable(`#${tableId}`, {
@@ -134,4 +128,4 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate) => {
     return patientsByResourceTable
 }
 
-export {getResourceValueSummaryTable, getUsedResourcesSummaryTable, getByResourceTable}
+export {getAccountsSummaryTable, getUsedResourcesSummaryTable, getByPayMethosTable}

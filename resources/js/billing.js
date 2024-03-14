@@ -19,12 +19,13 @@ window.addEventListener('DOMContentLoaded', function () {
     const outPatientsTab                = document.querySelector('#nav-outPatients-tab')
     const inPatientsTab                 = document.querySelector('#nav-inPatients-tab')
     const ancPatientsTab                = document.querySelector('#nav-ancPatients-tab')
+    const openVisitsTab                = document.querySelector('#nav-openVisits-tab')
     const changeBillSpan                = billModal._element.querySelector('.changeBill')
     const downloadBillSummaryBtn        = billModal._element.querySelector('#downloadBillSummaryBtn')
     const billSummaryBody               = billModal._element.querySelector('.billSummaryBody')
 
 
-    let inPatientsVisitTable, ancPatientsVisitTable
+    let inPatientsVisitTable, ancPatientsVisitTable, openVisitsTable
 
     const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient', 'consulted')
     const waitingTable = getWaitingTable('waitingTable')
@@ -45,6 +46,14 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#ancPatientsVisitTable').dataTable().fnDraw()
         } else {
             ancPatientsVisitTable = getPatientsVisitsByFilterTable('ancPatientsVisitTable', 'ANC', 'consulted')
+        }
+    })
+
+    openVisitsTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#openVisitsTable' )){
+            $('#openVisitsTable').dataTable().fnDraw()
+        } else {
+            openVisitsTable = getPatientsVisitsByFilterTable('openVisitsTable', '', 'openvisits')
         }
     })
 
@@ -86,7 +95,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #outstandingBillsTable').forEach(table => {
+    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #outstandingBillsTable, #openVisitsTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const billingDetailsBtn = event.target.closest('.consultationDetailsBtn')
             const patientsBillBtn   = event.target.closest('.patientsBillBtn')
@@ -119,6 +128,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             outPatientsVisitTable.draw()
                             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
                             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+                            openVisitsTable ? openVisitsTable.draw() : ''
                         }
                     })
                     .catch((error) => {
@@ -256,10 +266,13 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    billingModal._element.addEventListener('hide.bs.modal', function () {
-        outPatientsVisitTable.draw()
-        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
-        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+    document.querySelectorAll('#billingModal, #billModal').forEach(modal => {
+        modal.addEventListener('hide.bs.modal', function () {
+            outPatientsVisitTable.draw()
+            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+            openVisitsTable ? openVisitsTable.draw() : ''
+        })
     })
 
     outstandingBillsModal._element.addEventListener('hide.bs.modal', function () {

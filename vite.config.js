@@ -32,6 +32,7 @@ export default defineConfig({
                 'resources/js/pharmacyReports.js',
                 'resources/js/hospitalAndOthersReports.js',
                 'resources/js/resourceReports.js',
+                'resources/js/accountReports.js',
             ],
             refresh: true,
         }),

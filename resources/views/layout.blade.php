@@ -6,11 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- <title>{{ config('app.name', 'ShmsApp') }}</title> --}}
-
     <title>{{ Route::currentRouteName() }}</title>
-
-    <!-- Fonts -->
 
     <!-- Scripts -->
     @vite(['resources/css/app.scss', 'resources/js/app.js'])

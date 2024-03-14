@@ -44,7 +44,7 @@
         </div>
       </div>
       <div class="col d-flex align-items-start">
-        <i class="bi bi-receipt me-3 btn btn-outline-primary"></i>
+        <a href="reports/accounts"><i class="bi bi-receipt me-3 btn btn-outline-primary"></i></a>
         <div>
           <h3 class="fw-bold mb-0 fs-4 text-primary">Accounts</h3>
           <p>Paragraph of text beneath the heading to explain the heading.</p>

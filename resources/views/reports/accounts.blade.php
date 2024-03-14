@@ -2,7 +2,7 @@
 
 
 @section('content')
-@vite(['resources/js/medReports.js'])
+@vite(['resources/js/accountReports.js'])
 
 @include('reports.modals.byResourceModal', ['title' => 'Patients', 'id' => 'byResourceModal'])
 
@@ -14,16 +14,16 @@
                 <button class="nav-link active"  id="nav-summary-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-summary" type="button" role="tab" aria-controls="nav-summary"
                     aria-selected="true">Summary</button>
-                {{-- <button class="nav-link"  id="nav-distribution2-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-distribution2" type="button" role="tab" aria-controls="nav-distribution2"
-                    aria-selected="true">Distribution 2</button>
-                <button class="nav-link"  id="nav-frequency-tab" data-bs-toggle="tab"
+                <button class="nav-link"  id="nav-usedSummary-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-usedSummary" type="button" role="tab" aria-controls="nav-usedSummary"
+                    aria-selected="true">Used Summary</button>
+                {{-- <button class="nav-link"  id="nav-frequency-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-frequency" type="button" role="tab" aria-controls="nav-frequency"
                     aria-selected="false">Frequency</button>
                 <button class="nav-link"  id="nav-registrations-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-registrations" type="button" role="tab" aria-controls="nav-registrations"
-                    aria-selected="false">Registrations</button> --}}
-                {{-- <button class="nav-link"   id="nav-summaries-tab" data-bs-toggle="tab"
+                    aria-selected="false">Registrations</button>
+                <button class="nav-link"   id="nav-summaries-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-summaries" type="button" role="tab" aria-controls="nav-summaries"
                     aria-selected="false">Summaries</button> --}}
             </div>
@@ -32,7 +32,7 @@
             <!-- Distribution 1 table -->
             <div class="tab-pane fade show active" id="nav-summary" role="tabpanel" aria-labelledby="nav-summary-tab" tabindex="0">
                 <div class="py-2">
-                    <h5 class="card-title py-4">Summary of Medical Services</h5>
+                    <h5 class="card-title py-4">Pay Methods Summary</h5>
                     <x-form-div class="col-xl-6 py-3 datesDiv">
                         <x-input-span class="">Start</x-input-span>
                         <x-form-input type="date" name="startDate" id="startDate" />
@@ -43,10 +43,9 @@
                     <table  id="summaryTable" class="table table-hover table-sm">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>SubCategory</th>
-                                <th>Times Prescribed</th>
-                                <th>Qty Prescribed</th>
+                                <th>Pay Method</th>
+                                <th>Paymenys</th>
+                                <th>Total AMount</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -55,24 +54,35 @@
                                 <td class="text-center">Total</td>
                                 <td></td>
                                 <td></td>
-                                <td></td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
             </div>
             <!-- Distribution 2 table -->
-            {{-- <div class="tab-pane fade" id="nav-distribution2" role="tabpanel" aria-labelledby="nav-distribution2-tab" tabindex="0">
+            <div class="tab-pane fade" id="nav-usedSummary" role="tabpanel" aria-labelledby="nav-usedSummary-tab" tabindex="0">
                 <div class="py-2">
-                    <h5 class="card-title py-4">Patient Distribution by Sponsor</h5>
-                    <table  id="distribution2Table" class="table table-hover table-sm">
+                    <h5 class="card-title py-4">Used Summary Table</h5>
+                    <x-form-div class="col-xl-6 py-3 datesDiv">
+                        <x-input-span class="">Start</x-input-span>
+                        <x-form-input type="date" name="startDate" id="startDate" />
+                        <x-input-span class="">End</x-input-span>
+                        <x-form-input type="date" name="endDate" id="endDate" />
+                        <button class="input-group-text searchWithDatesBtn">Serach</button>
+                    </x-form-div>
+                    <table  id="usedSummaryTable" class="table table-hover table-sm">
                         <thead>
                             <tr>
-                                <th>Sponsor</th>
-                                <th>Female</th>
-                                <th>Male</th>
-                                <th>Total</th>
                                 <th>Category</th>
+                                <th>Resources</th>
+                                <th>Prescriptions</th>
+                                <th>Expected Cost</th>
+                                <th>Dispensed Costs</th>
+                                <th>Expected Income</th>
+                                <th>Dispensed Income</th>
+                                <th>Actual Income</th>
+                                <th>Actual - Ex Cost</th>
+                                <th>Actual - Expected</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -83,12 +93,17 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
             </div>
-            <!-- frequency table -->
+            {{-- <!-- frequency table -->
             <div class="tab-pane fade" id="nav-frequency" role="tabpanel" aria-labelledby="nav-frequency-tab" tabindex="0">
                 <div class="py-2">
                     <h5 class="card-title py-4">Patients by highest Paid/Visit</h5>

@@ -8,7 +8,7 @@
 @include('billing.outstandingBillsModal', ['title' => "Patient's Outstanding Bills", 'isUpdate' => false, 'id' => 'outstandingBillsModal'])
 @include('billing.billModal', ['title' => "", 'isSummary' => true, 'id' => 'billModal'])
 
-    <div class="container p-1 mt-5 bg-white">
+    <div class="container mt-5 bg-white">
 
         <div class="container p-1 mt-5 bg-white">
             <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2"
@@ -90,6 +90,9 @@
     
                     <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients"
                         type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button>
+
+                    <button class="nav-link" id="nav-openVisits-tab" data-bs-toggle="tab" data-bs-target="#nav-openVisits"
+                        type="button" role="tab" aria-controls="nav-openVisits" aria-selected="false">Open Visits</button>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
@@ -139,6 +142,26 @@
                     tabindex="0">
                     <div class="py-4 ">
                         <table id="ancPatientsVisitTable" class="table table-hover align-middle table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Seen</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Current Diagnosis</th>
+                                    <th>Sponsor</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Open Records table -->
+                <div class="tab-pane fade" id="nav-openVisits" role="tabpanel" aria-labelledby="nav-openVisits-tab"
+                    tabindex="0">
+                    <div class="py-4 ">
+                        <table id="openVisitsTable" class="table table-sm">
                             <thead>
                                 <tr>
                                     <th>Seen</th>

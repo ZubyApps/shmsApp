@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\AccountsReportService;
 use App\Services\DatatablesService;
 use App\Services\HospitalAndOthersReportService;
 use App\Services\InvestigationReportService;
@@ -22,6 +23,7 @@ class ReportController extends Controller
         private readonly PharmacyReportService $pharmacyReportService,
         private readonly HospitalAndOthersReportService $hospitalAndOthersReportService,
         private readonly ResourceReportService $resourceReportService,
+        private readonly AccountsReportService $accountsReportService,
         )
     {
         
@@ -193,13 +195,13 @@ class ReportController extends Controller
     {
         return view('reports.resources');
     }
-
+    
     public function loadResourceValueSummary(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
         $resources = $this->resourceReportService->getResourceValueSummary($params, $request);
-
+        
         return response()->json([
             'data' => $resources,
             'draw' => $params->draw,
@@ -207,22 +209,41 @@ class ReportController extends Controller
             'recordsFiltered' => count($resources)
         ]);
     }
-
+    
     public function loadUsedResourcesSummary(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
-    
+        
         $categories = $this->resourceReportService->getUsedResourcesSummary($params, $request);
-
+        
         // $loadTransformer = $this->resourceReportService->getUsedResourcesTransformer();
-
+        
         return response()->json([
             'data' => $categories,
             'draw' => $params->draw,
             'recordsTotal' => count($categories),
             'recordsFiltered' => count($categories)
         ]);
-
+        
         // return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    public function indexAccounts()
+    {
+        return view('reports.accounts');
+    }
+
+    public function loadPayMethodsSummary(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $payMethods = $this->accountsReportService->getPaymethodsSummary($params, $request);
+        
+        return response()->json([
+            'data' => $payMethods,
+            'draw' => $params->draw,
+            'recordsTotal' => count($payMethods),
+            'recordsFiltered' => count($payMethods)
+        ]);
     }
 }

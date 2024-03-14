@@ -615,11 +615,21 @@ class HmoService
                 'paid'      => $data->amountPaid,
                 'paid_by'   => $user->id
             ]);
-            
-            $prescription->visit->total_paid = $prescription->visit->totalPaidPrescriptions() + $prescription->visit->totalPayments();
+            $prescription->visit->total_paid = $this->determineValueOfTotalPaid($prescription->visit);
             $prescription->visit->save();
 
             return $prescription;
         });
+    }
+
+    public function determineValueOfTotalPaid(Visit $visit)
+    {
+        return $visit->sponsor->category_name == 'NHIS' && $visit->total_paid == $visit->totalPaidPrescriptions() ? $visit->total_paid : 
+        $visit->totalPaidPrescriptions() +  $visit->totalPayments();
+    }
+
+    public function NhisCapitation()
+    {
+        
     }
 }

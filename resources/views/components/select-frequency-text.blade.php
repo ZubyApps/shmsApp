@@ -12,4 +12,5 @@
         <option {{ $hidden  ? 'hidden disabled' : '' }} value="BD">BD</option>
         <option {{ $hidden  ? 'hidden disabled' : '' }} value="TDS">TDS</option>
         <option {{ $hidden  ? 'hidden disabled' : '' }} value="QDS">QDS</option>
+        <option {{ $hidden  ? 'hidden disabled' : '' }} value="PRN">PRN</option>
 </select>
