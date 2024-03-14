@@ -26,7 +26,6 @@ class UpdateUserRequest extends FormRequest
         // dd($this->user->id);
         return [
             'firstName1'             => ['required', 'string', 'max:255'],
-            'middleName1'            => ['string', 'max:255'],
             'lastName1'              => ['required', 'string', 'max:255'],
             'username1'              => ['required', 'string', 'max:255', 'unique:' . User::class.',username,' . $this->user->id],
             'phoneNumber1'           => ['required', 'numeric', 'digits:11', 'unique:' . User::class.',phone_number,' . $this->user->id],
