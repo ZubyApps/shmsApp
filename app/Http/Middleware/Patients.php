@@ -17,7 +17,7 @@ class Patients
     {
         $user = $request->user();
         
-        if ($user && $user->designation->designation !== 'Doctor' && $user->designation->designation !== 'Nurse' && $user->designation->designation !== 'Bill Officer' && $user->designation->designation !== 'HMO Officer' && $user->designation->access_level < 5){
+        if ($user && $user->designation->designation !== 'Doctor' && $user->designation->designation !== 'Nurse' && $user->designation->designation !== 'Bill Officer' && $user->designation->designation !== 'HMO Officer' && $user->designation->designation !== 'Records Clerk' && $user->designation->access_level < 5){
             return redirect()->route('login');
         }
         return $next($request);

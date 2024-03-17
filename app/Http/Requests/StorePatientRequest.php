@@ -27,7 +27,7 @@ class StorePatientRequest extends FormRequest
         return [
             "patientType"       => ['required'],
             "sponsorCategory"   => ['required'],
-            "address"           => ['nullable', 'max:500'],
+            "address"           => ['required', 'max:500'],
             "bloodGroup"        => ['nullable'],
             "cardNumber"        => ['required', 'unique:'.Patient::class.',card_no', 'min:9'],
             "dateOfBirth"       => ['required', 'before_or_equal:'.Carbon::today()],

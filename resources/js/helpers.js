@@ -417,7 +417,7 @@ const admissionStatusX = (row) => {
 
 const prescriptionOnLatestConsultation = (row) => {
     return `<div class="d-flex flex-">
-                <span class="btn" id="${row.closed ? '' : 'updateResourceListBtn'}" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">${row.diagnosis}</span>
+                <span class="btn" id="${row.closed ? '' : 'updateResourceListBtn'}" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">${row.diagnosis}</span>
             </div>`
 }
 
@@ -488,7 +488,7 @@ const resetFocusEndofLine = (element) => {
         element.focus()
         element.value = ''
         element.value = value
-    }, 1)
+    }, 100)
 }
 
 const dischargeColour = (reason) => {
@@ -551,7 +551,7 @@ const populateWardAndBedModal = (modal, btn) => {
 
 const populatePatientSponsor = (modal, btn) => {
     modal._element.querySelector('#patient').value = btn.getAttribute('data-patient')
-    modal._element.querySelector('#sponsorName').value = btn.getAttribute('data-sponsor')
+    modal._element.querySelector('#sponsorName').value = btn.getAttribute('data-sponsor') + ' - ' + btn.getAttribute('data-sponsorcat')
 }
 
 const populateVitalsignsModal = (modal, btn, id) => {

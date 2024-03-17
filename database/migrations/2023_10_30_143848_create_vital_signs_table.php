@@ -22,8 +22,10 @@ return new class extends Migration
             $table->string('pulse_rate')->nullable();
             $table->string('weight')->nullable();
             $table->string('height')->nullable();
+            $table->string('head_circumference')->nullable();
+            $table->string('mid_arm_circumference')->nullable();
             $table->string('bmi')->nullable();
-            $table->string('note')->nullable();
+            $table->text('note')->nullable();
             $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();

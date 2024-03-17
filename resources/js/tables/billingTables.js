@@ -389,26 +389,14 @@ const getPaymentTableByVisit = (tableId, visitId, modal) => {
         drawCallback: function () {
             var api = this.api()
             
-                $( api.column(4).footer() ).html(account.format(
-                    api.column( 4, {page:'current'} ).data().sum())
-                );
+                $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
         },
         columns: [
-            {
-                data: "date"
-            },
-            {
-                data: "receivedBy"
-            },
-            {
-                data: "payMethod"
-            },
-            {
-                data: "comment"
-            },
-            {
-                data: row => account.format(row.amount)
-            },
+            {data: "date"},
+            {data: "receivedBy"},
+            {data: "payMethod"},
+            {data: "comment"},
+            {data: row => account.format(row.amount)},
             {
                 sortable: false,
                 data: row => () => {
@@ -486,4 +474,54 @@ const getPatientsBill = (tableId, visitId, modal, type) => {
     return billTable
 }
 
-export {getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill}
+const getExpensesTable = (tableId) => {
+    const expenseTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax: '/billing/load/expenses',
+        orderMulti: true,
+        search: false,
+        searching: false,
+        lengthChange: false,
+        language: {
+            emptyTable: 'No expense'
+        },
+        drawCallback: function () {
+            var api = this.api()
+            
+                $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {data: "date"},
+            {data: "category"},
+            {data: "description"},
+            {data: row => account.format(row.amount)},
+            {data: "givenTo"},
+            {data: "approvedBy"},
+            {data: "givenBy"},
+            {data: "comment"},
+            {
+                sortable: false,
+                data: row => () => {
+                        return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary editExpenseBtn tooltip-test" title="update" data-id="${ row.id }">
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
+                            <button type="submit" class="ms-1 btn btn-outline-primary deleteExpenseBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
+                        </div>
+                        `  
+                }      
+            },
+        ]
+    });
+
+    // modal.addEventListener('hidden.bs.modal', function () {
+    //     expenseTable.destroy()
+    // })
+    
+    return expenseTable
+}
+
+export {getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable}

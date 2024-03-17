@@ -38,12 +38,6 @@
                         <span>{{ Auth::user()?->username }}</span>
                     </a>
                     <ul class="dropdown-menu p-0" aria-labelledby="userDropDownMenu" style="width: 1.5rem">
-                        <li>
-                            <a class="btn btn-outline-none w-100 text-start text-primary"
-                                href="{{ route('profile.edit') }}">
-                                {{ __('Profile') }}
-                            </a>
-                        </li>
                         <li class="px-0">
                             <div x-data>
                                 <form class="border-none" method="POST" action="{{ route('logout') }}">
@@ -65,7 +59,7 @@
 
     <div class="nav-scroller py-1 mb-3 border-bottom">
         <nav class="nav nav-underline justify-content-between fs-5 fw-semibold">
-            <a href="{{ $staffD === 'Bill Officer' || $staffD === 'HMO Officer' || $staffD === 'Nurse' || $staffD === 'Doctor' || $staffA > 4 ? '/patients' : '' }}"
+            <a href="{{ $staffD === 'Bill Officer' || $staffD === 'HMO Officer' || $staffD === 'Nurse' || $staffD === 'Records Clerk' || $staffD === 'Doctor' || $staffA > 4 ? '/patients' : '' }}"
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Patients') ? 'active text-primary' : '' }}">Patients</a>
             <a href="{{ $staffD === 'Doctor' || $staffA > 4 ? '/doctors' : '' }}"
                 class="nav-item nav-link link-body-emphasis {{ request()->routeIs('Doctors') ? 'active text-primary' : '' }}">Doctors</a>

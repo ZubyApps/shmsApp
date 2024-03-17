@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('weight')->nullable();
             $table->string('hb')->nullable();
             $table->string('oedema')->nullable();
-            $table->string('remarks')->nullable();
+            $table->text('remarks')->nullable();
             $table->string('return')->nullable();
             $table->foreignIdFor(AntenatalRegisteration::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();

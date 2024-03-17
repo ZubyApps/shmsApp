@@ -21,6 +21,7 @@
                             <option value="LabTech">LabTech</option>
                             <option value="Pharmacy Tech">Pharmacy Tech</option>
                             <option value="Bill Officer">Bill Officer</option>
+                            <option value="Bill Officer">Records Clerk</option>
                             <option value="HMO Officer">HMO Officer</option>
                             <option value="Admin">Admin</option>
                             <option value="IT Officer">IT Officer</option>

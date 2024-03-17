@@ -205,6 +205,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (addStockBtn) {
             addStockBtn.setAttribute('disabled', 'disabled')
+            let date = new Date().toISOString().split('T')[0]
+            newAddResourceStockModal._element.querySelector('[name="expiryDate"]').setAttribute('min', date.slice(0,7))
             const resourceId = addStockBtn.getAttribute('data-id')
             http.get(`/resources/addstock/${ resourceId }`)
                 .then((response) => {
@@ -256,7 +258,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     addResourceBtn.addEventListener('click', function () {
         let date = new Date().toISOString().split('T')[0]
-        newResourceModal._element.querySelector('[name="expiryDate"]').setAttribute('min', date)
+        newResourceModal._element.querySelector('[name="expiryDate"]').setAttribute('min', date.slice(0,7))
         newResourceModal.show()
     })
 

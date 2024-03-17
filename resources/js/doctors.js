@@ -484,7 +484,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (consultBtn) {
             consultBtn.setAttribute('disabled', 'disabled')
-            const [visitId, patientType, ancRegId] = [consultBtn.getAttribute('data-id'),consultBtn.getAttribute('data-patientType'),consultBtn.getAttribute('data-ancregid')]
+            const [visitId, patientType, ancRegId, age] = [consultBtn.getAttribute('data-id'),consultBtn.getAttribute('data-patientType'),consultBtn.getAttribute('data-ancregid'),consultBtn.getAttribute('data-age')]
             resourceInput.forEach(input => {input.setAttribute('data-sponsorcat', consultBtn.getAttribute('data-sponsorcat'))})
 
             http.post(`/doctors/consult/${ visitId }`, {patientType})
@@ -494,6 +494,9 @@ window.addEventListener('DOMContentLoaded', function () {
                             openDoctorModals(ancConsultationModal, ancConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                             getAncVitalSignsTable('#vitalSignsTableAnc', ancRegId, ancConsultationModal)
                         } else{
+                            if(age){
+                                console.log(age)
+                            }
                             openDoctorModals(newConsultationModal, newConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                             getVitalSignsTableByVisit('#vitalSignsTableNew', visitId, newConsultationModal)
                         }

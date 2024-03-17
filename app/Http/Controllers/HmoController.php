@@ -148,4 +148,15 @@ class HmoController extends Controller
     {
         return $this->hmoService->savePayment($request, $prescription, $request->user());
     }
+
+    public function loadCapitationReconciliation(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->hmoService->getNhisSponsorsByDate($params, $request);
+       
+        $loadTransformer = $this->hmoService->getSponsorsByDateTransformer($request);
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
 }

@@ -36,6 +36,8 @@
                                                 <th>Diagnosis</th>
                                                 <th>Total Bill Sent</th>
                                                 <th>Total Hms Bill</th>
+                                                <th>Total Nhis Bill</th>
+                                                <th>Total Capitation</th>
                                                 <th>Total Paid</th>
                                             </tr>
                                         </thead>

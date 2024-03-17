@@ -1,8 +1,8 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { clearDivValues, getDivData, clearValidationErrors, resetFocusEndofLine} from "./helpers"
-import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill } from "./tables/billingTables";
+import { clearDivValues, getDivData, clearValidationErrors, resetFocusEndofLine, openModals} from "./helpers"
+import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable } from "./tables/billingTables";
 import { getOutpatientsInvestigationTable } from "./tables/investigationTables";
 import html2pdf  from "html2pdf.js"
 
@@ -12,20 +12,26 @@ window.addEventListener('DOMContentLoaded', function () {
     const billingModal                  = new Modal(document.getElementById('billingModal'))
     const outstandingBillsModal         = new Modal(document.getElementById('outstandingBillsModal'))
     const billModal                     = new Modal(document.getElementById('billModal'))
+    const newExpenseModal               = new Modal(document.getElementById('newExpenseModal'))
+    const updateExpenseModal            = new Modal(document.getElementById('updateExpenseModal'))
 
     const waitingBtn                    = document.querySelector('#waitingBtn')
     const outpatientsInvestigationBtn   = document.querySelector('#outpatientsInvestigationBtn')
+    const newExpenseBtn                 = document.querySelector('#newExpenseBtn')
+    const saveExpenseBtn                = newExpenseModal._element.querySelector('#saveExpenseBtn')
+    const updateExpenseBtn              = updateExpenseModal._element.querySelector('#updateExpenseBtn')
 
     const outPatientsTab                = document.querySelector('#nav-outPatients-tab')
     const inPatientsTab                 = document.querySelector('#nav-inPatients-tab')
     const ancPatientsTab                = document.querySelector('#nav-ancPatients-tab')
-    const openVisitsTab                = document.querySelector('#nav-openVisits-tab')
+    const openVisitsTab                 = document.querySelector('#nav-openVisits-tab')
+    const expensesTab                   = document.querySelector('#nav-expenses-tab')
     const changeBillSpan                = billModal._element.querySelector('.changeBill')
     const downloadBillSummaryBtn        = billModal._element.querySelector('#downloadBillSummaryBtn')
     const billSummaryBody               = billModal._element.querySelector('.billSummaryBody')
 
 
-    let inPatientsVisitTable, ancPatientsVisitTable, openVisitsTable
+    let inPatientsVisitTable, ancPatientsVisitTable, openVisitsTable, expensesTable
 
     const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient', 'consulted')
     const waitingTable = getWaitingTable('waitingTable')
@@ -57,8 +63,20 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    expensesTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#expensesTable' )){
+            $('#expensesTable').dataTable().fnDraw()
+        } else {
+            expensesTable = getExpensesTable('expensesTable', '', 'openvisits')
+        }
+    })
+
     waitingBtn.addEventListener('click', function () {
         waitingTable.draw()
+    })
+
+    newExpenseBtn.addEventListener('click', function () {
+        newExpenseModal.show()
     })
 
     document.querySelectorAll('#waitingListOffcanvas2, #offcanvasInvestigations').forEach(canvas => {
@@ -264,6 +282,78 @@ window.addEventListener('DOMContentLoaded', function () {
             }
             
         }
+    })
+
+    saveExpenseBtn.addEventListener('click', function () {
+        http.post('/expenses', {...getDivData(newExpenseModal._element)}, {"html": newExpenseModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                newExpenseModal.hide()
+                    clearDivValues(newExpenseModal._element)
+                    expensesTable ? expensesTable.draw() : ''
+                }
+                saveExpenseBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            // alert(error.response.data.message)
+            saveExpenseBtn.removeAttribute('disabled')
+        })
+    })
+
+    document.querySelector('#expensesTable').addEventListener('click', function (event) {
+        const editExpenseBtn    = event.target.closest('.editExpenseBtn')
+        const deleteExpenseBtn    = event.target.closest('.deleteExpenseBtn')
+
+        if (editExpenseBtn) {
+            editExpenseBtn.setAttribute('disabled', 'disabled')
+            const expense = editExpenseBtn.getAttribute('data-id')
+            http.get(`/expenses/${ expense }`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openModals(updateExpenseModal, updateExpenseBtn, response.data.data)
+                    }
+                    editExpenseBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    editExpenseBtn.removeAttribute('disabled')
+                    alert(error.response.data.data.message)
+                })
+        }
+
+        if (deleteExpenseBtn){
+            deleteExpenseBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Expense?')) {
+                const expense = deleteExpenseBtn.getAttribute('data-id')
+                http.delete(`/expenses/${expense}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            expensesTable ? expensesTable.draw() : ''
+                        }
+                        deleteExpenseBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        deleteExpenseBtn.removeAttribute('disabled')
+                    })
+            }
+        }
+    })
+
+    updateExpenseBtn.addEventListener('click', function (event) {
+        const expense = event.currentTarget.getAttribute('data-id')
+        updateExpenseBtn.setAttribute('disabled', 'disabled')
+        http.post(`/expenses/${expense}`, getDivData(updateExpenseModal._element), {"html": updateExpenseModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                updateExpenseModal.hide()
+                expensesTable ? expensesTable.draw() : ''
+            }
+            updateExpenseBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            updateExpenseBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
+        })
     })
 
     document.querySelectorAll('#billingModal, #billModal').forEach(modal => {

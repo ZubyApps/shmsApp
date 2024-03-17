@@ -35,6 +35,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'discount_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->integer('total_hms_bill')->default(0);
             $table->integer('total_nhis_bill')->default(0);
+            $table->integer('total_capitation')->default(0);
             $table->integer('total_hmo_bill')->default(0);
             $table->integer('total_paid')->default(0);
             $table->foreignIdFor(User::class, 'sponsor_changed_by')->nullable()->constrained('users')->restrictOnDelete();

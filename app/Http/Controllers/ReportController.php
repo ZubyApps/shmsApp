@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\AccountsReportService;
+use App\Services\CapitationPaymentService;
 use App\Services\DatatablesService;
 use App\Services\HospitalAndOthersReportService;
 use App\Services\InvestigationReportService;
@@ -24,6 +25,7 @@ class ReportController extends Controller
         private readonly HospitalAndOthersReportService $hospitalAndOthersReportService,
         private readonly ResourceReportService $resourceReportService,
         private readonly AccountsReportService $accountsReportService,
+        private readonly CapitationPaymentService $capitationPaymentService
         )
     {
         
@@ -245,5 +247,16 @@ class ReportController extends Controller
             'recordsTotal' => count($payMethods),
             'recordsFiltered' => count($payMethods)
         ]);
+    }
+
+    public function loadCapitationPayments(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->capitationPaymentService->getCapitationPayments($params, $request);
+
+        $loadTransformer = $this->capitationPaymentService->getLoadTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 }

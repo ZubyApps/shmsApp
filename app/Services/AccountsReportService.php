@@ -106,7 +106,7 @@ class AccountsReportService
 
         if (! empty($params->searchTerm)) {
             if ($data->startDate && $data->endDate){
-                return $this->visit
+                return $this->prescription
                             ->whereRelation('resource', 'id', '=', $data->resourceId)
                             ->where(function (Builder $query) use($params) {
                                 $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )

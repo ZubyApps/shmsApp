@@ -72,10 +72,10 @@
                 <div class="tab-pane fade" id="nav-resourceSubCategory" role="tabpanel" aria-labelledby="nav-resourceSubCategory-tab"
                     tabindex="0">
                     <div class="text-start my-4">
-                        <button class="btn btn-primary" type="button" id="addResourceSubCategoryBtn">
+                        {{-- <button class="btn btn-primary" type="button" id="addResourceSubCategoryBtn">
                             <i class="bi bi-plus-circle"></i>
                             SubCategory
-                        </button>
+                        </button> --}}
                     </div>
                     <div class="">
                         <table id="resourceSubCategoryTable" class="table table-hover">

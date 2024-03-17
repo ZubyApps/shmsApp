@@ -7,6 +7,8 @@
 @include('billing.billingModal', ['title' => 'Billing Details', 'isUpdate' => false, 'id' => 'billingModal'])
 @include('billing.outstandingBillsModal', ['title' => "Patient's Outstanding Bills", 'isUpdate' => false, 'id' => 'outstandingBillsModal'])
 @include('billing.billModal', ['title' => "", 'isSummary' => true, 'id' => 'billModal'])
+@include('billing.expenseModal', ['title' => "New Expense", 'isUpdate' => false, 'id' => 'newExpenseModal'])
+@include('billing.expenseModal', ['title' => "Update Expense", 'isUpdate' => true, 'id' => 'updateExpenseModal'])
 
     <div class="container mt-5 bg-white">
 
@@ -93,6 +95,9 @@
 
                     <button class="nav-link" id="nav-openVisits-tab" data-bs-toggle="tab" data-bs-target="#nav-openVisits"
                         type="button" role="tab" aria-controls="nav-openVisits" aria-selected="false">Open Visits</button>
+
+                    <button class="nav-link" id="nav-expenses-tab" data-bs-toggle="tab" data-bs-target="#nav-expenses"
+                        type="button" role="tab" aria-controls="nav-expenses" aria-selected="false">Expenses</button>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
@@ -174,6 +179,46 @@
                                 </tr>
                             </thead>
                             <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Expenses table -->
+                <div class="tab-pane fade" id="nav-expenses" role="tabpanel" aria-labelledby="nav-expenses-tab"
+                    tabindex="0">
+                    <div class="py-4 ">
+                        <div class="text-start py-3">
+                            <button type="button" id="newExpenseBtn" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-1"></i>
+                                Expense
+                            </button>
+                        </div>
+                        <table id="expensesTable" class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Category</th>
+                                    <th>Desription</th>
+                                    <th>Amount</th>
+                                    <th>Given to</th>
+                                    <th>Given By</th>
+                                    <th>Approved By</th>
+                                    <th>Comment</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr class="">
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold">Total</td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>

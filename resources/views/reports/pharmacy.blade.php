@@ -36,12 +36,16 @@
                                 <th>Times Prescribed</th>
                                 <th>Qty Billed</th>
                                 <th>Qty Dispensed</th>
+                                <th>Bulk Dispensed</th>
+                                <th>Total Dispensed</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                         <tfoot class="fw-bolder">
                             <tr>
                                 <td class="text-center">Total</td>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

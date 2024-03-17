@@ -7,9 +7,12 @@ use App\Http\Controllers\AntenatalRegisterationController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\BulkRequestController;
+use App\Http\Controllers\CapitationPaymentController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DeliveryNoteController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\ExpenseCategoryController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\HmoController;
 use App\Http\Controllers\InvestigationController;
 use App\Http\Controllers\MedicalReportController;
@@ -34,6 +37,7 @@ use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\SurgeryNoteController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VitalSignsController;
+use App\Models\ExpenseCategory;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -147,6 +151,15 @@ Route::middleware('auth')->group(function () {
             Route::patch('/{payMethod}', [PayMethodController::class, 'update']);
         })->name('Pay Methods');
 
+        Route::prefix('expensecategory')->group(function (){
+            Route::post('', [ExpenseCategoryController::class, 'store']);
+            Route::get('/load', [ExpenseCategoryController::class, 'loadExpenseCategories']);
+            Route::get('/listcategories/{expenseCategory}', [ExpenseCategoryController::class, 'list']);
+            Route::get('/{expenseCategory}', [ExpenseCategoryController::class, 'edit']);
+            Route::delete('/{expenseCategory}', [ExpenseCategoryController::class, 'destroy']);
+            Route::post('/{expenseCategory}', [ExpenseCategoryController::class, 'update']);
+        })->name('Expense Category');
+
         Route::prefix('reports')->group(function (){
             Route::get('', [ReportController::class, 'index'])->name('Reports');
             Route::get('/patients', [ReportController::class, 'indexPatients'])->name('Patients Reports');
@@ -173,6 +186,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/resources/usedsummary', [ReportController::class, 'loadUsedResourcesSummary']);
             Route::get('/accounts', [ReportController::class, 'indexAccounts'])->name('Account Reports');
             Route::get('/accounts/summary', [ReportController::class, 'loadPayMethodsSummary']);
+            Route::get('/accounts/capitation', [ReportController::class, 'loadCapitationPayments']);
         });
     });
 
@@ -244,7 +258,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/load/summary', [HmoController::class, 'loadReportSummary']);
             Route::get('/load/reconciliation', [HmoController::class, 'loadReconciliationTable']);
             Route::patch('/pay/{prescription}', [HmoController::class, 'reconciliationPayments']);
+            Route::get('/load/capitation', [HmoController::class, 'loadCapitationReconciliation']);
     
+        });
+
+        Route::prefix('capitation')->group(function () {
+            Route::post('', [CapitationPaymentController::class, 'store'])->name('Capitation');
+            Route::delete('/{capitationPayment}', [CapitationPaymentController::class, 'destroy']);
         });
     });
 
@@ -260,6 +280,14 @@ Route::middleware('auth')->group(function () {
             Route::patch('/discount/{visit}', [BillingController::class, 'saveDiscount']);
             Route::delete('/payment/delete/{payment}', [BillingController::class, 'destroy']);
             Route::get('/load/outstandings', [BillingController::class, 'loadVisitsWithOutstandingBills']);
+            Route::get('/load/expenses', [BillingController::class, 'loadExpenses']);
+        });
+
+        Route::prefix('expenses')->group(function () {
+            Route::post('', [ExpenseController::class, 'store'])->name('Capitation');
+            Route::get('/{expense}', [ExpenseController::class, 'edit']);
+            Route::delete('/{expense}', [ExpenseController::class, 'destroy']);
+            Route::post('/{expense}', [ExpenseController::class, 'update']);
         });
     });
 

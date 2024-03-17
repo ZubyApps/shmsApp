@@ -2,7 +2,7 @@ import { Offcanvas, Modal } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
 import { clearDivValues, getOrdinal, getDivData, clearValidationErrors, loadingSpinners, removeDisabled, displayList, getPatientSponsorDatalistOptionId, resetFocusEndofLine, displayMedicalReportModal} from "./helpers"
-import { getAllHmoPatientsVisitTable, getApprovalListTable, getHmoReconciliationTable, getHmoReportsTable, getSentBillsTable, getVerificationTable, getVisitPrescriptionsTable, getWaitingTable } from "./tables/hmoTables";
+import { getAllHmoPatientsVisitTable, getApprovalListTable, getHmoReconciliationTable, getHmoReportsTable, getNhisReconTable, getSentBillsTable, getVerificationTable, getVisitPrescriptionsTable, getWaitingTable } from "./tables/hmoTables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getLabTableByConsultation, getMedicalReportTable, getMedicationsByFilter, getOtherPrescriptionsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
 import { getVitalsignsChartByVisit } from "./charts/vitalsignsCharts";
@@ -26,6 +26,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const reconciliationModal       = new Modal(document.getElementById('reconciliationModal'))
     const medicalReportListModal    = new Modal(document.getElementById('medicalReportListModal'))
     const viewMedicalReportModal    = new Modal(document.getElementById('viewMedicalReportModal'))
+    const capitationPaymentModal    = new Modal(document.getElementById('capitationPaymentModal'))
 
     const codeTextDiv               = verifyModal._element.querySelector('#codeTextDiv')
     const sponsorDetailsDiv         = changeSponsorModal._element.querySelector('#sponsorDetailsDiv')
@@ -45,6 +46,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const treatmentsTab             = document.querySelector('#nav-treatments-tab')
     const sentBillsTab              = document.querySelector('#nav-sentBills-tab')
     const hmoReportsTab             = document.querySelector('#nav-hmoReports-tab')
+    const nhisReconTab              = document.querySelector('#nav-nhisRecon-tab')
     const newSponsorCategoryInput           = document.querySelector('#newSponsorCategory')
     const newPatientSponsorInputEl          = document.querySelector('#newPatientSponsor')
     const newPatientSponsorDatalistEl       = document.querySelector('#newSponsorList')
@@ -54,7 +56,10 @@ window.addEventListener('DOMContentLoaded', function () {
     const searchWithDatesBtn                = document.querySelector('.searchWithDatesBtn')
     const reportDatesDiv                    = document.querySelector('.reportsDatesDiv')
     const searchReportsBtn                  = document.querySelector('.searchReportsBtn')
+    const nhisMonthYearDiv                  = document.querySelector('.nhisMonthYearDiv')
+    const searchNhisConBtn                  = document.querySelector('.searchNhisConBtn')
     const downloadReportBtn                 = viewMedicalReportModal._element.querySelector('#downloadReportBtn')
+    const saveCapitationPaymentBtn          = capitationPaymentModal._element.querySelector('#saveCapitationPaymentBtn')
 
     const reportModalBody                   = viewMedicalReportModal._element.querySelector('.reportModalBody')
     const patientsFullName                  = viewMedicalReportModal._element.querySelector('#patientsFullName')
@@ -64,7 +69,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const verificationTable = getVerificationTable('verificationTable')
     const hmoApprovalListTable = getApprovalListTable('hmoApprovalListTable',null, hmoApprovalListCount)
     const nhisApprovalListTable = getApprovalListTable('nhisApprovalListTable', 'NHIS')
-    let hmotreatmentsTable, visitPrescriptionsTable, sentBillsTable, hmoReportsTable, reconciliationTable, medicalReportTable, hmoIntervalId, nhisIntervalId
+    let hmotreatmentsTable, visitPrescriptionsTable, sentBillsTable, hmoReportsTable, reconciliationTable, medicalReportTable, nhisReconTable
 
     hmoApprovalListTable.on('draw.init', function() {
         const count = hmoApprovalListTable.rows().count()
@@ -138,6 +143,20 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    nhisReconTab.addEventListener('click', function () {
+        let date = new Date().toISOString().split('T')[0]
+        document.querySelector('#nhisDate').setAttribute('max', date.slice(0,7))
+        if ($.fn.DataTable.isDataTable( '#nhisReconTable' )){
+            $('#nhisReconTable').dataTable().fnDraw()
+            hmoApprovalListTable.draw()
+            nhisApprovalListTable.draw()
+        } else {
+            nhisReconTable = getNhisReconTable('nhisReconTable')
+            hmoApprovalListTable.draw()
+            nhisApprovalListTable.draw()
+        }
+    })
+
     filterListOption.addEventListener('change', function () {
         if ($.fn.DataTable.isDataTable( '#hmoTreatmentsTable' )){
             $('#hmoTreatmentsTable').dataTable().fnDestroy()
@@ -153,6 +172,7 @@ window.addEventListener('DOMContentLoaded', function () {
             hmotreatmentsTable ? hmotreatmentsTable.draw() : ''
             sentBillsTable ? sentBillsTable.draw() : ''
             hmoReportsTable ? hmoReportsTable.draw() : ''
+            nhisReconTable ? nhisReconTable.draw() : ''
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
         })
@@ -241,6 +261,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             if (response.status >= 200 || response.status <= 300){
                                 waitingTable.draw()
                                 hmotreatmentsTable ? hmotreatmentsTable.draw() : ''
+                                sentBillsTable ? sentBillsTable.draw() : ''
                             }
                         })
                         .catch((error) => {
@@ -310,34 +331,34 @@ window.addEventListener('DOMContentLoaded', function () {
             const table             = this.id == 'hmoApprovalListTable' ? hmoApprovalListTable : nhisApprovalListTable
         
             if (approveBtn) {
-                    const prescriptionId = approveBtn.getAttribute('data-id')
-                    approveBtn.classList.add('d-none')
-                    approveBtn.parentElement.querySelector('.rejectBtn').classList.add('d-none')
-                    const noteInput = approveBtn.parentElement.querySelector('.noteInput')
-                    noteInput.classList.remove('d-none')
-                    noteInput.focus()
-                    noteInput.addEventListener('blur', function() {
-                        approvalFieldset.setAttribute('disabled', 'disabled')
-                        http.patch(`/hmo/approve/${prescriptionId}`, {note: noteInput.value})
-                        .then((response) => {
-                            if (response.status == 200) {
-                                table.draw()
-                                table.on('draw', removeDisabled(approvalFieldset))                        
-                            }
-                            if (response.status == 222){
-                                table.draw()
-                                alert(response.data)
-                                table.on('draw', removeDisabled(approvalFieldset))
-                                
-                            }
+                const prescriptionId = approveBtn.getAttribute('data-id')
+                approveBtn.classList.add('d-none')
+                approveBtn.parentElement.querySelector('.rejectBtn').classList.add('d-none')
+                const noteInput = approveBtn.parentElement.querySelector('.noteInput')
+                noteInput.classList.remove('d-none')
+                noteInput.focus()
+                noteInput.addEventListener('blur', function() {
+                    approvalFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/hmo/approve/${prescriptionId}`, {note: noteInput.value})
+                    .then((response) => {
+                        if (response.status == 200) {
+                            table.draw()
+                            table.on('draw', removeDisabled(approvalFieldset))                        
+                        }
+                        if (response.status == 222){
+                            table.draw()
+                            alert(response.data)
+                            table.on('draw', removeDisabled(approvalFieldset))
+                            
+                        }
+                    })
+                        .catch((error) => {
+                            console.log(error.response.data)
+                            alert(error.response.data)
+                            table.on('draw', removeDisabled(approvalFieldset))
+                            
                         })
-                            .catch((error) => {
-                                console.log(error.response.data)
-                                alert(error.response.data)
-                                table.on('draw', removeDisabled(approvalFieldset))
-                                
-                            })
-                        })          
+                    })          
                 }
         
                 if (rejectBtn) {
@@ -408,6 +429,13 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#hmoReportsTable').dataTable().fnDestroy()
         }
         hmoReportsTable = getHmoReportsTable('hmoReportsTable', reportDatesDiv.querySelector('#category').value, reportDatesDiv.querySelector('#startDate').value, reportDatesDiv.querySelector('#endDate').value)
+    })
+
+    searchNhisConBtn.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#nhisReconTable' )){
+            $('#nhisReconTable').dataTable().fnDestroy()
+        }
+        nhisReconTable = getNhisReconTable('nhisReconTable', nhisMonthYearDiv.querySelector('#nhisDate').value)
     })
 
     markAsSentBtn.addEventListener('click', function() {
@@ -575,32 +603,63 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    document.querySelector('#reconciliationTable').addEventListener('click', function (event) {
-        const payBtnSpan       = event.target.closest('.payBtnSpan')
-        const reconciliationFieldset  = document.querySelector('#reconciliationFieldset')
-        if (payBtnSpan){
-            const prescriptionId    = payBtnSpan.getAttribute('data-id')
-            const payInput      = payBtnSpan.parentElement.querySelector('.payInput')
-            payBtnSpan.classList.add('d-none')
-            payInput.classList.remove('d-none')
-            resetFocusEndofLine(payInput)
-            
-            payInput.addEventListener('blur', function () {
-                reconciliationFieldset.setAttribute('disabled', 'disabled')
-                http.patch(`/hmo/pay/${prescriptionId}`, {amountPaid: payInput.value})
-                .then((response) => {
-                    if (response.status >= 200 || response.status <= 300) {
+    document.querySelectorAll('#reconciliationTable, #nhisReconTable').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const payBtnSpan                = event.target.closest('.payBtnSpan')
+            const reconciliationFieldset    = document.querySelector('#reconciliationFieldset')
+            const enterCapitationPaymentBtn = event.target.closest('.enterCapitationPaymentBtn')
+    
+            if (payBtnSpan){
+                const prescriptionId    = payBtnSpan.getAttribute('data-id')
+                const payInput      = payBtnSpan.parentElement.querySelector('.payInput')
+                payBtnSpan.classList.add('d-none')
+                payInput.classList.remove('d-none')
+                resetFocusEndofLine(payInput)
+                
+                payInput.addEventListener('blur', function () {
+                    reconciliationFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/hmo/pay/${prescriptionId}`, {amountPaid: payInput.value})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            reconciliationTable ?  reconciliationTable.draw() : ''
+                            reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
                         reconciliationTable ?  reconciliationTable.draw() : ''
                         reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
-                    }
+                    })                
                 })
-                .catch((error) => {
-                    console.log(error)
-                    reconciliationTable ?  reconciliationTable.draw() : ''
-                    reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
-                })                
-            })
-        }
+            }
+
+            if (enterCapitationPaymentBtn){
+                capitationPaymentModal._element.querySelector('#sponsor').value = enterCapitationPaymentBtn.getAttribute('data-sponsor')
+                capitationPaymentModal._element.querySelector('#monthYear').value = enterCapitationPaymentBtn.getAttribute('data-monthYear')
+                saveCapitationPaymentBtn.setAttribute('data-id', enterCapitationPaymentBtn.getAttribute('data-id'))
+                capitationPaymentModal.show()
+            }
+        })    
+    })
+
+    saveCapitationPaymentBtn.addEventListener('click', function () {
+        const sponsor = saveCapitationPaymentBtn.getAttribute('data-id')
+
+        let data = {...getDivData(capitationPaymentModal._element), sponsor }
+
+        http.post('/capitation', {...data}, {"html": capitationPaymentModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                capitationPaymentModal.hide()
+                    clearDivValues(capitationPaymentModal._element)
+                    nhisReconTable ? nhisReconTable.draw() : ''
+                }
+                saveCapitationPaymentBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            // alert(error.response.data.message)
+            saveCapitationPaymentBtn.removeAttribute('disabled')
+        })
     })
 
     document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal, #makeBillModal, #reconciliationModal, #investigationsModal').forEach(modal => {
@@ -610,6 +669,7 @@ window.addEventListener('DOMContentLoaded', function () {
             hmotreatmentsTable ?  hmotreatmentsTable.draw() : ''
             sentBillsTable ?  sentBillsTable.draw() : ''
             hmoReportsTable ?  hmoReportsTable.draw() : ''
+            nhisReconTable ?  nhisReconTable.draw() : ''
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
         })

@@ -85,7 +85,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                             </thead>
                                         <tbody>`
                                 prescriptions.forEach(p => {
-                                        totalBill += NHIS ? +p.nhisBill : +p.hmsBill
+                                        totalBill += NHIS && p.approved ? +p.nhisBill : +p.hmsBill
                                         child += `
                                             <tr>
                                                 <td class="text-secondary">${count++}</td>

@@ -166,6 +166,21 @@ class User extends Authenticatable
         return $this->hasMany(NursesReport::class);
     }
 
+    public function capitationPayments() 
+    {
+        return $this->hasMany(CapitationPayment::class);
+    }
+
+    public function expenseCategories() 
+    {
+        return $this->hasMany(ExpenseCategory::class);
+    }
+
+    public function expenses() 
+    {
+        return $this->hasMany(Expense::class);
+    }
+
     public function nameInFull()
     {
         return $this->firstname.' '.$this->middlename.' '.$this->lastname;

@@ -27,8 +27,6 @@ class StoreConsultationReviewRequest extends FormRequest
             'visitId'              => ['required', 'numeric', 'exists:'.Visit::class.',id'],
             'assessment'           => ['required_without_all:selectedDiagnosis,provisionalDiagnosis'],
             'admit'                => ['required'],
-            // 'ward'                 => ['required_if:admit,Inpatient,admit,Observation,'],
-            // 'bedNumber'            => ['required_if:admit,=,Inpatient,admit,=,Observation'],
         ];
     }
 }

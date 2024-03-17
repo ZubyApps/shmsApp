@@ -14,9 +14,9 @@
                 <button class="nav-link active"  id="nav-summary-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-summary" type="button" role="tab" aria-controls="nav-summary"
                     aria-selected="true">Summary</button>
-                <button class="nav-link"  id="nav-usedSummary-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-usedSummary" type="button" role="tab" aria-controls="nav-usedSummary"
-                    aria-selected="true">Used Summary</button>
+                <button class="nav-link"  id="nav-capitationPayments-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-capitationPayments" type="button" role="tab" aria-controls="nav-capitationPayments"
+                    aria-selected="true">Capitation Payments</button>
                 {{-- <button class="nav-link"  id="nav-frequency-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-frequency" type="button" role="tab" aria-controls="nav-frequency"
                     aria-selected="false">Frequency</button>
@@ -60,29 +60,32 @@
                 </div>
             </div>
             <!-- Distribution 2 table -->
-            <div class="tab-pane fade" id="nav-usedSummary" role="tabpanel" aria-labelledby="nav-usedSummary-tab" tabindex="0">
+            <div class="tab-pane fade" id="nav-capitationPayments" role="tabpanel" aria-labelledby="nav-capitationPayments-tab" tabindex="0">
                 <div class="py-2">
                     <h5 class="card-title py-4">Used Summary Table</h5>
-                    <x-form-div class="col-xl-6 py-3 datesDiv">
+                    <x-form-div class="col-xl-8 py-3 capitationDatesDiv">
                         <x-input-span class="">Start</x-input-span>
                         <x-form-input type="date" name="startDate" id="startDate" />
                         <x-input-span class="">End</x-input-span>
                         <x-form-input type="date" name="endDate" id="endDate" />
                         <button class="input-group-text searchWithDatesBtn">Serach</button>
+                        <x-input-span class="">OR</x-input-span>
+                        <x-input-span class="">Month/Year</x-input-span>
+                        <x-form-input type="month" name="nhisDate" id="nhisDate" />
+                        <button class="input-group-text searchNhisConBtn">Serach</button>
                     </x-form-div>
-                    <table  id="usedSummaryTable" class="table table-hover table-sm">
+                    <table  id="capitationPaymentsTable" class="table table-hover table-sm">
                         <thead>
                             <tr>
-                                <th>Category</th>
-                                <th>Resources</th>
-                                <th>Prescriptions</th>
-                                <th>Expected Cost</th>
-                                <th>Dispensed Costs</th>
-                                <th>Expected Income</th>
-                                <th>Dispensed Income</th>
-                                <th>Actual Income</th>
-                                <th>Actual - Ex Cost</th>
-                                <th>Actual - Expected</th>
+                                <th>Sponsor</th>
+                                <th>Month Paid for</th>
+                                <th>Lives</th>
+                                <th>Amount</th>
+                                <th>Bank</th>
+                                <th>Comment</th>
+                                <th>Entered By</th>
+                                <th>Created At</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -96,14 +99,12 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td></td>
-                                <td></td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
             </div>
-            {{-- <!-- frequency table -->
+            <!-- frequency table -->
             <div class="tab-pane fade" id="nav-frequency" role="tabpanel" aria-labelledby="nav-frequency-tab" tabindex="0">
                 <div class="py-2">
                     <h5 class="card-title py-4">Patients by highest Paid/Visit</h5>
@@ -159,7 +160,7 @@
                         </tfoot>
                     </table>
                 </div>
-            </div> --}}
+            </div>
             <!-- summaries tables -->
             {{-- <div class="tab-pane fade" id="nav-summaries" role="tabpanel" aria-labelledby="nav-summaries-tab" tabindex="0">
                 <div class="py-4">

@@ -24,7 +24,7 @@ class AddResourceStockService
             'unit_purchase'         => $data->unitPurchase,
             'purchase_price'        => $data->purchasePrice,
             'selling_price'         => $data->sellingPrice,
-            'expiry_date'           => $data->expiryDate ? new Carbon($data->expiryDate) : null,
+            'expiry_date'           => $data->expiryDate ? (new Carbon($data->expiryDate))->lastOfMonth() : null,
             'resource_supplier_id'  => $data->resourceSupplierId,
         ]);
 

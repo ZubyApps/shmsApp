@@ -5,6 +5,8 @@ import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 import { admissionStatus, admissionStatusX, detailsBtn, displayPaystatus, getOrdinal, sponsorAndPayPercent } from "../helpers";
 
+const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
+
 const getWaitingTable = (tableId) => {
     return new DataTable('#'+tableId, {
         serverSide: true,
@@ -326,7 +328,6 @@ const getSentBillsTable = (tableId, startDate, endDate) => {
 }
 
 const getHmoReportsTable = (tableId, category, startDate, endDate) => {
-    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
     const reportSummayTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/load/summary', data: {
@@ -385,9 +386,11 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to) => {
             {data: "patient"},
             {data: "consultBy"},
             {data: row =>  `<span class="text-primary fw-semibold">${row.diagnosis}</span>`},
-            {data: "totalHmoBill"},
-            {data: "totalHmsBill"},
-            {data: "totalPaid"},
+            {data: row => account.format(row.totalHmoBill)},
+            {data: row => account.format(row.totalHmsBill)},
+            {data: row => account.format(row.totalNhisBill)},
+            {data: row => account.format(row.totalCapitation)},
+            {data: row => account.format(row.totalPaid)},
         ]
     });
 
@@ -410,6 +413,8 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to) => {
                                                     <td class="text-secondary">HMO Staff</td>
                                                     <td class="text-secondary">HMO Bill</td>
                                                     <td class="text-secondary">HMS Bill</td>
+                                                    <td class="text-secondary">NHIS Bill</td>
+                                                    <td class="text-secondary">Capitation</td>
                                                     <td class="text-secondary">Paid</td>
                                                 </tr>
                                             </thead>
@@ -421,11 +426,13 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to) => {
                                                 <td class="text-secondary">${p.prescribed}</td>                
                                                 <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold">${p.item +' '+ displayPaystatus(p, credit, NHIS)}</td>                
                                                 <td class="text-secondary">${p.prescription}</td>                
-                                                <td class="text-secondary">${p.qtyBilled+' '+p.unit}</td>
+                                                <td class="text-secondary">${p.qtyBilled+' ('+p.unit +')'}</td>
                                                 <td class="text-secondary">${p.note}</td>
                                                 <td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>
                                                 <td class="text-secondary fw-semibold">${p.hmoBill}</td>
                                                 <td class="text-secondary fw-semibold">${p.hmsBill}</td>
+                                                <td class="text-secondary fw-semibold">${p.nhisBill}</td>
+                                                <td class="text-secondary fw-semibold">${p.capitation}</td>
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
                                                         <span class="btn payBtnSpan" data-id="${p.id}">${p.paid ? p.paid : 'Pay'}</span>
@@ -436,19 +443,6 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to) => {
                                             `
                                     })
                             child += `</tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td></td>
-                                            <td class="text-secondary fw-bold"></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                    </tfoot>
                                 </table>`
                     return (child);
                 } else {
@@ -494,4 +488,55 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to) => {
     return reconciliationTable
 }
 
-export {getWaitingTable, getVerificationTable, getAllHmoPatientsVisitTable, getApprovalListTable, getVisitPrescriptionsTable, getSentBillsTable, getHmoReportsTable, getHmoReconciliationTable}
+const getNhisReconTable = (tableId, date) => {
+    const nhisReconTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  {url: '/hmo/load/capitation', data: {
+            'date': date,
+        }},
+        orderMulti: false,
+        language: {
+            emptyTable: 'No Sponsors'
+        },
+        drawCallback: function (settings) {
+            var api = this.api()
+                $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
+                $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
+                $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
+                $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
+                $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
+                $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
+                $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
+                $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
+                $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {data: row => `<span class="btn text-decoration-underline showVisitisBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}">${row.sponsor}</span>`},
+            {data: "patientsR"},
+            {data: "patientsC"},
+            {data: "visitsC"},
+            {data: "visitsP"},
+            {data: "prescriptions"},
+            {data: row => account.format(row.hmsBill)},
+            {data: row => account.format(row.nhisBill)},
+            {data: row => account.format(row.paid)},
+            {data: "capitationPayment",
+                render: (data, type, row) => {
+                    if (data){
+                        return account.format(data)
+                    }
+                    return `
+                            <button class="ms-1 btn btn-outline-primary enterCapitationPaymentBtn tooltip-test" title="enter payment" data-id="${ row.id }" data-sponsor="${row.sponsor}" data-prescriptionCount="${row.prescriptions}" data-monthYear="${row.monthYear}">
+                                Enter
+                            </button>
+                            
+                        `}
+            },
+            {data: row => account.format(+row.paid + +row.capitationPayment - +row.hmsBill)},
+        ]
+    });
+
+    return nhisReconTable
+}
+
+export {getWaitingTable, getVerificationTable, getAllHmoPatientsVisitTable, getApprovalListTable, getVisitPrescriptionsTable, getSentBillsTable, getHmoReportsTable, getHmoReconciliationTable, getNhisReconTable}

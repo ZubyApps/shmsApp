@@ -24,52 +24,52 @@ class PatientReportService
     {
     }
 
-    public function getPaginatedPatients(DataTableQueryParams $params)
-    {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
+    // public function getPaginatedPatients(DataTableQueryParams $params)
+    // {
+    //     $orderBy    = 'created_at';
+    //     $orderDir   =  'desc';
 
-        if (! empty($params->searchTerm)) {
-            return $this->patient
-                        ->where('first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('phone', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('sex', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
+    //     if (! empty($params->searchTerm)) {
+    //         return $this->patient
+    //                     ->where('first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+    //                     ->orWhere('middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+    //                     ->orWhere('last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+    //                     ->orWhere('card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+    //                     ->orWhere('phone', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+    //                     ->orWhere('sex', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' )
+    //                     ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+    //                     ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+    //                     ->orderBy($orderBy, $orderDir)
+    //                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
 
-        return $this->patient
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     return $this->patient
+    //                 ->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        
-    }
+    // }
 
-    public function getLoadTransformer(): callable
-    {
-       return  function (Patient $patient) {
-            return [
-                'id'                => $patient->id,
-                'card'              => $patient->card_no,
-                'name'              => $patient->fullName(),
-                'phone'             => $patient->phone,
-                'sex'               => $patient->sex,
-                'age'               => $this->helperService->twoPartDiffInTimePast($patient->date_of_birth),
-                'sponsor'           => $patient->sponsor->name,
-                'category'          => $patient->sponsor->sponsorCategory->name,
-                'createdAt'         => (new Carbon($patient->created_at))->format('d/m/Y'),
-                'createdBy'         => $patient->user->username,
-                'active'            => $patient->is_active,
-                'count'             => $patient->visits()->count(),
-                'patient'           => $patient->patientId()
-            ];
-         };
-    }
+    // public function getLoadTransformer(): callable
+    // {
+    //    return  function (Patient $patient) {
+    //         return [
+    //             'id'                => $patient->id,
+    //             'card'              => $patient->card_no,
+    //             'name'              => $patient->fullName(),
+    //             'phone'             => $patient->phone,
+    //             'sex'               => $patient->sex,
+    //             'age'               => $this->helperService->twoPartDiffInTimePast($patient->date_of_birth),
+    //             'sponsor'           => $patient->sponsor->name,
+    //             'category'          => $patient->sponsor->sponsorCategory->name,
+    //             'createdAt'         => (new Carbon($patient->created_at))->format('d/m/Y'),
+    //             'createdBy'         => $patient->user->username,
+    //             'active'            => $patient->is_active,
+    //             'count'             => $patient->visits()->count(),
+    //             'patient'           => $patient->patientId()
+    //         ];
+    //      };
+    // }
 
     public function getSummaryBySex(DataTableQueryParams $params, $data)
     {
@@ -223,8 +223,7 @@ class PatientReportService
     }
 
     public function getFrequencyTransformer(): callable
-    {
-        
+    {        
         return  function (Patient $patient) {
             return [
                     'id'                => $patient->id,

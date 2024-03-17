@@ -1,7 +1,7 @@
 import {Modal } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { getAccountsSummaryTable } from "./tables/accountReportTables";
+import { getAccountsSummaryTable, getCapitationPaymentsTable } from "./tables/accountReportTables";
 
 window.addEventListener('DOMContentLoaded', function () {
     const byResourceModal            = new Modal(document.getElementById('byResourceModal'))
@@ -9,22 +9,22 @@ window.addEventListener('DOMContentLoaded', function () {
     const datesDiv                  = document.querySelector('.datesDiv')
 
     const summaryTab                = document.querySelector('#nav-summary-tab')
-    const usedSummaryTab            = document.querySelector('#nav-usedSummary-tab')
+    const capitationPaymentsTab     = document.querySelector('#nav-capitationPayments-tab')
 
     const searchWithDatesBtn        = document.querySelector('.searchWithDatesBtn')
 
-    let payMethodsSummmaryTable, usedSummaryTable, byResourceTable
+    let payMethodsSummmaryTable, capitationPaymentsTable, byResourceTable
     payMethodsSummmaryTable = getAccountsSummaryTable('summaryTable')
 
     summaryTab.addEventListener('click', function() {
         payMethodsSummmaryTable.draw()
     })
 
-    usedSummaryTab.addEventListener('click', function() {
-        if ($.fn.DataTable.isDataTable( '#usedSummaryTable' )){
-            $('#usedSummaryTable').dataTable().fnDraw()
+    capitationPaymentsTab.addEventListener('click', function() {
+        if ($.fn.DataTable.isDataTable( '#capitationPaymentsTable' )){
+            $('#capitationPaymentsTable').dataTable().fnDraw()
         } else {
-            usedSummaryTable = getUsedResourcesSummaryTable('usedSummaryTable')
+            capitationPaymentsTable = getCapitationPaymentsTable('capitationPaymentsTable')
         }
     })
 
@@ -48,6 +48,27 @@ window.addEventListener('DOMContentLoaded', function () {
             byResourceModal._element.querySelector('#to').value = to
             byResourceTable = getByResourceTable('byResourceTable', id, byResourceModal, datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value)
             byResourceModal.show()
+        }
+    })
+
+    document.querySelector('#capitationPaymentsTable').addEventListener('click', function (event) {
+        const deletePaymentBtn    = event.target.closest('.deletePaymentBtn')
+
+        if (deletePaymentBtn){
+            deletePaymentBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Capitation Payment?')) {
+                const capitationPayment = deletePaymentBtn.getAttribute('data-id')
+                http.delete(`/capitation/${capitationPayment}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            capitationPaymentsTable ? capitationPaymentsTable.draw() : ''
+                        }
+                        deletePaymentBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                    })
+            }
         }
     })
 })

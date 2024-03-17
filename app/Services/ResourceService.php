@@ -31,7 +31,7 @@ class ResourceService
             'selling_price'             => $data->sellingPrice,
             'reorder_level'             => $data->reOrder,
             'unit_description'          => $data->unitDescription,
-            'expiry_date'               => $data->expiryDate ? new Carbon($data->expiryDate) : null,
+            'expiry_date'               => $data->expiryDate ? (new Carbon($data->expiryDate))->lastOfMonth() : null,
         ]);
     }
 

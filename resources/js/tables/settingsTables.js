@@ -181,4 +181,48 @@ const getPayMethodTable = () => {
     return resourceCategoryTable
 }
 
-export {getSponsorCategoryTable, getResourceStockDateTable, getResourceCategoryTable, getPayMethodTable}
+const getExpenseCategoryTable = (table) => {
+    const resourceCategoryTable = new DataTable('#'+table, {
+        serverSide: true,
+        ajax:  '/expensecategory/load',
+        orderMulti: true,
+        search:true,
+        columns: [
+            {data:row => () => {
+                return `<span class="text-primary"> ${row.name}</span>`
+            }},
+            {data: "description"},
+            {data: "createdBy"},
+            {data: "createdAt"},
+            {
+                sortable: false,
+                data: row => () => {
+                    if (row.count < 1) {
+                         return `
+                            <div class="d-flex flex-">
+                                <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </button>
+                                <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </div>
+                        `
+                    } else {
+                        return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
+                        </div>
+                    `
+                    }
+                           
+                } 
+                    }
+        ]
+    });
+    return resourceCategoryTable
+}
+
+export {getSponsorCategoryTable, getResourceStockDateTable, getResourceCategoryTable, getPayMethodTable, getExpenseCategoryTable}

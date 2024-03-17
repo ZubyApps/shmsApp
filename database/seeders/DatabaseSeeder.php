@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder
             'next_of_kin_rship' => 'Son',
             'next_of_kin_phone' => '08035999029',
             'date_of_employment' => new DateTime('1982/06/28'),
+            'special_note' => 'Management',
             'password' => Hash::make('mylovelywife'), // password
         ]);
         User::create([

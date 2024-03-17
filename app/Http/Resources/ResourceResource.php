@@ -33,7 +33,7 @@ class ResourceResource extends JsonResource
                 'purchasePrice'         => $this->purchase_price,
                 'sellingPrice'          => $this->selling_price,
                 'reOrder'               => $this->reorder_level,
-                'expiryDate'            => (new Carbon($this->expiry_date))->format('Y-m-d'),
+                'expiryDate'            => (new Carbon($this->expiry_date))->format('Y-m'),
         ];
     }
 }

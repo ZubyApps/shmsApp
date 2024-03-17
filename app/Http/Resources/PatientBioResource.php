@@ -25,6 +25,7 @@ class PatientBioResource extends JsonResource
             "sponsorName"   => $this->sponsor->name,
             "age"           => $this->patient->age(),
             "sex"           => $this->patient->sex,
+            "address"       => $this->patient->address,
             "maritalStatus" => $this->patient->marital_status,
             "phone"         => $this->patient->phone,
             "ethnicGroup"   => $this->patient->ethnic_group,

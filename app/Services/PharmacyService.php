@@ -192,7 +192,8 @@ class PharmacyService
             ]);
 
             $prescription->visit->update([
-                'total_hms_bill' => $data->quantity ? $prescription->visit->totalHmsBills() : ($prescription->visit->totalHmsBills() - $bill)
+                'total_hms_bill' => $data->quantity ? $prescription->visit->totalHmsBills() : ($prescription->visit->totalHmsBills() - $bill),
+                // 'total_nhis_bill' => $data->quantity ? $prescription->visit->totalNhisBills() : ($prescription->visit->totalNhisBills() - $bill/10)
             ]);
  
             if ($prescription->visit->sponsor->sponsorCategory->name == 'NHIS'){

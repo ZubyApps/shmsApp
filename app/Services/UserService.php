@@ -67,6 +67,7 @@ class UserService
              'next_of_kin_phone'     => $data->nextOfKinPhone1,
              'date_of_employment'    => $data->dateOfEmployment1,
              'date_of_exit'          => $data->dateOfExit1,
+             'special_note'          => $data->specialNote1,
              'password'              => Hash::make($data->password),
              'created_by'            => $updater->username,
              ]);
@@ -89,6 +90,7 @@ class UserService
                 'next_of_kin_phone'     => $data->nextOfKinPhone1,
                 'date_of_employment'    => $data->dateOfEmployment1,
                 'date_of_exit'          => $data->dateOfExit1,
+                'special_note'          => $data->specialNote1,
                 'created_by'            => $updater->username,
                 ]);
         }
@@ -152,15 +154,25 @@ class UserService
         ]);
     }
 
-    public function listStaff(String $designation)
+    public function listStaff(String $designation = null, string $special_note = null)
     {
         $orderBy    = 'username';
         $orderDir   =  'desc';
 
-        return $this->user
-                    ->whereRelation('designation', 'designation', '=', $designation)
-                    ->orderBy($orderBy, $orderDir)
-                    ->get(['id', 'username']);
+        if ($special_note == 'Management'){
+            return $this->user
+                        ->where('special_note', $special_note)
+                        ->orderBy($orderBy, $orderDir)
+                        ->get(['id', 'username']);
+        }
+        
+        if ($designation){
+            return $this->user
+                            ->orWhereRelation('designation', 'designation', '=', $designation)
+                            ->orderBy($orderBy, $orderDir)
+                            ->get(['id', 'username']);
+        }
+
     }
 
     public function getActiveStaffList(DataTableQueryParams $params)

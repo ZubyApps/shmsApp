@@ -23,7 +23,7 @@ class NurseController extends Controller
 
     public function index()
     {
-        return view('nurses.nurses', ['doctors' => $this->userService->listStaff('Doctor')]);
+        return view('nurses.nurses', ['doctors' => $this->userService->listStaff(designation: 'Doctor')]);
     }
 
     public function loadVisitsNurses(Request $request)

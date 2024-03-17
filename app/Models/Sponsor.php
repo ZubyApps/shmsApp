@@ -30,4 +30,9 @@ class Sponsor extends Model
     {
         return $this->hasMany(Visit::class);
     }
+
+    public function capitationPayments()
+    {
+        return $this->hasMany(CapitationPayment::class);
+    }
 }

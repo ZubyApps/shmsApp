@@ -21,7 +21,8 @@ class PrescriptionService
     public function __construct(
         private readonly Prescription $prescription, 
         private readonly Resource $resource,
-        private readonly PaymentService $paymentService
+        private readonly PaymentService $paymentService,
+        private readonly CapitationPaymentService $capitationPaymentService
         )
     {
     }
@@ -50,17 +51,20 @@ class PrescriptionService
                 'doctor_on_call'    => $data->doc
             ]);
 
-            $prescription->update(['nhis_bill' => $bill ? $nhisBill($bill) : 0]);
+            $isNhis = $prescription->visit->sponsor->sponsorCategory->name == 'NHIS';
+
+            $isNhis && $bill ? $prescription->update(['nhis_bill' => $nhisBill($bill)]) : '';
 
             $prescription->visit->update([
                 'viewed_at'         => null,
-                'total_hms_bill'    => $data->quantity ? $prescription->visit->totalHmsBills() : ($prescription->visit->totalHmsBills() - $bill),
-                'total_nhis_bill'    => $data->quantity ? $prescription->visit->totalNhisBills() : ($prescription->visit->totalNhisBills() - $bill ? $nhisBill($bill) : 0),
+                'total_hms_bill'    => $prescription->visit->totalHmsBills(),
+                'total_nhis_bill'   => $isNhis ? $prescription->visit->totalNhisBills() : $prescription->visit->total_nhis_bill,
                 'pharmacy_done_by'  => $resource->category == 'Medications' || $resource->category == 'Consumables' ? null : $prescription->visit->pharmacy_done_by,
             ]);
 
-            if ($prescription->visit->sponsor->sponsorCategory->name == 'NHIS'){
+            if ($isNhis){
                 $this->paymentService->prescriptionsPaymentSeiveNhis($prescription->visit->totalPayments(), $prescription->visit->prescriptions);
+                $this->capitationPaymentService->seiveCapitationPayment($prescription->visit->sponsor, new Carbon($prescription->created_at));
             } else {
                 $this->paymentService->prescriptionsPaymentSeive($prescription->visit->totalPayments(), $prescription->visit->prescriptions);
             }

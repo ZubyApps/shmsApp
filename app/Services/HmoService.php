@@ -7,20 +7,25 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Consultation;
 use App\Models\Prescription;
+use App\Models\Sponsor;
 use App\Models\User;
 use App\Models\Visit;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
+use function Laravel\Prompts\search;
 
 class HmoService
 {
     public function __construct(
         private readonly Visit $visit, 
         private readonly Prescription $prescription,
-        private readonly PayPercentageService $payPercentageService
+        private readonly PayPercentageService $payPercentageService,
+        private readonly Sponsor $sponsor
         )
     {
         
@@ -307,10 +312,16 @@ class HmoService
         if ($prescription->approved == true || $prescription->rejected == true){
             return response('Already treated by ' . $prescription->approvedBy->username ?? $prescription->rejectedBy->username, 222);
         }
-        return  $prescription->update([
+        
+        $prescription->update([
             'approved'         => true,
             'hmo_note'          => $data->note,
             'approved_by'      => $user->id,
+        ]);
+
+
+        return $prescription->visit->update([
+            'total_nhis_bill'   => $prescription->visit->sponsor->category_name == 'NHIS' ? $prescription->visit->totalNhisBills() : $prescription->visit->total_nhis_bill,
         ]);
     }
 
@@ -328,13 +339,18 @@ class HmoService
 
     public function reset(Prescription $prescription)
     {
-        return  $prescription->update([
+        $prescription->update([
             'approved'          => false,
             'hmo_note'          => null,
             'approved_by'       => null,
             'rejected'          => false,
             'hmo_note'          => null,
             'rejected_by'       => null,
+        ]);
+
+        return $prescription->visit->update([
+            'total_hms_bill'    => $prescription->visit->totalHmsBills(),
+            'total_nhis_bill'   => $prescription->visit->sponsor->category_name == 'NHIS' ? $prescription->visit->totalNhisBills() : $prescription->visit->total_nhis_bill,
         ]);
     }
 
@@ -570,6 +586,7 @@ class HmoService
     public function getVisitsForReconciliationTransformer(): callable
     {
        return  function (Visit $visit) {
+            $visit->update(['total_capitation' => $visit->totalPrescriptionCapitations()]);
             return [
                 'id'                    => $visit->id,
                 'came'                  => (new Carbon($visit->created_at))->format('D/m/y g:ia'),                
@@ -583,6 +600,8 @@ class HmoService
                 'closed'                => $visit->closed,
                 'totalHmsBill'          => $visit->total_hms_bill,
                 'totalHmoBill'          => $visit->total_hmo_bill,
+                'totalNhisBill'         => $visit->total_nhis_bill,
+                'totalCapitation'       => $visit->total_capitation,
                 'totalPaid'             => $visit->total_paid,
                 'prescriptions'         => $visit->prescriptions->map(fn(Prescription $prescription)=> [
                     'id'                => $prescription->id ?? '',
@@ -593,6 +612,8 @@ class HmoService
                     'unit'              => $prescription->resource->unit_description,
                     'hmoBill'           => $prescription->hmo_bill ?? '',
                     'hmsBill'           => $prescription->hms_bill ?? '',
+                    'nhisBill'          => $prescription->nhis_bill ?? '',
+                    'capitation'        => $prescription->capitation ?? '',
                     'approved'          => $prescription->approved, 
                     'rejected'          => $prescription->rejected,
                     'hmoNote'           => $prescription->hmo_note ?? '',
@@ -628,8 +649,54 @@ class HmoService
         $visit->totalPaidPrescriptions() +  $visit->totalPayments();
     }
 
-    public function NhisCapitation()
+    public function getNhisSponsorsByDate(DataTableQueryParams $params, $data)
     {
-        
+        $orderBy    = 'name';
+        $orderDir   =  'asc';
+        $current    = CarbonImmutable::now();
+        $searchDate = $data->date ? (new Carbon($data->date)) : null;
+
+        if ($searchDate){
+            return $this->sponsor
+                    ->whereRelation('sponsorCategory', 'name', '=', 'NHIS')
+                    ->whereHas('visits.prescriptions', function(Builder $query) use($searchDate){
+                        $query->whereMonth('created_at', $searchDate->month)
+                                ->whereYear('created_at', $searchDate->year);
+                    })
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+        return $this->sponsor
+                    ->whereRelation('sponsorCategory', 'name', '=', 'NHIS')
+                    ->whereHas('visits.prescriptions', function(Builder $query) use($current){
+                        $query->whereMonth('created_at', $current->month)
+                              ->whereYear('created_at', $current->year);
+                    })
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));                        
+    }
+
+    public function getSponsorsByDateTransformer($data)
+    {
+        return function (Sponsor $sponsor) use ($data){
+            $month      = (new Carbon($data->date))->month;
+            $year       = (new Carbon($data->date))->year;
+            $monthYear  = (new Carbon($data->date))->format('F Y');
+            return [
+                'id'                => $sponsor->id,
+                'sponsor'           => $sponsor->name,
+                'category'          => $sponsor->category_name,
+                'patientsR'         => $sponsor->patients->count(),
+                'patientsC'         => $sponsor->patients()->whereHas('visits', fn(Builder $query)=>$query->whereMonth('created_at', $month))->count(),
+                'visitsC'           => $sponsor->visits()->whereMonth('created_at', $month)->count(),
+                'visitsP'           => $sponsor->visits()->whereHas('prescriptions', fn(Builder $query)=>$query->whereMonth('created_at', $month))->count(),
+                'prescriptions'     => $sponsor->through('visits')->has('prescriptions')->whereMonth('prescriptions.created_at', $month)->count(),
+                'hmsBill'           => $sponsor->visits()->whereMonth('created_at', $month)->sum('total_hms_bill'),
+                'nhisBill'          => $sponsor->visits()->whereMonth('created_at', $month)->sum('total_nhis_bill'),
+                'paid'              => $sponsor->visits()->whereMonth('created_at', $month)->sum('total_paid'),
+                'capitationPayment' => $sponsor->capitationPayments()->whereMonth('month_paid_for', $month)->whereYear('month_paid_for', $year)->first()?->amount_paid,
+                'monthYear'         => $monthYear,
+            ];
+        };
     }
 }

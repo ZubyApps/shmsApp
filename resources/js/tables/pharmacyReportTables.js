@@ -21,6 +21,8 @@ const getPharmacySummaryTable = (tableId, startDate, endDate) => {
             $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
             $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
             $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
+            $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
+            $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: row => `<span class="btn text-decoration-underline showPatientsBtn tooltip-test" title="show patients" data-id="${row.id}" data-resource="${row.name}" data-subcategory="${row.subCategory}">${row.name}</span>`},
@@ -28,6 +30,8 @@ const getPharmacySummaryTable = (tableId, startDate, endDate) => {
             {data: "prescriptions"},
             {data: "qtyBilled"},
             {data: "qtyDispensed"},
+            {data: "bulkDispensed"},
+            {data: row => row.qtyDispensed + row.bulkDispensed},
         ]
     })
 

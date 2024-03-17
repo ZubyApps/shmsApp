@@ -84,6 +84,10 @@
                                             <x-input-span id="pastMedicalHistoryLabel">Past Medical/ <br /> Surgical History</x-input-span>
                                             <x-form-textarea name="pastMedicalHistory" id="pastMedicalHistory" cols="10" rows="2"></x-form-textarea>
                                         </x-form-div>
+                                        <x-form-div class="col-xl-12">
+                                            <x-input-span id="paediatricHistoryLabel">Paedetric History</x-input-span>
+                                            <x-form-textarea name="paediatricHistory" id="paediatricHistory" cols="10" rows="2"></x-form-textarea>
+                                        </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="obGyneHistoryLabel">Obstetrics/<br />Gynecological History</x-input-span>
                                             <x-form-textarea type="text" name="obGynHistory" id="obGynHistory" cols="10" rows="2"></x-form-textarea>
@@ -105,6 +109,10 @@
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="diagnosisLabel">Provisional <br /> Diagnosis</x-input-span>
                                             <x-form-textarea type="text" name="provisionalDiagnosis" class="provisionalDiagnosis" id="provisionalDiagnosis" cols="10" rows="2"></x-form-textarea>
+                                        </x-form-div>
+                                        <x-form-div class="col-xl-6">
+                                            <x-input-span id="historyOfCareLabel">History of care</x-input-span>
+                                            <x-form-textarea type="text" name="historyOfCare" id="historyOfCare" cols="10" rows="2"></x-form-textarea>
                                         </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span id="physiciansPlanLabel">Physicians Plan</x-input-span>

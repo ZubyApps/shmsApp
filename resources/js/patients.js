@@ -202,7 +202,9 @@ window.addEventListener('DOMContentLoaded', function(){
             initiatePatientModal._element.querySelector('#patientId').value = initiateVisitBtn.getAttribute('data-patient')
             initiatePatientModal._element.querySelector('#confirmVisitBtn').setAttribute('data-id', initiateVisitBtn.getAttribute('data-id'))
             initiatePatientModal.show()
-            initiateVisitBtn.removeAttribute('disabled')    
+            initiateVisitBtn.removeAttribute('disabled')
+            setTimeout(function(){confirmVisitBtn.focus()}, 1000)
+            
         }
 
         if (deleteBtn){

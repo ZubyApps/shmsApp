@@ -14,6 +14,7 @@
 @include('hmo.reconciliationModal', ['title' => 'Reconciliation', 'id' => 'reconciliationModal'])
 @include('extras.medicalReportListModal', ['title' => 'Medical Report List', 'isDoctor' => false, 'id' => 'medicalReportListModal' ])
 @include('extras.viewMedicalReportModal', ['title' => '', 'isUpdate' => true, 'id' => 'viewMedicalReportModal' ])
+@include('hmo.capitationPaymentModal', ['title' => '', 'id' => 'capitationPaymentModal' ])
 
 
 
@@ -143,6 +144,9 @@
 
                     <button class="nav-link" id="nav-hmoReports-tab" data-bs-toggle="tab" data-bs-target="#nav-hmoReports"
                         type="button" role="tab" aria-controls="nav-hmoReports" aria-selected="false">Reports</button>
+
+                    <button class="nav-link" id="nav-nhisRecon-tab" data-bs-toggle="tab" data-bs-target="#nav-nhisRecon"
+                        type="button" role="tab" aria-controls="nav-nhisRecon" aria-selected="false">NHIS Capitation</button>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
@@ -276,6 +280,51 @@
                             </tbody>
                             <tfoot>
                                 <tr class="">
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+                <!-- nhis capitation reconciliation table -->
+                <div class="tab-pane fade" id="nav-nhisRecon" role="tabpanel" aria-labelledby="nav-nhisRecon-tab"
+                    tabindex="0">
+                    <x-form-div class="col-xl-4 pt-2 nhisMonthYearDiv">
+                        <x-input-span class="">Month/Year</x-input-span>
+                        <x-form-input type="month" name="nhisDate" id="nhisDate" />
+                        <button class="input-group-text searchNhisConBtn">Serach</button>
+                    </x-form-div>
+                    <div class="py-2 justify-content-center">
+                        <table id="nhisReconTable" class="table table-sm nhisReconTable">
+                            <thead>
+                                <tr>
+                                    <th>Sponsor</th>
+                                    <th>Px</th>
+                                    <th>Px Visits</th>
+                                    <th>Visits</th>
+                                    <th>Visits Rx</th>
+                                    <th>Rx</th>
+                                    <th>Hms Bill</th>
+                                    <th>Nhis Bill</th>
+                                    <th>Paid</th>
+                                    <th>Capitation</th>
+                                    <th>Gross</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <tfoot>
+                                <tr class="">
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>

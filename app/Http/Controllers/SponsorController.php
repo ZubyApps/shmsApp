@@ -18,13 +18,6 @@ class SponsorController extends Controller
     {
         
     }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
     public function list(Request $request, Sponsor $sponsor)
     {   
@@ -36,9 +29,7 @@ class SponsorController extends Controller
      */
     public function store(StoreSponsorRequest $request)
     {
-        $sponsor = $this->sponsorService->create($request, $request->user());
-
-        return $sponsor->load('sponsorCategory');
+        return $this->sponsorService->create($request, $request->user());
     }
 
     public function load(Request $request)
@@ -50,14 +41,6 @@ class SponsorController extends Controller
         $loadTransformer = $this->sponsorService->getLoadTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Sponsor $sponsor)
-    {
-        //
     }
 
     /**

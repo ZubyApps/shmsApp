@@ -9,6 +9,8 @@
 @include('admin.modals.sponsorCategoryModal', ['title' => 'Edit Sponsor Category', 'isUpdate' => true, 'id' => 'updateSponsorCategoryModal'])
 @include('admin.modals.resourceCategoryModal', ['title' => 'New Resource Category', 'isUpdate' => false, 'id' => 'newResourceCategoryModal'])
 @include('admin.modals.resourceCategoryModal', ['title' => 'Edit Resource Category', 'isUpdate' => true, 'id' => 'updateResourceCategoryModal'])
+@include('admin.modals.expenseCategoryModal', ['title' => 'New Expense Category', 'isUpdate' => false, 'id' => 'newExpenseCategoryModal'])
+@include('admin.modals.expenseCategoryModal', ['title' => 'Edit Expense Category', 'isUpdate' => true, 'id' => 'updateExpenseCategoryModal'])
 @include('admin.modals.payMethodModal', ['title' => 'New Pay Method', 'isUpdate' => false, 'id' => 'newPayMethodModal'])
 @include('admin.modals.payMethodModal', ['title' => 'Edit Pay Method', 'isUpdate' => true, 'id' => 'editPayMethodModal'])
 
@@ -25,10 +27,13 @@
 
                     <button class="nav-link" id="nav-resourceCategory-tab" data-bs-toggle="tab" data-bs-target="#nav-resourceCategory"
                         type="button" role="tab" aria-controls="nav-resourceCategory" aria-selected="false">Resource Category</button>
-
+                        
                     <button class="nav-link" id="nav-payMethod-tab" data-bs-toggle="tab" data-bs-target="#nav-payMethod"
-                        type="button" role="tab" aria-controls="nav-payMethod" aria-selected="false">Pay Methods</button>
-                </div>
+                    type="button" role="tab" aria-controls="nav-payMethod" aria-selected="false">Pay Methods</button>
+
+                    <button class="nav-link" id="nav-expenseCategory-tab" data-bs-toggle="tab" data-bs-target="#nav-expenseCategory"
+                        type="button" role="tab" aria-controls="nav-expenseCategory" aria-selected="false">Expense Category</button>
+                    </div>
             </nav>
             <div class="tab-content px-2" id="nav-tabContent">
                 <!-- patients table -->
@@ -36,10 +41,10 @@
                     aria-labelledby="nav-sponsorCategory-tab" tabindex="0">
                     
                     <div class="text-start my-4">
-                        <button class="btn btn-primary" type="button" id="addSponsnorCategoryBtn">
+                        {{-- <button class="btn btn-primary" type="button" id="addSponsnorCategoryBtn">
                             <i class="bi bi-plus-circle"></i>
                             Category
-                        </button>
+                        </button> --}}
                     </div>
 
                     <div class="container">
@@ -93,10 +98,10 @@
                     tabindex="0">
 
                     <div class="text-start my-4">
-                        <button class="btn btn-primary" type="button" id="addResourceCategoryBtn">
+                        {{-- <button class="btn btn-primary" type="button" id="addResourceCategoryBtn">
                             <i class="bi bi-plus-circle"></i>
                             Category
-                        </button>
+                        </button> --}}
                     </div>
                     <div class="container">
                         <table id="resourceCategoryTable" class="table table-hover align-middle table-sm">
@@ -126,6 +131,31 @@
                     </div>
                     <div class="container">
                         <table id="payMethodTable" class="table table-hover align-middle table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Created By</th>
+                                    <th>Created At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- expenseCategory table -->
+                <div class="tab-pane fade" id="nav-expenseCategory" role="tabpanel" aria-labelledby="nav-expenseCategory-tab"
+                    tabindex="0">
+
+                    <div class="text-start my-4">
+                        <button class="btn btn-primary" type="button" id="addExpenseCategoryBtn">
+                            <i class="bi bi-plus-circle"></i>
+                            Category
+                        </button>
+                    </div>
+                    <div class="container">
+                        <table id="expenseCategoryTable" class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
                                     <th>Name</th>

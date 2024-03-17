@@ -74,9 +74,9 @@ class RegisteredUserController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $activeStaffList, $params);  
     }
 
-    public function edit(User $user)
+    public function edit(User $user, Request $request)
     {
-        if ($user->designation?->access_level > 5) {
+        if ($user->designation?->access_level > 5 && $request->user()->designation?->access_level <= 5) {
             return response()->json(['message' => 'You are not authorized'], 403);
         }
         return new UserResource($user);

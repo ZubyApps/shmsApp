@@ -8,7 +8,9 @@ use App\Models\Payment;
 use App\Models\Visit;
 use App\Services\BillingService;
 use App\Services\DatatablesService;
+use App\Services\ExpenseService;
 use App\Services\PaymentService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 
 class BillingController extends Controller
@@ -16,14 +18,21 @@ class BillingController extends Controller
     public function __construct(
         private readonly DatatablesService $datatablesService,
         private readonly BillingService $billingService,
-        private readonly PaymentService $paymentService)
+        private readonly PaymentService $paymentService,
+        private readonly ExpenseService $expenseService,
+        private readonly ExpenseCategoryController $expenseCategoryController,
+        private readonly UserService $userService
+        )
     {
         
     }
 
     public function index()
     {
-        return view('billing.billing');
+        return view('billing.billing', [
+            'users' => $this->userService->listStaff(special_note:'Management'),
+            'categories' => $this->expenseCategoryController->showAll('id', 'name')
+        ]);
     }
 
     /**
@@ -122,6 +131,17 @@ class BillingController extends Controller
         $visits = $this->billingService->getpaginatedFilteredBillingVisits($params, $request);
        
         $loadTransformer = $this->billingService->getVisitsBillingTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
+
+    public function loadExpenses(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->expenseService->getPaginatedExpenses($params, $request);
+       
+        $loadTransformer = $this->expenseService->getLoadTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }

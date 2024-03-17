@@ -31,7 +31,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="expiryDateLabel">Expiry Date</x-input-span>
-                                <x-form-input type="date" name="expiryDate" value="" />
+                                <x-form-input type="month" name="expiryDate" value="" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="resourceSuplierLabel">Supplier</x-input-span>

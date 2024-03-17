@@ -18,11 +18,15 @@
     </x-form-div>
     <x-form-div>
         <x-input-span id="maritalStatusLabel">Marital Status</x-input-span>
-        <x-form-input name="maritalStatus" class="Male" value="" readonly />
+        <x-form-input name="maritalStatus"  value="" readonly />
     </x-form-div>
     <x-form-div>
         <x-input-span>Phone Number</x-input-span>
         <x-form-input type="tel" name="phone" id="phone" value="" readonly />
+    </x-form-div>
+    <x-form-div>
+        <x-input-span id="addressLabel">Address</x-input-span>
+        <x-form-input name="address" value="" readonly />
     </x-form-div>
     <x-form-div>
         <x-input-span>Ethnic Group</x-input-span>
@@ -44,7 +48,7 @@
         <x-input-span>Genotype</x-input-span>
         <x-form-input name="genotype" class="genotype" readonly />
     </x-form-div>
-    <x-form-div>
+    <x-form-div class="col-xl-12">
         <x-input-span>Known <br> Conditions</x-input-span>
         <x-form-textarea name="knownConditions" class="knownConditions text-danger fw-bold" readonly ></x-form-textarea>
     </x-form-div>

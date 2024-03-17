@@ -14,7 +14,7 @@ import 'datatables.net-fixedcolumns-bs5';
 import 'datatables.net-fixedheader-bs5';
 import 'datatables.net-select-bs5';
 import 'datatables.net-staterestore-bs5';
-import { getPayMethodTable, getResourceCategoryTable, getResourceStockDateTable, getSponsorCategoryTable } from "./tables/settingsTables";
+import { getExpenseCategoryTable, getPayMethodTable, getResourceCategoryTable, getResourceStockDateTable, getSponsorCategoryTable } from "./tables/settingsTables";
 
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -27,13 +27,17 @@ window.addEventListener('DOMContentLoaded', function () {
     const newResourceCategoryModal          = new Modal(document.getElementById('newResourceCategoryModal'))
     const updateResourceCategoryModal       = new Modal(document.getElementById('updateResourceCategoryModal'))
     
+    const newExpenseCategoryModal          = new Modal(document.getElementById('newExpenseCategoryModal'))
+    const updateExpenseCategoryModal       = new Modal(document.getElementById('updateExpenseCategoryModal'))
+    
     const newPayMethodModal                 = new Modal(document.getElementById('newPayMethodModal'))
     const editPayMethodModal                = new Modal(document.getElementById('editPayMethodModal'))
 
-    const addSponsorCategoryBtn             = document.querySelector('#addSponsnorCategoryBtn')
+    // const addSponsorCategoryBtn             = document.querySelector('#addSponsnorCategoryBtn')
     const addResourceStockDateBtn           = document.querySelector('#addResourceStockDateBtn')
-    const addResourceCategoryBtn            = document.querySelector('#addResourceCategoryBtn')
+    // const addResourceCategoryBtn            = document.querySelector('#addResourceCategoryBtn')
     const addPayMethodBtn                   = document.querySelector('#addPayMethodBtn')
+    const addExpenseCategoryBtn             = document.querySelector('#addExpenseCategoryBtn')
 
     const createSponsorCategoryBtn          = document.querySelector('#createSponsorCategoryBtn')
     const saveSponsorCategoryBtn            = document.querySelector('#saveSponsorCategoryBtn')
@@ -47,12 +51,16 @@ window.addEventListener('DOMContentLoaded', function () {
     const createPayMethodBtn                = document.querySelector('#createPayMethodBtn')
     const savePayMethodBtn                  = document.querySelector('#savePayMethodBtn')
     
+    const createExpenseCategoryBtn          = document.querySelector('#createExpenseCategoryBtn')
+    const saveExpenseCategoryBtn            = document.querySelector('#saveExpenseCategoryBtn')
+    
     const sponsorCategoryTab                = document.querySelector('#nav-sponsorCategory-tab')
     const resourceStockDateTab              = document.querySelector('#nav-resourceStockDate-tab')
     const resourceCategoryTab               = document.querySelector('#nav-resourceCategory-tab')
     const payMethodTab                      = document.querySelector('#nav-payMethod-tab') 
+    const expenseCategoryTab                = document.querySelector('#nav-expenseCategory-tab')
 
-    let resourceStockDateTable, resourceCategoryTable, payMethodTable
+    let resourceStockDateTable, resourceCategoryTable, payMethodTable, expenseCategoryTable
 
     const sponsorCategoryTable = getSponsorCategoryTable('sponsorCategoryTable')
 
@@ -81,6 +89,14 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#payMethodTable').dataTable().fnDraw()
         } else {
             payMethodTable = getPayMethodTable('payMethodTable')
+        }
+    })
+
+    expenseCategoryTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#expenseCategoryTable' )){
+            $('#expenseCategoryTable').dataTable().fnDraw()
+        } else {
+            expenseCategoryTable = getExpenseCategoryTable('expenseCategoryTable')
         }
     })
 
@@ -122,9 +138,9 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    addSponsorCategoryBtn.addEventListener('click', function () {
-        newSponsorCategoryModal.show()
-    })
+    // addSponsorCategoryBtn.addEventListener('click', function () {
+    //     newSponsorCategoryModal.show()
+    // })
 
     createSponsorCategoryBtn.addEventListener('click', function () {
         createSponsorCategoryBtn.setAttribute('disabled', 'disabled')
@@ -289,9 +305,9 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    addResourceCategoryBtn.addEventListener('click', function () {
-        newResourceCategoryModal.show()
-    })
+    // addResourceCategoryBtn.addEventListener('click', function () {
+    //     newResourceCategoryModal.show()
+    // })
 
     createResourceCategoryBtn.addEventListener('click', function () {
         createResourceCategoryBtn.setAttribute('disabled', 'disabled')
@@ -400,6 +416,82 @@ window.addEventListener('DOMContentLoaded', function () {
         .catch((error) => {
             alert(error.response.data.message)
             savePayMethodBtn.removeAttribute('disabled')
+        })
+    })
+
+    addExpenseCategoryBtn.addEventListener('click', function () {
+        newExpenseCategoryModal.show()
+    })
+
+    document.querySelector('#expenseCategoryTable').addEventListener('click', function (event) {
+        const editBtn    = event.target.closest('.updateBtn')
+        const deleteBtn  = event.target.closest('.deleteBtn')
+
+        if (editBtn) {
+            editBtn.setAttribute('disabled', 'disabled')
+            const expenseCategoryId = editBtn.getAttribute('data-id')
+            http.get(`/expensecategory/${ expenseCategoryId }`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openModals(updateExpenseCategoryModal, saveExpenseCategoryBtn, response.data.data)
+                    }
+                    editBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
+
+        if (deleteBtn){
+            deleteBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Expense Category?')) {
+                const expenseCategory = deleteBtn.getAttribute('data-id')
+                http.delete(`/expensecategory/${expenseCategory}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            expenseCategoryTable ? expenseCategoryTable.draw() : ''
+                        }
+                        deleteBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+            }
+        }
+    })
+
+    createExpenseCategoryBtn.addEventListener('click', function () {
+        createExpenseCategoryBtn.setAttribute('disabled', 'disabled')
+        http.post('/expensecategory', getDivData(newExpenseCategoryModal._element), {"html": newExpenseCategoryModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                newExpenseCategoryModal.hide()
+                    clearDivValues(newExpenseCategoryModal._element)
+                    expenseCategoryTable ? expenseCategoryTable.draw() : ''
+                }
+                createExpenseCategoryBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            console.log(error.response.data.message)
+            createExpenseCategoryBtn.removeAttribute('disabled')
+        })
+
+    })
+
+    saveExpenseCategoryBtn.addEventListener('click', function (event) {
+        const expenseCategoryId = event.currentTarget.getAttribute('data-id')
+        saveExpenseCategoryBtn.setAttribute('disabled', 'disabled')
+        http.post(`/expensecategory/${expenseCategoryId}`, getDivData(updateExpenseCategoryModal._element), {"html": updateExpenseCategoryModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                updateExpenseCategoryModal.hide()
+                expenseCategoryTable ? expenseCategoryTable.draw() : ''
+            }
+            saveExpenseCategoryBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            alert(error.response.data.message)
+            saveExpenseCategoryBtn.removeAttribute('disabled')
         })
     })
 

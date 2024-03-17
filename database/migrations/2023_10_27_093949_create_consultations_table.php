@@ -20,12 +20,14 @@ return new class extends Migration
             $table->text('hop_complain')->nullable();
             $table->text('med_surg_history')->nullable();
             $table->text('obgyn_history')->nullable();
+            $table->text('paediatric_history')->nullable();
             $table->text('exam_findings')->nullable();
             $table->text('icd11_diagnosis')->nullable();
             $table->text('provisional_diagnosis')->nullable();
             $table->text('phys_plan')->nullable();
             $table->text('complaint')->nullable();
             $table->text('assessment')->nullable();
+            $table->text('history_of_care')->nullable();
             $table->text('notes')->nullable();
             $table->text('roppt_brim')->nullable();
             $table->text('remarks')->nullable();

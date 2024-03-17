@@ -25,7 +25,7 @@
         <x-form-input type="text" name="weight" id="weight" class="weight" data-id="{{ $sf }}"/>
     </x-form-div>
     <x-form-div>
-        <x-input-span id="heightLabel">Height</x-input-span>
+        <x-input-span id="heightLabel">Height/Length</x-input-span>
         <x-form-input type="text" name="height" id="height" class="height" data-id="{{ $sf }}"/>
     </x-form-div>
     <x-form-div>
@@ -33,7 +33,15 @@
         <x-form-input type="text" name="bmi" id="bmi" value="" class="bmi"/>
     </x-form-div>
     <x-form-div>
+        <x-input-span id="heightLabel">Head Circ</x-input-span>
+        <x-form-input type="text" name="headCircumference" id="headCircumference" class="headCircumference" data-id="{{ $sf }}"/>
+    </x-form-div>
+    <x-form-div>
+        <x-input-span id="heightLabel">Mid Arm Circ</x-input-span>
+        <x-form-input type="text" name="midArmCircuference" id="midArmCircuference" class="midArmCircuference" data-id="{{ $sf }}"/>
+    </x-form-div>
+    <x-form-div>
         <x-input-span id="noteLabel">Note</x-input-span>
-        <x-form-input type="text" name="note" id="note" class="note"/>
+        <x-form-textarea type="text" name="note" id="note" class="note"/>
     </x-form-div>
 </div>

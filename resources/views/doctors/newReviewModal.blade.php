@@ -104,6 +104,10 @@
                                             <x-input-span id="diagnosisLabel">Provisional <br /> Diagnosis</x-input-span>
                                             <x-form-textarea type="text" name="provisionalDiagnosis" class="provisionalDiagnosis" id="provisionalDiagnosis" cols="10" rows="2"></x-form-textarea>
                                         </x-form-div>
+                                        <x-form-div class="col-xl-12">
+                                            <x-input-span id="historyOfCareLabel">History of care</x-input-span>
+                                            <x-form-textarea type="text" name="historyOfCare" id="historyOfCare" cols="10" rows="2"></x-form-textarea>
+                                        </x-form-div>
                                         <x-form-div class="col-xl-6">
                                             <x-input-span class="" id="assessmentLabel"> Assessment
                                             </x-input-span>

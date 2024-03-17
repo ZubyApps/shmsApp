@@ -48,7 +48,16 @@ class PharmacyReportService
                                     ->orderBy('created_at');
                                 }
                             }
-                        ])
+                        ,   'bulkRequests' =>  function ($query) use ($data, $current) {
+                                if ($data->startDate && $data->endDate){
+                                    $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                                    ->orderBy('created_at');
+                                } else {
+                                    $query->whereMonth('created_at', $current->month)
+                                            ->whereYear('created_at', $current->year)
+                                    ->orderBy('created_at');
+                                }
+                            }])
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -70,7 +79,16 @@ class PharmacyReportService
                                 ->orderBy('created_at');
                             }
                         }
-                    ])
+                    ,  'bulkRequests' =>  function ($query) use ($data, $current) {
+                        if ($data->startDate && $data->endDate){
+                            $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                            ->orderBy('created_at');
+                        } else {
+                            $query->whereMonth('created_at', $current->month)
+                                    ->whereYear('created_at', $current->year)
+                            ->orderBy('created_at');
+                        }
+                    }])
                     ->withCount('prescriptions as prescriptionCount')
                     ->orderBy('prescriptionCount', $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));       
@@ -86,6 +104,7 @@ class PharmacyReportService
                 'prescriptions'     => $resource->prescriptions->count(),
                 'qtyBilled'         => $resource->prescriptions->sum('qty_billed'),
                 'qtyDispensed'      => $resource->prescriptions->sum('qty_dispensed'),
+                'bulkDispensed'     => $resource->bulkRequests->sum('qty_dispensed'),
             ];
          };
     }

@@ -31,60 +31,50 @@ const getAccountsSummaryTable = (tableId, startDate, endDate) => {
     return summaryTable
 }
 
-const getUsedResourcesSummaryTable = (tableId, startDate, endDate) => {
+const getCapitationPaymentsTable = (tableId, startDate, endDate, date) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
-    const usedSummaryTable = new DataTable(`#${tableId}`, {
+    const capitationPaymentsTable = new DataTable(`#${tableId}`, {
         serverSide: true,
-        ajax:  {url: '/reports/resources/usedsummary', data: {
+        ajax:  {url: '/reports/accounts/capitation', data: {
             'startDate' : startDate, 
             'endDate'   : endDate,
+            'date'      : date,
             }
         },
         orderMulti: true,
         search:true,
         lengthMenu:[20, 40, 80, 120, 200],
-        dom: 'l<"my-1 text-center "B>frtip',
-        buttons: [
-            {
-                extend:'colvis',
-                text:'Show/Hide',
-                className:'btn btn-primary'       
-            }
-        ],
         drawCallback: function (settings) {
             var api = this.api()
-            $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
             $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
             $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
-            $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
-            $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
-            $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
-            $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
-            $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
-            $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: "rCategory"},
-            {data: "resourceCount"},
-            {data: "prescriptionsCount"},
-            {data: "expectedCost"},
+            {data: "sponsor"},
+            {data: "monthPaidFor"},
+            {data: "lives"},
+            {data: "amountPaid"},
+            {data: "bank"},
+            {data: "comment"},
+            {data: "enteredBy"},
+            {data: "createdAt"},
             {
-                visible: false,
-                data: "dispensedCost"
+                sortable: false,
+                data: row => () => {
+                        return `
+                        <div class="d-flex flex-">
+                            <button type="submit" class="ms-1 btn btn-outline-primary deletePaymentBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
+                        </div>
+                        `  
+                }      
             },
-            {data: "expectedIncome"},
-            {
-                visible: false,
-                data: "dispensedIncome"
-            },
-            {data: "actualIncome"},
-            {data:  row => row.actualIncome - row.expectedCost},
-            {data:  row => row.actualIncome - row.expectedIncome},
         ]
     })
 
-    return usedSummaryTable
+    return capitationPaymentsTable
 }
 
 const getByPayMethosTable = (tableId, resourceId, modal, startDate, endDate) => {
@@ -128,4 +118,4 @@ const getByPayMethosTable = (tableId, resourceId, modal, startDate, endDate) => 
     return patientsByResourceTable
 }
 
-export {getAccountsSummaryTable, getUsedResourcesSummaryTable, getByPayMethosTable}
+export {getAccountsSummaryTable, getCapitationPaymentsTable, getByPayMethosTable}

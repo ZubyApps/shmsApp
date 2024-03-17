@@ -79,7 +79,8 @@ class SponsorCategoryService
                 'billMatrix'        => $sponsorCategory->bill_matrix,
                 'balanceRequired'   => $sponsorCategory->balance_required === 0 ? 'false' : 'true',
                 'createdAt'         => (new Carbon($sponsorCategory->created_at))->format('d/m/Y'),
-                'count'             => $sponsorCategory->sponsors()->count()
+                'count'             => $sponsorCategory->sponsors()->count(),
+                'visits'            => $sponsorCategory->through('sponsors')->has('visits')->count()
             ];
          };
     }
