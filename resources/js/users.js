@@ -18,6 +18,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const registerStaffBtn  = document.getElementById('registerStaffBtn')
     const saveStaffBtn      = document.getElementById('saveStaffBtn')
     const designateBtn      = document.getElementById('designateBtn')
+
+    const allStaffTab                 = document.querySelector('#nav-allStaff-tab')
         
     newStaffBtn.addEventListener('click', function() {
         newStaffModal.show()
@@ -25,6 +27,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const allStaffTable = getAllStaffTable('allStaffTable')
     const activeStaffTable = getActiveStaffTable('activeStaffTable')
+
+    allStaffTab.addEventListener('click', function () {
+        allStaffTable.draw()
+    })
 
     activeUsersBtn.addEventListener('click', function () {
         activeStaffTable.draw()

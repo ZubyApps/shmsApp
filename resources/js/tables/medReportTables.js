@@ -3,7 +3,7 @@ import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 
-const getMedServiceSummaryTable = (tableId, startDate, endDate) => {
+const getMedServiceSummaryTable = (tableId, startDate, endDate, date) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
     const summaryTable = new DataTable(`#${tableId}`, {
@@ -11,6 +11,7 @@ const getMedServiceSummaryTable = (tableId, startDate, endDate) => {
         ajax:  {url: '/reports/medservices/summary', data: {
             'startDate' : startDate, 
             'endDate'   : endDate,
+            'date'      : date
             }
         },
         orderMulti: true,
@@ -32,7 +33,7 @@ const getMedServiceSummaryTable = (tableId, startDate, endDate) => {
     return summaryTable
 }
 
-const getByResourceTable = (tableId, resourceId, modal, startDate, endDate) => {
+const getByResourceTable = (tableId, resourceId, modal, startDate, endDate, date) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
     const patientsByResourceTable = new DataTable(`#${tableId}`, {
@@ -41,6 +42,7 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate) => {
             'resourceId': resourceId,
             'startDate' : startDate, 
             'endDate'   : endDate,
+            'date'      : date
         }},
         orderMulti: true,
         search:true,
@@ -60,13 +62,16 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate) => {
             {data: "category"},
             {data: "diagnosis"},
             {data: "doctor"},
-            {data: "Hmsbill"},
-            {data: "Hmobill"},
-            {data: "paid"},
+            {data: row => account.format(row.Hmsbill)},
+            {data: row => account.format(row.Hmobill)},
+            {data: row => account.format(row.paid)},
         ]
     })
 
     modal._element.addEventListener('hidden.bs.modal', function () {
+        modal._element.querySelector('#resourceMonth').value = ''
+        modal._element.querySelector('#from').value = ''
+        modal._element.querySelector('#to').value = ''
         patientsByResourceTable.destroy()
     })
 

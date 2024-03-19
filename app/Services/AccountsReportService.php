@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
+use App\Models\Payment;
 use App\Models\PayMethod;
 use App\Models\Prescription;
 use App\Models\ResourceCategory;
@@ -17,69 +18,134 @@ class AccountsReportService
 {
     public function __construct(
         private readonly PayMethod $payMethod, 
-        private readonly ResourceCategory $resourceCategory, 
+        private readonly Payment $payment, 
         private readonly HelperService $helperService,
         private readonly Prescription $prescription,
         )
     {
     }
 
-    public function getPaymethodsSummary(DataTableQueryParams $params, $data)
+    public function getPayMethodsSummary(DataTableQueryParams $params, $data)
     {
         $current = new CarbonImmutable();
 
         if ($data->startDate && $data->endDate){
         return DB::table('pay_methods')
-            ->selectRaw('COUNT(DISTINCT(payments.id)) as paymentCount, pay_methods.name AS pMethods, SUM(payments.amount_paid) as amountPaid')
+            ->selectRaw('COUNT(payments.id) as paymentCount, pay_methods.name AS pMethod, SUM(payments.amount_paid) as amountPaid')
             ->leftJoin('payments', 'pay_methods.id', '=', 'payments.pay_method_id')
             ->whereBetween('payments.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-            ->groupBy('pMethods')
+            ->groupBy('pMethod')
+            ->orderBy('paymentCount', 'desc')
+            ->get()
+            ->toArray();
+        }
+
+        if($data->date){
+            $date = new Carbon($data->date);
+
+            return DB::table('pay_methods')
+            ->selectRaw('COUNT(payments.id) as paymentCount, pay_methods.name AS pMethod, pay_methods.id, SUM(payments.amount_paid) as amountPaid')
+            ->leftJoin('payments', 'pay_methods.id', '=', 'payments.pay_method_id')
+            ->whereMonth('payments.created_at', $date->month)
+            ->whereYear('payments.created_at', $date->year)
+            ->groupBy('pMethod', 'id')
             ->orderBy('paymentCount', 'desc')
             ->get()
             ->toArray();
         }
 
         return DB::table('pay_methods')
-            ->selectRaw('COUNT(DISTINCT(payments.id)) as paymentCount, pay_methods.name AS pMethods, pay_methods.id, SUM(payments.amount_paid) as amountPaid')
+            ->selectRaw('COUNT(payments.id) as paymentCount, pay_methods.name AS pMethod, pay_methods.id, SUM(payments.amount_paid) as amountPaid')
             ->leftJoin('payments', 'pay_methods.id', '=', 'payments.pay_method_id')
             ->whereMonth('payments.created_at', $current->month)
             ->whereYear('payments.created_at', $current->year)
-            ->groupBy('pMethods', 'id')
+            ->groupBy('pMethod', 'id')
             ->orderBy('paymentCount', 'desc')
             ->get()
             ->toArray();
     }
 
-    public function getUsedResourcesSummary(DataTableQueryParams $params, $data)
+    public function getExpenseSummary(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
         $current = new CarbonImmutable();
 
+        if (! empty($params->searchTerm)) {
+            if ($data->startDate && $data->endDate){
+                return DB::table('expenses')
+                ->selectRaw('expense_categories.name AS eCategory, COUNT(expenses.id) as expenseCount, SUM(expenses.amount) as totalExpense')
+                ->leftJoin('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
+                ->whereBetween('expenses.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                ->where('expense_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                ->groupBy('eCategory')
+                ->orderBy('eCategory', 'desc')
+                ->get()
+                ->toArray();
+            }
+
+            if($data->date){
+                $date = new Carbon($data->date);
+    
+                return DB::table('expenses')
+                ->selectRaw('expense_categories.name AS eCategory, expense_categories.id AS id, COUNT(expenses.id) as expenseCount, SUM(expenses.amount) as totalExpense')
+                    ->leftJoin('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
+                    ->whereMonth('expenses.created_at', $date->month)
+                    ->whereYear('expenses.created_at', $date->year)
+                    ->where('expense_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                    ->groupBy('eCategory', 'id')
+                    ->orderBy('eCategory', 'desc')
+                    ->get()
+                    ->toArray();
+            }
+
+            
+            return DB::table('expenses')
+            ->selectRaw('expense_categories.name AS eCategory, COUNT(expenses.id) as expenseCount, SUM(expenses.amount) as totalExpense')
+            ->leftJoin('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
+            ->whereMonth('expenses.created_at', $current->month)
+            ->whereYear('expenses.created_at', $current->year)
+            ->where('expense_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            ->groupBy('eCategory')
+            ->orderBy('eCategory', 'desc')
+            ->get()
+            ->toArray();
+    
+        }
 
         if ($data->startDate && $data->endDate){
-            return DB::table('resource_categories')
-            ->selectRaw('resource_categories.name AS rCategory, COUNT(DISTINCT(resources.id)) as resourceCount, COUNT(prescriptions.id) as prescriptionsCount, SUM(prescriptions.qty_billed * purchase_price) as expectedCost, SUM(prescriptions.qty_dispensed * purchase_price) as dispensedCost, SUM(prescriptions.hms_bill) as expectedIncome, SUM(prescriptions.paid) as actualIncome, SUM(prescriptions.qty_dispensed * selling_price) as dispensedIncome')
-                ->leftJoin('resource_sub_categories', 'resource_categories.id', '=', 'resource_sub_categories.resource_category_id')
-                ->leftJoin('resources', 'resource_sub_categories.id', '=', 'resources.resource_sub_category_id')
-                ->leftJoin('prescriptions', 'resources.id', '=', 'prescriptions.resource_id')
-                ->whereBetween('prescriptions.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                ->groupBy('rCategory')
-                ->orderBy('rCategory', 'desc')
+            return DB::table('expenses')
+            ->selectRaw('expense_categories.name AS eCategory, COUNT(expenses.id) as expenseCount, SUM(expenses.amount) as totalExpense')
+                ->leftJoin('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
+                ->whereBetween('expenses.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                ->groupBy('eCategory')
+                ->orderBy('eCategory', 'desc')
+                ->get()
+                ->toArray();
+        }
+
+        if($data->date){
+            $date = new Carbon($data->date);
+
+            return DB::table('expenses')
+            ->selectRaw('expense_categories.name AS eCategory, expense_categories.id AS id, COUNT(expenses.id) as expenseCount, SUM(expenses.amount) as totalExpense')
+                ->leftJoin('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
+                ->whereMonth('expenses.created_at', $date->month)
+                ->whereYear('expenses.created_at', $date->year)
+                ->groupBy('eCategory', 'id')
+                ->orderBy('eCategory', 'desc')
                 ->get()
                 ->toArray();
         }
 
 
-        return DB::table('resource_categories')
-        ->selectRaw('resource_categories.name AS rCategory, COUNT(DISTINCT(resources.id)) as resourceCount, COUNT(prescriptions.id) as prescriptionsCount, SUM(prescriptions.qty_billed * purchase_price) as expectedCost, SUM(prescriptions.qty_dispensed * purchase_price) as dispensedCost, SUM(prescriptions.hms_bill) as expectedIncome, SUM(prescriptions.paid) as actualIncome, SUM(prescriptions.qty_dispensed * selling_price) as dispensedIncome')
-            ->leftJoin('resource_sub_categories', 'resource_categories.id', '=', 'resource_sub_categories.resource_category_id')
-            ->leftJoin('resources', 'resource_sub_categories.id', '=', 'resources.resource_sub_category_id')
-            ->leftJoin('prescriptions', 'resources.id', '=', 'prescriptions.resource_id')
-            ->whereMonth('prescriptions.created_at', $current->month)
-            ->whereYear('prescriptions.created_at', $current->year)
-            ->groupBy('rCategory')
-            ->orderBy('rCategory', 'desc')
+        return DB::table('expenses')
+        ->selectRaw('expense_categories.name AS eCategory, expense_categories.id AS id, COUNT(expenses.id) as expenseCount, SUM(expenses.amount) as totalExpense')
+            ->leftJoin('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
+            ->whereMonth('expenses.created_at', $current->month)
+            ->whereYear('expenses.created_at', $current->year)
+            ->groupBy('eCategory', 'id')
+            ->orderBy('eCategory', 'desc')
             ->get()
             ->toArray();
     }
@@ -98,7 +164,7 @@ class AccountsReportService
          };
     }
 
-    public function getVisitsByPayMethod(DataTableQueryParams $params, $data)
+    public function getPaymentsByPayMethod(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
@@ -106,8 +172,8 @@ class AccountsReportService
 
         if (! empty($params->searchTerm)) {
             if ($data->startDate && $data->endDate){
-                return $this->prescription
-                            ->whereRelation('resource', 'id', '=', $data->resourceId)
+                return $this->payment
+                            ->whereRelation('payMethod', 'id', '=', $data->payMethodId)
                             ->where(function (Builder $query) use($params) {
                                 $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -121,8 +187,19 @@ class AccountsReportService
                             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
-            return $this->prescription
-                            ->whereRelation('resource', 'id', '=', $data->resourceId)
+            if($data->date){
+                $date = new Carbon($data->date);
+    
+                return $this->payment
+                    ->whereRelation('payMethod', 'id', '=', $data->payMethodId)
+                    ->whereMonth('created_at', $date->month)
+                    ->whereYear('created_at', $date->year)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            return $this->payment
+                            ->whereRelation('payMethod', 'id', '=', $data->payMethodId)
                             ->where(function (Builder $query) use($params) {
                                 $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -138,43 +215,98 @@ class AccountsReportService
         }
 
         if ($data->startDate && $data->endDate){
-            return $this->prescription
-                ->whereRelation('resource', 'id', '=', $data->resourceId)
+            return $this->payment
+                ->whereRelation('payMethod', 'id', '=', $data->payMethodId)
                 ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                 ->orderBy($orderBy, $orderDir)
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
+        if($data->date){
+            $date = new Carbon($data->date);
+
+            return $this->payment
+                ->whereRelation('payMethod', 'id', '=', $data->payMethodId)
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
         
-        return $this->prescription
-                ->whereRelation('resource', 'id', '=', $data->resourceId)
+        return $this->payment
+                ->whereRelation('payMethod', 'id', '=', $data->payMethodId)
                 ->whereMonth('created_at', $current->month)
                 ->whereYear('created_at', $current->year)
                 ->orderBy($orderBy, $orderDir)
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
-    public function getByResourceTransformer(): callable
+    public function getPaymentsByPayMethodTransformer(): callable
     {
-        return  function (Prescription $prescription) {
+        return  function (Payment $payment) {
 
-            $pVisit = $prescription->visit;
-            $pConsultation = $prescription->consultation;
+            $pVisit = $payment->visit;
 
             return [
-                    'id'                => $prescription->id,
-                    'date'              => (new Carbon($prescription->created_at))->format('d/M/y g:ia'),
+                    'id'                => $payment->id,
+                    'date'              => (new Carbon($payment->created_at))->format('d/M/y g:ia'),
                     'patient'           => $pVisit->patient->patientId(),
-                    'sex'               => $prescription->visit->patient->sex,
-                    'age'               => $this->helperService->twoPartDiffInTimePast($pVisit->patient->date_of_birth),
                     'sponsor'           => $pVisit->sponsor->name,
                     'category'          => $pVisit->sponsor->category_name,
-                    'diagnosis'         => $pConsultation->icd11_diagnosis ?? $pConsultation->provisional_diagnosis,
-                    'doctor'            => $pConsultation->user->username,
-                    'Hmsbill'           => $prescription->hms_bill,
-                    'Hmobill'           => $prescription->hmo_bill,
-                    'paid'              => $prescription->paid,
+                    'diagnosis'         => $pVisit->consultations()->where('visit_id', $pVisit->id)->first()?->icd11_diagnosis ?? $pVisit->consultations()->where('visit_id', $pVisit->id)->first()?->provisional_diagnosis,
+                    'doctor'            => $pVisit->doctor->username,
+                    'totalHmsBill'      => $pVisit->total_hms_bill,
+                    'totalHmoBill'      => $pVisit->total_hmo_bill,
+                    'totalNhisBill'     => $pVisit->total_nhis_bill,
+                    'amountPaid'        => $payment->amount_paid,
                 ];
             };
+    }
+
+    public function getVisitsSummaryBySponsorCategory(DataTableQueryParams $params, $data)
+    {
+        $current    = CarbonImmutable::now();
+
+        if ($data->startDate && $data->endDate){
+            return DB::table('visits')
+            ->selectRaw('COUNT(DISTINCT(sponsors.id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(visits.id) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
+            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+            ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+            ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+            ->groupBy('category')
+            ->orderBy('patientsCount', 'desc')
+            ->get()
+            ->toArray();
+        }
+
+        if($data->date){
+            $date = new Carbon($data->date);
+
+            return DB::table('visits')
+            ->selectRaw('COUNT(DISTINCT(sponsors.id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(visits.id) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
+            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+            ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+            ->whereMonth('visits.created_at', $date->month)
+            ->whereYear('visits.created_at', $date->year)
+            ->groupBy('category')
+            ->orderBy('patientsCount', 'desc')
+            ->get()
+            ->toArray();
+        }
+
+        return DB::table('visits')
+            ->selectRaw('COUNT(DISTINCT(sponsors.id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(visits.id) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
+            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+            ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+            ->whereMonth('visits.created_at', $current->month)
+            ->whereYear('visits.created_at', $current->year)
+            ->groupBy('category')
+            ->orderBy('patientsCount', 'desc')
+            ->get()
+            ->toArray();
     }
 }

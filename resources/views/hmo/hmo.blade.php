@@ -209,7 +209,7 @@
                         <x-form-input type="date" name="startDate" id="startDate" />
                         <x-input-span class="">End</x-input-span>
                         <x-form-input type="date" name="endDate" id="endDate" />
-                        <button class="input-group-text searchWithDatesBtn">Serach</button>
+                        <button class="input-group-text searchWithDatesBtn">Search</button>
                     </x-form-div>
                     <div class="pt-3 ">
                         <table id="sentBillsTable" class="table table-hover align-middle table-sm sentBillsTable">
@@ -260,7 +260,7 @@
                         <x-form-input type="date" name="startDate" id="startDate" />
                         <x-input-span class="">End</x-input-span>
                         <x-form-input type="date" name="endDate" id="endDate" />
-                        <button class="input-group-text searchReportsBtn">Serach</button>
+                        <button class="input-group-text searchReportsBtn">Search</button>
                     </x-form-div>
                     <div class="py-2 justify-content-center">
                         <table id="hmoReportsTable" class="table table-sm hmoReportsTable">
@@ -300,7 +300,7 @@
                     <x-form-div class="col-xl-4 pt-2 nhisMonthYearDiv">
                         <x-input-span class="">Month/Year</x-input-span>
                         <x-form-input type="month" name="nhisDate" id="nhisDate" />
-                        <button class="input-group-text searchNhisConBtn">Serach</button>
+                        <button class="input-group-text searchNhisConBtn">Search</button>
                     </x-form-div>
                     <div class="py-2 justify-content-center">
                         <table id="nhisReconTable" class="table table-sm nhisReconTable">

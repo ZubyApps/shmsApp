@@ -24,53 +24,6 @@ class PatientReportService
     {
     }
 
-    // public function getPaginatedPatients(DataTableQueryParams $params)
-    // {
-    //     $orderBy    = 'created_at';
-    //     $orderDir   =  'desc';
-
-    //     if (! empty($params->searchTerm)) {
-    //         return $this->patient
-    //                     ->where('first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                     ->orWhere('middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                     ->orWhere('last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                     ->orWhere('card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                     ->orWhere('phone', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                     ->orWhere('sex', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' )
-    //                     ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                     ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                     ->orderBy($orderBy, $orderDir)
-    //                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    //     }
-
-    //     return $this->patient
-    //                 ->orderBy($orderBy, $orderDir)
-    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-
-       
-    // }
-
-    // public function getLoadTransformer(): callable
-    // {
-    //    return  function (Patient $patient) {
-    //         return [
-    //             'id'                => $patient->id,
-    //             'card'              => $patient->card_no,
-    //             'name'              => $patient->fullName(),
-    //             'phone'             => $patient->phone,
-    //             'sex'               => $patient->sex,
-    //             'age'               => $this->helperService->twoPartDiffInTimePast($patient->date_of_birth),
-    //             'sponsor'           => $patient->sponsor->name,
-    //             'category'          => $patient->sponsor->sponsorCategory->name,
-    //             'createdAt'         => (new Carbon($patient->created_at))->format('d/m/Y'),
-    //             'createdBy'         => $patient->user->username,
-    //             'active'            => $patient->is_active,
-    //             'count'             => $patient->visits()->count(),
-    //             'patient'           => $patient->patientId()
-    //         ];
-    //      };
-    // }
-
     public function getSummaryBySex(DataTableQueryParams $params, $data)
     {
         return DB::table('patients')
@@ -187,7 +140,7 @@ class PatientReportService
             return $patient->allNhisBills() - $patient->allPaid();
         }
         if ($isHmo){
-            return $patient->allHmoBills() - $patient->allPaid();
+            return $patient->allHmsBills() - $patient->allPaid();
         }
 
         return $patient->allHmsBills() - $patient->allPaid();        
@@ -253,8 +206,14 @@ class PatientReportService
                             if ($data->startDate && $data->endDate){
                                 $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                                 ->orderBy('created_at');
+                            } else if($data->date){
+                                $date = new Carbon($data->date);
+                                $query->whereMonth('created_at', $date->month)
+                                      ->whereYear('created_at', $date->year)
+                                      ->orderBy('created_at');
                             } else {
                                 $query->whereMonth('created_at', $current->month)
+                                ->whereYear('created_at', $current->year)
                                 ->orderBy('created_at');
                             }
                         }
@@ -272,6 +231,11 @@ class PatientReportService
                             if ($data->startDate && $data->endDate){
                                 $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                                 ->orderBy('created_at');
+                            } else if($data->date){
+                                $date = new Carbon($data->date);
+                                $query->whereMonth('created_at', $date->month)
+                                      ->whereYear('created_at', $date->year)
+                                      ->orderBy('created_at');
                             } else {
                                 $query->whereMonth('created_at', $current->month)
                                       ->whereYear('created_at', $current->year)
@@ -323,6 +287,24 @@ class PatientReportService
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));    
                 }
 
+            if ($data->date){
+                $date = new Carbon($data->date);
+                return $this->patient
+                    ->where('sponsor_id', $data->sponsorId)
+                    ->where(function (Builder $query) use($params) {
+                        $query->where('first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('phone', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('sex', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' );
+                    })
+                    ->whereMonth('created_at', $date->month)
+                    ->whereYear('created_at', $date->year)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
             return $this->patient
                         ->where('sponsor_id', $data->sponsorId)
                         ->where(function (Builder $query) use($params) {
@@ -343,6 +325,16 @@ class PatientReportService
             return $this->patient
                 ->where('sponsor_id', $data->sponsorId)
                 ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        } 
+
+        if ($data->date){
+            $date = new Carbon($data->date);
+            return $this->patient
+                ->where('sponsor_id', $data->sponsorId)
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
                 ->orderBy($orderBy, $orderDir)
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         } 

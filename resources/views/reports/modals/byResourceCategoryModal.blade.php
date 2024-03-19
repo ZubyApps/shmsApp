@@ -11,12 +11,8 @@
                         <div class="mb-2 form-control">
                             <div class="row">
                                 <x-form-div class="col-xl-6">
-                                    <x-input-span>Resource</x-input-span>
-                                    <x-form-input name="resource" value="" id="resource" readonly/>
-                                </x-form-div>
-                                <x-form-div class="col-xl-6">
-                                    <x-input-span>Sub Category</x-input-span>
-                                    <x-form-input name="subcategory" value="" id="subcategory" readonly/>
+                                    <x-input-span>Resource Category</x-input-span>
+                                    <x-form-input name="category" value="" id="category" readonly/>
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
                                     <x-input-span>Dates</x-input-span>
@@ -27,7 +23,7 @@
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
                                     <x-input-span class="">Month/Year</x-input-span>
-                                    <x-form-input type="month" name="resourceMonth" id="resourceMonth" />
+                                    <x-form-input type="month" name="resourcesMonth" id="resourcesMonth" />
                                 </x-form-div>
                             </div>
                         </div>
@@ -35,7 +31,7 @@
                             <x-form-span>Patients prescribed for</x-form-span>
                             <div class="row overflow-auto my-3">
                                 <fieldset id="patientsBySponsorFieldset">
-                                    <table id="byResourceTable" class="table align-middle table-sm byResourceTable mt-2">
+                                    <table id="byResourceCategoryTable" class="table align-middle table-sm byResourceCategoryTable mt-2">
                                         <thead>
                                             <tr>
                                                 <th>Date</th>
@@ -46,15 +42,21 @@
                                                 <th>Category</th>
                                                 <th>Diagnosis</th>
                                                 <th>Doctor</th>
+                                                <th>Resource</th>
+                                                <th>Subcat</th>
                                                 <th>HmsBill</th>
-                                                <th>HmoBill</th>
                                                 <th>Paid</th>
+                                                <th>Capitation</th>
+                                                <th>Total</th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>
                                         <tfoot class="fw-bold">
                                             <tr>
                                                 <td class="text-center">Total</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>

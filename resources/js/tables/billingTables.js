@@ -474,21 +474,25 @@ const getPatientsBill = (tableId, visitId, modal, type) => {
     return billTable
 }
 
-const getExpensesTable = (tableId) => {
+const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate, endDate, date) => {
+    console.log(expenseCategoryId, accessor)
     const expenseTable =  new DataTable('#'+tableId, {
         serverSide: true,
-        ajax: '/billing/load/expenses',
+        ajax: {url: '/billing/load/expenses', data: {
+            'accessor': accessor,
+            'expenseCategoryId' : expenseCategoryId,
+            'startDate'         : startDate, 
+            'endDate'           : endDate,
+            'date'              : date,
+        }},
         orderMulti: true,
-        search: false,
-        searching: false,
-        lengthChange: false,
         language: {
             emptyTable: 'No expense'
         },
         drawCallback: function () {
             var api = this.api()
             
-                $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
+                $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: "date"},
@@ -496,8 +500,8 @@ const getExpensesTable = (tableId) => {
             {data: "description"},
             {data: row => account.format(row.amount)},
             {data: "givenTo"},
-            {data: "approvedBy"},
             {data: "givenBy"},
+            {data: "approvedBy"},
             {data: "comment"},
             {
                 sortable: false,
@@ -517,9 +521,9 @@ const getExpensesTable = (tableId) => {
         ]
     });
 
-    // modal.addEventListener('hidden.bs.modal', function () {
-    //     expenseTable.destroy()
-    // })
+    modal._element.addEventListener('hidden.bs.modal', function () {
+        expenseTable.destroy()
+    })
     
     return expenseTable
 }

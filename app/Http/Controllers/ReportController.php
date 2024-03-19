@@ -11,6 +11,7 @@ use App\Services\MedReportService;
 use App\Services\PatientReportService;
 use App\Services\PharmacyReportService;
 use App\Services\ResourceReportService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
@@ -25,7 +26,9 @@ class ReportController extends Controller
         private readonly HospitalAndOthersReportService $hospitalAndOthersReportService,
         private readonly ResourceReportService $resourceReportService,
         private readonly AccountsReportService $accountsReportService,
-        private readonly CapitationPaymentService $capitationPaymentService
+        private readonly CapitationPaymentService $capitationPaymentService,
+        private readonly ExpenseCategoryController $expenseCategoryController,
+        private readonly UserService $userService
         )
     {
         
@@ -230,9 +233,23 @@ class ReportController extends Controller
         // return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
+    public function loadByCategoryResource(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->resourceReportService->getPrescriptionsByResourceCategory($params, $request);
+
+        $loadTransformer = $this->resourceReportService->getLoadTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
     public function indexAccounts()
     {
-        return view('reports.accounts');
+        return view('reports.accounts', [
+            'users' => $this->userService->listStaff(special_note:'Management'),
+            'categories' => $this->expenseCategoryController->showAll('id', 'name')
+        ]);
     }
 
     public function loadPayMethodsSummary(Request $request)
@@ -256,6 +273,45 @@ class ReportController extends Controller
         $patients = $this->capitationPaymentService->getCapitationPayments($params, $request);
 
         $loadTransformer = $this->capitationPaymentService->getLoadTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    public function loadExpensesSummary(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+        
+        $expenseSummaries = $this->accountsReportService->getExpenseSummary($params, $request);
+        
+        return response()->json([
+            'data' => $expenseSummaries,
+            'draw' => $params->draw,
+            'recordsTotal' => count($expenseSummaries),
+            'recordsFiltered' => count($expenseSummaries)
+        ]);        
+    }
+
+    public function loadVisitsSummaryBySponsorCategory(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+        
+        $visitsSummaries = $this->accountsReportService->getVisitsSummaryBySponsorCategory($params, $request);
+        
+        return response()->json([
+            'data' => $visitsSummaries,
+            'draw' => $params->draw,
+            'recordsTotal' => count($visitsSummaries),
+            'recordsFiltered' => count($visitsSummaries)
+        ]);        
+    }
+
+    public function loadPaymentsByPayMethod(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->accountsReportService->getPaymentsByPayMethod($params, $request);
+
+        $loadTransformer = $this->accountsReportService->getPaymentsByPayMethodTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }

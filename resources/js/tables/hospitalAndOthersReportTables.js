@@ -3,7 +3,7 @@ import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 
-const getHospitalAndOthersTable = (tableId, startDate, endDate) => {
+const getHospitalAndOthersTable = (tableId, startDate, endDate, date) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
     const summaryTable = new DataTable(`#${tableId}`, {
@@ -11,6 +11,7 @@ const getHospitalAndOthersTable = (tableId, startDate, endDate) => {
         ajax:  {url: '/reports/hospitalandothers/summary', data: {
             'startDate' : startDate, 
             'endDate'   : endDate,
+            'date'      : date
             }
         },
         orderMulti: true,
@@ -67,6 +68,9 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate) => {
     })
 
     modal._element.addEventListener('hidden.bs.modal', function () {
+        modal._element.querySelector('#resourceMonth').value = ''
+        modal._element.querySelector('#from').value = ''
+        modal._element.querySelector('#to').value = ''
         patientsByResourceTable.destroy()
     })
 

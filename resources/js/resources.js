@@ -121,9 +121,9 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    addResourceSubCategoryBtn.addEventListener('click', function () {
-        newResourceSubCategoryModal.show()
-    })
+    // addResourceSubCategoryBtn.addEventListener('click', function () {
+    //     newResourceSubCategoryModal.show()
+    // })
 
     createResourceSubCategoryBtn.addEventListener('click', function () {
         createResourceSubCategoryBtn.setAttribute('disabled', 'disabled')

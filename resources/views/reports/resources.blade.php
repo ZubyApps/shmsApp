@@ -4,7 +4,7 @@
 @section('content')
 @vite(['resources/js/resourceReports.js'])
 
-@include('reports.modals.byResourceModal', ['title' => 'Patients', 'id' => 'byResourceModal'])
+@include('reports.modals.byResourceCategoryModal', ['title' => 'Prescriptions', 'id' => 'byResourceCategoryModal'])
 
 <div class="container mt-5">
     @include('reports.reportGrid')
@@ -60,14 +60,18 @@
             </div>
             <!-- Distribution 2 table -->
             <div class="tab-pane fade" id="nav-usedSummary" role="tabpanel" aria-labelledby="nav-usedSummary-tab" tabindex="0">
-                <div class="py-2">
+                <div class="">
                     <h5 class="card-title py-4">Used Summary Table</h5>
-                    <x-form-div class="col-xl-6 py-3 datesDiv">
+                    <x-form-div class="col-xl-8 py-3 datesDiv">
                         <x-input-span class="">Start</x-input-span>
                         <x-form-input type="date" name="startDate" id="startDate" />
                         <x-input-span class="">End</x-input-span>
                         <x-form-input type="date" name="endDate" id="endDate" />
-                        <button class="input-group-text searchWithDatesBtn">Serach</button>
+                        <button class="input-group-text searchWithDatesBtn">Search</button>
+                        <x-input-span class="">OR</x-input-span>
+                        <x-input-span class="">Month/Year</x-input-span>
+                        <x-form-input type="month" name="resourcesMonth" id="resourcesMonth" />
+                        <button class="input-group-text searchResourcesByMonthBtn">Search</button>
                     </x-form-div>
                     <table  id="usedSummaryTable" class="table table-hover table-sm">
                         <thead>
@@ -133,7 +137,7 @@
                     <x-form-input type="date" name="startDate" id="startDate" />
                     <x-input-span class="">End</x-input-span>
                     <x-form-input type="date" name="endDate" id="endDate" />
-                    <button class="input-group-text searchRegWithDatesBtn">Serach</button>
+                    <button class="input-group-text searchRegWithDatesBtn">Search</button>
                 </x-form-div>
                 <div class="py-2 ">
                     <table  id="registerationsTable" class="table table-hover table-sm">

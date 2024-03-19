@@ -59,13 +59,14 @@ const getDistribution2Table = (tableId) => {
     return distribution2Table
 }
 
-const getBySponsorTable = (tableId, urlSuffix, sponsorId, modal, startDate, endDate) => {
+const getBySponsorTable = (tableId, urlSuffix, sponsorId, modal, startDate, endDate, date) => {
     const patientsBySponsorTable = new DataTable(`#${tableId}`, {
         serverSide: true,
         ajax:  {url: `/reports/patients/${urlSuffix}`, data: {
             'sponsorId': sponsorId,
             'startDate' : startDate, 
             'endDate'   : endDate,
+            'date'      : date,
         }},
         orderMulti: true,
         search:true,
@@ -84,6 +85,9 @@ const getBySponsorTable = (tableId, urlSuffix, sponsorId, modal, startDate, endD
     })
 
     modal._element.addEventListener('hidden.bs.modal', function () {
+        modal._element.querySelector('#patientMonth').value = ''
+        modal._element.querySelector('#from').value = ''
+        modal._element.querySelector('#to').value = ''
         patientsBySponsorTable.destroy()
     })
 
@@ -143,7 +147,7 @@ const getFrequencyTable = (tableId) => {
     return frequencyTable
 }
 
-const getRegBySponsorTable = (tableId, startDate, endDate) => {
+const getRegBySponsorTable = (tableId, startDate, endDate, date) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
     const regSummaryTable = new DataTable(`#${tableId}`, {
@@ -151,6 +155,7 @@ const getRegBySponsorTable = (tableId, startDate, endDate) => {
         ajax:  {url: '/reports/patients/regsummary', data: {
             'startDate' : startDate, 
             'endDate'   : endDate, 
+            'date'      : date, 
         }},
         orderMulti: true,
         search:true,

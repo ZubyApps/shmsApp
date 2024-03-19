@@ -3,9 +3,9 @@ import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 
-const getResourceValueSummaryTable = (tableId, startDate, endDate) => {
-    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
+const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
+const getResourceValueSummaryTable = (tableId, startDate, endDate) => {
     const summaryTable = new DataTable(`#${tableId}`, {
         serverSide: true,
         ajax:  {url: '/reports/resources/summary', data: {
@@ -26,9 +26,9 @@ const getResourceValueSummaryTable = (tableId, startDate, endDate) => {
         },
         columns: [
             {data: "rCategory"},
-            {data: "subCategoryCount"},
-            {data: "resourceCount"},
-            {data: "stockLevel"},
+            {data: row => account.format(row.subCategoryCount)},
+            {data: row => account.format(row.resourceCount)},
+            {data: row => account.format(row.stockLevel)},
             {data: row => account.format(row.purchacedValue)},
             {data: row => account.format(row.sellValue)},
         ]
@@ -37,14 +37,13 @@ const getResourceValueSummaryTable = (tableId, startDate, endDate) => {
     return summaryTable
 }
 
-const getUsedResourcesSummaryTable = (tableId, startDate, endDate) => {
-    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
-
+const getUsedResourcesSummaryTable = (tableId, startDate, endDate, date) => {
     const usedSummaryTable = new DataTable(`#${tableId}`, {
         serverSide: true,
         ajax:  {url: '/reports/resources/usedsummary', data: {
             'startDate' : startDate, 
             'endDate'   : endDate,
+            'date'      : date,
             }
         },
         orderMulti: true,
@@ -71,46 +70,46 @@ const getUsedResourcesSummaryTable = (tableId, startDate, endDate) => {
             $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: "rCategory"},
-            {data: "resourceCount"},
-            {data: "prescriptionsCount"},
-            {data: "expectedCost"},
+            {data: row => `<span class="btn text-decoration-underline showPrescriptionsBtn tooltip-test" title="show prescriptions" data-id="${row.id}" data-category="${row.rCategory}">${row.rCategory}</span>`},
+            {data: row => account.format(row.resourceCount)},
+            {data: row => account.format(row.prescriptionsCount)},
+            {data: row => account.format(row.expectedCost)},
             {
                 visible: false,
-                data: "dispensedCost"
+                data: row => account.format(row.dispensedCost)
             },
-            {data: "expectedIncome"},
+            {data: row => account.format(row.expectedIncome)},
             {
                 visible: false,
-                data: "dispensedIncome"
+                data: row => account.format(row.dispensedIncome)
             },
-            {data: "actualIncome"},
-            {data:  row => row.actualIncome - row.expectedCost},
-            {data:  row => row.actualIncome - row.expectedIncome},
+            {data: row => account.format(row.actualIncome)},
+            {data:  row => account.format(row.actualIncome - row.expectedCost)},
+            {data:  row => account.format(row.actualIncome - row.expectedIncome)},
         ]
     })
 
     return usedSummaryTable
 }
 
-const getByResourceTable = (tableId, resourceId, modal, startDate, endDate) => {
-    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
-
+const getByResourceCategoryTable = (tableId, resourceCategoryId, modal, startDate, endDate, date) => {
     const patientsByResourceTable = new DataTable(`#${tableId}`, {
         serverSide: true,
-        ajax:  {url: `/reports/investigations/byresource`, data: {
-            'resourceId': resourceId,
+        ajax:  {url: `/reports/resources/bycategoryresource`, data: {
+            'resourceCategoryId': resourceCategoryId,
             'startDate' : startDate, 
             'endDate'   : endDate,
+            'date'      : date,
         }},
         orderMulti: true,
         search:true,
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
-            $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
-            $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
             $( api.column(10).footer() ).html(account.format(api.column( 10, {page:'current'} ).data().sum()));
+            $( api.column(11).footer() ).html(account.format(api.column( 11, {page:'current'} ).data().sum()));
+            $( api.column(12).footer() ).html(account.format(api.column( 12, {page:'current'} ).data().sum()));
+            $( api.column(13).footer() ).html(account.format(api.column( 13, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: "date"},
@@ -121,17 +120,25 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate) => {
             {data: "category"},
             {data: "diagnosis"},
             {data: "doctor"},
-            {data: "Hmsbill"},
-            {data: "Hmobill"},
-            {data: "paid"},
+            {data: "resource"},
+            {data: "resourceSubcategory"},
+            {data: row => account.format(row.hmsBill)},
+            {data: row => account.format(row.paid)},
+            {data: row => account.format(row.capitation)},
+            {data:row => account.format(row.paid + row.capitation)},
         ]
     })
 
     modal._element.addEventListener('hidden.bs.modal', function () {
+        modal._element.querySelector('#resourcesMonth').value = ''
+        modal._element.querySelector('#from').value = ''
+        modal._element.querySelector('#to').value = ''
         patientsByResourceTable.destroy()
     })
+
+
 
     return patientsByResourceTable
 }
 
-export {getResourceValueSummaryTable, getUsedResourcesSummaryTable, getByResourceTable}
+export {getResourceValueSummaryTable, getUsedResourcesSummaryTable, getByResourceCategoryTable}

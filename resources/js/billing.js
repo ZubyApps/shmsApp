@@ -67,7 +67,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#expensesTable' )){
             $('#expensesTable').dataTable().fnDraw()
         } else {
-            expensesTable = getExpensesTable('expensesTable', '', 'openvisits')
+            expensesTable = getExpensesTable('expensesTable', 'billing')
         }
     })
 

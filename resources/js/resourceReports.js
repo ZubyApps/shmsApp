@@ -1,10 +1,10 @@
 import {Modal } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { getResourceValueSummaryTable, getUsedResourcesSummaryTable } from "./tables/resourceReportTables";
+import { getByResourceCategoryTable, getResourceValueSummaryTable, getUsedResourcesSummaryTable } from "./tables/resourceReportTables";
 
 window.addEventListener('DOMContentLoaded', function () {
-    const byResourceModal            = new Modal(document.getElementById('byResourceModal'))
+    const byResourceCategoryModal    = new Modal(document.getElementById('byResourceCategoryModal'))
 
     const datesDiv                  = document.querySelector('.datesDiv')
 
@@ -12,8 +12,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const usedSummaryTab                = document.querySelector('#nav-usedSummary-tab')
 
     const searchWithDatesBtn        = document.querySelector('.searchWithDatesBtn')
+    const searchResourcesByMonthBtn = document.querySelector('.searchResourcesByMonthBtn')
 
-    let resourceValuesTable, usedSummaryTable, byResourceTable
+    let resourceValuesTable, usedSummaryTable, byResourceCategoryTable
     resourceValuesTable = getResourceValueSummaryTable('summaryTable')
 
     summaryTab.addEventListener('click', function() {
@@ -35,19 +36,41 @@ window.addEventListener('DOMContentLoaded', function () {
         usedSummaryTable = getUsedResourcesSummaryTable('usedSummaryTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value)
     })
 
-    document.querySelector('#summaryTable').addEventListener('click', function (event) {
-        const showPatientsBtn    = event.target.closest('.showPatientsBtn')
-        const from               = datesDiv.querySelector('#startDate').value
-        const to                 = datesDiv.querySelector('#endDate').value
+    searchResourcesByMonthBtn.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#usedSummaryTable' )){
+            $('#usedSummaryTable').dataTable().fnDestroy()
+        }
+        usedSummaryTable = getUsedResourcesSummaryTable('usedSummaryTable', null, null, datesDiv.querySelector('#resourcesMonth').value)
+    })
 
-        if (showPatientsBtn){
-            const id = showPatientsBtn.getAttribute('data-id')
-            byResourceModal._element.querySelector('#resource').value = showPatientsBtn.getAttribute('data-resource') 
-            byResourceModal._element.querySelector('#subcategory').value = showPatientsBtn.getAttribute('data-subcategory')
-            byResourceModal._element.querySelector('#from').value = from
-            byResourceModal._element.querySelector('#to').value = to
-            byResourceTable = getByResourceTable('byResourceTable', id, byResourceModal, datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value)
-            byResourceModal.show()
+    document.querySelector('#usedSummaryTable').addEventListener('click', function (event) {
+        const showPrescriptionsBtn    = event.target.closest('.showPrescriptionsBtn')
+        const from                    = datesDiv.querySelector('#startDate').value
+        const to                 = datesDiv.querySelector('#endDate').value
+        const date               = datesDiv.querySelector('#resourcesMonth').value
+
+        if (showPrescriptionsBtn){
+            const id = showPrescriptionsBtn.getAttribute('data-id')
+            byResourceCategoryModal._element.querySelector('#category').value = showPrescriptionsBtn.getAttribute('data-category')
+            
+            if (date){
+                byResourceCategoryModal._element.querySelector('#resourcesMonth').value = date
+                byResourceCategoryTable = getByResourceCategoryTable('byResourceCategoryTable', id, byResourceCategoryModal, null, null, datesDiv.querySelector('#resourcesMonth').value)
+                byResourceCategoryModal.show()
+                return
+            }
+            
+            if (datesDiv.querySelector('#startDate').value && datesDiv.querySelector('#endDate').value){
+                byResourceCategoryModal._element.querySelector('#from').value = from
+                byResourceCategoryModal._element.querySelector('#to').value = to
+                byResourceCategoryTable = getByResourceCategoryTable('byResourceCategoryTable', id, byResourceCategoryModal, datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value)
+                byResourceCategoryModal.show()
+                return
+                
+            }
+            byResourceCategoryModal._element.querySelector('#resourcesMonth').value = new Date().toISOString().slice(0,7)
+            byResourceCategoryTable = getByResourceCategoryTable('byResourceCategoryTable', id, byResourceCategoryModal)
+            byResourceCategoryModal.show()
         }
     })
 })

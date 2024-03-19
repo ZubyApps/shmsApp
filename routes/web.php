@@ -184,9 +184,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/resources', [ReportController::class, 'indexResources'])->name('Resource Reports');
             Route::get('/resources/summary', [ReportController::class, 'loadResourceValueSummary']);
             Route::get('/resources/usedsummary', [ReportController::class, 'loadUsedResourcesSummary']);
+            Route::get('/resources/bycategoryresource', [ReportController::class, 'loadByCategoryResource']);
             Route::get('/accounts', [ReportController::class, 'indexAccounts'])->name('Account Reports');
-            Route::get('/accounts/summary', [ReportController::class, 'loadPayMethodsSummary']);
+            Route::get('/accounts/paymethodsummary', [ReportController::class, 'loadPayMethodsSummary']);
             Route::get('/accounts/capitation', [ReportController::class, 'loadCapitationPayments']);
+            Route::get('/accounts/expensesummary', [ReportController::class, 'loadExpensesSummary']);
+            Route::get('/accounts/visitsummary', [ReportController::class, 'loadVisitsSummaryBySponsorCategory']);
+            Route::get('/accounts/bypaymethod', [ReportController::class, 'loadPaymentsByPayMethod']);
         });
     });
 

@@ -645,7 +645,7 @@ class HmoService
 
     public function determineValueOfTotalPaid(Visit $visit)
     {
-        return $visit->sponsor->category_name == 'NHIS' && $visit->total_paid == $visit->totalPaidPrescriptions() ? $visit->total_paid : 
+        return $visit->sponsor->category_name == 'NHIS' ? $visit->totalPaidPrescriptions() : 
         $visit->totalPaidPrescriptions() +  $visit->totalPayments();
     }
 

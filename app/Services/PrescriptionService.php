@@ -60,6 +60,7 @@ class PrescriptionService
                 'total_hms_bill'    => $prescription->visit->totalHmsBills(),
                 'total_nhis_bill'   => $isNhis ? $prescription->visit->totalNhisBills() : $prescription->visit->total_nhis_bill,
                 'pharmacy_done_by'  => $resource->category == 'Medications' || $resource->category == 'Consumables' ? null : $prescription->visit->pharmacy_done_by,
+                'hmo_done_by'       => null
             ]);
 
             if ($isNhis){

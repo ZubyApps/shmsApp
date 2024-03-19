@@ -8,6 +8,9 @@ use App\DataObjects\DataTableQueryParams;
 use App\Models\Expense;
 use App\Models\User;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
+use Carbon\Doctrine\CarbonImmutableType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class ExpenseService
@@ -42,23 +45,113 @@ class ExpenseService
         return $expense;
     }
 
-    public function getPaginatedExpenses(DataTableQueryParams $params)
+    public function getPaginatedExpenses(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
         $orderDir   = 'desc';
-
+        $currentDate = new CarbonImmutable();
+        // dd($data->accessor == 'byExpenseCategory');
         if (! empty($params->searchTerm)) {
-            return $this->expense
-                        ->whereRelation('user', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+
+            if ($data->accessor == 'billing'){
+                    return $this->expense
+                            ->whereRelation('user.designation', 'access_level', '<', 5)
+                            ->where(function (Builder $query) use($params){
+                                $query->whereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            if ($data->accessor == 'byExpenseCategory'){
+                if ($data->startDate && $data->endDate){
+                    return $this->expense
+                            ->where('expense_category_id', $data->expenseCategoryId)
+                            ->where(function (Builder $query) use($params){
+                                $query->whereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhere('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                            ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                }
+    
+                if($data->date){
+                    $date = new Carbon($data->date);
+                    return $this->expense
+                        ->where('expense_category_id', $data->expenseCategoryId)
+                        ->where(function (Builder $query) use($params){
+                            $query->whereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhere('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
+                        ->whereMonth('created_at', $date->month)
+                        ->whereYear('created_at', $date->year)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                }
+                
+                return $this->expense
+                        ->where('expense_category_id', $data->expenseCategoryId)
+                        ->where(function (Builder $query) use($params){
+                            $query->whereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhere('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
+                        ->whereMonth('created_at', $currentDate->month)
+                        ->whereYear('created_at', $currentDate->year)
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+                
+
+            return $this->expense
+                    ->where(function (Builder $query) use($params){
+                        $query->whereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    })
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+
+        }
+
+        if ($data->accessor == 'billing'){
+            return $this->expense
+                    ->whereRelation('user.designation', 'access_level', '<', 5)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->accessor == 'byExpenseCategory'){
+
+            if ($data->startDate && $data->endDate){
+                return $this->expense
+                    ->where('expense_category_id', $data->expenseCategoryId)
+                    ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            if($data->date){
+                $date = new Carbon($data->date);
+                return $this->expense
+                ->where('expense_category_id', $data->expenseCategoryId)
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            return $this->expense
+                    ->where('expense_category_id', $data->expenseCategoryId)
+                    ->whereMonth('created_at', $currentDate->month)
+                    ->whereYear('created_at', $currentDate->year)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return $this->expense
                     ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-
-        
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length)); 
     }
 
     public function getLoadTransformer(): callable
@@ -70,8 +163,8 @@ class ExpenseService
                 'category'          => $expense->expenseCategory->name,
                 'amount'            => $expense->amount,
                 'givenTo'           => $expense->given_to,
-                'approvedBy'        => $expense->approvedBy->username,
                 'givenBy'           => $expense->user->username,
+                'approvedBy'        => $expense->approvedBy->username,
                 'comment'           => $expense->comment,
                 'date'              => (new Carbon($expense->created_at))->format('d/m/Y gi:a'),
             ];

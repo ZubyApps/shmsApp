@@ -21,12 +21,16 @@
             <div class="tab-pane fade show active" id="nav-summary" role="tabpanel" aria-labelledby="nav-summary-tab" tabindex="0">
                 <div class="py-2">
                     <h5 class="card-title py-4">Summary of Pharmacy Resources</h5>
-                    <x-form-div class="col-xl-6 py-3 datesDiv">
+                    <x-form-div class="col-xl-8 py-3 datesDiv">
                         <x-input-span class="">Start</x-input-span>
                         <x-form-input type="date" name="startDate" id="startDate" />
                         <x-input-span class="">End</x-input-span>
                         <x-form-input type="date" name="endDate" id="endDate" />
-                        <button class="input-group-text searchWithDatesBtn">Serach</button>
+                        <button class="input-group-text searchWithDatesBtn">Search</button>
+                        <x-input-span class="">OR</x-input-span>
+                        <x-input-span class="">Month/Year</x-input-span>
+                        <x-form-input type="month" name="medicationMonth" id="medicationMonth" />
+                        <button class="input-group-text searchMedicationByMonthBtn">Search</button>
                     </x-form-div>
                     <table  id="summaryTable" class="table table-hover table-sm">
                         <thead>

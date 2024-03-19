@@ -4,7 +4,8 @@
 @section('content')
 @vite(['resources/js/patientReports.js'])
 
-@include('reports.modals.bySponsorModal', ['title' => 'Patients', 'id' => 'bySponsorModal'])
+@include('reports.modals.bySponsorModal', ['title' => 'Patients', 'isByMonth' => false, 'id' => 'bySponsorModal'])
+@include('reports.modals.bySponsorModal', ['title' => 'Patients', 'isByMonth' => true, 'id' => 'bySponsorByMonthModal'])
 
 <div class="container mt-5">
     @include('reports.reportGrid')
@@ -109,12 +110,16 @@
             <!-- Visit Details table -->
             <div class="tab-pane fade" id="nav-registrations" role="tabpanel" aria-labelledby="nav-registrations-tab" tabindex="0">
                 <h5 class="card-title py-4">Registration Summary by Dates <small>(Default: This Month)</small></h5>
-                <x-form-div class="col-xl-6 py-3 datesDiv">
+                <x-form-div class="col-xl-8 py-3 registrationDatesDiv">
                     <x-input-span class="">Start</x-input-span>
                     <x-form-input type="date" name="startDate" id="startDate" />
                     <x-input-span class="">End</x-input-span>
                     <x-form-input type="date" name="endDate" id="endDate" />
-                    <button class="input-group-text searchRegWithDatesBtn">Serach</button>
+                    <button class="input-group-text searchRegWithDatesBtn">Search</button>
+                    <x-input-span class="">OR</x-input-span>
+                        <x-input-span class="">Month/Year</x-input-span>
+                        <x-form-input type="month" name="registrationMonth" id="registrationMonth" />
+                        <button class="input-group-text searchRegisterationByMonthBtn">Search</button>
                 </x-form-div>
                 <div class="py-2 ">
                     <table  id="registerationsTable" class="table table-hover table-sm">

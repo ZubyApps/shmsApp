@@ -59,8 +59,15 @@ class BillingService
             ->where('consulted', '!=', null)
             ->where('closed', false)
             ->where(function (Builder $query){
-                $query->whereColumn('total_hms_bill', '>', 'total_paid')
-                    ->orWhereColumn('total_nhis_bill', '>', 'total_paid');
+                $query->where(function (Builder $query){
+                    $query->where('total_nhis_bill', '>', 0)
+                          ->WhereColumn('total_nhis_bill', '>', 'total_paid');
+                          
+                        })
+                    ->orWhere(function (Builder $query){
+                        $query->where('total_nhis_bill', '=', 0)
+                            ->whereColumn('total_hms_bill', '>', 'total_paid');
+                            });
             })
             ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
@@ -74,8 +81,15 @@ class BillingService
                     ->where('consulted', '!=', null)
                     ->where('closed', false)
                     ->where(function (Builder $query){
-                        $query->whereColumn('total_hms_bill', '>', 'total_paid')
-                            ->whereColumn('total_nhis_bill', '>', 'total_paid');
+                        $query->where(function (Builder $query){
+                            $query->where('total_nhis_bill', '>', 0)
+                                  ->WhereColumn('total_nhis_bill', '>', 'total_paid');
+                                  
+                                })
+                            ->orWhere(function (Builder $query){
+                                $query->where('total_nhis_bill', '=', 0)
+                                    ->whereColumn('total_hms_bill', '>', 'total_paid');
+                                    });
                     })
                     ->where(function (Builder $query) {
                         $query->where('admission_status', '=', 'Inpatient')
@@ -93,8 +107,15 @@ class BillingService
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
                     ->where(function (Builder $query){
-                        $query->whereColumn('total_hms_bill', '>', 'total_paid')
-                            ->whereColumn('total_nhis_bill', '>', 'total_paid');
+                        $query->where(function (Builder $query){
+                            $query->where('total_nhis_bill', '>', 0)
+                                  ->WhereColumn('total_nhis_bill', '>', 'total_paid');
+                                  
+                                })
+                            ->orWhere(function (Builder $query){
+                                $query->where('total_nhis_bill', '=', 0)
+                                    ->whereColumn('total_hms_bill', '>', 'total_paid');
+                                    });
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
