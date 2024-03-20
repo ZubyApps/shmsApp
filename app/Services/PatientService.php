@@ -179,8 +179,7 @@ class PatientService
             ->groupBy('sponsor')
             ->orderBy('sponsor')
             ->orderBy('patientsCount')
-            ->get()
-            ->toArray();
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return DB::table('patients')
@@ -192,8 +191,7 @@ class PatientService
             ->groupBy('sponsor')
             ->orderBy('sponsor')
             ->orderBy('patientsCount')
-            ->get()
-            ->toArray();
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
     public function getPatientsBySponsor(DataTableQueryParams $params, $data)

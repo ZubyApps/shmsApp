@@ -98,6 +98,9 @@
 
                     <button class="nav-link" id="nav-expenses-tab" data-bs-toggle="tab" data-bs-target="#nav-expenses"
                         type="button" role="tab" aria-controls="nav-expenses" aria-selected="false">Expenses</button>
+
+                    <button class="nav-link" id="nav-balancing-tab" data-bs-toggle="tab" data-bs-target="#nav-balancing"
+                        type="button" role="tab" aria-controls="nav-balancing" aria-selected="false">Balancing</button>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
@@ -219,6 +222,28 @@
                                     <td class="fw-semibold"></td>
                                 </tr>
                             </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <!-- Balancing table -->
+                <div class="tab-pane fade" id="nav-balancing" role="tabpanel" aria-labelledby="nav-balancing-tab"
+                    tabindex="0">
+                    <div class="py-4 ">
+                        <x-form-div class="col-xl-4 py-3 balancingDateDiv">
+                            <x-input-span class="">Pick Date</x-input-span>
+                            <x-form-input type="date" name="balanceDate" id="balanceDate" />
+                            <button class="input-group-text searchBalanceByDateBtn">Search</button>
+                        </x-form-div>
+                        <table id="balancingTable" class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Total Cash</th>
+                                    <th>Total Expense</th>
+                                    <th>Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>

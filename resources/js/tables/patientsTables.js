@@ -113,7 +113,7 @@ const getTotalPatientsTable = (tableId) => {
         ajax:  '/patients/load/summary/sponsor',
         orderMulti: true,
         search:true,
-        lengthMenu:[40, 80, 120, 160, 200],
+        "sAjaxDataProp": "data.data",
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
@@ -198,6 +198,7 @@ const getVisitsSummaryTable = (tableId) => {
         orderMulti: true,
         search:true,
         lengthMenu:[40, 80, 120, 160, 200],
+        "sAjaxDataProp": "data.data",
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));

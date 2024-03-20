@@ -12,6 +12,7 @@ use Carbon\CarbonImmutable;
 use Carbon\Doctrine\CarbonImmutableType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ExpenseService
 {
@@ -169,5 +170,51 @@ class ExpenseService
                 'date'              => (new Carbon($expense->created_at))->format('d/m/Y gi:a'),
             ];
          };
+    }
+
+    public function getExpensesByDate($data)
+    {
+        $currentDate = new CarbonImmutable();
+
+        if ($data->date){
+            return DB::table('expenses')
+                            ->selectRaw('SUM(expenses.amount) as totalExpense')
+                            ->leftJoin('users', 'expenses.user_id', '=', 'users.id')
+                            ->leftJoin('designations', 'users.id', '=', 'designations.user_id')
+                            ->where('designations.access_level', '<', 5)
+                            ->whereDate('expenses.created_at', $data->date)
+                            ->first();
+        }
+
+        return DB::table('expenses')
+                            ->selectRaw('SUM(expenses.amount) as totalExpense')
+                            ->leftJoin('users', 'expenses.user_id', '=', 'users.id')
+                            ->leftJoin('designations', 'users.id', '=', 'designations.user_id')
+                            ->where('designations.access_level', '<', 5)
+                            ->whereDate('expenses.created_at', $currentDate->format('Y-m-d'))
+                            ->first();
+    }
+
+    public function totalYearlyExpense($data)
+    {
+        $currentDate = new Carbon();
+
+        if ($data->date){
+            $date = new Carbon($data->date);
+
+            return DB::table('expenses')
+                            ->selectRaw('SUM(amount) as amount, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
+                            ->whereYear('created_at', $date->year)
+                            ->groupBy('month_name', 'month')
+                            ->orderBy('month')
+                            ->get();
+        }
+
+        return DB::table('expenses')
+                        ->selectRaw('SUM(amount) as amount, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
+                        ->whereYear('created_at', $currentDate->year)
+                        ->groupBy('month_name', 'month')
+                        ->orderBy('month')
+                        ->get();
     }
 }

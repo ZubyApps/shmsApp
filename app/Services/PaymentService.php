@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\Payment;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -96,5 +97,28 @@ Class PaymentService
             return $deleted;
         });
     
+    }
+
+    public function getCashPaymentsByDate($data)
+    {
+        $currentDate = new CarbonImmutable();
+
+        if ($data->date){
+            return DB::table('payments')
+                            ->selectRaw('SUM(payments.amount_paid) as totalCash, pay_methods.id as id')
+                            ->leftJoin('pay_methods', 'payments.pay_method_id', '=', 'pay_methods.id')
+                            ->where('pay_methods.name', 'Cash')
+                            ->groupBy('id')
+                            ->whereDate('payments.created_at', $data->date)
+                            ->first();
+        }
+
+        return DB::table('payments')
+                            ->selectRaw('SUM(payments.amount_paid) as totalCash, pay_methods.id as id')
+                            ->leftJoin('pay_methods', 'payments.pay_method_id', '=', 'pay_methods.id')
+                            ->where('pay_methods.name', 'Cash')
+                            ->groupBy('id')
+                            ->whereDate('payments.created_at',  $currentDate->format('Y-m-d'))
+                            ->first();
     }
 }

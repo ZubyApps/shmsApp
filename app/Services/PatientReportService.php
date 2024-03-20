@@ -69,8 +69,7 @@ class PatientReportService
             ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
             ->groupBy('sponsor')
             ->orderBy('patientsCount', 'desc')
-            ->get()
-            ->toArray();
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return DB::table('patients')
@@ -79,8 +78,7 @@ class PatientReportService
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->groupBy('sponsor')
             ->orderBy('patientsCount', 'desc')
-            ->get()
-            ->toArray();
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
     public function getBySponsor(DataTableQueryParams $params, $data)

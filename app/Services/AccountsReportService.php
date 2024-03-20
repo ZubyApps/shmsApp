@@ -5,10 +5,11 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
+use App\Models\Expense;
 use App\Models\Payment;
 use App\Models\PayMethod;
 use App\Models\Prescription;
-use App\Models\ResourceCategory;
+use App\Models\Visit;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,6 +22,9 @@ class AccountsReportService
         private readonly Payment $payment, 
         private readonly HelperService $helperService,
         private readonly Prescription $prescription,
+        private readonly ExpenseService $expenseService,
+        private readonly PrescriptionService $prescriptionService,
+        private readonly Visit $visit,
         )
     {
     }
@@ -150,20 +154,6 @@ class AccountsReportService
             ->toArray();
     }
 
-    public function getUsedResourcesTransformer(): callable
-    {
-       return  function (ResourceCategory $resourceCategory) {
-            return [
-                'id'                => $resourceCategory->id,
-                'category'          => $resourceCategory->name,
-                'subCategoryCount'  => $resourceCategory->resourceSubCategories->count(),
-                'prescriptions'     => $resourceCategory->resourceSubCategories->resources->prescriptions->count(),
-                'hmsBill'           => $resourceCategory->resourceSubCategories->resources->resources->prescriptions->sum('hms_bill'),
-                'paid'              => $resourceCategory->resourceSubCategories->resources->resourceSubCategories->prescriptions->sum('paid'),
-            ];
-         };
-    }
-
     public function getPaymentsByPayMethod(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
@@ -192,6 +182,14 @@ class AccountsReportService
     
                 return $this->payment
                     ->whereRelation('payMethod', 'id', '=', $data->payMethodId)
+                    ->where(function (Builder $query) use($params) {
+                        $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    })
                     ->whereMonth('created_at', $date->month)
                     ->whereYear('created_at', $date->year)
                     ->orderBy($orderBy, $orderDir)
@@ -277,8 +275,7 @@ class AccountsReportService
             ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
             ->groupBy('category')
             ->orderBy('patientsCount', 'desc')
-            ->get()
-            ->toArray();
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         if($data->date){
@@ -293,8 +290,7 @@ class AccountsReportService
             ->whereYear('visits.created_at', $date->year)
             ->groupBy('category')
             ->orderBy('patientsCount', 'desc')
-            ->get()
-            ->toArray();
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return DB::table('visits')
@@ -306,7 +302,192 @@ class AccountsReportService
             ->whereYear('visits.created_at', $current->year)
             ->groupBy('category')
             ->orderBy('patientsCount', 'desc')
-            ->get()
-            ->toArray();
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
+    public function getVisitsSummaryBySponsor(DataTableQueryParams $params, $data)
+    {
+        $current = CarbonImmutable::now();
+
+        if (! empty($params->searchTerm)) {
+
+            if ($data->startDate && $data->endDate){
+                return DB::table('visits')
+                ->selectRaw('sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(visits.id) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
+                ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+                ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                ->groupBy('sponsor')
+                ->orderBy('patientsCount', 'desc')
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+    
+            if($data->date){
+                $date = new Carbon($data->date);
+    
+                return DB::table('visits')
+                ->selectRaw('v sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(visits.id) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
+                ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+                ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                ->whereMonth('visits.created_at', $date->month)
+                ->whereYear('visits.created_at', $date->year)
+                ->groupBy('sponsor')
+                ->orderBy('patientsCount', 'desc')
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+    
+            return DB::table('visits')
+                ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(visits.id) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
+                ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+                ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                ->whereMonth('visits.created_at', $current->month)
+                ->whereYear('visits.created_at', $current->year)
+                ->groupBy('sponsor')
+                ->orderBy('patientsCount', 'desc')
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->startDate && $data->endDate){
+            return DB::table('visits')
+            ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(visits.id) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
+            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+            ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+            ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+            ->groupBy('sponsor')
+            ->orderBy('patientsCount', 'desc')
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if($data->date){
+            $date = new Carbon($data->date);
+
+            return DB::table('visits')
+            ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(visits.id) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
+            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+            ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+            ->whereMonth('visits.created_at', $date->month)
+            ->whereYear('visits.created_at', $date->year)
+            ->groupBy('sponsor')
+            ->orderBy('patientsCount', 'desc')
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return DB::table('visits')
+            ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(visits.id) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
+            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+            ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+            ->whereMonth('visits.created_at', $current->month)
+            ->whereYear('visits.created_at', $current->year)
+            ->groupBy('sponsor')
+            ->orderBy('patientsCount', 'desc')
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
+    public function getVisitsBySponsor(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'asc';
+        $current    = CarbonImmutable::now();
+
+        if (! empty($params->searchTerm)) {
+            if ($data->startDate && $data->endDate){
+                return $this->visit
+                            ->whereRelation('sponsor', 'id', '=', $data->sponsorId)
+                            ->where(function (Builder $query) use($params) {
+                                $query->where('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhere('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhere('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhere('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                            ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            if($data->date){
+                $date = new Carbon($data->date);
+    
+                return $this->visit
+                    ->whereRelation('sponsor', 'id', '=', $data->sponsorId)
+                    ->where(function (Builder $query) use($params) {
+                        $query->where('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    })
+                    ->whereMonth('created_at', $date->month)
+                    ->whereYear('created_at', $date->year)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            return $this->visit
+                            ->whereRelation('sponsor', 'id', '=', $data->sponsorId)
+                            ->where(function (Builder $query) use($params) {
+                                $query->where('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhere('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhere('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhere('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                            ->whereMonth('created_at', $current->month)
+                            ->whereYear('created_at', $current->year)
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->startDate && $data->endDate){
+            return $this->visit
+                ->whereRelation('sponsor', 'id', '=', $data->sponsorId)
+                ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if($data->date){
+            $date = new Carbon($data->date);
+
+            return $this->visit
+                ->whereRelation('sponsor', 'id', '=', $data->sponsorId)
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        
+        return $this->visit
+                ->whereRelation('sponsor', 'id', '=', $data->sponsorId)
+                ->whereMonth('created_at', $current->month)
+                ->whereYear('created_at', $current->year)
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
+    public function getVisitsBySponsorTransformer(): callable
+    {
+        return  function (Visit $visit) {
+
+            return [
+                    'id'                => $visit->id,
+                    'category'          => $visit->sponsor->category_name,
+                    'date'              => (new Carbon($visit->created_at))->format('d/M/y g:ia'),
+                    'patient'           => $visit->patient->patientId(),
+                    'diagnosis'         => $visit->consultations()->where('visit_id', $visit->id)->first()?->icd11_diagnosis ?? $visit->consultations()->where('visit_id', $visit->id)->first()?->provisional_diagnosis,
+                    'doctor'            => $visit->doctor->username,
+                    'totalHmsBill'      => $visit->total_hms_bill,
+                    'totalHmoBill'      => $visit->total_hmo_bill,
+                    'totalNhisBill'     => $visit->total_nhis_bill,
+                    'amountPaid'        => $visit->total_paid,
+                ];
+            };
     }
 }

@@ -40,7 +40,7 @@ const getDistribution2Table = (tableId) => {
         ajax:  '/reports/patients/dist2',
         orderMulti: true,
         search:true,
-        lengthMenu:[40, 80, 120, 160, 200],
+        "sAjaxDataProp": "data.data",
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
@@ -85,10 +85,13 @@ const getBySponsorTable = (tableId, urlSuffix, sponsorId, modal, startDate, endD
     })
 
     modal._element.addEventListener('hidden.bs.modal', function () {
-        modal._element.querySelector('#patientMonth').value = ''
-        modal._element.querySelector('#from').value = ''
-        modal._element.querySelector('#to').value = ''
         patientsBySponsorTable.destroy()
+        
+        if (urlSuffix === 'bysponsormonth'){
+            modal._element.querySelector('#patientMonth').value = '' 
+            modal._element.querySelector('#from').value = ''
+            modal._element.querySelector('#to').value = ''
+        }
     })
 
     return patientsBySponsorTable

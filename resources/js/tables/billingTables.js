@@ -409,6 +409,7 @@ const getPaymentTableByVisit = (tableId, visitId, modal) => {
                         </div>
                         `  
                     }
+                    return ''
                 }      
             },
         ]
@@ -475,7 +476,6 @@ const getPatientsBill = (tableId, visitId, modal, type) => {
 }
 
 const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate, endDate, date) => {
-    console.log(expenseCategoryId, accessor)
     const expenseTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax: {url: '/billing/load/expenses', data: {
@@ -521,11 +521,47 @@ const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate
         ]
     });
 
-    modal._element.addEventListener('hidden.bs.modal', function () {
-        expenseTable.destroy()
-    })
+    if (accessor == 'byExpenseCategory'){
+        modal._element.addEventListener('hidden.bs.modal', function () {
+            expenseTable.destroy()
+        })
+    }
     
     return expenseTable
 }
 
-export {getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable}
+const getBalancingTable = (tableId, accessor, date) => {
+    const balancingTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax: {url: '/billing/load/balancing', data: {
+            'accessor': accessor,
+            'date'    : date,
+        }},
+        orderMulti: true,
+        searching: false,
+        lengthChange: false,
+        drawCallback: function () {
+            var api = this.api()
+            
+                // $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
+                // $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
+                // $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {data: "date"},
+            {data: row => `<span class="btn text-decoration-underline tooltip-test" title="show payments" data-id="${row.id}">${account.format(row.totalCash)}</span>`},
+            {data: row => `<span class="btn text-decoration-underline tooltip-test" title="show records">${account.format(row.totalExpense ?? 0)}</span>`},
+            {data: row => account.format(row.totalCash - row.totalExpense)},
+        ]
+    });
+
+    // if (accessor == 'byExpenseCategory'){
+    //     modal._element.addEventListener('hidden.bs.modal', function () {
+    //         expenseTable.destroy()
+    //     })
+    // }
+    
+    return balancingTable
+}
+
+export {getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable, getBalancingTable}

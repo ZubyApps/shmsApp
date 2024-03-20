@@ -25,7 +25,8 @@ class BillingService
         private readonly PaymentService $paymentService,
         private readonly PayPercentageService $payPercentageService,
         private readonly Resource $resource,
-        private readonly PayMethodService $payMethodService
+        private readonly PayMethodService $payMethodService,
+        private readonly ExpenseService $expenseService
         )
     {
         
@@ -258,7 +259,7 @@ class BillingService
                     'amount'        => $payment->amount_paid,
                     'payMethod'     => $payment->payMethod->name,
                     'comment'       => $payment->comment,
-                    'user'          => auth()->user()->designation->access_level > 3
+                    'user'          => auth()->user()->designation->access_level > 4
             ];
          };
     }
@@ -320,7 +321,6 @@ class BillingService
                         ->groupBy('service', 'discount')
                         ->orderBy('service')
                         ->get()
-                        ->toArray();
-        
+                        ->toArray();   
     }
 }

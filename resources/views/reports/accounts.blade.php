@@ -5,6 +5,7 @@
 @vite(['resources/js/accountReports.js'])
 
 @include('reports.modals.byPayMethodModal', ['title' => 'Paymets By Paymethod', 'id' => 'byPayMethodModal'])
+@include('reports.modals.visitsBySponsorModal', ['title' => 'Visits By Sponsor', 'id' => 'visitsBySponsorModal'])
 @include('reports.modals.byExpenseCategoryModal', ['title' => 'Paymets By Paymethod', 'id' => 'byExpenseCategoryModal'])
 @include('billing.expenseModal', ['title' => "New Expense", 'isUpdate' => false, 'id' => 'newExpenseModal'])
 @include('billing.expenseModal', ['title' => "Update Expense", 'isUpdate' => true, 'id' => 'updateExpenseModal'])
@@ -25,12 +26,15 @@
                 <button class="nav-link"  id="nav-expenseSummary-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-expenseSummary" type="button" role="tab" aria-controls="nav-expenseSummary"
                     aria-selected="false">Expense Summary</button>
-                <button class="nav-link"  id="nav-visitSummary-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-visitSummary" type="button" role="tab" aria-controls="nav-visitSummary"
-                    aria-selected="false">Visit Summary</button>
-                {{-- <button class="nav-link"   id="nav-summaries-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-summaries" type="button" role="tab" aria-controls="nav-summaries"
-                    aria-selected="false">Summaries</button> --}}
+                <button class="nav-link"  id="nav-visitSummary1-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-visitSummary1" type="button" role="tab" aria-controls="nav-visitSummary1"
+                    aria-selected="false">Visit Summary1</button>
+                <button class="nav-link"  id="nav-visitSummary2-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-visitSummary2" type="button" role="tab" aria-controls="nav-visitSummary2"
+                    aria-selected="false">Visit Summary2</button>
+                <button class="nav-link" id="nav-yearlyIncomeAndExpense-tab" data-bs-toggle="tab" 
+                    data-bs-target="#nav-yearlyIncomeAndExpense" type="button" role="tab" aria-controls="nav-yearlyIncomeAndExpense" 
+                    aria-selected="false">Yearly Summary</button>
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
@@ -148,6 +152,7 @@
                             <td class="fw-semibold"></td>
                             <td class="fw-semibold"></td>
                             <td class="fw-semibold"></td>
+                            <td class="fw-semibold"></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -187,22 +192,22 @@
                     </table>
                 </div>
             </div>
-            <!-- Visit Details table -->
-            <div class="tab-pane fade" id="nav-visitSummary" role="tabpanel" aria-labelledby="nav-visitSummary-tab" tabindex="0">
+            <!-- Visit Summary 1 table -->
+            <div class="tab-pane fade" id="nav-visitSummary1" role="tabpanel" aria-labelledby="nav-visitSummary1-tab" tabindex="0">
                 <h5 class="card-title py-4">Visits Summary </h5>
-                <x-form-div class="col-xl-8 py-3 visistSummaryDiv">
+                <x-form-div class="col-xl-8 py-3 visistSummaryDiv1">
                     <x-input-span class="">Start</x-input-span>
                     <x-form-input type="date" name="startDate" id="startDate" />
                     <x-input-span class="">End</x-input-span>
                     <x-form-input type="date" name="endDate" id="endDate" />
-                    <button class="input-group-text searchVisitsByDatesBtn">Search</button>
+                    <button class="input-group-text searchVisitsByDatesBtn1">Search</button>
                     <x-input-span class="">OR</x-input-span>
                     <x-input-span class="">Month/Year</x-input-span>
-                    <x-form-input type="month" name="visitSummaryMonth" id="visitSummaryMonth" />
-                    <button class="input-group-text searchVisitsByMonthBtn">Search</button>
+                    <x-form-input type="month" name="visitSummaryMonth1" id="visitSummaryMonth1" />
+                    <button class="input-group-text searchVisitsByMonthBtn1">Search</button>
                 </x-form-div>
                 <div class="py-2 ">
-                    <table  id="visitSummaryTable" class="table table-hover table-sm">
+                    <table  id="visitSummaryTable1" class="table table-hover table-sm">
                         <thead>
                             <tr>
                                 <th>Sponsor Category</th>
@@ -235,129 +240,89 @@
                     </table>
                 </div>
             </div>
-            <!-- summaries tables -->
-            {{-- <div class="tab-pane fade" id="nav-summaries" role="tabpanel" aria-labelledby="nav-summaries-tab" tabindex="0">
-                <div class="py-4">
-                    <div class="row">
-                        <div class="col-xl-6 mb-2">
-                          <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">All Patients by Sex</h5>
-                                <table  id="sexAggregateTable" class="table table-hover table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Sex</th>
-                                            <th>Count</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                    <tfoot class="fw-bolder text-primary">
-                                        <tr>
-                                            <td class="text-center">Total</td>
-                                            <td></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-6">
-                          <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">All Patients by Age and Sex</h5>
-                                <table  id="ageAggregateTable" class="table table-hover table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Sex</th>
-                                            <th>0-3m</th>
-                                            <th>3-12m</th>
-                                            <th>1-5y</th>
-                                            <th>5-13y</th>
-                                            <th>13-18y</th>
-                                            <th>18-48y</th>
-                                            <th>48-63y</th>
-                                            <th>63</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                    <tfoot class="fw-bolder text-primary">
-                                        <tr>
-                                            <td class="text-center">Totals</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+            <!-- Visit Summary 2 table -->
+            <div class="tab-pane fade" id="nav-visitSummary2" role="tabpanel" aria-labelledby="nav-visitSummary2-tab" tabindex="0">
+                <h5 class="card-title py-4">Visits Summary </h5>
+                <x-form-div class="col-xl-8 py-3 visistSummaryDiv2">
+                    <x-input-span class="">Start</x-input-span>
+                    <x-form-input type="date" name="startDate" id="startDate" />
+                    <x-input-span class="">End</x-input-span>
+                    <x-form-input type="date" name="endDate" id="endDate" />
+                    <button class="input-group-text searchVisitsByDatesBtn2">Search</button>
+                    <x-input-span class="">OR</x-input-span>
+                    <x-input-span class="">Month/Year</x-input-span>
+                    <x-form-input type="month" name="visitSummaryMonth2" id="visitSummaryMonth2" />
+                    <button class="input-group-text searchVisitsByMonthBtn2">Search</button>
+                </x-form-div>
+                <div class="py-2 ">
+                    <table  id="visitSummaryTable2" class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>Sponsor</th>
+                                <th>Category</th>
+                                <th>Patients</th>
+                                <th>Visits</th>
+                                <th>HMS Bill</th>
+                                <th>HMO Bill</th>
+                                <th>NHIS Bill</th>
+                                <th>Paid</th>
+                                <th>Capitation</th>
+                                <th>(Paid+Captation) - HMS</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot class="fw-bolder text-primary">
+                            <tr>
+                                <td class="text-center">Total</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
-                <div class="py-4">
-                    <div class="row">
-                        <div class="col-xl-6 mb-2">
-                          <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">New Registrations by Sponsor This Month</h5>
-                                <table  id="totalPatientsTable" class="table table-hover table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Sponsor</th>
-                                            <th>Count</th>
-                                            <th>Category</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                    <tfoot class="fw-bolder text-primary">
-                                        <tr>
-                                            <td class="text-center">Total</td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-6">
-                          <div class="card">
-                            <div class="card-body">
-                            <h5 class="card-title">Visits Summary by Sponsor This Month</h5>
-                            <table  id="visitsSummaryTable" class="table table-hover table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Sponsor</th>
-                                        <th>Outpatients</th>
-                                        <th>Inpatients</th>
-                                        <th>Observations</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                                <tfoot class="fw-bolder text-primary">
-                                    <tr>
-                                        <td class="text-center">Total</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+            </div>
+             <!-- Yearly income and expenses table -->
+            <div class="tab-pane fade" id="nav-yearlyIncomeAndExpense" role="tabpanel" aria-labelledby="nav-yearlyIncomeAndExpense-tab" tabindex="0">
+                <div class="py-4 ">
+                    <x-form-div class="col-lg-3 py-3 yearlyIncomeAndExpenseDiv">
+                        <x-input-span class="">Year</x-input-span>
+                        <x-form-input type="number" name="incomeAndExpenseyear" id="incomeAndExpenseyear" min="1900" max="{{ date('Y') }}" value="{{ date('Y') }}" />
+                        <button class="input-group-text searchIncomeAndExpenseByYearBtn">Get</button>
+                    </x-form-div>
+                    <table id="yearlyIncomeAndExpenseTable" class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Total Bill</th>
+                                <th>Total Paid</th>
+                                <th>Total Expense</th>
+                                <th>Expected Net</th>
+                                <th>Actual Net</th>
+                                <th>Net Difference</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr class="text-primary">
+                                <td class="fw-bold">Total</td>
+                                <td class="fw-bold "></td>
+                                <td class="fw-bold "></td>
+                                <td class="fw-bold "></td>
+                                <td class="fw-bold "></td>
+                                <td class="fw-bold "></td>
+                                <td class="fw-bold "></td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
-            </div> --}}
+            </div>
         </div>
     </div>
     

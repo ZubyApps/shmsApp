@@ -77,7 +77,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const id = showPatientsBtn.getAttribute('data-id')
                 bySponsorModal._element.querySelector('#sponsor').value = showPatientsBtn.getAttribute('data-sponsor') 
                 bySponsorModal._element.querySelector('#category').value = showPatientsBtn.getAttribute('data-category')
-                bySponsorTable = getBySponsorTable('bySponsorTable', 'bysponsor', id, bySponsorModal, datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value)
+                bySponsorTable = getBySponsorTable('bySponsorTable', 'bysponsor', id, bySponsorModal)
                 bySponsorModal.show()
             }
 

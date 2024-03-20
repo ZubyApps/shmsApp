@@ -41,7 +41,7 @@
                                 <th>Sponsors</th>
                                 <th>Female</th>
                                 <th>Male</th>
-                                <th>Total</th>
+                                <th>Total Patients</th>
                             </tr>
                         </thead>
                         <tbody></tbody>

@@ -189,8 +189,11 @@ Route::middleware('auth')->group(function () {
             Route::get('/accounts/paymethodsummary', [ReportController::class, 'loadPayMethodsSummary']);
             Route::get('/accounts/capitation', [ReportController::class, 'loadCapitationPayments']);
             Route::get('/accounts/expensesummary', [ReportController::class, 'loadExpensesSummary']);
-            Route::get('/accounts/visitsummary', [ReportController::class, 'loadVisitsSummaryBySponsorCategory']);
+            Route::get('/accounts/visitsummary1', [ReportController::class, 'loadVisitsSummaryBySponsorCategory']);
+            Route::get('/accounts/visitsummary2', [ReportController::class, 'loadVisitsSummaryBySponsor']);
             Route::get('/accounts/bypaymethod', [ReportController::class, 'loadPaymentsByPayMethod']);
+            Route::get('/accounts/byvisitbysponsor', [ReportController::class, 'loadVisitsBySponsor']);
+            Route::get('/accounts/yearlysummary', [ReportController::class, 'loadYearlyIncomeAndExpense']);
         });
     });
 
@@ -285,6 +288,7 @@ Route::middleware('auth')->group(function () {
             Route::delete('/payment/delete/{payment}', [BillingController::class, 'destroy']);
             Route::get('/load/outstandings', [BillingController::class, 'loadVisitsWithOutstandingBills']);
             Route::get('/load/expenses', [BillingController::class, 'loadExpenses']);
+            Route::get('/load/balancing', [BillingController::class, 'loadCashPaymentsAndExpenses']);
         });
 
         Route::prefix('expenses')->group(function () {

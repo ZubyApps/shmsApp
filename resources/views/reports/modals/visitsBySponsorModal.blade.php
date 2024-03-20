@@ -11,8 +11,12 @@
                         <div class="mb-2 form-control">
                             <div class="row">
                                 <x-form-div class="col-xl-6">
-                                    <x-input-span>PayMethod</x-input-span>
-                                    <x-form-input name="expenseCategory" value="" id="expenseCategory" readonly/>
+                                    <x-input-span>Sponsor</x-input-span>
+                                    <x-form-input name="sponsor" value="" id="sponsor" readonly/>
+                                </x-form-div>
+                                <x-form-div class="col-xl-6">
+                                    <x-input-span>Sponsor Category</x-input-span>
+                                    <x-form-input name="sponsorCategory" value="" id="sponsorCategory" readonly/>
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
                                     <x-input-span>Dates</x-input-span>
@@ -23,33 +27,34 @@
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
                                     <x-input-span class="">Month/Year</x-input-span>
-                                    <x-form-input type="month" name="expenseMonth" id="expenseMonth" />
+                                    <x-form-input type="month" name="visitMonth" id="visitMonth" />
                                 </x-form-div>
                             </div>
                         </div>
                         <div class="mb-2 form-control">
-                            <x-form-span>Expenses Made in this Category</x-form-span>
+                            <x-form-span>Visits Under this Sponsor</x-form-span>
                             <div class="row overflow-auto my-3">
-                                <table id="byExpenseCategoryTable" class="table table-sm">
+                                <table id="visitsBySponsorTable" class="table table-sm">
                                     <thead>
                                         <tr>
-                                            <th>Date</th>
-                                            <th>Category</th>
-                                            <th>Desription</th>
-                                            <th>Amount</th>
-                                            <th>Given to</th>
-                                            <th>Given By</th>
-                                            <th>Approved By</th>
-                                            <th>Comment</th>
-                                            <th>Actions</th>
+                                            <th>Seen</th>
+                                            <th>Patient</th>
+                                            <th>Doctor</th>
+                                            <th>Current Diagnosis</th>
+                                            <th>HMS Bill</th>
+                                            <th>HMO Bill</th>
+                                            <th>NHIS Bill</th>
+                                            <th>Paid</th>
+                                            <th>Diff</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
                                     <tfoot>
                                         <tr class="">
                                             <td class="fw-semibold"></td>
-                                            <td class="fw-semibold">Total</td>
                                             <td class="fw-semibold"></td>
+                                            <td class="fw-semibold"></td>
+                                            <td class="fw-semibold">Total</td>
                                             <td class="fw-semibold"></td>
                                             <td class="fw-semibold"></td>
                                             <td class="fw-semibold"></td>

@@ -2,7 +2,7 @@ import { Offcanvas, Modal, Toast } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
 import { clearDivValues, getDivData, clearValidationErrors, resetFocusEndofLine, openModals} from "./helpers"
-import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable } from "./tables/billingTables";
+import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable, getBalancingTable } from "./tables/billingTables";
 import { getOutpatientsInvestigationTable } from "./tables/investigationTables";
 import html2pdf  from "html2pdf.js"
 
@@ -15,23 +15,28 @@ window.addEventListener('DOMContentLoaded', function () {
     const newExpenseModal               = new Modal(document.getElementById('newExpenseModal'))
     const updateExpenseModal            = new Modal(document.getElementById('updateExpenseModal'))
 
+    const balancingDateDiv              = document.querySelector('.balancingDateDiv')
+
     const waitingBtn                    = document.querySelector('#waitingBtn')
     const outpatientsInvestigationBtn   = document.querySelector('#outpatientsInvestigationBtn')
     const newExpenseBtn                 = document.querySelector('#newExpenseBtn')
     const saveExpenseBtn                = newExpenseModal._element.querySelector('#saveExpenseBtn')
     const updateExpenseBtn              = updateExpenseModal._element.querySelector('#updateExpenseBtn')
+    const searchBalanceByDateBtn        = balancingDateDiv.querySelector('.searchBalanceByDateBtn')
 
     const outPatientsTab                = document.querySelector('#nav-outPatients-tab')
     const inPatientsTab                 = document.querySelector('#nav-inPatients-tab')
     const ancPatientsTab                = document.querySelector('#nav-ancPatients-tab')
     const openVisitsTab                 = document.querySelector('#nav-openVisits-tab')
     const expensesTab                   = document.querySelector('#nav-expenses-tab')
+    const balancingTab                   = document.querySelector('#nav-balancing-tab')
+
     const changeBillSpan                = billModal._element.querySelector('.changeBill')
     const downloadBillSummaryBtn        = billModal._element.querySelector('#downloadBillSummaryBtn')
     const billSummaryBody               = billModal._element.querySelector('.billSummaryBody')
 
 
-    let inPatientsVisitTable, ancPatientsVisitTable, openVisitsTable, expensesTable
+    let inPatientsVisitTable, ancPatientsVisitTable, openVisitsTable, expensesTable, balancingTable
 
     const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient', 'consulted')
     const waitingTable = getWaitingTable('waitingTable')
@@ -69,6 +74,21 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             expensesTable = getExpensesTable('expensesTable', 'billing')
         }
+    })
+
+    balancingTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#balancingTable' )){
+            $('#balancingTable').dataTable().fnDraw()
+        } else {
+            balancingTable = getBalancingTable('balancingTable')
+        }
+    })
+
+    searchBalanceByDateBtn.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#balancingTable' )){
+            $('#balancingTable').dataTable().fnDestroy()
+        }
+        balancingTable = getBalancingTable('balancingTable', null, balancingDateDiv.querySelector('#balanceDate').value)
     })
 
     waitingBtn.addEventListener('click', function () {

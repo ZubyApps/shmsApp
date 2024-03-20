@@ -93,8 +93,8 @@ class PatientController extends Controller
         return response()->json([
             'data' => $sponsors,
             'draw' => $params->draw,
-            'recordsTotal' => count($sponsors),
-            'recordsFiltered' => count($sponsors)
+            'recordsTotal' => $sponsors->total(),
+            'recordsFiltered' => $sponsors->total()
         ]);
     }
 
@@ -135,8 +135,8 @@ class PatientController extends Controller
         return response()->json([
             'data' => $visits,
             'draw' => $params->draw,
-            'recordsTotal' => count($visits),
-            'recordsFiltered' => count($visits)
+            'recordsTotal' => $visits->total(),
+            'recordsFiltered' => $visits->total()
         ]);
     }
     

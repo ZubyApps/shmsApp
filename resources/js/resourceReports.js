@@ -22,6 +22,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     usedSummaryTab.addEventListener('click', function() {
+        datesDiv.querySelector('#resourcesMonth').value = new Date().toISOString().slice(0,7)
         if ($.fn.DataTable.isDataTable( '#usedSummaryTable' )){
             $('#usedSummaryTable').dataTable().fnDraw()
         } else {

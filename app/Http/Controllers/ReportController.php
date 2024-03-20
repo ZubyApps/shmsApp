@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Services\AccountsReportService;
 use App\Services\CapitationPaymentService;
 use App\Services\DatatablesService;
+use App\Services\ExpenseService;
 use App\Services\HospitalAndOthersReportService;
 use App\Services\InvestigationReportService;
 use App\Services\MedReportService;
 use App\Services\PatientReportService;
 use App\Services\PharmacyReportService;
+use App\Services\PrescriptionService;
 use App\Services\ResourceReportService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -28,7 +30,9 @@ class ReportController extends Controller
         private readonly AccountsReportService $accountsReportService,
         private readonly CapitationPaymentService $capitationPaymentService,
         private readonly ExpenseCategoryController $expenseCategoryController,
-        private readonly UserService $userService
+        private readonly UserService $userService,
+        private readonly PrescriptionService $prescriptionService,
+        private readonly ExpenseService $expenseService
         )
     {
         
@@ -68,8 +72,8 @@ class ReportController extends Controller
         return response()->json([
             'data' => $sponsors,
             'draw' => $params->draw,
-            'recordsTotal' => count($sponsors),
-            'recordsFiltered' => count($sponsors)
+            'recordsTotal' => $sponsors->total(),
+            'recordsFiltered' => $sponsors->total()
         ]);
     }
 
@@ -300,8 +304,22 @@ class ReportController extends Controller
         return response()->json([
             'data' => $visitsSummaries,
             'draw' => $params->draw,
-            'recordsTotal' => count($visitsSummaries),
-            'recordsFiltered' => count($visitsSummaries)
+            'recordsTotal' => $visitsSummaries->total(),
+            'recordsFiltered' => $visitsSummaries->total()
+        ]);        
+    }
+
+    public function loadVisitsSummaryBySponsor(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+        
+        $visitsSummaries = $this->accountsReportService->getVisitsSummaryBySponsor($params, $request);
+        
+        return response()->json([
+            'data' => $visitsSummaries,
+            'draw' => $params->draw,
+            'recordsTotal' => $visitsSummaries->total(),
+            'recordsFiltered' => $visitsSummaries->total()
         ]);        
     }
 
@@ -314,5 +332,63 @@ class ReportController extends Controller
         $loadTransformer = $this->accountsReportService->getPaymentsByPayMethodTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    public function loadVisitsBySponsor(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->accountsReportService->getVisitsBySponsor($params, $request);
+
+        $loadTransformer = $this->accountsReportService->getVisitsBySponsorTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    public function loadYearlyIncomeAndExpense(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+        
+        $totalIncomes   = $this->prescriptionService->totalYearlyIncomeFromPrescription($request);
+        $totalExpenses  = $this->expenseService->totalYearlyExpense($request);
+
+        $incomeArray = [...$totalIncomes, ...$totalExpenses];
+
+        $months = [
+            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'January', 'm' => 1],
+            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'February', 'm' => 2],
+            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'March', 'm' => 3],
+            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'April', 'm' => 4],
+            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'May', 'm' => 5],
+            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'June', 'm' => 6],
+            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'July', 'm' => 7],
+            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'August', 'm' => 8],
+            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'September', 'm' => 9],
+            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'October', 'm' => 10],
+            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'November', 'm' => 11],
+            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'December', 'm' => 12],
+        ];
+
+
+        foreach($incomeArray as $income){
+            foreach($months as $key => $month){
+                if ($month['m'] === $income->month){
+                    $months[$key]['bill'] === 0 && $income->bill ? $months[$key]['bill'] = $income->bill : 0 ;
+
+                    $months[$key]['paid'] === 0 && $income->paid ? $months[$key]['paid'] = $income->paid : 0 ;
+                    
+                    $months[$key]['expense'] = $income->amount ?? 0;
+                }
+            }
+        }
+
+        $total = count($months);
+
+        return response()->json([
+            'data' => $months,
+            'draw' => $params->draw,
+            'recordsTotal' => $total,
+            'recordsFiltered' => $total
+        ]);
     }
 }

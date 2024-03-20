@@ -11,6 +11,7 @@ use App\Services\DatatablesService;
 use App\Services\ExpenseService;
 use App\Services\PaymentService;
 use App\Services\UserService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class BillingController extends Controller
@@ -144,5 +145,29 @@ class BillingController extends Controller
         $loadTransformer = $this->expenseService->getLoadTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
+    }
+
+    public function loadCashPaymentsAndExpenses(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $payment = $this->paymentService->getCashPaymentsByDate($request);
+        $expense = $this->expenseService->getExpensesByDate($request);
+        // dd($expense);
+        $combined[] = [
+            'date' => $request->date ? (new Carbon($request->date))->format('d/m/Y') : (new Carbon())->format('d/m/Y'),
+            'id' => $payment?->id,
+            'totalCash' => $payment?->totalCash,
+            'totalExpense' => $expense?->totalExpense
+        ];
+
+
+        return response()->json([
+            'data' => $combined,
+            'draw' => $params->draw,
+            'recordsTotal' => count($combined),
+            'recordsFiltered' => count($combined)
+        ]);
+
     }
 }
