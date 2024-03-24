@@ -54,7 +54,6 @@ return new class extends Migration
             $table->string('weight')->nullable();
             $table->string('cs_surgeon')->nullable();
             $table->string('cs_anaesthetist')->nullable();
-            $table->foreignIdFor(Consultation::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();

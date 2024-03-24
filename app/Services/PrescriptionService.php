@@ -9,6 +9,7 @@ use App\Models\MedicationChart;
 use App\Models\NursingChart;
 use App\Models\Prescription;
 use App\Models\Resource;
+use App\Models\ThirdParty;
 use App\Models\User;
 use App\Models\Visit;
 use Carbon\Carbon;
@@ -163,6 +164,7 @@ class PrescriptionService
                 'staff'             => $prescription->resultBy->username ?? '',
                 'staffFullName'     => $prescription->resultBy?->nameInFull() ?? '',
                 'doc'               => $prescription->doc,
+                'thirdParty'        => ThirdParty::whereRelation('thirdPartyServies','prescription_id', $prescription->id)->first()?->short_name ?? ''
             ];
          };
     }

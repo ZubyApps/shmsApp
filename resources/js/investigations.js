@@ -1,12 +1,13 @@
 import { Offcanvas, Modal } from "bootstrap";
 import $ from 'jquery';
 import http from "./http";
-import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, loadingSpinners, clearValidationErrors, openModals, populatePatientSponsor, displayItemsList, getDatalistOptionId, handleValidationErrors} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, textareaHeightAdjustment, loadingSpinners, clearValidationErrors, openModals, populatePatientSponsor, displayItemsList, getDatalistOptionId, handleValidationErrors} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getPatientsVisitsByFilterTable, getInpatientsInvestigationsTable, getOutpatientsInvestigationTable } from "./tables/investigationTables";
 import { getLabTableByConsultation } from "./tables/doctorstables";
 import { getBulkRequestTable } from "./tables/pharmacyTables";
 import html2pdf  from "html2pdf.js"
+$.fn.dataTable.ext.errMode = 'throw';
 
 window.addEventListener('DOMContentLoaded', function () {
     const treatmentDetailsModal         = new Modal(document.getElementById('treatmentDetailsModal'))
@@ -53,6 +54,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable')
 
     const outPatientsVisitsTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient')
+    $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #inpatientInvestigationsTable, #outpatientInvestigationsTable, #investigationsTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
 
     inpatientsInvestigationsTable.on('draw.init', function() {
         const count = inpatientsInvestigationsTable.rows().count()
@@ -170,7 +172,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const tableId = investigationsModal._element.querySelector('.investigationsTable').id
                 const visitId = investigationsBtn.getAttribute('data-id')
                 investigationsModal._element.querySelector('#patient').value = investigationsBtn.getAttribute('data-patient')
-                investigationsModal._element.querySelector('#sponsorName').value = investigationsBtn.getAttribute('data-sponsor')
+                investigationsModal._element.querySelector('#sponsorName').value = investigationsBtn.getAttribute('data-sponsor') + ' - ' + investigationsBtn.getAttribute('data-sponsorcat')
     
                 getLabTableByConsultation(tableId, investigationsModal._element, viewer, null, visitId)
     
@@ -337,7 +339,6 @@ window.addEventListener('DOMContentLoaded', function () {
         http.patch(`/investigations/create/${prescriptionId}`, { ...data }, { "html": addResultDiv })
         .then((response) => {
             if (response.status >= 200 || response.status <= 300) {
-
                 clearDivValues(addResultDiv)
                 clearValidationErrors(addResultDiv)
 

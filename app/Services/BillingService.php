@@ -9,12 +9,16 @@ use App\Models\Consultation;
 use App\Models\Payment;
 use App\Models\Prescription;
 use App\Models\Resource;
+use App\Models\ThirdParty;
+use App\Models\ThirdPartyService;
 use App\Models\User;
 use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
+use function Pest\Laravel\get;
 
 class BillingService
 {
@@ -209,6 +213,7 @@ class BillingService
                 'payMethods'            => $this->payMethodService->list(),
                 'notBilled'             => $visit->prescriptions->where('qty_billed', null)->count(),
                 'prescriptions'         => $visit->prescriptions->map(fn(Prescription $prescription) => [
+                    'prescriptionId'    => $prescription->id,
                     'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                     'prescribedBy'      => $prescription->user->username,
                     'description'       => $prescription->resource->unit_description,
@@ -223,6 +228,8 @@ class BillingService
                     'statusBy'          => $prescription->approvedBy?->username ?? $prescription->rejectedBy?->username ?? '',
                     'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
                     'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
+                    'isInvestigation'   => $prescription->resource->category == 'Investigations',
+                    'thirdParty'        => ThirdParty::whereRelation('thirdPartyServies','prescription_id', $prescription->id)->first()?->short_name ?? ''
                 ]),
                 
             ];

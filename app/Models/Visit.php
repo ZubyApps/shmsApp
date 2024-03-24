@@ -136,7 +136,7 @@ class Visit extends Model
         return $this->hasMany(MedicalReport::class);
     }
 
-    public function nursesReport() 
+    public function nursesReports() 
     {
         return $this->hasMany(NursesReport::class);
     }
@@ -144,6 +144,11 @@ class Visit extends Model
     public function antenatalRegisteration(): HasOne
     {
         return $this->hasOne(AntenatalRegisteration::class);
+    }
+
+    public function patientsFiles() 
+    {
+        return $this->hasMany(PatientsFile::class);
     }
 
     public function totalHmsBills()

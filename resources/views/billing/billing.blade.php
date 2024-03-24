@@ -9,6 +9,7 @@
 @include('billing.billModal', ['title' => "", 'isSummary' => true, 'id' => 'billModal'])
 @include('billing.expenseModal', ['title' => "New Expense", 'isUpdate' => false, 'id' => 'newExpenseModal'])
 @include('billing.expenseModal', ['title' => "Update Expense", 'isUpdate' => true, 'id' => 'updateExpenseModal'])
+@include('billing.thirdPartyServiceModal', ['title' => "Initiate Third Party Service", 'id' => 'thirdPartyServiceModal'])
 
     <div class="container mt-5 bg-white">
 

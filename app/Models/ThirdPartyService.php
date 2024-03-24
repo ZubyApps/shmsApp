@@ -5,20 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DispenseResource extends Model
+class ThirdPartyService extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
 
-    public function consultation()
+    public function thirdParty()
     {
-        return $this->belongsTo(Consultation::class);
+        return $this->belongsTo(ThirdParty::class);
     }
 
-    public function resource()
+    public function prescription()
     {
-        return $this->belongsTo(Resource::class);
+        return $this->belongsTo(Prescription::class);
     }
 
     public function user()

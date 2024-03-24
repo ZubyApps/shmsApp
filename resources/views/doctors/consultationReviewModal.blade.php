@@ -93,6 +93,81 @@
                         </div>
                         <div id="consultationReviewDiv" data-bs-spy="scroll" tabindex="0" data-bs-smooth-scroll="true">
                         </div>
+                        @if (!$isAnc)   
+                        <div class="my-2 form-control">
+                            <span class="fw-bold text-primary"> Delivery Note </span>
+                            <div class="row overflow-auto m-1">
+                                <table id="deliveryNoteTable" class="table table-sm deliveryNoteTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Time of Admission</th>
+                                            <th>Time of Delivery</th>
+                                            <th>Mode of Delivery</th>
+                                            <th>Female</th>
+                                            <th>Male</th>
+                                            <th>EBL</th>
+                                            <th>Nurse</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="mb-2 form-control">
+                            <x-form-span>Surgery Note</x-form-span>
+                            <div class="text-start py-3">
+                                <button type="button" id="newSurgeryBtn" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle me-1"></i>
+                                    Surgery
+                                </button>
+                            </div>
+                            <div class="row overflow-auto m-1">
+                                <table id="surgeryNoteTable" class="table table-sm surgeryNoteTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Operation</th>
+                                            <th>Aneasthesia</th>
+                                            <th>Surgeon</th>
+                                            <th>Surgeons Notes</th>
+                                            <th>PostOp Notes</th>
+                                            <th>Saved By</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        @endif
+                        <div class="mb-2 form-control">
+                            <x-form-span>Files/Documents</x-form-span>
+                            <div class="text-start py-3">
+                                <button type="button" id="fileBtn" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle me-1"></i>
+                                    File
+                                    <i class="bi bi-file-earmark-medical"></i>
+                                </button>
+                            </div>
+                            <div class="row overflow-auto m-1">
+                                <table id="patientsFileTable{{ $isAnc ? 'AncConReview' : 'ConReview' }}" class="table align-middle table-sm bg-primary">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>File Name</th>
+                                            <th>Third Party</th>
+                                            <th>Comment</th>
+                                            <th>File</th>
+                                            <th>UploadedBy</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
                         @if ($isAnc)
                         <x-bill-summary :number="'AncConReview'"></x-bill-summary> @else <x-bill-summary :number="'ConReview'"></x-bill-summary> @endif
                     </div>

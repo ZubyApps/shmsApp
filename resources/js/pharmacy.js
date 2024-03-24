@@ -8,6 +8,7 @@ import { getLabTableByConsultation, getMedicationsByFilter, getVitalSignsTableBy
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getbillingTableByVisit } from "./tables/billingTables";
 import { getEmergencyTable } from "./tables/nursesTables";
+$.fn.dataTable.ext.errMode = 'throw';
 
 
 window.addEventListener('DOMContentLoaded', function () {

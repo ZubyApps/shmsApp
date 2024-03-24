@@ -34,7 +34,6 @@ class StoreSurgeryNoteRequest extends FormRequest
             'aneasthetistsNotes'=> ['required'],
             'postOperationNotes'=> ['required'],
             'immediatePostOp'   => ['required'],
-            'conId'             => ['required', 'numeric', 'exists:'.Consultation::class.',id'],
             'visitId'           => ['required', 'numeric', 'exists:'.Visit::class.',id'],
         ];
     }

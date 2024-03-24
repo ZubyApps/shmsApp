@@ -28,7 +28,7 @@ const getWaitingTable = (tableId) => {
                     if (row.vitalSigns < 1){
                         return `
                             <div class="d-flex flex-">
-                                <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                                <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                                     <i class="bi bi-plus-square-fill"></i>
                                 </button>
                             </div>`
@@ -40,7 +40,7 @@ const getWaitingTable = (tableId) => {
                                 </a>
                                     <ul class="dropdown-menu">
                                     <li>
-                                        <a role="button" class="dropdown-item vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                                        <a role="button" class="dropdown-item vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                                             <i class="bi bi-plus-square-fill text-primary"></i> Add
                                         </a>
                                     </li>
@@ -74,7 +74,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                 const chartables = row.chartableMedications
                     return `
                     <div class="d-flex flex">
-                        <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewMedicationBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }">
+                        <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewMedicationBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                             ${(chartables < 1 ? '' : chartables) + ' ' + row.givenCount + '/' + row.doseCount}
                         </button>
                     </div>`
@@ -84,8 +84,8 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                 const chartables = row.otherChartables
                 const isAnc = row.patientType == 'ANC'
                         return `
-                        <div class="d-flex flex" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }" data-patientid="${ row.patientId }" data-ancregid="${ row.ancRegId }">
-                                <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewOtherPrescriptionsBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }">
+                        <div class="d-flex flex" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-patientid="${ row.patientId }" data-ancregid="${ row.ancRegId }" data-sponsorcat="${row.sponsorCategory}">
+                                <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewOtherPrescriptionsBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${row.sponsor}" data-sponsorcat="${row.sponsorCategory}">
                                     ${(chartables < 1 ? '' : chartables) + ' ' + row.doneCount + '/' + row.scheduleCount}
                                 </button>
                                 ${ row.ancRegId ? 
@@ -117,14 +117,14 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                     if (row.ancVitalSigns < 1){
                         return `
                             <div class="d-flex flex-">
-                                <button class=" btn btn-outline-${row.ancRegId ? 'primary ancVitalSignsBtn' : 'secondary'}  tooltip-test" title="${row.ancRegId ? 'add vital signs' : 'no anc registeration'}" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-ancregid="${row.ancRegId}" data-patienttype="${ row.patientType }" id="ancVitalSignsBtn">
+                                <button class=" btn btn-outline-${row.ancRegId ? 'primary ancVitalSignsBtn' : 'secondary'}  tooltip-test" title="${row.ancRegId ? 'add vital signs' : 'no anc registeration'}" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patienttype="${ row.patientType }" id="ancVitalSignsBtn">
                                 ${ row.ancRegId ? '<i class="bi bi-plus-square-fill"></i>' :'<i class="bi bi-x-square-fill"></i>'}
                                 </button>
                             </div>`
                         } else {
                             return `
                             <div class="d-flex flex-">
-                                <button class=" btn btn-outline-primary ancVitalSignsBtn tooltip-test px-2" title="Add Vitals Signs" data-id="${ row.id }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-patienttype="${ row.patientType }" id="ancVitalSignsBtn">
+                                <button class=" btn btn-outline-primary ancVitalSignsBtn tooltip-test px-2" title="Add Vitals Signs" data-id="${ row.id }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-patienttype="${ row.patientType }" id="ancVitalSignsBtn">
                                 <i class="bi bi-check-circle-fill">${row.ancVitalSigns}</i>
                                 </button>
                             </div>`
@@ -133,14 +133,14 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                         if (row.vitalSigns < 1){
                             return `
                                 <div class="d-flex flex-">
-                                    <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                                    <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                                         <i class="bi bi-plus-square-fill"></i>
                                     </button>
                                 </div>`
                             } else {
                                 return `
                                 <div class="d-flex flex-">
-                                    <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test px-2" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                                    <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test px-2" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                                     <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
                                     </button>
                                 </div>`
@@ -662,11 +662,11 @@ const getUpcomingNursingChartsTable = (tableId, button, span) => {
     return allNursingChartsTable
 }
 
-const getDeliveryNoteTable = (tableId, conId, view) => {
-    return new DataTable('#'+tableId, {
+const getDeliveryNoteTable = (tableId, visitId, view, modal) => {
+    const deliveryNoteTable = new DataTable('#'+tableId, {
         serverSide: true,
         ajax:   {url: '/deliverynote/load/details', data: {
-            'conId': conId,
+            'visitId': visitId,
         }},
         orderMulti: true,
         searching:false,
@@ -701,6 +701,12 @@ const getDeliveryNoteTable = (tableId, conId, view) => {
             },
         ]
     });
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        deliveryNoteTable.destroy()
+    })
+
+    return deliveryNoteTable
 }
 
 const getAncVitalSignsTable = (tableId, ancRegId, modal, viewer) => {

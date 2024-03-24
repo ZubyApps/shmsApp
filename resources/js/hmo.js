@@ -9,6 +9,7 @@ import { getVitalsignsChartByVisit } from "./charts/vitalsignsCharts";
 import { getbillingTableByVisit } from "./tables/billingTables";
 import { getAncVitalSignsTable, getOtherPrescriptionsByFilterNurses } from "./tables/nursesTables";
 import html2pdf  from "html2pdf.js"
+$.fn.dataTable.ext.errMode = 'throw';
 
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -233,7 +234,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     const visitId = patientBillBtn.getAttribute('data-id')
                     const hmoDoneBy = patientBillBtn.getAttribute('data-hmodoneby')
                     makeBillModal._element.querySelector('#patient').value = patientBillBtn.getAttribute('data-patient')
-                    makeBillModal._element.querySelector('#sponsor').value = patientBillBtn.getAttribute('data-sponsor')
+                    makeBillModal._element.querySelector('#sponsor').value = patientBillBtn.getAttribute('data-sponsor') + ' - ' + patientBillBtn.getAttribute('data-sponsorcat')
                     makeBillModal._element.querySelector('#markAsSentBtn').setAttribute('data-id', visitId)
                     makeBillModal._element.querySelector('#markAsSentBtn').innerHTML = hmoDoneBy === 'null' ? '<i class="bi bi-check-circle me-1"></i> Mark as Sent' : 'Sent (Unmark)'
                     visitPrescriptionsTable = getVisitPrescriptionsTable(tableId, visitId, makeBillModal)
@@ -245,7 +246,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     const tableId = investigationsModal._element.querySelector('.investigationsTable').id
                     const visitId = investigationsBtn.getAttribute('data-id')
                     investigationsModal._element.querySelector('#patient').value = investigationsBtn.getAttribute('data-patient')
-                    investigationsModal._element.querySelector('#sponsorName').value = investigationsBtn.getAttribute('data-sponsor')
+                    investigationsModal._element.querySelector('#sponsorName').value = investigationsBtn.getAttribute('data-sponsor') + ' - ' + investigationsBtn.getAttribute('data-sponsorcat')
         
                     getLabTableByConsultation(tableId, investigationsModal._element, viewer, null, visitId)
         
@@ -276,7 +277,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 if (medicalReportBtn){
                     const visitId = medicalReportBtn.getAttribute('data-id')
                     medicalReportListModal._element.querySelector('#patient').value = medicalReportBtn.getAttribute('data-patient')
-                    medicalReportListModal._element.querySelector('#sponsorName').value = medicalReportBtn.getAttribute('data-sponsor')
+                    medicalReportListModal._element.querySelector('#sponsorName').value = medicalReportBtn.getAttribute('data-sponsor') + ' - ' + medicalReportBtn.getAttribute('data-sponsorcat')
                     medicalReportListModal._element.querySelector('#age').value = medicalReportBtn.getAttribute('data-age')
                     medicalReportListModal._element.querySelector('#sex').value = medicalReportBtn.getAttribute('data-sex')
                     medicalReportTable = getMedicalReportTable('medicalReportTable', visitId, medicalReportListModal._element)
@@ -348,13 +349,11 @@ window.addEventListener('DOMContentLoaded', function () {
                         if (response.status == 222){
                             table.draw()
                             alert(response.data)
-                            table.on('draw', removeDisabled(approvalFieldset))
-                            
+                            table.on('draw', removeDisabled(approvalFieldset))   
                         }
                     })
                         .catch((error) => {
                             console.log(error.response.data)
-                            alert(error.response.data)
                             table.on('draw', removeDisabled(approvalFieldset))
                             
                         })
@@ -462,7 +461,7 @@ window.addEventListener('DOMContentLoaded', function () {
             verifyBtn.setAttribute('data-id', verifyPatientBtn.getAttribute('data-id'))
             verifyBtn.setAttribute('data-table', verifyPatientBtn.getAttribute('data-table'))
             verifyModal._element.querySelector('#patientId').value = verifyPatientBtn.getAttribute('data-patient')
-            verifyModal._element.querySelector('#sponsorName').value = verifyPatientBtn.getAttribute('data-sponsor')
+            verifyModal._element.querySelector('#sponsorName').value = verifyPatientBtn.getAttribute('data-sponsor') + ' - ' + verifyPatientBtn.getAttribute('data-sponsorcat')
             verifyModal._element.querySelector('#staffId').value = verifyPatientBtn.getAttribute('data-staffid')
             verifyModal._element.querySelector('#phoneNumber').value = verifyPatientBtn.getAttribute('data-phone')
             verifyModal.show()
@@ -472,7 +471,7 @@ window.addEventListener('DOMContentLoaded', function () {
             saveNewSponsorBtn.setAttribute('data-id', changeSponsorBtn.getAttribute('data-id'))
             saveNewSponsorBtn.setAttribute('data-table', changeSponsorBtn.getAttribute('data-table'))
             changeSponsorModal._element.querySelector('#patientId').value = changeSponsorBtn.getAttribute('data-patient')
-            changeSponsorModal._element.querySelector('#sponsorName').value = changeSponsorBtn.getAttribute('data-sponsor')
+            changeSponsorModal._element.querySelector('#sponsorName').value = changeSponsorBtn.getAttribute('data-sponsor') + ' - ' + changeSponsorBtn.getAttribute('data-sponsorcat')
             changeSponsorModal._element.querySelector('#staffId').value = changeSponsorBtn.getAttribute('data-staffid')
             changeSponsorModal._element.querySelector('#phoneNumber').value = changeSponsorBtn.getAttribute('data-phone')
             changeSponsorModal.show()

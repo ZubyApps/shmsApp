@@ -148,8 +148,8 @@ const getResourceTable = (tableId) => {
                                     <a class="btn btn-outline-${!row.isActive ? 'danger' : 'primary'} toggleActiveStatusBtn" data-id="${ row.id }">
                                     ${!row.isActive ? '<i class="bi bi-x-square-fill tooltip-test" title="inactive"></i>' : '<i class="bi bi-check-square-fill tooltip-test" title="active"></i>'}
                                     </a>
-                                </div>
-                                <div class="dropdown ms-1">
+                            </div>
+                            <div class="dropdown ms-1">
                                 <a class="btn btn-outline-${!row.isActive ? 'danger' : 'primary'} tooltip-test text-decoration-none" title="options" data-bs-toggle="dropdown"  >
                                 <i class="bi bi-gear" role="button"></i>
                                 </a>

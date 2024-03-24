@@ -35,7 +35,6 @@ class StoreDeliveryNoteRequest extends FormRequest
             'female'            => ['required_if:male,null'],
             'male'              => ['required_if:female,null'],
             'ebl'               => ['required'],
-            'conId'             => ['required', 'numeric', 'exists:'.Consultation::class.',id'],
             'visitId'           => ['required', 'numeric', 'exists:'.Visit::class.',id'],
         ];
     }

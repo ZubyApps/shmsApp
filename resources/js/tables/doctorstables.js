@@ -24,7 +24,7 @@ const getOutpatientsVisitTable = (tableId, filter) => {
             {data: "30dayCount"},
             {data: row =>  `
                         <div class="d-flex justify-content-center">
-                            <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                            <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                                 ${row.labPrescribed}<i class="bi bi-eyedropper"></i>${row.labDone}
                             </button>
                         </div>`                
@@ -32,7 +32,7 @@ const getOutpatientsVisitTable = (tableId, filter) => {
             {data: row => function () {
                    return `
                     <div class="d-flex flex-">
-                        <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                        <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                         <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
                         </button>
                     </div>`
@@ -691,11 +691,11 @@ const getOtherPrescriptionsByFilter = (tableId, conId, modal, visitId) => {
     return treatmentTable
 }
 
-const getSurgeryNoteTable = (tableId, conId, view) => {
-    return new DataTable('#'+tableId, {
+const getSurgeryNoteTable = (tableId, visitId, view, modal) => {
+    const surgeryNoteTable = new DataTable('#'+tableId, {
         serverSide: true,
         ajax:   {url: '/surgerynote/load/details', data: {
-            'conId': conId,
+            'visitId': visitId,
         }},
         orderMulti: true,
         searching:false,
@@ -729,6 +729,12 @@ const getSurgeryNoteTable = (tableId, conId, view) => {
             },
         ]
     });
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        surgeryNoteTable.destroy()
+    })
+
+    return surgeryNoteTable
 }
 
 const getMedicalReportTable = (tableId, visitId, modal, isDoctor) => {
@@ -775,4 +781,45 @@ const getMedicalReportTable = (tableId, visitId, modal, isDoctor) => {
     return medicalReportTable
 }
 
-export {getOutpatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getSurgeryNoteTable, getMedicalReportTable}
+const getPatientsFileTable = (tableId, visitId, modal) => {
+    const patientsFileTable = new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:   {url: '/patientsfiles/load/files', data: {
+            'visitId': visitId,
+        }},
+        orderMulti: true,
+        searching:true,
+        lengthChange: true,
+        language: {
+            emptyTable: 'No file/document'
+        },
+        columns: [
+            {data: "createdAt"},
+            {data: "filename"},
+            {data: "thirdParty"},
+            {data: "comment"},
+            {data: row =>  `<span class="position-relative"><a href="/patientsfiles/download/${row.id}" target="blank">
+                                <i class="bi bi-file-earmark-text download-receipt text-primary fs-4"></i></a>
+                            </span>`},
+            {data: "uploadedBy"},
+            {data: row => function () {
+                return `
+                <div class="d-flex flex- ${row.closed ? 'd-none' : ''}">
+                    <button type="submit" class="btn btn-outline-primary deleteFileBtn" title="delete file" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+            `
+                }
+            },
+        ]
+    });
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        patientsFileTable.destroy()
+    })
+
+    return patientsFileTable
+}
+
+export {getOutpatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getSurgeryNoteTable, getMedicalReportTable, getPatientsFileTable}

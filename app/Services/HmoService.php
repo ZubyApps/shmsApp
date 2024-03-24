@@ -75,6 +75,7 @@ class HmoService
                 'sex'               => $visit->patient->sex,
                 'age'               => $visit->patient->age(),
                 'sponsor'           => $visit->sponsor->name,
+                'sponsorCategory'   => $visit->sponsor->category_name,
                 'doctor'            => $visit->doctor->username ?? '',
                 'codeText'          => $visit->verification_code,
                 'phone'             => $visit->patient->phone,
@@ -128,7 +129,6 @@ class HmoService
             ->where('consulted', '!=', null)
             ->where('closed', false)
             ->where('hmo_done_by', null)
-            // ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->where(function (Builder $query) {
@@ -150,10 +150,6 @@ class HmoService
                         ->orWhereRelation('sponsor', 'category_name', 'NHIS')
                         ->orWhereRelation('sponsor', 'category_name', 'Retainership');
                     })
-                    // ->where(function (Builder $query) {
-                    //     $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
-                    //     ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
-                    // })
                     ->where(function (Builder $query) {
                         $query->where('admission_status', '=', 'Inpatient')
                         ->orWhere('admission_status', '=', 'Observation');
@@ -204,6 +200,7 @@ class HmoService
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
                 'sponsor'           => $visit->sponsor->name,
+                'sponsorCategory'   => $visit->sponsor->category_name,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
                 'patientType'       => $visit->patient->patient_type,
@@ -214,7 +211,6 @@ class HmoService
                                         ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
                                         ->where('result_date','!=', null)
                                         ->count(),
-                'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
@@ -283,6 +279,7 @@ class HmoService
                 'id'                => $prescription->id,
                 'patient'           => $prescription->visit->patient->patientId(),
                 'sponsor'           => $prescription->visit->sponsor->name,
+                'sponsorCategory'   => $prescription->visit->sponsor->category_name,
                 'doctor'            => $prescription->user->username,
                 'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                 'diagnosis'         => $prescription->consultation?->icd11_diagnosis ?? 

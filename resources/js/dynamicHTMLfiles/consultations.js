@@ -1,4 +1,4 @@
-import { deliveryNotes, surgeryNotes, files, updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses, otherPrescriptions, otherPrescriptionsNurses} from "./partialHTMLS"
+import { updateInvestigationAndManagement, investigations, review, consultation, AncConsultation, medicationAndTreatment, medicationAndTreatmentNurses, otherPrescriptions, otherPrescriptionsNurses} from "./partialHTMLS"
 
 const regularReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone, closed, isHistory = 0) => {
     return `
@@ -14,33 +14,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                             ${viewer == 'doctor' ||  viewer == 'hmo' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
                             ${viewer == 'doctor' ||  viewer == 'hmo' ? otherPrescriptions(line) : viewer == 'nurse' ? otherPrescriptionsNurses(line) : ''}
                             ${viewer == 'doctor' ? updateInvestigationAndManagement(length, iteration, line, isDoctorDone, closed) : ''}
-                            ${isDoctorDone || closed ? '' :
-                            `<div class="d-flex justify-content-start my-3 gap-2" >
-                                ${viewer == 'doctor' ? `
-                                <button type="button" id="fileBtn" data-id="${line.id}" data-visitid="${line.visitId}" class="btn btn-outline-primary">
-                                    File
-                                    <i class="bi bi-file-earmark-medical"></i>
-                                </button>
-                                <button type="button" id="newSurgeryBtn" data-id="${line.id}" data-visitid="${line.visitId}" class="btn btn-outline-primary">
-                                    Surgery 
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>` : ''}
-                                ${length == iteration && (viewer == 'nurse') ? `
-                                <button type="button" id="newDeliveryNoteBtn" class="btn btn-outline-primary ${line.deliveryNotes ? 'd-none' : ''}" data-id="${line.id}" data-visitid="${line.visitId}">
-                                    Delivery Note
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>` : ''}
-                            </div>` }
                             <div class="extraInfoDiv">
-                                ${viewer == 'doctor' ? `
-                                <div class="my-2 form-control">
-                                    <span class="fw-bold text-primary"> Other Documents </span>
-                                    <div class="row overflow-auto m-1">
-                                        ${ line.file === undefined ? '<td>No files</td>' : files(line.file)}
-                                    </div>
-                                </div> ` : ''}
-                                ${viewer == 'nurse' || viewer == 'doctor' ? surgeryNotes(line) : ''}
-                                ${viewer == 'nurse' || viewer == 'doctor' ? deliveryNotes(line): ''}
                                 ${length == iteration && viewer == 'doctor' ? 
                                 `<div class="d-flex justify-content-end my-2">                                  
                                     ${closed || isHistory ? '' : 
@@ -61,7 +35,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                 `
 }
 
-const AncPatientReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone, closed) => {
+const AncPatientReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone, closed, isHistory = 0) => {
 
     return `
                 <div class="btn btn-primary d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseConsultationBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${iteration}">
@@ -77,29 +51,10 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
                             ${viewer == 'doctor' ||  viewer == 'hmo' ? medicationAndTreatment(line) : viewer == 'nurse' ? medicationAndTreatmentNurses(line) : ''}
                             ${viewer == 'doctor' ||  viewer == 'hmo' ? otherPrescriptions(line) : viewer == 'nurse' ? otherPrescriptionsNurses(line) : ''}
                             ${viewer == 'doctor' ? updateInvestigationAndManagement(length, iteration, line, isDoctorDone, closed) : ''}
-
-                            ${isDoctorDone ? '' :
-                            `<div class="d-flex justify-content-start my-3 gap-2">
-                                ${!viewer ? `
-                                    <button type="button" id="fileBtn" data-id="${line.id}" data-visitid="${line.visitId}" class="btn btn-outline-primary">
-                                        File
-                                        <i class="bi bi-file-earmark-medical"></i>
-                                    </button>` : ''}
-                            </div>`}
                             <div class="extraInfoDiv" >
-                                ${!viewer ? `
-                                    <div class="my-2 form-control">
-                                        <span class="fw-bold text-primary"> Other Documents </span>
-                                        <div class="row overflow-auto m-1">
-                                            ${ line.file === undefined ? '<td>No files</td>' : files(line.file)}
-                                        </div>
-                                    </div>` : ''}
                                 ${length == iteration && viewer == 'doctor' ? 
                                 `<div class="d-flex justify-content-between my-2">
-                                    <button type="button" id="${closed ? 'open' : 'close'}VisitBtn" data-id="${line.id}" class="btn btn${closed ? '' : '-outline'}-primary">
-                                        ${closed ? 'Open Visit? <i class="bi bi-lock-fill"></i>' : 'Close Visit? <i class="bi bi-unlock-fill"></i>'}
-                                    </button>
-                                    ${closed ? '' : 
+                                    ${closed || isHistory ? '' : 
                                     `<button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" data-patienttype="Regular" class="btn btn-outline-primary">
                                         <i class="bi bi-trash"></i>
                                         Delete
@@ -118,5 +73,3 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
 }
 
 export{regularReviewDetails, AncPatientReviewDetails}
-
-// ${closed ? '' : viewer == 'nurse' && length == iteration ? updateAdmissionStatus(line, iteration) : ''}

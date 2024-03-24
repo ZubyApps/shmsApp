@@ -82,6 +82,11 @@ class Prescription extends Model
         return $this->hasMany(NursingChart::class);
     }
 
+    public function thirdPartyServices() 
+    {
+        return $this->hasMany(ThirdPartyService::class);
+    }
+
     public function forPharmacy(int $conId)
     {
         return $this->where('consultation_id', $conId)

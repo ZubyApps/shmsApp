@@ -32,7 +32,6 @@ Class DeliveryNoteService
             'male'                  => $data->male,
             'ebl'                   => $data->ebl,
             'note'                  => $data->note,
-            'consultation_id'       => $data->conId,
             'visit_id'              => $data->visitId
         ]);
 
@@ -67,13 +66,14 @@ Class DeliveryNoteService
 
         if (! empty($params->searchTerm)) {
             return $this->deliveryNote
-                        ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->where('visit_id', $data->visitId)
+                        ->where('mode_of_delivery', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return $this->deliveryNote
-                    ->where('consultation_id', $data->conId)
+                    ->where('visit_id', $data->visitId)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 

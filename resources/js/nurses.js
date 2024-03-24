@@ -4,10 +4,11 @@ import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import { getWaitingTable, getPatientsVisitsByFilterTable, getNurseMedicationsByFilter, getMedicationChartByPrescription, getUpcomingMedicationsTable, getDeliveryNoteTable, getAncVitalSignsTable, getUpcomingNursingChartsTable, getOtherPrescriptionsByFilterNurses, getPrescriptionChartByPrescription, getEmergencyTable, getNursesReportTable } from "./tables/nursesTables";
-import { getVitalSignsTableByVisit, getLabTableByConsultation, getSurgeryNoteTable, getPrescriptionTableByConsultation } from "./tables/doctorstables";
+import { getVitalSignsTableByVisit, getLabTableByConsultation, getSurgeryNoteTable, getPrescriptionTableByConsultation, getPatientsFileTable } from "./tables/doctorstables";
 import { getbillingTableByVisit } from "./tables/billingTables";
 import { getBulkRequestTable } from "./tables/pharmacyTables";
 import { visitDetails } from "./dynamicHTMLfiles/visits";
+$.fn.dataTable.ext.errMode = 'throw';
 
 window.addEventListener('DOMContentLoaded', function () {
     const upcomingMedicationsCanvas         = new Offcanvas(document.getElementById('upcomingMedicationsoffcanvas'))
@@ -56,6 +57,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveGivenMedicationBtn    = giveMedicationModal._element.querySelector('.saveGivenMedicationBtn')
     const savePrescriptionChartBtn  = chartPrescriptionModal._element.querySelector('#savePrescriptionChartBtn')
     const saveServiceDoneBtn        = serviceDoneModal._element.querySelector('.saveServiceDoneBtn')
+    const newDeliveryNoteBtn        = treatmentDetailsModal._element.querySelector('#newDeliveryNoteBtn')
     const createDeliveryNoteBtn     = newDeliveryNoteModal._element.querySelector('#createBtn')
     const saveDeliveryNoteBtn       = updateDeliveryNoteModal._element.querySelector('#saveBtn')
     const registerAncBtn            = newAncRegisterationModal._element.querySelector('#registerAncBtn') 
@@ -80,12 +82,13 @@ window.addEventListener('DOMContentLoaded', function () {
     bmiCalculator(document.querySelectorAll('#height, .weight'))
     lmpCalculator(document.querySelectorAll('#lmp'), document.querySelectorAll('#registerationDiv'))
 
-    let outPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable, emergencyTable, nursesReportTable
+    let outPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable, emergencyTable, nursesReportTable, surgeryNoteTable, deliveryNoteTable
 
     const inPatientsVisitTable = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient')
     const waitingTable                  = getWaitingTable('waitingTable')
     const upcomingMedicationsTable      = getUpcomingMedicationsTable('upcomingMedicationsTable', inpatientsMedChartBtn, inpatientMedicationBadgeSpan)
     const upcomingNursingChartsTable    = getUpcomingNursingChartsTable('upcomingNursingChartsTable', nursingChartBtn, inpatientNursingBadgeSpan)
+    $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #bulkRequestsTable, #emergencyTable, #nursesReportTable, #upcomingMedicationsTable, #upcomingNursingChartsTable, #waitingTable, #medicationsTable, #otherPrescriptionsTable, #ancVitalSignsTable, #vitalSignsTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
 
     inPatientsTab.addEventListener('click', function() {
         inPatientsVisitTable.draw()
@@ -191,7 +194,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const [visitId, patientType, ancRegId, closed] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-patientType'), consultationDetailsBtn.getAttribute('data-ancregid'), +consultationDetailsBtn.getAttribute('data-closed')] 
                 const isAnc = patientType === 'ANC'
                 const [modal, div, displayFunction, vitalSignsTable, id, suffixId] = isAnc ? [ancTreatmentDetailsModal, ancTreatmentDiv, AncPatientReviewDetails, getAncVitalSignsTable, ancRegId, 'AncConDetails'] : [treatmentDetailsModal, regularTreatmentDiv, regularReviewDetails, getVitalSignsTableByVisit, visitId, 'ConDetails']
-                
+                createDeliveryNoteBtn.setAttribute('data-visitid', visitId)
                 closed ? modal._element.querySelector('.addVitalsignsDiv').classList.add('d-none') : modal._element.querySelector('.addVitalsignsDiv').classList.remove('d-none')
                 http.get(`/consultation/consultations/${visitId}`)
                     .then((response) => {
@@ -211,6 +214,8 @@ window.addEventListener('DOMContentLoaded', function () {
                                 div.innerHTML += displayFunction(iteration, getOrdinal, count, consultations.length, line, viewer, false, closed)
                             })
                             vitalSignsTable(`#vitalSignsTableNurses${suffixId}`, id, modal)
+                            deliveryNoteTable   = getDeliveryNoteTable('deliveryNoteTable', visitId, true, modal._element)
+                            surgeryNoteTable    = getSurgeryNoteTable('surgeryNoteTable', visitId, false, modal._element)
                             getbillingTableByVisit(`billingTable${suffixId}`, visitId, modal._element)
                             modal.show()
                         }
@@ -345,43 +350,88 @@ window.addEventListener('DOMContentLoaded', function () {
     newNursesReportBtn.addEventListener('click', function() {
         newNursesReportTemplateModal.show()
     })
+    newDeliveryNoteBtn.addEventListener('click', function() {
+        newDeliveryNoteModal.show()
+    })
 
-    document.querySelector('#nursesReportTable').addEventListener('click', function (event) {
-        const editNursesReportBtn   = event.target.closest('.editNursesReportBtn')
-        const deleteNursesReportBtn = event.target.closest('.deleteNursesReportBtn')
-
-        if (editNursesReportBtn) {
-            editNursesReportBtn.setAttribute('disabled', 'disabled')
-            saveNursesReportBtn.setAttribute('data-table', editNursesReportBtn.dataset.table)
-            http.get(`/nursesreport/${editNursesReportBtn.getAttribute('data-id')}`)
-            .then((response) => {
-                if (response.status >= 200 || response.status <= 300) {
-                    openModals(editNursesReportTemplateModal, saveNursesReportBtn, response.data.data)
+    document.querySelectorAll('#nursesReportTable, #deliveryNoteTable').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const editNursesReportBtn   = event.target.closest('.editNursesReportBtn')
+            const deleteNursesReportBtn = event.target.closest('.deleteNursesReportBtn')
+            const deliveryNoteBtn       = event.target.closest('.updateDeliveryNoteBtn, .viewDeliveryNoteBtn')
+            const deleteDeliveryNoteBtn = event.target.closest('.deleteDeliveryNoteBtn')
+    
+            if (editNursesReportBtn) {
+                editNursesReportBtn.setAttribute('disabled', 'disabled')
+                saveNursesReportBtn.setAttribute('data-table', editNursesReportBtn.dataset.table)
+                http.get(`/nursesreport/${editNursesReportBtn.getAttribute('data-id')}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openModals(editNursesReportTemplateModal, saveNursesReportBtn, response.data.data)
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+                setTimeout(()=>{editNursesReportBtn.removeAttribute('disabled')}, 2000)
+            }
+    
+            if (deleteNursesReportBtn) {
+                deleteNursesReportBtn.setAttribute('disabled', 'disabled')
+                if (confirm('Are you sure you want to delete this report?')) {
+                    const id = deleteNursesReportBtn.getAttribute('data-id')
+                    http.delete(`/nursesreport/${id}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                nursesReportTable ? nursesReportTable.draw() : ''
+                            }
+                            deleteNursesReportBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {
+                            alert(error)
+                            deleteNursesReportBtn.removeAttribute('disabled')
+                        })
                 }
-            })
-            .catch((error) => {
-                console.log(error)
-            })
-            setTimeout(()=>{editNursesReportBtn.removeAttribute('disabled')}, 2000)
-        }
-
-        if (deleteNursesReportBtn) {
-            deleteNursesReportBtn.setAttribute('disabled', 'disabled')
-            if (confirm('Are you sure you want to delete this report?')) {
-                const id = deleteNursesReportBtn.getAttribute('data-id')
-                http.delete(`/nursesreport/${id}`)
+            }
+    
+            if (deliveryNoteBtn) {
+                const isUpdate = deliveryNoteBtn.id == 'updateDeliveryNoteBtn'
+                const [btn, modalBtn, modal ] = isUpdate ? [deliveryNoteBtn, saveDeliveryNoteBtn, updateDeliveryNoteModal] : [deliveryNoteBtn, saveDeliveryNoteBtn, viewDeliveryNoteModal]
+                btn.setAttribute('disabled', 'disabled')
+                saveDeliveryNoteBtn.setAttribute('data-table', btn.dataset.table)
+                http.get(`/deliverynote/${btn.getAttribute('data-id')}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
-                            nursesReportTable ? nursesReportTable.draw() : ''
+                            openModals(modal, modalBtn, response.data.data)
                         }
-                        deleteNursesReportBtn.removeAttribute('disabled')
                     })
                     .catch((error) => {
-                        alert(error)
-                        deleteNursesReportBtn.removeAttribute('disabled')
+                        console.log(error)
                     })
+                setTimeout(()=>{btn.removeAttribute('disabled')}, 2000)
             }
-        }
+
+            if (deleteDeliveryNoteBtn){
+                deleteDeliveryNoteBtn.setAttribute('disabled', 'disabled')
+                const id = deleteDeliveryNoteBtn.getAttribute('data-id')
+                const tableId = deleteDeliveryNoteBtn.getAttribute('data-table')
+                if (confirm('Are you sure you want to delete Delivery Note?')) {
+                    http.delete(`/deliverynote/${id}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                if ($.fn.DataTable.isDataTable('#' + tableId)) {
+                                    $('#' + tableId).dataTable().fnDraw()
+                                }
+                            }
+                            deleteDeliveryNoteBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                            deleteDeliveryNoteBtn.removeAttribute('disabled')
+                        })
+                } deleteDeliveryNoteBtn.removeAttribute('disabled')
+            }
+        })
     })
 
     createNursesReportBtn.addEventListener('click', function() {
@@ -738,14 +788,9 @@ window.addEventListener('DOMContentLoaded', function () {
             const giveMedicationBtn         = event.target.closest('#giveMedicationBtn')
             const chartMedicationBtn        = event.target.closest('#chartMedicationBtn')
             const chartPrescriptionBtn      = event.target.closest('#chartPrescriptionBtn')
-            const newDeliveryNoteBtn        = event.target.closest('#newDeliveryNoteBtn')
-            const deliveryNoteBtn           = event.target.closest('.updateDeliveryNoteBtn, .viewDeliveryNoteBtn')
-            const saveWardAndBedBtn         = event.target.closest('#saveWardAndBedBtn')
-            const wardAndBedDiv             = document.querySelectorAll('#wardAndBedDiv')
             const deleteGivenBtn            = event.target.closest('#deleteGivenBtn')
             const deleteServiceBtn          = event.target.closest('#deleteServiceBtn')
             const discontinueBtn            = event.target.closest('.discontinueBtn')
-            const deleteDeliveryNoteBtn     = event.target.closest('.deleteDeliveryNoteBtn')
             const reportServiceBtn          = event.target.closest('#reportServiceBtn')
             const viewer                    = 'nurse'
     
@@ -778,8 +823,6 @@ window.addEventListener('DOMContentLoaded', function () {
                     getLabTableByConsultation(investigationTableId, treatmentDetailsModal._element, viewer, conId, null)
                     getNurseMedicationsByFilter(medicationsTableId, conId, treatmentDetailsModal._element, null, isHistory)
                     getOtherPrescriptionsByFilterNurses(otherPrescriptionsTableId, conId, treatmentDetailsModal._element, null, isHistory)
-                    getDeliveryNoteTable('deliveryNoteTable'+conId, conId, true, isHistory)
-                    getSurgeryNoteTable('surgeryNoteTable'+conId, conId, false, isHistory)
                 }
                 setTimeout(goto, 300)
             }
@@ -798,8 +841,11 @@ window.addEventListener('DOMContentLoaded', function () {
 
                 const goto = () => {
                     location.href = collapseVisitBtn.getAttribute('data-gotovisit')
-                    window.history.replaceState({}, document.title, "/" + "doctors" )
+                    window.history.replaceState({}, document.title, "/" + "nurses" )
                     getVitalsigns('#vitalSignsHistory'+visitId, id, consultationHistoryModal)
+                    getDeliveryNoteTable('deliveryNoteTable'+visitId, visitId, false, consultationHistoryModal._element)
+                    getSurgeryNoteTable('surgeryNoteTableHistory'+visitId, visitId, false, consultationHistoryModal._element)
+                    getPatientsFileTable('patientsFileTableHistory'+visitId, visitId, consultationHistoryModal._element)
                     getbillingTableByVisit('billingTableHistory'+visitId, visitId, consultationHistoryModal._element)
                 }
                 setTimeout(goto, 300)
@@ -930,50 +976,6 @@ window.addEventListener('DOMContentLoaded', function () {
                     })
                 }
             }
-    
-            if (newDeliveryNoteBtn) {
-                createDeliveryNoteBtn.setAttribute('data-conid', newDeliveryNoteBtn.dataset.id)
-                createDeliveryNoteBtn.setAttribute('data-visitid', newDeliveryNoteBtn.dataset.visitid)
-                newDeliveryNoteModal.show()
-            }
-    
-            if (deliveryNoteBtn) {
-                const isUpdate = deliveryNoteBtn.id == 'updateDeliveryNoteBtn'
-                const [btn, modalBtn, modal ] = isUpdate ? [deliveryNoteBtn, saveDeliveryNoteBtn, updateDeliveryNoteModal] : [deliveryNoteBtn, saveDeliveryNoteBtn, viewDeliveryNoteModal]
-                btn.setAttribute('disabled', 'disabled')
-                saveDeliveryNoteBtn.setAttribute('data-table', btn.dataset.table)
-                http.get(`/deliverynote/${btn.getAttribute('data-id')}`)
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300) {
-                            openModals(modal, modalBtn, response.data.data)
-                        }
-                    })
-                    .catch((error) => {
-                        console.log(error)
-                    })
-                setTimeout(()=>{btn.removeAttribute('disabled')}, 2000)
-            }
-
-            if (deleteDeliveryNoteBtn){
-                deleteDeliveryNoteBtn.setAttribute('disabled', 'disabled')
-                const id = deleteDeliveryNoteBtn.getAttribute('data-id')
-                const tableId = deleteDeliveryNoteBtn.getAttribute('data-table')
-                if (confirm('Are you sure you want to delete Delivery Note?')) {
-                    http.delete(`/deliverynote/${id}`)
-                        .then((response) => {
-                            if (response.status >= 200 || response.status <= 300) {
-                                if ($.fn.DataTable.isDataTable('#' + tableId)) {
-                                    $('#' + tableId).dataTable().fnDraw()
-                                }
-                            }
-                            deleteDeliveryNoteBtn.removeAttribute('disabled')
-                        })
-                        .catch((error) => {
-                            alert(error)
-                            deleteDeliveryNoteBtn.removeAttribute('disabled')
-                        })
-                } deleteDeliveryNoteBtn.removeAttribute('disabled')
-            }
         })
     })
 
@@ -1103,24 +1105,23 @@ window.addEventListener('DOMContentLoaded', function () {
 
     createDeliveryNoteBtn.addEventListener('click', function () {
         createDeliveryNoteBtn.setAttribute('disabled', 'disabled')
-        const conId = createDeliveryNoteBtn.dataset.conid
         const visitId = createDeliveryNoteBtn.dataset.visitid
 
-        let data = { ...getDivData(newDeliveryNoteModal._element), conId, visitId }
+        let data = { ...getDivData(newDeliveryNoteModal._element), visitId }
         http.post('/deliverynote', {...data}, {"html": newDeliveryNoteModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 newDeliveryNoteModal.hide()
                 clearDivValues(newDeliveryNoteModal._element)
-                if ($.fn.DataTable.isDataTable('#deliveryNoteTable' + conId)) {
-                    $('#deliveryNoteTable' + conId).dataTable().fnDraw()
+                if ($.fn.DataTable.isDataTable('#deliveryNoteTable')) {
+                    $('#deliveryNoteTable').dataTable().fnDraw()
                 }
             }
             createDeliveryNoteBtn.removeAttribute('disabled')
         })
         .catch((error) => {
             createDeliveryNoteBtn.removeAttribute('disabled')
-            alert(error)
+            console.log(error)
         })
     })
 
@@ -1141,7 +1142,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
         .catch((error) => {
             saveDeliveryNoteBtn.removeAttribute('disabled')
-            alert(error)
+            console.log(error)
         })
     })
 })

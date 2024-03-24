@@ -14,7 +14,8 @@ class DoctorController extends Controller
     public function __construct(
         private readonly DatatablesService $datatablesService, 
         private readonly DoctorService $doctorService,
-        private readonly ResourceService $resourceService
+        private readonly ResourceService $resourceService,
+        private readonly ThirdPartyController $thirdPartyController
         )
     {
         
@@ -26,7 +27,10 @@ class DoctorController extends Controller
      */
     public function index()
     {
-        return view('doctors.doctors', ['doctors' => []]);
+        return view('doctors.doctors', [
+            'doctors' => [],
+            'thirdParties'  => $this->thirdPartyController->showAll('id', 'short_name')
+        ]);
     }
 
     public function list(Request $request)

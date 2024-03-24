@@ -10,6 +10,7 @@ use App\Services\BillingService;
 use App\Services\DatatablesService;
 use App\Services\ExpenseService;
 use App\Services\PaymentService;
+use App\Services\ThirdPartyServices;
 use App\Services\UserService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -22,7 +23,8 @@ class BillingController extends Controller
         private readonly PaymentService $paymentService,
         private readonly ExpenseService $expenseService,
         private readonly ExpenseCategoryController $expenseCategoryController,
-        private readonly UserService $userService
+        private readonly UserService $userService,
+        private readonly ThirdPartyController $thirdPartyController
         )
     {
         
@@ -31,8 +33,9 @@ class BillingController extends Controller
     public function index()
     {
         return view('billing.billing', [
-            'users' => $this->userService->listStaff(special_note:'Management'),
-            'categories' => $this->expenseCategoryController->showAll('id', 'name')
+            'users'         => $this->userService->listStaff(special_note:'Management'),
+            'categories'    => $this->expenseCategoryController->showAll('id', 'name'),
+            'thirdParties'  => $this->thirdPartyController->showAll('id', 'short_name'),
         ]);
     }
 

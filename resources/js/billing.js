@@ -5,6 +5,7 @@ import { clearDivValues, getDivData, clearValidationErrors, resetFocusEndofLine,
 import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable, getBalancingTable } from "./tables/billingTables";
 import { getOutpatientsInvestigationTable } from "./tables/investigationTables";
 import html2pdf  from "html2pdf.js"
+$.fn.dataTable.ext.errMode = 'throw';
 
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -14,6 +15,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const billModal                     = new Modal(document.getElementById('billModal'))
     const newExpenseModal               = new Modal(document.getElementById('newExpenseModal'))
     const updateExpenseModal            = new Modal(document.getElementById('updateExpenseModal'))
+    const thirdPartyServiceModal        = new Modal(document.getElementById('thirdPartyServiceModal'))
 
     const balancingDateDiv              = document.querySelector('.balancingDateDiv')
 
@@ -23,6 +25,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveExpenseBtn                = newExpenseModal._element.querySelector('#saveExpenseBtn')
     const updateExpenseBtn              = updateExpenseModal._element.querySelector('#updateExpenseBtn')
     const searchBalanceByDateBtn        = balancingDateDiv.querySelector('.searchBalanceByDateBtn')
+    const saveThirPartyServiceBtn       = thirdPartyServiceModal._element.querySelector('#saveThirPartyServiceBtn')
 
     const outPatientsTab                = document.querySelector('#nav-outPatients-tab')
     const inPatientsTab                 = document.querySelector('#nav-inPatients-tab')
@@ -36,11 +39,13 @@ window.addEventListener('DOMContentLoaded', function () {
     const billSummaryBody               = billModal._element.querySelector('.billSummaryBody')
 
 
-    let inPatientsVisitTable, ancPatientsVisitTable, openVisitsTable, expensesTable, balancingTable
+    let inPatientsVisitTable, ancPatientsVisitTable, billingTable, openVisitsTable, expensesTable, balancingTable
 
     const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient', 'consulted')
     const waitingTable = getWaitingTable('waitingTable')
     const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable', true)
+
+    $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #inpatientInvestigationsTable, #outpatientInvestigationsTable, #waitingTable, #billingTable, #openVisitsTable, #expensesTable, #balancingTable, #outstandingBillsTable, #paymentTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})    
 
     outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw()})
 
@@ -141,7 +146,7 @@ window.addEventListener('DOMContentLoaded', function () {
             
             if (billingDetailsBtn){
                 const visitId = billingDetailsBtn.getAttribute('data-id') 
-                getbillingTableByVisit('billingTable', visitId, billingModal._element, true)
+                billingTable = getbillingTableByVisit('billingTable', visitId, billingModal._element, true)
                 getPaymentTableByVisit('paymentTable', visitId, billingModal._element)
                 outstandingBillsModal.hide()
                 billingModal.show()
@@ -197,11 +202,20 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
 
+    document.querySelector('#billingTable').addEventListener('mouseover',  function (event) {
+        const thirdPartyServiceBtn  = event.target.closest('.thirdPartyServiceBtn')
+        if (thirdPartyServiceBtn){
+            thirdPartyServiceBtn.style.cursor = 'pointer'
+        }
+    })
+
     document.querySelector('#billingTable').addEventListener('click',  function (event) {
-            const payBtn = event.target.closest('.payBtn')
-            const paymentDetailsDiv = document.querySelector('.paymentDetailsDiv')
-            const discountBtn       = event.target.closest('.discountBtn')
-            const outstandingsBtn    = event.target.closest('.outstandingsBtn')
+            const payBtn                = event.target.closest('.payBtn')
+            const paymentDetailsDiv     = document.querySelector('.paymentDetailsDiv')
+            const discountBtn           = event.target.closest('.discountBtn')
+            const outstandingsBtn       = event.target.closest('.outstandingsBtn')
+            const thirdPartyServiceBtn  = event.target.closest('.thirdPartyServiceBtn')
+            
 
             if (payBtn) {
                 payBtn.setAttribute('disabled', 'disabled')
@@ -215,12 +229,14 @@ window.addEventListener('DOMContentLoaded', function () {
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         new Toast(paymentDetailsDiv.querySelector('#savePaymentToast'), {delay:2000}).show()
+                        billingTable ? billingTable.draw() : ''
                         clearDivValues(paymentDetailsDiv)
                         clearValidationErrors(paymentDetailsDiv)
+
                     }
-                    if ($.fn.DataTable.isDataTable( '#billingTable' )){
-                        $('#billingTable').dataTable().fnDraw()
-                    }
+                    // if ($.fn.DataTable.isDataTable( '#billingTable' )){
+                    //     $('#billingTable').dataTable().fnDraw()
+                    // }
                     if ($.fn.DataTable.isDataTable( '#paymentTable' )){
                         $('#paymentTable').dataTable().fnDraw()
                     }
@@ -269,6 +285,32 @@ window.addEventListener('DOMContentLoaded', function () {
                 outstandingBillsModal.show()
                 billingModal.hide()
             }
+
+            if (thirdPartyServiceBtn){
+                thirdPartyServiceModal._element.querySelector('#patient').value = thirdPartyServiceBtn.getAttribute('data-patient')
+                thirdPartyServiceModal._element.querySelector('#service').value = thirdPartyServiceBtn.getAttribute('data-service')
+                thirdPartyServiceModal._element.querySelector('#saveThirPartyServiceBtn').setAttribute('data-id', thirdPartyServiceBtn.getAttribute('data-id'))
+                thirdPartyServiceModal.show()
+            }
+    })
+
+    saveThirPartyServiceBtn.addEventListener('click', function () {
+        saveThirPartyServiceBtn.setAttribute('disabled', 'disabled')
+        const thirdPartyId = saveThirPartyServiceBtn.getAttribute('data-id')
+        http.post(`/thirdpartyservices/${thirdPartyId}`, getDivData(thirdPartyServiceModal._element), {"html": thirdPartyServiceModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                billingTable ? billingTable.draw() : ''
+                thirdPartyServiceModal.hide()
+                // clearDivValues(newthirdPartyModal._element)
+                // thirdPartiesTable ? thirdPartiesTable.draw() : ''
+            }
+            saveThirPartyServiceBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            saveThirPartyServiceBtn.removeAttribute('disabled')
+            console.log(error.response.data.data.message)
+        })
     })
 
     document.querySelector('#paymentTable').addEventListener('click', function (event) {

@@ -28,7 +28,7 @@ class InvestigationService
     public function getpaginatedFilteredLabVisits(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'consulted';
-        $orderDir   =  'asc';
+        $orderDir   =  'desc';
 
         if (! empty($params->searchTerm)) {
             return $this->visit

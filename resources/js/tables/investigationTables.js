@@ -14,7 +14,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
         {data: row => sponsorAndPayPercent(row)},
         {data: row =>  `
                     <div class="d-flex flex-">
-                        <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                        <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                             ${row.labPrescribed}<i class="bi bi-eyedropper"></i>${row.labDone}
                         </button>
                     </div>`                

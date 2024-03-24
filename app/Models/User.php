@@ -86,11 +86,6 @@ class User extends Authenticatable
         return $this->hasMany(AddResourceStock::class);
     }
 
-    public function dispenseResources(): HasMany 
-    {
-        return $this->hasMany(DispenseResource::class);
-    }
-
     public function resourceSuppliers(): HasMany 
     {
         return $this->hasMany(ResourceSupplier::class);
@@ -161,7 +156,7 @@ class User extends Authenticatable
         return $this->hasMany(MedicalReport::class);
     }
 
-    public function nursesReport() 
+    public function nursesReports() 
     {
         return $this->hasMany(NursesReport::class);
     }
@@ -179,6 +174,21 @@ class User extends Authenticatable
     public function expenses() 
     {
         return $this->hasMany(Expense::class);
+    }
+
+    public function thirdParties() 
+    {
+        return $this->hasMany(ThirdParty::class);
+    }
+
+    public function thirdPartyServies() 
+    {
+        return $this->hasMany(ThirdPartyService::class);
+    }
+
+    public function patientsFiles() 
+    {
+        return $this->hasMany(PatientsFile::class);
     }
 
     public function nameInFull()

@@ -21,6 +21,7 @@ use App\Http\Controllers\NurseController;
 use App\Http\Controllers\NursesReportController;
 use App\Http\Controllers\NursingChartController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PatientsFileController;
 use App\Http\Controllers\PayMethodController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\PrescriptionController;
@@ -35,6 +36,8 @@ use App\Http\Controllers\ResourceSupplierController;
 use App\Http\Controllers\SponsorCategoryController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\SurgeryNoteController;
+use App\Http\Controllers\ThirdPartyController;
+use App\Http\Controllers\ThirdPartyServiceController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VitalSignsController;
 use App\Models\ExpenseCategory;
@@ -458,6 +461,31 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{nursesReport}', [NursesReportController::class, 'destroy']);
         Route::get('/{nursesReport}', [NursesReportController::class, 'edit']);
         Route::get('display/{nursesReport}', [NursesReportController::class, 'displayReport']);
+    });
+
+    Route::prefix('thirdpartyservices')->group(function () {
+        Route::get('', [ThirdPartyServiceController::class, 'index'])->name('Third Party Services');
+        Route::post('/{prescription}', [ThirdPartyServiceController::class, 'store']);
+        Route::get('/load/list', [ThirdPartyServiceController::class, 'load']);
+        Route::get('/list/thirdparties', [ThirdPartyServiceController::class, 'list']);
+        Route::delete('/{thirdPartyService}', [ThirdPartyServiceController::class, 'destroy']);
+    });
+
+    Route::prefix('thirdparties')->group(function () {
+        Route::post('', [ThirdPartyController::class, 'store']);
+        Route::get('/load/thirdparties', [ThirdPartyController::class, 'load']);
+        Route::get('/list/thirdparties', [ThirdPartyController::class, 'list']);
+        Route::get('/{thirdParty}', [ThirdPartyController::class, 'edit']);
+        Route::post('toggle/{thirdParty}', [ThirdPartyController::class, 'toggleDelisted']);
+        Route::delete('/{thirdParty}', [ThirdPartyController::class, 'destroy']);
+        Route::post('/{thirdParty}', [ThirdPartyController::class, 'update']);
+    });
+
+    Route::prefix('patientsfiles')->group(function () {
+        Route::post('/{visit}', [PatientsFileController::class, 'store']);
+        Route::get('/load/files', [PatientsFileController::class, 'load']);
+        Route::get('/download/{patientsFile}', [PatientsFileController::class, 'download']);
+        Route::delete('/{patientsFile}', [PatientsFileController::class, 'destroy']);
     });
 });
 

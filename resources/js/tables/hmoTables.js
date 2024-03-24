@@ -74,14 +74,14 @@ const getVerificationTable = (tableId) => {
             {data: "age"},
             {data: row => 
                         `
-                    <button class="btn changeSponsorBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-phone="${ row.phone }"         data-sponsor="${ row.sponsor }" data-staffid="${ row.staffId }">${row.sponsor}</button>`
+                    <button class="btn changeSponsorBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-phone="${ row.phone }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-staffid="${ row.staffId }">${row.sponsor}</button>`
             },
             {data: "30dayCount"},
             {data: "doctor"},
             {data: row => 
                         `
                     <div class="d-flex flex-">
-                        <button class=" btn btn-outline-primary ${row.status == 'Verified' ? '' : 'verifyPatientBtn'} tooltip-test" title="${row.status ? row.status : 'verify'}" data-id="${ row.id }" data-patient="${ row.patient }" data-phone="${ row.phone }" data-sponsor="${ row.sponsor }" data-staffid="${ row.staffId }">
+                        <button class=" btn btn-outline-primary ${row.status == 'Verified' ? '' : 'verifyPatientBtn'} tooltip-test" title="${row.status ? row.status : 'verify'}" data-id="${ row.id }" data-patient="${ row.patient }" data-phone="${ row.phone }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-staffid="${ row.staffId }">
                             ${row.status ? row.status : 'Verify'}
                         </button>
                     </div>
@@ -115,7 +115,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
             },
             {data: row =>  `
                         <div class="d-flex justify-content-center">
-                            <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                            <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                             ${row.labDone}<i class="bi bi-eyedropper"></i>${row.labPrescribed}
                             </button>
                         </div>`                
@@ -133,10 +133,10 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                             <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }" data-ancregid="${row.ancRegId}">
                                 Details
                             </a>
-                            <a class="dropdown-item patientBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-hmodoneby="${ row.hmoDoneBy }">
+                            <a class="dropdown-item patientBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-hmodoneby="${ row.hmoDoneBy }">
                                 ${row.hmoDoneBy ? 'Bill sent <i class="bi bi-check-circle-fill tooltip-test text-primary" title="sent"></i>' : 'Make bill'}
                             </a>
-                            <a class="dropdown-item btn btn-outline-primary medicalReportBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-age="${ row.age }" data-sex="${ row.sex }">Report/Refer/Result</a>
+                            <a class="dropdown-item btn btn-outline-primary medicalReportBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-age="${ row.age }" data-sex="${ row.sex }">Report/Refer/Result</a>
                             <a class="dropdown-item closeVisitBtn btn tooltip-test" title="${row.closed ? 'closed': 'close'}"  data-id="${ row.id }">
                             ${row.closed ? '': 'Close'}
                             </a>
@@ -314,7 +314,7 @@ const getSentBillsTable = (tableId, startDate, endDate) => {
                 sortable: false,
                 data: row => `
                 <div class="d-flex justify-content-center">
-                    <button class="ms-1 btn btn-outline-primary patientBillBtn tooltip-test" title="See bill" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" >
+                    <button class="ms-1 btn btn-outline-primary patientBillBtn tooltip-test" title="See bill" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                         <i class="bi bi-eye-fill"></i>
                     </button>   
                     <button class="ms-1 btn btn-outline-primary closeVisitBtn tooltip-test" title="${row.closed ? 'closed': 'close'}" data-id="${ row.id }">

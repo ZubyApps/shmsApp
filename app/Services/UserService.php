@@ -6,12 +6,9 @@ namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Designation;
-use App\Models\SponsorCategory;
 use App\Models\User;
 use Carbon\Carbon;
-use DateTime;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserService

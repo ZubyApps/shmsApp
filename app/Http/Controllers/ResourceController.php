@@ -82,9 +82,6 @@ class ResourceController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function toggleIsActive(Request $request, Resource $resource)
     {
         $resource->update([

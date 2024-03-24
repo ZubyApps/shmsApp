@@ -1,15 +1,12 @@
 import { Modal } from "bootstrap"
-import { getDivData, clearDivValues, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, getPatientSponsorDatalistOptionId, getOrdinal } from "./helpers"
+import { getDivData, clearDivValues, clearValidationErrors, displayList, openModals, getPatientSponsorDatalistOptionId, getOrdinal } from "./helpers"
 import http from "./http"
 import $ from 'jquery';
-import jszip from 'jszip';
-import pdfmake from 'pdfmake';
-import DataTable from 'datatables.net-bs5';
 import { getAgeAggregateTable, getAllPatientsTable, getPatientsBySponsorTable, getSexAggregateTable, getSponsorsTable, getTotalPatientsTable, getVisitsSummaryTable, getVisitsTable } from "./tables/patientsTables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getAncVitalSignsTable, getOtherPrescriptionsByFilterNurses } from "./tables/nursesTables";
 import { getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
-
+$.fn.dataTable.ext.errMode = 'throw';
 
 window.addEventListener('DOMContentLoaded', function(){
     const newSponsorModal                   = new Modal(document.getElementById('newSponsorModal'))
@@ -49,7 +46,7 @@ window.addEventListener('DOMContentLoaded', function(){
     let sponsorsTable, visitsTable, totalPatientsTable, sexAggregateTable, patientsBySponsorTable, visitsSummaryTable
 
     const allPatientsTable = getAllPatientsTable('allPatientsTable')
-
+    $('#allPatientsTable, #sponsorsTable, #visitsTable, #totalPatientsTable, #sexAggregateTable, #patientsBySponsorTable, #visitsSummaryTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
     newSponsorBtn.addEventListener('click', function() {
         newSponsorModal.show()
     })

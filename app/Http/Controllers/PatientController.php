@@ -39,9 +39,7 @@ class PatientController extends Controller
      */
     public function store(StorePatientRequest $request)
     {
-        $patient = $this->patientService->create($request, $request->user());
-        
-        return $patient->load('sponsor');
+        return $this->patientService->create($request, $request->user());        
     }
 
     public function load(Request $request)

@@ -86,10 +86,6 @@ class PharmacyService
         
                         });
                     })
-                    // ->where(function (Builder $query) {
-                    //     $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
-                    //     ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
-                    // })
                     ->where(function (Builder $query) {
                         $query->where('admission_status', '=', 'Inpatient')
                         ->orWhere('admission_status', '=', 'Observation');
@@ -321,7 +317,10 @@ class PharmacyService
 
         if (! empty($params->searchTerm)) {
             return $this->resource
-                        ->where('category', 'Medications')
+                        ->where(function (Builder $query) {
+                            $query->where('category', 'Medications')
+                            ->orWhere('category', 'Consumables');
+                        })
                         ->where(function (Builder $query) use($params) {
                             $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhere('sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
@@ -333,7 +332,10 @@ class PharmacyService
 
         if ($data->filterBy === 'expiration'){
             return $this->resource
-                    ->where('category', 'Medications')
+                    ->where(function (Builder $query) {
+                        $query->where('category', 'Medications')
+                        ->orWhere('category', 'Consumables');
+                    })
                     ->where('expiry_date', '<', (new Carbon())->addMonths(6))
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -341,7 +343,10 @@ class PharmacyService
 
         if ($data->filterBy === 'stockLevel'){
             return $this->resource
-                    ->where('category', 'Medications')
+                    ->where(function (Builder $query) {
+                        $query->where('category', 'Medications')
+                        ->orWhere('category', 'Consumables');
+                    })
                     ->whereColumn('stock_level', '<=','reorder_level')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));

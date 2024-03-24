@@ -10,6 +10,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const datesDiv                  = document.querySelector('.datesDiv')
 
     const summaryTab                = document.querySelector('#nav-summary-tab')
+    const newBirthsTab              = document.querySelector('#nav-newBirths-tab')
+    const referralsTab              = document.querySelector('#nav-referrals-tab')
+    const deceasedTab                = document.querySelector('#nav-deceased-tab')
 
     const searchWithDatesBtn        = document.querySelector('.searchWithDatesBtn')
     const searchMedServiceByMonthBtn = document.querySelector('.searchMedServiceByMonthBtn')

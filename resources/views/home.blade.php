@@ -25,6 +25,8 @@
                         <a href="{{ $staffD === 'Bill Officer' || $staffA > 4 ? '/billing' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-receipt"> Billing</i></a>
                         <a href="{{ $staffA > 4 ? '/resources' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-minecart-loaded"> Resources</i></a>
                         <a href="{{ $staffA > 4 ? '/admin' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-person-fill"> Admin</i></a>
+                        <br>
+                        <a href="{{ $staffD === 'Bill Officer' || $staffD === 'HMO Officer' || $staffD === 'Records Clerk' || $staffA  > 4 ? '/thirdpartyservices' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-arrow-up-right-square-fill"> Third Party Services</i></a>
                     </div>
                     <br>
                     <p class="fs-5 mb-0"><a href="#" class="text-decoration-none text-black">We treat, <span class="text-primary fw-bold">God</span> heals...</a></p>

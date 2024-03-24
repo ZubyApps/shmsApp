@@ -58,7 +58,6 @@ Class SurgeryNoteService
             'weight'                => $data->birthWeight,
             'cs_surgeon'            => $data->csSsurgeon,
             'cs_anaesthetist'       => $data->csAnaesthetist,
-            'consultation_id'       => $data->conId,
             'visit_id'              => $data->visitId
         ]);
 
@@ -120,12 +119,13 @@ Class SurgeryNoteService
         if (! empty($params->searchTerm)) {
             return $this->surgeryNote
                         ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->where('visit_id', $data->visitId)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return $this->surgeryNote
-                    ->where('consultation_id', $data->conId)
+                    ->where('visit_id', $data->visitId)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 

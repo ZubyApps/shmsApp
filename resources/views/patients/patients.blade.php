@@ -131,7 +131,7 @@
                           <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">All Patients by Sex</h5>
-                                <table  id="sexAggregateTable" class="table table-hover table-sm">
+                                <table  id="sexAggregateTable" class="table table-sm">
                                     <thead>
                                         <tr>
                                             <th>Sex</th>
@@ -153,7 +153,7 @@
                           <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">All Patients by Age and Sex</h5>
-                                <table  id="ageAggregateTable" class="table table-hover table-sm">
+                                <table  id="ageAggregateTable" class="table table-sm">
                                     <thead>
                                         <tr>
                                             <th>Sex</th>
@@ -195,7 +195,7 @@
                           <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">New Registrations by Sponsor This Month</h5>
-                                <table  id="totalPatientsTable" class="table table-hover table-sm">
+                                <table  id="totalPatientsTable" class="table table-sm">
                                     <thead>
                                         <tr>
                                             <th>Sponsor</th>
@@ -219,7 +219,7 @@
                           <div class="card">
                             <div class="card-body">
                             <h5 class="card-title">Visits Summary by Sponsor This Month</h5>
-                            <table  id="visitsSummaryTable" class="table table-hover table-sm">
+                            <table  id="visitsSummaryTable" class="table table-sm">
                                 <thead>
                                     <tr>
                                         <th>Sponsor</th>

@@ -1,16 +1,17 @@
 import { Modal, Collapse, Toast, Offcanvas } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, filterPatients, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
-import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable, getOtherPrescriptionsByFilter, getMedicalReportTable} from "./tables/doctorstables"
+import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable, getOtherPrescriptionsByFilter, getMedicalReportTable, getPatientsFileTable} from "./tables/doctorstables"
 import { getAncVitalsignsChart, getVitalsignsChartByVisit } from "./charts/vitalsignsCharts"
-import $ from 'jquery';
+import $, { get } from 'jquery';
 import { getbillingTableByVisit } from "./tables/billingTables"
 import { getAncVitalSignsTable, getDeliveryNoteTable, getEmergencyTable } from "./tables/nursesTables"
 import { visitDetails } from "./dynamicHTMLfiles/visits"
 import html2pdf  from "html2pdf.js"
+$.fn.dataTable.ext.errMode = 'throw';
 
 window.addEventListener('DOMContentLoaded', function () {
     const waitingListOffcanvas              = new Offcanvas(document.getElementById('waitingListOffcanvas1'))
@@ -71,6 +72,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const italicsBtn                        = newMedicalReportTemplateModal._element.querySelector('.italicsBtn')
     const underlineBtn                      = newMedicalReportTemplateModal._element.querySelector('.underlineBtn')
     const downloadReportBtn                 = viewMedicalReportModal._element.querySelector('#downloadReportBtn')
+    const fileBtn                           = consultationReviewModal._element.querySelector('#fileBtn')
+    const uploadFileBtn                     = fileModal._element.querySelector('#uploadFileBtn')
+    const newSurgeryBtn                     = consultationReviewModal._element.querySelector('#newSurgeryBtn')
     const reportModalBody                   = viewMedicalReportModal._element.querySelector('.reportModalBody')
     const patientsFullName                  = viewMedicalReportModal._element.querySelector('#patientsFullName')
     const patientsInfo                      = viewMedicalReportModal._element.querySelector('#patientsInfo')
@@ -102,10 +106,11 @@ window.addEventListener('DOMContentLoaded', function () {
     // ICD11 handler
     ECT.Handler.configure(mySettings, myCallbacks)
     //visit Tables and consultations that are active
-    let inPatientsVisitTable, ancPatientsVisitTable, prescriptionTable, medicalReportTable, emergencyTable
+    let inPatientsVisitTable, ancPatientsVisitTable, prescriptionTable, medicalReportTable, emergencyTable, patientsFilesTable, surgeryNoteTable, deliveryNoteTable
 
     let outPatientsVisitTable = getOutpatientsVisitTable('#outPatientsVisitTable', 'My Patients')
     const waitingTable = getWaitingTable('#waitingTable')
+    $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #medicalReportTable, #emergencyTable, #patientsFilesTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
 
     outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw()})
 
@@ -166,7 +171,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (consultationReviewBtn) {
                 consultationReviewBtn.setAttribute('disabled', 'disabled')
                 const [visitId, patientType, ancRegId, isDoctorDone, closed] = [consultationReviewBtn.dataset.id, consultationReviewBtn.dataset.patienttype, consultationReviewBtn.dataset.ancregid, consultationReviewBtn.dataset.doctordone, +consultationReviewBtn.dataset.closed] 
-                
+                uploadFileBtn.setAttribute('data-id', visitId); createSurgeryNoteBtn.setAttribute('data-id', visitId)
                 const isAnc = patientType === 'ANC'
                 resourceInput.forEach(input => {input.setAttribute('data-sponsorcat', consultationReviewBtn.getAttribute('data-sponsorcat'))})
                 populateConsultationModal(newReviewModal, reviewPatientbtn, visitId, ancRegId, patientType, consultationReviewBtn)
@@ -205,6 +210,9 @@ window.addEventListener('DOMContentLoaded', function () {
                         .catch((error) => {
                             console.log(error)
                         })
+                        deliveryNoteTable   = getDeliveryNoteTable('deliveryNoteTable', visitId, false, modal._element)
+                        surgeryNoteTable    = getSurgeryNoteTable('surgeryNoteTable', visitId, true, modal._element)
+                        patientsFilesTable  = getPatientsFileTable(`patientsFileTable${suffixId}`, visitId, modal._element)
                         getbillingTableByVisit(`billingTable${suffixId}`, visitId, modal._element)
                         
                         modal.show()
@@ -331,6 +339,25 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
+    fileBtn.addEventListener('click', function() {fileModal.show()}); newSurgeryBtn.addEventListener('click', function() {newSurgeryModal.show()});
+
+    uploadFileBtn.addEventListener('click', function() { uploadFileBtn.setAttribute('disabled', 'disabled')
+        const visitId = uploadFileBtn.getAttribute('data-id')
+        
+        http.post(`/patientsfiles/${visitId}`, { filename : fileModal._element.querySelector('#filename').value,
+            patientsFile: fileModal._element.querySelector('#patientsFile').files[0],
+            thirdParty : fileModal._element.querySelector('#thirdParty').value,
+            comment : fileModal._element.querySelector('#comment').value,
+        }, {"html": fileModal._element, headers: {'Content-Type' : 'multipart/form-data'}})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) { fileModal.hide()
+                clearDivValues(fileModal._element); clearValidationErrors(fileModal._element); patientsFilesTable ? patientsFilesTable.draw() : ''
+            }
+            uploadFileBtn.removeAttribute('disabled')
+        })
+        .catch((response) => { console.log(response); uploadFileBtn.removeAttribute('disabled')})
+    })
+
     document.querySelectorAll('#admit').forEach(selectEl => {
         selectEl.addEventListener('change', function(){
             const div = selectEl.parentElement
@@ -394,64 +421,120 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelector('#medicalReportTable').addEventListener('click', function (event) {
-        const medicalReportBtn          = event.target.closest('.editMedicalReportBtn')
-        const viewMedicalReportbtn      = event.target.closest('.viewMedicalReportBtn')
-        const deleteMedicalReportBtn    = event.target.closest('.deleteMedicalReportBtn')
+    document.querySelectorAll('#medicalReportTable, #patientsFileTable, #surgeryNoteTable').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const medicalReportBtn          = event.target.closest('.editMedicalReportBtn')
+            const viewMedicalReportbtn      = event.target.closest('.viewMedicalReportBtn')
+            const deleteMedicalReportBtn    = event.target.closest('.deleteMedicalReportBtn')
+            const deleteFileBtn             = event.target.closest('.deleteFileBtn')
+            const SurgeryNoteBtn            = event.target.closest('.updateSurgeryNoteBtn, .viewSurgeryNoteBtn')
+            const deleteSurgeryNoteBtn      = event.target.closest('.deleteSurgeryNoteBtn')
+    
+            if (medicalReportBtn) {
+                medicalReportBtn.setAttribute('disabled', 'disabled')
+                saveMedicalReportBtn.setAttribute('data-table', medicalReportBtn.dataset.table)
+                http.get(`/medicalreports/${medicalReportBtn.getAttribute('data-id')}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openMedicalReportModal(editMedicalReportTemplateModal, saveMedicalReportBtn, response.data.data)
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+                setTimeout(()=>{medicalReportBtn.removeAttribute('disabled')}, 2000)
+            }
+    
+            if (viewMedicalReportbtn) {
+                viewMedicalReportbtn.setAttribute('disabled', 'disabled')
+                http.get(`/medicalreports/display/${viewMedicalReportbtn.getAttribute('data-id')}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        displayMedicalReportModal(viewMedicalReportModal, response.data.data)
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+                setTimeout(()=>{viewMedicalReportbtn.removeAttribute('disabled')}, 2000)
+            }
+    
+            if (deleteMedicalReportBtn){
+                deleteMedicalReportBtn.setAttribute('disabled', 'disabled')
+                    if (confirm('Are you sure you want to delete this report?')) {
+                        const id = deleteMedicalReportBtn.getAttribute('data-id')
+                        http.delete(`/medicalreports/${id}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300){
+                                if ($.fn.DataTable.isDataTable( '#'+this.id )){
+                                $('#'+this.id).dataTable().fnDraw()
+                                }
+                            }
+                            deleteMedicalReportBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {console.log(error);deleteMedicalReportBtn.removeAttribute('disabled')})
+                    } deleteMedicalReportBtn.removeAttribute('disabled')
+            }
 
-        if (medicalReportBtn) {
-            medicalReportBtn.setAttribute('disabled', 'disabled')
-            saveMedicalReportBtn.setAttribute('data-table', medicalReportBtn.dataset.table)
-            http.get(`/medicalreports/${medicalReportBtn.getAttribute('data-id')}`)
-            .then((response) => {
-                if (response.status >= 200 || response.status <= 300) {
-                    openMedicalReportModal(editMedicalReportTemplateModal, saveMedicalReportBtn, response.data.data)
-                }
-            })
-            .catch((error) => {
-                console.log(error)
-            })
-            setTimeout(()=>{medicalReportBtn.removeAttribute('disabled')}, 2000)
-        }
+            if (deleteFileBtn){
+                deleteFileBtn.setAttribute('disabled', 'disabled')
+                    if (confirm('Are you sure you want to delete this file?')) {
+                        const id = deleteFileBtn.getAttribute('data-id')
+                        http.delete(`/patientsfiles/${id}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300){
+                                if ($.fn.DataTable.isDataTable( '#'+this.id )){
+                                $('#'+this.id).dataTable().fnDraw()
+                                }
+                                if (response.status == 222){
+                                    alert(response.data)
+                                }
+                                table.draw()
+                            }
+                            deleteFileBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {console.log(error);deleteFileBtn.removeAttribute('disabled')})
+                    } deleteFileBtn.removeAttribute('disabled')
+            }
 
-        if (viewMedicalReportbtn) {
-            viewMedicalReportbtn.setAttribute('disabled', 'disabled')
-            http.get(`/medicalreports/display/${viewMedicalReportbtn.getAttribute('data-id')}`)
-            .then((response) => {
-                if (response.status >= 200 || response.status <= 300) {
-                    displayMedicalReportModal(viewMedicalReportModal, response.data.data)
-                }
-            })
-            .catch((error) => {
-                console.log(error)
-            })
-            setTimeout(()=>{viewMedicalReportbtn.removeAttribute('disabled')}, 2000)
-        }
-
-        if (deleteMedicalReportBtn){
-            deleteMedicalReportBtn.setAttribute('disabled', 'disabled')
-                if (confirm('Are you sure you want to delete this record?')) {
-                    const id = deleteMedicalReportBtn.getAttribute('data-id')
-                    http.delete(`/medicalreports/${id}`)
+            if (SurgeryNoteBtn) {
+                const isUpdate = SurgeryNoteBtn.id == 'updateSurgeryNoteBtn'
+                const [btn, modalBtn, modal ] = isUpdate ? [SurgeryNoteBtn, saveSurgeryNoteBtn, updateSurgeryModal] : [SurgeryNoteBtn, saveSurgeryNoteBtn, viewSurgeryModal]
+                btn.setAttribute('disabled', 'disabled')
+                saveSurgeryNoteBtn.setAttribute('data-table', btn.dataset.table)
+                http.get(`/surgerynote/${btn.getAttribute('data-id')}`)
                     .then((response) => {
-                        if (response.status >= 200 || response.status <= 300){
-                            if ($.fn.DataTable.isDataTable( '#'+this.id )){
-                            $('#'+this.id).dataTable().fnDraw()
+                        if (response.status >= 200 || response.status <= 300) {
+                            openModals(modal, modalBtn, response.data.data)
+                        }
+                    })
+                    .catch((error) => { console.log(error) })
+                setTimeout(()=>{btn.removeAttribute('disabled')}, 2000)
+            }
+
+            if (deleteSurgeryNoteBtn){
+                deleteSurgeryNoteBtn.setAttribute('disabled', 'disabled')
+                const id = deleteSurgeryNoteBtn.getAttribute('data-id')
+                const tableId = deleteSurgeryNoteBtn.getAttribute('data-table')
+                if (confirm('Are you sure you want to delete Surgery Note?')) {
+                    http.delete(`/surgerynote/${id}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            if ($.fn.DataTable.isDataTable('#' + tableId)) {
+                                $('#' + tableId).dataTable().fnDraw()
                             }
                         }
-                        deleteMedicalReportBtn.removeAttribute('disabled')
+                        deleteSurgeryNoteBtn.removeAttribute('disabled')
                     })
-                    .catch((error) => {
-                        console.log(error)
-                        deleteMedicalReportBtn.removeAttribute('disabled')
+                    .catch((error) => { alert(error)
+                        deleteSurgeryNoteBtn.removeAttribute('disabled')
                     })
-                }  
-        }
+                } deleteSurgeryNoteBtn.removeAttribute('disabled')
+            }
+        })
     })
 
-    dischargeBtn.forEach(btn => {
-        btn.addEventListener('click', function () {
-            this.setAttribute('disabled', 'disabled')
+    dischargeBtn.forEach(btn => { btn.addEventListener('click', function () { this.setAttribute('disabled', 'disabled')
             dischargeModal.show()
             this.removeAttribute('disabled')
         })
@@ -584,9 +667,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                 new Toast(div.querySelector('#knownClinicalInfoToast'), {delay:2000}).show()
                             }
                         })
-                        .catch((error) => {
-                            console.log(error)
-                        })
+                        .catch((error) => { console.log(error) })
                     }
                 }
             })
@@ -640,8 +721,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         }
                         deleteBtn.removeAttribute('disabled')
                     })
-                    .catch((error) => {
-                        console.log(error)
+                    .catch((error) => { console.log(error)
                         deleteBtn.removeAttribute('disabled')
                     })
                 }  
@@ -857,10 +937,8 @@ window.addEventListener('DOMContentLoaded', function () {
         div.addEventListener('click', function (event) {
             const deleteConsultationBtn                 = event.target.closest('#deleteReviewConsultationBtn')
             const updateResourceListBtn                 = event.target.closest('#updateResourceListBtn')
-            const newSurgeryBtn                         = event.target.closest('#newSurgeryBtn')
             const SurgeryNoteBtn                        = event.target.closest('.updateSurgeryNoteBtn, .viewSurgeryNoteBtn')
             const deleteSurgeryNoteBtn                  = event.target.closest('.deleteSurgeryNoteBtn')
-            const fileBtn                               = event.target.closest('#fileBtn')
             const collapseConsultationBtn               = event.target.closest('.collapseConsultationBtn')
             const collapseVisitBtn                      = event.target.closest('.collapseVisitBtn')
             const resultBtn                             = event.target.closest('#addResultBtn, #updateResultBtn')
@@ -896,7 +974,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     getMedicationsByFilter(treatmentTableId, conId, consultationReviewModal._element)
                     getOtherPrescriptionsByFilter(otherPrescriptionsTableId, conId, consultationReviewModal._element)
                     getDeliveryNoteTable('deliveryNoteTable'+conId, conId, false)
-                    getSurgeryNoteTable('surgeryNoteTable'+conId, conId, true)
+                    // getSurgeryNoteTable('surgeryNoteTable'+conId, conId, true)
                 }
                 setTimeout(goto, 300)
             }
@@ -917,6 +995,9 @@ window.addEventListener('DOMContentLoaded', function () {
                     location.href = collapseVisitBtn.getAttribute('data-gotovisit')
                     window.history.replaceState({}, document.title, "/" + "doctors" )
                     getVitalsigns('#vitalSignsHistory'+visitId, id, consultationHistoryModal)
+                    getDeliveryNoteTable('deliveryNoteTable'+visitId, visitId, false, consultationHistoryModal._element)
+                    getSurgeryNoteTable('surgeryNoteTableHistory'+visitId, visitId, true, consultationHistoryModal._element)
+                    getPatientsFileTable('patientsFileTableHistory'+visitId, visitId, consultationHistoryModal._element)
                     getbillingTableByVisit('billingTableHistory'+visitId, visitId, consultationHistoryModal._element)
                 }
                 setTimeout(goto, 300)
@@ -980,54 +1061,41 @@ window.addEventListener('DOMContentLoaded', function () {
                     })
                 }
             }
-    
-            if (newSurgeryBtn) {
-                createSurgeryNoteBtn.setAttribute('data-conid', newSurgeryBtn.dataset.id)
-                createSurgeryNoteBtn.setAttribute('data-visitid', newSurgeryBtn.dataset.visitid)
-                newSurgeryModal.show()
-            }
 
-            if (SurgeryNoteBtn) {
-                const isUpdate = SurgeryNoteBtn.id == 'updateSurgeryNoteBtn'
-                const [btn, modalBtn, modal ] = isUpdate ? [SurgeryNoteBtn, saveSurgeryNoteBtn, updateSurgeryModal] : [SurgeryNoteBtn, saveSurgeryNoteBtn, viewSurgeryModal]
-                btn.setAttribute('disabled', 'disabled')
-                saveSurgeryNoteBtn.setAttribute('data-table', btn.dataset.table)
-                http.get(`/surgerynote/${btn.getAttribute('data-id')}`)
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300) {
-                            openModals(modal, modalBtn, response.data.data)
-                        }
-                    })
-                    .catch((error) => {
-                        console.log(error)
-                    })
-                setTimeout(()=>{btn.removeAttribute('disabled')}, 2000)
-            }
+            // if (SurgeryNoteBtn) {
+            //     const isUpdate = SurgeryNoteBtn.id == 'updateSurgeryNoteBtn'
+            //     const [btn, modalBtn, modal ] = isUpdate ? [SurgeryNoteBtn, saveSurgeryNoteBtn, updateSurgeryModal] : [SurgeryNoteBtn, saveSurgeryNoteBtn, viewSurgeryModal]
+            //     btn.setAttribute('disabled', 'disabled')
+            //     saveSurgeryNoteBtn.setAttribute('data-table', btn.dataset.table)
+            //     http.get(`/surgerynote/${btn.getAttribute('data-id')}`)
+            //         .then((response) => {
+            //             if (response.status >= 200 || response.status <= 300) {
+            //                 openModals(modal, modalBtn, response.data.data)
+            //             }
+            //         })
+            //         .catch((error) => { console.log(error) })
+            //     setTimeout(()=>{btn.removeAttribute('disabled')}, 2000)
+            // }
 
-            if (deleteSurgeryNoteBtn){
-                deleteSurgeryNoteBtn.setAttribute('disabled', 'disabled')
-                const id = deleteSurgeryNoteBtn.getAttribute('data-id')
-                const tableId = deleteSurgeryNoteBtn.getAttribute('data-table')
-                if (confirm('Are you sure you want to delete Delivery Note?')) {
-                    http.delete(`/surgerynote/${id}`)
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300) {
-                            if ($.fn.DataTable.isDataTable('#' + tableId)) {
-                                $('#' + tableId).dataTable().fnDraw()
-                            }
-                        }
-                        deleteSurgeryNoteBtn.removeAttribute('disabled')
-                    })
-                    .catch((error) => {
-                        alert(error)
-                        deleteSurgeryNoteBtn.removeAttribute('disabled')
-                    })
-                } deleteSurgeryNoteBtn.removeAttribute('disabled')
-            }
-    
-            if (fileBtn) {
-                fileModal.show()
-            }
+            // if (deleteSurgeryNoteBtn){
+            //     deleteSurgeryNoteBtn.setAttribute('disabled', 'disabled')
+            //     const id = deleteSurgeryNoteBtn.getAttribute('data-id')
+            //     const tableId = deleteSurgeryNoteBtn.getAttribute('data-table')
+            //     if (confirm('Are you sure you want to delete Surgery Note?')) {
+            //         http.delete(`/surgerynote/${id}`)
+            //         .then((response) => {
+            //             if (response.status >= 200 || response.status <= 300) {
+            //                 if ($.fn.DataTable.isDataTable('#' + tableId)) {
+            //                     $('#' + tableId).dataTable().fnDraw()
+            //                 }
+            //             }
+            //             deleteSurgeryNoteBtn.removeAttribute('disabled')
+            //         })
+            //         .catch((error) => { alert(error)
+            //             deleteSurgeryNoteBtn.removeAttribute('disabled')
+            //         })
+            //     } deleteSurgeryNoteBtn.removeAttribute('disabled')
+            // }
     
             if (resultBtn) {
                 const update = resultBtn.id == 'updateResultBtn'
@@ -1042,8 +1110,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             openModals(updateResultModal, saveResultBtn, response.data.data)
                         }
                     })
-                    .catch((error) => {
-                        alert(error)
+                    .catch((error) => { alert(error)
                     })
                 } else {
                     modalBtn.setAttribute('data-id', btn.getAttribute('data-id'))
@@ -1065,8 +1132,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             }
                             deleteResultBtn.removeAttribute('disabled')
                         })
-                        .catch((error) => {
-                            alert(error)
+                        .catch((error) => { alert(error)
                             deleteResultBtn.removeAttribute('disabled')
                         })
                 }
@@ -1077,18 +1143,17 @@ window.addEventListener('DOMContentLoaded', function () {
 
     createSurgeryNoteBtn.addEventListener('click', function () {
         createSurgeryNoteBtn.setAttribute('disabled', 'disabled')
-        const conId = createSurgeryNoteBtn.dataset.conid
-        const visitId = createSurgeryNoteBtn.dataset.visitid
+        const visitId = createSurgeryNoteBtn.dataset.id
 
-        let data = { ...getDivData(newSurgeryModal._element), conId, visitId }
+        let data = { ...getDivData(newSurgeryModal._element), visitId }
         http.post('/surgerynote', {...data}, {"html": newSurgeryModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 newSurgeryModal.hide()
                 clearDivValues(newSurgeryModal._element)
                 clearValidationErrors(newSurgeryModal._element)
-                if ($.fn.DataTable.isDataTable('#surgeryNoteTable' + conId)) {
-                    $('#surgeryNoteTable' + conId).dataTable().fnDraw()
+                if ($.fn.DataTable.isDataTable('#surgeryNoteTable')) {
+                    $('#surgeryNoteTable').dataTable().fnDraw()
                 }
             }
             createSurgeryNoteBtn.removeAttribute('disabled')
@@ -1141,8 +1206,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     btn.removeAttribute('disabled')
                     modal.hide()
                 })
-                .catch((error) => {
-                    console.log(error)
+                .catch((error) => { console.log(error)
                     btn.removeAttribute('disabled')
                 })
         })
@@ -1210,8 +1274,7 @@ function openDoctorModals(modal, button, {id, visitId, ancRegId, patientType, ca
         }
     } else {
         button.setAttribute('href', `https://portal.sandrahospitalmkd.com/Consultations/History?CardNumber=${cardNo}`)
-    }
-    
+    }   
 }
 
 function getSelectedResourceValues(modal, inputEl, datalistEl) {  

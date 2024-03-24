@@ -12,10 +12,23 @@
                         <div class="row">
                             <x-form-div class="col-xl-12">
                                 <x-input-span>Name File<x-required-span /></x-input-span>
-                                <x-form-input name="name" placeholder="eg: x-ray, ultrasound scan" />
+                                <x-form-input name="filename" placeholder="eg: x-ray, scan result, lab result etc.." id="filename"/>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                <x-form-input type="file" name="file" />
+                                <x-form-input type="file" name="patientsFile" id="patientsFile" />
+                            </x-form-div>
+                            <x-form-div class="col-xl-12">
+                                <x-input-span>Third Party <i><small>(if applicable)</small></i></x-input-span>
+                                <select class="form-select form-select-md" id="thirdParty" name="thirdParty">
+                                    <option value="">Select</option>   
+                                    @foreach ($thirdParties as $thirdParty )
+                                        <option value="{{ $thirdParty->id}}" name="{{ $thirdParty->short_name }}">{{ $thirdParty->short_name }}</option>
+                                    @endforeach
+                                </select>
+                            </x-form-div>
+                            <x-form-div class="col-xl-12">
+                                <x-input-span>Comment</x-input-span>
+                                <x-form-textarea name="comment" id="comment"></x-form-textarea>
                             </x-form-div>
                         </div>
                     </div>
@@ -26,7 +39,7 @@
                     <i class="bi bi-x-circle me-1"></i>
                     Close
                 </button>
-                <button type="button" id="{{ $isUpdate ? 'saveBtn' : 'createBtn' }}" class="btn bg-primary text-white">
+                <button type="button" id="uploadFileBtn" class="btn bg-primary text-white">
                     <i class="bi bi-check-circle me-1"></i>
                     Create
                 </button>

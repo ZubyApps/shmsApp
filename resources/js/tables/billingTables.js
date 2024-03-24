@@ -156,12 +156,13 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
     });
 
     function format(data, tableId) {
-        const credit = data.sponsorCategoryClass == 'Credit'
-        const NHIS = data.sponsorCategory == 'NHIS'
-        const balance = data.sponsorCategory == 'NHIS' ? data.nhisBalance : data.balance
+        const credit        = data.sponsorCategoryClass == 'Credit'
+        const NHIS          = data.sponsorCategory == 'NHIS'
+        const balance       = data.sponsorCategory == 'NHIS' ? data.nhisBalance : data.balance
         const prescriptions = data.prescriptions
-        const payMethods = data.payMethods
-        const notBilled = data.notBilled
+        const payMethods    = data.payMethods
+        const notBilled     = data.notBilled
+        const patient       = data.patient
         let payMethodOptions = ''
         payMethods.forEach(method => {
             payMethodOptions += `<option value="${method.id}">${method.name}</option>`
@@ -188,8 +189,8 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             <tr>
                                                 <td class="text-secondary">${count++}</td>
                                                 <td class="text-secondary">${p.prescribed}</td>                
-                                                <td class="text-secondary">${p.prescribedBy}</td>                                
-                                                <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold">
+                                                <td class="text-secondary">${p.prescribedBy}</td>
+                                                <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold tooltip-test ${p.isInvestigation && p.thirdParty == ''  ? 'thirdPartyServiceBtn' : ''}" data-id="${p.prescriptionId}" data-patient="${patient}" data-service="${p.item}" title="${p.thirdParty ? '' : 'initite third party service'}">
                                                     ${p.item +' '+ displayPaystatus(p, credit, NHIS)}
                                                 </td>
                                                 ${credit || NHIS ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>` : ''}                

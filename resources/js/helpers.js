@@ -361,9 +361,9 @@ const sponsorAndPayPercent = (row) => {
 
 const displayPaystatus = (row, credit, NHIS) => {
     if (credit || NHIS){
-        return  `<i class="bi ${+row.approved ? 'bi-check-circle-fill text-primary' : row.rejected ? 'bi-x-circle-fill text-danger' : 'bi-dash-circle-fill text-secondary'} tooltip-test" title=${row.approved ? 'approved' : row.rejected ? 'rejected' : 'not processed'}></i> ${row.paid || row.paidNhis ? '<i class="bi bi-p-circle-fill text-primary tooltip-test" title="paid"></i>': ''} `
+        return  `<i class="bi ${+row.approved ? 'bi-check-circle-fill text-primary' : row.rejected ? 'bi-x-circle-fill text-danger' : 'bi-dash-circle-fill text-secondary'} tooltip-test" title=${row.approved ? 'approved' : row.rejected ? 'rejected' : 'not processed'}></i> ${row.paid || row.paidNhis ? '<i class="bi bi-p-circle-fill text-primary tooltip-test" title="paid"></i>': ''}  ${row.thirdParty ? `<small>(${row.thirdParty})</small>` : ''}` 
     } else {
-        return  row.paid ? '<i class="bi bi-p-circle-fill tooltip-test text-primary" title="paid"></i>' : '<i class="bi bi-dash-circle-fill text-secondary tooltip-test" title="not processed"></i>'
+        return  row.paid ? `<i class="bi bi-p-circle-fill tooltip-test text-primary" title="paid"></i> ${row.thirdParty  ? `<small>(${row.thirdParty})</small>` : ''}` : `<i class="bi bi-dash-circle-fill text-secondary tooltip-test" title="not processed"></i> ${row.thirdParty ? `</small>(${row.thirdParty})</small>` : ''}`
     }
 }
 
@@ -377,7 +377,7 @@ const admissionStatus = (row) => {
             </a>
                 <ul class="dropdown-menu">
                 <li>
-                    <a role="button" class="dropdown-item wardBedBtn" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-updatedby="${row.updatedBy}" data-doctor="${row.doctor}" data-ward="${row.ward}" data-bedno="${row.bedNo}">
+                    <a role="button" class="dropdown-item wardBedBtn" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-updatedby="${row.updatedBy}" data-doctor="${row.doctor}" data-ward="${row.ward}" data-bedno="${row.bedNo}">
                         Update Ward & Bed
                     </a>
                 </li>
@@ -390,7 +390,7 @@ const admissionStatus = (row) => {
         </div>
     </div>` :
     `<div class="d-flex flex-">
-        <button class="d-flex flex- btn fw-bold tooltip-test dischargedBtn" title="Outpatient" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">
+        <button class="d-flex flex- btn fw-bold tooltip-test dischargedBtn" title="Outpatient" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">
         <i class="bi bi-hospital"></i>
         ${row.reason ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged"></i>` : ''}
         </button>
@@ -408,7 +408,7 @@ const admissionStatusX = (row) => {
         </div>
     </div>` :
     `<div class="d-flex flex-">
-        <button class="d-flex flex- btn fw-bold tooltip-test dischargedBtn" title="Outpatient" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">
+        <button class="d-flex flex- btn fw-bold tooltip-test dischargedBtn" title="Outpatient" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">
         <i class="bi bi-hospital"></i>
         ${row.reason ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged"></i>` : ''}
         </button>

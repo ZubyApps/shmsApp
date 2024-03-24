@@ -70,9 +70,57 @@
                         </div>
                         <div id="treatmentDiv">
                         </div>
+                        @if (!$isAnc && !$isLab && !$isHmo)   
+                        <div class="my-2 form-control">
+                            <span class="fw-bold"> Delivery Note </span>
+                            <div class="text-start py-3">
+                                <button type="button" id="newDeliveryNoteBtn" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle me-1"></i>
+                                    Delivery Note
+                                </button>
+                            </div>
+                            <div class="row overflow-auto m-1">
+                                <table id="deliveryNoteTable" class="table table-sm deliveryNoteTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Time of Admission</th>
+                                            <th>Time of Delivery</th>
+                                            <th>Mode of Delivery</th>
+                                            <th>Female</th>
+                                            <th>Male</th>
+                                            <th>EBL</th>
+                                            <th>Nurse</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="mb-2 form-control">
+                            <x-form-span>Surgery Note</x-form-span>
+                            <div class="row overflow-auto m-1">
+                                <table id="surgeryNoteTable" class="table table-sm surgeryNoteTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Operation</th>
+                                            <th>Aneasthesia</th>
+                                            <th>Surgeon</th>
+                                            <th>Surgeons Notes</th>
+                                            <th>PostOp Notes</th>
+                                            <th>Saved By</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        @endif
                         @if ($isAnc)
                         <x-bill-summary :number="'AncConDetails'" class="{{ $isLab ? 'd-none' : '' }}"></x-bill-summary> @else <x-bill-summary :number="'ConDetails'" class="{{ $isLab ? 'd-none' : '' }}"></x-bill-summary> @endif
-                        {{-- <x-bill-summary class="{{ $isLab ? 'd-none' : '' }}"></x-bill-summary> --}}
                     </div>
                 </div>
                 <div class="modal-footer px-5">

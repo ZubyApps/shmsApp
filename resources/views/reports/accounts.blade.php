@@ -57,7 +57,7 @@
                         <thead>
                             <tr>
                                 <th>Pay Method</th>
-                                <th>Paymenys</th>
+                                <th>Payments</th>
                                 <th>Total AMount</th>
                             </tr>
                         </thead>
