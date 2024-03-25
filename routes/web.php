@@ -175,6 +175,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/medservices', [ReportController::class, 'indexMedServices'])->name('Medical Services');
             Route::get('/medservices/summary', [ReportController::class, 'loadMedServicesSummary']);
             Route::get('/medservices/byresource', [ReportController::class, 'loadByResource']);
+            Route::get('/medservices/newbirths', [ReportController::class, 'loadNewBirths']);
+            Route::get('/medservices/referredordeceased', [ReportController::class, 'loadReferredOrDeceased']);
+            Route::get('/medservices/dischargesummary', [ReportController::class, 'loadDischargeSummary']);
             Route::get('/investigations', [ReportController::class, 'indexInvestigations'])->name('Investigation Reports');
             Route::get('/investigations/summary', [ReportController::class, 'loadInvestigationsSummary']);
             Route::get('/investigations/byresource', [ReportController::class, 'loadByResource']);
@@ -188,6 +191,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/resources/summary', [ReportController::class, 'loadResourceValueSummary']);
             Route::get('/resources/usedsummary', [ReportController::class, 'loadUsedResourcesSummary']);
             Route::get('/resources/bycategoryresource', [ReportController::class, 'loadByCategoryResource']);
+            Route::get('/resources/expiratonstock', [ReportController::class, 'loadByExpirationOrStock']);
             Route::get('/accounts', [ReportController::class, 'indexAccounts'])->name('Account Reports');
             Route::get('/accounts/paymethodsummary', [ReportController::class, 'loadPayMethodsSummary']);
             Route::get('/accounts/capitation', [ReportController::class, 'loadCapitationPayments']);
@@ -197,6 +201,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/accounts/bypaymethod', [ReportController::class, 'loadPaymentsByPayMethod']);
             Route::get('/accounts/byvisitbysponsor', [ReportController::class, 'loadVisitsBySponsor']);
             Route::get('/accounts/yearlysummary', [ReportController::class, 'loadYearlyIncomeAndExpense']);
+            Route::get('/users', [ReportController::class, 'indexUsers'])->name('Users Reports');
+            Route::get('/users/doctors', [ReportController::class, 'loadDoctorsActivity']);
         });
     });
 

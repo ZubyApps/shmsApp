@@ -1111,11 +1111,8 @@ window.addEventListener('DOMContentLoaded', function () {
         http.post('/deliverynote', {...data}, {"html": newDeliveryNoteModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
-                newDeliveryNoteModal.hide()
-                clearDivValues(newDeliveryNoteModal._element)
-                if ($.fn.DataTable.isDataTable('#deliveryNoteTable')) {
-                    $('#deliveryNoteTable').dataTable().fnDraw()
-                }
+                newDeliveryNoteModal.hide(); clearDivValues(newDeliveryNoteModal._element); clearValidationErrors(newDeliveryNoteModal._element)
+                if ($.fn.DataTable.isDataTable('#deliveryNoteTable')) {$('#deliveryNoteTable').dataTable().fnDraw()}
             }
             createDeliveryNoteBtn.removeAttribute('disabled')
         })

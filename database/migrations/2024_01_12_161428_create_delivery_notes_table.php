@@ -24,8 +24,7 @@ return new class extends Migration
             $table->string('mode_of_delivery');
             $table->string('parity');
             $table->string('head_circumference');
-            $table->integer('female')->nullable();
-            $table->integer('male')->nullable();
+            $table->string('sex');
             $table->string('ebl');
             $table->text('note');
             $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();

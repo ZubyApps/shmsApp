@@ -111,7 +111,6 @@ class UserService
         }
 
         return $this->user
-                    ->where('id', '!=', 0)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 

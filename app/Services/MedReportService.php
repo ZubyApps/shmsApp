@@ -5,11 +5,15 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
+use App\Models\Consultation;
+use App\Models\DeliveryNote;
 use App\Models\Prescription;
 use App\Models\Resource;
+use App\Models\Visit;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class MedReportService
 {
@@ -17,6 +21,9 @@ class MedReportService
         private readonly Resource $resource, 
         private readonly HelperService $helperService,
         private readonly Prescription $prescription,
+        private readonly DeliveryNote $deliveryNote,
+        private readonly Visit $visit,
+        private readonly PayPercentageService $payPercentageService
         )
     {
     }
@@ -199,5 +206,257 @@ class MedReportService
                     'paid'              => $prescription->paid,
                 ];
             };
+    }
+
+    public function getNewBirthsList(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'asc';
+        $current    = CarbonImmutable::now();
+
+        if (! empty($params->searchTerm)) {
+            if ($data->startDate && $data->endDate){
+                return $this->deliveryNote
+                            ->where(function (Builder $query) use($params) {
+                                $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                            ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            if($data->date){
+                $date = new Carbon($data->date);
+                return $this->deliveryNote
+                    ->where(function (Builder $query) use($params) {
+                        $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    })
+                    ->whereMonth('created_at', $date->month)
+                    ->whereYear('created_at', $date->year)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            return $this->deliveryNote
+                            ->where(function (Builder $query) use($params) {
+                                $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                            ->whereMonth('created_at', $current->month)
+                            ->whereYear('created_at', $current->year)
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->startDate && $data->endDate){
+            return $this->deliveryNote
+                ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if($data->date){
+            $date = new Carbon($data->date);
+            return $this->deliveryNote
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return $this->deliveryNote
+                ->whereMonth('created_at', $current->month)
+                ->whereYear('created_at', $current->year)
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
+    public function getNewBirthsTransformer(): callable
+    {
+        return  function (DeliveryNote $deliveryNote) {
+
+            $dVisit = $deliveryNote->visit;
+
+            return [
+                    'id'                => $deliveryNote->id,
+                    'date'              => (new Carbon($deliveryNote->date))->format('d-M-y'),
+                    'timeofDelivery'    => (new Carbon($deliveryNote->time_of_delivery))->format('d-M-y g:ia'),
+                    'mother'            => $dVisit->patient->patientId(),
+                    'age'               => $this->helperService->twoPartDiffInTimePast($dVisit->patient->date_of_birth),
+                    'sponsor'           => $dVisit->sponsor->name,
+                    'category'          => $dVisit->sponsor->category_name,
+                    'noteBy'            => $dVisit->user->username,
+                    'modeOfDelivery'    => $deliveryNote->mode_of_delivery,
+                    'sex'               => $deliveryNote->sex,
+                ];
+            };
+    }
+
+    public function getReferredOrDeceasedList(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'asc';
+        $current    = CarbonImmutable::now();
+
+        if (! empty($params->searchTerm)) {
+            if ($data->startDate && $data->endDate){
+                return $this->visit
+                            ->where('discharge_reason', $data->filterBy)
+                            ->where(function (Builder $query) use($params) {
+                                $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                            ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            if($data->date){
+                $date = new Carbon($data->date);
+                return $this->visit
+                    ->where('discharge_reason', $data->filterBy)
+                    ->where(function (Builder $query) use($params) {
+                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    })
+                    ->whereMonth('created_at', $date->month)
+                    ->whereYear('created_at', $date->year)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            return $this->visit
+                            ->where('discharge_reason', $data->filterBy)
+                            ->where(function (Builder $query) use($params) {
+                                $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                            ->whereMonth('created_at', $current->month)
+                            ->whereYear('created_at', $current->year)
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->startDate && $data->endDate){
+            return $this->visit
+                ->where('discharge_reason', $data->filterBy)
+                ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if($data->date){
+            $date = new Carbon($data->date);
+            return $this->visit
+                ->where('discharge_reason', $data->filterBy)
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return $this->visit
+                ->where('discharge_reason', $data->filterBy)
+                ->whereMonth('created_at', $current->month)
+                ->whereYear('created_at', $current->year)
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
+    public function getReferredOrDeceasedLoadTransformer(): callable
+    {
+       return  function (Visit $visit) {
+            return [
+                'id'                => $visit->id,
+                'date'              => (new Carbon($visit->created_at))->format('d/m/Y'),
+                'sponsorCategoryClass'  => $visit->sponsor->sponsorCategory->pay_class,
+                'sponsorCategory'       => $visit->sponsor->category_name,
+                'sponsor'               => $visit->sponsor->name,
+                'patient'               => $visit->patient->patientId(),
+                'age'                   => $this->helperService->twoPartDiffInTimePast($visit->patient->date_of_birth),
+                'sex'                   => $visit->patient->sex,
+                'phone'                 => $visit->patient->phone,
+                'doctor'                => $visit->doctor->username,
+                'diagnosis'             =>  Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
+                                            Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
+                                            Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment ?? '',
+                'admissionStatus'   => $visit->admission_status,
+                'reason'            => $visit->discharge_reason,
+                'totalHmsBill'      => $visit->total_hms_bill,
+                'totalHmsPaid'      => $visit->total_paid,
+                'payPercent'        => $this->payPercentageService->individual_Family($visit),
+                'payPercentNhis'    => $this->payPercentageService->nhis($visit),
+                'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
+            ];
+         };
+    }
+
+    public function getDischargeSummary(DataTableQueryParams $params, $data)
+    {
+        $current = CarbonImmutable::now();
+
+        if ($data->startDate && $data->endDate){
+            return DB::table('visits')
+            ->selectRaw('COUNT(DISTINCT(sponsors.id)) as sponsorCount, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, visits.discharge_reason as reason')
+            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+            ->where('visits.admission_status', 'Inpatient')
+            ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+            ->groupBy('reason')
+            ->orderBy('patientsCount', 'desc')
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if($data->date){
+            $date = new Carbon($data->date);
+
+            return DB::table('visits')
+            ->selectRaw('COUNT(DISTINCT(sponsors.id)) as sponsorCount, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, visits.discharge_reason as reason')
+            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+            ->where('visits.admission_status', 'Inpatient')
+            ->whereMonth('visits.created_at', $date->month)
+            ->whereYear('visits.created_at', $date->year)
+            ->groupBy('reason')
+            ->orderBy('patientsCount', 'desc')
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return DB::table('visits')
+            ->selectRaw('COUNT(DISTINCT(sponsors.id)) as sponsorCount, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, visits.discharge_reason as reason')
+            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+            ->where('visits.admission_status', 'Inpatient')
+            ->whereMonth('visits.created_at', $current->month)
+            ->whereYear('visits.created_at', $current->year)
+            ->groupBy('reason')
+            ->orderBy('patientsCount', 'desc')
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 }

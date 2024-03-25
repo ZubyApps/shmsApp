@@ -32,8 +32,7 @@ class StoreDeliveryNoteRequest extends FormRequest
             'modeOfDelivery'    => ['required'],
             'parity'            => ['required'],
             'headCircumference' => ['required'],
-            'female'            => ['required_if:male,null'],
-            'male'              => ['required_if:female,null'],
+            'sex'               => ['required'],
             'ebl'               => ['required'],
             'visitId'           => ['required', 'numeric', 'exists:'.Visit::class.',id'],
         ];

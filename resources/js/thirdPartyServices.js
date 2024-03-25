@@ -52,6 +52,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         console.log(error)
                     })
             }
+            deleteThirPartyServiceBtn.removeAttribute('disabled')
             
         }
     })

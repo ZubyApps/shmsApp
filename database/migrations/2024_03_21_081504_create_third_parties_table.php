@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('short_name');
             $table->string('phone');
             $table->string('address');
-            $table->string('email');
-            $table->string('comment');
+            $table->string('email')->nullable();
+            $table->string('comment')->nullable();
             $table->boolean('delisted')->default(false);
             $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();

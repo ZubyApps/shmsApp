@@ -1,7 +1,7 @@
 import {Modal } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { getByResourceCategoryTable, getResourceValueSummaryTable, getUsedResourcesSummaryTable } from "./tables/resourceReportTables";
+import { getByResourceCategoryTable, getExpirationStockTable, getResourceValueSummaryTable, getUsedResourcesSummaryTable } from "./tables/resourceReportTables";
 
 window.addEventListener('DOMContentLoaded', function () {
     const byResourceCategoryModal    = new Modal(document.getElementById('byResourceCategoryModal'))
@@ -9,12 +9,15 @@ window.addEventListener('DOMContentLoaded', function () {
     const datesDiv                  = document.querySelector('.datesDiv')
 
     const summaryTab                = document.querySelector('#nav-summary-tab')
-    const usedSummaryTab                = document.querySelector('#nav-usedSummary-tab')
+    const usedSummaryTab            = document.querySelector('#nav-usedSummary-tab')
+    const expirationStockTab        = document.querySelector('#nav-expirationStock-tab')
+
+    const filterListOption          = document.querySelector('#filterList')
 
     const searchWithDatesBtn        = document.querySelector('.searchWithDatesBtn')
     const searchResourcesByMonthBtn = document.querySelector('.searchResourcesByMonthBtn')
 
-    let resourceValuesTable, usedSummaryTable, byResourceCategoryTable
+    let resourceValuesTable, usedSummaryTable, byResourceCategoryTable, expirationStockTable
     resourceValuesTable = getResourceValueSummaryTable('summaryTable')
 
     summaryTab.addEventListener('click', function() {
@@ -30,6 +33,14 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    expirationStockTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#expirationStockTable' )){
+            $('#expirationStockTable').dataTable().fnDraw()
+        } else {
+            expirationStockTable = getExpirationStockTable('expirationStockTable', 'expiration')
+        }
+    })
+
     searchWithDatesBtn.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#usedSummaryTable' )){
             $('#usedSummaryTable').dataTable().fnDestroy()
@@ -42,6 +53,13 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#usedSummaryTable').dataTable().fnDestroy()
         }
         usedSummaryTable = getUsedResourcesSummaryTable('usedSummaryTable', null, null, datesDiv.querySelector('#resourcesMonth').value)
+    })
+
+    filterListOption.addEventListener('change', function () {
+        if ($.fn.DataTable.isDataTable( '#expirationStockTable' )){
+            $('#expirationStockTable').dataTable().fnDestroy()
+        }
+        getExpirationStockTable('expirationStockTable', filterListOption.value)
     })
 
     document.querySelector('#usedSummaryTable').addEventListener('click', function (event) {

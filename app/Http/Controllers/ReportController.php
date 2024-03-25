@@ -13,6 +13,7 @@ use App\Services\PatientReportService;
 use App\Services\PharmacyReportService;
 use App\Services\PrescriptionService;
 use App\Services\ResourceReportService;
+use App\Services\UserReportService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 
@@ -32,7 +33,8 @@ class ReportController extends Controller
         private readonly ExpenseCategoryController $expenseCategoryController,
         private readonly UserService $userService,
         private readonly PrescriptionService $prescriptionService,
-        private readonly ExpenseService $expenseService
+        private readonly ExpenseService $expenseService,
+        private readonly UserReportService $userReportService,
         )
     {
         
@@ -149,6 +151,42 @@ class ReportController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
+    public function loadNewBirths(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->medReportService->getNewBirthsList($params, $request);
+
+        $loadTransformer = $this->medReportService->getNewBirthsTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    public function loadReferredOrDeceased(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->medReportService->getReferredOrDeceasedList($params, $request);
+
+        $loadTransformer = $this->medReportService->getReferredOrDeceasedLoadTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    public function loadDischargeSummary(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $visits = $this->medReportService->getDischargeSummary($params, $request);
+
+        return response()->json([
+            'data' => $visits,
+            'draw' => $params->draw,
+            'recordsTotal' => $visits->total(),
+            'recordsFiltered' => $visits->total()
+        ]);
+    }
+
     /** Medical Services Report */
     public function indexInvestigations()
     {
@@ -225,8 +263,6 @@ class ReportController extends Controller
         
         $categories = $this->resourceReportService->getUsedResourcesSummary($params, $request);
         
-        // $loadTransformer = $this->resourceReportService->getUsedResourcesTransformer();
-        
         return response()->json([
             'data' => $categories,
             'draw' => $params->draw,
@@ -234,7 +270,6 @@ class ReportController extends Controller
             'recordsFiltered' => count($categories)
         ]);
         
-        // return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
     public function loadByCategoryResource(Request $request)
@@ -246,6 +281,17 @@ class ReportController extends Controller
         $loadTransformer = $this->resourceReportService->getLoadTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    public function loadByExpirationOrStock(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $expirationStock = $this->resourceReportService->getResourcesByExpirationOrStock($params, $request);
+       
+        $transformer = $this->resourceReportService->getExpirationStockTransformer();
+
+        return $this->datatablesService->datatableResponse($transformer, $expirationStock, $params);  
     }
 
     public function indexAccounts()
@@ -390,5 +436,21 @@ class ReportController extends Controller
             'recordsTotal' => $total,
             'recordsFiltered' => $total
         ]);
+    }
+
+    public function indexUsers()
+    {
+        return view('reports.users');
+    }
+
+    public function loadDoctorsActivity(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->userReportService->staffActivitiesByDesignation($params, $request);
+
+        $loadTransformer = $this->userReportService->getDoctorsTransformer($request);
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 }

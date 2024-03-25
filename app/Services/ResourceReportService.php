@@ -219,4 +219,54 @@ class ResourceReportService
                 ];
             };
     }
+
+    public function getResourcesByExpirationOrStock(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'expiry_date';
+        $orderDir   =  'asc';
+
+        if (! empty($params->searchTerm)) {
+            return $this->resource
+                        ->where(function (Builder $query) use($params) {
+                            $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhere('sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
+                            ->orWhere('category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->filterBy === 'expiration'){
+            return $this->resource
+                    ->where('expiry_date', '<', (new Carbon())->addMonths(6))
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->filterBy === 'stockLevel'){
+            return $this->resource
+                    ->whereColumn('stock_level', '<=','reorder_level')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+    }
+
+    public function getExpirationStockTransformer()
+    {
+        return function (Resource $resource) {
+            return [
+                'id'                    => $resource->id,
+                'name'                  => $resource->name,
+                'stockLevel'            => $resource->stock_level,
+                'reOrderLevel'          => $resource->reorder_level,
+                'description'           => $resource->unit_description,
+                'purchasePrice'         => $resource->purchase_price,
+                'sellingPrice'          => $resource->selling_price,
+                'expiring'              => $resource->expiry_date ? $this->helperService->twoPartDiffInTimeToCome($resource->expiry_date) : '',
+                'prescriptionFrequency' => $resource->prescriptions->where('created_at', '>', (new Carbon())->subDays(30))->count(),
+                'dispenseFrequency'     => $resource->prescriptions->where('dispense_date', '>', (new Carbon())->subDays(30))->count(),
+                'flag'                  => $resource->expiry_date ? $this->helperService->flagExpired($resource->expiry_date) : '',
+            ];
+        };
+    }
 }

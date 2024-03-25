@@ -33,6 +33,7 @@ export default defineConfig({
                 'resources/js/hospitalAndOthersReports.js',
                 'resources/js/resourceReports.js',
                 'resources/js/accountReports.js',
+                'resources/js/usersReports.js',
             ],
             refresh: true,
         }),

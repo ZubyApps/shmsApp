@@ -69,7 +69,7 @@ class PatientsFileService
        return  function (PatientsFile $patientsFile) {
             return [
                 'id'                => $patientsFile->id,
-                'createdAt'         => (new Carbon($patientsFile->created_at))->format('d/m/Y g:ai'),
+                'createdAt'         => (new Carbon($patientsFile->created_at))->format('d/m/Y g:ia'),
                 'filename'          => $patientsFile->filename,
                 'thirdParty'        => $patientsFile->thirdParty?->short_name,
                 'comment'           => $patientsFile->comment,

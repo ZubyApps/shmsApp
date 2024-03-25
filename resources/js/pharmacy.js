@@ -12,7 +12,6 @@ $.fn.dataTable.ext.errMode = 'throw';
 
 
 window.addEventListener('DOMContentLoaded', function () {
-    // const reviewDetailsModal        = new Modal(document.getElementById('treatmentDetailsModal'))
     const treatmentDetailsModal     = new Modal(document.getElementById('treatmentDetailsModal'))
     const ancTreatmentDetailsModal  = new Modal(document.getElementById('ancTreatmentDetailsModal'))
     const billingDispenseModal      = new Modal(document.getElementById('billingDispenseModal'))
@@ -21,8 +20,6 @@ window.addEventListener('DOMContentLoaded', function () {
     const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
     const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
     const markDoneBtn               = billingDispenseModal._element.querySelector('#markDoneBtn')
-
-    // const treatmentDiv              = document.querySelector('#treatmentDiv')
 
     const regularTreatmentDiv       = treatmentDetailsModal._element.querySelector('#treatmentDiv')
     const ancTreatmentDiv           = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')

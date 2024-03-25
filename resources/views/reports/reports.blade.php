@@ -58,7 +58,7 @@
         </div>
       </div>
       <div class="col d-flex align-items-start">
-        <i class="bi bi-people me-3 btn btn-outline-primary"></i>
+        <a href="reports/users"><i class="bi bi-people me-3 btn btn-outline-primary"></i></a>
         <div>
           <h3 class="fw-bold mb-0 fs-4 text-primary">Staff </h3>
           <p>Staff activities and performance report summaries.</p>

@@ -22,7 +22,7 @@
             </div>
             <div class="offcanvas-body">
                 <div class="py-4 ">
-                    <table id="waitingTable" class="table table-hover align-middle table-sm bg-primary">
+                    <table id="waitingTable" class="table align-middle table-sm bg-primary">
                         <thead>
                             <tr>
                                 <th>Patient</th>
@@ -51,7 +51,7 @@
                 <div class="my-2 form-control">
                     <span class="fw-bold text-primary"> Outpatient's Investigations </span>
                     <div class="row overflow-auto m-1">
-                        <table id="outpatientInvestigationsTable" class="table table-hover table-sm">
+                        <table id="outpatientInvestigationsTable" class="table table-sm">
                             <thead>
                                 <tr>
                                     <th>Date</th>
@@ -109,7 +109,7 @@
                 <div class="tab-pane fade show active" id="nav-outPatients" role="tabpanel"
                     aria-labelledby="nav-outPatients-tab" tabindex="0">
                     <div class="py-4">
-                        <table id="outPatientsVisitTable" class="table table-hover align-middle table-sm">
+                        <table id="outPatientsVisitTable" class="table align-middle table-sm">
                             <thead>
                                 <tr>
                                     <th>Seen</th>
@@ -129,7 +129,7 @@
                 <div class="tab-pane fade" id="nav-inPatients" role="tabpanel" aria-labelledby="nav-inPatients-tab"
                     tabindex="0">
                     <div class="py-4 ">
-                        <table id="inPatientsVisitTable" class="table table-hover align-middle table-sm">
+                        <table id="inPatientsVisitTable" class="table align-middle table-sm">
                             <thead>
                                 <tr>
                                     <th>Seen</th>
@@ -150,7 +150,7 @@
                 <div class="tab-pane fade" id="nav-ancPatients" role="tabpanel" aria-labelledby="nav-ancPatients-tab"
                     tabindex="0">
                     <div class="py-4 ">
-                        <table id="ancPatientsVisitTable" class="table table-hover align-middle table-sm">
+                        <table id="ancPatientsVisitTable" class="table align-middle table-sm">
                             <thead>
                                 <tr>
                                     <th>Seen</th>

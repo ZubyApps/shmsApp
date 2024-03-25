@@ -48,10 +48,11 @@
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>Sex<x-required-span /></x-input-span>
-                            <x-input-span class="">Female</x-input-span>
-                            <x-form-input type="number" name="female" id="female" :readonly="$isView"/>
-                            <x-input-span class="">Male</x-input-span>
-                            <x-form-input type="number" name="male" id="male" :readonly="$isView"/>
+                            <select class = "form-select form-select-md" name="sex" id="sex" :readonly="$isView">
+                                <option value="">Select</option>
+                                <option value="Female">Female</option>
+                                <option value="Male">Male</option>
+                            </select>
                         </x-form-div>
                         <x-form-div>
                             <x-input-span>EBL<x-required-span /></x-input-span>

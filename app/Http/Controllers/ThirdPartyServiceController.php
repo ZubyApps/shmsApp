@@ -56,22 +56,6 @@ class ThirdPartyServiceController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ThirdPartyService $thirdPartyService)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateThirdPartyServiceRequest $request, ThirdPartyService $thirdPartyService)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      */
     public function destroy(ThirdPartyService $thirdPartyService)

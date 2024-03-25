@@ -141,4 +141,41 @@ const getByResourceCategoryTable = (tableId, resourceCategoryId, modal, startDat
     return patientsByResourceTable
 }
 
-export {getResourceValueSummaryTable, getUsedResourcesSummaryTable, getByResourceCategoryTable}
+const getExpirationStockTable = (tableId, filter) => {
+    return new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax: {url: '/reports/resources/expiratonstock', data: {
+            'filterBy': filter
+        }},
+        orderMulti: true,
+        search:true,
+        language: {
+            emptyTable: 'No Resource'
+        },
+        columns: [
+            {data: "name"},
+            {data: row => () => {
+                if (row.stockLevel <= row.reOrderLevel) {
+                    return `<span class="text-danger fw-semibold">${row.stockLevel +' '+ row.description}</span>`
+                    }
+                return row.stockLevel +' '+ row.description
+                } },
+            {data: row => row.reOrderLevel +' '+ row.description},
+            {data: "purchasePrice"},
+            {data: "sellingPrice"},
+            {data: row => row.stockLevel * row.purchasePrice},
+            {data: row => row.stockLevel * row.sellingPrice},
+            {data: row => () => {
+                if (row.flag) {
+                    return `<span class="text-danger fw-semibold">${row.expiring}</span>`
+                    }
+                return row.expiring
+                } 
+            },
+            {data: "prescriptionFrequency"},
+            {data: "dispenseFrequency"},
+        ]
+    });
+}
+
+export {getResourceValueSummaryTable, getUsedResourcesSummaryTable, getByResourceCategoryTable, getExpirationStockTable}

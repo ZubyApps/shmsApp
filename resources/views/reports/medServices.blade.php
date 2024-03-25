@@ -17,15 +17,15 @@
                 <button class="nav-link"  id="nav-newBirths-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-newBirths" type="button" role="tab" aria-controls="nav-newBirths"
                     aria-selected="true">New Births</button>
-                <button class="nav-link"  id="nav-referrals-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-referrals" type="button" role="tab" aria-controls="nav-referrals"
-                    aria-selected="false">Referrals</button>
+                <button class="nav-link"  id="nav-referred-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-referred" type="button" role="tab" aria-controls="nav-referred"
+                    aria-selected="false">Referred</button>
                 <button class="nav-link"  id="nav-deceased-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-deceased" type="button" role="tab" aria-controls="nav-deceased"
                     aria-selected="false">Deceased</button>
-                {{-- <button class="nav-link"   id="nav-summaries-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-summaries" type="button" role="tab" aria-controls="nav-summaries"
-                    aria-selected="false">Summaries</button> --}}
+                <button class="nav-link"   id="nav-dischargeSummary-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-dischargeSummary" type="button" role="tab" aria-controls="nav-dischargeSummary"
+                    aria-selected="false">Discharge Summary</button>
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
@@ -69,81 +69,129 @@
             <div class="tab-pane fade" id="nav-newBirths" role="tabpanel" aria-labelledby="nav-newBirths-tab" tabindex="0">
                 <div class="py-2">
                     <h5 class="card-title py-4">New Births</h5>
+                    <x-form-div class="col-xl-8 py-3 newBirthsDatesDiv">
+                        <x-input-span class="">Start</x-input-span>
+                        <x-form-input type="date" name="startDate" id="startDate" />
+                        <x-input-span class="">End</x-input-span>
+                        <x-form-input type="date" name="endDate" id="endDate" />
+                        <button class="input-group-text searchNewBirthsWithDatesBtn">Search</button>
+                        <x-input-span class="">OR</x-input-span>
+                        <x-input-span class="">Month/Year</x-input-span>
+                        <x-form-input type="month" name="newBirthsMonth" id="newBirthsMonth" />
+                        <button class="input-group-text searchNewBirthsByMonthBtn">Search</button>
+                    </x-form-div>
                     <table  id="newBirthsTable" class="table table-hover table-sm">
                         <thead>
                             <tr>
                                 <th>Date</th>
+                                <th>Time of delivery</th>
                                 <th>Mode of delivery</th>
-                                <th>Female</th>
-                                <th>Male</th>
-                                <th>Total</th>
+                                <th>Mother</th>
+                                <th>Age</th>
+                                <th>Sponsor</th>
+                                <th>Note By</th>
+                                <th>Sex</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
-                        <tfoot class="fw-bolder text-primary">
+                    </table>
+                </div>
+            </div>
+            <!-- frequency table -->
+            <div class="tab-pane fade" id="nav-referred" role="tabpanel" aria-labelledby="nav-referred-tab" tabindex="0">
+                <div class="py-2">
+                    <h5 class="card-title py-4">Referred Patients</h5>
+                    <x-form-div class="col-xl-8 py-3 referredDatesDiv">
+                        <x-input-span class="">Start</x-input-span>
+                        <x-form-input type="date" name="startDate" id="startDate" />
+                        <x-input-span class="">End</x-input-span>
+                        <x-form-input type="date" name="endDate" id="endDate" />
+                        <button class="input-group-text searchReferredWithDatesBtn">Search</button>
+                        <x-input-span class="">OR</x-input-span>
+                        <x-input-span class="">Month/Year</x-input-span>
+                        <x-form-input type="month" name="newBirthsMonth" id="referredMonth" />
+                        <button class="input-group-text searchReferredByMonthBtn">Search</button>
+                    </x-form-div>
+                    <table id="referredTable" class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Patient</th>
+                                <th>Age</th>
+                                <th>Sex</th>
+                                <th> <i class="bi bi-telephone-outbound-fill text-primary"></i></th>
+                                <th>Doctor</th>
+                                <th>Diagnosis</th>
+                                <th>Sponsor</th>
+                                <th>Status</th>
+                                <th>HMS Bill</th>
+                                <th>Paid</th>
+                                <th>Diff</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot class="fw-bolder">
                             <tr>
                                 <td class="text-center">Total</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                             </tr>
                         </tfoot>
-                    </table>
-                </div>
-            </div>
-            <!-- frequency table -->
-            <div class="tab-pane fade" id="nav-referrals" role="tabpanel" aria-labelledby="nav-referrals-tab" tabindex="0">
-                <div class="py-2">
-                    <h5 class="card-title py-4">Referred Patients</h5>
-                    <table id="referralsTable" class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Patient</th>
-                                <th>Age</th>
-                                <th>Sex</th>
-                                <th> <i class="bi bi-telephone-outbound-fill text-primary"></i></th>
-                                <th>Sponsor</th>
-                                <th>Diagnosis</th>
-                                <th>HMS Bill</th>
-                                <th>HMO Bill</th>
-                                <th>NHIS Bill</th>
-                                <th>Total Paid</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
                     </table>
                 </div>
             </div>
             <!-- Visit Details table -->
             <div class="tab-pane fade" id="nav-deceased" role="tabpanel" aria-labelledby="nav-deceased-tab" tabindex="0">
                 <h5 class="card-title py-4">Deceased Patients</h5>
-                <x-form-div class="col-xl-6 py-3 datesDiv">
+                <x-form-div class="col-xl-8 py-3 deceasedDatesDiv">
                     <x-input-span class="">Start</x-input-span>
                     <x-form-input type="date" name="startDate" id="startDate" />
                     <x-input-span class="">End</x-input-span>
                     <x-form-input type="date" name="endDate" id="endDate" />
-                    <button class="input-group-text searchRegWithDatesBtn">Search</button>
+                    <button class="input-group-text searchDeceasedWithDatesBtn">Search</button>
+                    <x-input-span class="">OR</x-input-span>
+                    <x-input-span class="">Month/Year</x-input-span>
+                    <x-form-input type="month" name="newBirthsMonth" id="deceasedMonth" />
+                    <button class="input-group-text searchDeceasedByMonthBtn">Search</button>
                 </x-form-div>
                 <div class="py-2 ">
-                    <table  id="deceasedTable" class="table table-hover table-sm">
+                    <table id="deceasedTable" class="table table-sm">
                         <thead>
                             <tr>
+                                <th>Date</th>
                                 <th>Patient</th>
                                 <th>Age</th>
                                 <th>Sex</th>
-                                <th>Sponsor</th>
+                                <th> <i class="bi bi-telephone-outbound-fill text-primary"></i></th>
+                                <th>Doctor</th>
                                 <th>Diagnosis</th>
+                                <th>Sponsor</th>
+                                <th>Status</th>
                                 <th>HMS Bill</th>
-                                <th>HMO Bill</th>
-                                <th>NHIS Bill</th>
-                                <th>Total Paid</th>
+                                <th>Paid</th>
+                                <th>Diff</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
-                        <tfoot class="fw-bolder text-primary">
+                        <tfoot class="fw-bolder">
                             <tr>
                                 <td class="text-center">Total</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -153,129 +201,42 @@
                     </table>
                 </div>
             </div>
-            <!-- summaries tables -->
-            {{-- <div class="tab-pane fade" id="nav-summaries" role="tabpanel" aria-labelledby="nav-summaries-tab" tabindex="0">
-                <div class="py-4">
-                    <div class="row">
-                        <div class="col-xl-6 mb-2">
-                          <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">All Patients by Sex</h5>
-                                <table  id="sexAggregateTable" class="table table-hover table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Sex</th>
-                                            <th>Count</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                    <tfoot class="fw-bolder text-primary">
-                                        <tr>
-                                            <td class="text-center">Total</td>
-                                            <td></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-6">
-                          <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">All Patients by Age and Sex</h5>
-                                <table  id="ageAggregateTable" class="table table-hover table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Sex</th>
-                                            <th>0-3m</th>
-                                            <th>3-12m</th>
-                                            <th>1-5y</th>
-                                            <th>5-13y</th>
-                                            <th>13-18y</th>
-                                            <th>18-48y</th>
-                                            <th>48-63y</th>
-                                            <th>63</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                    <tfoot class="fw-bolder text-primary">
-                                        <tr>
-                                            <td class="text-center">Totals</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+            <!-- discharge summaries tables -->
+            <div class="tab-pane fade" id="nav-dischargeSummary" role="tabpanel" aria-labelledby="nav-dischargeSummary-tab" tabindex="0">
+                <h5 class="card-title py-4">Discharge Summary</h5>
+                <x-form-div class="col-xl-8 py-3 dischargeSummaryDatesDiv">
+                    <x-input-span class="">Start</x-input-span>
+                    <x-form-input type="date" name="startDate" id="startDate" />
+                    <x-input-span class="">End</x-input-span>
+                    <x-form-input type="date" name="endDate" id="endDate" />
+                    <button class="input-group-text searchDischargeSummaryWithDatesBtn">Search</button>
+                    <x-input-span class="">OR</x-input-span>
+                    <x-input-span class="">Month/Year</x-input-span>
+                    <x-form-input type="month" name="dischargeSummaryMonth" id="dischargeSummaryMonth" />
+                    <button class="input-group-text searchDischargeSummaryByMonthBtn">Search</button>
+                </x-form-div>
+                <div class="py-2 ">
+                    <table  id="dischargeSummaryTable" class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>Reason</th>
+                                <th>Sponsors</th>
+                                <th>Patients</th>
+                                <th>Visits</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot class="fw-bolder">
+                            <tr>
+                                <td class="text-center">Total</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
-                <div class="py-4">
-                    <div class="row">
-                        <div class="col-xl-6 mb-2">
-                          <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">New Registrations by Sponsor This Month</h5>
-                                <table  id="totalPatientsTable" class="table table-hover table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Sponsor</th>
-                                            <th>Count</th>
-                                            <th>Category</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                    <tfoot class="fw-bolder text-primary">
-                                        <tr>
-                                            <td class="text-center">Total</td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-6">
-                          <div class="card">
-                            <div class="card-body">
-                            <h5 class="card-title">Visits Summary by Sponsor This Month</h5>
-                            <table  id="visitsSummaryTable" class="table table-hover table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Sponsor</th>
-                                        <th>Outpatients</th>
-                                        <th>Inpatients</th>
-                                        <th>Observations</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                                <tfoot class="fw-bolder text-primary">
-                                    <tr>
-                                        <td class="text-center">Total</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                </div>
-            </div> --}}
+            </div>
         </div>
     </div>
     

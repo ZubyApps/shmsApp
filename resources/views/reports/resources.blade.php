@@ -17,6 +17,8 @@
                 <button class="nav-link"  id="nav-usedSummary-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-usedSummary" type="button" role="tab" aria-controls="nav-usedSummary"
                     aria-selected="true">Used Summary</button>
+                <button class="nav-link" id="nav-expirationStock-tab" data-bs-toggle="tab" data-bs-target="#nav-expirationStock"
+                    type="button" role="tab" aria-controls="nav-expirationStock" aria-selected="false">Expiration/Stock</button>
                 {{-- <button class="nav-link"  id="nav-frequency-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-frequency" type="button" role="tab" aria-controls="nav-frequency"
                     aria-selected="false">Frequency</button>
@@ -103,6 +105,36 @@
                                 <td></td>
                             </tr>
                         </tfoot>
+                    </table>
+                </div>
+            </div>
+            <!-- Near Expiration table -->
+            <div class="tab-pane fade" id="nav-expirationStock" role="tabpanel" aria-labelledby="nav-expirationStock-tab"
+            tabindex="0">
+                <x-form-div class="col-md-4 pt-2">
+                    <x-input-span id="filterListLabel">Display List<x-required-span /></x-input-span>
+                    <select class="form-select form-select-md" name="filterList" id="filterList">
+                        <option value="expiration">Close Expiration</option>
+                        <option value="stockLevel">Low Stock</option>
+                    </select>
+                </x-form-div>
+                <div class="pt-2 ">
+                    <table id="expirationStockTable" class="table table-hover table-sm expirationStockTable">
+                        <thead>
+                            <tr>
+                                <th>Medication</th>
+                                <th>Stock Level</th>
+                                <th>Reorder Level</th>
+                                <th>Purchase Price</th>
+                                <th>Selling Price</th>
+                                <th>Purchase Value</th>
+                                <th>Sell Value</th>
+                                <th>Expiring</th>
+                                <th>No. Prescribed(30days)</th>
+                                <th>No. Dispensed(30days)</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
