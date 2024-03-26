@@ -72,7 +72,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const italicsBtn                        = newMedicalReportTemplateModal._element.querySelector('.italicsBtn')
     const underlineBtn                      = newMedicalReportTemplateModal._element.querySelector('.underlineBtn')
     const downloadReportBtn                 = viewMedicalReportModal._element.querySelector('#downloadReportBtn')
-    const fileBtn                           = consultationReviewModal._element.querySelector('#fileBtn')
+    const fileBtns                           = document.querySelectorAll('#fileBtn')
     const uploadFileBtn                     = fileModal._element.querySelector('#uploadFileBtn')
     const newSurgeryBtn                     = consultationReviewModal._element.querySelector('#newSurgeryBtn')
     const reportModalBody                   = viewMedicalReportModal._element.querySelector('.reportModalBody')
@@ -339,7 +339,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    fileBtn.addEventListener('click', function() {fileModal.show()}); newSurgeryBtn.addEventListener('click', function() {newSurgeryModal.show()});
+    fileBtns.forEach(btn => {btn.addEventListener('click', function() {fileModal.show()})}); newSurgeryBtn.addEventListener('click', function() {newSurgeryModal.show()});
 
     uploadFileBtn.addEventListener('click', function() { uploadFileBtn.setAttribute('disabled', 'disabled')
         const visitId = uploadFileBtn.getAttribute('data-id')
