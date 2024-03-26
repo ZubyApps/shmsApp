@@ -1,7 +1,12 @@
-import jQuery from "jquery";
-import jszip from 'jszip';
-import pdfmake from 'pdfmake';
+import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
+import jszip, { forEach } from 'jszip';
+import pdfmake from 'pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts'
+DataTable.Buttons.jszip(jszip)
+DataTable.Buttons.pdfMake(pdfmake)
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+$.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 const getSponsorCategoryTable = (tableId) => {
     const sponsorCategoryTable = new DataTable('#'+tableId, {
@@ -65,6 +70,14 @@ const getResourceStockDateTable = (tableId) => {
         serverSide: true,
         ajax:  '/resourcestockdate/load',
         orderMulti: true,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
         search:true,
         columns: [
             {data: "date"},

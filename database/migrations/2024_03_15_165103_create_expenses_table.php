@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('given_to');
             $table->float('amount');
-            $table->string('comment');
+            $table->string('comment')->nullable();
             $table->foreignIdFor(User::class, 'approved_by')->nullable()->constrained('users')->restrictOnDelete();
             $table->foreignIdFor(ExpenseCategory::class)->constrained()->restrictOnDelete();
             $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();

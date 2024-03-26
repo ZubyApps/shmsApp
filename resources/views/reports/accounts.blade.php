@@ -21,6 +21,9 @@
                 <button class="nav-link"  id="nav-capitationPayments-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-capitationPayments" type="button" role="tab" aria-controls="nav-capitationPayments"
                     aria-selected="true">Capitation Payments</button>
+                <button class="nav-link"  id="nav-TPSSummary-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-TPSSummary" type="button" role="tab" aria-controls="nav-TPSSummary"
+                    aria-selected="true">Third Party Summary</button>
                 <button class="nav-link" id="nav-expenses-tab" data-bs-toggle="tab" data-bs-target="#nav-expenses"
                     type="button" role="tab" aria-controls="nav-expenses" aria-selected="false">Expenses</button>
                 <button class="nav-link"  id="nav-expenseSummary-tab" data-bs-toggle="tab"
@@ -109,6 +112,43 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <!-- Third Party Services Summary Table -->
+            <div class="tab-pane fade" id="nav-TPSSummary" role="tabpanel" aria-labelledby="nav-TPSSummary-tab" tabindex="0">
+                <div class="py-2">
+                    <h5 class="card-title py-4">Third Party Services Summary</h5>
+                    <x-form-div class="col-xl-8 py-3 TPSSummaryDatesDiv">
+                        <x-input-span class="">Start</x-input-span>
+                        <x-form-input type="date" name="startDate" id="startDate" />
+                        <x-input-span class="">End</x-input-span>
+                        <x-form-input type="date" name="endDate" id="endDate" />
+                        <button class="input-group-text searchTPSSummaryByDatesBtn">Search</button>
+                        <x-input-span class="">OR</x-input-span>
+                        <x-input-span class="">Month/Year</x-input-span>
+                        <x-form-input type="month" name="TPSSummaryMonth" id="TPSSummaryMonth" />
+                        <button class="input-group-text searchTPPSSummaryMonthBtn">Search</button>
+                    </x-form-div>
+                    <table  id="TPSSummaryTable" class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Third Party Org</th>
+                                <th>Patients</th>
+                                <th>Services</th>
+                                <th>Total Hms Bill</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot class="fw-bolder">
+                            <tr>
+                                <td class="text-center">Total</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -302,6 +342,7 @@
                                 <th>Month</th>
                                 <th>Total Bill</th>
                                 <th>Total Paid</th>
+                                <th>Total Capitation</th>
                                 <th>Total Expense</th>
                                 <th>Expected Net</th>
                                 <th>Actual Net</th>
@@ -312,6 +353,7 @@
                         <tfoot>
                             <tr class="text-primary">
                                 <td class="fw-bold">Total</td>
+                                <td class="fw-bold "></td>
                                 <td class="fw-bold "></td>
                                 <td class="fw-bold "></td>
                                 <td class="fw-bold "></td>

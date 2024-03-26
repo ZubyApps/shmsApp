@@ -18,7 +18,7 @@
                         <a href="{{ $staffD === 'Doctor' || $staffA > 4 ? '/doctors' : '' }}" class="btn btn-outline-primary mx-1"><i class="bi bi-lungs-fill"> Doctors</i></a>
                         <a href="{{ $staffD === 'Doctor' || $staffD === 'Nurse' || $staffA > 4 ? '/nurses' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-thermometer-low"> Nurses</i></a>
                         <br>
-                        <a href="{{ $staffD === 'Doctor' || $staffD === 'LabTech' || $staffD === 'HMO Officer' || $staffA > 4 ? '/investigations' : '' }}" class="btn btn-outline-primary mx-1"><i class="bi bi-eyedropper" aria-hidden="true"> Investigations</i></a>
+                        <a href="{{ $staffD === 'Doctor' || $staffD === 'Lab Tech' || $staffD === 'HMO Officer' || $staffA > 4 ? '/investigations' : '' }}" class="btn btn-outline-primary mx-1"><i class="bi bi-eyedropper" aria-hidden="true"> Investigations</i></a>
                         <a href="{{ $staffD === 'Pharmacy Tech' || $staffA > 4 ? '/pharmacy' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-capsule"> Pharmacy</i></a>
                         <a href="{{ $staffD === 'HMO Officer' || $staffA > 4 ? '/hmo' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-calendar2-plus-fill"> HMO</i></a>
                         <br>

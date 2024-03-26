@@ -18,7 +18,7 @@
                             <option value="">Select</option>
                             <option value="Doctor">Doctor</option>
                             <option value="Nurse">Nurse</option>
-                            <option value="LabTech">LabTech</option>
+                            <option value="Lab Tech">Lab Tech</option>
                             <option value="Pharmacy Tech">Pharmacy Tech</option>
                             <option value="Bill Officer">Bill Officer</option>
                             <option value="Bill Officer">Records Clerk</option>

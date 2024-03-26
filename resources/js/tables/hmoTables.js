@@ -1,9 +1,14 @@
 import jQuery from "jquery";
 import $ from 'jquery';
-import jszip, { forEach } from 'jszip';
-import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 import { admissionStatus, admissionStatusX, detailsBtn, displayPaystatus, getOrdinal, sponsorAndPayPercent } from "../helpers";
+import jszip, { forEach } from 'jszip';
+import pdfmake from 'pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts'
+DataTable.Buttons.jszip(jszip)
+DataTable.Buttons.pdfMake(pdfmake)
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+$.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
@@ -293,6 +298,14 @@ const getSentBillsTable = (tableId, startDate, endDate) => {
         }},
         orderMulti: true,
         search:true,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
         language: {
             emptyTable: "No patient"
         },
@@ -336,6 +349,14 @@ const getHmoReportsTable = (tableId, category, startDate, endDate) => {
             'endDate': endDate,
         }},
         orderMulti: false,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
         language: {
             emptyTable: 'No report'
         },
@@ -495,6 +516,14 @@ const getNhisReconTable = (tableId, date) => {
             'date': date,
         }},
         orderMulti: false,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
         language: {
             emptyTable: 'No Sponsors'
         },
@@ -509,6 +538,7 @@ const getNhisReconTable = (tableId, date) => {
                 $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
                 $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
                 $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
+                $( api.column(10).footer() ).html(account.format(api.column( 10, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: row => `<span class="btn text-decoration-underline showVisitisBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}">${row.sponsor}</span>`},

@@ -17,7 +17,7 @@ class DoctorsAndLab
     {
         $user = $request->user();
         
-        if ($user && $user->designation->designation !== 'Doctor' && $user->designation->designation !== 'LabTech' && $user->designation->designation !== 'HMO Officer' && $user->designation->access_level < 5){
+        if ($user && $user->designation->designation !== 'Doctor' && $user->designation->designation !== 'Lab Tech' && $user->designation->designation !== 'HMO Officer' && $user->designation->access_level < 5){
             return redirect()->route('login');
         }
         return $next($request);

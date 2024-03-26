@@ -429,7 +429,7 @@ class PrescriptionService
             $date = new Carbon($data->date);
 
             return DB::table('prescriptions')
-                            ->selectRaw('SUM(hms_bill) as bill, SUM(hmo_bill) as totalHmoBill, SUM(nhis_bill) as totalNhisBill, SUM(paid + capitation) as paid, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
+                            ->selectRaw('SUM(hms_bill) as bill, SUM(hmo_bill) as totalHmoBill, SUM(nhis_bill) as totalNhisBill, SUM(paid) as paid, SUM(capitation) as capitation, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
                             ->whereYear('created_at', $date->year)
                             ->groupBy('month_name', 'month')
                             ->orderBy('month')
@@ -437,7 +437,7 @@ class PrescriptionService
         }
 
         return DB::table('prescriptions')
-                        ->selectRaw('SUM(hms_bill) as bill, SUM(hmo_bill) as totalHmoBill, SUM(nhis_bill) as totalNhisBill, SUM(paid + capitation) as paid, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
+                        ->selectRaw('SUM(hms_bill) as bill, SUM(hmo_bill) as totalHmoBill, SUM(nhis_bill) as totalNhisBill, SUM(paid) as paid, SUM(capitation) as capitation, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
                         ->whereYear('created_at', $currentDate->year)
                         ->groupBy('month_name', 'month')
                         ->orderBy('month')

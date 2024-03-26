@@ -195,6 +195,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/accounts', [ReportController::class, 'indexAccounts'])->name('Account Reports');
             Route::get('/accounts/paymethodsummary', [ReportController::class, 'loadPayMethodsSummary']);
             Route::get('/accounts/capitation', [ReportController::class, 'loadCapitationPayments']);
+            Route::get('/accounts/tpsssummary', [ReportController::class, 'loadTPSSummary']);
             Route::get('/accounts/expensesummary', [ReportController::class, 'loadExpensesSummary']);
             Route::get('/accounts/visitsummary1', [ReportController::class, 'loadVisitsSummaryBySponsorCategory']);
             Route::get('/accounts/visitsummary2', [ReportController::class, 'loadVisitsSummaryBySponsor']);
@@ -203,6 +204,11 @@ Route::middleware('auth')->group(function () {
             Route::get('/accounts/yearlysummary', [ReportController::class, 'loadYearlyIncomeAndExpense']);
             Route::get('/users', [ReportController::class, 'indexUsers'])->name('Users Reports');
             Route::get('/users/doctors', [ReportController::class, 'loadDoctorsActivity']);
+            Route::get('/users/nurses', [ReportController::class, 'loadNursesActivity']);
+            Route::get('/users/labtechs', [ReportController::class, 'loadLabTechsActivity']);
+            Route::get('/users/pharmacytechs', [ReportController::class, 'loadPharmacyTechsActivity']);
+            Route::get('/users/hmoofficers', [ReportController::class, 'loadHmoOfficersActivity']);
+            Route::get('/users/billofficers', [ReportController::class, 'loadBillOfficersActivity']);
         });
     });
 

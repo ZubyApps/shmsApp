@@ -69,6 +69,103 @@ class AccountsReportService
             ->toArray();
     }
 
+    public function getTPSSummary(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+        $current = new CarbonImmutable();
+
+        if (! empty($params->searchTerm)) {
+            if ($data->startDate && $data->endDate){
+                return DB::table('third_party_services')
+                ->selectRaw('third_parties.short_name AS thirdParty, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
+                ->leftJoin('third_parties', 'third_party_services.third_party_id', '=', 'third_parties.id')
+                ->leftJoin('prescriptions', 'third_party_services.prescription_id', '=', 'prescriptions.id')
+                ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
+                ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
+                ->whereBetween('third_party_services.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                ->where('third_parties.short_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                ->groupBy('thirdParty', 'id')
+                ->orderBy('thirdParty', 'desc')
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            if($data->date){
+                $date = new Carbon($data->date);
+    
+                return DB::table('third_party_services')
+                    ->selectRaw('third_parties.short_name AS thirdParty, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
+                    ->leftJoin('third_parties', 'third_party_services.third_party_id', '=', 'third_parties.id')
+                    ->leftJoin('prescriptions', 'third_party_services.prescription_id', '=', 'prescriptions.id')
+                    ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
+                    ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
+                    ->whereMonth('third_party_services.created_at', $date->month)
+                    ->whereYear('third_party_services.created_at', $date->year)
+                    ->where('third_parties.short_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                    ->groupBy('thirdParty', 'id')
+                    ->orderBy('thirdParty', 'desc')
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            
+            return DB::table('third_party_services')
+            ->selectRaw('third_parties.short_name AS thirdParty, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
+            ->leftJoin('third_parties', 'third_party_services.third_party_id', '=', 'third_parties.id')
+            ->leftJoin('prescriptions', 'third_party_services.prescription_id', '=', 'prescriptions.id')
+            ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
+            ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
+            ->whereMonth('third_party_services.created_at', $current->month)
+            ->whereYear('third_party_services.created_at', $current->year)
+            ->where('third_parties.short_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            ->groupBy('thirdParty', 'id')
+            ->orderBy('thirdParty', 'desc')
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    
+        }
+
+        if ($data->startDate && $data->endDate){
+            return DB::table('third_party_services')
+                ->selectRaw('third_parties.short_name AS thirdParty, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
+                ->leftJoin('third_parties', 'third_party_services.third_party_id', '=', 'third_parties.id')
+                ->leftJoin('prescriptions', 'third_party_services.prescription_id', '=', 'prescriptions.id')
+                ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
+                ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
+                ->whereBetween('third_party_services.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                ->groupBy('thirdParty', 'id')
+                ->orderBy('thirdParty', 'desc')
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if($data->date){
+            $date = new Carbon($data->date);
+
+            return DB::table('third_party_services')
+                ->selectRaw('third_parties.short_name AS thirdParty, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
+                ->leftJoin('third_parties', 'third_party_services.third_party_id', '=', 'third_parties.id')
+                ->leftJoin('prescriptions', 'third_party_services.prescription_id', '=', 'prescriptions.id')
+                ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
+                ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
+                ->whereMonth('third_party_services.created_at', $date->month)
+                ->whereYear('third_party_services.created_at', $date->year)
+                ->groupBy('thirdParty', 'id')
+                ->orderBy('thirdParty', 'desc')
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+
+        return DB::table('third_party_services')
+            ->selectRaw('third_parties.short_name AS thirdParty, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
+            ->leftJoin('third_parties', 'third_party_services.third_party_id', '=', 'third_parties.id')
+            ->leftJoin('prescriptions', 'third_party_services.prescription_id', '=', 'prescriptions.id')
+            ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
+            ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
+            ->whereMonth('third_party_services.created_at', $current->month)
+            ->whereYear('third_party_services.created_at', $current->year)
+            ->groupBy('thirdParty', 'id')
+            ->orderBy('thirdParty', 'desc')
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
     public function getExpenseSummary(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
@@ -84,8 +181,7 @@ class AccountsReportService
                 ->where('expense_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                 ->groupBy('eCategory')
                 ->orderBy('eCategory', 'desc')
-                ->get()
-                ->toArray();
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
             if($data->date){
@@ -99,8 +195,7 @@ class AccountsReportService
                     ->where('expense_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                     ->groupBy('eCategory', 'id')
                     ->orderBy('eCategory', 'desc')
-                    ->get()
-                    ->toArray();
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
             
@@ -112,9 +207,7 @@ class AccountsReportService
             ->where('expense_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
             ->groupBy('eCategory')
             ->orderBy('eCategory', 'desc')
-            ->get()
-            ->toArray();
-    
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         if ($data->startDate && $data->endDate){
@@ -124,8 +217,7 @@ class AccountsReportService
                 ->whereBetween('expenses.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                 ->groupBy('eCategory')
                 ->orderBy('eCategory', 'desc')
-                ->get()
-                ->toArray();
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         if($data->date){
@@ -138,8 +230,7 @@ class AccountsReportService
                 ->whereYear('expenses.created_at', $date->year)
                 ->groupBy('eCategory', 'id')
                 ->orderBy('eCategory', 'desc')
-                ->get()
-                ->toArray();
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
 
@@ -150,8 +241,7 @@ class AccountsReportService
             ->whereYear('expenses.created_at', $current->year)
             ->groupBy('eCategory', 'id')
             ->orderBy('eCategory', 'desc')
-            ->get()
-            ->toArray();
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
     public function getPaymentsByPayMethod(DataTableQueryParams $params, $data)

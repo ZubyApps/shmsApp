@@ -1,8 +1,13 @@
 import jQuery from "jquery";
 import $ from 'jquery';
-import jszip from 'jszip';
-import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
+import jszip, { forEach } from 'jszip';
+import pdfmake from 'pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts'
+DataTable.Buttons.jszip(jszip)
+DataTable.Buttons.pdfMake(pdfmake)
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+$.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 const getResourceSubCategoryTable = (tableId) => {
     const resourceSubCategoryTable = new DataTable('#'+tableId, {
@@ -61,7 +66,12 @@ const getResourceTable = (tableId) => {
                 extend:'colvis',
                 text:'Show/Hide',
                 className:'btn btn-primary'       
-            }
+            },
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
         ],
         rowCallback: (row, data) => {
             if ( !data.isActive) {
@@ -181,6 +191,14 @@ const getAddResourceStockTable = () => {
         ajax:  '/addresourcestock/load',
         orderMulti: true,
         search:true,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
         columns: [
             {data: "resource"},
             {data: "qty"},
@@ -213,6 +231,14 @@ const getResourceSupplierTable = () => {
         ajax:  '/resourcesupplier/load',
         orderMulti: true,
         search:true,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
         columns: [
             {data: "company"},
             {data: "person"},

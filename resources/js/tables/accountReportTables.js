@@ -1,7 +1,11 @@
 import $, { data } from 'jquery';
+import DataTable from 'datatables.net-bs5';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
-import DataTable from 'datatables.net-bs5';
+import pdfFonts from 'pdfmake/build/vfs_fonts'
+DataTable.Buttons.jszip(jszip)
+DataTable.Buttons.pdfMake(pdfmake)
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 
 const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
@@ -84,6 +88,14 @@ const getCapitationPaymentsTable = (tableId, startDate, endDate, date) => {
         },
         orderMulti: true,
         search:true,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy'},
+            {extend: 'csv'},
+            {extend: 'excel'},
+            {extend: 'pdfHtml5'},
+            {extend: 'print'},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -130,6 +142,7 @@ const getExpenseSummaryTable = (tableId, startDate, endDate, date) => {
         language: {
             emptyTable: 'No expense'
         },
+        "sAjaxDataProp": "data.data",
         drawCallback: function () {
             var api = this.api()
             
@@ -144,6 +157,38 @@ const getExpenseSummaryTable = (tableId, startDate, endDate, date) => {
     });
     
     return expenseSummaryTable
+}
+
+const getTPSSummaryTable = (tableId, startDate, endDate, date) => {
+    const TPSSummaryTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax: {url: '/reports/accounts/tpsssummary', data: {
+            'startDate' : startDate, 
+            'endDate'   : endDate,
+            'date'      : date,
+        }},
+        orderMulti: true,
+        lengthMenu:[20, 40, 80, 120, 200],
+        language: {
+            emptyTable: 'No expense'
+        },
+        "sAjaxDataProp": "data.data",
+        drawCallback: function () {
+            var api = this.api()
+            
+                $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
+                $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
+                $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {data: row => `<span class="btn text-decoration-underline showExpensesBtn tooltip-test" title="show expenses" data-id="${row.id}" data-expensecategory="${row.thirdParty}">${row.thirdParty}</span>`},
+            {data: row => account.format(+row.patientsCount)},
+            {data: row => account.format(+row.servicesCount)},
+            {data: row => account.format(+row.totalHmsBill)},
+        ]
+    });
+    
+    return TPSSummaryTable
 }
 
 const getVisitSummaryTable1 = (tableId, startDate, endDate, date) => {
@@ -194,11 +239,18 @@ const getVisitSummaryTable2 = (tableId, startDate, endDate, date) => {
             'date'      : date,
         }},
         orderMulti: true,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy'},
+            {extend: 'csv'},
+            {extend: 'excel'},
+            {extend: 'pdfHtml5'},
+            {extend: 'print'},
+             ],
         search:true,
         "sAjaxDataProp": "data.data",
         drawCallback: function (settings) {
             var api = this.api()
-            // $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
             $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
             $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
             $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
@@ -274,6 +326,14 @@ const getYearlyIncomeAndExpenseTable = (tableId, year) => {
         searching: false,
         lengthChange: false,
         info: false,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy'},
+            {extend: 'csv'},
+            {extend: 'excel'},
+            {extend: 'pdfHtml5'},
+            {extend: 'print'},
+             ],
         drawCallback: function () {
             var api = this.api()
             
@@ -283,11 +343,13 @@ const getYearlyIncomeAndExpenseTable = (tableId, year) => {
                 $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
                 $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
                 $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
+                $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: "month_name"},
             {data: row => account.format(row.bill)},
             {data: row => account.format(row.paid)},
+            {data: row => account.format(row.capitation)},
             {data: row => account.format(row.expense)},
             {data: row => account.format(row.bill - row.expense)},
             {data: row => account.format(row.paid - row.expense)},
@@ -304,4 +366,4 @@ const getYearlyIncomeAndExpenseTable = (tableId, year) => {
     return yearlyIncomeAndExpenseTable
 }
 
-export {getPayMethodsSummmaryTable, getCapitationPaymentsTable, getByPayMethodsTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable}
+export {getPayMethodsSummmaryTable, getCapitationPaymentsTable, getTPSSummaryTable, getByPayMethodsTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable}

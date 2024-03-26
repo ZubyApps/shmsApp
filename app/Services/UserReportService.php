@@ -5,12 +5,13 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
+use App\Models\MedicationChart;
 use App\Models\Prescription;
 use App\Models\Resource;
 use App\Models\User;
+use App\Models\Visit;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Builder;
 
 class UserReportService
 {
@@ -21,170 +22,6 @@ class UserReportService
         )
     {
     }
-
-    // public function getPharmacySummary(DataTableQueryParams $params, $data)
-    // {
-    //     $orderBy    = 'created_at';
-    //     $orderDir   =  'desc';
-    //     $current = new CarbonImmutable();
-
-    //     if (! empty($params->searchTerm)) {
-    //         return $this->resource
-    //                     ->where(function (Builder $query) use($params) {
-    //                         $query->whereRelation('resourceSubCategory.resourceCategory', 'name', '=', 'Medications')
-    //                             ->orWhereRelation('resourceSubCategory.resourceCategory', 'name', '=', 'Consumables');
-    //                     })
-    //                     ->where(function (Builder $query) use($params) {
-    //                         $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                         ->orWhere('sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-    //                     })
-    //                     ->with([
-    //                         'prescriptions' => function ($query) use ($data, $current) {
-    //                             if ($data->startDate && $data->endDate){
-    //                                 $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-    //                                 ->orderBy('created_at');
-    //                             } else if($data->date){
-    //                                 $date = new Carbon($data->date);
-    //                                 $query->whereMonth('created_at', $date->month)
-    //                                       ->whereYear('created_at', $date->year)
-    //                                       ->orderBy('created_at');
-    //                             } else {
-    //                                 $query->whereMonth('created_at', $current->month)
-    //                                         ->whereYear('created_at', $current->year)
-    //                                 ->orderBy('created_at');
-    //                             }
-    //                         }
-    //                     ,   'bulkRequests' =>  function ($query) use ($data, $current) {
-    //                             if ($data->startDate && $data->endDate){
-    //                                 $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-    //                                 ->orderBy('created_at');
-    //                             } else if($data->date){
-    //                                 $date = new Carbon($data->date);
-    //                                 $query->whereMonth('created_at', $date->month)
-    //                                       ->whereYear('created_at', $date->year)
-    //                                       ->orderBy('created_at');
-    //                             } else {
-    //                                 $query->whereMonth('created_at', $current->month)
-    //                                         ->whereYear('created_at', $current->year)
-    //                                 ->orderBy('created_at');
-    //                             }
-    //                         }])
-    //                     ->orderBy($orderBy, $orderDir)
-    //                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    //     }
-
-        
-    //     return $this->resource
-    //                 ->where(function (Builder $query) use($params) {
-    //                     $query->whereRelation('resourceSubCategory.resourceCategory', 'name', '=', 'Medications')
-    //                         ->orWhereRelation('resourceSubCategory.resourceCategory', 'name', '=', 'Consumables');
-    //                 })
-    //                 ->with([
-    //                     'prescriptions' => function ($query) use ($data, $current) {
-    //                         if ($data->startDate && $data->endDate){
-    //                             $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-    //                             ->orderBy('created_at');
-    //                         } else if($data->date){
-    //                             $date = new Carbon($data->date);
-    //                             $query->whereMonth('created_at', $date->month)
-    //                                   ->whereYear('created_at', $date->year)
-    //                                   ->orderBy('created_at');
-    //                         } else {
-    //                             $query->whereMonth('created_at', $current->month)
-    //                                     ->whereYear('created_at', $current->year)
-    //                             ->orderBy('created_at');
-    //                         }
-    //                     }
-    //                 ,  'bulkRequests' =>  function ($query) use ($data, $current) {
-    //                     if ($data->startDate && $data->endDate){
-    //                         $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-    //                         ->orderBy('created_at');
-    //                     } else if($data->date){
-    //                         $date = new Carbon($data->date);
-    //                         $query->whereMonth('created_at', $date->month)
-    //                               ->whereYear('created_at', $date->year)
-    //                               ->orderBy('created_at');
-    //                     } else {
-    //                         $query->whereMonth('created_at', $current->month)
-    //                                 ->whereYear('created_at', $current->year)
-    //                         ->orderBy('created_at');
-    //                     }
-    //                 }])
-    //                 ->withCount('prescriptions as prescriptionCount')
-    //                 ->orderBy('prescriptionCount', $orderDir)
-    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));       
-    // }
-
-    // public function getPharmacyTransformer(): callable
-    // {
-    //    return  function (Resource $resource) {
-    //         return [
-    //             'id'                => $resource->id,
-    //             'name'              => $resource->name,
-    //             'subCategory'       => $resource->sub_category,
-    //             'prescriptions'     => $resource->prescriptions->count(),
-    //             'qtyBilled'         => $resource->prescriptions->sum('qty_billed'),
-    //             'qtyDispensed'      => $resource->prescriptions->sum('qty_dispensed'),
-    //             'bulkDispensed'     => $resource->bulkRequests->sum('qty_dispensed'),
-    //         ];
-    //      };
-    // }
-
-    // public function getPatientsByResource(DataTableQueryParams $params, $data)
-    // {
-    //     $orderBy    = 'created_at';
-    //     $orderDir   =  'asc';
-    //     $current    = CarbonImmutable::now();
-
-    //     if (! empty($params->searchTerm)) {
-    //         if ($data->startDate && $data->endDate){
-    //             return $this->prescription
-    //                         ->whereRelation('resource', 'id', '=', $data->resourceId)
-    //                         ->where(function (Builder $query) use($params) {
-    //                             $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                             ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                             ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                             ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                             ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                             ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-    //                         })
-    //                         ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-    //                         ->orderBy($orderBy, $orderDir)
-    //                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    //         }
-
-    //         return $this->prescription
-    //                         ->whereRelation('resource', 'id', '=', $data->resourceId)
-    //                         ->where(function (Builder $query) use($params) {
-    //                             $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                             ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                             ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                             ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                             ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-    //                             ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-    //                         })
-    //                         ->whereMonth('created_at', $current->month)
-    //                         ->whereYear('created_at', $current->year)
-    //                         ->orderBy($orderBy, $orderDir)
-    //                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    //     }
-
-    //     if ($data->startDate && $data->endDate){
-    //         return $this->prescription
-    //             ->whereRelation('resource', 'id', '=', $data->resourceId)
-    //             ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-    //             ->orderBy($orderBy, $orderDir)
-    //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    //     }
-
-        
-    //     return $this->prescription
-    //             ->whereRelation('resource', 'id', '=', $data->resourceId)
-    //             ->whereMonth('created_at', $current->month)
-    //             ->whereYear('created_at', $current->year)
-    //             ->orderBy($orderBy, $orderDir)
-    //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-    // }
 
     public function staffActivitiesByDesignation(DataTableQueryParams $params, $data)
     {
@@ -211,19 +48,276 @@ class UserReportService
     public function getDoctorsTransformer($data): callable
     {
         return  function (User $user) use($data) {
-            $date = new CarbonImmutable($data->date);
-            return [
+            $current = new CarbonImmutable();
+
+            if ($data->date){
+                $date = new CarbonImmutable($data->date);
+                return [
+                        'id'                    => $user->id,
+                        'doctor'                => $user->username,
+                        'dateOfEmployment'      => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                        'visitsInitiated'       => $user->visits()->whereMonth('created_at', $date->month)->count(),
+                        'firstConsultations'    => Visit::where('doctor_id', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'consultations'         => $user->consultations()->whereMonth('created_at', $date->month)->count(),
+                        'prescriptions'         => $user->prescriptions()->whereMonth('created_at', $date->month)->count(),
+                        'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'surgeryNotes'          => $user->surgeryNotes()->whereMonth('created_at', $date->month)->count(),
+                        'vitalSigns'            => $user->vitalSigns()->whereMonth('created_at', $date->month)->count(),
+                        'AncVitalSigns'         => $user->ancVitalSigns()->whereMonth('created_at', $date->month)->count(),
+                    ];
+            }
+
+            if ($data->startDate && $data->endDate){
+                return [
                     'id'                    => $user->id,
-                    'doctor'                 => $user->username,
+                    'doctor'                => $user->username,
                     'dateOfEmployment'      => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
-                    'visitsInitiated'       => $user->visits()->whereMonth('created_at', $date->month)->count(),
-                    'firstConsultations'    => $user->visits()->where('doctor_id', $user->id)->whereMonth('created_at', $date->month)->count(),
-                    'consultations'         => $user->consultations()->where('user_id', $user->id)->whereMonth('created_at', $date->month)->count(),
-                    'prescriptions'         => $user->prescriptions()->where('user_id', $user->id)->whereMonth('created_at', $date->month)->count(),
-                    'surgeryNotes'          => $user->surgeryNotes()->where('user_id', $user->id)->whereMonth('created_at', $date->month)->count(),
-                    'vitalSigns'            => $user->vitalSigns()->where('user_id', $user->id)->whereMonth('created_at', $date->month)->count(),
-                    'AncVitalSigns'         => $user->ancVitalSigns()->where('user_id', $user->id)->whereMonth('created_at', $date->month)->count(),
+                    'visitsInitiated'       => $user->visits()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                    'firstConsultations'    => Visit::where('doctor_id', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                    'consultations'         => $user->consultations()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                    'prescriptions'         => $user->prescriptions()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                    'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                    'surgeryNotes'          => $user->surgeryNotes()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                    'vitalSigns'            => $user->vitalSigns()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                    'AncVitalSigns'         => $user->ancVitalSigns()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
                 ];
-            };
+            }
+
+            return [
+                'id'                    => $user->id,
+                'doctor'                => $user->username,
+                'dateOfEmployment'      => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                'visitsInitiated'       => $user->visits()->whereMonth('created_at', $current->month)->count(),
+                'firstConsultations'    => Visit::where('doctor_id', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'consultations'         => $user->consultations()->whereMonth('created_at', $current->month)->count(),
+                'prescriptions'         => $user->prescriptions()->whereMonth('created_at', $current->month)->count(),
+                'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'surgeryNotes'          => $user->surgeryNotes()->whereMonth('created_at', $current->month)->count(),
+                'vitalSigns'            => $user->vitalSigns()->whereMonth('created_at', $current->month)->count(),
+                'AncVitalSigns'         => $user->ancVitalSigns()->whereMonth('created_at', $current->month)->count(),
+            ];
+        };
+    }
+
+    public function getNursesTransformer($data): callable
+    {
+        return  function (User $user) use($data) {
+            $current = new CarbonImmutable();
+        
+            if ($data->date){
+                $date = new CarbonImmutable($data->date);
+                return [
+                        'id'                    => $user->id,
+                        'nurse'                 => $user->username,
+                        'dateOfEmployment'      => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                        'vitalSigns'            => $user->vitalSigns()->whereMonth('created_at', $date->month)->count(),
+                        'AncVitalSigns'         => $user->ancVitalSigns()->whereMonth('created_at', $date->month)->count(),
+                        'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'deiveryNotes'          => $user->deliveryNotes()->whereMonth('created_at', $date->month)->count(),
+                        'charted'               => $user->medicationCharts()->whereMonth('created_at', $date->month)->count(),
+                        'served'                => MedicationChart::where('given_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'nursingCharts'         => $user->nursingCharts()->whereMonth('created_at', $date->month)->count(),
+                        'nursesReports'         => $user->nursesReports()->whereMonth('created_at', $date->month)->count(),
+                    ];
+            }
+
+            if ($data->startDate && $data->endDate){
+                return [
+                        'id'                    => $user->id,
+                        'nurse'                 => $user->username,
+                        'dateOfEmployment'      => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                        'vitalSigns'            => $user->vitalSigns()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'AncVitalSigns'         => $user->ancVitalSigns()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'deiveryNotes'          => $user->deliveryNotes()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'charted'               => $user->medicationCharts()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'served'                => MedicationChart::where('given_by', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'nursingCharts'         => $user->nursingCharts()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'nursesReports'         => $user->nursesReports()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                    ];
+            }
+
+            return [
+                'id'                    => $user->id,
+                'nurse'                 => $user->username,
+                'dateOfEmployment'      => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                'vitalSigns'            => $user->vitalSigns()->whereMonth('created_at', $current->month)->count(),
+                'AncVitalSigns'         => $user->ancVitalSigns()->whereMonth('created_at', $current->month)->count(),
+                'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'deiveryNotes'          => $user->deliveryNotes()->whereMonth('created_at', $current->month)->count(),
+                'charted'               => $user->medicationCharts()->whereMonth('created_at', $current->month)->count(),
+                'served'                => MedicationChart::where('given_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'nursingCharts'         => $user->nursingCharts()->whereMonth('created_at', $current->month)->count(),
+                'nursesReports'         => $user->nursesReports()->whereMonth('created_at', $current->month)->count(),
+            ];
+        };
+    }
+
+    public function getLabTechsTransformer($data): callable
+    {
+        return  function (User $user) use($data) {
+            $current = new CarbonImmutable();
+        
+            if ($data->date){
+                $date = new CarbonImmutable($data->date);
+                return [
+                        'id'                => $user->id,
+                        'labTech'           => $user->username,
+                        'dateOfEmployment'  => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                        'results'           => Prescription::where('result_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                    ];
+            }
+
+            if ($data->startDate && $data->endDate){
+                return [
+                        'id'                    => $user->id,
+                        'labTech'                 => $user->username,
+                        'dateOfEmployment'      => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                        'results'         => Prescription::where('result_by', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                    ];
+            }
+
+            return [
+                'id'                    => $user->id,
+                'labTech'               => $user->username,
+                'dateOfEmployment'      => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                'results'               => Prescription::where('result_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+            ];
+        };
+    }
+
+    public function getPharmacyTechsTransformer($data): callable
+    {
+        return  function (User $user) use($data) {
+            $current = new CarbonImmutable();
+        
+            if ($data->date){
+                $date = new CarbonImmutable($data->date);
+                return [
+                        'id'                => $user->id,
+                        'pharmacyTech'      => $user->username,
+                        'dateOfEmployment'  => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                        'rxBilled'          => Prescription::where('hms_bill_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'rxDispensed'       => Prescription::where('dispensed_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                    ];
+            }
+
+            if ($data->startDate && $data->endDate){
+                return [
+                        'id'              => $user->id,
+                        'pharmacyTech'    => $user->username,
+                        'dateOfEmployment'=> (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                        'rxBilled'        => Prescription::where('hms_bill_by', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'rxDispensed'     => Prescription::where('dispensed_by', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                    ];
+            }
+
+            return [
+                'id'               => $user->id,
+                'pharmacyTech'     => $user->username,
+                'dateOfEmployment' => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                'rxBilled'         => Prescription::where('hms_bill_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'rxDispensed'      => Prescription::where('dispensed_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+            ];
+        };
+    }
+
+    public function getHmoOfficerTransformer($data): callable
+    {
+        return  function (User $user) use($data) {
+            $current = new CarbonImmutable();
+        
+            if ($data->date){
+                $date = new CarbonImmutable($data->date);
+                return [
+                        'id'                => $user->id,
+                        'hmoOfficer'        => $user->username,
+                        'dateOfEmployment'  => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                        'visitsInitiated'   => $user->visits()->whereMonth('created_at', $date->month)->count(),
+                        'verified'          => Visit::where('verified_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'closedAndOpened'   => Visit::where('closed_opened_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'billsProcessed'    => Visit::where('hmo_done_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'rxHmoBilled'       => Prescription::where('hmo_bill_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'rxApproved'        => Prescription::where('approved_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'rxRejected'        => Prescription::where('rejected_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'rxPaid'            => Prescription::where('paid_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                    ];
+            }
+
+            if ($data->startDate && $data->endDate){
+                return [
+                        'id'              => $user->id,
+                        'hmoOfficer'      => $user->username,
+                        'dateOfEmployment'=> (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                        'visitsInitiated' => $user->visits()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'verified'        => Visit::where('verified_by', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'closedAndOpened' => Visit::where('closed_opened_by', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'billsProcessed'  => Visit::where('hmo_done_by', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'rxHmoBilled'     => Prescription::where('hmo_bill_by', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'rxApproved'      => Prescription::where('approved_by', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'rxRejected'      => Prescription::where('rejected_by', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'rxPaid'          => Prescription::where('paid_by', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                    ];
+            }
+
+            return [
+                'id'                => $user->id,
+                'hmoOfficer'        => $user->username,
+                'dateOfEmployment'  => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                'verified'          => Visit::where('verified_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'visitsInitiated'   => $user->visits()->whereMonth('created_at', $current->month)->count(),
+                'closedAndOpened'   => Visit::where('closed_opened_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'billsProcessed'    => Visit::where('hmo_done_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'rxHmoBilled'       => Prescription::where('hmo_bill_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'rxApproved'        => Prescription::where('approved_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'rxRejected'        => Prescription::where('rejected_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'rxPaid'            => Prescription::where('paid_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+            ];
+        };
+    }
+
+    public function getBillOfficerTransformer($data): callable
+    {
+        return  function (User $user) use($data) {
+            $current = new CarbonImmutable();
+        
+            if ($data->date){
+                $date = new CarbonImmutable($data->date);
+                return [
+                        'id'                => $user->id,
+                        'billOfficer'       => $user->username,
+                        'dateOfEmployment'  => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                        'visitsInitiated'   => $user->visits()->whereMonth('created_at', $date->month)->count(),
+                        'closedAndOpened'   => Visit::where('closed_opened_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'thirdPartyServices' => $user->thirdPartyServies()->whereMonth('created_at', $date->month)->count(),
+                        'payments'          => $user->payments()->whereMonth('created_at', $date->month)->count(),
+                        'paymentsTotal'     => $user->payments()->whereMonth('created_at', $date->month)->sum('amount_paid'),
+                    ];
+            }
+
+            if ($data->startDate && $data->endDate){
+                return [
+                        'id'              => $user->id,
+                        'billOfficer'      => $user->username,
+                        'dateOfEmployment'=> (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                        'visitsInitiated' => $user->visits()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'closedAndOpened' => Visit::where('closed_opened_by', $user->id)->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'thirdPartyServices' => $user->thirdPartyServies()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'payments'        => $user->payments()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->count(),
+                        'paymentsTotal'   => $user->payments()->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->sum('amount_paid'),
+                    ];
+            }
+
+            return [
+                'id'                => $user->id,
+                'billOfficer'        => $user->username,
+                'dateOfEmployment'  => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
+                'visitsInitiated'   => $user->visits()->whereMonth('created_at', $current->month)->count(),
+                'closedAndOpened'   => Visit::where('closed_opened_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'thirdPartyServices' => $user->thirdPartyServies()->whereMonth('created_at', $current->month)->count(),
+                'payments'          => $user->payments()->whereMonth('created_at', $current->month)->count(),
+                'paymentsTotal'     => $user->payments()->whereMonth('created_at', $current->month)->sum('amount_paid'),
+            ];
+        };
     }
 }

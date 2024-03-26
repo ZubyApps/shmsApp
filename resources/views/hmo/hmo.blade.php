@@ -333,6 +333,7 @@
                                     <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
                                 </tr>
                             </tfoot>
                         </table>

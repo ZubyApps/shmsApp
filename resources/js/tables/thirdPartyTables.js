@@ -1,15 +1,21 @@
 import jQuery from "jquery";
 import $ from 'jquery';
-import jszip, { forEach } from 'jszip';
-import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 import { admissionStatus, admissionStatusX, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import jszip, { forEach } from 'jszip';
+import pdfmake from 'pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts'
+DataTable.Buttons.jszip(jszip)
+DataTable.Buttons.pdfMake(pdfmake)
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+$.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
 const getlistOfServicesTable = (tableId) => {
     const preparedColumns = [
         {data: "date"},
+        {data: "initiatedBy"},
         {data: "thirdParty"},
         {data: row => function () {
             const credit = row.sponsorCategoryClass == 'Credit'
@@ -42,6 +48,14 @@ const getlistOfServicesTable = (tableId) => {
         }},
         orderMulti: true,
         search:true,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
         language: {
             emptyTable: 'No Third Party Services'
         },

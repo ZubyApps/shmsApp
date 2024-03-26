@@ -1,7 +1,7 @@
 import {Modal } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { getPayMethodsSummmaryTable, getCapitationPaymentsTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getByPayMethodsTable, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable } from "./tables/accountReportTables";
+import { getPayMethodsSummmaryTable, getCapitationPaymentsTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getByPayMethodsTable, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable, getTPSSummaryTable } from "./tables/accountReportTables";
 import { getExpensesTable } from "./tables/billingTables";
 import { clearDivValues, getDivData } from "./helpers";
 
@@ -14,6 +14,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const payMethodDiv               = document.querySelector('.payMethodDiv')
     const capitationDatesDiv         = document.querySelector('.capitationDatesDiv')
+    const TPSSummaryDatesDiv         = document.querySelector('.TPSSummaryDatesDiv')
     const expenseSummaryDatesDiv     = document.querySelector('.expenseSummaryDatesDiv')
     const visistSummaryDiv1          = document.querySelector('.visistSummaryDiv1')
     const visistSummaryDiv2          = document.querySelector('.visistSummaryDiv2')
@@ -21,6 +22,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const payMethodSummaryTab       = document.querySelector('#nav-payMethodSummary-tab')
     const capitationPaymentsTab     = document.querySelector('#nav-capitationPayments-tab')
+    const TPSSummaryTab             = document.querySelector('#nav-TPSSummary-tab')
     const expensesTab               = document.querySelector('#nav-expenses-tab')
     const expenseSummaryTab         = document.querySelector('#nav-expenseSummary-tab')
     const visitSummaryTab1          = document.querySelector('#nav-visitSummary1-tab')
@@ -29,14 +31,22 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const searchPayMethodByDatesBtn  = document.querySelector('.searchPayMethodByDatesBtn')
     const searchPayMethodByMonthBtn  = document.querySelector('.searchPayMethodByMonthBtn')
+
     const searchByCapitationDatesBtn = document.querySelector('.searchByCapitationDatesBtn')
     const searchByCapitationMonthBtn = document.querySelector('.searchByCapitationMonthBtn')
+
+    const searchTPSSummaryByDatesBtn = document.querySelector('.searchTPSSummaryByDatesBtn')
+    const searchTPPSSummaryMonthBtn  = document.querySelector('.searchTPPSSummaryMonthBtn')
+
     const searchExpenseSummaryByDatesBtn = document.querySelector('.searchExpenseSummaryByDatesBtn')
     const searchExpenseSummaryByMonthBtn = document.querySelector('.searchExpenseSummaryByMonthBtn')
+
     const searchVisitsByDatesBtn1        = document.querySelector('.searchVisitsByDatesBtn1')
     const searchVisitsByMonthBtn1        = document.querySelector('.searchVisitsByMonthBtn1')
+
     const searchVisitsByDatesBtn2        = document.querySelector('.searchVisitsByDatesBtn2')
     const searchVisitsByMonthBtn2        = document.querySelector('.searchVisitsByMonthBtn2')
+
     const searchIncomeAndExpenseByYearBtn = document.querySelector('.searchIncomeAndExpenseByYearBtn')
 
 
@@ -44,7 +54,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveExpenseBtn                = newExpenseModal._element.querySelector('#saveExpenseBtn')
     const updateExpenseBtn              = updateExpenseModal._element.querySelector('#updateExpenseBtn')
 
-    let payMethodsSummmaryTable, capitationPaymentsTable, visitSummaryTable1, visitSummaryTable2, expensesTable, expenseSummaryTable, byPayMethodTable, byExpenseCategoryTable, visitsBySponsorTable, yearlyIncomeAndExpenseTable
+    let payMethodsSummmaryTable, capitationPaymentsTable, TPSSummaryTable, visitSummaryTable1, visitSummaryTable2, expensesTable, expenseSummaryTable, byPayMethodTable, byExpenseCategoryTable, visitsBySponsorTable, yearlyIncomeAndExpenseTable
 
     payMethodsSummmaryTable = getPayMethodsSummmaryTable('payMethodSummaryTable')
     payMethodDiv.querySelector('#payMethodMonth').value = new Date().toISOString().slice(0,7)
@@ -59,6 +69,15 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#capitationPaymentsTable').dataTable().fnDraw()
         } else {
             capitationPaymentsTable = getCapitationPaymentsTable('capitationPaymentsTable')
+        }
+    })
+
+    TPSSummaryTab.addEventListener('click', function() {
+        TPSSummaryDatesDiv.querySelector('#TPSSummaryMonth').value = new Date().toISOString().slice(0,7)
+        if ($.fn.DataTable.isDataTable( '#TPSSummaryTable' )){
+            $('#TPSSummaryTable').dataTable().fnDraw()
+        } else {
+            TPSSummaryTable = getTPSSummaryTable('TPSSummaryTable')
         }
     })
 
@@ -135,6 +154,22 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#expenseSummaryTable').dataTable().fnDestroy()
         }
         capitationPaymentsTable = getCapitationPaymentsTable('expenseSummaryTable', null, null, capitationDatesDiv.querySelector('#capitationMonth').value)
+    })
+
+    searchTPSSummaryByDatesBtn.addEventListener('click', function () {
+        TPSSummaryDatesDiv.querySelector('#TPSSummaryMonth').value = ''
+        if ($.fn.DataTable.isDataTable( '#TPSSummaryTable' )){
+            $('#TPSSummaryTable').dataTable().fnDestroy()
+        }
+        TPSSummaryTable = getTPSSummaryTable('TPSSummaryTable', TPSSummaryDatesDiv.querySelector('#startDate').value, TPSSummaryDatesDiv.querySelector('#endDate').value)
+    })
+
+    searchTPPSSummaryMonthBtn.addEventListener('click', function () {
+        TPSSummaryDatesDiv.querySelector('#startDate').value = ''; TPSSummaryDatesDiv.querySelector('#endDate').value = ''
+        if ($.fn.DataTable.isDataTable( '#TPSSummaryTable' )){
+            $('#TPSSummaryTable').dataTable().fnDestroy()
+        }
+        TPSSummaryTable = getTPSSummaryTable('TPSSummaryTable', null, null, TPSSummaryDatesDiv.querySelector('#TPSSummaryMonth').value)
     })
 
     searchExpenseSummaryByDatesBtn.addEventListener('click', function () {

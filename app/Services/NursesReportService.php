@@ -20,7 +20,7 @@ Class NursesReportService
 
     public function create(Request $data, Visit $visit, User $user): NursesReport
     {
-       $nursesReport = $user->nursesReport()->create([
+       $nursesReport = $user->nursesReports()->create([
             'report'       => $data->report,
             'visit_id'     => $visit->id,
             'patient_id'   => $visit->patient->id,

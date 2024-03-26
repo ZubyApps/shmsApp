@@ -91,7 +91,8 @@ class HmoService
             $visit->update([
                 'verification_status'   => $request->status,
                 'verification_code'     => $request->codeText,
-                'verified_at'           => $request->status === 'Verified' ? new Carbon() : null
+                'verified_at'           => $request->status === 'Verified' ? new Carbon() : null,
+                'verified_by'           => $request->user()->id,
             ]);
 
             return $visit;

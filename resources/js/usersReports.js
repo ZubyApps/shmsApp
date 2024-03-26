@@ -2,19 +2,44 @@ import {Modal } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
 import { getByResourceTable, getPharmacySummaryTable } from "./tables/pharmacyReportTables";
-import { getDoctorsActivityTable } from "./tables/usersReportTables";
+import { getBillOfficersActivityTable, getDoctorsActivityTable, getHmoOfficersActivityTable, getLabTechActivityTable, getNursesActivityTable, getPharmacyTechActivityTable } from "./tables/usersReportTables";
 
 window.addEventListener('DOMContentLoaded', function () {
     const byResourceModal           = new Modal(document.getElementById('byResourceModal'))
 
     const doctorsDatesDiv           = document.querySelector('.doctorsDatesDiv')
+    const nursesDatesDiv            = document.querySelector('.nursesDatesDiv')
+    const labTechDatesDiv           = document.querySelector('.labTechDatesDiv')
+    const pharmacyTechsDatesDiv     = document.querySelector('.pharmacyTechsDatesDiv')
+    const hmoOfficersDatesDiv       = document.querySelector('.hmoOfficersDatesDiv')
+    const billOfficersDatesDiv      = document.querySelector('.billOfficersDatesDiv')
 
     const doctorsActivityTab        = document.querySelector('#nav-doctorsActivity-tab')
+    const nursesActivityTab         = document.querySelector('#nav-nursesActivity-tab')
+    const labTechActivityTab        = document.querySelector('#nav-labTechActivity-tab')
+    const pharmacyTechsActivityTab  = document.querySelector('#nav-pharmacyTechsActivity-tab')
+    const hmoOfficersActivityTab    = document.querySelector('#nav-hmoOfficersActivity-tab')
+    const billOfficersActivityTab   = document.querySelector('#nav-billOfficersActivity-tab')
 
-    const searchWithDatesBtn         = document.querySelector('.searchWithDatesBtn')
-    const searchMedicationByMonthBtn = document.querySelector('.searchMedicationByMonthBtn')
+    const searchDoctorsWithDatesBtn = document.querySelector('.searchDoctorsWithDatesBtn')
+    const searchDoctorsByMonthBtn   = document.querySelector('.searchDoctorsByMonthBtn')
+    
+    const searchNursesWithDatesBtn  = document.querySelector('.searchNursesWithDatesBtn')
+    const searchNursesByMonthBtn    = document.querySelector('.searchNursesByMonthBtn')
 
-    let doctorsActivityTable, byResourceTable
+    const searchLabTechWithDatesBtn  = document.querySelector('.searchLabTechWithDatesBtn')
+    const searchLabTechByMonthBtn    = document.querySelector('.searchLabTechByMonthBtn')
+    
+    const searchPharmacyTechsWithDatesBtn  = document.querySelector('.searchPharmacyTechsWithDatesBtn')
+    const searchPharmacyTechsByMonthBtn    = document.querySelector('.searchPharmacyTechsByMonthBtn')
+
+    const searchHmoOfficersWithDatesBtn  = document.querySelector('.searchHmoOfficersWithDatesBtn')
+    const searchHmoOfficersByMonthBtn    = document.querySelector('.searchHmoOfficersByMonthBtn')
+
+    const searchBillOfficersWithDatesBtn  = document.querySelector('.searchBillOfficersWithDatesBtn')
+    const searchBillOfficersByMonthBtn    = document.querySelector('.searchBillOfficersByMonthBtn')
+
+    let doctorsActivityTable, nursesActivityTable, labTechActivityTable, pharmacyTechsActivityTable, hmoOfficersActivityTable, billOfficersActivityTable
     doctorsActivityTable = getDoctorsActivityTable('doctorsActivityTable', 'Doctor')
     doctorsDatesDiv.querySelector('#doctorsActivityMonth').value = new Date().toISOString().slice(0,7)
 
@@ -22,51 +47,150 @@ window.addEventListener('DOMContentLoaded', function () {
         doctorsActivityTable.draw()
     })
 
-    // searchWithDatesBtn.addEventListener('click', function () {
-    //     datesDiv.querySelector('#medicationMonth').value = ''
-    //     if ($.fn.DataTable.isDataTable( '#summaryTable' )){
-    //         $('#summaryTable').dataTable().fnDestroy()
-    //     }
-    //     pharmacyTable = getPharmacySummaryTable('summaryTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value)
-    // })
+    nursesActivityTab.addEventListener('click', function() {
+        nursesDatesDiv.querySelector('#nursesActivityMonth').value = new Date().toISOString().slice(0,7)
+        if ($.fn.DataTable.isDataTable( '#nursesActivityTable' )){
+            $('#nursesActivityTable').dataTable().fnDraw()
+        } else {
+            nursesActivityTable = getNursesActivityTable('nursesActivityTable', 'Nurse')
+        }
+    })
 
-    // searchMedicationByMonthBtn.addEventListener('click', function () {
-    //     datesDiv.querySelector('#startDate').value = ''; datesDiv.querySelector('#endDate').value = ''
-    //     if ($.fn.DataTable.isDataTable( '#summaryTable' )){
-    //         $('#summaryTable').dataTable().fnDestroy()
-    //     }
-    //     pharmacyTable = getPharmacySummaryTable('summaryTable', null, null, datesDiv.querySelector('#medicationMonth').value)
-    // })
+    labTechActivityTab.addEventListener('click', function() {
+        labTechDatesDiv.querySelector('#labTechActivityMonth').value = new Date().toISOString().slice(0,7)
+        if ($.fn.DataTable.isDataTable( '#labTechActivityTable' )){
+            $('#labTechActivityTable').dataTable().fnDraw()
+        } else {
+            labTechActivityTable = getLabTechActivityTable('labTechActivityTable', 'Lab Tech')
+        }
+    })
 
-    // document.querySelector('#summaryTable').addEventListener('click', function (event) {
-    //     const showPatientsBtn    = event.target.closest('.showPatientsBtn')
-    //     const from               = datesDiv.querySelector('#startDate').value
-    //     const to                 = datesDiv.querySelector('#endDate').value
-    //     const date               = datesDiv.querySelector('#medicationMonth').value
+    pharmacyTechsActivityTab.addEventListener('click', function() {
+        pharmacyTechsDatesDiv.querySelector('#pharmacyTechsActivityMonth').value = new Date().toISOString().slice(0,7)
+        if ($.fn.DataTable.isDataTable( '#pharmacyTechsActivityTable' )){
+            $('#pharmacyTechsActivityTable').dataTable().fnDraw()
+        } else {
+            pharmacyTechsActivityTable = getPharmacyTechActivityTable('pharmacyTechsActivityTable', 'Pharmacy Tech')
+        }
+    })
 
-    //     if (showPatientsBtn){
-    //         const id = showPatientsBtn.getAttribute('data-id')
-    //         byResourceModal._element.querySelector('#resource').value = showPatientsBtn.getAttribute('data-resource') 
-    //         byResourceModal._element.querySelector('#subcategory').value = showPatientsBtn.getAttribute('data-subcategory')
+    hmoOfficersActivityTab.addEventListener('click', function() {
+        hmoOfficersDatesDiv.querySelector('#hmoOfficersActivityMonth').value = new Date().toISOString().slice(0,7)
+        if ($.fn.DataTable.isDataTable( '#hmoOfficersActivityTable' )){
+            $('#hmoOfficersActivityTable').dataTable().fnDraw()
+        } else {
+            hmoOfficersActivityTable = getHmoOfficersActivityTable('hmoOfficersActivityTable', 'HMO Officer')
+        }
+    })
 
-    //         if (date) {
-    //             byResourceModal._element.querySelector('#resourceMonth').value = date
-    //             byResourceTable = getByResourceTable('byResourceTable', id, byResourceModal, null, null, date)
-    //             byResourceModal.show()
-    //             return
-    //         }
-            
-    //         if (from && to ){
-    //             byResourceModal._element.querySelector('#from').value = from
-    //             byResourceModal._element.querySelector('#to').value = to
-    //             byResourceTable = getByResourceTable('byResourceTable', id, byResourceModal, from, to)
-    //             byResourceModal.show()
-    //             return
-    //         }
+    billOfficersActivityTab.addEventListener('click', function() {
+        billOfficersDatesDiv.querySelector('#billOffersActivityMonth').value = new Date().toISOString().slice(0,7)
+        if ($.fn.DataTable.isDataTable( '#billOfficersActivityTable' )){
+            $('#billOfficersActivityTable').dataTable().fnDraw()
+        } else {
+            billOfficersActivityTable = getBillOfficersActivityTable('billOfficersActivityTable', 'Bill Officer')
+        }
+    })
 
-    //         byResourceModal._element.querySelector('#resourceMonth').value = new Date().toISOString().slice(0,7)
-    //         byResourceTable = getByResourceTable('byResourceTable', id, byResourceModal)
-    //         byResourceModal.show()
-    //     }
-    // })
+    //doctor
+    searchDoctorsWithDatesBtn.addEventListener('click', function () {
+        doctorsDatesDiv.querySelector('#doctorsActivityMonth').value = ''
+        if ($.fn.DataTable.isDataTable( '#doctorsActivityTable' )){
+            $('#doctorsActivityTable').dataTable().fnDestroy()
+        }
+        doctorsActivityTable = getDoctorsActivityTable('doctorsActivityTable', 'Doctor', doctorsDatesDiv.querySelector('#startDate').value, doctorsDatesDiv.querySelector('#endDate').value)
+    })
+
+    searchDoctorsByMonthBtn.addEventListener('click', function () {
+        doctorsDatesDiv.querySelector('#startDate').value = ''; doctorsDatesDiv.querySelector('#endDate').value = ''
+        if ($.fn.DataTable.isDataTable( '#doctorsActivityTable' )){
+            $('#doctorsActivityTable').dataTable().fnDestroy()
+        }
+        doctorsActivityTable = getDoctorsActivityTable('doctorsActivityTable', 'Doctor', null, null, doctorsDatesDiv.querySelector('#doctorsActivityMonth').value)
+    })
+
+    //nurse
+    searchNursesWithDatesBtn.addEventListener('click', function () {
+        nursesDatesDiv.querySelector('#nursesActivityMonth').value = ''
+        if ($.fn.DataTable.isDataTable( '#nursesActivityTable' )){
+            $('#nursesActivityTable').dataTable().fnDestroy()
+        }
+        nursesActivityTable = getNursesActivityTable('nursesActivityTable', 'Nurse', nursesDatesDiv.querySelector('#startDate').value, nursesDatesDiv.querySelector('#endDate').value)
+    })
+
+    searchNursesByMonthBtn.addEventListener('click', function () {
+        nursesDatesDiv.querySelector('#startDate').value = ''; nursesDatesDiv.querySelector('#endDate').value = ''
+        if ($.fn.DataTable.isDataTable( '#nursesActivityTable' )){
+            $('#nursesActivityTable').dataTable().fnDestroy()
+        }
+        nursesActivityTable = getNursesActivityTable('nursesActivityTable', 'Nurse', null, null, nursesDatesDiv.querySelector('#nursesActivityMonth').value)
+    })
+
+    //lab
+    searchLabTechWithDatesBtn.addEventListener('click', function () {
+        labTechDatesDiv.querySelector('#labTechActivityMonth').value = ''
+        if ($.fn.DataTable.isDataTable( '#labTechActivityTable' )){
+            $('#labTechActivityTable').dataTable().fnDestroy()
+        }
+        labTechActivityTable = getLabTechActivityTable('labTechActivityTable', 'Lab Tech', labTechDatesDiv.querySelector('#startDate').value, labTechDatesDiv.querySelector('#endDate').value)
+    })
+
+    searchLabTechByMonthBtn.addEventListener('click', function () {
+        labTechDatesDiv.querySelector('#startDate').value = ''; labTechDatesDiv.querySelector('#endDate').value = ''
+        if ($.fn.DataTable.isDataTable( '#labTechActivityTable' )){
+            $('#labTechActivityTable').dataTable().fnDestroy()
+        }
+        labTechActivityTable = getLabTechActivityTable('labTechActivityTable', 'Lab Tech', null, null, labTechDatesDiv.querySelector('#labTechActivityMonth').value)
+    })
+
+    //pharmacy
+    searchPharmacyTechsWithDatesBtn.addEventListener('click', function () {
+        pharmacyTechsDatesDiv.querySelector('#pharmacyTechsActivityMonth').value = ''
+        if ($.fn.DataTable.isDataTable( '#pharmacyTechsActivityTable' )){
+            $('#pharmacyTechsActivityTable').dataTable().fnDestroy()
+        }
+        pharmacyTechsActivityTable = getPharmacyTechActivityTable('pharmacyTechsActivityTable', 'Pharmacy Tech', pharmacyTechsDatesDiv.querySelector('#startDate').value, pharmacyTechsDatesDiv.querySelector('#endDate').value)
+    })
+
+    searchPharmacyTechsByMonthBtn.addEventListener('click', function () {
+        pharmacyTechsDatesDiv.querySelector('#startDate').value = ''; pharmacyTechsDatesDiv.querySelector('#endDate').value = ''
+        if ($.fn.DataTable.isDataTable( '#pharmacyTechsActivityTable' )){
+            $('#pharmacyTechsActivityTable').dataTable().fnDestroy()
+        }
+        pharmacyTechsActivityTable = getPharmacyTechActivityTable('pharmacyTechsActivityTable', 'Pharmacy Tech', null, null, pharmacyTechsDatesDiv.querySelector('#pharmacyTechsActivityMonth').value)
+    })
+    
+    //Hmo
+    searchHmoOfficersWithDatesBtn.addEventListener('click', function () {
+        hmoOfficersDatesDiv.querySelector('#hmoOfficersActivityMonth').value = ''
+        if ($.fn.DataTable.isDataTable( '#hmoOfficersActivityTable' )){
+            $('#hmoOfficersActivityTable').dataTable().fnDestroy()
+        }
+        hmoOfficersActivityTable = getHmoOfficersActivityTable('hmoOfficersActivityTable', 'HMO Officer', hmoOfficersDatesDiv.querySelector('#startDate').value, hmoOfficersDatesDiv.querySelector('#endDate').value)
+    })
+
+    searchHmoOfficersByMonthBtn.addEventListener('click', function () {
+        hmoOfficersDatesDiv.querySelector('#startDate').value = ''; hmoOfficersDatesDiv.querySelector('#endDate').value = ''
+        if ($.fn.DataTable.isDataTable( '#hmoOfficersActivityTable' )){
+            $('#hmoOfficersActivityTable').dataTable().fnDestroy()
+        }
+        hmoOfficersActivityTable = getHmoOfficersActivityTable('hmoOfficersActivityTable', 'HMO Officer', null, null, hmoOfficersDatesDiv.querySelector('#hmoOfficersActivityMonth').value)
+    })
+
+    //bill
+    searchBillOfficersWithDatesBtn.addEventListener('click', function () {
+        billOfficersDatesDiv.querySelector('#billOffersActivityMonth').value = ''
+        if ($.fn.DataTable.isDataTable( '#billOfficersActivityTable' )){
+            $('#billOfficersActivityTable').dataTable().fnDestroy()
+        }
+        billOfficersActivityTable = getLabTechActivityTable('billOfficersActivityTable', 'Bill Officer', billOfficersDatesDiv.querySelector('#startDate').value, billOfficersDatesDiv.querySelector('#endDate').value)
+    })
+
+    searchBillOfficersByMonthBtn.addEventListener('click', function () {
+        billOfficersDatesDiv.querySelector('#startDate').value = ''; billOfficersDatesDiv.querySelector('#endDate').value = ''
+        if ($.fn.DataTable.isDataTable( '#billOfficersActivityTable' )){
+            $('#billOfficersActivityTable').dataTable().fnDestroy()
+        }
+        billOfficersActivityTable = getLabTechActivityTable('billOfficersActivityTable', 'Bill Officer', null, null, billOfficersDatesDiv.querySelector('#billOffersActivityMonth').value)
+    })
 })

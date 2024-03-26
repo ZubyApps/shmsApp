@@ -327,6 +327,20 @@ class ReportController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
+    public function loadTPSSummary(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+        
+        $TPSSummary = $this->accountsReportService->getTPSSummary($params, $request);
+        
+        return response()->json([
+            'data' => $TPSSummary,
+            'draw' => $params->draw,
+            'recordsTotal' => $TPSSummary->total(),
+            'recordsFiltered' => $TPSSummary->total()
+        ]);        
+    }
+
     public function loadExpensesSummary(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
@@ -336,8 +350,8 @@ class ReportController extends Controller
         return response()->json([
             'data' => $expenseSummaries,
             'draw' => $params->draw,
-            'recordsTotal' => count($expenseSummaries),
-            'recordsFiltered' => count($expenseSummaries)
+            'recordsTotal' => $expenseSummaries->total(),
+            'recordsFiltered' => $expenseSummaries->total()
         ]);        
     }
 
@@ -401,18 +415,18 @@ class ReportController extends Controller
         $incomeArray = [...$totalIncomes, ...$totalExpenses];
 
         $months = [
-            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'January', 'm' => 1],
-            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'February', 'm' => 2],
-            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'March', 'm' => 3],
-            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'April', 'm' => 4],
-            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'May', 'm' => 5],
-            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'June', 'm' => 6],
-            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'July', 'm' => 7],
-            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'August', 'm' => 8],
-            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'September', 'm' => 9],
-            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'October', 'm' => 10],
-            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'November', 'm' => 11],
-            ['bill' => 0, 'paid' => 0,'expense' => 0, 'month_name' => 'December', 'm' => 12],
+            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'January', 'm' => 1],
+            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'February', 'm' => 2],
+            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'March', 'm' => 3],
+            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'April', 'm' => 4],
+            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'May', 'm' => 5],
+            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'June', 'm' => 6],
+            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'July', 'm' => 7],
+            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'August', 'm' => 8],
+            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'September', 'm' => 9],
+            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'October', 'm' => 10],
+            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'November', 'm' => 11],
+            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'December', 'm' => 12],
         ];
 
 
@@ -420,8 +434,10 @@ class ReportController extends Controller
             foreach($months as $key => $month){
                 if ($month['m'] === $income->month){
                     $months[$key]['bill'] === 0 && $income->bill ? $months[$key]['bill'] = $income->bill : 0 ;
-
+                    
                     $months[$key]['paid'] === 0 && $income->paid ? $months[$key]['paid'] = $income->paid : 0 ;
+
+                    $months[$key]['capitation'] === 0 && $income->capitation ? $months[$key]['capitation'] = $income->paid : 0 ;
                     
                     $months[$key]['expense'] = $income->amount ?? 0;
                 }
@@ -450,6 +466,61 @@ class ReportController extends Controller
         $patients = $this->userReportService->staffActivitiesByDesignation($params, $request);
 
         $loadTransformer = $this->userReportService->getDoctorsTransformer($request);
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    public function loadNursesActivity(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->userReportService->staffActivitiesByDesignation($params, $request);
+
+        $loadTransformer = $this->userReportService->getNursesTransformer($request);
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    public function loadLabTechsActivity(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->userReportService->staffActivitiesByDesignation($params, $request);
+
+        $loadTransformer = $this->userReportService->getLabTechsTransformer($request);
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    public function loadPharmacyTechsActivity(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->userReportService->staffActivitiesByDesignation($params, $request);
+
+        $loadTransformer = $this->userReportService->getPharmacyTechsTransformer($request);
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    public function loadHmoOfficersActivity(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->userReportService->staffActivitiesByDesignation($params, $request);
+
+        $loadTransformer = $this->userReportService->getHmoOfficerTransformer($request);
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
+    public function loadBillOfficersActivity(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->userReportService->staffActivitiesByDesignation($params, $request);
+
+        $loadTransformer = $this->userReportService->getBillOfficerTransformer($request);
 
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }

@@ -212,6 +212,7 @@ class BillingService
                 'outstandingNhisBalance'=> $visit->patient->allNhisBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
                 'payMethods'            => $this->payMethodService->list(),
                 'notBilled'             => $visit->prescriptions->where('qty_billed', null)->count(),
+                'user'                  => auth()->user()->designation->access_level > 4,
                 'prescriptions'         => $visit->prescriptions->map(fn(Prescription $prescription) => [
                     'prescriptionId'    => $prescription->id,
                     'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),

@@ -46,7 +46,7 @@ class CapitationPaymentService
 
     public function seiveCapitationPayment(Sponsor $sponsor, Carbon $date, float $amount = 0): void
     {
-        $amount == 0 ? $amount = $sponsor->capitationPayments()->whereMonth('month_paid_for', $date->month)->whereYear('month_paid_for', $date->year)->first()?->amount_paid : '';
+        $amount == 0 ? $amount = $sponsor->capitationPayments()->whereMonth('month_paid_for', $date->month)->whereYear('month_paid_for', $date->year)->first()?->amount_paid : 0;
 
         if ($amount > 0 ){
             $prescriptions = $sponsor->through('visits')->has('prescriptions')
@@ -143,5 +143,10 @@ class CapitationPaymentService
                 'createdAt'         => (new Carbon($capitationPayment->created_at))->format('d/m/Y g:ia'),
             ];
          };
+    }
+
+    public function processDeletion(CapitationPayment $capitationPayment)
+    {
+
     }
 }

@@ -1,9 +1,14 @@
 import jQuery from "jquery";
 import $ from 'jquery';
-import jszip, { forEach } from 'jszip';
-import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 import {admissionStatusX, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import jszip, { forEach } from 'jszip';
+import pdfmake from 'pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts'
+DataTable.Buttons.jszip(jszip)
+DataTable.Buttons.pdfMake(pdfmake)
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
 
 const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
@@ -163,6 +168,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
         const payMethods    = data.payMethods
         const notBilled     = data.notBilled
         const patient       = data.patient
+        const user          = data.user
         let payMethodOptions = ''
         payMethods.forEach(method => {
             payMethodOptions += `<option value="${method.id}">${method.name}</option>`
@@ -237,7 +243,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             ${billing ? 
                                                 `
                                                 <div class="">
-                                                    <button class="discountBtn btn btn-outline-secondary m-0" data-id="${data.id}">Discount</button>
+                                                    <button class="${user ? 'discountBtn' : ''} btn btn-outline-secondary m-0" data-id="${data.id}">Discount</button>
                                                     <input class="ms-1 form-control discountInput d-none" id="discountInput" type="number" style="width:6rem;" value="${data.discount}">
                                                 </div>
                                                 ` : ''}
@@ -487,6 +493,14 @@ const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate
             'date'              : date,
         }},
         orderMulti: true,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy'},
+            {extend: 'csv'},
+            {extend: 'excel'},
+            {extend: 'pdfHtml5'},
+            {extend: 'print'},
+             ],
         language: {
             emptyTable: 'No expense'
         },
