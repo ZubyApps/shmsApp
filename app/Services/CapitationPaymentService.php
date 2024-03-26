@@ -9,6 +9,7 @@ use App\Models\CapitationPayment;
 use App\Models\Sponsor;
 use App\Models\SponsorCategory;
 use App\Models\User;
+use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -46,27 +47,43 @@ class CapitationPaymentService
 
     public function seiveCapitationPayment(Sponsor $sponsor, Carbon $date, float $amount = 0): void
     {
-        $amount == 0 ? $amount = $sponsor->capitationPayments()->whereMonth('month_paid_for', $date->month)->whereYear('month_paid_for', $date->year)->first()?->amount_paid : 0;
-
-        if ($amount > 0 ){
-            $prescriptions = $sponsor->through('visits')->has('prescriptions')
-                                        ->whereMonth('prescriptions.created_at', $date->month)
-                                        ->whereYear('prescriptions.created_at', $date->year)->get();
+        DB::transaction(function () use($sponsor, $date, $amount) {
+            $amount == 0 ? $amount = $sponsor->capitationPayments()->whereMonth('month_paid_for', $date->month)->whereYear('month_paid_for', $date->year)->first()?->amount_paid : 0;
     
-            $pCount = $prescriptions->count();
+            if ($amount > 0 ){
+                $prescriptions  = $this->getPrescriptonsByMonthAndYear($sponsor, $date);
     
-            array_reduce([$prescriptions], function($carry, $prescription) use($pCount, $amount) {
-                foreach($prescription as $p){
-                    $avgCapitation =  $amount/$pCount;
-                    $p->update(['capitation' => $carry >= $avgCapitation ? $avgCapitation : ($carry < $avgCapitation && $carry > 0 ? $carry : null)]);
-                    $carry = $carry - $avgCapitation;
-                }
-                return $carry;
-    
-            }, $amount);
-        }
+                $pCount = $prescriptions->count();
+        
+                array_reduce([$prescriptions], function($carry, $prescription) use($pCount, $amount) {
+                    foreach($prescription as $p){
+                        $avgCapitation =  $amount/$pCount;
+                        $p->update(['capitation' => $carry >= $avgCapitation ? $avgCapitation : ($carry < $avgCapitation && $carry > 0 ? $carry : null)]);
+                        $carry = $carry - $avgCapitation;
+                    }
+                    return $carry;
+        
+                }, $amount);
+            }
+            $this->recalculateVisitsCapitations($sponsor, $date);
+        });
 
+    }
 
+    public function getPrescriptonsByMonthAndYear(Sponsor $sponsor, Carbon $date)
+    {
+        return $sponsor->through('visits')->has('prescriptions')
+        ->whereMonth('prescriptions.created_at', $date->month)
+        ->whereYear('prescriptions.created_at', $date->year)->get();
+    }
+
+    public function recalculateVisitsCapitations(Sponsor $sponsor, Carbon $date)
+    {
+        $visits = $sponsor->visits->whereMonth('prescriptions.created_at', $date->month)->whereYear('prescriptions.created_at', $date->year)->get();
+
+        $visits->map(function(Visit $visit){
+            $visit->update(['total_capitation' => $visit->totalPrescriptionCapitations()]);
+        });
     }
 
     public function getCapitationPayments(DataTableQueryParams $params, $data)
@@ -138,7 +155,6 @@ class CapitationPaymentService
                 'bank'              => $capitationPayment->bank,
                 'comment'           => $capitationPayment->comment,
                 'sponsor'           => $capitationPayment->sponsor->name,
-                'prescriptionCount' => $capitationPayment->prescription_count,
                 'enteredBy'         => $capitationPayment->user->username,
                 'createdAt'         => (new Carbon($capitationPayment->created_at))->format('d/m/Y g:ia'),
             ];
@@ -147,6 +163,21 @@ class CapitationPaymentService
 
     public function processDeletion(CapitationPayment $capitationPayment)
     {
+        
+        return DB::transaction(function () use($capitationPayment) {
 
+            $date    = new Carbon($capitationPayment->month_paid_for);
+            $sponsor = $capitationPayment->sponsor;
+
+            $prescriptions = $this->getPrescriptonsByMonthAndYear($sponsor, $date);
+    
+            $prescriptions->map(function ($prescription){
+                $prescription->update(['capitation' => 0]);
+            });
+
+            $this->recalculateVisitsCapitations($sponsor, $date);
+
+            $capitationPayment->destroy($capitationPayment->id);
+        });
     }
 }

@@ -31,7 +31,7 @@ class PrescriptionService
     public function createFromDoctors(Request $data, Resource $resource, User $user): Prescription
     {
         return DB::transaction(function () use($data, $resource, $user) {
-            $bill = null;
+            $bill = 0;
             $nhisBill = fn($value)=>$value/10;
             if ($data->quantity){
                 $bill = $resource->selling_price * $data->quantity;
@@ -42,7 +42,7 @@ class PrescriptionService
                 'prescription'      => $this->arrangePrescription($data),
                 'consultation_id'   => $data->conId,
                 'visit_id'          => $data->visitId,
-                'qty_billed'        => $data->quantity,
+                'qty_billed'        => $data->quantity ?? 0,
                 'qty_dispensed'     => $this->determineDispense($resource, $data),
                 'hms_bill'          => $bill,
                 'hms_bill_date'     => $bill ? new Carbon() : null,
@@ -60,6 +60,7 @@ class PrescriptionService
                 'viewed_at'         => null,
                 'total_hms_bill'    => $prescription->visit->totalHmsBills(),
                 'total_nhis_bill'   => $isNhis ? $prescription->visit->totalNhisBills() : $prescription->visit->total_nhis_bill,
+                'total_capitation'  => $isNhis ? $prescription->visit->totalPrescriptionCapitations() : $prescription->visit->total_capitation,
                 'pharmacy_done_by'  => $resource->category == 'Medications' || $resource->category == 'Consumables' ? null : $prescription->visit->pharmacy_done_by,
                 'hmo_done_by'       => null
             ]);
@@ -82,7 +83,7 @@ class PrescriptionService
 
     public function determineDispense(Resource $resource, $data){
         if ($resource->category == 'Medications' || $resource->category == 'Consumables' || $resource->category == 'Investigations'){
-            return null;
+            return 0;
         }
         $resource->stock_level = $resource->stock_level - $data->quantity; 
         $resource->save();
@@ -429,7 +430,7 @@ class PrescriptionService
             $date = new Carbon($data->date);
 
             return DB::table('prescriptions')
-                            ->selectRaw('SUM(hms_bill) as bill, SUM(hmo_bill) as totalHmoBill, SUM(nhis_bill) as totalNhisBill, SUM(paid) as paid, SUM(capitation) as capitation, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
+                            ->selectRaw('SUM(hms_bill) as bill, SUM(hmo_bill) as totalHmoBill, SUM(nhis_bill) as totalNhisBill, SUM(paid + capitation) as paid, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
                             ->whereYear('created_at', $date->year)
                             ->groupBy('month_name', 'month')
                             ->orderBy('month')
@@ -437,7 +438,7 @@ class PrescriptionService
         }
 
         return DB::table('prescriptions')
-                        ->selectRaw('SUM(hms_bill) as bill, SUM(hmo_bill) as totalHmoBill, SUM(nhis_bill) as totalNhisBill, SUM(paid) as paid, SUM(capitation) as capitation, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
+                        ->selectRaw('SUM(hms_bill) as bill, SUM(hmo_bill) as totalHmoBill, SUM(nhis_bill) as totalNhisBill, SUM(paid + capitation) as paid, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
                         ->whereYear('created_at', $currentDate->year)
                         ->groupBy('month_name', 'month')
                         ->orderBy('month')

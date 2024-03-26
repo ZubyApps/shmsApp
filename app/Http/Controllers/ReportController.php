@@ -415,18 +415,18 @@ class ReportController extends Controller
         $incomeArray = [...$totalIncomes, ...$totalExpenses];
 
         $months = [
-            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'January', 'm' => 1],
-            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'February', 'm' => 2],
-            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'March', 'm' => 3],
-            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'April', 'm' => 4],
-            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'May', 'm' => 5],
-            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'June', 'm' => 6],
-            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'July', 'm' => 7],
-            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'August', 'm' => 8],
-            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'September', 'm' => 9],
-            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'October', 'm' => 10],
-            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'November', 'm' => 11],
-            ['bill' => 0, 'paid' => 0, 'capitation' => 0, 'expense' => 0, 'month_name' => 'December', 'm' => 12],
+            ['bill' => 0, 'paid' => 0, 'expense' => 0, 'month_name' => 'January', 'm' => 1],
+            ['bill' => 0, 'paid' => 0, 'expense' => 0, 'month_name' => 'February', 'm' => 2],
+            ['bill' => 0, 'paid' => 0, 'expense' => 0, 'month_name' => 'March', 'm' => 3],
+            ['bill' => 0, 'paid' => 0, 'expense' => 0, 'month_name' => 'April', 'm' => 4],
+            ['bill' => 0, 'paid' => 0, 'expense' => 0, 'month_name' => 'May', 'm' => 5],
+            ['bill' => 0, 'paid' => 0, 'expense' => 0, 'month_name' => 'June', 'm' => 6],
+            ['bill' => 0, 'paid' => 0, 'expense' => 0, 'month_name' => 'July', 'm' => 7],
+            ['bill' => 0, 'paid' => 0, 'expense' => 0, 'month_name' => 'August', 'm' => 8],
+            ['bill' => 0, 'paid' => 0, 'expense' => 0, 'month_name' => 'September', 'm' => 9],
+            ['bill' => 0, 'paid' => 0, 'expense' => 0, 'month_name' => 'October', 'm' => 10],
+            ['bill' => 0, 'paid' => 0, 'expense' => 0, 'month_name' => 'November', 'm' => 11],
+            ['bill' => 0, 'paid' => 0, 'expense' => 0, 'month_name' => 'December', 'm' => 12],
         ];
 
 
@@ -437,8 +437,6 @@ class ReportController extends Controller
                     
                     $months[$key]['paid'] === 0 && $income->paid ? $months[$key]['paid'] = $income->paid : 0 ;
 
-                    $months[$key]['capitation'] === 0 && $income->capitation ? $months[$key]['capitation'] = $income->paid : 0 ;
-                    
                     $months[$key]['expense'] = $income->amount ?? 0;
                 }
             }

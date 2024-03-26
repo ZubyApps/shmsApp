@@ -67,7 +67,6 @@ class PharmacyService
                     });
                 });
             })
-            // ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->where('admission_status', '=', 'Outpatient')
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -175,12 +174,12 @@ class PharmacyService
     public function bill(Request $data, Prescription $prescription, User $user)
     {
         return DB::transaction(function () use($data, $prescription, $user) {
-            $bill = null;
+            $bill = 0;
             if ($data->quantity){
                 $bill = $prescription->resource->selling_price * $data->quantity;
             }
             $prescription->update([
-                'qty_billed'        => $data->quantity,
+                'qty_billed'        => $data->quantity ?? 0,
                 'hms_bill'          => $bill,
                 'nhis_bill'         => $bill/10,
                 'hms_bill_date'     => $bill ? new Carbon() : null,
@@ -223,7 +222,7 @@ class PharmacyService
             }
 
             return $prescription->update([
-                'qty_dispensed'     => $data->quantity,
+                'qty_dispensed'     => $data->quantity ?? 0,
                 'dispense_date'     => new Carbon(),
                 'dispensed_by'      => $user->id
             ]);

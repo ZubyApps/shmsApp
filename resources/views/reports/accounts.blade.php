@@ -342,7 +342,6 @@
                                 <th>Month</th>
                                 <th>Total Bill</th>
                                 <th>Total Paid</th>
-                                <th>Total Capitation</th>
                                 <th>Total Expense</th>
                                 <th>Expected Net</th>
                                 <th>Actual Net</th>
@@ -353,7 +352,6 @@
                         <tfoot>
                             <tr class="text-primary">
                                 <td class="fw-bold">Total</td>
-                                <td class="fw-bold "></td>
                                 <td class="fw-bold "></td>
                                 <td class="fw-bold "></td>
                                 <td class="fw-bold "></td>
