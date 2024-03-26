@@ -79,10 +79,12 @@ class CapitationPaymentService
 
     public function recalculateVisitsCapitations(Sponsor $sponsor, Carbon $date)
     {
-        $visits = $sponsor->visits->whereMonth('prescriptions.created_at', $date->month)->whereYear('prescriptions.created_at', $date->year)->get();
-
-        $visits->map(function(Visit $visit){
-            $visit->update(['total_capitation' => $visit->totalPrescriptionCapitations()]);
+        DB::transaction(function () use($sponsor, $date){
+            $visits = $sponsor->visits()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->get();
+    
+            $visits->map(function(Visit $visit){
+                $visit->update(['total_capitation' => $visit->totalPrescriptionCapitations()]);
+            });
         });
     }
 

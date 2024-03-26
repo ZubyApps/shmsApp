@@ -39,7 +39,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const billSummaryBody               = billModal._element.querySelector('.billSummaryBody')
 
 
-    let inPatientsVisitTable, ancPatientsVisitTable, billingTable, openVisitsTable, expensesTable, balancingTable
+    let inPatientsVisitTable, ancPatientsVisitTable, billingTable, paymentTable, openVisitsTable, expensesTable, balancingTable
 
     const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient', 'consulted')
     const waitingTable = getWaitingTable('waitingTable')
@@ -147,7 +147,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (billingDetailsBtn){
                 const visitId = billingDetailsBtn.getAttribute('data-id') 
                 billingTable = getbillingTableByVisit('billingTable', visitId, billingModal._element, true)
-                getPaymentTableByVisit('paymentTable', visitId, billingModal._element)
+                paymentTable = getPaymentTableByVisit('paymentTable', visitId, billingModal._element)
                 outstandingBillsModal.hide()
                 billingModal.show()
             }
@@ -230,16 +230,13 @@ window.addEventListener('DOMContentLoaded', function () {
                     if (response.status >= 200 || response.status <= 300) {
                         new Toast(paymentDetailsDiv.querySelector('#savePaymentToast'), {delay:2000}).show()
                         billingTable ? billingTable.draw() : ''
+                        paymentTable ? paymentTable.draw() : ''
                         clearDivValues(paymentDetailsDiv)
                         clearValidationErrors(paymentDetailsDiv)
-
                     }
-                    // if ($.fn.DataTable.isDataTable( '#billingTable' )){
-                    //     $('#billingTable').dataTable().fnDraw()
+                    // if ($.fn.DataTable.isDataTable( '#paymentTable' )){
+                    //     $('#paymentTable').dataTable().fnDraw()
                     // }
-                    if ($.fn.DataTable.isDataTable( '#paymentTable' )){
-                        $('#paymentTable').dataTable().fnDraw()
-                    }
                     payBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {

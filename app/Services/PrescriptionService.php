@@ -119,7 +119,7 @@ class PrescriptionService
                 'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                 'resource'          => $prescription->resource->name,
                 'prescription'      => $prescription->prescription,
-                'quantity'          => $prescription->qty_billed,
+                'quantity'          => $prescription->qty_billed < 1 ? '' : $prescription->qty_billed,
                 'by'                => $prescription->user->username,
                 'chartable'         => $prescription->chartable ? 'Yes' : 'No',
                 'note'              => $prescription->note

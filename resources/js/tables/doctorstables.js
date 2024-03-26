@@ -410,11 +410,6 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                                         <i class="bi bi-download"></i> Print All
                                     </a>
                                 </li>
-                                <li class="${!row.sent ||(viewer !== 'lab' && viewer !== 'doctor') ? 'd-none' : ''}">
-                                    <a class="btn dropdown-item upload-result-btn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-table="${tableId}" title="edit result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
-                                        <i class="bi bi-upload"></i> Upload Doc
-                                    </a>
-                                </li>
                                 <li class="${!row.sent || (viewer !== 'lab' && viewer !== 'doctor') ? 'd-none' : ''}">
                                     <a class="btn dropdown-item deleteResultBtn" data-table="${tableId}" title="delete" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-trash3-fill"></i> Delete Result

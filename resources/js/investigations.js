@@ -185,10 +185,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal, #investigationsModal, #addResultModal, #updateResultModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function () {
-            console.log('ran')
             outPatientsVisitsTable.draw()
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+            modal.id == 'addResultModal' || modal.id == 'updateResultModal' ? '':
             regularTreatmentDiv.innerHTML = ''
             ancTreatmentDiv.innerHTML = ''
         })
@@ -202,7 +202,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 createResultBtn.setAttribute('data-id', addResultBtn.getAttribute('data-id'))
                 createResultBtn.setAttribute('data-table', addResultBtn.getAttribute('data-table'))
                 addResultModal._element.querySelector('#patient').value = addResultBtn.getAttribute('data-patient')
-                addResultModal._element.querySelector('#sponsorName').value = addResultBtn.getAttribute('data-sponsor')
+                addResultModal._element.querySelector('#sponsorName').value = addResultBtn.getAttribute('data-sponsor') + ' - ' + addResultBtn.getAttribute('data-sponsorcat')
                 addResultModal._element.querySelector('#diagnosis').value = addResultBtn.getAttribute('data-diagnosis')
                 addResultModal._element.querySelector('#investigation').value = addResultBtn.getAttribute('data-investigation')
                 addResultModal.show()
@@ -341,13 +341,13 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300) {
                 clearDivValues(addResultDiv)
                 clearValidationErrors(addResultDiv)
+                addResultModal.hide()
 
                 if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
                     $('#' + investigationTableId).dataTable().fnDraw()
                 }
             }
             createResultBtn.removeAttribute('disabled')
-            addResultModal.hide()
         })
         .catch((error) => {
             console.log(error)

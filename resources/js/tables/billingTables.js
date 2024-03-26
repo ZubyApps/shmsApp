@@ -310,7 +310,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             </div>  
                                         </div>
                                         <ul class="list-group list-group-flush">
-                                            <li class="list-group-item border-0"> Amount <input class="ms-1 form-control amountInput" id="amount" name="amount"></li>
+                                            <li class="list-group-item border-0"> Amount <input class="ms-1 form-control amountInput" id="amount" name="amount" type="number"></li>
                                             <li class="list-group-item border-0">Pay Method
                                             <select class="form-select form-select-md payMethodInput" name="payMethod" id="payMethod">
                                             ${payMethodOptions}
@@ -345,7 +345,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             </div>  
                                         </div>
                                         <ul class="list-group list-group-flush">
-                                            <li class="list-group-item border-0"> Amount <input class="ms-1 form-control amountInput" id="amount" name="amount"></li>
+                                            <li class="list-group-item border-0"> Amount <input class="ms-1 form-control amountInput" type="number" id="amount" name="amount"></li>
                                             <li class="list-group-item border-0">Pay Method
                                             <select class="form-select form-select-md payMethodInput" name="payMethod" id="payMethod">
                                             ${payMethodOptions}

@@ -50,9 +50,6 @@
                                 <x-input-span id="statusLabel">Result/Report<x-required-span /></x-input-span>
                                 <x-form-textarea name="result"></x-form-textarea>
                             </x-form-div>
-                            <x-form-div class="col-xl-12">
-                                <x-form-input type="file" name="file" />
-                            </x-form-div>
                         </div>
                     </div>
                 </div>

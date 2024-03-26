@@ -66,7 +66,7 @@ const getInpatientsInvestigationsTable = (tableId, notLab) => {
                 sortable: false,
                 data: row =>  `
                         <div class="d-flex flex- ${notLab ? 'd-none' : ''}">
-                            <button class=" btn btn-outline-primary addResultBtn tooltip-test" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                            <button class=" btn btn-outline-primary addResultBtn tooltip-test" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                                 <i class="bi bi-plus-square"></i> Add Result
                             </button>
                         </div>
@@ -114,7 +114,7 @@ const getOutpatientsInvestigationTable = (tableId, notLab) => {
                         } else {
                             return `
                             <div class="d-flex flex- ${notLab ? 'd-none' : ''}">
-                                <button class="btn btn-outline-primary addResultBtn tooltip-test" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                                <button class="btn btn-outline-primary addResultBtn tooltip-test" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                                     <i class="bi bi-plus-square"></i> Add Result
                                 </button>
                             </div>
