@@ -35,10 +35,10 @@ class AccountsReportService
 
         if ($data->startDate && $data->endDate){
         return DB::table('pay_methods')
-            ->selectRaw('COUNT(payments.id) as paymentCount, pay_methods.name AS pMethod, SUM(payments.amount_paid) as amountPaid')
+            ->selectRaw('COUNT(payments.id) as paymentCount, pay_methods.name AS pMethod, pay_methods.id AS id, SUM(payments.amount_paid) as amountPaid')
             ->leftJoin('payments', 'pay_methods.id', '=', 'payments.pay_method_id')
             ->whereBetween('payments.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-            ->groupBy('pMethod')
+            ->groupBy('pMethod', 'id')
             ->orderBy('paymentCount', 'desc')
             ->get()
             ->toArray();
@@ -48,7 +48,7 @@ class AccountsReportService
             $date = new Carbon($data->date);
 
             return DB::table('pay_methods')
-            ->selectRaw('COUNT(payments.id) as paymentCount, pay_methods.name AS pMethod, pay_methods.id, SUM(payments.amount_paid) as amountPaid')
+            ->selectRaw('COUNT(payments.id) as paymentCount, pay_methods.name AS pMethod, pay_methods.id AS id, SUM(payments.amount_paid) as amountPaid')
             ->leftJoin('payments', 'pay_methods.id', '=', 'payments.pay_method_id')
             ->whereMonth('payments.created_at', $date->month)
             ->whereYear('payments.created_at', $date->year)
@@ -59,7 +59,7 @@ class AccountsReportService
         }
 
         return DB::table('pay_methods')
-            ->selectRaw('COUNT(payments.id) as paymentCount, pay_methods.name AS pMethod, pay_methods.id, SUM(payments.amount_paid) as amountPaid')
+            ->selectRaw('COUNT(payments.id) as paymentCount, pay_methods.name AS pMethod, pay_methods.id AS id, SUM(payments.amount_paid) as amountPaid')
             ->leftJoin('payments', 'pay_methods.id', '=', 'payments.pay_method_id')
             ->whereMonth('payments.created_at', $current->month)
             ->whereYear('payments.created_at', $current->year)
