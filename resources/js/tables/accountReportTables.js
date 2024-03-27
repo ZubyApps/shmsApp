@@ -415,4 +415,4 @@ const getYearlyIncomeAndExpenseTable = (tableId, year) => {
     return yearlyIncomeAndExpenseTable
 }
 
-export {getPayMethodsSummmaryTable, getCapitationPaymentsTable, getTPSSummaryTable, getByPayMethodsTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable}
+export {getPayMethodsSummmaryTable, getCapitationPaymentsTable, getTPSSummaryTable, getByPayMethodsTable, getThirdPartyServicesByThirdPartyTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable}

@@ -45,7 +45,7 @@ class ResourceReportService
 
         if ($data->startDate && $data->endDate){
             return DB::table('resource_categories')
-            ->selectRaw('resource_categories.name AS rCategory, resource_categories.id AS id, COUNT(DISTINCT(resources.id)) as resourceCount, COUNT(prescriptions.id) as prescriptionsCount, SUM(prescriptions.qty_billed * purchase_price) as expectedCost, SUM(prescriptions.qty_dispensed * purchase_price) as dispensedCost, SUM(prescriptions.hms_bill) as expectedIncome, SUM(prescriptions.paid) as actualIncome, SUM(prescriptions.qty_dispensed * selling_price) as dispensedIncome')
+            ->selectRaw('resource_categories.name AS rCategory, resource_categories.id AS id, COUNT(DISTINCT(resources.id)) as resourceCount, COUNT(prescriptions.id) as prescriptionsCount, SUM(prescriptions.qty_billed * purchase_price) as expectedCost, SUM(prescriptions.qty_dispensed * purchase_price) as dispensedCost, SUM(prescriptions.hms_bill) as expectedIncome, SUM(prescriptions.paid + prescriptions.capitation) as actualIncome, SUM(prescriptions.qty_dispensed * selling_price) as dispensedIncome')
                 ->leftJoin('resource_sub_categories', 'resource_categories.id', '=', 'resource_sub_categories.resource_category_id')
                 ->leftJoin('resources', 'resource_sub_categories.id', '=', 'resources.resource_sub_category_id')
                 ->leftJoin('prescriptions', 'resources.id', '=', 'prescriptions.resource_id')

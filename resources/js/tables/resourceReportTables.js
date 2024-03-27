@@ -60,7 +60,12 @@ const getUsedResourcesSummaryTable = (tableId, startDate, endDate, date) => {
                 extend:'colvis',
                 text:'Show/Hide',
                 className:'btn btn-primary'       
-            }
+            },
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
         ],
         drawCallback: function (settings) {
             var api = this.api()

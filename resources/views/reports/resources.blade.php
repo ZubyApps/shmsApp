@@ -87,7 +87,7 @@
                                 <th>Dispensed Income</th>
                                 <th>Actual Income</th>
                                 <th>Actual - Ex Cost</th>
-                                <th>Actual - Expected</th>
+                                <th>Actual - Ex Income</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
