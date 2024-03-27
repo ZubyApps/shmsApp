@@ -9,6 +9,7 @@ use App\Models\Expense;
 use App\Models\Payment;
 use App\Models\PayMethod;
 use App\Models\Prescription;
+use App\Models\ThirdPartyService;
 use App\Models\Visit;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
@@ -24,7 +25,9 @@ class AccountsReportService
         private readonly Prescription $prescription,
         private readonly ExpenseService $expenseService,
         private readonly PrescriptionService $prescriptionService,
+        private readonly ThirdPartyService $thirdPartyService,
         private readonly Visit $visit,
+        private readonly PayPercentageService $payPercentageService
         )
     {
     }
@@ -350,6 +353,127 @@ class AccountsReportService
                     'amountPaid'        => $payment->amount_paid,
                 ];
             };
+    }
+
+    public function getThirdPartyServicesByThirdParty(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+        $current    = CarbonImmutable::now();
+
+        if (! empty($params->searchTerm)) {
+            if ($data->startDate && $data->endDate){
+                return $this->thirdPartyService
+                            ->whereRelation('thirdParty', 'id', '=',  $data->thirdPartyId)
+                            ->orWhere(function (Builder $query) use($params, $data) {
+                                $query->whereRelation('prescription.visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.consultation', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.consultation', 'provisional_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                            ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            if($data->date){
+                $date = new Carbon($data->date);
+                return $this->thirdPartyService
+                            ->whereRelation('thirdParty', 'id', '=',  $data->thirdPartyId)
+                            ->orWhere(function (Builder $query) use($params, $data) {
+                                $query->whereRelation('prescription.visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.consultation', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.consultation', 'provisional_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                            ->whereMonth('created_at', $date->month)
+                            ->whereYear('created_at', $date->year)
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            return $this->thirdPartyService
+                            ->whereRelation('thirdParty', 'id', '=',  $data->thirdPartyId)
+                            ->orWhere(function (Builder $query) use($params, $data) {
+                                $query->whereRelation('prescription.visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.visit.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.consultation', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescription.consultation', 'provisional_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                            ->whereMonth('created_at', $current->month)
+                            ->whereYear('created_at', $current->year)
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->startDate && $data->endDate){
+            return $this->thirdPartyService
+                        ->whereRelation('thirdParty', 'id', '=',  $data->thirdPartyId)
+                        ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if($data->date){
+            $date = new Carbon($data->date);
+            return $this->thirdPartyService
+                    ->whereRelation('thirdParty', 'id', '=',  $data->thirdPartyId)
+                    ->whereMonth('created_at', $date->month)
+                    ->whereYear('created_at', $date->year)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return $this->thirdPartyService
+                    ->whereRelation('thirdParty', 'id', '=',  $data->thirdPartyId)
+                    ->whereMonth('created_at', $current->month)
+                    ->whereYear('created_at', $current->year)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+
+       
+    }
+
+    public function getTPSByThirdPartyTransformer(): callable
+    {
+       return  function (ThirdPartyService $thirdPartyService) {
+            return [
+                'id'                => $thirdPartyService->id,
+                'date'              => (new Carbon($thirdPartyService->created_at))->format('d/m/Y'),
+                'thirdParty'        => $thirdPartyService->thirdParty->short_name,
+                'sponsorCategoryClass'  => $thirdPartyService->prescription->visit->sponsor->sponsorCategory->pay_class,
+                'sponsorCategory'       => $thirdPartyService->prescription->visit->sponsor->category_name,
+                'sponsor'               => $thirdPartyService->prescription->visit->sponsor->name,
+                'resource'              => $thirdPartyService->prescription->resource->name,
+                'patient'               => $thirdPartyService->prescription->visit->patient->patientId(),
+                'doctor'                => $thirdPartyService->prescription->user->username,
+                'diagnosis'             => $thirdPartyService->prescription->consultation?->icd11_diagnosis ?? $thirdPartyService->prescription->consultation?->provisional_diagnosis ?? $thirdPartyService->prescription->consultation?->assessment,
+                'admissionStatus'   => $thirdPartyService->prescription->visit->admission_status,
+                'reason'            => $thirdPartyService->prescription->visit->discharge_reason,
+                'hmsBill'           => $thirdPartyService->prescription->hms_bill,
+                'initiatedBy'       => $thirdPartyService->user->username,
+                'payPercent'        => $this->payPercentageService->individual_Family($thirdPartyService->prescription->visit),
+                'payPercentNhis'    => $this->payPercentageService->nhis($thirdPartyService->prescription->visit),
+                'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($thirdPartyService->prescription->visit),
+                'paid'              => $thirdPartyService->prescription->paid > 0 && $thirdPartyService->prescription->paid >= $thirdPartyService->prescription->hms_bill,
+                'paidNhis'          => $thirdPartyService->prescription->paid > 0 && $thirdPartyService->prescription->paid >= $thirdPartyService->prescription->hms_bill/10 && $thirdPartyService->prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
+                'approved'          => $thirdPartyService->prescription->approved, 
+                'rejected'          => $thirdPartyService->prescription->rejected,
+                'user'              => auth()->user()->designation->access_level > 4
+            ];
+         };
     }
 
     public function getVisitsSummaryBySponsorCategory(DataTableQueryParams $params, $data)

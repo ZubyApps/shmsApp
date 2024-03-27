@@ -260,6 +260,39 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    document.querySelector('#TPSSummaryTable').addEventListener('click', function (event) {
+        const showThirdPartyServicesBtn = event.target.closest('.showThirdPartyServicesBtn')
+        const visitFrom     = visistSummaryDiv2.querySelector('#startDate').value
+        const visitTo       = visistSummaryDiv2.querySelector('#endDate').value
+        const visitDate     = visistSummaryDiv2.querySelector('#visitSummaryMonth2').value
+
+        if (showThirdPartyServicesBtn){
+            showThirdPartyServicesBtn.setAttribute('disabled', true)
+            const id = showThirdPartyServicesBtn.getAttribute('data-id')
+            visitsBySponsorModal._element.querySelector('#sponsor').value = showThirdPartyServicesBtn.getAttribute('data-sponsor')
+            visitsBySponsorModal._element.querySelector('#sponsorCategory').value = showThirdPartyServicesBtn.getAttribute('data-category')
+
+            if (visitDate){
+                visitsBySponsorModal._element.querySelector('#visitMonth').value = visitDate
+                visitsBySponsorTable = getVisitsBySponsorTable('visitsBySponsorTable', id, visitsBySponsorModal, null, null, visitDate)
+                visitsBySponsorModal.show()
+                return
+            }
+
+            if(visitFrom && visitTo){
+                visitsBySponsorModal._element.querySelector('#from').value = visitFrom
+                visitsBySponsorModal._element.querySelector('#to').value = visitTo
+                visitsBySponsorTable = getVisitsBySponsorTable('visitsBySponsorTable', id, visitsBySponsorModal, visitFrom, visitTo)
+                visitsBySponsorModal.show()
+                return
+            }
+
+            visitsBySponsorModal._element.querySelector('#visitMonth').value = new Date().toISOString().slice(0,7)
+            visitsBySponsorTable = getVisitsBySponsorTable('visitsBySponsorTable', id, visitsBySponsorModal)
+            visitsBySponsorModal.show()
+        }
+    })
+
     document.querySelector('#expenseSummaryTable').addEventListener('click', function (event) {
         const showExpensesBtn   = event.target.closest('.showExpensesBtn')
         const expensesFrom      = expenseSummaryDatesDiv.querySelector('#startDate').value

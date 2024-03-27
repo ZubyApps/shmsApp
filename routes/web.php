@@ -196,6 +196,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/accounts/paymethodsummary', [ReportController::class, 'loadPayMethodsSummary']);
             Route::get('/accounts/capitation', [ReportController::class, 'loadCapitationPayments']);
             Route::get('/accounts/tpsssummary', [ReportController::class, 'loadTPSSummary']);
+            Route::get('/accounts/tpsbythirdparty', [ReportController::class, 'loadTPSByThirdParty']);
             Route::get('/accounts/expensesummary', [ReportController::class, 'loadExpensesSummary']);
             Route::get('/accounts/visitsummary1', [ReportController::class, 'loadVisitsSummaryBySponsorCategory']);
             Route::get('/accounts/visitsummary2', [ReportController::class, 'loadVisitsSummaryBySponsor']);

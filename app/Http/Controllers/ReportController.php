@@ -394,6 +394,17 @@ class ReportController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
+    public function loadTPSByThirdParty(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->accountsReportService->getThirdPartyServicesByThirdParty($params, $request);
+
+        $loadTransformer = $this->accountsReportService->getTPSByThirdPartyTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
     public function loadVisitsBySponsor(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);

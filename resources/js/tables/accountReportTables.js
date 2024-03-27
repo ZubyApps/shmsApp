@@ -2,7 +2,7 @@ import $, { data } from 'jquery';
 import DataTable from 'datatables.net-bs5';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
-import pdfFonts from 'pdfMake/build/vfs_fonts'
+import pdfFonts from 'pdfmake/build/vfs_fonts'
 DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -65,6 +65,62 @@ const getByPayMethodsTable = (tableId, payMethodId, modal, startDate, endDate, d
             {data: "totalHmoBill"},
             {data: "totalNhisBill"},
             {data: "amountPaid"},
+        ]
+    })
+
+    modal._element.addEventListener('hidden.bs.modal', function () {
+        modal._element.querySelector('#payMethodMonth').value = ''
+        modal._element.querySelector('#from').value = ''
+        modal._element.querySelector('#to').value = ''
+        byPayMethodTable.destroy()
+    })
+
+    return byPayMethodTable
+}
+
+const getThirdPartyServicesByThirdPartyTable = (tableId, thirdPartyId, modal, startDate, endDate, date) => {
+    const byPayMethodTable = new DataTable(`#${tableId}`, {
+        serverSide: true,
+        ajax:  {url: `/reports/accounts/tpsbythirdparty`, data: {
+            'thirdPartyId': thirdPartyId,
+            'startDate' : startDate, 
+            'endDate'   : endDate,
+            'date'      : date,
+        }},
+        orderMulti: true,
+        search:true,
+        lengthMenu:[20, 40, 80, 120, 200],
+        drawCallback: function (settings) {
+            var api = this.api()
+            $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {data: "date"},
+            {data: "initiatedBy"},
+            {data: "thirdParty"},
+            {data: row => function () {
+                const credit = row.sponsorCategoryClass == 'Credit'
+                const NHIS = row.sponsorCategory == 'NHIS'
+                return `<span class="text-primary fw-semibold">${row.resource +' '+ displayPaystatus(row, credit, NHIS)}</span>`
+                }
+            },
+            {data: "patient"},
+            {data: "doctor"},
+            {data: "diagnosis"},
+            {data: row => sponsorAndPayPercent(row)},
+            {data: row => admissionStatusX(row)},
+            {data: row => account.format(row.hmsBill)},
+            {
+                sortable: false,
+                data: row => function () {
+                        return `
+                        <div class="d-flex flex-">
+                            <button type="submit" class="ms-1 btn btn-outline-primary deleteThirPartyServiceBtn tooltip-test ${row.user ? '' : 'd-none'}" title="delete" data-id="${ row.id }">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
+                        </div>
+                    `
+            }}
         ]
     })
 
@@ -182,7 +238,7 @@ const getTPSSummaryTable = (tableId, startDate, endDate, date) => {
                 $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: row => `<span class="btn text-decoration-underline showExpensesBtn tooltip-test" title="show expenses" data-id="${row.id}" data-expensecategory="${row.thirdParty}">${row.thirdParty}</span>`},
+            {data: row => `<span class="btn text-decoration-underline showThirdPartyServicesBtn tooltip-test" title="show third party services" data-id="${row.id}" data-thirdparty="${row.thirdParty}">${row.thirdParty}</span>`},
             {data: row => account.format(+row.patientsCount)},
             {data: row => account.format(+row.servicesCount)},
             {data: row => account.format(+row.totalHmsBill)},
