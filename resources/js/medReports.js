@@ -34,7 +34,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const searchDischargeSummaryWithDatesBtn   = document.querySelector('.searchDischargeSummaryWithDatesBtn')
     const searchDischargeSummaryByMonthBtn     = document.querySelector('.searchDischargeSummaryByMonthBtn')
 
-    let medServicesTable, newBirthsTable, referredTable, deceasedTable, dischargeSummaryTable
+    let medServicesTable, newBirthsTable, referredTable, deceasedTable, dischargeSummaryTable, byResourceTable
     medServicesTable = getMedServiceSummaryTable('summaryTable')
     datesDiv.querySelector('#medServiceMonth').value = new Date().toISOString().slice(0,7)
 

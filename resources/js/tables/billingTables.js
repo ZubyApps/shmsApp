@@ -8,6 +8,7 @@ import pdfFonts from 'pdfmake/build/vfs_fonts'
 DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
+$.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 
 const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
@@ -495,11 +496,11 @@ const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate
         orderMulti: true,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
-            {extend: 'copy'},
-            {extend: 'csv'},
-            {extend: 'excel'},
-            {extend: 'pdfHtml5'},
-            {extend: 'print'},
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
              ],
         language: {
             emptyTable: 'No expense'

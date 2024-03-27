@@ -20,7 +20,7 @@
                                     <x-form-div class="col-xl-12 qty" id="qty">
                                         <x-input-span id="quantityLabel">Quantity<x-required-span /></x-input-span>
                                         <x-form-input type="number" name="quantity" id="quantity"
-                                            placeholder="quanitity"/>
+                                            placeholder="quantity"/>
                                     </x-form-div>
                                     <x-form-div class="col-xl-12">
                                         <x-input-span id="noteLabel">Note</x-input-span>

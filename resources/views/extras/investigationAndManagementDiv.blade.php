@@ -4,7 +4,7 @@
         <div class="row">
             <x-form-div class="col-xl-6">
                 <x-input-span id="resourceLabel">Medical Resource<x-required-span /></x-input-span>
-                <input class="form-control resource" type="search" name="resource" id="resource" data-input="{{ strtolower($type) }}" placeholder="search" list="resourceList{{ strtolower($type) }}"/>
+                <input class="form-control resource" type="search" autocomplete="off" name="resource" id="resource" data-input="{{ strtolower($type) }}" placeholder="search" list="resourceList{{ strtolower($type) }}"/>
                 <datalist name="resource" type="text" class="decoration-none resourceList" id="resourceList{{ strtolower($type) }}"></datalist>
             </x-form-div>
             <x-form-div class="col-xl-6 pres" id="pres">

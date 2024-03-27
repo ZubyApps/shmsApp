@@ -95,7 +95,7 @@
                     <x-form-input type="date" name="startDate" id="startDate" />
                     <x-input-span class="">End</x-input-span>
                     <x-form-input type="date" name="endDate" id="endDate" />
-                    <button class="input-group-text searchVisitsWithDatesBtn">Serach</button>
+                    <button class="input-group-text searchVisitsWithDatesBtn">Search</button>
                 </x-form-div>
                 <div class="py-2 ">
                     <table id="visitsTable" class="table">

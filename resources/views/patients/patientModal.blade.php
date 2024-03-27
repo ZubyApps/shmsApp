@@ -127,7 +127,7 @@
                                 </x-form-div>
 
                                 <x-form-div>
-                                    <x-input-span>Address</x-input-span>
+                                    <x-input-span>Address<x-required-span /></x-input-span>
                                     <x-form-input name="address" id="address"/>
                                 </x-form-div>
 

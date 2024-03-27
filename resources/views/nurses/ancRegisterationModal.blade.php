@@ -113,7 +113,7 @@
                             <!-- first row -->
                             <div class="row">
                                 <x-form-div>
-                                    <x-input-span>LMP</x-input-span>
+                                    <x-input-span>LMP<x-required-span /></x-input-span>
                                     <x-form-input type="date" name="lmp" id="lmp" data-lmp="{{ $isUpdate ? 'updateAnc' : 'newAnc' }}"  :readonly="$isView"/>
                                 </x-form-div>
 

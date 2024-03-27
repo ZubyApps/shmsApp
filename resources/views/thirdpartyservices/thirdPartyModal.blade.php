@@ -22,11 +22,11 @@
                                 <x-form-input name="shortName" />
                             </x-form-div>
                             <x-form-div class="col-xl-6">
-                                <x-input-span>Phone No.</x-input-span>
+                                <x-input-span>Phone No.<x-required-span /></x-input-span>
                                 <x-form-input name="phone" />
                             </x-form-div>
                             <x-form-div class="col-xl-6">
-                                <x-input-span>Address</x-input-span>
+                                <x-input-span>Address<x-required-span /></x-input-span>
                                 <x-form-input name="address" />
                             </x-form-div>
                             <x-form-div class="col-xl-6">

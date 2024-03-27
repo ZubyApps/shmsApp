@@ -6,6 +6,7 @@ import pdfFonts from 'pdfmake/build/vfs_fonts'
 DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
+$.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 
 const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
@@ -90,11 +91,11 @@ const getCapitationPaymentsTable = (tableId, startDate, endDate, date) => {
         search:true,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
-            {extend: 'copy'},
-            {extend: 'csv'},
-            {extend: 'excel'},
-            {extend: 'pdfHtml5'},
-            {extend: 'print'},
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
              ],
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
@@ -241,11 +242,11 @@ const getVisitSummaryTable2 = (tableId, startDate, endDate, date) => {
         orderMulti: true,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
-            {extend: 'copy'},
-            {extend: 'csv'},
-            {extend: 'excel'},
-            {extend: 'pdfHtml5'},
-            {extend: 'print'},
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
              ],
         search:true,
         "sAjaxDataProp": "data.data",
@@ -328,11 +329,11 @@ const getYearlyIncomeAndExpenseTable = (tableId, year) => {
         info: false,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
-            {extend: 'copy'},
-            {extend: 'csv'},
-            {extend: 'excel'},
-            {extend: 'pdfHtml5'},
-            {extend: 'print'},
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
              ],
         drawCallback: function () {
             var api = this.api()
