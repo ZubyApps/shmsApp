@@ -7,6 +7,7 @@
 @include('reports.modals.byPayMethodModal', ['title' => 'Paymets By Paymethod', 'id' => 'byPayMethodModal'])
 @include('reports.modals.visitsBySponsorModal', ['title' => 'Visits By Sponsor', 'id' => 'visitsBySponsorModal'])
 @include('reports.modals.byExpenseCategoryModal', ['title' => 'Paymets By Paymethod', 'id' => 'byExpenseCategoryModal'])
+@include('reports.modals.TPSByThirdPartyModal', ['title' => 'Third Party Services By Third Party', 'id' => 'TPSByThirdPartyModal'])
 @include('billing.expenseModal', ['title' => "New Expense", 'isUpdate' => false, 'id' => 'newExpenseModal'])
 @include('billing.expenseModal', ['title' => "Update Expense", 'isUpdate' => true, 'id' => 'updateExpenseModal'])
 
@@ -61,7 +62,7 @@
                             <tr>
                                 <th>Pay Method</th>
                                 <th>Payments</th>
-                                <th>Total AMount</th>
+                                <th>Total Amount</th>
                             </tr>
                         </thead>
                         <tbody></tbody>

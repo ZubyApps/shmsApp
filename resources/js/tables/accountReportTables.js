@@ -3,6 +3,7 @@ import DataTable from 'datatables.net-bs5';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts'
+import { admissionStatusX, displayPaystatus, sponsorAndPayPercent } from '../helpers';
 DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -78,8 +79,8 @@ const getByPayMethodsTable = (tableId, payMethodId, modal, startDate, endDate, d
     return byPayMethodTable
 }
 
-const getThirdPartyServicesByThirdPartyTable = (tableId, thirdPartyId, modal, startDate, endDate, date) => {
-    const byPayMethodTable = new DataTable(`#${tableId}`, {
+const getTPSByThirdPartyTable = (tableId, thirdPartyId, modal, startDate, endDate, date) => {
+    const TPSByThirdPartyTable = new DataTable(`#${tableId}`, {
         serverSide: true,
         ajax:  {url: `/reports/accounts/tpsbythirdparty`, data: {
             'thirdPartyId': thirdPartyId,
@@ -97,7 +98,7 @@ const getThirdPartyServicesByThirdPartyTable = (tableId, thirdPartyId, modal, st
         columns: [
             {data: "date"},
             {data: "initiatedBy"},
-            {data: "thirdParty"},
+            // {data: "thirdParty"},
             {data: row => function () {
                 const credit = row.sponsorCategoryClass == 'Credit'
                 const NHIS = row.sponsorCategory == 'NHIS'
@@ -125,13 +126,13 @@ const getThirdPartyServicesByThirdPartyTable = (tableId, thirdPartyId, modal, st
     })
 
     modal._element.addEventListener('hidden.bs.modal', function () {
-        modal._element.querySelector('#payMethodMonth').value = ''
+        modal._element.querySelector('#TPSByMonth').value = ''
         modal._element.querySelector('#from').value = ''
         modal._element.querySelector('#to').value = ''
-        byPayMethodTable.destroy()
+        TPSByThirdPartyTable.destroy()
     })
 
-    return byPayMethodTable
+    return TPSByThirdPartyTable
 }
 
 const getCapitationPaymentsTable = (tableId, startDate, endDate, date) => {
@@ -415,4 +416,4 @@ const getYearlyIncomeAndExpenseTable = (tableId, year) => {
     return yearlyIncomeAndExpenseTable
 }
 
-export {getPayMethodsSummmaryTable, getCapitationPaymentsTable, getTPSSummaryTable, getByPayMethodsTable, getThirdPartyServicesByThirdPartyTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable}
+export {getPayMethodsSummmaryTable, getCapitationPaymentsTable, getTPSSummaryTable, getByPayMethodsTable, getTPSByThirdPartyTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable}

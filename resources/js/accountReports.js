@@ -1,7 +1,7 @@
 import {Modal } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { getPayMethodsSummmaryTable, getCapitationPaymentsTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getByPayMethodsTable, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable, getTPSSummaryTable } from "./tables/accountReportTables";
+import { getPayMethodsSummmaryTable, getCapitationPaymentsTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getByPayMethodsTable, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable, getTPSSummaryTable, getTPSByThirdPartyTable } from "./tables/accountReportTables";
 import { getExpensesTable } from "./tables/billingTables";
 import { clearDivValues, getDivData } from "./helpers";
 
@@ -11,6 +11,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const updateExpenseModal         = new Modal(document.getElementById('updateExpenseModal'))
     const byExpenseCategoryModal     = new Modal(document.getElementById('byExpenseCategoryModal'))
     const visitsBySponsorModal       = new Modal(document.getElementById('visitsBySponsorModal'))
+    const TPSByThirdPartyModal       = new Modal(document.getElementById('TPSByThirdPartyModal'))
 
     const payMethodDiv               = document.querySelector('.payMethodDiv')
     const capitationDatesDiv         = document.querySelector('.capitationDatesDiv')
@@ -54,7 +55,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveExpenseBtn                = newExpenseModal._element.querySelector('#saveExpenseBtn')
     const updateExpenseBtn              = updateExpenseModal._element.querySelector('#updateExpenseBtn')
 
-    let payMethodsSummmaryTable, capitationPaymentsTable, TPSSummaryTable, visitSummaryTable1, visitSummaryTable2, expensesTable, expenseSummaryTable, byPayMethodTable, byExpenseCategoryTable, visitsBySponsorTable, yearlyIncomeAndExpenseTable
+    let payMethodsSummmaryTable, capitationPaymentsTable, TPSSummaryTable, TPSByThirdPartyTable, visitSummaryTable1, visitSummaryTable2, expensesTable, expenseSummaryTable, byPayMethodTable, byExpenseCategoryTable, visitsBySponsorTable, yearlyIncomeAndExpenseTable
 
     payMethodsSummmaryTable = getPayMethodsSummmaryTable('payMethodSummaryTable')
     payMethodDiv.querySelector('#payMethodMonth').value = new Date().toISOString().slice(0,7)
@@ -262,34 +263,34 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelector('#TPSSummaryTable').addEventListener('click', function (event) {
         const showThirdPartyServicesBtn = event.target.closest('.showThirdPartyServicesBtn')
-        const visitFrom     = visistSummaryDiv2.querySelector('#startDate').value
-        const visitTo       = visistSummaryDiv2.querySelector('#endDate').value
-        const visitDate     = visistSummaryDiv2.querySelector('#visitSummaryMonth2').value
+        const serviceFrom     = TPSSummaryDatesDiv.querySelector('#startDate').value
+        const serviceTo       = TPSSummaryDatesDiv.querySelector('#endDate').value
+        const serviceDate     = TPSSummaryDatesDiv.querySelector('#TPSSummaryMonth').value
 
         if (showThirdPartyServicesBtn){
             showThirdPartyServicesBtn.setAttribute('disabled', true)
             const id = showThirdPartyServicesBtn.getAttribute('data-id')
-            visitsBySponsorModal._element.querySelector('#sponsor').value = showThirdPartyServicesBtn.getAttribute('data-sponsor')
-            visitsBySponsorModal._element.querySelector('#sponsorCategory').value = showThirdPartyServicesBtn.getAttribute('data-category')
+            TPSByThirdPartyModal._element.querySelector('#thirdParty').value = showThirdPartyServicesBtn.getAttribute('data-thirdparty')
+            // TPSByThirdPartyModal._element.querySelector('#sponsorCategory').value = showThirdPartyServicesBtn.getAttribute('data-category')
 
-            if (visitDate){
-                visitsBySponsorModal._element.querySelector('#visitMonth').value = visitDate
-                visitsBySponsorTable = getVisitsBySponsorTable('visitsBySponsorTable', id, visitsBySponsorModal, null, null, visitDate)
-                visitsBySponsorModal.show()
+            if (serviceDate){
+                TPSByThirdPartyModal._element.querySelector('#TPSByMonth').value = serviceDate
+                TPSByThirdPartyTable = getTPSByThirdPartyTable('TPSByThirdPartyTable', id, TPSByThirdPartyModal, null, null, serviceDate)
+                TPSByThirdPartyModal.show()
                 return
             }
 
-            if(visitFrom && visitTo){
-                visitsBySponsorModal._element.querySelector('#from').value = visitFrom
-                visitsBySponsorModal._element.querySelector('#to').value = visitTo
-                visitsBySponsorTable = getVisitsBySponsorTable('visitsBySponsorTable', id, visitsBySponsorModal, visitFrom, visitTo)
-                visitsBySponsorModal.show()
+            if(serviceFrom && serviceTo){
+                TPSByThirdPartyModal._element.querySelector('#from').value = serviceFrom
+                TPSByThirdPartyModal._element.querySelector('#to').value = serviceTo
+                TPSByThirdPartyTable = getTPSByThirdPartyTable('TPSByThirdPartyTable', id, TPSByThirdPartyModal, serviceFrom, serviceTo)
+                TPSByThirdPartyModal.show()
                 return
             }
 
-            visitsBySponsorModal._element.querySelector('#visitMonth').value = new Date().toISOString().slice(0,7)
-            visitsBySponsorTable = getVisitsBySponsorTable('visitsBySponsorTable', id, visitsBySponsorModal)
-            visitsBySponsorModal.show()
+            TPSByThirdPartyModal._element.querySelector('#TPSByMonth').value = new Date().toISOString().slice(0,7)
+            TPSByThirdPartyTable = getTPSByThirdPartyTable('TPSByThirdPartyTable', id, TPSByThirdPartyModal)
+            TPSByThirdPartyModal.show()
         }
     })
 
