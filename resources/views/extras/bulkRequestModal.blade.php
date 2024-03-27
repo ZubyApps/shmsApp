@@ -14,7 +14,7 @@
                                 <div class="valuesDiv">
                                     <x-form-div class="col-xl-12">
                                         <x-input-span id="itemLabel">Item<x-required-span /></x-input-span>
-                                        <input class="form-control item" type="search" name="item" id="item" placeholder="search" list="itemList" data-dept="{{ strtolower($dept) }}"/>
+                                        <input class="form-control item" type="search" name="item" id="item" autocomplete="off" placeholder="search" list="itemList" data-dept="{{ strtolower($dept) }}"/>
                                         <datalist name="item" type="text" class="decoration-none itemList" id="itemList"></datalist>
                                     </x-form-div>        
                                     <x-form-div class="col-xl-12 qty" id="qty">
@@ -27,7 +27,7 @@
                                         <x-form-input type="text" name="note" id="note"/>
                                     </x-form-div>
                                     <x-form-div class="col-xl-12 qty" id="qty">
-                                        <x-input-span id="quantityLabel">Department<x-required-span /></x-input-span>
+                                        <x-input-span id="departmentLabel">Department<x-required-span /></x-input-span>
                                         <select class="form-select form-select-md" name="department" id="department">
                                             <option value="">Select Department</option>
                                             <option value="Nurses">Nurses</option>
