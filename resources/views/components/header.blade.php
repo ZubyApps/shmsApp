@@ -12,7 +12,7 @@
                         class="fw-bold pl-4">H</span>ospital</a>
             </div>
             <div class="col-6 d-flex justify-content-end align-items-center">
-                <div class="btn-group mx-2">
+                {{-- <div class="btn-group mx-2">
                     <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown"
                         aria-expanded="false">
                         <i class="bi bi-bell-fill"></i>
@@ -29,7 +29,7 @@
                             </table>
                         </div>
                     </ul>
-                </div>
+                </div> --}}
                 <div class="dropdown user-dropdown-menu pb-2">
                     <a href="#"
                         class="text-decoration-none d-flex align-items-center mt-2 btn btn-outline-primary"
