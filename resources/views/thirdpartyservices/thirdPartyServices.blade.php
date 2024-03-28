@@ -40,6 +40,21 @@
                                 </tr>
                             </thead>
                             <tbody></tbody>
+                            <tfoot>
+                                <tr class="">
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold">Total</td>
+                                    <td class="fw-semibold"></td>
+                                    <td class           ="fw-semibold"></td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>

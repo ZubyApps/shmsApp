@@ -5,7 +5,7 @@
 
 <div class="container mt-5">
     <div class="container px-4 py-5" id="icon-grid">
-    <h2 class="pb-2 border-bottom">Report grid</h2>
+    <h2 class="pb-2 border-bottom">Report Grid</h2>
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 py-5">
       <div class="col d-flex align-items-start">

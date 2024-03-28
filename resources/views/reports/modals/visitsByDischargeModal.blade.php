@@ -10,9 +10,9 @@
                     <div class="">
                         <div class="mb-2 form-control">
                             <div class="row">
-                                <x-form-div class="col-xl-6">
-                                    <x-input-span>PayMethod</x-input-span>
-                                    <x-form-input name="paymethod" value="" id="paymethod" readonly/>
+                                <x-form-div class="col-xl-12">
+                                    <x-input-span>Discharge Reason</x-input-span>
+                                    <x-form-input name="dischargeReason" value="" id="dischargeReason" readonly/>
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
                                     <x-input-span>Dates</x-input-span>
@@ -23,33 +23,35 @@
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
                                     <x-input-span class="">Month/Year</x-input-span>
-                                    <x-form-input type="month" name="payMethodMonth" id="payMethodMonth" />
+                                    <x-form-input type="month" name="dischargeMonth" id="dischargeMonth" readonly/>
                                 </x-form-div>
                             </div>
                         </div>
                         <div class="mb-2 form-control">
-                            <x-form-span>Payments Made with this Paymethod</x-form-span>
+                            <x-form-span>Visits discharged for this reason</x-form-span>
                             <div class="row overflow-auto my-3">
-                                <table id="byPayMethodTable" class="table align-middle table-sm byPayMethodTable mt-2">
+                                <table id="dischargeReasonTable" class="table table-sm">
                                     <thead>
                                         <tr>
                                             <th>Date</th>
                                             <th>Patient</th>
-                                            <th>Sponsor</th>
-                                            <th>Category</th>
-                                            <th>Diagnosis</th>
+                                            <th>Age</th>
+                                            <th>Sex</th>
+                                            <th> <i class="bi bi-telephone-outbound-fill text-primary"></i></th>
                                             <th>Doctor</th>
-                                            <th>HmsBill</th>
-                                            <th>HmoBill</th>
-                                            <th>NhisBill</th>
-                                            <th>Amount Paid</th>
-                                            <th>By</th>
+                                            <th>Diagnosis</th>
+                                            <th>Sponsor</th>
+                                            <th>Status</th>
+                                            <th>HMS Bill</th>
+                                            <th>Paid</th>
+                                            <th>Diff</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
-                                    <tfoot class="fw-bold">
+                                    <tfoot class="fw-bolder">
                                         <tr>
                                             <td class="text-center">Total</td>
+                                            <td></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>

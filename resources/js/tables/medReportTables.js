@@ -1,8 +1,15 @@
 import $ from 'jquery';
-import jszip, { forEach } from 'jszip';
-import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 import { admissionStatusX, sponsorAndPayPercent } from '../helpers';
+import jszip, { forEach } from 'jszip';
+import pdfmake from 'pdfmake';
+// import pdfFonts from 'pdfmake/build/vfs_fonts'
+import pdfFonts from './vfs_fontes'
+DataTable.Buttons.jszip(jszip)
+DataTable.Buttons.pdfMake(pdfmake)
+// pdfMake.vfs = pdfFonts.pdfMake.vfs;
+pdfMake.vfs = pdfFonts;
+$.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
@@ -18,6 +25,14 @@ const getMedServiceSummaryTable = (tableId, startDate, endDate, date) => {
         },
         orderMulti: true,
         search:true,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -104,7 +119,7 @@ const getNewBirthsTable = (tableId, startDate, endDate, date) => {
     return newBirthsTable
 }
 
-const getReferredOrDeceasedVisits = (tableId, filterBy, startDate, endDate, date) => {
+const getDischargeReasonTable = (tableId, filterBy, modal, startDate, endDate, date) => {
     const preparedColumns = [
         {data: "date"},
         {data: "patient"},
@@ -120,9 +135,9 @@ const getReferredOrDeceasedVisits = (tableId, filterBy, startDate, endDate, date
         {data: row => account.format(row.totalHmsBill - row.totalHmsPaid)},
     ]
 
-    return new DataTable('#'+tableId, {
+    const dischargeReasonTable = new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  {url: '/reports/medservices/referredordeceased', data: {
+        ajax:  {url: '/reports/medservices/bydischarge', data: {
             'filterBy'  : filterBy,
             'startDate' : startDate, 
             'endDate'   : endDate,
@@ -130,6 +145,14 @@ const getReferredOrDeceasedVisits = (tableId, filterBy, startDate, endDate, date
         }},
         orderMulti: true,
         search:true,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
@@ -137,6 +160,15 @@ const getReferredOrDeceasedVisits = (tableId, filterBy, startDate, endDate, date
         },
         columns: preparedColumns
     });
+
+    modal._element.addEventListener('hidden.bs.modal', function () {
+        modal._element.querySelector('#dischargeMonth').value = ''
+        modal._element.querySelector('#from').value = ''
+        modal._element.querySelector('#to').value = ''
+        dischargeReasonTable.destroy()
+    })
+
+    return dischargeReasonTable
 }
 
 const getDischargeSummaryTable = (tableId, startDate, endDate, date) => {
@@ -149,6 +181,14 @@ const getDischargeSummaryTable = (tableId, startDate, endDate, date) => {
         }},
         orderMulti: true,
         search:true,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         "sAjaxDataProp": "data.data",
         drawCallback: function (settings) {
@@ -158,18 +198,14 @@ const getDischargeSummaryTable = (tableId, startDate, endDate, date) => {
             $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: row => row.reason ?? 'Not properly discharged'},
+            {data: row => `<span class="btn text-decoration-underline showVisitsBtn tooltip-test" title="show visits" data-reason="${row.reason}">${row.reason ?? 'Not discharged'}</span>`},
             {data: "sponsorCount"},
             {data: "patientsCount"},
             {data: "visitCount"},
-            // {data: "age"},
-            // {data: row => row.sponsor + ' - ' + row.category},
-            // {data: "noteBy"},
-            // {data: "sex"},
         ]
     })
 
     return dischargeSummaryTable
 }
 
-export {getMedServiceSummaryTable, getByResourceTable, getNewBirthsTable, getReferredOrDeceasedVisits, getDischargeSummaryTable}
+export {getMedServiceSummaryTable, getByResourceTable, getNewBirthsTable, getDischargeReasonTable, getDischargeSummaryTable}

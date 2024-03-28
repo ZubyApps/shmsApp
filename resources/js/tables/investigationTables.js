@@ -1,9 +1,5 @@
-import jQuery from "jquery";
-import $ from 'jquery';
-import jszip, { forEach } from 'jszip';
-import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, admissionStatusX, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import { admissionStatusX, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
 
 const getPatientsVisitsByFilterTable = (tableId, filter) => {
     const preparedColumns = [

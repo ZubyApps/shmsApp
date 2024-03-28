@@ -76,6 +76,11 @@ class Visit extends Model
         return $this->belongsTo(User::class, 'discount_by');
     }
 
+    public function statusUpdatedBy()
+    {
+        return $this->belongsTo(User::class, 'status_updated_by');
+    }
+
     public function patient()
     {
         return $this->belongsTo(Patient::class);

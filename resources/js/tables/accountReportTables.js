@@ -1,12 +1,14 @@
 import $, { data } from 'jquery';
 import DataTable from 'datatables.net-bs5';
+import { admissionStatusX, displayPaystatus, sponsorAndPayPercent } from '../helpers';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts'
-import { admissionStatusX, displayPaystatus, sponsorAndPayPercent } from '../helpers';
+import pdfFonts from './vfs_fontes'
+// import pdfFonts from 'pdfmake/build/vfs_fonts'
 DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+pdfMake.vfs = pdfFonts;
+// pdfMake.vfs = pdfFonts.pdfMake.vfs;
 $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 
@@ -66,6 +68,7 @@ const getByPayMethodsTable = (tableId, payMethodId, modal, startDate, endDate, d
             {data: "totalHmoBill"},
             {data: "totalNhisBill"},
             {data: "amountPaid"},
+            {data: "by"},
         ]
     })
 
@@ -148,11 +151,11 @@ const getCapitationPaymentsTable = (tableId, startDate, endDate, date) => {
         search:true,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
-            {extend: 'copy', className: 'btn-primary'},
-            {extend: 'csv', className: 'btn-primary'},
-            {extend: 'excel', className: 'btn-primary'},
-            {extend: 'pdfHtml5', className: 'btn-primary'},
-            {extend: 'print', className: 'btn-primary'},
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
              ],
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
@@ -239,7 +242,7 @@ const getTPSSummaryTable = (tableId, startDate, endDate, date) => {
                 $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: row => `<span class="btn text-decoration-underline showThirdPartyServicesBtn tooltip-test" title="show third party services" data-id="${row.id}" data-thirdparty="${row.thirdParty}">${row.thirdParty}</span>`},
+            {data: row => `<span class="btn text-decoration-underline showThirdPartyServicesBtn tooltip-test" title="show third party services" data-id="${row.id}" data-thirdparty="${row.thirdPartyL}">${row.thirdParty}</span>`},
             {data: row => account.format(+row.patientsCount)},
             {data: row => account.format(+row.servicesCount)},
             {data: row => account.format(+row.totalHmsBill)},
@@ -299,11 +302,11 @@ const getVisitSummaryTable2 = (tableId, startDate, endDate, date) => {
         orderMulti: true,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
-            {extend: 'copy', className: 'btn-primary'},
-            {extend: 'csv', className: 'btn-primary'},
-            {extend: 'excel', className: 'btn-primary'},
-            {extend: 'pdfHtml5', className: 'btn-primary'},
-            {extend: 'print', className: 'btn-primary'},
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
              ],
         search:true,
         "sAjaxDataProp": "data.data",
@@ -386,11 +389,11 @@ const getYearlyIncomeAndExpenseTable = (tableId, year) => {
         info: false,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
-            {extend: 'copy', className: 'btn-primary'},
-            {extend: 'csv', className: 'btn-primary'},
-            {extend: 'excel', className: 'btn-primary'},
-            {extend: 'pdfHtml5', className: 'btn-primary'},
-            {extend: 'print', className: 'btn-primary'},
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
              ],
         drawCallback: function () {
             var api = this.api()

@@ -184,6 +184,7 @@ class DoctorService
                 'admissionStatus'   => $visit->admission_status,
                 'ward'              => $visit->ward ?? '',
                 'bedNo'             => $visit->bed_no ?? '',
+                'updatedBy'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->updatedBy?->username ?? 'Nurse...',
                 'patientType'       => $visit->patient->patient_type,
                 'labPrescribed'     => Prescription::where('visit_id', $visit->id)
                                         ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')

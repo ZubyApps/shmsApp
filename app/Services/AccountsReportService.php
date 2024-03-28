@@ -81,7 +81,7 @@ class AccountsReportService
         if (! empty($params->searchTerm)) {
             if ($data->startDate && $data->endDate){
                 return DB::table('third_party_services')
-                ->selectRaw('third_parties.short_name AS thirdParty, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
+                ->selectRaw('third_parties.short_name AS thirdParty, third_parties.full_name AS thirdPartyL, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
                 ->leftJoin('third_parties', 'third_party_services.third_party_id', '=', 'third_parties.id')
                 ->leftJoin('prescriptions', 'third_party_services.prescription_id', '=', 'prescriptions.id')
                 ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
@@ -97,7 +97,7 @@ class AccountsReportService
                 $date = new Carbon($data->date);
     
                 return DB::table('third_party_services')
-                    ->selectRaw('third_parties.short_name AS thirdParty, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
+                    ->selectRaw('third_parties.short_name AS thirdParty, third_parties.full_name AS thirdPartyL, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
                     ->leftJoin('third_parties', 'third_party_services.third_party_id', '=', 'third_parties.id')
                     ->leftJoin('prescriptions', 'third_party_services.prescription_id', '=', 'prescriptions.id')
                     ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
@@ -112,7 +112,7 @@ class AccountsReportService
 
             
             return DB::table('third_party_services')
-            ->selectRaw('third_parties.short_name AS thirdParty, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
+            ->selectRaw('third_parties.short_name AS thirdParty, third_parties.full_name AS thirdPartyL, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
             ->leftJoin('third_parties', 'third_party_services.third_party_id', '=', 'third_parties.id')
             ->leftJoin('prescriptions', 'third_party_services.prescription_id', '=', 'prescriptions.id')
             ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
@@ -128,7 +128,7 @@ class AccountsReportService
 
         if ($data->startDate && $data->endDate){
             return DB::table('third_party_services')
-                ->selectRaw('third_parties.short_name AS thirdParty, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
+                ->selectRaw('third_parties.short_name AS thirdParty, third_parties.full_name AS thirdPartyL, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
                 ->leftJoin('third_parties', 'third_party_services.third_party_id', '=', 'third_parties.id')
                 ->leftJoin('prescriptions', 'third_party_services.prescription_id', '=', 'prescriptions.id')
                 ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
@@ -143,7 +143,7 @@ class AccountsReportService
             $date = new Carbon($data->date);
 
             return DB::table('third_party_services')
-                ->selectRaw('third_parties.short_name AS thirdParty, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
+                ->selectRaw('third_parties.short_name AS thirdParty, third_parties.full_name AS thirdPartyL, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
                 ->leftJoin('third_parties', 'third_party_services.third_party_id', '=', 'third_parties.id')
                 ->leftJoin('prescriptions', 'third_party_services.prescription_id', '=', 'prescriptions.id')
                 ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
@@ -157,7 +157,7 @@ class AccountsReportService
 
 
         return DB::table('third_party_services')
-            ->selectRaw('third_parties.short_name AS thirdParty, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
+            ->selectRaw('third_parties.short_name AS thirdParty, third_parties.full_name AS thirdPartyL, third_parties.id as id, COUNT(prescriptions.id) as servicesCount, SUM(prescriptions.hms_bill) as totalHmsBill, COUNT(DISTINCT(patients.id)) as patientsCount')
             ->leftJoin('third_parties', 'third_party_services.third_party_id', '=', 'third_parties.id')
             ->leftJoin('prescriptions', 'third_party_services.prescription_id', '=', 'prescriptions.id')
             ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
@@ -351,6 +351,7 @@ class AccountsReportService
                     'totalHmoBill'      => $pVisit->total_hmo_bill,
                     'totalNhisBill'     => $pVisit->total_nhis_bill,
                     'amountPaid'        => $payment->amount_paid,
+                    'by'                => $payment->user->username,
                 ];
             };
     }

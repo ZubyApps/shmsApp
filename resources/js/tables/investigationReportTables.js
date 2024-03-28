@@ -1,6 +1,4 @@
 import $ from 'jquery';
-import jszip, { forEach } from 'jszip';
-import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 
 const getInvestigationsSummaryTable = (tableId, startDate, endDate, date) => {

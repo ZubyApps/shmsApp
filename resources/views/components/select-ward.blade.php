@@ -7,6 +7,11 @@
     <option value="PW3">Private Ward 3</option>
     <option value="PW4">Private Ward 4</option>
     <option value="PW5">Private Ward 5</option>
-    <option value="PW6">Private Ward 6</option>
-    <option value="Old Ward">Old Ward</option>
+    <option value="VIPR">VIP Room</option>
+    <option value="OW1">Old Ward 1</option>
+    <option value="OW12">Old Ward 2</option>
+    <option value="RW">Recovery Ward</option>
+    <option value="PR">Prep Room</option>
+    <option value="ER">Emergency Room</option>
+    <option value="CR">Consulting Room</option>
 </select>

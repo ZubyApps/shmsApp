@@ -382,7 +382,7 @@ const admissionStatus = (row) => {
                     </a>
                 </li>
                 <li>
-                    <a role="button" class="dropdown-item dischargedBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">
+                    <a role="button" class="dropdown-item dischargedBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">
                         Discharge Details ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}"></i>` : ''}
                     </a>
                 </li>
@@ -546,7 +546,7 @@ const populateWardAndBedModal = (modal, btn) => {
     modal._element.querySelector('#bedNumber').value = btn.getAttribute('data-bedno')
     modal._element.querySelector('#doctor').innerHTML = btn.getAttribute('data-doctor')
     modal._element.querySelector('#updatedBy').innerHTML = btn.getAttribute('data-updatedby')
-    modal._element.querySelector('#saveWardAndBedBtn').setAttribute('data-id', btn.getAttribute('data-conid'))
+    modal._element.querySelector('#saveWardAndBedBtn').setAttribute('data-conid', btn.getAttribute('data-conid'))
 }
 
 const populatePatientSponsor = (modal, btn) => {

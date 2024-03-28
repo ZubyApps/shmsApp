@@ -5,6 +5,7 @@
 @vite(['resources/js/medReports.js'])
 
 @include('reports.modals.byResourceModal', ['title' => 'Patients', 'id' => 'byResourceModal'])
+@include('reports.modals.visitsByDischargeModal', ['title' => "Patient's Visits", 'id' => 'visitsByDischargeModal'])
 
 <div class="container mt-5">
     @include('reports.reportGrid')

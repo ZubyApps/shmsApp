@@ -176,7 +176,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/medservices/summary', [ReportController::class, 'loadMedServicesSummary']);
             Route::get('/medservices/byresource', [ReportController::class, 'loadByResource']);
             Route::get('/medservices/newbirths', [ReportController::class, 'loadNewBirths']);
-            Route::get('/medservices/referredordeceased', [ReportController::class, 'loadReferredOrDeceased']);
+            Route::get('/medservices/bydischarge', [ReportController::class, 'loadVisitsByDischarge']);
             Route::get('/medservices/dischargesummary', [ReportController::class, 'loadDischargeSummary']);
             Route::get('/investigations', [ReportController::class, 'indexInvestigations'])->name('Investigation Reports');
             Route::get('/investigations/summary', [ReportController::class, 'loadInvestigationsSummary']);
@@ -368,7 +368,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('consultation')->group(function () {
         Route::post('', [ConsultationController::class, 'store']);
         Route::post('/review', [ConsultationController::class, 'storeReview']);
-        Route::post('/{consultation}', [ConsultationController::class, 'updateAdmissionStatus']);
+        Route::patch('updatestatus/{consultation}', [ConsultationController::class, 'updateAdmissionStatus']);
         Route::get('/consultations/{visit}', [ConsultationController::class, 'loadConsultations']);
         Route::get('/history/{patient}', [ConsultationController::class, 'loadVisitsAndConsultations']);
         Route::delete('/{consultation}', [ConsultationController::class, 'destroy']);

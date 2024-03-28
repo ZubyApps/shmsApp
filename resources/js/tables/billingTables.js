@@ -1,13 +1,14 @@
-import jQuery from "jquery";
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
 import {admissionStatusX, displayPaystatus, sponsorAndPayPercent } from "../helpers";
-import jszip, { forEach } from 'jszip';
+import jszip from 'jszip';
 import pdfmake from 'pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts'
+import pdfFonts from './vfs_fontes'
+// import pdfFonts from 'pdfmake/build/vfs_fonts'
 DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// pdfMake.vfs = pdfFonts.pdfMake.vfs;
+pdfMake.vfs = pdfFonts;
 $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 
@@ -496,11 +497,11 @@ const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate
         orderMulti: true,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
-            {extend: 'copy', className: 'btn-primary'},
-            {extend: 'csv', className: 'btn-primary'},
-            {extend: 'excel', className: 'btn-primary'},
-            {extend: 'pdfHtml5', className: 'btn-primary'},
-            {extend: 'print', className: 'btn-primary'},
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
              ],
         language: {
             emptyTable: 'No expense'
@@ -556,13 +557,6 @@ const getBalancingTable = (tableId, accessor, date) => {
         orderMulti: true,
         searching: false,
         lengthChange: false,
-        drawCallback: function () {
-            var api = this.api()
-            
-                // $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
-                // $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
-                // $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
-        },
         columns: [
             {data: "date"},
             {data: row => `<span class="btn text-decoration-underline tooltip-test" title="show payments" data-id="${row.id}">${account.format(row.totalCash)}</span>`},
@@ -571,12 +565,6 @@ const getBalancingTable = (tableId, accessor, date) => {
         ]
     });
 
-    // if (accessor == 'byExpenseCategory'){
-    //     modal._element.addEventListener('hidden.bs.modal', function () {
-    //         expenseTable.destroy()
-    //     })
-    // }
-    
     return balancingTable
 }
 

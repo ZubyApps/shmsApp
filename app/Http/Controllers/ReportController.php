@@ -162,13 +162,13 @@ class ReportController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
-    public function loadReferredOrDeceased(Request $request)
+    public function loadVisitsByDischarge(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
     
-        $patients = $this->medReportService->getReferredOrDeceasedList($params, $request);
+        $patients = $this->medReportService->getVisitsByDischarge($params, $request);
 
-        $loadTransformer = $this->medReportService->getReferredOrDeceasedLoadTransformer();
+        $loadTransformer = $this->medReportService->getByDischargeTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }

@@ -1,13 +1,15 @@
 import jQuery from "jquery";
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, admissionStatusX, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import { admissionStatusX, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts'
+// import pdfFonts from 'pdfmake/build/vfs_fonts'
+import pdfFonts from './vfs_fontes'
 DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// pdfMake.vfs = pdfFonts.pdfMake.vfs;
+pdfMake.vfs = pdfFonts;
 $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 const getPatientsVisitByFilterTable = (tableId, filter) => {

@@ -1,7 +1,7 @@
 import { Modal, Collapse, Toast, Offcanvas } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
 import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable, getOtherPrescriptionsByFilter, getMedicalReportTable, getPatientsFileTable} from "./tables/doctorstables"
@@ -33,7 +33,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const updateResultModal                 = new Modal(document.getElementById('updateResultModal'))
     const investigationsModal               = new Modal(document.getElementById('investigationsModal'))
     const investigationAndManagementModal   = new Modal(document.getElementById('investigationAndManagementModal'))
-    const dischargeModal                    = new Modal(document.getElementById('dischargeModal'))
+    const dischargeModal                    = new Modal(document.getElementById('dischargeModal')); const wardAndBedModal = new Modal(document.getElementById('wardAndBedModal'))
     const medicalReportListModal            = new Modal(document.getElementById('medicalReportListModal'))
     const newMedicalReportTemplateModal     = new Modal(document.getElementById('newMedicalReportTemplateModal'))
     const editMedicalReportTemplateModal    = new Modal(document.getElementById('editMedicalReportTemplateModal'))
@@ -84,11 +84,7 @@ window.addEventListener('DOMContentLoaded', function () {
     bmiCalculator(document.querySelectorAll('#height, .weight'))
     lmpCalculator(document.querySelectorAll('#lmp'), consultationDiv)
 
-    clearDiagnosisBtns.forEach(btn => {
-        btn.addEventListener('click', function () {
-            btn.parentElement.parentElement.querySelector('#selectedDiagnosis').value = ''
-        })
-    })
+    clearDiagnosisBtns.forEach(btn => {btn.addEventListener('click', function () { btn.parentElement.parentElement.querySelector('#selectedDiagnosis').value = ''})})
     // Auto textarea adjustment
     const textareaHeight = 65;
     textareaHeightAdjustment(textareaHeight, document.getElementsByTagName("textarea"))
@@ -164,7 +160,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const historyBtn            = event.target.closest('.historyBtn')
             const toggleVisitBtn        = event.target.closest('#closeVisitBtn, #openVisitBtn')
             const medicalReportBtn      = event.target.closest('.medicalReportBtn')
-            const updateResourceListBtn = event.target.closest('#updateResourceListBtn')
+            const updateResourceListBtn = event.target.closest('#updateResourceListBtn');  const wardBedBtn = event.target.closest('.wardBedBtn')
             const viewer                = 'doctor'
             let [iteration, count]        = [0, 0]
     
@@ -271,11 +267,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 investigationsBtn.removeAttribute('disabled')
             }
 
-            if (dischargedBtn){
-                dischargedBtn.setAttribute('disabled', 'disabled')
-                populateDischargeModal(dischargeModal, dischargedBtn)
-                dischargeModal.show()
-            }
+            if (wardBedBtn){ populateWardAndBedModal(wardAndBedModal, wardBedBtn); wardAndBedModal.show()}
+            if (dischargedBtn){dischargedBtn.setAttribute('disabled', 'disabled'); populateDischargeModal(dischargeModal, dischargedBtn); dischargeModal.show() }
 
             if (historyBtn){
                 const patientId     = historyBtn.getAttribute('data-patientid')
@@ -343,7 +336,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
     uploadFileBtn.addEventListener('click', function() { uploadFileBtn.setAttribute('disabled', 'disabled')
         const visitId = uploadFileBtn.getAttribute('data-id')
-        
         http.post(`/patientsfiles/${visitId}`, { filename : fileModal._element.querySelector('#filename').value,
             patientsFile: fileModal._element.querySelector('#patientsFile').files[0],
             thirdParty : fileModal._element.querySelector('#thirdParty').value,
@@ -363,10 +355,16 @@ window.addEventListener('DOMContentLoaded', function () {
             const div = selectEl.parentElement
             const status = selectEl.getAttribute('data-admissionstatus')
             const statuses = ['Inpatient', 'Observation']
-            if (statuses.includes(statuses) && !statuses.includes(selectEl.value)){
+            if (statuses.includes(status) && !statuses.includes(selectEl.value)){
                 const message = {"admit": [`Pls note that this patient's status was "${status}". You may cause confusion with their medication schedule if you change to outpatient.`]}; handleValidationErrors(message, div)
             } else {clearValidationErrors(div)}
         })
+    })
+
+    wardAndBedModal._element.querySelector('#saveWardAndBedBtn').addEventListener('click', function() {this.setAttribute('disabled', 'disabled'); const conId = this.getAttribute('data-conid'); let data = { ...getDivData(wardAndBedModal._element)}
+        http.patch(`consultation/updatestatus/${conId}`, {...data}, {'html': wardAndBedModal._element})
+        .then((response) => {if (response.status >= 200 || response.status <= 300) {wardAndBedModal.hide(); clearValidationErrors(wardAndBedModal._element)} this.removeAttribute('disabled')})
+        .catch((response) => {console.log(response); this.removeAttribute('disabled')})
     })
 
     emboldenBtn.addEventListener('click', function () {
@@ -642,7 +640,7 @@ window.addEventListener('DOMContentLoaded', function () {
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
     })
 
-    document.querySelectorAll('#dischargeModal, #vitalsignsModal, #ancVitalsignsModal, #investigationAndManagementModal').forEach(modal => {
+    document.querySelectorAll('#dischargeModal, #wardAndBedModal, #vitalsignsModal, #ancVitalsignsModal, #investigationAndManagementModal').forEach(modal => {
         modal.addEventListener('hidden.bs.modal', () => {
             outPatientsVisitTable ? outPatientsVisitTable.draw() : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''

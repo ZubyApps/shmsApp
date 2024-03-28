@@ -14,10 +14,6 @@
                                     <x-input-span>Third Party</x-input-span>
                                     <x-form-input name="thirdParty" value="" id="thirdParty" readonly/>
                                 </x-form-div>
-                                {{-- <x-form-div class="col-xl-6">
-                                    <x-input-span>Sponsor Category</x-input-span>
-                                    <x-form-input name="sponsorCategory" value="" id="sponsorCategory" readonly/>
-                                </x-form-div> --}}
                                 <x-form-div class="col-xl-6">
                                     <x-input-span>Dates</x-input-span>
                                     <x-input-span class="">From</x-input-span>

@@ -1,13 +1,14 @@
-import jQuery from "jquery";
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, admissionStatusX, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
-import jszip, { forEach } from 'jszip';
+import { admissionStatusX, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import jszip from 'jszip';
 import pdfmake from 'pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts'
+// import pdfFonts from 'pdfmake/build/vfs_fonts'
+import pdfFonts from './vfs_fontes'
 DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// pdfMake.vfs = pdfFonts.pdfMake.vfs;
+pdfMake.vfs = pdfFonts;
 $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
@@ -50,14 +51,19 @@ const getlistOfServicesTable = (tableId) => {
         search:true,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
-            {extend: 'copy', className: 'btn-primary'},
-            {extend: 'csv', className: 'btn-primary'},
-            {extend: 'excel', className: 'btn-primary'},
-            {extend: 'pdfHtml5', className: 'btn-primary'},
-            {extend: 'print', className: 'btn-primary'},
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
              ],
         language: {
             emptyTable: 'No Third Party Services'
+        },
+        drawCallback: function () {
+            var api = this.api()
+            
+                $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
         },
         columns: preparedColumns
     });
@@ -71,6 +77,17 @@ const getThirdPartiesTable = (tableId, notLab) => {
         orderMulti: false,
         language: {
             emptyTable: 'No Third Party'
+        },
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
+        language: {
+            emptyTable: 'No Third Party Services'
         },
         rowCallback: (row, data) => {
             if (data.delisted) {
@@ -122,55 +139,4 @@ const getThirdPartiesTable = (tableId, notLab) => {
 
     return thirdPartiesTable
 }
-
-// const getOutpatientsInvestigationTable = (tableId, notLab) => {
-//     const investigationsTable =  new DataTable('#'+tableId, {
-//         serverSide: true,
-//         ajax:  {url: '/investigations/load/outpatients', data: {
-//             'notLab': notLab
-//         }},
-//         paging: true,
-//         orderMulti: false,
-//         language: {
-//             emptyTable: 'No lab investigation requested'
-//         },
-//         columns: [
-//             {data: "requested"},
-//             {data: "type"},
-//             {data: "doctor"},
-//             {data: "patient"},
-//             {data: "diagnosis"},
-//             {data: row => function () {
-//                 const credit = row.sponsorCategoryClass == 'Credit'
-//                 const NHIS = row.sponsorCategory == 'NHIS'
-//                 return `<span class="text-primary fw-semibold">${row.resource +' '+ displayPaystatus(row, credit, NHIS)}</span>`
-//                 }
-//             },
-//             {
-//                 sortable: false,
-//                 data: row => function () {
-//                     if (row.result){
-//                         return `
-//                             <div class="d-flex flex-">
-//                                 <button class="btn btn-primary resultAddedBtn tooltip-test" title="result added">
-//                                 <i class="bi bi-check-circle-fill"></i>
-//                                 </button>
-//                             </div>`
-//                         } else {
-//                             return `
-//                             <div class="d-flex flex- ${notLab ? 'd-none' : ''}">
-//                                 <button class="btn btn-outline-primary addResultBtn tooltip-test" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
-//                                     <i class="bi bi-plus-square"></i> Add Result
-//                                 </button>
-//                             </div>
-//                             `
-//                         }
-//                     }  
-//             },
-//         ]
-//     });
-
-//     return investigationsTable
-// }
-
 export {getlistOfServicesTable, getThirdPartiesTable}

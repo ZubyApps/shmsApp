@@ -1,7 +1,4 @@
-import jQuery from "jquery";
 import $ from 'jquery';
-import jszip, { forEach } from 'jszip';
-import pdfmake from 'pdfmake';
 import DataTable from 'datatables.net-bs5';
 import { admissionStatus, detailsBtn, detailsBtn1, displayPaystatus, getMinsDiff, getOrdinal, histroyBtn, prescriptionStatusContorller, sponsorAndPayPercent } from "../helpers";
 

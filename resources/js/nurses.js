@@ -297,10 +297,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 dischargeModal.show()
             }
 
-            if (wardBedBtn){
-                populateWardAndBedModal(wardAndBedModal, wardBedBtn)
-                wardAndBedModal.show()
-            }
+            if (wardBedBtn){ populateWardAndBedModal(wardAndBedModal, wardBedBtn); wardAndBedModal.show()}
 
             if (historyBtn){
                 const patientId     = historyBtn.getAttribute('data-patientid')
@@ -347,12 +344,14 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    newNursesReportBtn.addEventListener('click', function() {
-        newNursesReportTemplateModal.show()
+    wardAndBedModal._element.querySelector('#saveWardAndBedBtn').addEventListener('click', function() {this.setAttribute('disabled', 'disabled'); const conId = this.getAttribute('data-conid'); let data = { ...getDivData(wardAndBedModal._element)}
+        http.patch(`consultation/updatestatus/${conId}`, {...data}, {'html': wardAndBedModal._element})
+        .then((response) => {if (response.status >= 200 || response.status <= 300) {wardAndBedModal.hide(); clearValidationErrors(wardAndBedModal._element)} this.removeAttribute('disabled')})
+        .catch((response) => {console.log(response); this.removeAttribute('disabled')})
     })
-    newDeliveryNoteBtn.addEventListener('click', function() {
-        newDeliveryNoteModal.show()
-    })
+
+    newNursesReportBtn.addEventListener('click', function() {newNursesReportTemplateModal.show()})
+    newDeliveryNoteBtn.addEventListener('click', function() {newDeliveryNoteModal.show()})
 
     document.querySelectorAll('#nursesReportTable, #deliveryNoteTable').forEach(table => {
         table.addEventListener('click', function (event) {
@@ -534,7 +533,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const div = selectEl.parentElement
             const status = selectEl.getAttribute('data-admissionstatus')
             const statuses = ['Inpatient', 'Observation']
-            if (!statuses.includes(selectEl.value)){
+            if (statuses.includes(status) && !statuses.includes(selectEl.value)){
                 const message = {"admit": [`Pls note that this patient's status was "${status}". You may cause confusion with their medication schedule if you change to outpatient.`]}; handleValidationErrors(message, div)
             } else {clearValidationErrors(div)}
         })

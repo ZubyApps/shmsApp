@@ -1,12 +1,13 @@
-import jQuery from "jquery";
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import jszip, { forEach } from 'jszip';
+import jszip from 'jszip';
 import pdfmake from 'pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts'
+// import pdfFonts from 'pdfmake/build/vfs_fonts'
+import pdfFonts from './vfs_fontes'
 DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// pdfMake.vfs = pdfFonts.pdfMake.vfs;
+pdfMake.vfs = pdfFonts;
 $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 const getResourceSubCategoryTable = (tableId) => {
@@ -67,11 +68,11 @@ const getResourceTable = (tableId) => {
                 text:'Show/Hide',
                 className:'btn btn-primary'       
             },
-            {extend: 'copy', className: 'btn-primary'},
-            {extend: 'csv', className: 'btn-primary'},
-            {extend: 'excel', className: 'btn-primary'},
-            {extend: 'pdfHtml5', className: 'btn-primary'},
-            {extend: 'print', className: 'btn-primary'},
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
         ],
         rowCallback: (row, data) => {
             if ( !data.isActive) {
@@ -193,11 +194,11 @@ const getAddResourceStockTable = () => {
         search:true,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
-            {extend: 'copy', className: 'btn-primary'},
-            {extend: 'csv', className: 'btn-primary'},
-            {extend: 'excel', className: 'btn-primary'},
-            {extend: 'pdfHtml5', className: 'btn-primary'},
-            {extend: 'print', className: 'btn-primary'},
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
              ],
         columns: [
             {data: "resource"},
@@ -233,11 +234,11 @@ const getResourceSupplierTable = () => {
         search:true,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
-            {extend: 'copy', className: 'btn-primary'},
-            {extend: 'csv', className: 'btn-primary'},
-            {extend: 'excel', className: 'btn-primary'},
-            {extend: 'pdfHtml5', className: 'btn-primary'},
-            {extend: 'print', className: 'btn-primary'},
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
              ],
         columns: [
             {data: "company"},

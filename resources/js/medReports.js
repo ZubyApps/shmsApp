@@ -1,11 +1,11 @@
 import {Modal } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { getBySponsorTable, getDistribution1Table, getDistribution2Table, getFrequencyTable, getRegBySponsorTable } from "./tables/patientReportTables";
-import { getByResourceTable, getDischargeSummaryTable, getMedServiceSummaryTable, getNewBirthsTable, getReferredOrDeceasedVisits } from "./tables/medReportTables";
+import { getByResourceTable, getDischargeReasonTable, getDischargeSummaryTable, getMedServiceSummaryTable, getNewBirthsTable } from "./tables/medReportTables";
 
 window.addEventListener('DOMContentLoaded', function () {
     const byResourceModal            = new Modal(document.getElementById('byResourceModal'))
+    const visitsByDischargeModal     = new Modal(document.getElementById('visitsByDischargeModal'))
 
     const datesDiv                  = document.querySelector('.datesDiv')
     const newBirthsDatesDiv         = document.querySelector('.newBirthsDatesDiv')
@@ -34,7 +34,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const searchDischargeSummaryWithDatesBtn   = document.querySelector('.searchDischargeSummaryWithDatesBtn')
     const searchDischargeSummaryByMonthBtn     = document.querySelector('.searchDischargeSummaryByMonthBtn')
 
-    let medServicesTable, newBirthsTable, referredTable, deceasedTable, dischargeSummaryTable, byResourceTable
+    let medServicesTable, newBirthsTable, referredTable, deceasedTable, dischargeSummaryTable, byResourceTable, dischargeReasonTable
     medServicesTable = getMedServiceSummaryTable('summaryTable')
     datesDiv.querySelector('#medServiceMonth').value = new Date().toISOString().slice(0,7)
 
@@ -115,7 +115,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#referredTable' )){
             $('#referredTable').dataTable().fnDestroy()
         }
-        referredTable = getReferredOrDeceasedVisits('referredTable', 'Referred', referredDatesDiv.querySelector('#startDate').value, referredDatesDiv.querySelector('#endDate').value)
+        referredTable = getDischargeReasonTable('referredTable', 'Referred', referredDatesDiv.querySelector('#startDate').value, referredDatesDiv.querySelector('#endDate').value)
     })
 
     searchReferredByMonthBtn.addEventListener('click', function () {
@@ -123,7 +123,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#referredTable' )){
             $('#referredTable').dataTable().fnDestroy()
         }
-        referredTable = getReferredOrDeceasedVisits('referredTable', 'Referred', null, null, referredDatesDiv.querySelector('#referredMonth').value)
+        referredTable = getDischargeReasonTable('referredTable', 'Referred', null, null, referredDatesDiv.querySelector('#referredMonth').value)
     })
 
     searchDeceasedWithDatesBtn.addEventListener('click', function () {
@@ -131,7 +131,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#deceasedTable' )){
             $('#deceasedTable').dataTable().fnDestroy()
         }
-        deceasedTable = getReferredOrDeceasedVisits('deceasedTable', 'Deceased', deceasedDatesDiv.querySelector('#startDate').value, deceasedDatesDiv.querySelector('#endDate').value)
+        deceasedTable = getDischargeReasonTable('deceasedTable', 'Deceased', deceasedDatesDiv.querySelector('#startDate').value, deceasedDatesDiv.querySelector('#endDate').value)
     })
 
     searchDeceasedByMonthBtn.addEventListener('click', function () {
@@ -139,7 +139,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#deceasedTable' )){
             $('#deceasedTable').dataTable().fnDestroy()
         }
-        deceasedTable = getReferredOrDeceasedVisits('deceasedTable', 'Deceased', null, null, deceasedDatesDiv.querySelector('#deceasedMonth').value)
+        deceasedTable = getDischargeReasonTable('deceasedTable', 'Deceased', null, null, deceasedDatesDiv.querySelector('#deceasedMonth').value)
     })
 
     searchDischargeSummaryWithDatesBtn.addEventListener('click', function () {
@@ -158,29 +158,33 @@ window.addEventListener('DOMContentLoaded', function () {
         dischargeSummaryTable = getDischargeSummaryTable('dischargeSummaryTable', null, null, dischargeSummaryDatesDiv.querySelector('#dischargeSummaryMonth').value)
     })
 
-    document.querySelectorAll('#summaryTable').forEach(table => {
+    document.querySelectorAll('#summaryTable, #dischargeSummaryTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const showPatientsBtn   = event.target.closest('.showPatientsBtn')
-            const from              = datesDiv.querySelector('#startDate').value
-            const to                = datesDiv.querySelector('#endDate').value
-            const date              = datesDiv.querySelector('#medServiceMonth').value
+            const medFrom           = datesDiv.querySelector('#startDate').value
+            const medTo             = datesDiv.querySelector('#endDate').value
+            const medDate           = datesDiv.querySelector('#medServiceMonth').value
+            const showVisitsBtn     = event.target.closest('.showVisitsBtn')
+            const dischargedFrom    = dischargeSummaryDatesDiv.querySelector('#startDate').value
+            const dischargedTo      = dischargeSummaryDatesDiv.querySelector('#endDate').value
+            const dischargedDate    = dischargeSummaryDatesDiv.querySelector('#dischargeSummaryMonth').value
     
             if (showPatientsBtn){
                 const id = showPatientsBtn.getAttribute('data-id')
                 byResourceModal._element.querySelector('#resource').value = showPatientsBtn.getAttribute('data-resource') 
                 byResourceModal._element.querySelector('#subcategory').value = showPatientsBtn.getAttribute('data-subcategory')
                 
-                if (date) {
-                    byResourceModal._element.querySelector('#resourceMonth').value = date
-                    byResourceTable = getByResourceTable('byResourceTable', id, byResourceModal, null, null, date)
+                if (medDate) {
+                    byResourceModal._element.querySelector('#resourceMonth').value = medDate
+                    byResourceTable = getByResourceTable('byResourceTable', id, byResourceModal, null, null, medDate)
                     byResourceModal.show()
                     return
                 }
                 
-                if (from && to ){
-                    byResourceModal._element.querySelector('#from').value = from
-                    byResourceModal._element.querySelector('#to').value = to
-                    byResourceTable = getByResourceTable('byResourceTable', id, byResourceModal, from, to)
+                if (medFrom && medTo ){
+                    byResourceModal._element.querySelector('#from').value = medFrom
+                    byResourceModal._element.querySelector('#to').value = medTo
+                    byResourceTable = getByResourceTable('byResourceTable', id, byResourceModal, medFrom, medTo)
                     byResourceModal.show()
                     return
                 }
@@ -188,6 +192,31 @@ window.addEventListener('DOMContentLoaded', function () {
                 byResourceModal._element.querySelector('#resourceMonth').value = new Date().toISOString().slice(0,7)
                 byResourceTable = getByResourceTable('byResourceTable', id, byResourceModal)
                 byResourceModal.show()
+            }
+
+            if (showVisitsBtn){
+                const reason = showVisitsBtn.getAttribute('data-reason')
+                visitsByDischargeModal._element.querySelector('#dischargeReason').value = reason == "null" ? 'Not discharged' : reason;
+                // visitsByDischargeModal._element.querySelector('#subcategory').value = showPatientsBtn.getAttribute('data-subcategory')
+                
+                if (dischargedDate) {
+                    visitsByDischargeModal._element.querySelector('#dischargeMonth').value = dischargedDate
+                    dischargeReasonTable = getDischargeReasonTable('dischargeReasonTable', reason, visitsByDischargeModal, null, null, dischargedDate)
+                    visitsByDischargeModal.show()
+                    return
+                }
+                
+                if (dischargedFrom && dischargedTo ){
+                    visitsByDischargeModal._element.querySelector('#from').value = medFrom
+                    visitsByDischargeModal._element.querySelector('#to').value = medTo
+                    dischargeReasonTable = getDischargeReasonTable('dischargeReasonTable', reason, visitsByDischargeModal, dischargedFrom, dischargedTo)
+                    visitsByDischargeModal.show()
+                    return
+                }
+
+                visitsByDischargeModal._element.querySelector('#resourceMonth').value = new Date().toISOString().slice(0,7)
+                dischargeReasonTable = getDischargeReasonTable('dischargeReasonTable', reason, visitsByDischargeModal)
+                visitsByDischargeModal.show()
             }
         })
     })

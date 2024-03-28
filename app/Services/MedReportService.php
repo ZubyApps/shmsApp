@@ -306,15 +306,22 @@ class MedReportService
             };
     }
 
-    public function getReferredOrDeceasedList(DataTableQueryParams $params, $data)
+    public function getVisitsByDischarge(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
         $current    = CarbonImmutable::now();
+        
+        $data->filterBy = $data->filterBy == "null" ? null : $data->filterBy;
 
         if (! empty($params->searchTerm)) {
             if ($data->startDate && $data->endDate){
                 return $this->visit
+                            ->where('consulted', '!=', null)
+                            ->where(function (Builder $query) {
+                                $query->where('admission_status', '=', 'Inpatient')
+                                ->orWhere('admission_status', '=', 'Observation');
+                            })
                             ->where('discharge_reason', $data->filterBy)
                             ->where(function (Builder $query) use($params) {
                                 $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -332,6 +339,11 @@ class MedReportService
             if($data->date){
                 $date = new Carbon($data->date);
                 return $this->visit
+                    ->where('consulted', '!=', null)
+                    ->where(function (Builder $query) {
+                        $query->where('admission_status', '=', 'Inpatient')
+                        ->orWhere('admission_status', '=', 'Observation');
+                    })
                     ->where('discharge_reason', $data->filterBy)
                     ->where(function (Builder $query) use($params) {
                         $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -348,6 +360,11 @@ class MedReportService
             }
 
             return $this->visit
+                            ->where('consulted', '!=', null)
+                            ->where(function (Builder $query) {
+                                $query->where('admission_status', '=', 'Inpatient')
+                                ->orWhere('admission_status', '=', 'Observation');
+                            })
                             ->where('discharge_reason', $data->filterBy)
                             ->where(function (Builder $query) use($params) {
                                 $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -365,6 +382,11 @@ class MedReportService
 
         if ($data->startDate && $data->endDate){
             return $this->visit
+                ->where('consulted', '!=', null)
+                ->where(function (Builder $query) {
+                    $query->where('admission_status', '=', 'Inpatient')
+                    ->orWhere('admission_status', '=', 'Observation');
+                })
                 ->where('discharge_reason', $data->filterBy)
                 ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                 ->orderBy($orderBy, $orderDir)
@@ -374,6 +396,11 @@ class MedReportService
         if($data->date){
             $date = new Carbon($data->date);
             return $this->visit
+                ->where('consulted', '!=', null)
+                ->where(function (Builder $query) {
+                    $query->where('admission_status', '=', 'Inpatient')
+                    ->orWhere('admission_status', '=', 'Observation');
+                })
                 ->where('discharge_reason', $data->filterBy)
                 ->whereMonth('created_at', $date->month)
                 ->whereYear('created_at', $date->year)
@@ -382,6 +409,11 @@ class MedReportService
         }
 
         return $this->visit
+                ->where('consulted', '!=', null)
+                ->where(function (Builder $query) {
+                    $query->where('admission_status', '=', 'Inpatient')
+                    ->orWhere('admission_status', '=', 'Observation');
+                })
                 ->where('discharge_reason', $data->filterBy)
                 ->whereMonth('created_at', $current->month)
                 ->whereYear('created_at', $current->year)
@@ -389,12 +421,12 @@ class MedReportService
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
-    public function getReferredOrDeceasedLoadTransformer(): callable
+    public function getByDischargeTransformer(): callable
     {
        return  function (Visit $visit) {
             return [
                 'id'                => $visit->id,
-                'date'              => (new Carbon($visit->created_at))->format('d/m/Y'),
+                'date'              => (new Carbon($visit->consulted))->format('d/m/Y g:ia'),
                 'sponsorCategoryClass'  => $visit->sponsor->sponsorCategory->pay_class,
                 'sponsorCategory'       => $visit->sponsor->category_name,
                 'sponsor'               => $visit->sponsor->name,

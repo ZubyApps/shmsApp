@@ -43,11 +43,6 @@ class DoctorController extends Controller
 
     }
 
-    public function store(Request $request)
-    {
-        //
-    }
-
     public function loadOutPatientVisits(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
