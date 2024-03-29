@@ -68,7 +68,7 @@ const getWaitingTable = (tableId) => {
 const getVerificationTable = (tableId) => {
     return new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  '/hmo/load/verification/list/',
+        ajax:  '/hmo/load/verification/list',
         orderMulti: true,
         search:true,
         language: {
@@ -102,7 +102,7 @@ const getVerificationTable = (tableId) => {
 const getAllHmoPatientsVisitTable = (tableId, filter) => {
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  {url: '/hmo/load/consulted/', data: {
+        ajax:  {url: '/hmo/load/consulted', data: {
             'filterBy': filter 
         }},
         orderMulti: true,
@@ -159,7 +159,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
 const getApprovalListTable = (tableId, sponsor) => {
     const prescriptionTable =  new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  {url: '/hmo/load/approval/list/', data: {
+        ajax:  {url: '/hmo/load/approval/list', data: {
             'sponsor': sponsor 
         }},
         orderMulti: true,
@@ -294,7 +294,7 @@ const getSentBillsTable = (tableId, startDate, endDate) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  {url: '/hmo/load/sentbills/', data: {
+        ajax:  {url: '/hmo/load/sentbills', data: {
             'startDate' : startDate, 
             'endDate'   : endDate, 
         }},
