@@ -21,7 +21,6 @@ export default defineConfig({
                 'resources/js/pharmacy.js',
                 'resources/js/billing.js',
                 'resources/js/adminSettings.js',
-                'resources/js/visits.js',
                 'resources/js/resources.js',
                 'resources/js/vitalSignsMasks.js',
                 'resources/js/users.js',
