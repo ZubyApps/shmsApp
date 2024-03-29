@@ -9,7 +9,7 @@
                 <div class="modal-body">
                     <div class="">
                         <div class="mb-2 form-control">
-                            @include('patients.partials.patientBio')
+                            @include('patients.partials.PatientBio')
                         </div>
                         @if ($isAnc)
                             <x-current-lmp-calculation></x-current-lmp-calculation>  

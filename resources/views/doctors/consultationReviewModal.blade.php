@@ -10,7 +10,7 @@
                     <div class="">
                         <div class="card card-body">
                             <div class="mb-2 form-control">
-                                @include('patients.partials.patientBio')
+                                @include('patients.partials.PatientBio')
                             </div>
                             <div class="mb-2 form-control">
                                 <X-form-span class="fw-semibold">Previously Known Clinical Info</X-form-span>

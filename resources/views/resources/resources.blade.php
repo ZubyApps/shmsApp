@@ -9,8 +9,8 @@
 @include('resources.modals.resourceModal', ['title' => 'New Resource', 'isUpdate' => false, 'id' => 'newResourceModal'])
 @include('resources.modals.resourceModal', ['title' => 'Update Resource', 'isUpdate' => true, 'id' => 'updateResourceModal'])
 
-@include('resources.modals.AddresourceStockModal', ['title' => 'Add Resource Stock', 'isUpdate' => false, 'id' => 'newAddResourceStockModal'])
-@include('resources.modals.AddresourceStockModal', ['title' => 'Update Resource Stock', 'isUpdate' => true, 'id' => 'updateAddResourceStockModal'])
+@include('resources.modals.addResourceStockModal', ['title' => 'Add Resource Stock', 'isUpdate' => false, 'id' => 'newAddResourceStockModal'])
+@include('resources.modals.addResourceStockModal', ['title' => 'Update Resource Stock', 'isUpdate' => true, 'id' => 'updateAddResourceStockModal'])
 
 @include('resources.modals.resourceSupplierModal', ['title' => 'Add Resource Supplier', 'isUpdate' => false, 'id' => 'newResourceSupplierModal'])
 @include('resources.modals.resourceSupplierModal', ['title' => 'Update Resource Supplier', 'isUpdate' => true, 'id' => 'updateResourceSupplierModal'])
