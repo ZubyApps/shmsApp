@@ -62,7 +62,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
     newSponsorCategoryInput.addEventListener('change', function() {
             if (newSponsorCategoryInput.value) {
-                http.get(`/sponsorcategory/list_sponsors/${newSponsorCategoryInput.value}`, {params: {category: newSponsorCategoryInput.value}})
+                http.get(`/sponsorcategory/list_sponsors/${newSponsorCategoryInput.value}`)
                 .then((response) => {
                         displayList(newPatientSponsorDatalistEl, 'sponsorOption' ,response.data)
                 })

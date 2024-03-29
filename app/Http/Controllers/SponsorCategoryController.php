@@ -30,7 +30,7 @@ class SponsorCategoryController extends Controller
         return SponsorCategory::all($columns)->load('sponsors');
     }
 
-    public function list(SponsorCategory $sponsorCategory)
+    public function list(Request $request, SponsorCategory $sponsorCategory)
     {   
         return $sponsorCategory->sponsors()->orderBy('name')->get(['id', 'name'])->toJson();
     }
