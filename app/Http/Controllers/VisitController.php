@@ -22,9 +22,7 @@ class VisitController extends Controller
 
     public function storeVisit(StoreVisitRequest $request)
     {
-        $visit = $this->visitService->create($request, $request->user());
-        
-        return $visit;
+        return $this->visitService->create($request, $request->user());
     }
 
     public function loadWaitingTable(Request $request)
@@ -48,25 +46,16 @@ class VisitController extends Controller
         return $this->visitService->discharge($request, $visit, $request->user());
     }
     
-    /**
-     * close a completed visit
-     */
     public function closeVisit(CloseVisitRequest $request, Visit $visit)
     {
        return $this->visitService->close($request->user(), $visit);
     }
 
-    /**
-     * open a close visit
-     */
     public function openVisit(OpenVisitRequest $request, Visit $visit)
     {
        return $this->visitService->open($request->user(), $visit);
     }
 
-    /**
-     * delete a specified visit.
-     */
     public function destroy(Visit $visit)
     {
        return $this->visitService->delete($visit);

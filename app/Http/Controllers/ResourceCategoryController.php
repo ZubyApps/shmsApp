@@ -25,17 +25,11 @@ class ResourceCategoryController extends Controller
         return ResourceCategory::all($columns);
     }
 
-    /**
-     * Display all the resource's relationship by the id given.
-     */
     public function list(Request $request, ResourceCategory $resourceCategory)
     {   
         return $resourceCategory->resourceSubCategories()->orderBy('name')->get(['id', 'name'])->toJson();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreResourceCategoryRequest $request)
     {
         return $this->resourceCategoryService->create($request, $request->user());
@@ -52,25 +46,16 @@ class ResourceCategoryController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $categories, $params);  
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(ResourceCategory $resourceCategory)
     {
         return new ResourceCategoryResource($resourceCategory);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateResourceCategoryRequest $request, ResourceCategory $resourceCategory)
     {
         return $this->resourceCategoryService->update($request, $resourceCategory, $request->user());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(ResourceCategory $resourceCategory)
     {
         return $resourceCategory->destroy($resourceCategory->id);

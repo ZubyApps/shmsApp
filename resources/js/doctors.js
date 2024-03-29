@@ -1,4 +1,4 @@
-import { Modal, Collapse, Toast, Offcanvas } from "bootstrap"
+import { Modal, Toast, Offcanvas } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
 import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal} from "./helpers"
@@ -6,7 +6,7 @@ import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfile
 import http from "./http";
 import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable, getOtherPrescriptionsByFilter, getMedicalReportTable, getPatientsFileTable} from "./tables/doctorstables"
 import { getAncVitalsignsChart, getVitalsignsChartByVisit } from "./charts/vitalsignsCharts"
-import $, { get } from 'jquery';
+import $ from 'jquery';
 import { getbillingTableByVisit } from "./tables/billingTables"
 import { getAncVitalSignsTable, getDeliveryNoteTable, getEmergencyTable } from "./tables/nursesTables"
 import { visitDetails } from "./dynamicHTMLfiles/visits"
@@ -971,8 +971,6 @@ window.addEventListener('DOMContentLoaded', function () {
                     getLabTableByConsultation(investigationTableId, consultationReviewModal._element, 'lab', conId, '')
                     getMedicationsByFilter(treatmentTableId, conId, consultationReviewModal._element)
                     getOtherPrescriptionsByFilter(otherPrescriptionsTableId, conId, consultationReviewModal._element)
-                    getDeliveryNoteTable('deliveryNoteTable'+conId, conId, false)
-                    // getSurgeryNoteTable('surgeryNoteTable'+conId, conId, true)
                 }
                 setTimeout(goto, 300)
             }
@@ -1060,41 +1058,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 }
             }
 
-            // if (SurgeryNoteBtn) {
-            //     const isUpdate = SurgeryNoteBtn.id == 'updateSurgeryNoteBtn'
-            //     const [btn, modalBtn, modal ] = isUpdate ? [SurgeryNoteBtn, saveSurgeryNoteBtn, updateSurgeryModal] : [SurgeryNoteBtn, saveSurgeryNoteBtn, viewSurgeryModal]
-            //     btn.setAttribute('disabled', 'disabled')
-            //     saveSurgeryNoteBtn.setAttribute('data-table', btn.dataset.table)
-            //     http.get(`/surgerynote/${btn.getAttribute('data-id')}`)
-            //         .then((response) => {
-            //             if (response.status >= 200 || response.status <= 300) {
-            //                 openModals(modal, modalBtn, response.data.data)
-            //             }
-            //         })
-            //         .catch((error) => { console.log(error) })
-            //     setTimeout(()=>{btn.removeAttribute('disabled')}, 2000)
-            // }
-
-            // if (deleteSurgeryNoteBtn){
-            //     deleteSurgeryNoteBtn.setAttribute('disabled', 'disabled')
-            //     const id = deleteSurgeryNoteBtn.getAttribute('data-id')
-            //     const tableId = deleteSurgeryNoteBtn.getAttribute('data-table')
-            //     if (confirm('Are you sure you want to delete Surgery Note?')) {
-            //         http.delete(`/surgerynote/${id}`)
-            //         .then((response) => {
-            //             if (response.status >= 200 || response.status <= 300) {
-            //                 if ($.fn.DataTable.isDataTable('#' + tableId)) {
-            //                     $('#' + tableId).dataTable().fnDraw()
-            //                 }
-            //             }
-            //             deleteSurgeryNoteBtn.removeAttribute('disabled')
-            //         })
-            //         .catch((error) => { alert(error)
-            //             deleteSurgeryNoteBtn.removeAttribute('disabled')
-            //         })
-            //     } deleteSurgeryNoteBtn.removeAttribute('disabled')
-            // }
-    
             if (resultBtn) {
                 const update = resultBtn.id == 'updateResultBtn'
                 const [btn, modalBtn, modal] = update ? [resultBtn, saveResultBtn, updateResultModal] : [resultBtn, createResultBtn, addResultModal]

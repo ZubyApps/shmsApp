@@ -10,7 +10,6 @@ use App\Services\BillingService;
 use App\Services\DatatablesService;
 use App\Services\ExpenseService;
 use App\Services\PaymentService;
-use App\Services\ThirdPartyServices;
 use App\Services\UserService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -39,17 +38,6 @@ class BillingController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StorePaymentRequest $request)
     {
         $payment = $this->paymentService->create($request, $request->user());
@@ -156,14 +144,13 @@ class BillingController extends Controller
 
         $payment = $this->paymentService->getCashPaymentsByDate($request);
         $expense = $this->expenseService->getExpensesByDate($request);
-        // dd($expense);
+
         $combined[] = [
             'date' => $request->date ? (new Carbon($request->date))->format('d/m/Y') : (new Carbon())->format('d/m/Y'),
             'id' => $payment?->id,
             'totalCash' => $payment?->totalCash,
             'totalExpense' => $expense?->totalExpense
         ];
-
 
         return response()->json([
             'data' => $combined,

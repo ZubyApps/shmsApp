@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Prescription;
-use App\Models\ThirdParty;
 use App\Models\ThirdPartyService;
 use App\Models\User;
 use Carbon\Carbon;

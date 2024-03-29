@@ -24,9 +24,6 @@ class SponsorController extends Controller
         return $sponsor::where('category', $request->category)->orderBy('name')->get(['id', 'name'])->toJson();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreSponsorRequest $request)
     {
         return $this->sponsorService->create($request, $request->user());
@@ -43,25 +40,16 @@ class SponsorController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Sponsor $sponsor)
     {
         return new SponsorResource($sponsor);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateSponsorRequest $request, Sponsor $sponsor)
     {
         return $this->sponsorService->update($request, $sponsor, $request->user());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Sponsor $sponsor)
     {
         return $sponsor->destroy($sponsor->id);

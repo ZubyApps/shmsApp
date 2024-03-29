@@ -20,9 +20,6 @@ class NursesReportController extends Controller
     {
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreNursesReportRequest $request, Visit $visit)
     {
         return $this->nursesReportService->create($request, $visit, $request->user());
@@ -39,25 +36,16 @@ class NursesReportController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $nursesReport, $params);  
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(NursesReport $nursesReport)
     {
         return new NursesReportResource($nursesReport);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateNursesReportRequest $request, NursesReport $nursesReport)
     {
         return $this->nursesReportService->update($request, $nursesReport, $request->user());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(NursesReport $nursesReport)
     {
         return $nursesReport->destroy($nursesReport);

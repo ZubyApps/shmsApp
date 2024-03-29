@@ -5,9 +5,8 @@ import { clearDivValues, getOrdinal, getDivData, clearValidationErrors, loadingS
 import { getAllHmoPatientsVisitTable, getApprovalListTable, getHmoReconciliationTable, getHmoReportsTable, getNhisReconTable, getSentBillsTable, getVerificationTable, getVisitPrescriptionsTable, getWaitingTable } from "./tables/hmoTables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getLabTableByConsultation, getMedicalReportTable, getMedicationsByFilter, getOtherPrescriptionsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
-import { getVitalsignsChartByVisit } from "./charts/vitalsignsCharts";
 import { getbillingTableByVisit } from "./tables/billingTables";
-import { getAncVitalSignsTable, getOtherPrescriptionsByFilterNurses } from "./tables/nursesTables";
+import { getAncVitalSignsTable } from "./tables/nursesTables";
 import html2pdf  from "html2pdf.js"
 $.fn.dataTable.ext.errMode = 'throw';
 
@@ -656,7 +655,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 saveCapitationPaymentBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            // alert(error.response.data.message)
+            console.log(error.response.data.message)
             saveCapitationPaymentBtn.removeAttribute('disabled')
         })
     })

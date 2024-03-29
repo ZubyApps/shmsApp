@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\VitalSigns;
 use App\Http\Requests\StoreVitalSignsRequest;
-use App\Http\Requests\UpdateVitalSignsRequest;
 use App\Services\DatatablesService;
 use App\Services\VitalSignsService;
 use Illuminate\Http\Request;
@@ -15,7 +14,6 @@ class VitalSignsController extends Controller
         private readonly DatatablesService $datatablesService,
         private readonly VitalSignsService $vitalSignsService)
     {
-        
     }
 
     public function store(StoreVitalSignsRequest $request)

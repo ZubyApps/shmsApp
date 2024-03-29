@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Nurse;
 use App\Services\DatatablesService;
 use App\Services\NurseService;
 use App\Services\ResourceService;

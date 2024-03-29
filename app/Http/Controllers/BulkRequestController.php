@@ -31,9 +31,6 @@ class BulkRequestController extends Controller
 
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreBulkRequestRequest $request, Resource $resource)
     {
         $bulkRequest = $this->bulkRequestService->create($request, $resource, $request->user());
@@ -74,9 +71,6 @@ class BulkRequestController extends Controller
         return $this->datatablesService->datatableResponse($transformer, $expirationStock, $params);  
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function toggleApproveBulkRequest(UpdateBulkRequestRequest $request, BulkRequest $bulkRequest)
     {
         if ($request->user()->designation?->access_level < 5) {
@@ -85,17 +79,11 @@ class BulkRequestController extends Controller
         return $this->bulkRequestService->toggleRequest($request, $bulkRequest, $request->user());
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function dispenseBulkRequest(UpdateBulkRequestRequest $request, BulkRequest $bulkRequest)
     {
         return $this->bulkRequestService->dispenseRequest($request, $bulkRequest, $request->user());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Request $request, BulkRequest $bulkRequest)
     {
         if ($request->user()->designation?->access_level < 5) {

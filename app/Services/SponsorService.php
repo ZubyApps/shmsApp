@@ -9,7 +9,6 @@ use App\Models\Sponsor;
 use App\Models\SponsorCategory;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class SponsorService

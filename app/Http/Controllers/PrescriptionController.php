@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AcknowledgePrescriptionRequest;
 use App\Http\Requests\ConfirmPrescriptionRequest;
 use App\Http\Requests\DiscontinuePrescriptionRequest;
-use App\Http\Requests\SaveLabResultRequest;
 use App\Models\Prescription;
 use App\Http\Requests\StorePrescriptionRequest;
-use App\Http\Requests\UpdatePrescriptionRequest;
 use App\Models\Resource;
 use App\Services\DatatablesService;
 use App\Services\PrescriptionService;
@@ -23,9 +20,6 @@ class PrescriptionController extends Controller
     {  
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StorePrescriptionRequest $request, Resource $resource)
     {
         $prescription = $this->prescriptionService->createFromDoctors($request, $resource, $request->user());
@@ -98,9 +92,6 @@ class PrescriptionController extends Controller
         return $this->prescriptionService->discontinue($request, $prescription);
     }
     
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Prescription $prescription)
     {
         return $this->prescriptionService->processDeletion($prescription);

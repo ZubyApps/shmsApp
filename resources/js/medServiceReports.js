@@ -1,5 +1,4 @@
 import {Modal } from "bootstrap";
-import http from "./http";
 import $ from 'jquery';
 import { getBySponsorTable, getDistribution1Table, getDistribution2Table, getFrequencyTable, getRegBySponsorTable } from "./tables/patientReportTables";
 
@@ -47,9 +46,6 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     searchRegWithDatesBtn.addEventListener('click', function () {
-        // if (!datesDiv.querySelector('#startDate').value && !datesDiv.querySelector('#endDate').value){
-        //     return alert('Please pick valid dates')
-        // }
         if ($.fn.DataTable.isDataTable( '#registerationsTable' )){
             $('#registerationsTable').dataTable().fnDestroy()
         }

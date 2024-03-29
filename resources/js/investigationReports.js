@@ -1,5 +1,4 @@
 import {Modal } from "bootstrap";
-import http from "./http";
 import $ from 'jquery';
 import { getInvestigationsSummaryTable, getByResourceTable } from "./tables/investigationReportTables";
 

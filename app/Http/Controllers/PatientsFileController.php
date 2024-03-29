@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\PatientsFile;
 use App\Http\Requests\StorePatientsFileRequest;
-use App\Http\Requests\UpdatePatientsFileRequest;
 use App\Models\Visit;
 use App\Services\DatatablesService;
 use App\Services\PatientsFileService;
@@ -18,9 +17,7 @@ class PatientsFileController extends Controller
         )
     {
     }
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(StorePatientsFileRequest $request, Visit $visit)
     {
         return $this->patientsFileService->create($request, $visit, $request->user());
@@ -37,17 +34,11 @@ class PatientsFileController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsorCategories, $params);  
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function download(PatientsFile $patientsFile)
     {
         return $this->patientsFileService->findFile($patientsFile);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(PatientsFile $patientsFile)
     {
         return $this->patientsFileService->processDeletion($patientsFile);

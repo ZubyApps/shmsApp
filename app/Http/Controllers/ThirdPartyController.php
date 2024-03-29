@@ -17,7 +17,6 @@ class ThirdPartyController extends Controller
         private readonly ThirdPartyServices $thirdPartyServices,
         )
     {
-        
     }
 
     public function showAll(string ...$columns)
@@ -25,9 +24,6 @@ class ThirdPartyController extends Controller
         return ThirdParty::where('delisted', false)->get();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreThirdPartyRequest $request)
     {
         return $this->thirdPartyServices->create($request, $request->user());
@@ -51,25 +47,16 @@ class ThirdPartyController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(ThirdParty $thirdParty)
     {
         return new ThirdPartyResource($thirdParty);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateThirdPartyRequest $request, ThirdParty $thirdParty)
     {
         return $this->thirdPartyServices->update($request, $thirdParty, $request->user());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(ThirdParty $thirdParty)
     {
         return $thirdParty->destroy($thirdParty->id);

@@ -18,22 +18,12 @@ class ExpenseCategoryController extends Controller
     {
         
     }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
     public function showAll(string ...$columns)
     {
         return ExpenseCategory::all($columns);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreExpenseCategoryRequest $request)
     {
         return $this->expenseCategoryService->create($request, $request->user());
@@ -50,25 +40,16 @@ class ExpenseCategoryController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);  
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(ExpenseCategory $expenseCategory)
     {
         return new ExpenseCategoryResource($expenseCategory);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateExpenseCategoryRequest $request, ExpenseCategory $expenseCategory)
     {
         return $this->expenseCategoryService->update($request, $expenseCategory, $request->user());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(ExpenseCategory $expenseCategory)
     {
         return $expenseCategory->destroy($expenseCategory->id);

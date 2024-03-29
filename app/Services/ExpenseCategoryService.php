@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
-use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use App\Models\User;
 use Carbon\Carbon;

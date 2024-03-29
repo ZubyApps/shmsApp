@@ -1,5 +1,4 @@
 import {Modal } from "bootstrap";
-import http from "./http";
 import $ from 'jquery';
 import { getByResourceTable, getDischargeReasonTable, getDischargeSummaryTable, getMedServiceSummaryTable, getNewBirthsTable } from "./tables/medReportTables";
 
@@ -9,14 +8,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const datesDiv                  = document.querySelector('.datesDiv')
     const newBirthsDatesDiv         = document.querySelector('.newBirthsDatesDiv')
-    const referredDatesDiv          = document.querySelector('.referredDatesDiv')
-    const deceasedDatesDiv          = document.querySelector('.deceasedDatesDiv')
     const dischargeSummaryDatesDiv  = document.querySelector('.dischargeSummaryDatesDiv')
 
     const summaryTab                = document.querySelector('#nav-summary-tab')
     const newBirthsTab              = document.querySelector('#nav-newBirths-tab')
-    const referredTab               = document.querySelector('#nav-referred-tab')
-    const deceasedTab               = document.querySelector('#nav-deceased-tab')
     const dischargeSummaryTab       = document.querySelector('#nav-dischargeSummary-tab')
 
     const searchWithDatesBtn           = document.querySelector('.searchWithDatesBtn')
@@ -24,12 +19,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const searchNewBirthsWithDatesBtn  = document.querySelector('.searchNewBirthsWithDatesBtn')
     const searchNewBirthsByMonthBtn    = document.querySelector('.searchNewBirthsByMonthBtn')
-
-    const searchReferredWithDatesBtn   = document.querySelector('.searchReferredWithDatesBtn')
-    const searchReferredByMonthBtn     = document.querySelector('.searchReferredByMonthBtn')
-
-    const searchDeceasedWithDatesBtn   = document.querySelector('.searchDeceasedWithDatesBtn')
-    const searchDeceasedByMonthBtn     = document.querySelector('.searchDeceasedByMonthBtn')
 
     const searchDischargeSummaryWithDatesBtn   = document.querySelector('.searchDischargeSummaryWithDatesBtn')
     const searchDischargeSummaryByMonthBtn     = document.querySelector('.searchDischargeSummaryByMonthBtn')
@@ -48,24 +37,6 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#newBirthsTable').dataTable().fnDraw()
         } else {
             newBirthsTable = getNewBirthsTable('newBirthsTable')
-        }
-    })
-
-    referredTab.addEventListener('click', function() {
-        referredDatesDiv.querySelector('#referredMonth').value = new Date().toISOString().slice(0,7)
-        if ($.fn.DataTable.isDataTable( '#referredTable' )){
-            $('#referredTable').dataTable().fnDraw()
-        } else {
-            referredTable = getReferredOrDeceasedVisits('referredTable', 'Referred')
-        }
-    })
-
-    deceasedTab.addEventListener('click', function() {
-        deceasedDatesDiv.querySelector('#deceasedMonth').value = new Date().toISOString().slice(0,7)
-        if ($.fn.DataTable.isDataTable( '#deceasedTable' )){
-            $('#deceasedTable').dataTable().fnDraw()
-        } else {
-            deceasedTable = getReferredOrDeceasedVisits('deceasedTable', 'Deceased')
         }
     })
 
@@ -108,38 +79,6 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#newBirthsTable').dataTable().fnDestroy()
         }
         newBirthsTable = getNewBirthsTable('newBirthsTable', null, null, newBirthsDatesDiv.querySelector('#newBirthsMonth').value)
-    })
-
-    searchReferredWithDatesBtn.addEventListener('click', function () {
-        referredDatesDiv.querySelector('#referredMonth').value = ''
-        if ($.fn.DataTable.isDataTable( '#referredTable' )){
-            $('#referredTable').dataTable().fnDestroy()
-        }
-        referredTable = getDischargeReasonTable('referredTable', 'Referred', referredDatesDiv.querySelector('#startDate').value, referredDatesDiv.querySelector('#endDate').value)
-    })
-
-    searchReferredByMonthBtn.addEventListener('click', function () {
-        referredDatesDiv.querySelector('#startDate').value = ''; referredDatesDiv.querySelector('#endDate').value = ''
-        if ($.fn.DataTable.isDataTable( '#referredTable' )){
-            $('#referredTable').dataTable().fnDestroy()
-        }
-        referredTable = getDischargeReasonTable('referredTable', 'Referred', null, null, referredDatesDiv.querySelector('#referredMonth').value)
-    })
-
-    searchDeceasedWithDatesBtn.addEventListener('click', function () {
-        deceasedDatesDiv.querySelector('#deceasedMonth').value = ''
-        if ($.fn.DataTable.isDataTable( '#deceasedTable' )){
-            $('#deceasedTable').dataTable().fnDestroy()
-        }
-        deceasedTable = getDischargeReasonTable('deceasedTable', 'Deceased', deceasedDatesDiv.querySelector('#startDate').value, deceasedDatesDiv.querySelector('#endDate').value)
-    })
-
-    searchDeceasedByMonthBtn.addEventListener('click', function () {
-        deceasedDatesDiv.querySelector('#startDate').value = ''; referredDatesDiv.querySelector('#endDate').value = ''
-        if ($.fn.DataTable.isDataTable( '#deceasedTable' )){
-            $('#deceasedTable').dataTable().fnDestroy()
-        }
-        deceasedTable = getDischargeReasonTable('deceasedTable', 'Deceased', null, null, deceasedDatesDiv.querySelector('#deceasedMonth').value)
     })
 
     searchDischargeSummaryWithDatesBtn.addEventListener('click', function () {
@@ -197,7 +136,6 @@ window.addEventListener('DOMContentLoaded', function () {
             if (showVisitsBtn){
                 const reason = showVisitsBtn.getAttribute('data-reason')
                 visitsByDischargeModal._element.querySelector('#dischargeReason').value = reason == "null" ? 'Not discharged' : reason;
-                // visitsByDischargeModal._element.querySelector('#subcategory').value = showPatientsBtn.getAttribute('data-subcategory')
                 
                 if (dischargedDate) {
                     visitsByDischargeModal._element.querySelector('#dischargeMonth').value = dischargedDate

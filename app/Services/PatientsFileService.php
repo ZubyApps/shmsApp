@@ -9,7 +9,6 @@ use App\Models\PatientsFile;
 use App\Models\User;
 use App\Models\Visit;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 

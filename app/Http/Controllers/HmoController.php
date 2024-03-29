@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\VerifyPatientRequest;
-use App\Models\Hmo;
 use App\Models\Prescription;
 use App\Models\Visit;
 use App\Services\DatatablesService;
@@ -21,9 +20,6 @@ class HmoController extends Controller
         
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         return view('hmo.hmo',
@@ -69,9 +65,6 @@ class HmoController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 
-    /**
-     * HMO officers approval.
-     */
     public function approveItem(Request $request, Prescription $prescription)
     {
        return $this->hmoService->approve($request, $prescription, $request->user());

@@ -18,12 +18,6 @@
                 <button class="nav-link"  id="nav-newBirths-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-newBirths" type="button" role="tab" aria-controls="nav-newBirths"
                     aria-selected="true">New Births</button>
-                <button class="nav-link"  id="nav-referred-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-referred" type="button" role="tab" aria-controls="nav-referred"
-                    aria-selected="false">Referred</button>
-                <button class="nav-link"  id="nav-deceased-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-deceased" type="button" role="tab" aria-controls="nav-deceased"
-                    aria-selected="false">Deceased</button>
                 <button class="nav-link"   id="nav-dischargeSummary-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-dischargeSummary" type="button" role="tab" aria-controls="nav-dischargeSummary"
                     aria-selected="false">Discharge Summary</button>
@@ -95,110 +89,6 @@
                             </tr>
                         </thead>
                         <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-            <!-- frequency table -->
-            <div class="tab-pane fade" id="nav-referred" role="tabpanel" aria-labelledby="nav-referred-tab" tabindex="0">
-                <div class="py-2">
-                    <h5 class="card-title py-4">Referred Patients</h5>
-                    <x-form-div class="col-xl-8 py-3 referredDatesDiv">
-                        <x-input-span class="">Start</x-input-span>
-                        <x-form-input type="date" name="startDate" id="startDate" />
-                        <x-input-span class="">End</x-input-span>
-                        <x-form-input type="date" name="endDate" id="endDate" />
-                        <button class="input-group-text searchReferredWithDatesBtn">Search</button>
-                        <x-input-span class="">OR</x-input-span>
-                        <x-input-span class="">Month/Year</x-input-span>
-                        <x-form-input type="month" name="newBirthsMonth" id="referredMonth" />
-                        <button class="input-group-text searchReferredByMonthBtn">Search</button>
-                    </x-form-div>
-                    <table id="referredTable" class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Patient</th>
-                                <th>Age</th>
-                                <th>Sex</th>
-                                <th> <i class="bi bi-telephone-outbound-fill text-primary"></i></th>
-                                <th>Doctor</th>
-                                <th>Diagnosis</th>
-                                <th>Sponsor</th>
-                                <th>Status</th>
-                                <th>HMS Bill</th>
-                                <th>Paid</th>
-                                <th>Diff</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                        <tfoot class="fw-bolder">
-                            <tr>
-                                <td class="text-center">Total</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-            <!-- Visit Details table -->
-            <div class="tab-pane fade" id="nav-deceased" role="tabpanel" aria-labelledby="nav-deceased-tab" tabindex="0">
-                <h5 class="card-title py-4">Deceased Patients</h5>
-                <x-form-div class="col-xl-8 py-3 deceasedDatesDiv">
-                    <x-input-span class="">Start</x-input-span>
-                    <x-form-input type="date" name="startDate" id="startDate" />
-                    <x-input-span class="">End</x-input-span>
-                    <x-form-input type="date" name="endDate" id="endDate" />
-                    <button class="input-group-text searchDeceasedWithDatesBtn">Search</button>
-                    <x-input-span class="">OR</x-input-span>
-                    <x-input-span class="">Month/Year</x-input-span>
-                    <x-form-input type="month" name="newBirthsMonth" id="deceasedMonth" />
-                    <button class="input-group-text searchDeceasedByMonthBtn">Search</button>
-                </x-form-div>
-                <div class="py-2 ">
-                    <table id="deceasedTable" class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Patient</th>
-                                <th>Age</th>
-                                <th>Sex</th>
-                                <th> <i class="bi bi-telephone-outbound-fill text-primary"></i></th>
-                                <th>Doctor</th>
-                                <th>Diagnosis</th>
-                                <th>Sponsor</th>
-                                <th>Status</th>
-                                <th>HMS Bill</th>
-                                <th>Paid</th>
-                                <th>Diff</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                        <tfoot class="fw-bolder">
-                            <tr>
-                                <td class="text-center">Total</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             </div>

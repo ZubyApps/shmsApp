@@ -1,7 +1,7 @@
 import { Modal } from "bootstrap";
 import $ from 'jquery';
 import http from "./http";
-import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, loadingSpinners, clearValidationErrors, openModals, populatePatientSponsor, displayItemsList, getDatalistOptionId, handleValidationErrors} from "./helpers"
+import { clearDivValues, getDivData, openModals } from "./helpers"
 import html2pdf  from "html2pdf.js"
 import { getThirdPartiesTable, getlistOfServicesTable } from "./tables/thirdPartyTables";
 

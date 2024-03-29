@@ -15,9 +15,7 @@ class SurgeryNoteController extends Controller
     public function __construct(
         private readonly DatatablesService $datatablesService, 
         private readonly SurgeryNoteService $surgeryNoteService
-    )
-    {
-        
+    ){ 
     }
 
     public function store(StoreSurgeryNoteRequest $request)

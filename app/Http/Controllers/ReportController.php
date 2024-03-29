@@ -187,7 +187,7 @@ class ReportController extends Controller
         ]);
     }
 
-    /** Medical Services Report */
+    /**Investigations Report */
     public function indexInvestigations()
     {
         return view('reports.investigations');
@@ -204,7 +204,7 @@ class ReportController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
-    /** Medical Services Report */
+    /** Pharmacy Report */
     public function indexPharmacy()
     {
         return view('reports.pharmacy');
@@ -221,7 +221,7 @@ class ReportController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
-    /** Medical Services Report */
+    /** Hospital Services and Others Report */
     public function indexHospitalAndOthers()
     {
         return view('reports.hospitalAndOthers');
@@ -238,6 +238,7 @@ class ReportController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
+    //Resource Reports
     public function indexResources()
     {
         return view('reports.resources');
@@ -294,6 +295,7 @@ class ReportController extends Controller
         return $this->datatablesService->datatableResponse($transformer, $expirationStock, $params);  
     }
 
+    // Account Reports
     public function indexAccounts()
     {
         return view('reports.accounts', [
@@ -463,6 +465,7 @@ class ReportController extends Controller
         ]);
     }
 
+    // Staff/Users Reports
     public function indexUsers()
     {
         return view('reports.users');

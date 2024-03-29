@@ -17,9 +17,6 @@ class CapitationPaymentController extends Controller
         
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreCapitationPaymentRequest $request)
     {
         return $this->capitationPaymentService->create($request, $request->user());
@@ -35,10 +32,7 @@ class CapitationPaymentController extends Controller
 
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(CapitationPayment $capitationPayment)
     {
         return $this->capitationPaymentService->processDeletion($capitationPayment);

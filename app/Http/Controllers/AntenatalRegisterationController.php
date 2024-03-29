@@ -18,17 +18,6 @@ class AntenatalRegisterationController extends Controller
         
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreAntenatalRegisterationRequest $request)
     {
         $registeration = $this->antenatalRegisterationService->create($request, $request->user());
@@ -36,33 +25,16 @@ class AntenatalRegisterationController extends Controller
         return $registeration;
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(AntenatalRegisteration $antenatalRegisteration)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(AntenatalRegisteration $antenatalRegisteration)
     {
         return new AntenatalRegisterationResource($antenatalRegisteration);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateAntenatalRegisterationRequest $request, AntenatalRegisteration $antenatalRegisteration)
     {
         return $this->antenatalRegisterationService->update($request, $antenatalRegisteration, $request->user());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(AntenatalRegisteration $antenatalRegisteration)
     {
         return $antenatalRegisteration->destroy($antenatalRegisteration->id);

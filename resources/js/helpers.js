@@ -1,6 +1,5 @@
 import $ from 'jquery';
 import { getAncPatientsVisitTable, getInpatientsVisitTable, getOutpatientsVisitTable } from './tables/doctorstables';
-import { Collapse } from 'bootstrap';
 
 function clearDivValues(div) {
     const tagName = div.querySelectorAll('input, select, textarea')
@@ -568,7 +567,6 @@ const displayItemsList = (datalistEl, data, optionName) => {
         option.setAttribute('data-id', line.id)
         option.setAttribute('name', line.name)
         option.setAttribute('data-cat', line.category)
-        // option.setAttribute('data-plainname', line.plainName)
 
         !datalistEl.options.namedItem(line.name) ? datalistEl.appendChild(option) : ''
     })

@@ -1,12 +1,8 @@
 import {Modal } from "bootstrap";
-import http from "./http";
 import $ from 'jquery';
-import { getByResourceTable, getPharmacySummaryTable } from "./tables/pharmacyReportTables";
 import { getBillOfficersActivityTable, getDoctorsActivityTable, getHmoOfficersActivityTable, getLabTechActivityTable, getNursesActivityTable, getPharmacyTechActivityTable } from "./tables/usersReportTables";
 
 window.addEventListener('DOMContentLoaded', function () {
-    const byResourceModal           = new Modal(document.getElementById('byResourceModal'))
-
     const doctorsDatesDiv           = document.querySelector('.doctorsDatesDiv')
     const nursesDatesDiv            = document.querySelector('.nursesDatesDiv')
     const labTechDatesDiv           = document.querySelector('.labTechDatesDiv')

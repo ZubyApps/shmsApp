@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace App\Services;
 
-use App\DataObjects\DataTableQueryParams;
 use Illuminate\Http\Request;
 
 class RequestService

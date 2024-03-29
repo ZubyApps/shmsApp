@@ -23,20 +23,13 @@ class PatientController extends Controller
         
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        // dd($this->visitService->getVisitSummaryBySponsor('name'));
         return view('patients.patients', 
         ['categories' => $this->sponsorCategoryController->showAll('id', 'name')]
         );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StorePatientRequest $request)
     {
         return $this->patientService->create($request, $request->user());        
@@ -53,17 +46,11 @@ class PatientController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsorCategories, $params);  
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Patient $patient)
     {
         return new PatientResource($patient);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdatePatientRequest $request, Patient $patient)
     {
         return $this->patientService->update($request, $patient, $request->user());
@@ -160,9 +147,6 @@ class PatientController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Patient $patient)
     {
         return $patient->destroy($patient->id);

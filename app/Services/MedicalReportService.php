@@ -7,7 +7,6 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\MedicalReport;
 use App\Models\User;
-use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 

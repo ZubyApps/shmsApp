@@ -23,44 +23,44 @@ class DatabaseSeeder extends Seeder
         //  Sponsor::factory(1)->create();
 
         User::create([
-            'firstname' => 'User',
-            'middlename' => 'Super',
-            'lastname' => 'Admin',
-            'email' => 'admin@example.com',
+            'firstname' => 'Nzube',
+            'middlename' => 'Yonna',
+            'lastname' => 'Okoye',
+            'email' => 'zubyokoye@gmail.com',
             'address' => '24 J.S Tarka Way, Wadata',
-            'date_of_birth' => new DateTime('1982/06/28'),
-            'highest_qualification' => 'MBBS',
+            'date_of_birth' => new DateTime('1983/03/05'),
+            'highest_qualification' => 'BTech',
             'sex' => 'male',
             'marital_status' => 'Married',
-            'username' => 'Admin User',
-            'phone_number' => '09022812281',
+            'username' => 'Nzube',
+            'phone_number' => '08035999029',
             'state_of_origin' => 'Anambra',
-            'next_of_kin' => 'Nzube Okoye',
-            'next_of_kin_rship' => 'Son',
-            'next_of_kin_phone' => '08035999029',
-            'date_of_employment' => new DateTime('1982/06/28'),
+            'next_of_kin' => 'Stephanie Okoye',
+            'next_of_kin_rship' => 'Wife',
+            'next_of_kin_phone' => '08103830241',
+            'date_of_employment' => new DateTime('1983/03/05'),
             'special_note' => 'Management',
-            'password' => Hash::make('mylovelywife'), // password
+            'password' => Hash::make('Mylovelywife'), // password
         ]);
-        User::create([
-            'firstname' => 'Stephnie',
-            'middlename' => 'Iniobong',
-            'lastname' => 'Nkonim',
-            'email' => 'nkonim@example.com',
-            'address' => 'Demekpe way, Demekpe Mkd',
-            'date_of_birth' => new DateTime('1996/03/10'),
-            'highest_qualification' => 'Btech',
-            'sex' => 'female',
-            'marital_status' => 'Single',
-            'username' => 'Steph IT',
-            'phone_number' => '09023185763',
-            'state_of_origin' => 'Akwa Ibom',
-            'next_of_kin' => 'Emmanuel Nkonim',
-            'next_of_kin_rship' => 'Father',
-            'next_of_kin_phone' => '08136196683',
-            'date_of_employment' => new DateTime('2020/06/31'),
-            'password' => Hash::make('Stephanie'), // password
-        ]);
+        // User::create([
+        //     'firstname' => 'Stephnie',
+        //     'middlename' => 'Iniobong',
+        //     'lastname' => 'Nkonim',
+        //     'email' => 'nkonim@example.com',
+        //     'address' => 'Demekpe way, Demekpe Mkd',
+        //     'date_of_birth' => new DateTime('1996/03/10'),
+        //     'highest_qualification' => 'Btech',
+        //     'sex' => 'female',
+        //     'marital_status' => 'Single',
+        //     'username' => 'Steph IT',
+        //     'phone_number' => '09023185763',
+        //     'state_of_origin' => 'Akwa Ibom',
+        //     'next_of_kin' => 'Emmanuel Nkonim',
+        //     'next_of_kin_rship' => 'Father',
+        //     'next_of_kin_phone' => '08136196683',
+        //     'date_of_employment' => new DateTime('2020/06/31'),
+        //     'password' => Hash::make('Stephanie'), // password
+        // ]);
 
          //Sponsor Categories
          \App\Models\SponsorCategory::create([
@@ -203,14 +203,6 @@ class DatabaseSeeder extends Seeder
             'user_id'   => 1,
             'resource_category_id'   => 1
         ]);
-        // \App\Models\ResourceSubCategory::create([
-        //     'name' => 'Treatment',
-        //     'description' => 'Monitoring, Dressings, Care treatments',
-        //     'user_id'   => 1,
-        //     'resource_category_id'   => 1
-        // ]);
-
-        //ResourceSubCategories for Resource Category 2
         \App\Models\ResourceSubCategory::create([
             'name' => 'Microbiology',
             'description' => 'Microbiological Tests eg MP',
@@ -253,14 +245,6 @@ class DatabaseSeeder extends Seeder
             'user_id'   => 1,
             'resource_category_id'   => 2
         ]);
-        // \App\Models\ResourceSubCategory::create([
-        //     'name' => 'Supplies',
-        //     'description' => 'All Items required for lab fucntions eg. test strips, reagents, etc',
-        //     'user_id'   => 1,
-        //     'resource_category_id'   => 2
-        // ]);
-
-        //ResourceSubCategories for Resource Category 3
         \App\Models\ResourceSubCategory::create([
             'name' => 'Consultation',
             'description' => 'Gp Consultations & Reviews, Specialist Consultation & Reviews ',
@@ -352,11 +336,11 @@ class DatabaseSeeder extends Seeder
             'designator'  => 'Super Admin',
             'user_id'   => 1,
         ]);
-        \App\Models\Designation::create([
-            'designation' => 'IT Officer',
-            'access_level'   => 5,
-            'designator'  => 'Super Admin',
-            'user_id'   => 2,
-        ]);
+        // \App\Models\Designation::create([
+        //     'designation' => 'IT Officer',
+        //     'access_level'   => 5,
+        //     'designator'  => 'Super Admin',
+        //     'user_id'   => 2,
+        // ]);
     }
 }

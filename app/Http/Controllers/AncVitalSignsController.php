@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\AncVitalSigns;
 use App\Http\Requests\StoreAncVitalSignsRequest;
-use App\Http\Requests\UpdateAncVitalSignsRequest;
 use App\Services\AncVitalSignsService;
 use App\Services\DatatablesService;
 use Illuminate\Http\Request;
@@ -18,9 +17,6 @@ class AncVitalSignsController extends Controller
         
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreAncVitalSignsRequest $request)
     {
         $vitalSigns = $this->ancVitalSignsService->create($request, $request->user());
@@ -49,9 +45,6 @@ class AncVitalSignsController extends Controller
         return response()->json($outGoing);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(AncVitalSigns $ancVitalSigns)
     {
         return $ancVitalSigns->destroy($ancVitalSigns->id);

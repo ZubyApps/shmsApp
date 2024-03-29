@@ -20,9 +20,6 @@ class ResourceSubCategoryController extends Controller
         
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreResourceSubCategoryRequest $request)
     {
         $resourceSubCategory = $this->resourceSubCategoryService->create($request, $request->user());
@@ -41,25 +38,16 @@ class ResourceSubCategoryController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(ResourceSubCategory $resourceSubCategory)
     {
         return new ResourceSubCategoryResource($resourceSubCategory);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateResourceSubCategoryRequest $request, ResourceSubCategory $resourceSubCategory)
     {
         return $this->resourceSubCategoryService->update($request, $resourceSubCategory, $request->user());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(ResourceSubCategory $resourceSubCategory)
     {
         return $resourceSubCategory->destroy($resourceSubCategory->id);

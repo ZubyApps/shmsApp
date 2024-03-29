@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Services\DatatablesService;
 use App\Services\AddResourceStockService;
 use App\Http\Requests\StoreAddResourceStockRequest;
-use App\Http\Requests\UpdateAddResourceStockRequest;
 use App\Models\AddResourceStock;
 use Illuminate\Http\Request;
 
@@ -19,25 +18,7 @@ class AddResourceStockController extends Controller
     {
         
     }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(StoreAddResourceStockRequest $request)
     {
         $addResourceStock = $this->addResourceStockService->create($request, $request->user());
@@ -56,17 +37,6 @@ class AddResourceStockController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(AddResourceStock $addResourceStock)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(AddResourceStock $addResourceStock)
     {
         $addResourceStock->resource()->update([

@@ -6,7 +6,6 @@ use App\Http\Requests\SaveLabResultRequest;
 use App\Http\Resources\InvestigationResultResource;
 use App\Http\Resources\PrintLabTestsCollection;
 use App\Models\Prescription;
-use App\Models\Visit;
 use App\Services\DatatablesService;
 use App\Services\InvestigationService;
 use Illuminate\Http\Request;
@@ -19,9 +18,7 @@ class InvestigationController extends Controller
     {
         
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         return view('investigations.investigations');

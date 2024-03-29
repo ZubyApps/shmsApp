@@ -1,11 +1,7 @@
 import { Modal } from "bootstrap";
-import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, clearValidationErrors, openModals, displayList, getDatalistOptionId} from "./helpers"
+import { clearDivValues, getDivData, clearValidationErrors, openModals, displayList, getDatalistOptionId} from "./helpers"
 import http from "./http";
 import $ from 'jquery';
-import jQuery from "jquery";
-import jszip from 'jszip';
-import pdfmake from 'pdfmake';
-import DataTable from 'datatables.net-bs5';
 import { getAddResourceStockTable, getResourceSubCategoryTable, getResourceSupplierTable, getResourceTable } from "./tables/resourcesTables";
 
 

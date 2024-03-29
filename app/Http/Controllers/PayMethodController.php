@@ -20,9 +20,6 @@ class PayMethodController extends Controller
         
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StorePayMethodRequest $request)
     {
         return $this->payMethodService->create($request, $request->user());
@@ -39,25 +36,16 @@ class PayMethodController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $payMethods, $params);  
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(PayMethod $payMethod)
     {
         return new PayMethodResource($payMethod);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdatePayMethodRequest $request, PayMethod $payMethod)
     {
         return $this->payMethodService->update($request, $payMethod, $request->user());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(PayMethod $payMethod)
     {
         return $payMethod->destroy($payMethod->id);

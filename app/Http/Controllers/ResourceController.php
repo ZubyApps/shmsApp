@@ -20,17 +20,12 @@ class ResourceController extends Controller
     {
         
     }
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         return view('resources.resources',  ['categories' => $this->resourceCategoryController->showAll('id', 'name')]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function list(Request $request)
     {
         $resources = $this->resourceService->getFormattedList($request);
@@ -41,29 +36,6 @@ class ResourceController extends Controller
 
     }
 
-    // public function emergencyList(Request $request)
-    // {
-    //     $resources = $this->resourceService->getEmergencyList($request);
-
-    //     $listTransformer = $this->resourceService->listTransformer1();
-
-    //     return array_map($listTransformer, (array)$resources->getIterator());
-
-    // }
-
-    // public function listBulk(Request $request)
-    // {
-    //     $items = $this->resourceService->getBulkList($request);
-
-    //     $listTransformer = $this->resourceService->listTransformer1();
-
-    //     return array_map($listTransformer, (array)$items->getIterator());
-
-    // }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreResourceRequest $request)
     {
         $resource = $this->resourceService->create($request, $request->user());
@@ -89,9 +61,6 @@ class ResourceController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Resource $resource)
     {
         return new ResourceResource($resource);
@@ -109,17 +78,11 @@ class ResourceController extends Controller
         return response();
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateResourceRequest $request, Resource $resource)
     {
         return $this->resourceService->update($request, $resource, $request->user());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Resource $resource)
     {
         return $resource->destroy($resource->id);

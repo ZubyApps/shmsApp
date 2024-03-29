@@ -10,15 +10,12 @@ use App\Models\Payment;
 use App\Models\Prescription;
 use App\Models\Resource;
 use App\Models\ThirdParty;
-use App\Models\ThirdPartyService;
 use App\Models\User;
 use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
-use function Pest\Laravel\get;
 
 class BillingService
 {

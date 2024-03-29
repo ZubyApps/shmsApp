@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Doctor;
 use App\Models\Visit;
 use App\Services\DatatablesService;
 use App\Services\DoctorService;
@@ -21,10 +20,6 @@ class DoctorController extends Controller
         
     }
 
-
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         return view('doctors.doctors', [

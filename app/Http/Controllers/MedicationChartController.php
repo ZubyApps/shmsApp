@@ -18,9 +18,6 @@ class MedicationChartController extends Controller
     {   
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreMedicationChartRequest $request)
     {
         $chart = $this->medicationChartService->create($request, $request->user());
@@ -50,25 +47,6 @@ class MedicationChartController extends Controller
         return $this->datatablesService->datatableResponse($transformer, $upcomingMedications, $params);  
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(MedicationChart $medicationChart)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(MedicationChart $medicationChart)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function saveGivenData(UpdateMedicationChartRequest $request, MedicationChart $medicationChart)
     {
         return $this->medicationChartService->updateRecord($request, $medicationChart, $request->user());
@@ -79,9 +57,6 @@ class MedicationChartController extends Controller
         return $this->medicationChartService->removeRecord($medicationChart);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(MedicationChart $medicationChart)
     {
         return $medicationChart->destroy($medicationChart->id);

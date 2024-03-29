@@ -12,7 +12,6 @@ use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class InvestigationService
 {
@@ -56,7 +55,6 @@ class InvestigationService
                 $query->where('result', '=', null)
                 ->whereRelation('resource', 'category', '=', 'Investigations');
             })
-            // ->whereRelation('consultations', 'admission_status', '=', 'Outpatient')
             ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
@@ -71,10 +69,6 @@ class InvestigationService
                             $query->where('result', '=', null)
                             ->whereRelation('resource', 'category', '=', 'Investigations');
                         })
-                    // ->where(function (Builder $query) {
-                    //     $query->whereRelation('consultations', 'admission_status', '=', 'Inpatient')
-                    //     ->orWhereRelation('consultations', 'admission_status', '=', 'Observation');
-                    // })
                     ->where(function (Builder $query) {
                         $query->where('admission_status', '=', 'Inpatient')
                         ->orWhere('admission_status', '=', 'Observation');
@@ -211,7 +205,6 @@ class InvestigationService
                     ->whereRelation('visit', 'consulted', '!=', null)
                     ->whereRelation('consultation', 'admission_status', '=', 'Outpatient')
                     ->where('result_date', null)
-                    // ->where('created_at', '>', (new Carbon)->subDays(2))
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }

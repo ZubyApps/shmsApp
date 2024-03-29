@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
-use App\Models\Expense;
 use App\Models\Payment;
 use App\Models\PayMethod;
 use App\Models\Prescription;
@@ -74,8 +73,6 @@ class AccountsReportService
 
     public function getTPSSummary(DataTableQueryParams $params, $data)
     {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
         $current = new CarbonImmutable();
 
         if (! empty($params->searchTerm)) {
@@ -171,8 +168,6 @@ class AccountsReportService
 
     public function getExpenseSummary(DataTableQueryParams $params, $data)
     {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
         $current = new CarbonImmutable();
 
         if (! empty($params->searchTerm)) {

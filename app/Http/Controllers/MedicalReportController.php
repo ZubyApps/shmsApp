@@ -7,7 +7,6 @@ use App\Http\Requests\StoreMedicalReportRequest;
 use App\Http\Requests\UpdateMedicalReportRequest;
 use App\Http\Resources\DisplayMedicalReportResource;
 use App\Http\Resources\MedicalReportResource;
-use App\Models\Visit;
 use App\Services\DatatablesService;
 use App\Services\MedicalReportService;
 use Illuminate\Http\Request;
@@ -21,9 +20,6 @@ class MedicalReportController extends Controller
         
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreMedicalReportRequest $request)
     {
         $visit = $this->medicalReportService->create($request, $request->user());
@@ -39,9 +35,7 @@ class MedicalReportController extends Controller
 
         return $this->datatablesService->datatableResponse($loadTransformer, $medicalReports, $params);  
     }
-    /**
-     * Show the form for editing the specified resource.
-     */
+
     public function edit(MedicalReport $medicalReport)
     {
         return new MedicalReportResource($medicalReport);
@@ -52,17 +46,11 @@ class MedicalReportController extends Controller
         return new DisplayMedicalReportResource($medicalReport);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateMedicalReportRequest $request, MedicalReport $medicalReport)
     {
         return $this->medicalReportService->update($request, $medicalReport, $request->user());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(MedicalReport $medicalReport)
     {
         return $medicalReport->destroy($medicalReport->id);

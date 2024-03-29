@@ -18,9 +18,6 @@ class NursingChartController extends Controller
     { 
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreNursingChartRequest $request)
     {
         $chart = $this->nursingChartService->create($request, $request->user());
@@ -60,33 +57,6 @@ class NursingChartController extends Controller
         return $this->nursingChartService->removeRecord($nursingChart);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(NursingChart $nursingChart)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(NursingChart $nursingChart)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateNursingChartRequest $request, NursingChart $nursingChart)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(NursingChart $nursingChart)
     {
         return $nursingChart->destroy($nursingChart->id);

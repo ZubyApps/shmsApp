@@ -28,9 +28,6 @@ class ConsultationController extends Controller
         
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreConsultationRequest $request)
     {
         $consultation = $this->consultationService->create($request, $request->user());
@@ -65,18 +62,6 @@ class ConsultationController extends Controller
         return $this->consultationService->updateAdmissionStatus($consultation, $request, $request->user());
     }
     
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateConsultationRequest $request, Consultation $consultation)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Consultation $consultation)
     {
        return DB::transaction(function () use ($consultation) {

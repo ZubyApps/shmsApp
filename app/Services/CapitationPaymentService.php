@@ -7,11 +7,9 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\CapitationPayment;
 use App\Models\Sponsor;
-use App\Models\SponsorCategory;
 use App\Models\User;
 use App\Models\Visit;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

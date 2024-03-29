@@ -20,25 +20,6 @@ class ResourceSupplierController extends Controller
     {
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreResourceSupplierRequest $request)
     {
         $resourceSupplier = $this->resourceSupplierService->create($request, $request->user());
@@ -62,33 +43,16 @@ class ResourceSupplierController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(ResourceSupplier $resourceSupplier)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(ResourceSupplier $resourceSupplier)
     {
         return new ResourceSupplierResource($resourceSupplier);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateResourceSupplierRequest $request, ResourceSupplier $resourceSupplier)
     {
         return $this->resourceSupplierService->update($request, $resourceSupplier, $request->user());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(ResourceSupplier $resourceSupplier)
     {
         return $resourceSupplier->destroy($resourceSupplier->id);

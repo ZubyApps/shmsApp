@@ -1,7 +1,6 @@
 import { Modal} from "bootstrap";
 import { clearDivValues, getDivData, clearValidationErrors, openModals } from "./helpers"
 import http from "./http";
-import jQuery, { error } from "jquery";
 import { getActiveStaffTable, getAllStaffTable } from "./tables/usersTables";
 
 window.addEventListener('DOMContentLoaded', function () {
