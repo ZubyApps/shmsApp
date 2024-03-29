@@ -258,20 +258,20 @@ Route::middleware('auth')->group(function () {
         Route::prefix('hmo')->group(function () {
             Route::get('', [HmoController::class, 'index'])->name('Hmo');
             Route::post('/verify/{visit}', [HmoController::class, 'verifyPatient']);
-            Route::get('/load/consulted/', [HmoController::class, 'loadVisitsByFilterHmo']);
-            Route::get('/load/verification/list', [HmoController::class, 'loadVerificationListTable']);
-            Route::get('/load/approval/list', [HmoController::class, 'loadHmoApprovalListTable']);
+            Route::get('/consulted', [HmoController::class, 'loadVisitsByFilterHmo']);
+            Route::get('/verification/list', [HmoController::class, 'loadVerificationListTable']);
+            Route::get('/approval/list', [HmoController::class, 'loadHmoApprovalListTable']);
             Route::patch('/approve/{prescription}', [HmoController::class, 'approveItem']);
             Route::patch('/reject/{prescription}', [HmoController::class, 'rejectItem']);
             Route::patch('/reset/{prescription}', [HmoController::class, 'resetItem']);
-            Route::get('/load/visit/prescriptions', [HmoController::class, 'loadVisitPrescriptions']);
+            Route::get('/visit/prescriptions', [HmoController::class, 'loadVisitPrescriptions']);
             Route::patch('/bill/{prescription}', [HmoController::class, 'saveHmoBill']);
             Route::patch('/markassent/{visit}', [HmoController::class, 'markBillAsSent']);
-            Route::get('/load/sentbills', [HmoController::class, 'sentBillsTable']);
-            Route::get('/load/summary', [HmoController::class, 'loadReportSummary']);
-            Route::get('/load/reconciliation', [HmoController::class, 'loadReconciliationTable']);
+            Route::get('/sentbills', [HmoController::class, 'sentBillsTable']);
+            Route::get('/summary', [HmoController::class, 'loadReportSummary']);
+            Route::get('/reconciliation', [HmoController::class, 'loadReconciliationTable']);
             Route::patch('/pay/{prescription}', [HmoController::class, 'reconciliationPayments']);
-            Route::get('/load/capitation', [HmoController::class, 'loadCapitationReconciliation']);
+            Route::get('/capitation', [HmoController::class, 'loadCapitationReconciliation']);
     
         });
 

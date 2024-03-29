@@ -68,7 +68,7 @@ const getWaitingTable = (tableId) => {
 const getVerificationTable = (tableId) => {
     return new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  '/hmo/load/verification/list',
+        ajax:  '/hmo/verification/list',
         orderMulti: true,
         search:true,
         language: {
@@ -102,7 +102,7 @@ const getVerificationTable = (tableId) => {
 const getAllHmoPatientsVisitTable = (tableId, filter) => {
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  {url: '/hmo/load/consulted', data: {
+        ajax:  {url: '/hmo/consulted', data: {
             'filterBy': filter 
         }},
         orderMulti: true,
@@ -159,7 +159,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
 const getApprovalListTable = (tableId, sponsor) => {
     const prescriptionTable =  new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  {url: '/hmo/load/approval/list', data: {
+        ajax:  {url: '/hmo/approval/list', data: {
             'sponsor': sponsor 
         }},
         orderMulti: true,
@@ -228,7 +228,7 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
     const visitPrescriptionsTable = new DataTable(tableId, {
         serverSide: true,
-        ajax:  {url: '/hmo/load/visit/prescriptions', data: {
+        ajax:  {url: '/hmo/visit/prescriptions', data: {
             'visitId': visitId 
         }},
         orderMulti: true,
@@ -294,7 +294,7 @@ const getSentBillsTable = (tableId, startDate, endDate) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
     return new DataTable(tableId, {
         serverSide: true,
-        ajax:  {url: '/hmo/load/sentbills', data: {
+        ajax:  {url: '/hmo/sentbills', data: {
             'startDate' : startDate, 
             'endDate'   : endDate, 
         }},
@@ -345,7 +345,7 @@ const getSentBillsTable = (tableId, startDate, endDate) => {
 const getHmoReportsTable = (tableId, category, startDate, endDate) => {
     const reportSummayTable =  new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  {url: '/hmo/load/summary', data: {
+        ajax:  {url: '/hmo/summary', data: {
             'category': category,
             'startDate': startDate,
             'endDate': endDate,
@@ -390,7 +390,7 @@ const getHmoReportsTable = (tableId, category, startDate, endDate) => {
 const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to) => {
     const reconciliationTable =  new DataTable(tableId, {
         serverSide: true,
-        ajax:  {url: '/hmo/load/reconciliation', data: {
+        ajax:  {url: '/hmo/reconciliation', data: {
             'sponsorId': sponsorId,
             'from': from,
             'to': to,
@@ -514,7 +514,7 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to) => {
 const getNhisReconTable = (tableId, date) => {
     const nhisReconTable =  new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  {url: '/hmo/load/capitation', data: {
+        ajax:  {url: '/hmo/capitation', data: {
             'date': date,
         }},
         orderMulti: false,
