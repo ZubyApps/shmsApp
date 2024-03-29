@@ -176,7 +176,7 @@ class PatientService
             ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
             ->whereMonth('patients.created_at', $current->month)
             ->whereYear('patients.created_at', $current->year)
-            ->groupBy('sponsor')
+            ->groupBy('sponsor', 'id', 'category')
             ->orderBy('sponsor')
             ->orderBy('patientsCount')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -188,7 +188,7 @@ class PatientService
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->whereMonth('patients.created_at', $current->month)
             ->whereYear('patients.created_at', $current->year)
-            ->groupBy('sponsor')
+            ->groupBy('sponsor', 'id', 'category')
             ->orderBy('sponsor')
             ->orderBy('patientsCount')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));

@@ -1,7 +1,7 @@
 @vite(['resources/css/header.scss', 'resources/js/app.js'])
 <?php 
-    $staffD = Auth::user()->designation->designation; 
-    $staffA = Auth::user()->designation->access_level; 
+    $staffD = Auth::user()->designation?->designation; 
+    $staffA = Auth::user()->designation?->access_level; 
 ?>
 <div class="container bg-white">
     <header class="border-bottom lh-1 py-3">

@@ -3,8 +3,8 @@
 @section('content')
     @vite(['resources/css/home.scss', 'resources/js/app.js'])
 <?php 
-    $staffD = Auth::user()->designation->designation; 
-    $staffA = Auth::user()->designation->access_level; 
+    $staffD = Auth::user()->designation?->designation; 
+    $staffA = Auth::user()->designation?->access_level; 
 ?>
     <div class="container">
         <main class="px-0">

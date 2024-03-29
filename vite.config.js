@@ -33,6 +33,7 @@ export default defineConfig({
                 'resources/js/resourceReports.js',
                 'resources/js/accountReports.js',
                 'resources/js/usersReports.js',
+                'resources/js/thirdPartyServices.js',
             ],
             refresh: true,
         }),
