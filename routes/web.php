@@ -25,7 +25,6 @@ use App\Http\Controllers\PatientsFileController;
 use App\Http\Controllers\PayMethodController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\PrescriptionController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResourceCategoryController;
 use App\Http\Controllers\ResourceController;
