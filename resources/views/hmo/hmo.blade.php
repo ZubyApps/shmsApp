@@ -1,5 +1,5 @@
 @extends('layout')
-
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> 
 @section('content')
 @vite(['resources/js/hmo.js'])
 
