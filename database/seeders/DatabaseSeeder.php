@@ -18,50 +18,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        //  User::factory(1)->create();
-        //  SponsorCategory::factory(1)->create();
-        //  Sponsor::factory(1)->create();
-
-        User::create([
-            'firstname' => 'Nzube',
-            'middlename' => 'Yonna',
-            'lastname' => 'Okoye',
-            'email' => 'zubyokoye@gmail.com',
-            'address' => '24 J.S Tarka Way, Wadata',
-            'date_of_birth' => new DateTime('1983/03/05'),
-            'highest_qualification' => 'BTech',
-            'sex' => 'male',
-            'marital_status' => 'Married',
-            'username' => 'Nzube',
-            'phone_number' => '08035999029',
-            'state_of_origin' => 'Anambra',
-            'next_of_kin' => 'Stephanie Okoye',
-            'next_of_kin_rship' => 'Wife',
-            'next_of_kin_phone' => '08103830241',
-            'date_of_employment' => new DateTime('1983/03/05'),
-            'special_note' => 'Management',
-            'password' => Hash::make('Mylovelywife'), // password
-        ]);
-        // User::create([
-        //     'firstname' => 'Stephnie',
-        //     'middlename' => 'Iniobong',
-        //     'lastname' => 'Nkonim',
-        //     'email' => 'nkonim@example.com',
-        //     'address' => 'Demekpe way, Demekpe Mkd',
-        //     'date_of_birth' => new DateTime('1996/03/10'),
-        //     'highest_qualification' => 'Btech',
-        //     'sex' => 'female',
-        //     'marital_status' => 'Single',
-        //     'username' => 'Steph IT',
-        //     'phone_number' => '09023185763',
-        //     'state_of_origin' => 'Akwa Ibom',
-        //     'next_of_kin' => 'Emmanuel Nkonim',
-        //     'next_of_kin_rship' => 'Father',
-        //     'next_of_kin_phone' => '08136196683',
-        //     'date_of_employment' => new DateTime('2020/06/31'),
-        //     'password' => Hash::make('Stephanie'), // password
-        // ]);
-
+         User::factory(1)->create();
+       
          //Sponsor Categories
          \App\Models\SponsorCategory::create([
             'user_id' => 1,
@@ -124,9 +82,6 @@ class DatabaseSeeder extends Seeder
             'sponsor_category_id' => 1,
             'category_name'  => 'Individual'
         ]);
-
-        //Patient
-        Patient::factory(1)->create();
 
         // Resource Categories
         \App\Models\ResourceCategory::create([
@@ -336,11 +291,5 @@ class DatabaseSeeder extends Seeder
             'designator'  => 'Super Admin',
             'user_id'   => 1,
         ]);
-        // \App\Models\Designation::create([
-        //     'designation' => 'IT Officer',
-        //     'access_level'   => 5,
-        //     'designator'  => 'Super Admin',
-        //     'user_id'   => 2,
-        // ]);
     }
 }
