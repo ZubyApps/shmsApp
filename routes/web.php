@@ -29,7 +29,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResourceCategoryController;
 use App\Http\Controllers\ResourceController;
-use App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\ResourceStockDateController;
 use App\Http\Controllers\ResourceSubCategoryController;
 use App\Http\Controllers\ResourceSupplierController;
@@ -40,7 +39,6 @@ use App\Http\Controllers\ThirdPartyController;
 use App\Http\Controllers\ThirdPartyServiceController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VitalSignsController;
-use App\Models\ExpenseCategory;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -308,7 +306,7 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::prefix('expenses')->group(function () {
-            Route::post('', [ExpenseController::class, 'store'])->name('Capitation');
+            Route::post('', [ExpenseController::class, 'store'])->name('Expenses');
             Route::get('/{expense}', [ExpenseController::class, 'edit']);
             Route::delete('/{expense}', [ExpenseController::class, 'destroy']);
             Route::post('/{expense}', [ExpenseController::class, 'update']);
