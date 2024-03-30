@@ -116,7 +116,7 @@ window.addEventListener('DOMContentLoaded', function () {
     createThirdPartyBtn.addEventListener('click', function () {
         console.log('this')
         createThirdPartyBtn.setAttribute('disabled', 'disabled')
-        http.post('/thirdparties/', getDivData(newthirdPartyModal._element), {"html": newthirdPartyModal._element})
+        http.post('/thirdparties', getDivData(newthirdPartyModal._element), {"html": newthirdPartyModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 newthirdPartyModal.hide()

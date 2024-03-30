@@ -234,9 +234,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         clearDivValues(paymentDetailsDiv)
                         clearValidationErrors(paymentDetailsDiv)
                     }
-                    // if ($.fn.DataTable.isDataTable( '#paymentTable' )){
-                    //     $('#paymentTable').dataTable().fnDraw()
-                    // }
+
                     payBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {
@@ -299,8 +297,6 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                 billingTable ? billingTable.draw() : ''
                 thirdPartyServiceModal.hide()
-                // clearDivValues(newthirdPartyModal._element)
-                // thirdPartiesTable ? thirdPartiesTable.draw() : ''
             }
             saveThirPartyServiceBtn.removeAttribute('disabled')
         })
@@ -354,7 +350,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 saveExpenseBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            // alert(error.response.data.message)
+            console.log(error.response.data.message)
             saveExpenseBtn.removeAttribute('disabled')
         })
     })
