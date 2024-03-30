@@ -18,9 +18,7 @@ class VitalSignsController extends Controller
 
     public function store(StoreVitalSignsRequest $request)
     {
-        $vitalSigns = $this->vitalSignsService->create($request, $request->user());
-        
-        return $vitalSigns->load('visit');
+        return $this->vitalSignsService->create($request, $request->user());        
     }
 
     public function loadVitalSignsTableByVisit(Request $request)

@@ -29,7 +29,9 @@ class VitalSignsService
                 "weight"            => $data->weight,
                 "height"            => $data->height,
                 "bmi"               => $data->bmi,
-                "note"               => $data->note,
+                "head_circumference" => $data->headCircumference,
+                "mid_arm_circumference" => $data->midArmCircuference,
+                "note"              => $data->note,
         ]);
     }
 
@@ -70,6 +72,8 @@ class VitalSignsService
                 'temperature'       => $vitalSigns->temperature,
                 'bloodPressure'     => $vitalSigns->blood_pressure,
                 'respiratoryRate'   => $vitalSigns->respiratory_rate,
+                'headCircumference' => $vitalSigns->head_circumference,
+                'midArmCircuference'=> $vitalSigns->mid_arm_circumference,
                 'spO2'              => $vitalSigns->spO2,
                 'pulseRate'         => $vitalSigns->pulse_rate,
                 'weight'            => $vitalSigns->weight,

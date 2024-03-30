@@ -806,12 +806,10 @@ const getEmergencyTable = (tableId, viewer) => {
 const getNursesReportTable = (tableId, visitId, modal) => {
     const nursesRportTable = new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:   {url: '/nursesreport/load/', data: {
+        ajax:   {url: '/nursesreport/load', data: {
             'visitId': visitId,
         }},
         orderMulti: true,
-        // searching:false,
-        // lengthChange: false,
         language: {
             emptyTable: 'No Report'
         },

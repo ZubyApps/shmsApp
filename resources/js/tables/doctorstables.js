@@ -295,6 +295,8 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
                 } 
             }
             },
+            {data: "headCircumference"},
+            {data: "midArmCircuference"},
             {data: "note"},
             {data: "by"},
             {
