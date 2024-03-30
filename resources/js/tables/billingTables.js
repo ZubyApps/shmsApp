@@ -4,10 +4,8 @@ import {admissionStatusX, displayPaystatus, sponsorAndPayPercent } from "../help
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
-// import pdfFonts from 'pdfmake/build/vfs_fonts'
 DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
-// pdfMake.vfs = pdfFonts.pdfMake.vfs;
 pdfMake.vfs = pdfFonts;
 $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
@@ -559,8 +557,8 @@ const getBalancingTable = (tableId, accessor, date) => {
         lengthChange: false,
         columns: [
             {data: "date"},
-            {data: row => `<span class="btn text-decoration-underline tooltip-test" title="show payments" data-id="${row.id}">${account.format(row.totalCash)}</span>`},
-            {data: row => `<span class="btn text-decoration-underline tooltip-test" title="show records">${account.format(row.totalExpense ?? 0)}</span>`},
+            {data: row => account.format(row.totalCash)},
+            {data: row => account.format(row.totalExpense)},
             {data: row => account.format(row.totalCash - row.totalExpense)},
         ]
     });

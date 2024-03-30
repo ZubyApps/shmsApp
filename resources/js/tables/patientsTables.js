@@ -2,10 +2,7 @@ import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
-// import pdfFonts from 'pdfmake/build/vfs_fonts'
 import pdfFonts from './vfs_fontes'
-// import pdfFonts from '../vfs_fontes'
-// pdfMake.vfs = pdfFonts.pdfMake.vfs;
 DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
 pdfMake.vfs = pdfFonts;

@@ -1,5 +1,5 @@
 import { Modal } from "bootstrap";
-import { clearDivValues, clearItemsList, getOrdinal, getDivData, textareaHeightAdjustment, clearValidationErrors, openModals} from "./helpers"
+import { clearDivValues, getDivData, clearValidationErrors, openModals} from "./helpers"
 import http from "./http";
 import $ from 'jquery';
 import 'datatables.net-buttons-bs5';

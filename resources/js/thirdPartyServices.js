@@ -2,7 +2,6 @@ import { Modal } from "bootstrap";
 import $ from 'jquery';
 import http from "./http";
 import { clearDivValues, getDivData, openModals } from "./helpers"
-import html2pdf  from "html2pdf.js"
 import { getThirdPartiesTable, getlistOfServicesTable } from "./tables/thirdPartyTables";
 
 window.addEventListener('DOMContentLoaded', function () {

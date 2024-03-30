@@ -1,9 +1,7 @@
 import "bootstrap";
 import "./bootstrap";
 import "../../node_modules/jquery/dist/jquery.min.js";
-// import "../../node_modules/datatables.net/js/jquery.dataTables.min.mjs";
 import "../../node_modules/datatables.net/js/jquery.dataTables.js";
-// import "../../node_modules/datatables.net-bs5/js/dataTables.bootstrap5.min.mjs";
 import "../../node_modules/datatables.net-bs5/js/dataTables.bootstrap5.js";
 import "../css/app.scss";
 import 'datatables.net-plugins/api/sum().mjs';

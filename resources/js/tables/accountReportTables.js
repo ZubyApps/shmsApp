@@ -4,11 +4,9 @@ import { admissionStatusX, displayPaystatus, sponsorAndPayPercent } from '../hel
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
-// import pdfFonts from 'pdfmake/build/vfs_fonts'
 DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
 pdfMake.vfs = pdfFonts;
-// pdfMake.vfs = pdfFonts.pdfMake.vfs;
 $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 
