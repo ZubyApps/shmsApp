@@ -133,8 +133,8 @@ class UserService
                 'phone'             => $user->phone_number,
                 'createdAt'         => (new Carbon($user->created_at))->format('d/m/Y'), 
                 'hasDesignation'    => $user->designation != null, 
-                'guard'             => $user->designation->access_level > 5, 
-                'superUser'         => auth()->user()->designation->access_level > 5, 
+                'guard'             => $user->designation?->access_level > 5, 
+                'superUser'         => auth()->user()->designation?->access_level > 5, 
             ];
          };
     }

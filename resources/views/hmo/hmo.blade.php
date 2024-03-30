@@ -119,13 +119,11 @@
                 data-bs-target="#hmoApprovalListOffcanvas" aria-controls="hmoApprovalListOffcanvas">
                 <i class="bi bi-list-check"></i>
                 PHIS Approval List <span class="badge text-bg-danger" id="hmoApprovalListCount"></span>
-                {{-- <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="hmoApprovalListCount"></span> --}}
             </button>
             <button class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas" id="nhisApprovalListBtn"
                 data-bs-target="#nhisApprovalListOffcanvas" aria-controls="nhisApprovalListOffcanvas">
                 <i class="bi bi-list-check"></i>
                 NHIS Approval List <span class="badge text-bg-danger" id="nhisApprovalListCount"></span>
-                {{-- <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="nhisApprovalListCount"></span> --}}
             </button>
         </div>
 
