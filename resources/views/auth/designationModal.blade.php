@@ -13,7 +13,7 @@
                         <x-form-input name="fullName" id="fullName" readonly/>
                     </x-form-div>
                     <x-form-div class="col-xl-12">
-                        <x-input-span>Designation</x-input-span>
+                        <x-input-span>Designation<x-required-span /></x-input-span>
                         <select class="form-select form-select-md" name="designation" id="designation">
                             <option value="">Select</option>
                             <option value="Doctor">Doctor</option>
@@ -30,7 +30,7 @@
                         </select>
                     </x-form-div>
                     <x-form-div class="col-xl-12">
-                        <x-input-span>Access Level</x-input-span>
+                        <x-input-span>Access Level<x-required-span /></x-input-span>
                         <select class="form-select form-select-md" name="accessLevel" id="accessLevel">
                             <option value="">Select</option>
                             <option value="0">0</option>

@@ -42,7 +42,7 @@
                         </div>
                         <div class="row">
                             <x-form-div class="col-xl-6">
-                                <x-input-span>Surgical Procedure</x-input-span>
+                                <x-input-span>Surgical Procedure<x-required-span /></x-input-span>
                                 <x-form-textarea name="surgicalProcedure" id="surgicalProcedure" :readonly="$isView"></x-form-textarea>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
@@ -50,7 +50,7 @@
                                 <x-form-textarea name="surgeonsNotes" id="surgeonsNotes" :readonly="$isView"></x-form-textarea>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
-                                <x-input-span>Aneasthetist's Notes</x-input-span>
+                                <x-input-span>Aneasthetist's Notes<x-required-span /></x-input-span>
                                 <x-form-textarea name="aneasthetistsNotes" id="aneasthetistsNotes" :readonly="$isView"></x-form-textarea>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
@@ -134,7 +134,7 @@
                                 <x-form-input name="ebl" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
-                                <x-input-span>Immediate post-op</x-input-span>
+                                <x-input-span>Immediate post-op<x-required-span /></x-input-span>
                                 <x-form-input name="immediatePostOp" id="immediatePostOp" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">

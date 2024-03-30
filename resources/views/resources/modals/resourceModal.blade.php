@@ -32,7 +32,7 @@
                                 <datalist name="resourceSubCategory" type="text" class="decoration-none bg-white subCategoryList" id="{{ $isUpdate ? 'updateSubCategoryList' : 'newSubCategoryList' }}"></datalist>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="reOrderLabel">Re-order Level</x-input-span>
+                                <x-input-span id="reOrderLabel">Re-order Level<x-required-span /></x-input-span>
                                 <x-form-input type="number" name="reOrder" id="reOrder" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
@@ -51,10 +51,6 @@
                                 <x-input-span id="expiryDateLabel">Expiry Date</x-input-span>
                                 <x-form-input type="month" name="expiryDate" id="expiryDate" />
                             </x-form-div>
-                            {{-- <x-form-div class="col-xl-12">
-                                <x-input-span id="stockLevelLabel">Stock Level</x-input-span>
-                                <x-form-input type="number" name="stockLevel" value="" />
-                            </x-form-div> --}}
                         </div>
                     </div>
                 </div>
