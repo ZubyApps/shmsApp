@@ -131,8 +131,10 @@ class UserService
                 'qualification'     => $user->highest_qualification,
                 'username'          => $user->username,
                 'phone'             => $user->phone_number,
-                'createdAt'         => (new Carbon($user->created_at))->format('d/m/Y'),
-                'count'             => $user->patients()->count() 
+                'createdAt'         => (new Carbon($user->created_at))->format('d/m/Y'), 
+                'hasDesignation'    => $user->designation != null, 
+                'guard'             => $user->designation->access_level > 5, 
+                'superUser'         => auth()->user()->designation->access_level > 5, 
             ];
          };
     }
@@ -204,7 +206,6 @@ class UserService
                 'name'              => $user->nameInFull(),
                 'designation'       => $user?->designation?->designation,
                 'phone'             => $user->phone_number,
-                'count'             => $user->patients()->count() 
             ];
          };
     }

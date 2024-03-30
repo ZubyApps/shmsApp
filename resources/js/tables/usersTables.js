@@ -36,7 +36,10 @@ const getAllStaffTable = (tableId) => {
             {
                 sortable: false,
                 data: row => function () {
-                    if (row.count < 1) {
+                    if (!row.hasDesignation) {
+                        if (row.guard && !row.superUser){
+                            return ''
+                        }
                         return `
                         <div class="d-flex flex-">
                             <button class=" btn btn-outline-primary designationBtn tooltip-test" title="designation" data-id="${ row.id }" data-name="${row.name}">
@@ -51,8 +54,10 @@ const getAllStaffTable = (tableId) => {
                         </div>
                     `
                     } else {
+                        if (row.guard && !row.superUser){
+                            return ''
+                        }
                         return `
-                        
                         <div class="d-flex flex-">
                             <button class=" btn btn-outline-primary designationBtn tooltip-test" title="designation" data-id="${ row.id }" data-name="${row.name}">
                                 <i class="bi bi-arrow-left-circle-fill"></i>
