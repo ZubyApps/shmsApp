@@ -67,7 +67,7 @@ class PatientReportService
             ->leftJoin('sponsors', 'patients.sponsor_id', '=', 'sponsors.id')
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-            ->groupBy('sponsor')
+            ->groupBy('sponsor', 'id', 'category')
             ->orderBy('patientsCount', 'desc')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -76,7 +76,7 @@ class PatientReportService
             ->selectRaw('sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(patients.id) as patientsCount, SUM(CASE WHEN sex = "Female" THEN 1 ELSE 0 END) AS female, SUM(CASE WHEN sex = "Male" THEN 1 ELSE 0 END) AS male')
             ->leftJoin('sponsors', 'patients.sponsor_id', '=', 'sponsors.id')
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-            ->groupBy('sponsor')
+            ->groupBy('sponsor', 'id', 'category')
             ->orderBy('patientsCount', 'desc')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }

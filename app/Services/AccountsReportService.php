@@ -85,7 +85,7 @@ class AccountsReportService
                 ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
                 ->whereBetween('third_party_services.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                 ->where('third_parties.short_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                ->groupBy('thirdParty', 'id')
+                ->groupBy('thirdParty', 'id', 'thirdPartyL')
                 ->orderBy('thirdParty', 'desc')
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
@@ -102,7 +102,7 @@ class AccountsReportService
                     ->whereMonth('third_party_services.created_at', $date->month)
                     ->whereYear('third_party_services.created_at', $date->year)
                     ->where('third_parties.short_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                    ->groupBy('thirdParty', 'id')
+                    ->groupBy('thirdParty', 'id', 'thirdPartyL')
                     ->orderBy('thirdParty', 'desc')
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
@@ -117,7 +117,7 @@ class AccountsReportService
             ->whereMonth('third_party_services.created_at', $current->month)
             ->whereYear('third_party_services.created_at', $current->year)
             ->where('third_parties.short_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-            ->groupBy('thirdParty', 'id')
+            ->groupBy('thirdParty', 'id', 'thirdPartyL')
             ->orderBy('thirdParty', 'desc')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     
@@ -131,7 +131,7 @@ class AccountsReportService
                 ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
                 ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
                 ->whereBetween('third_party_services.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                ->groupBy('thirdParty', 'id')
+                ->groupBy('thirdParty', 'id', 'thirdPartyL')
                 ->orderBy('thirdParty', 'desc')
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -147,7 +147,7 @@ class AccountsReportService
                 ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
                 ->whereMonth('third_party_services.created_at', $date->month)
                 ->whereYear('third_party_services.created_at', $date->year)
-                ->groupBy('thirdParty', 'id')
+                ->groupBy('thirdParty', 'id', 'thirdPartyL')
                 ->orderBy('thirdParty', 'desc')
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -161,7 +161,7 @@ class AccountsReportService
             ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
             ->whereMonth('third_party_services.created_at', $current->month)
             ->whereYear('third_party_services.created_at', $current->year)
-            ->groupBy('thirdParty', 'id')
+            ->groupBy('thirdParty', 'id', 'thirdPartyL')
             ->orderBy('thirdParty', 'desc')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }

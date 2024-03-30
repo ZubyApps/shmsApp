@@ -47,7 +47,7 @@
         <a href="reports/accounts"><i class="bi bi-receipt me-3 btn btn-outline-primary"></i></a>
         <div>
           <h3 class="fw-bold mb-0 fs-4 text-primary">Accounts</h3>
-        <p>Finacial, Accounting and Monitary report summaries.</p>
+        <p>Financial, Accounting and Monetary report summaries.</p>
         </div>
       </div>
       <div class="col d-flex align-items-start">
