@@ -72,7 +72,7 @@ class AddResourceStockService
        return  function (AddResourceStock $addResourceStock) {
             return [
                 'id'                => $addResourceStock->id,
-                'resource'          => $addResourceStock->resource->name,
+                'resource'          => $addResourceStock->resource?->name,
                 'qty'               => $addResourceStock->quantity,
                 'purchasePrice'     => $addResourceStock->purchase_price,
                 'sellingPrice'      => $addResourceStock->selling_price,
