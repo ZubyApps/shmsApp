@@ -224,7 +224,7 @@ window.addEventListener('DOMContentLoaded', function () {
             http.post(`/resources/toggle/${ resourceId }`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
-                        resourceTable.draw()
+                        resourceTable.draw(false)
                     }
                     toggleActiveStatusBtn.removeAttribute('disabled')
                 })
@@ -290,7 +290,7 @@ window.addEventListener('DOMContentLoaded', function () {
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 updateResourceModal.hide()
-                resourceTable.draw()
+                resourceTable.draw(false)
                 clearValidationErrors(updateResourceModal._element)
             }
             saveResourceBtn.removeAttribute('disabled')
@@ -312,7 +312,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
                             addResourceStockTable.draw()
-                            resourceTable.draw()
+                            resourceTable.draw(false)
                         }
                         deleteBtn.removeAttribute('disabled')
                     })
