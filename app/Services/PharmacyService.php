@@ -328,6 +328,7 @@ class PharmacyService
 
         if ($data->filterBy === 'expiration'){
             return $this->resource
+                    ->where('is_active', true)
                     ->where(function (Builder $query) {
                         $query->where('category', 'Medications')
                         ->orWhere('category', 'Consumables');
@@ -339,6 +340,7 @@ class PharmacyService
 
         if ($data->filterBy === 'stockLevel'){
             return $this->resource
+                    ->where('is_active', true)
                     ->where(function (Builder $query) {
                         $query->where('category', 'Medications')
                         ->orWhere('category', 'Consumables');
