@@ -336,7 +336,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     newAddResourceStockModal.hide()
                     clearDivValues(newAddResourceStockModal._element)
                     addResourceStockTable ? addResourceStockTable.draw() : ''
-                    resourceTable.draw()
+                    resourceTable.draw(false)
                 }
             createAddResourceStockBtn.removeAttribute('disabled')
         })
