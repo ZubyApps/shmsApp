@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
 import { admissionStatus, displayPaystatus, getOrdinal, histroyBtn, prescriptionOnLatestConsultation, prescriptionStatusContorller, reviewBtn, sponsorAndPayPercent } from "../helpers";
 
