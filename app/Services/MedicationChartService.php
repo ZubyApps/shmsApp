@@ -24,7 +24,7 @@ class MedicationChartService
     {
         $tz = 'Africa/Lagos';
         $interval = CarbonInterval::hours($data->frequency);
-        $start = CarbonImmutable::now($tz)->addMinutes(30);
+        $start = (new CarbonImmutable($data->date, $tz))->addMinutes(30);//CarbonImmutable::now($tz)->addMinutes(30);
         $end    = $start->addDays($data->days);
         $dates = new CarbonPeriod($start, $interval, $end, CarbonPeriod::EXCLUDE_END_DATE);
 
