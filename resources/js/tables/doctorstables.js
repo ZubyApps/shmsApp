@@ -445,7 +445,6 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                                                 </td>
                                                 <td class="text-secondary">${data.staff}</td>
                                                 <td class="text-secondary">${data.sent}</td>
-                                                <td class="text-secondary">${data.doc ?? 'No files'}</td>
                                             </tr>   
                                      </tbody>
                                 </table>
