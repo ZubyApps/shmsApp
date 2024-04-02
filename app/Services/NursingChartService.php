@@ -116,9 +116,10 @@ class NursingChartService
         if (! empty($params->searchTerm)) {
             return $this->nursingChart
                         ->where('status', false)
+                        ->whereRelation('visit', 'discharge_reason', null)
                         ->where(function (Builder $query){
-                            $query->whereRelation('consultation', 'admission_status', '=', 'Inpatient')
-                            ->orWhereRelation('visit.consultations', 'admission_status', '=','Observation');
+                            $query->whereRelation('visit', 'admission_status', '=', 'Inpatient')
+                            ->orWhereRelation('visit', 'admission_status', '=','Observation');
                         })
                         ->where(function (Builder $query) use($params) {
                             $query->WhereRelation('prescription.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -135,9 +136,10 @@ class NursingChartService
         return $this->nursingChart
                     ->where('status', false)
                     ->whereRelation('prescription', 'discontinued', false)
+                    ->whereRelation('visit', 'discharge_reason', null)
                     ->where(function (Builder $query){
-                        $query->whereRelation('consultation', 'admission_status', '=', 'Inpatient')
-                        ->orWhereRelation('visit.consultations', 'admission_status', '=','Observation');
+                        $query->whereRelation('visit', 'admission_status', '=', 'Inpatient')
+                        ->orWhereRelation('visit', 'admission_status', '=','Observation');
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));

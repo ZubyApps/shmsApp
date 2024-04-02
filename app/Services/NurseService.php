@@ -108,7 +108,7 @@ class NurseService
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
                 'sponsor'           => $visit->sponsor->name,
-                'admissionStatus'   => $visit->admission_status,//Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
+                'admissionStatus'   => $visit->admission_status,
                 'ward'              => $visit->ward ?? '',
                 'bedNo'             => $visit->bed_no ?? '',
                 'updatedBy'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->updatedBy?->username ?? 'Nurse...',
