@@ -814,8 +814,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch((error) => {
-                console.log(error)
                 saveBtn.removeAttribute('disabled')
+                console.log(error)
             })
         })
     })
