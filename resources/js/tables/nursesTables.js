@@ -541,12 +541,12 @@ const getUpcomingMedicationsTable = (tableId, button, span) => {
         },
         rowCallback: (row, data) => {
                 const diff = getMinsDiff(new Date(), new Date(data.rawDateTime))
-                if (diff > 15 && diff < 30){
+                if (diff > 5 && diff < 15){
                     row.classList.add('table-warning')
                     button.classList.remove('btn-primary')
                     button.classList.add('colour-change')
                     diffCount1.push(diff)
-                } else if (diff < 15){
+                } else if (diff < 5){
                     row.classList.add('table-danger')
                     button.classList.remove('btn-primary')
                     button.classList.add('colour-change1')
@@ -606,12 +606,12 @@ const getUpcomingNursingChartsTable = (tableId, button, span) => {
         },
         rowCallback: (row, data) => {
         const diff = getMinsDiff(new Date(), new Date(data.rawDateTime))
-            if (diff > 15 && diff < 30){
+            if (diff > 5 && diff < 15){
                 row.classList.add('table-warning')
                 button.classList.remove('btn-primary')
                 button.classList.add('colour-change')
                 diffCount1.push(diff)
-            } else if (diff < 15){
+            } else if (diff < 5){
                 row.classList.add('table-danger')
                 button.classList.remove('btn-primary')
                 button.classList.add('colour-change1')
