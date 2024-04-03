@@ -286,8 +286,8 @@ window.addEventListener('DOMContentLoaded', function () {
         saveResourceBtn.setAttribute('disabled', 'disabled')
         const resourceSubCategory = getDatalistOptionId(updateResourceModal, updateResourceSubCategoryInputEl, updateResourceSubCategoryDatalistEl)
         let data = {...getDivData(updateResourceModal._element), resourceSubCategory }
-
-        http.post(`/resources/${resourceId}`, {...data}, {"html": updateResourceModal._element})
+        let flag = $('#flagUpdate').val().toString()
+        http.post(`/resources/${resourceId}`, {...data, flag}, {"html": updateResourceModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 updateResourceModal.hide()
