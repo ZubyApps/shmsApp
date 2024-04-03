@@ -263,8 +263,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
         createResourceBtn.setAttribute('disabled', 'disabled')
         let data = {...getDivData(newResourceModal._element), resourceSubCategory }
+        let flag = $('#flag').val().toString()
 
-        http.post('/resources', {...data}, {"html": newResourceModal._element})
+        http.post('/resources', {...data, flag}, {"html": newResourceModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                     newResourceModal.hide()
@@ -274,8 +275,8 @@ window.addEventListener('DOMContentLoaded', function () {
             createResourceBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            // alert(error.response.data.message)
             createResourceBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
         })
 
     })
