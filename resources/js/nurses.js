@@ -378,9 +378,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
         http.patch(`/visits/discharge/${id}`, getDivData(dischargeDetailsDiv), {html:dischargeDetailsDiv})
         .then((response) => {
-            if (response) {
-                clearDivValues(dischargeDetailsDiv)
-                clearValidationErrors(dischargeDetailsDiv)
+            if (response) {clearDivValues(dischargeDetailsDiv);  clearValidationErrors(dischargeDetailsDiv)
+                inPatientsVisitTable.draw(false); upcomingMedicationsTable.draw(); upcomingNursingChartsTable.draw()
                 dischargeModal.hide()
             }
             saveDischargeBtn.removeAttribute('disabled')
