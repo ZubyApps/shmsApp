@@ -4,5 +4,5 @@
     <option value="HMO">HMO</option>
     <option value="Retainership">Retainership</option>
     <option value="Family">Family</option>
-    <option value="Self">Self</option>
+    <option value="Individual">Individual</option>
 </select>
