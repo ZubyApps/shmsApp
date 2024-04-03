@@ -62,6 +62,7 @@ class PrescriptionService
                 'total_nhis_bill'   => $isNhis ? $prescription->visit->totalNhisBills() : $prescription->visit->total_nhis_bill,
                 'total_capitation'  => $isNhis ? $prescription->visit->totalPrescriptionCapitations() : $prescription->visit->total_capitation,
                 'pharmacy_done_by'  => $resource->category == 'Medications' || $resource->category == 'Consumables' ? null : $prescription->visit->pharmacy_done_by,
+                'nurse_done_by'     => $resource->sub_category == 'Injectables' || $resource->category == 'Consumables' ? null : $prescription->visit->nurse_done_by,
                 'hmo_done_by'       => null
             ]);
 
