@@ -100,8 +100,8 @@ class NurseService
             return [
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
-                'patient'           => $visit->patient->patientId(),
-                'patientId'         => $visit->patient->id,
+                'patient'           => $visit->patient?->patientId(),
+                'patientId'         => $visit->patient?->id,
                 'age'               => $visit->patient->age(),
                 'doctor'            => $visit->doctor?->username,
                 'ancRegId'          => $visit->antenatalRegisteration?->id,
@@ -124,15 +124,16 @@ class NurseService
                 'scheduleCount'     => $visit->nursingCharts->count(),
                 'doneCount'         => $visit->nursingCharts->where('time_done', '!=', null)->count(),
                 'viewed'            => !!$visit->viewed_at,
-                'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
+                'sponsorCategory'   => $visit->sponsor->sponsorCategory?->name,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
                 'discharged'        => $visit->discharge_reason,
                 'reason'            => $visit->discharge_reason,
                 'remark'            => $visit->discharge_remark ?? '',
-                'doctorDone'        => $visit->doctorDoneBy->username ?? '',
+                'doctorDone'        => $visit->doctorDoneBy?->username ?? '',
                 'ancCount'          => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : '',
+                'nurseDoneBy'       => $visit->nurseDoneBy?->username,
                 'closed'            => $visit->closed
             ];
          };
@@ -140,6 +141,11 @@ class NurseService
 
     public function done(Visit $visit, User $user)
     {
+        if ($visit->nurse_done_by){
+            return $visit->update([
+                'nurse_done_by' => null
+            ]);
+        }
         return $visit->update([
             'nurse_done_by' => $user->id
         ]);
