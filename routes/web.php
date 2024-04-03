@@ -219,6 +219,7 @@ Route::middleware('auth')->group(function () {
             Route::get('', [NurseController::class, 'index'])->name('Nurses');
             Route::get('/load/consulted/nurses', [NurseController::class, 'loadVisitsNurses']);
             Route::get('/list/emergency', [NurseController::class, 'emergencyList']);
+            Route::patch('/done/{visit}', [NurseController::class, 'nurseDone']);
         });
     });
 

@@ -50,6 +50,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveServiceDoneDiv        = serviceDoneModal._element.querySelector('#saveServiceDoneDiv')
     const regularTreatmentDiv       = treatmentDetailsModal._element.querySelector('#treatmentDiv')
     const ancTreatmentDiv           = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
+    const dischargeDetailsDiv       = dischargeModal._element.querySelector('#dischargeDetails')
 
     const waitingBtn                = document.querySelector('#waitingBtn')
     const addVitalsignsBtn          = document.querySelectorAll('#addVitalsignsBtn')
@@ -75,6 +76,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const newNursesReportBtn        = nursesReportModal._element.querySelector('#newNursesReportBtn')
     const createNursesReportBtn     = newNursesReportTemplateModal._element.querySelector('#createNursesReportBtn')
     const saveNursesReportBtn       = editNursesReportTemplateModal._element.querySelector('#saveNursesReportBtn')
+    const saveDischargeBtn          = document.querySelector('#saveDischargeBtn')
 
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
     const [outPatientsTab, inPatientsTab, ancPatientsTab, bulkRequestsTab, emergencyTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-emergency-tab')]
@@ -183,6 +185,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const viewOtherPrescriptionsBtn = event.target.closest('.viewOtherPrescriptionsBtn')
             const addPrescriptionBtn        = event.target.closest('.addPrescriptionBtn')
             const reportsListBtn            = event.target.closest('.reportsListBtn')
+            const markDoneBtn               = event.target.closest('.markDoneBtn')
             const wardBedBtn                = event.target.closest('.wardBedBtn')
             const viewer = 'nurse'
             let [iteration, count]          = [0, 0]
@@ -341,6 +344,24 @@ window.addEventListener('DOMContentLoaded', function () {
                 nursesReportTable = getNursesReportTable('nursesReportTable', visitId, nursesReportModal)
                 nursesReportModal.show()
             }
+
+            if(markDoneBtn){
+                if (confirm("Are you sure you are done with this Patient's visit?")){
+                    markDoneBtn.setAttribute('disabled', 'disabled')
+                    const visitId = markDoneBtn.getAttribute('data-id')
+                    http.patch(`/nurses/done/${visitId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            markDoneBtn.removeAttribute('disabled') 
+                        }
+                      })
+                    .catch((error) => {
+                        console.log(error)
+                        markDoneBtn.removeAttribute('disabled')
+                    })
+                }
+        
+            }
         })
     })
 
@@ -348,6 +369,25 @@ window.addEventListener('DOMContentLoaded', function () {
         http.patch(`consultation/updatestatus/${conId}`, {...data}, {'html': wardAndBedModal._element})
         .then((response) => {if (response.status >= 200 || response.status <= 300) {wardAndBedModal.hide(); clearValidationErrors(wardAndBedModal._element)} this.removeAttribute('disabled')})
         .catch((response) => {console.log(response); this.removeAttribute('disabled')})
+    })
+
+    saveDischargeBtn.addEventListener('click', function () {
+        const id = this.getAttribute('data-id')
+        saveDischargeBtn.setAttribute('disabled', 'disabled')
+
+        http.patch(`/visits/discharge/${id}`, getDivData(dischargeDetailsDiv), {html:dischargeDetailsDiv})
+        .then((response) => {
+            if (response) {
+                clearDivValues(dischargeDetailsDiv)
+                clearValidationErrors(dischargeDetailsDiv)
+                dischargeModal.hide()
+            }
+            saveDischargeBtn.removeAttribute('disabled')
+        })
+        .catch((response) => {
+            saveDischargeBtn.removeAttribute('disabled')
+            console.log(response)
+        })
     })
 
     newNursesReportBtn.addEventListener('click', function() {newNursesReportTemplateModal.show()})

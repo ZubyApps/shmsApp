@@ -20,7 +20,7 @@
 @include('vitalsigns.ancVitalsignsModal', ['title' => 'Anc Vital Signs', 'isDoctor' => false, 'id' => 'ancVitalsignsModal', ])
 @include('nurses.giveMedicationModal')
 @include('nurses.serviceDoneModal')
-@include('doctors.dischargeModal', ['title' => 'Discharge Patient', 'isNurses' => true, 'id' => 'dischargeModal'])
+@include('doctors.dischargeModal', ['title' => 'Discharge Patient', 'isNurses' => false, 'id' => 'dischargeModal'])
 @include('extras.bulkRequestModal', ['title' => 'Bulk Request', 'dept' => 'Nurses', 'isPharmacy' => false, 'id' => 'bulkRequestModal'])
 @include('extras.investigationAndManagementModal', ['title' => 'Emergency Management', 'isNurse' => true, 'id' => 'investigationAndManagementModal'])
 @include('extras.nursesReportModal', ['title' => 'Nurses Report', 'isNurses' => true, 'id' => 'nursesReportModal'])

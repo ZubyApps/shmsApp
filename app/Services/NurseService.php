@@ -7,6 +7,7 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Consultation;
 use App\Models\Prescription;
+use App\Models\User;
 use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -135,5 +136,12 @@ class NurseService
                 'closed'            => $visit->closed
             ];
          };
+    }
+
+    public function done(Visit $visit, User $user)
+    {
+        return $visit->update([
+            'nurse_done_by' => $user->id
+        ]);
     }
 }

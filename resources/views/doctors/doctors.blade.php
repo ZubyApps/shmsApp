@@ -14,6 +14,7 @@
 @include('doctors.consultationHistoryModal', ['title' => 'Consultation History', 'isAnc' => false, 'id' => 'consultationHistoryModal'])
 @include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isDoctor' => true, 'id' => 'vitalsignsModal'])
 @include('vitalsigns.ancVitalsignsModal', ['title' => 'Anc Vital Signs', 'isDoctor' => true, 'id' => 'ancVitalsignsModal', ])
+@include('nurses.prescriptionsModal', ['title' => 'Medications for this Visit', 'isMedications' => true, 'id' => 'medicationPrescriptionsModal'])
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
 @include('investigations.addResultModal', ['title' => 'Update Result', 'isUpdate' => true, 'id' => 'updateResultModal'])
@@ -104,7 +105,8 @@
                                     <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
                                     <th>Last 30days</th>
-                                    <th>Investigations</th>
+                                    <th>Rx Count</th>
+                                    <th>Lab Count</th>
                                     <th>Vitals</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -134,7 +136,8 @@
                                     <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
                                     <th>Last 30days</th>
-                                    <th>Lab Test</th>
+                                    <th>Rx Count</th>
+                                    <th>Lab Count</th>
                                     <th>Vitals</th>
                                     <th>Status</th>
                                     <th>Ward</th>
@@ -165,7 +168,8 @@
                                     <th>Current Diagnosis</th>
                                     <th>Sponsor</th>
                                     <th>ANC</th>
-                                    <th>Investigations</th>
+                                    <th>Rx Count</th>
+                                    <th>Lab Count</th>
                                     <th>Vitals</th>
                                     <th>Status</th>
                                     <th>Actions</th>

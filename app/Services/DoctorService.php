@@ -193,6 +193,9 @@ class DoctorService
                                         ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
                                         ->where('result_date','!=', null)
                                         ->count(),
+                'chartableMedications'  => (new Prescription())->prescriptionsCharted($visit->id, 'medicationCharts'),
+                'doseCount'         => $visit->medicationCharts->count(),
+                'givenCount'        => $visit->medicationCharts->where('dose_given', '!=', null)->count(),
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),

@@ -288,6 +288,9 @@ const detailsBtn1 = (row) => {
                 <a class="dropdown-item reportsListBtn btn tooltip-test" title="write report"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                     Report
                 </a>
+                <a class="dropdown-item markDoneBtn btn tooltip-test" title="write report"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                    Mark as done
+                </a>
             </li>
         </ul>
     </div>

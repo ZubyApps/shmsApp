@@ -20,9 +20,19 @@ const getOutpatientsVisitTable = (tableId, filter) => {
             {data: row => prescriptionOnLatestConsultation(row)},
             {data: row => sponsorAndPayPercent(row)},
             {data: "30dayCount"},
+            {data: row => function () {
+                const chartables = row.chartableMedications
+                    return `
+                    <div class="d-flex flex">
+                        <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewMedicationBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                            ${(chartables < 1 ? '' : chartables) + ' ' + row.givenCount + '/' + row.doseCount}
+                        </button>
+                    </div>`
+                }
+            },
             {data: row =>  `
                         <div class="d-flex justify-content-center">
-                            <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                            <button class=" btn btn-outline-primary investigationsBtn px-1 tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                                 ${row.labPrescribed}<i class="bi bi-eyedropper"></i>${row.labDone}
                             </button>
                         </div>`                
@@ -30,7 +40,7 @@ const getOutpatientsVisitTable = (tableId, filter) => {
             {data: row => function () {
                    return `
                     <div class="d-flex flex-">
-                        <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                        <button class=" btn btn-outline-primary vitalSignsBtn px-2 tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                         <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
                         </button>
                     </div>`
@@ -63,6 +73,16 @@ const getInpatientsVisitTable = (tableId, filter) => {
             {data: row => prescriptionOnLatestConsultation(row)},
             {data: row => sponsorAndPayPercent(row)},
             {data: "30dayCount"},
+            {data: row => function () {
+                const chartables = row.chartableMedications
+                    return `
+                    <div class="d-flex flex">
+                        <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewMedicationBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                            ${(chartables < 1 ? '' : chartables) + ' ' + row.givenCount + '/' + row.doseCount}
+                        </button>
+                    </div>`
+                }
+            },
             {data: row =>  `
                         <div class="d-flex flex- justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
@@ -107,6 +127,16 @@ const getAncPatientsVisitTable = (tableId, filter) => {
             {data: row => prescriptionOnLatestConsultation(row)},
             {data: row => sponsorAndPayPercent(row)},
             {data: row => row.ancCount+getOrdinal(row.ancCount)},
+            {data: row => function () {
+                const chartables = row.chartableMedications
+                    return `
+                    <div class="d-flex flex">
+                        <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewMedicationBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                            ${(chartables < 1 ? '' : chartables) + ' ' + row.givenCount + '/' + row.doseCount}
+                        </button>
+                    </div>`
+                }
+            },
             {data: row =>  `
                         <div class="d-flex flex- justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">

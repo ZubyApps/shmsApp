@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Visit;
 use App\Services\DatatablesService;
 use App\Services\NurseService;
 use App\Services\ResourceService;
@@ -44,5 +45,10 @@ class NurseController extends Controller
 
         return array_map($listTransformer, (array)$resources->getIterator());
 
+    }
+
+    public function nurseDone(Request $request, Visit $visit)
+    {
+        return $this->nurseService->done($visit, $request->user());
     }
 }
