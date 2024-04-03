@@ -353,6 +353,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                             markDoneBtn.removeAttribute('disabled') 
+                            inPatientsVisitTable.draw(false); upcomingMedicationsTable.draw(); upcomingNursingChartsTable.draw()
                         }
                       })
                     .catch((error) => {
