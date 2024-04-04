@@ -28,7 +28,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                         </div>
                     </div>
                     <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${iteration}" role="button" aria-expanded="true" aria-controls="collapseExample">
-                    <span class="mx-2">Close ${iteration > 1 && !line.specialistFlag ? count + numberConverter(count) + ' Review' : line.specialistFlag ? 'Specialist Consultation' : 'Initial Consultation'}</span>
+                    <span class="mx-2">Close ${iteration > 1 && !line.specialistFlag ? count + numberConverter(count) + ' Review' : line.specialistFlag ? 'Specialist Consultation' : 'Initial Consultation'} ${ `(${line.date})`}</span>
                     <i class="bi bi-chevron-double-up text-primary"></i>
                     </div>
                 </div>
