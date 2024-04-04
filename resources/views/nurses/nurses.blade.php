@@ -162,7 +162,7 @@
                                 <th>Current Diagnosis</th>
                                 <th>Sponsor</th>
                                 <th>Rx count</th>
-                                <th>Other-More</th>
+                                <th>Additional</th>
                                 <th>Vitals</th>
                                 <th>Status</th>
                                 <th>Ward</th>
