@@ -43,7 +43,7 @@
                                          aria-label="cardNumber" aria-describedby="basic-addon1" :isUpdate="$isUpdate"/>
                                     <x-form-input type="text" class="{{ $isUpdate ? 'd-none' : '' }} oldCardNumber" data-maska="SH##/####A"
                                         aria-label="cardNumber" aria-describedby="basic-addon1" :isUpdate="$isUpdate"/>
-                                    <x-form-input type="text" class="{{ $isUpdate ? 'd-none' : '' }} ancCardNumber" data-maska="ANC{{ date('y') }}/####" 
+                                    <x-form-input type="text" class="{{ $isUpdate ? 'd-none' : '' }} ancCardNumber" data-maska="ANC##/####" 
                                         aria-label="cardNumber" aria-describedby="basic-addon1" :isUpdate="$isUpdate" />
                                     <input type="text" aria-label="cardNumber" aria-describedby="basic-addon1" class="form-control" {!! $isUpdate ? 'name="cardNumber" disabled'  : 'hidden' !!}>
                                 </x-form-div>
