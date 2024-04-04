@@ -191,7 +191,7 @@
                                     <th>Sponsor</th>
                                     <th>Last 30days</th>
                                     <th>Personnel</th>
-                                    <th>Lab Test</th>
+                                    <th>LabTest</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
