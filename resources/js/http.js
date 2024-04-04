@@ -2,8 +2,8 @@ import axios from "axios"
 import { handleValidationErrors, clearValidationErrors } from "./helpers"
 
 const http =  axios.create({
-    // baseURL: 'http://localhost/'
-    baseURL: 'https://phpstack-1240730-4437357.cloudwaysapps.com/'
+    baseURL: 'http://localhost:8000'
+    // baseURL: 'https://phpstack-1240730-4437357.cloudwaysapps.com/'
 })
 
 

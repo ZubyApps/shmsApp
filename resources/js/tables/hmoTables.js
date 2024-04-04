@@ -120,6 +120,13 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
             },
             {data: row =>  `
                         <div class="d-flex justify-content-center">
+                            <button class=" btn btn-${row.viewedAt ? '' : 'primary'} treatVisitBtn tooltip-test ${row.viewedAt ? 'p-0' : ''}" title="Treat Visit" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                            ${row.viewedAt ? row.viewedBy : 'Treat'}
+                            </button>
+                        </div>`                
+            },
+            {data: row =>  `
+                        <div class="d-flex justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                             ${row.labDone}<i class="bi bi-eyedropper"></i>${row.labPrescribed}
                             </button>

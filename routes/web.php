@@ -266,6 +266,7 @@ Route::middleware('auth')->group(function () {
             Route::patch('/reset/{prescription}', [HmoController::class, 'resetItem']);
             Route::get('/visit/prescriptions', [HmoController::class, 'loadVisitPrescriptions']);
             Route::patch('/bill/{prescription}', [HmoController::class, 'saveHmoBill']);
+            Route::patch('/treat/{visit}', [HmoController::class, 'treatVisit']);
             Route::patch('/markassent/{visit}', [HmoController::class, 'markBillAsSent']);
             Route::get('/sentbills', [HmoController::class, 'sentBillsTable']);
             Route::get('/summary', [HmoController::class, 'loadReportSummary']);

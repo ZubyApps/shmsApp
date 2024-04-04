@@ -96,6 +96,11 @@ class HmoController extends Controller
         return $this->hmoService->saveBill($request, $prescription, $request->user());
     }
 
+    public function treatVisit(Request $request, Visit $visit)
+    {
+        return $this->hmoService->treat($visit, $request->user());
+    }
+
     public function markBillAsSent(Request $request, Visit $visit)
     {
         return $this->hmoService->markAsSent($visit, $request->user());

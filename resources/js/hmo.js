@@ -183,6 +183,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const consultationDetailsBtn    = event.target.closest('.consultationDetailsBtn')
                 const patientBillBtn            = event.target.closest('.patientBillBtn')
                 const investigationsBtn         = event.target.closest('.investigationsBtn')
+                const treatVisitBtn             = event.target.closest('.treatVisitBtn')
                 const closeVisitBtn             = event.target.closest('.closeVisitBtn')
                 const medicalReportBtn          = event.target.closest('.medicalReportBtn')
                 const viewer                    = 'hmo'
@@ -253,6 +254,23 @@ window.addEventListener('DOMContentLoaded', function () {
                     investigationsBtn.removeAttribute('disabled')
                 }
     
+                if (treatVisitBtn){
+                    if (confirm('Please confirm that you are taking responsibility to process this Visit?')) {
+                        const visitId = treatVisitBtn.getAttribute('data-id')
+                        http.patch(`/hmo/treat/${visitId}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300){
+                                waitingTable.draw()
+                                hmotreatmentsTable ? hmotreatmentsTable.draw() : ''
+                                sentBillsTable ? sentBillsTable.draw() : ''
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                        })
+                    }
+                }
+                
                 if (closeVisitBtn){
                     if (confirm('Are you sure you want to close this Visit?')) {
                         const visitId = closeVisitBtn.getAttribute('data-id')

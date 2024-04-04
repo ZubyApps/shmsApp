@@ -217,6 +217,8 @@ class HmoService
                 'thirtyDayCount'    => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
                 'discharged'        => $visit->discharge_reason,
                 'reason'            => $visit->discharge_reason,
+                'viewedAt'          => $visit->viewed_at,
+                'viewedBy'          => $visit->viewedBy?->username,
                 'hmoDoneBy'         => $visit->hmoDoneBy?->username,
                 'closed'            => $visit->closed,
 
@@ -386,6 +388,14 @@ class HmoService
         ]);   
         
         return $prescription;
+    }
+
+    public function treat( Visit $visit, User $user)
+    {
+        return $visit->update([
+            'viewed_at' => Carbon::now(),
+            'viewed_by' => $user->id,
+        ]);
     }
 
     public function markAsSent( Visit $visit, User $user)

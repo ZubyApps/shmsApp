@@ -190,7 +190,8 @@
                                     <th>Diagnosis</th>
                                     <th>Sponsor</th>
                                     <th>Last 30days</th>
-                                    <th>Investigations</th>
+                                    <th>Personnel</th>
+                                    <th>Lab Test</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
