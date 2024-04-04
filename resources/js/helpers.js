@@ -461,8 +461,27 @@ const lmpCurrentCalculator = (value, div) => {
 
 const gyneaLmpCalculator = (lmpDate) => {
     let [lmpDay, lmpMonth, lmpYear] = [lmpDate.getDate(), lmpDate.getMonth(), lmpDate.getFullYear()]
-    const [eddYear, eddMonth, eddDay] = lmpMonth < 3 ? [lmpYear, (lmpMonth + 9), (lmpDay + 7)] : [(lmpYear + 1), (lmpMonth - 3), (lmpDay + 7)]
+
+    const eddYear   = lmpMonth < 3 ? lmpYear : (lmpYear + 1)
+    const eddMonth  = lmpMonth < 3 ?   (lmpMonth + 9) : (lmpMonth - 3)
+    const eddDay    = determineDay(daysInMonth(eddMonth, eddYear),(lmpDay + 7)) 
     return eddYear + '-' + (eddMonth + 1).toString().padStart(2, "0") + '-' + eddDay.toString().padStart(2, "0")
+}
+
+const determineDay = (daysInMonthValue, days) => {
+    return days > daysInMonthValue ? (days - daysInMonthValue) : days
+}
+
+const daysInMonth = (month, year) => {
+    const monthArray = [0, 2, 4, 6, 7, 9, 11]
+    return monthArray.includes(month) ? 31 : month === 1 ? determineFebruaryDays(year) : 30
+}
+
+function determineFebruaryDays(year) {
+        return leapyear(year) ? 29 : 28
+}
+function leapyear(year) {
+    return (year % 100 === 0) ? (year % 400 === 0) : (year % 4 === 0);
 }
 
 const filterPatients = (elements) => {
