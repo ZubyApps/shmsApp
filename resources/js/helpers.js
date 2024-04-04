@@ -441,8 +441,8 @@ const lmpCalculator = (elements, elementDiv) => {
             elementDiv.forEach(div => {
                 if (lmp.dataset.lmp == div.dataset.div){
                     if (lmp.value){
-                        const lmpDate = new Date(lmp.value) 
-                        div.querySelector('#edd').value = addDays(lmpDate, 280).toISOString().split('T')[0]
+                        const lmpDate = new Date(lmp.value)
+                        div.querySelector('#edd').value = gyneaLmpCalculator(lmpDate)
                         div.querySelector('#ega').value = String(getWeeksDiff(new Date(), lmpDate)).split('.')[0] + 'W' + ' ' + getWeeksModulus(new Date, lmpDate)%7 + 'D'
                     }                    
                 }
@@ -455,8 +455,14 @@ const lmpCurrentCalculator = (value, div) => {
     if (!value){return}
     const lmpDate = new Date(value)
     div.querySelector('#lmp').value = value
-    div.querySelector('#edd').value = addDays(lmpDate, 280).toISOString().split('T')[0]
+    div.querySelector('#edd').value = gyneaLmpCalculator(lmpDate)
     div.querySelector('#ega').value = String(getWeeksDiff(new Date(), lmpDate)).split('.')[0] + 'W' + ' ' + getWeeksModulus(new Date, lmpDate)%7 + 'D'
+}
+
+const gyneaLmpCalculator = (lmpDate) => {
+    let [lmpDay, lmpMonth, lmpYear] = [lmpDate.getDate(), lmpDate.getMonth(), lmpDate.getFullYear()]
+    const [eddYear, eddMonth, eddDay] = lmpMonth < 3 ? [lmpYear, (lmpMonth + 9), (lmpDay + 7)] : [(lmpYear + 1), (lmpMonth - 3), (lmpDay + 7)]
+    return eddYear + '-' + (eddMonth + 1).toString().padStart(2, "0") + '-' + eddDay.toString().padStart(2, "0")
 }
 
 const filterPatients = (elements) => {
