@@ -402,6 +402,7 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to) => {
         }},
         paging: true,
         orderMulti: false,
+        lengthMenu:[30, 50, 100, 200],
         language: {
             emptyTable: 'No Visits'
         },
@@ -492,7 +493,6 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to) => {
     })
 
     reconciliationTable.on('draw', function() {
-        // const tableId = reconciliationTable.table().container().id.split('_')[0]
         reconciliationTable.rows().every(function () {
             let tr = $(this.node())
             let row = this.row(tr);
@@ -506,7 +506,6 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to) => {
      
         if (row.child.isShown()) {
             row.child.hide();
-            // reconciliationTable.draw()
         }
         else {
             row.child(format(row.data()), tableId).show();

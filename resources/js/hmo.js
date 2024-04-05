@@ -637,7 +637,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.patch(`/hmo/pay/${prescriptionId}`, {amountPaid: payInput.value})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
-                            reconciliationTable ?  reconciliationTable.draw() : ''
+                            reconciliationTable ?  reconciliationTable.draw(false) : ''
                             reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
                         }
                     })
