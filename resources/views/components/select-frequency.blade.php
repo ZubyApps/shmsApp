@@ -2,7 +2,7 @@
         <option value="">Select</option>
         <option value="24">stat</option>
         <option value="24">Daily</option>
-        <option value="24">Nocte</option>
+        {{-- <option value="24">Nocte</option> --}}
         <option value="12">12hrly</option>
         <option value="8">8hrly</option>
         <option value="6">6hrly</option>
