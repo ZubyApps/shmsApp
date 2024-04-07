@@ -241,7 +241,7 @@ window.addEventListener('DOMContentLoaded', function(){
             registerPatientBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            // alert(error.response.data.message)
+            console.log(error.response.data.message)
             registerPatientBtn.removeAttribute('disabled')
         })
     })
@@ -271,7 +271,7 @@ window.addEventListener('DOMContentLoaded', function(){
         confirmVisitBtn.setAttribute('disabled', 'disabled')
         const patientId = confirmVisitBtn.getAttribute('data-id')
 
-        http.post('/visits', {patientId})
+        http.post(`/visits/${patientId}`)
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 initiatePatientModal.hide()

@@ -7,6 +7,7 @@ use App\Http\Requests\CloseVisitRequest;
 use App\Http\Requests\OpenVisitRequest;
 use App\Models\Visit;
 use App\Http\Requests\StoreVisitRequest;
+use App\Models\Patient;
 use App\Services\DatatablesService;
 use App\Services\VisitService;
 use Illuminate\Http\Request;
@@ -20,9 +21,9 @@ class VisitController extends Controller
         
     }
 
-    public function storeVisit(StoreVisitRequest $request)
+    public function storeVisit(StoreVisitRequest $request, Patient $patient)
     {
-        return $this->visitService->create($request, $request->user());
+        return $this->visitService->create($patient, $request->user());
     }
 
     public function loadWaitingTable(Request $request)

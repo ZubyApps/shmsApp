@@ -23,7 +23,6 @@ class StoreVisitRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "patientId"        => ['required', 'numeric', 'exists:'.Patient::class.',id'],
         ];
     }
 }

@@ -232,7 +232,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 populatePatientSponsor(investigationAndManagementModal, updateResourceListBtn)
                 btn.setAttribute('data-conid', conId)
                 btn.setAttribute('data-visitid', visitId)
-                getPrescriptionTableByConsultation('prescriptionTableConReview', conId, null, investigationAndManagementModal._element)
+                getPrescriptionTableByConsultation('prescriptionTableConReview', conId, visitId, investigationAndManagementModal._element)
                 investigationAndManagementModal.show()
                 setTimeout(()=> {updateResourceListBtn.removeAttribute('disabled')}, 1000)
             }

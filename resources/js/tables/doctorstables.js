@@ -373,7 +373,7 @@ const getPrescriptionTableByConsultation = (tableId, conId, visitId, modal) => {
             {
                 sortable: false,
                 data: row =>  `
-                <div class="d-flex flex- ${visitId ? 'd-none': ''}">
+                <div class="d-flex flex- ${visitId && !conId ? 'd-none': ''}">
                     <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}" data-conid="${conId}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>

@@ -98,8 +98,12 @@ class PrescriptionService
 
         if (! empty($params->searchTerm)) {
             return $this->prescription
-                        ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->where('visit_id', $data->visitId)
+                        ->where(function(Builder $query) use ($params) {
+                            $query->whereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+
+                        })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -311,17 +315,6 @@ class PrescriptionService
     public function getPaginated(DataTableQueryParams $params, $data)
     {
         return DB::transaction(function () use ($params, $data) {
-            if ($data->visitId){
-                $visit = Visit::find($data->visitId);
-                dd($visit);
-
-                if ($visit->viewed_at == null){
-                    $visit->update([
-                        'viewed_at' => new Carbon(),
-                        'viewed_by' => request()->user()->id,
-                    ]);
-                }
-            }
 
             $orderBy    = 'created_at';
             $orderDir   =  'desc';
@@ -347,13 +340,24 @@ class PrescriptionService
         if (! empty($params->searchTerm)) {
             return $this->prescription
                         ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->where(function(Builder $query) {
+                            $query->whereRelation('resource', 'category', 'Medications')
+                            ->orWhereRelation('resource', 'category', 'Medical Services')
+                            ->orWhereRelation('resource', 'category', 'Consumables')
+                            ->orWhere('chartable', true);
+                        })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return $this->prescription
                     ->where('consultation_id', null)
+                    ->where(function(Builder $query) {
+                        $query->whereRelation('resource', 'category', 'Medications')
+                        ->orWhereRelation('resource', 'category', 'Medical Services')
+                        ->orWhereRelation('resource', 'category', 'Consumables')
+                        ->orWhere('chartable', true);
+                    })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 

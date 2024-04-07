@@ -344,7 +344,7 @@ Route::middleware('auth')->group(function () {
     })->name('Sponsors');
 
     Route::prefix('visits')->group(function () {
-        Route::post('', [VisitController::class, 'storeVisit']);
+        Route::post('/{patient}', [VisitController::class, 'storeVisit']);
         Route::patch('changesponsor/{visit}', [VisitController::class, 'changeSponsor']);
         Route::get('/load/waiting', [VisitController::class, 'loadWaitingTable']);
         Route::get('/load/consulted/', [VisitController::class, 'loadAllVisits']);

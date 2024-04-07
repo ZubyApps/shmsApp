@@ -39,7 +39,7 @@ class ExpenseService
             'amount'        => $data->amount,
             'comment'       => $data->comment,
             'approved_by'   => $data->approvedBy,
-            'user_id'       => $user->id
+            // 'user_id'       => $user->id
         ]);
 
         return $expense;

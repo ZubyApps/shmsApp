@@ -7,6 +7,9 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Consultation;
 use App\Models\Patient;
+use App\Models\Prescription;
+use App\Models\Resource;
+use App\Models\ResourceSubCategory;
 use App\Models\User;
 use App\Models\Visit;
 use Carbon\Carbon;
@@ -20,18 +23,133 @@ class VisitService
     {
     }
 
-    public function create(Request $data, User $user): Visit
+    public function create(Patient $patient, User $user): Visit
     {
-        $patient = Patient::findOrFail($data->patientId);
+        return DB::transaction(function () use ($patient, $user) {
 
-        $patient->update([
-            "is_active" => true
-        ]); 
+            $sponsorArray = ['Individual', 'Family'];
 
-        return $user->visits()->create([
-                "patient_id" => $data->patientId,
-                "sponsor_id" => $patient->sponsor->id,
-        ]);
+            $patient->update([
+                "is_active" => true
+            ]); 
+    
+            $visit = $user->visits()->create([
+                    "patient_id" => $patient->id,
+                    "sponsor_id" => $patient->sponsor->id,
+            ]);
+    
+            if (in_array($patient->sponsor->category_name, $sponsorArray)){
+                
+                $subcat = ResourceSubCategory::firstOrCreate([
+                    'name' => 'Hospital Card',
+                    'description' => 'Card opening for new patients. Individual, Family etc.',
+                    'user_id'   => 1,
+                    'resource_category_id' => 6
+                ]);
+    
+                if ($patient->visits->count() < 2 && $patient->sponsor->category_name == 'Individual'){
+                    
+                    $resource = Resource::firstOrCreate([
+                        'name'              => 'Individual Card',
+                        'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
+                        'reorder_level'     => 0,
+                        'purchase_price'    => 200,
+                        'selling_price'     => 2000,
+                        'unit_description'  => 'Service(s)',
+                        'category'          => 'Other Services',
+                        'sub_category'      => 'Hospital Card',
+                        'stock_level'       => 1000,
+                        'resource_sub_category_id' => $subcat->id,
+                        'user_id'           => 1,
+                    ]);
+    
+                    $prescription = $user->prescriptions()->create([
+                        'resource_id'       => $resource->id,
+                        'prescription'      => null,
+                        'consultation_id'   => null,
+                        'visit_id'          => $visit->id,
+                        'qty_billed'        => 1,
+                        'qty_dispensed'     => 1,
+                        'hms_bill'          => $resource->selling_price,
+                        'hms_bill_date'     => new Carbon(),
+                        'hms_bill_by'       => $user->id,
+                    ]);
+
+                    $prescription->visit->update([
+                        'total_hms_bill'    => $prescription->visit->totalHmsBills(),
+                    ]);
+                }
+    
+                if ($patient->sponsor->category_name == 'Family' && $patient->sponsor->visits->count() < 2 && $patient->visits->count() < 2){
+    
+                    $resource = Resource::firstOrCreate([
+                        'name'              => 'Family Card',
+                        'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
+                        'reorder_level'     => 0,
+                        'purchase_price'    => 350,
+                        'selling_price'     => 3500,
+                        'unit_description'  => 'Service(s)',
+                        'category'          => 'Other Services',
+                        'sub_category'      => 'Hospital Card',
+                        'stock_level'       => 1000,
+                        'resource_sub_category_id' => $subcat->id,
+                        'user_id'           => 1,
+                    ]);
+    
+                    $prescription = $user->prescriptions()->create([
+                        'resource_id'       => $resource->id,
+                        'prescription'      => null,
+                        'consultation_id'   => null,
+                        'visit_id'          => $visit->id,
+                        'qty_billed'        => 1,
+                        'qty_dispensed'     => 1,
+                        'hms_bill'          => $resource->selling_price,
+                        'hms_bill_date'     => new Carbon(),
+                        'hms_bill_by'       => $user->id,
+                    ]);
+
+                    $prescription->visit->update([
+                        'total_hms_bill'    => $prescription->visit->totalHmsBills(),
+                    ]);
+                }
+
+                if ($patient->sponsor->category_name == 'Family' && $patient->sponsor->visits->count() < 2 && $patient->visits->count() > 1){
+                    $resource = Resource::firstOrCreate([
+                        'name'              => 'Family Card Upgrade',
+                        'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
+                        'reorder_level'     => 0,
+                        'purchase_price'    => 150,
+                        'selling_price'     => 1500,
+                        'unit_description'  => 'Service(s)',
+                        'category'          => 'Other Services',
+                        'sub_category'      => 'Hospital Card',
+                        'stock_level'       => 1000,
+                        'resource_sub_category_id' => $subcat->id,
+                        'user_id'           => 1,
+                    ]);
+    
+                    $prescription = $user->prescriptions()->create([
+                        'resource_id'       => $resource->id,
+                        'prescription'      => null,
+                        'consultation_id'   => null,
+                        'visit_id'          => $visit->id,
+                        'qty_billed'        => 1,
+                        'qty_dispensed'     => 1,
+                        'hms_bill'          => $resource->selling_price,
+                        'hms_bill_date'     => new Carbon(),
+                        'hms_bill_by'       => $user->id,
+                    ]);
+
+                    $prescription->visit->update([
+                        'total_hms_bill'    => $prescription->visit->totalHmsBills(),
+                    ]);
+                }
+            }
+    
+            
+    
+            return $visit;
+        });
     }
 
     public function getPaginatedWaitingVisits(DataTableQueryParams $params)
@@ -81,7 +199,7 @@ class VisitService
                 'status'            => $visit->status,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
-                'emergency'         => $visit->prescriptions->where('consultation_id', null)->count(),
+                'emergency'         => $visit->prescriptions()->where('consultation_id', null)->whereRelation('resource', 'sub_category', '!=', 'Hospital Card')->count(),
                 'closed'            => $visit->closed,
             ];
          };
