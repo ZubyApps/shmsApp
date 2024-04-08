@@ -481,9 +481,9 @@ class MedReportService
         }
 
         return DB::table('visits')
-            ->selectRaw('COUNT(DISTINCT(sponsors.id)) as sponsorCount, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, visits.discharge_reason as reason')
-            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-            ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+            ->selectRaw('COUNT(DISTINCT(visit.sponsor_id)) as sponsorCount, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, visits.discharge_reason as reason')
+            // ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            // ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
             ->where('visits.admission_status', 'Inpatient')
             ->whereMonth('visits.created_at', $current->month)
             ->whereYear('visits.created_at', $current->year)
