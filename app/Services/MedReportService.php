@@ -455,9 +455,7 @@ class MedReportService
 
         if ($data->startDate && $data->endDate){
             return DB::table('visits')
-            ->selectRaw('COUNT(DISTINCT(sponsors.id)) as sponsorCount, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, visits.discharge_reason as reason')
-            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-            ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+            ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, visits.discharge_reason as reason')
             ->where('visits.admission_status', 'Inpatient')
             ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
             ->groupBy('reason')
@@ -469,9 +467,7 @@ class MedReportService
             $date = new Carbon($data->date);
 
             return DB::table('visits')
-            ->selectRaw('COUNT(DISTINCT(sponsors.id)) as sponsorCount, COUNT(DISTINCT(patients.id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, visits.discharge_reason as reason')
-            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-            ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
+            ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, visits.discharge_reason as reason')
             ->where('visits.admission_status', 'Inpatient')
             ->whereMonth('visits.created_at', $date->month)
             ->whereYear('visits.created_at', $date->year)
@@ -482,8 +478,6 @@ class MedReportService
 
         return DB::table('visits')
             ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, visits.discharge_reason as reason')
-            // ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-            // ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
             ->where('visits.admission_status', 'Inpatient')
             ->whereMonth('visits.created_at', $current->month)
             ->whereYear('visits.created_at', $current->year)

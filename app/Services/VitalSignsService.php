@@ -33,6 +33,7 @@ class VitalSignsService
                 "mid_arm_circumference" => $data->midArmCircuference,
                 "fluid_drain"           => $data->fluidDrain,
                 "urine_output"          => $data->urineOutput,
+                "fetal_heart_rate"      => $data->fetalHr,
                 "note"                  => $data->note,
         ]);
     }
@@ -83,6 +84,7 @@ class VitalSignsService
                 'bmi'               => $vitalSigns->bmi ?? '',
                 'fluidDrain'        => $vitalSigns->fluid_drain,
                 'urineOutput'       => $vitalSigns->urine_output,
+                'fetalHr'           => $vitalSigns->fetal_heart_rate,
                 'created_at'        => (new Carbon($vitalSigns->created_at))->format('d/m/y g:ia'),
                 'by'                => $vitalSigns->user->username,
                 'note'              => $vitalSigns->note,

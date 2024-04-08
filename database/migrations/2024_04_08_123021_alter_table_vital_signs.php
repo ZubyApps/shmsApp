@@ -12,8 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('vital_signs', function (Blueprint $table) {
-            $table->string('fluid_drain')->nullable();
-            $table->string('urine_output')->nullable();
+            $table->after('mid_arm_circumference', function (Blueprint $table) {
+                $table->string('fluid_drain')->nullable();
+                $table->string('urine_output')->nullable();
+                $table->string('fetal_heart_rate')->nullable();
+
+            });
+
         });
     }
 
@@ -23,7 +28,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('vital_signs', function (Blueprint $table) {
-            $table->dropColumn(['fluid_drain', 'urine_output']);
+            $table->dropColumn(['fluid_drain', 'urine_output', 'fetal_heart_rate']);
         });
     }
 };

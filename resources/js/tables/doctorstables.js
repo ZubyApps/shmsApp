@@ -330,6 +330,7 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
             {data: "midArmCircuference"},
             {data: "fluidDrain"},
             {data: "urineOutput"},
+            {data: "fetalHr"},
             {data: "note"},
             {data: "by"},
             {
