@@ -123,11 +123,11 @@
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>KOS</x-input-span>
-                                <x-form-input name="kos" :readonly="$isView"/>
+                                <x-form-input type="datetime-local" name="kos" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>EOS</x-input-span>
-                                <x-form-input name="eos" :readonly="$isView"/>
+                                <x-form-input type="datetime-local" name="eos" :readonly="$isView"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>EBL</x-input-span>
@@ -135,7 +135,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Immediate post-op<x-required-span /></x-input-span>
-                                <x-form-input name="immediatePostOp" id="immediatePostOp" :readonly="$isView"/>
+                                <x-form-textarea name="immediatePostOp" id="immediatePostOp" :readonly="$isView"></x-form-textarea>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Tourniquet time</x-input-span>

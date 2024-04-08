@@ -41,6 +41,14 @@
         <x-form-input type="text" name="midArmCircuference" id="midArmCircuference" class="midArmCircuference" data-id="{{ $sf }}"/>
     </x-form-div>
     <x-form-div>
+        <x-input-span id="heightLabel">Fluid Drain</x-input-span>
+        <x-form-input type="text" name="fluidDrain" id="fluidDrain" class="fluidDrain" data-id="{{ $sf }}"/>
+    </x-form-div>
+    <x-form-div>
+        <x-input-span id="heightLabel">Urine Output</x-input-span>
+        <x-form-input type="text" name="urineOutput" id="urineOutput" class="urineOutput" data-id="{{ $sf }}"/>
+    </x-form-div>
+    <x-form-div>
         <x-input-span id="noteLabel">Note</x-input-span>
         <x-form-textarea type="text" name="note" id="note" class="note"/>
     </x-form-div>

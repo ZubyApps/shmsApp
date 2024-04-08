@@ -36,7 +36,7 @@ class SurgeryNoteResource extends JsonResource
             'cannulation'           => $this->cannulation,
             'preloading'            => $this->pre_loading,
             'induction'             => $this->induction,
-            'maintenance'           => $this->maintenance,
+            'maintenance'           => $this->maintainance,
             'infusion'              => $this->infusion,
             'analgesics'            => $this->analgesics,
             'transfusion'           => $this->transfusion,
@@ -52,7 +52,7 @@ class SurgeryNoteResource extends JsonResource
             'male'                  => $this->male,
             'apgarScore'            => $this->apgar_score,
             'birthWeight'           => $this->weight,
-            'csSurgeon'             => $this->cs_ssurgeon,
+            'csSurgeon'             => $this->cs_surgeon,
             'csAneasthetist'        => $this->cs_anaesthetist,
         ];
     }

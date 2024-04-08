@@ -9,5 +9,7 @@ window.addEventListener('DOMContentLoaded', function(){
     const weight            = new MaskInput("#weight", {mask:["#kg", "##kg", "###kg"], eager:true})
     const height            = new MaskInput("#height", {mask: ['#.##m'], eager:true, })
     const headCircumference = new MaskInput("#headCircumference", {mask: ["##.#cm"], eager:true, })
-    const midArmCircuference = new MaskInput("#midArmCircuference", {mask: ["##.#cm"], eager:true, })
+    const midArmCircuference = new MaskInput("#midArmCircuference", {mask: ["#.#cm", "##.#cm"], eager:true, })
+    const fluidDrain         = new MaskInput("#fluidDrain", {mask: ["#ml(s)", "##ml(s)", "###ml(s)", "####ml(s)"], eager:true, })
+    const urineOutput        = new MaskInput("#urineOutput", {mask: ["#ml(s)", "##ml(s)", "###ml(s)", "####ml(s)"], eager:true, })
 })

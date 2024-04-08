@@ -328,6 +328,8 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
             },
             {data: "headCircumference"},
             {data: "midArmCircuference"},
+            {data: "fluidDrain"},
+            {data: "urineOutput"},
             {data: "note"},
             {data: "by"},
             {

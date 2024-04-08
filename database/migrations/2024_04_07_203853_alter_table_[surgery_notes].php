@@ -11,26 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('[surgery_notes]', function (Blueprint $table) {
-            $table->string('scrub_nurse')->nullable();
-            $table->string('surgical_procedure');
-            $table->string('surgeons_notes');
-            $table->string('aneasthetists_notes')->nullable();
-            $table->string('post_op_notes');
-            $table->string('pre_assessment')->nullable();
-            $table->string('indication')->nullable();
-            $table->string('surgery')->nullable();
-            $table->string('plan')->nullable();
-            $table->string('pre_med')->nullable();
-            $table->string('baseline')->nullable();
-            $table->string('cannulation')->nullable();
-            $table->string('pre_loading')->nullable();
-            $table->string('induction')->nullable();
-            $table->string('maintainance')->nullable();
-            $table->string('infusion')->nullable();
-            $table->string('analgesics')->nullable();
-            $table->string('transfusion')->nullable();
-            $table->string('antibiotics')->nullable();
+        Schema::table('surgery_notes', function (Blueprint $table) {
+            $table->text('surgical_procedure')->change();
+            $table->text('surgeons_notes')->change();
+            $table->text('aneasthetists_notes')->nullable()->change();
+            $table->text('post_op_notes')->change();
+            $table->text('pre_assessment')->nullable()->change();
+            $table->text('indication')->nullable()->change();
+            $table->dateTime('kos')->nullable()->change();
+            $table->dateTime('eos')->nullable()->change();
+            $table->text('immediate_post_op')->nullable()->change();
+
+            
         });
     }
 
@@ -39,7 +31,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('[surgery_notes]', function (Blueprint $table) {
+        Schema::table('surgery_notes', function (Blueprint $table) {
             //
         });
     }

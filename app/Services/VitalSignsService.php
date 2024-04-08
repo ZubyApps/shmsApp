@@ -20,18 +20,20 @@ class VitalSignsService
     {
 
         return $user->vitalSigns()->create([
-                "visit_id"          => $data->visitId,
-                "temperature"       => $data->temperature,
-                "blood_pressure"    => $data->bloodPressure,
-                "respiratory_rate"  => $data->respiratoryRate,
-                "spO2"              => $data->spO2,
-                "pulse_rate"        => $data->pulseRate,
-                "weight"            => $data->weight,
-                "height"            => $data->height,
-                "bmi"               => $data->bmi,
-                "head_circumference" => $data->headCircumference,
+                "visit_id"              => $data->visitId,
+                "temperature"           => $data->temperature,
+                "blood_pressure"        => $data->bloodPressure,
+                "respiratory_rate"      => $data->respiratoryRate,
+                "spO2"                  => $data->spO2,
+                "pulse_rate"            => $data->pulseRate,
+                "weight"                => $data->weight,
+                "height"                => $data->height,
+                "bmi"                   => $data->bmi,
+                "head_circumference"    => $data->headCircumference,
                 "mid_arm_circumference" => $data->midArmCircuference,
-                "note"              => $data->note,
+                "fluid_drain"           => $data->fluidDrain,
+                "urine_output"          => $data->urineOutput,
+                "note"                  => $data->note,
         ]);
     }
 
@@ -79,6 +81,8 @@ class VitalSignsService
                 'weight'            => $vitalSigns->weight,
                 'height'            => $vitalSigns->height,
                 'bmi'               => $vitalSigns->bmi ?? '',
+                'fluidDrain'        => $vitalSigns->fluid_drain,
+                'urineOutput'       => $vitalSigns->urine_output,
                 'created_at'        => (new Carbon($vitalSigns->created_at))->format('d/m/y g:ia'),
                 'by'                => $vitalSigns->user->username,
                 'note'              => $vitalSigns->note,

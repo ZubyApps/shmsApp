@@ -43,6 +43,8 @@
                                                 <th>BMI</th>
                                                 <th>Head Circ</th>
                                                 <th>Mid A Circ</th>
+                                                <th>Fluid Drain</th>
+                                                <th>Urine OutPut</th>
                                                 <th>Note</th>
                                                 <th>By</th>
                                                 <th></th>

@@ -56,8 +56,8 @@ Class SurgeryNoteService
             'male'                  => $data->male,
             'apgar_score'           => $data->apgarScore,
             'weight'                => $data->birthWeight,
-            'cs_surgeon'            => $data->csSsurgeon,
-            'cs_anaesthetist'       => $data->csAnaesthetist,
+            'cs_surgeon'            => $data->csSurgeon,
+            'cs_anaesthetist'       => $data->csAneasthetist,
             'visit_id'              => $data->visitId
         ]);
 
@@ -103,8 +103,8 @@ Class SurgeryNoteService
             'male'                  => $data->male,
             'apgar_score'           => $data->apgarScore,
             'weight'                => $data->birthWeight,
-            'cs_surgeon'            => $data->csSsurgeon,
-            'cs_anaesthetist'       => $data->csAnaesthetist,
+            'cs_surgeon'            => $data->csSurgeon,
+            'cs_anaesthetist'       => $data->csAneasthetist,
             'user_id'               => $user->id
         ]);
 
