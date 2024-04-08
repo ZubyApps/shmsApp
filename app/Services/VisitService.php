@@ -39,8 +39,8 @@ class VisitService
             ]);
     
             if (in_array($patient->sponsor->category_name, $sponsorArray)){
-                
-                $subcat = ResourceSubCategory::firstOrCreate([
+
+                $subcat = ResourceSubCategory::firstOrCreate(['name' => 'Hospital Card'], [
                     'name' => 'Hospital Card',
                     'description' => 'Card opening for new patients. Individual, Family etc.',
                     'user_id'   => 1,
@@ -49,7 +49,7 @@ class VisitService
     
                 if ($patient->visits->count() < 2 && $patient->sponsor->category_name == 'Individual'){
                     
-                    $resource = Resource::firstOrCreate([
+                    $resource = Resource::firstOrCreate(['name' => 'Individual Card'],[
                         'name'              => 'Individual Card',
                         'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
                         'reorder_level'     => 0,
@@ -82,7 +82,7 @@ class VisitService
     
                 if ($patient->sponsor->category_name == 'Family' && $patient->sponsor->visits->count() < 2 && $patient->visits->count() < 2){
     
-                    $resource = Resource::firstOrCreate([
+                    $resource = Resource::firstOrCreate(['name' => 'Family Card'], [
                         'name'              => 'Family Card',
                         'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
                         'reorder_level'     => 0,
@@ -114,7 +114,7 @@ class VisitService
                 }
 
                 if ($patient->sponsor->category_name == 'Family' && $patient->sponsor->visits->count() < 2 && $patient->visits->count() > 1){
-                    $resource = Resource::firstOrCreate([
+                    $resource = Resource::firstOrCreate(['name' => 'Family Card Upgrade'], [
                         'name'              => 'Family Card Upgrade',
                         'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
                         'reorder_level'     => 0,
