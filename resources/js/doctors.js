@@ -588,9 +588,6 @@ window.addEventListener('DOMContentLoaded', function () {
                             openDoctorModals(ancConsultationModal, ancConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                             getAncVitalSignsTable('#vitalSignsTableAnc', ancRegId, ancConsultationModal)
                         } else{
-                            if(age){
-                                console.log(age)
-                            }
                             openDoctorModals(newConsultationModal, newConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                             getVitalSignsTableByVisit('#vitalSignsTableNew', visitId, newConsultationModal)
                         }
@@ -802,23 +799,25 @@ window.addEventListener('DOMContentLoaded', function () {
             saveBtn.setAttribute('disabled', 'disabled')
             const [investigationAndManagementDiv, investigationAndManagementBtn] = [div.parentElement.querySelector('.investigationAndManagementDiv'), div.parentElement.querySelector('#addInvestigationAndManagementBtn')]
             const modal = div.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
-            const [visitId, tableId] = [saveBtn.getAttribute('data-id'), investigationAndManagementDiv.querySelector('.prescriptionTable').id]
+            const [visitId, tableId, conId] = [saveBtn.getAttribute('data-id'), investigationAndManagementDiv.querySelector('.prescriptionTable').id, saveBtn.getAttribute('data-conid')]
             const urlSuffix = modal.id == 'newReviewModal'  ? '/review' : ''
+            const id = conId ? `/${conId}` : ''
+            console.log(urlSuffix, conId)
             let data = {...getDivData(div), visitId}
-            http.post(`/consultation${urlSuffix}`, {...data}, {"html": div})
+            http.post(`/consultation${urlSuffix}${id}`, {...data}, {"html": div})
             .then((response) => {
                 if (response.status >= 200 || response.status <= 300){
-                    toggleAttributeLoop(querySelectAllTags(div, ['input, select, textarea']), 'disabled')
+                    saveBtn.setAttribute('data-conid', response.data.id)
                     clearValidationErrors(div)
-                    saveBtn.textContent === 'Saved' ? saveBtn.textContent = `Save` : saveBtn.textContent = 'Saved'
+                    saveBtn.removeAttribute('disabled')
                     investigationAndManagementDiv.classList.remove('d-none')
                     location.href = '#'+investigationAndManagementDiv.id
-                    
                     investigationAndManagementBtn.setAttribute('data-conId', response.data.id)
                     investigationAndManagementBtn.setAttribute('data-visitId', visitId)
                     window.history.replaceState({}, document.title, "/" + "doctors" )
 
                     new Toast(div.querySelector('#saveConsultationToast'), {delay:2000}).show()
+                    if ($.fn.DataTable.isDataTable( '#'+tableId )){$('#'+tableId).dataTable().fnDestroy()}
                     getPrescriptionTableByConsultation(tableId, response.data.id, null, modal)
                     waitingTable.draw()
                     outPatientsVisitTable.draw()

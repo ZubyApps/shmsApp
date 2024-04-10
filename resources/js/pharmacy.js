@@ -308,18 +308,12 @@ window.addEventListener('DOMContentLoaded', function () {
         if (dispenseQtyBtn){
             const bulkRequestId     = dispenseQtyBtn.getAttribute('data-id')
             const div               = dispenseQtyBtn.parentElement
-            const qtyApproved       = dispenseQtyBtn.getAttribute('data-qtyapproved')
             const qtyDispensedInput  = div.querySelector('.qtyDispensedInput')
             dispenseQtyBtn.classList.add('d-none')
             qtyDispensedInput.classList.remove('d-none')
             resetFocusEndofLine(qtyDispensedInput)
             
             qtyDispensedInput.addEventListener('blur', function () {
-                if (qtyDispensedInput.value != +qtyApproved){
-                    alert('Quantity to be dispensed should equal to Quantity approved')
-                    resetFocusEndofLine(qtyDispensedInput)
-                    return
-                }
                 http.patch(`/bulkrequests/dispense/${bulkRequestId}`, {qty: qtyDispensedInput.value}, {'html' : div})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {

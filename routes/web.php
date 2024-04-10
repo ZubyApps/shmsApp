@@ -359,6 +359,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('consultation')->group(function () {
         Route::post('', [ConsultationController::class, 'store']);
         Route::post('/review', [ConsultationController::class, 'storeReview']);
+        Route::post('/{consultation}', [ConsultationController::class, 'update']);
+        Route::post('/review/{consultation}', [ConsultationController::class, 'update']);
         Route::patch('updatestatus/{consultation}', [ConsultationController::class, 'updateAdmissionStatus']);
         Route::get('/consultations/{visit}', [ConsultationController::class, 'loadConsultations']);
         Route::get('/history/{patient}', [ConsultationController::class, 'loadVisitsAndConsultations']);

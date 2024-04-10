@@ -35,6 +35,13 @@ class ConsultationController extends Controller
         return $consultation->load('visit');
     }
 
+    public function update(StoreConsultationRequest $request, Consultation $consultation)
+    {
+        $consultation = $this->consultationService->update($request, $consultation, $request->user());
+        
+        return $consultation->load('visit');
+    }
+
     public function storeReview(StoreConsultationReviewRequest $request)
     {
         $consultation = $this->consultationService->create($request, $request->user());

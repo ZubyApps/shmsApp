@@ -180,7 +180,7 @@ const getNurseMedicationsByFilter = (tableId, conId, modal, visitId, isHistory) 
             'visitId': visitId
         }},
         paging: true,
-        lengthChange: false,
+        lengthMenu:[25, 50, 75, 100, 125],
         searching: false,
         orderMulti: false,
         language: {

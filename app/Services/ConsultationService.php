@@ -71,6 +71,59 @@ class ConsultationService
         });
     }
 
+    public function update(Request $data, Consultation $consultation, User $user)
+    {
+        return DB::transaction(function () use ($data, $consultation, $user) {
+            $consultation->update([
+                // "visit_id"                  => $data->visitId,
+                "p_complain"                => $data->presentingComplain,
+                "hop_complain"              => $data->historyOfPresentingComplain,
+                "med_surg_history"          => $data->pastMedicalHistory,
+                "specialist"                => $data->consultantSpecialist,
+                "exam_findings"             => $data->examinationFindings,
+                "paediatric_history"        => $data->paediatricHistory,
+                "obgyn_history"             => $data->obGynHistory,
+                "icd11_diagnosis"           => $data->selectedDiagnosis,
+                "provisional_diagnosis"     => $data->provisionalDiagnosis,
+                "admission_status"          => $data->admit,
+                "ward"                      => $data->ward,
+                "bed_no"                    => $data->bedNumber,
+                "lmp"                       => $data->lmp,
+                "edd"                       => $data->edd,
+                "ega"                       => $data->ega,
+                "fh_rate"                   => $data->fetalHeartRate,
+                "assessment"                => $data->assessment,
+                "history_of_care"           => $data->historyOfCare,
+                "notes"                     => $data->notes,
+                "remarks"                   => $data->remarks,
+                "phys_plan"                 => $data->plan,
+                "complaint"                 => $data->complaint,
+                "p_position"                => $data->presentationAndPosition,
+                "ho_fundus"                 => $data->heightOfFundus,
+                "roppt_brim"                => $data->relationOfPresentingPartToBrim,
+                "specialist_consultation"   => $data->specialConsultation,
+                "user_id"                   => $user->id
+            ]);
+
+            if ($consultation->visit->consulted){
+                $consultation->visit()->update([
+                    'admission_status'  => $data->admit,
+                    'ward'              => $data->ward,
+                    'bed_no'            => $data->bedNumber,
+                ]);
+            } else {
+                $consultation->visit()->update([
+                    'consulted'         => new Carbon(),
+                    'admission_status'  => $data->admit,
+                    'ward'              => $data->ward,
+                    'bed_no'            => $data->bedNumber,
+                ]);
+            }
+
+            return $consultation;
+        });
+    }
+
     public function updateAdmissionStatus(Consultation $consultation, Request $data, User $user)
     {
         return DB::transaction(function () use ($data, $consultation, $user) {

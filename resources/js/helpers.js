@@ -210,7 +210,7 @@ function doctorsModalClosingTasks(event, modal, textareaHeight){
     clearDivValues(modal.querySelector('#consultationDiv'))
     clearValidationErrors(modal.querySelector('#consultationDiv'))
     modal.querySelector('#updateKnownClinicalInfoBtn').innerHTML = `Update`
-    modal.querySelector('#saveConsultationBtn').removeAttribute('disabled')
+    modal.querySelector('#saveConsultationBtn').removeAttribute('data-conid')
     modal.querySelector('.investigationAndManagementDiv').classList.add('d-none')
     modal.querySelectorAll('.resourceList').forEach(list => clearItemsList(list))
     removeAttributeLoop(querySelectAllTags(modal.querySelector('#consultationDiv'), ['input, select, textarea']), 'disabled')

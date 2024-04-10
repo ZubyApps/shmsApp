@@ -180,11 +180,11 @@
                                     <th>Dept</th>
                                     <th>Request By</th>
                                     <th>Note</th>
-                                    <th>Qty Approved</th>
-                                    <th>Approved By</th>
                                     <th>Qty Dispensed</th>
                                     <th>Dispensed</th>
                                     <th>Dispensed By</th>
+                                    <th>Qty Confirmed</th>
+                                    <th>Confirmed By</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
