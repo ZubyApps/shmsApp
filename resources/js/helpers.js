@@ -323,7 +323,7 @@ const reviewBtn = (row) => {
 }
 
 const histroyBtn = (row) => {
-    return `<a class="historyBtn tooltip-test text-decoration-none text-dark" href="#" title="history" data-patientid="${row.patientId}" data-patientType="${ row.patientType }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">${row.patient}</a>`
+    return `<button class="btn p-0 historyBtn tooltip-test text-decoration-none text-dark" href="#" title="history" data-patientid="${row.patientId}" data-patientType="${ row.patientType }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">${row.patient}</button>`
 }
 
 const displayConsultations = (div, displayFunction, iteration, getOrdinal, count, length, data, viewer, isDoctorDone, closed) => {
@@ -418,9 +418,9 @@ const admissionStatusX = (row) => {
 }
 
 const prescriptionOnLatestConsultation = (row) => {
-    return `<div class="d-flex flex-">
-                <span class="btn" id="${row.closed ? '' : 'updateResourceListBtn'}" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">${row.diagnosis}</span>
-            </div>`
+    return `
+                <button class="btn p-0" id="${row.closed ? '' : 'updateResourceListBtn'}" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">${row.diagnosis}</button>
+            `
 }
 
 const bmiCalculator = (elements) => {

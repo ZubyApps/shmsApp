@@ -284,6 +284,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (dischargedBtn){dischargedBtn.setAttribute('disabled', 'disabled'); populateDischargeModal(dischargeModal, dischargedBtn); dischargeModal.show() }
 
             if (historyBtn){
+                historyBtn.setAttribute('disabled', 'disabled')
                 const patientId     = historyBtn.getAttribute('data-patientid')
                 const isAnc         = historyBtn.getAttribute('data-patienttype') === 'ANC'
                 populatePatientSponsor(investigationAndManagementModal, historyBtn)
@@ -297,9 +298,15 @@ window.addEventListener('DOMContentLoaded', function () {
                         iteration++
                         iteration > 1 ? count++ : ''
                         displayVisits(visitHistoryDiv, visitDetails, iteration, getOrdinal, line, viewer, isAnc)
+                        consultationHistoryModal.show()
+                        historyBtn.removeAttribute('disabled')
                     })
-                    consultationHistoryModal.show()
-                }
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    historyBtn.removeAttribute('disabled')
+
                 })
             }
 
