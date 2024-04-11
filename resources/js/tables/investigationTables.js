@@ -63,7 +63,7 @@ const getInpatientsInvestigationsTable = (tableId, notLab) => {
                 data: row =>  `
                         <div class="d-flex flex- ${notLab ? 'd-none' : ''}">
                             <button class=" btn btn-outline-primary addResultBtn tooltip-test" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
-                                <i class="bi bi-plus-square"></i> Add Result
+                                Add Result
                             </button>
                         </div>
                 `      
@@ -111,7 +111,7 @@ const getOutpatientsInvestigationTable = (tableId, notLab) => {
                             return `
                             <div class="d-flex flex- ${notLab ? 'd-none' : ''}">
                                 <button class="btn btn-outline-primary addResultBtn tooltip-test" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
-                                    <i class="bi bi-plus-square"></i> Add Result
+                                    Add Result
                                 </button>
                             </div>
                             `
