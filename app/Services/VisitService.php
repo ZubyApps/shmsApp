@@ -49,19 +49,36 @@ class VisitService
     
                 if ($patient->visits->count() < 2 && $patient->sponsor->category_name == 'Individual'){
                     
-                    $resource = Resource::firstOrCreate(['name' => 'Individual Card'],[
-                        'name'              => 'Individual Card',
-                        'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
-                        'reorder_level'     => 0,
-                        'purchase_price'    => 200,
-                        'selling_price'     => 2000,
-                        'unit_description'  => 'Service(s)',
-                        'category'          => 'Other Services',
-                        'sub_category'      => 'Hospital Card',
-                        'stock_level'       => 1000,
-                        'resource_sub_category_id' => $subcat->id,
-                        'user_id'           => 1,
-                    ]);
+                    if ($patient->patient_type == 'ANC'){
+                        $resource = Resource::firstOrCreate(['name' => 'Antenatal Card'],[
+                            'name'              => 'Antenatal Card',
+                            'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
+                            'reorder_level'     => 0,
+                            'purchase_price'    => 100,
+                            'selling_price'     => 1000,
+                            'unit_description'  => 'Service(s)',
+                            'category'          => 'Other Services',
+                            'sub_category'      => 'Hospital Card',
+                            'stock_level'       => 500,
+                            'resource_sub_category_id' => $subcat->id,
+                            'user_id'           => 1,
+                        ]);
+                    } else {
+                        $resource = Resource::firstOrCreate(['name' => 'Individual Card'],[
+                            'name'              => 'Individual Card',
+                            'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
+                            'reorder_level'     => 0,
+                            'purchase_price'    => 200,
+                            'selling_price'     => 2000,
+                            'unit_description'  => 'Service(s)',
+                            'category'          => 'Other Services',
+                            'sub_category'      => 'Hospital Card',
+                            'stock_level'       => 1000,
+                            'resource_sub_category_id' => $subcat->id,
+                            'user_id'           => 1,
+                        ]);
+                    }
+
     
                     $prescription = $user->prescriptions()->create([
                         'resource_id'       => $resource->id,
