@@ -81,7 +81,7 @@ class NurseService
                     ->where('nurse_done_by', null)
                     ->where('closed', false)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
-                    ->orderBy($orderBy, $orderDir)
+                    ->orderBy('created_at', $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
