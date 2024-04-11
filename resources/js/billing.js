@@ -194,7 +194,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (changeBillSpan.innerHTML == 'Summary'){
             changeBillSpan.innerHTML = 'Details'
-            getPatientsBill('billTable', visitId, billModal._element, 'name')
+            getPatientsBill('billTable', visitId, billModal._element, 'sub_category')
         } else {
             changeBillSpan.innerHTML = 'Summary'
             getPatientsBill('billTable', visitId, billModal._element, 'category')

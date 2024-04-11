@@ -140,6 +140,7 @@ class PrescriptionService
         return $this->prescription
                     ->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
                     ->whereRelation('resource', 'category', 'Investigations')
+                    ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -339,7 +340,11 @@ class PrescriptionService
 
         if (! empty($params->searchTerm)) {
             return $this->prescription
-                        ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->where('consultation_id', null)
+                        ->where(function(Builder $query) use($params) {
+                            $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
                         ->where(function(Builder $query) {
                             $query->whereRelation('resource', 'category', 'Medications')
                             ->orWhereRelation('resource', 'category', 'Medical Services')
