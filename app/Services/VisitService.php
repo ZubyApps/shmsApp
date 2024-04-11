@@ -282,10 +282,10 @@ class VisitService
 
         if (! empty($params->searchTerm)) {
             return DB::table('visits')
-            ->selectRaw('sponsors.name as sponsor, COUNT(patients.id) as patientsCount, SUM(CASE WHEN admission_status = "Outpatient" THEN 1 ELSE 0 END) AS outpatients, SUM(CASE WHEN admission_status = "Inpatient" THEN 1 ELSE 0 END) AS inpatients, SUM(CASE WHEN admission_status = "Observation" THEN 1 ELSE 0 END) AS observations')
+            ->selectRaw('sponsors.name as sponsor, COUNT(visits.patient_id) as patientsCount, SUM(CASE WHEN admission_status = "Outpatient" THEN 1 ELSE 0 END) AS outpatients, SUM(CASE WHEN admission_status = "Inpatient" THEN 1 ELSE 0 END) AS inpatients, SUM(CASE WHEN admission_status = "Observation" THEN 1 ELSE 0 END) AS observations')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-            ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
+            // ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+            // ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
             ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
             ->whereMonth('visits.created_at', $current->month)
             ->whereYear('visits.created_at', $current->year)
@@ -296,10 +296,10 @@ class VisitService
         }
 
         return DB::table('visits')
-            ->selectRaw('sponsors.name as sponsor, COUNT(patients.id) as patientsCount, SUM(CASE WHEN admission_status = "Outpatient" THEN 1 ELSE 0 END) AS outpatients, SUM(CASE WHEN admission_status = "Inpatient" THEN 1 ELSE 0 END) AS inpatients, SUM(CASE WHEN admission_status = "Observation" THEN 1 ELSE 0 END) AS observations')
+            ->selectRaw('sponsors.name as sponsor, COUNT(visits.patient_id) as patientsCount, SUM(CASE WHEN admission_status = "Outpatient" THEN 1 ELSE 0 END) AS outpatients, SUM(CASE WHEN admission_status = "Inpatient" THEN 1 ELSE 0 END) AS inpatients, SUM(CASE WHEN admission_status = "Observation" THEN 1 ELSE 0 END) AS observations')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-            ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
+            // ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+            // ->leftJoin('patients', 'visits.patient_id', '=', 'patients.id')
             ->where('consulted', '!=', null)
             ->whereMonth('visits.created_at', $current->month)
             ->whereYear('visits.created_at', $current->year)
