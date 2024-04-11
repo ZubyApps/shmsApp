@@ -53,7 +53,8 @@ class InvestigationService
             ->where('closed', false)
             ->whereHas('prescriptions', function(Builder $query){
                 $query->where('result', '=', null)
-                ->whereRelation('resource', 'category', '=', 'Investigations');
+                ->whereRelation('resource', 'category', '=', 'Investigations')
+                ->whereRelation('resource', 'sub_category', '!=', 'Imaging');
             })
             ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
@@ -67,7 +68,8 @@ class InvestigationService
                     ->where('closed', false)
                     ->whereHas('prescriptions', function(Builder $query){
                             $query->where('result', '=', null)
-                            ->whereRelation('resource', 'category', '=', 'Investigations');
+                            ->whereRelation('resource', 'category', '=', 'Investigations')
+                            ->whereRelation('resource', 'sub_category', '!=', 'Imaging');
                         })
                     ->where(function (Builder $query) {
                         $query->where('admission_status', '=', 'Inpatient')
@@ -82,7 +84,8 @@ class InvestigationService
                     ->where('closed', false)
                     ->whereHas('prescriptions', function(Builder $query){
                         $query->where('result', '=', null)
-                        ->whereRelation('resource', 'category', '=', 'Investigations');
+                        ->whereRelation('resource', 'category', '=', 'Investigations')
+                        ->whereRelation('resource', 'sub_category', '!=', 'Imaging');
                     })
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->orderBy($orderBy, $orderDir)
@@ -113,10 +116,12 @@ class InvestigationService
                 'bedNo'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->bed_no ?? '',
                 'patientType'       => $visit->patient->patient_type,
                 'labPrescribed'     => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
+                                        ->whereRelation('resource', 'category', '=', 'Investigations')
+                                        ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
                                         ->count(),
                 'labDone'           => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
+                                        ->whereRelation('resource', 'category', '=', 'Investigations')
+                                        ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
                                         ->where('result_date','!=', null)
                                         ->count(),
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
