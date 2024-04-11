@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <div class="offcanvas offcanvas-bottom overflow-auto" data-bs-scroll="true" tabindex="-1" id="offcanvasOutpatientsInvestigations"
+        <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="offcanvasOutpatientsInvestigations"
             aria-labelledby="offcanvasOutpatientsInvestigationsLabel">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title text-primary" id="offcanvasOutpatientsInvestigations">OutPatient Investigations</h5>
