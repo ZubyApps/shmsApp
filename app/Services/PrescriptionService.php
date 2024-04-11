@@ -178,24 +178,13 @@ class PrescriptionService
     public function getPaginatedMedications(DataTableQueryParams $params, $data)
     {
         return DB::transaction(function () use ($params, $data) {
-            if ($data->visitId){
-
-                $visit = Visit::find($data->visitId);
-
-                if ($visit->viewed_at == null){
-                    $visit->update([
-                        'viewed_at' => new Carbon(),
-                        'viewed_by' => request()->user()->id,
-                    ]);
-                }
-            }
 
             $orderBy    = 'created_at';
             $orderDir   =  'desc';
     
             return $this->prescription
                         ->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
-                        ->whereRelation('resource', 'category', 'Medications')
+                        ->whereRelation('resource', 'sub_category', 'Injectable')
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         });
@@ -204,17 +193,6 @@ class PrescriptionService
     public function getOtherPrescriptions(DataTableQueryParams $params, $data)
     {
         return DB::transaction(function () use ($params, $data) {
-            if ($data->visitId){
-
-                $visit = Visit::find($data->visitId);
-
-                if ($visit->viewed_at == null){
-                    $visit->update([
-                        'viewed_at' => new Carbon(),
-                        'viewed_by' => request()->user()->id,
-                    ]);
-                }
-            }
 
             $orderBy    = 'created_at';
             $orderDir   =  'desc';
