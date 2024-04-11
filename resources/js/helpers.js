@@ -463,8 +463,9 @@ const gyneaLmpCalculator = (lmpDate) => {
     let [lmpDay, lmpMonth, lmpYear] = [lmpDate.getDate(), lmpDate.getMonth(), lmpDate.getFullYear()]
 
     const eddYear   = lmpMonth < 3 ? lmpYear : (lmpYear + 1)
-    const eddMonth  = lmpMonth < 3 ?   (lmpMonth + 9) + determineIfNextMonth(daysInMonth(eddMonth, eddYear), lmpDay + 7) : (lmpMonth - 3)
-    const eddDay    = determineDay(daysInMonth(eddMonth, eddYear),(lmpDay + 7)) 
+    const eddMonth  = lmpMonth < 3 ? determineMonth((lmpDay + 7), lmpMonth + 9, eddYear)  : determineMonth((lmpDay + 7), lmpMonth - 3, eddYear)
+    const eddDay    = determineDay(daysInMonth(eddMonth, eddYear),(lmpDay + 7))
+
     return eddYear + '-' + (eddMonth + 1).toString().padStart(2, "0") + '-' + eddDay.toString().padStart(2, "0")
 }
 
@@ -472,8 +473,9 @@ const determineDay = (daysInMonthValue, days) => {
     return days > daysInMonthValue ? (days - daysInMonthValue) : days
 }
 
-const determineIfNextMonth = (daysInMonthValue, days) => {
-    return days > daysInMonthValue ? 1 : 0
+const determineMonth = (days, month, year) => {
+    let monthsDays = daysInMonth(month, year)
+    return days > monthsDays ? month + 1 : month
 }
 
 const daysInMonth = (month, year) => {
