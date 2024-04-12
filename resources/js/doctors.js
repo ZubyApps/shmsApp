@@ -929,6 +929,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         openDoctorModals(modal, modal._element.querySelector('#saveConsultationBtn'), response.data)
+                        // const lmp = response.data
+                        // console.log(lmp)
+                        // isAnc ? lmpCurrentCalculator(lmp, modal._element.querySelector('.lmpDetailsDiv')) : ''
                         getVitalsigns(tableId, id, modal)}
                     btn.removeAttribute('disabled')
                     })
