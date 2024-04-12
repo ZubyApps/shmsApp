@@ -12,11 +12,6 @@ class Resource extends Model
 
     protected $guarded = [];
 
-    public function dispenseResources() 
-    {
-        return $this->hasMany(DispenseResource::class);
-    }
-
     public function addResources() 
     {
         return $this->hasMany(AddResourceStock::class);
@@ -49,7 +44,7 @@ class Resource extends Model
 
     public function nameWithIndicators()
     {
-        return $this->name.$this->expiryDateChecker($this->expiry_date).$this->stockLevelChecker($this->stock_level, $this->unit_description);
+        return $this->name.$this->expiryDateChecker($this->expiry_date).$this->stockLevelChecker($this);
     }
 
     public function expiryDateChecker($expiryDate)
@@ -63,8 +58,16 @@ class Resource extends Model
 
     }
 
-    public function stockLevelChecker($stockLevel, $unitDescription)
+    public function stockLevelChecker($resource)
     {
-        return $stockLevel < 1 ? ' - Not in Stock' : ' - '.$stockLevel.' '.$unitDescription.' left';
+        if ($resource->stock_level < $resource->reorder_level){
+            return ' - '.$resource->stock_level.' '.$resource->unit_description.' left'.' - reorder';
+        }
+
+        if ($resource->stock_level < 1){
+            return '- Not in stock';
+        }
+
+        return ' - '.$resource->stock_level.' '.$resource->unit_description.' left';
     }
 }
