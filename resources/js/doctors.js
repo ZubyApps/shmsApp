@@ -412,6 +412,8 @@ window.addEventListener('DOMContentLoaded', function () {
         http.post(`medicalreports`, {...data}, {'html': newMedicalReportDetailsDiv})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300) {
+                clearDivValues(newMedicalReportTemplateModal._element)
+                clearValidationErrors(newMedicalReportTemplateModal._element); newMedicalReportTemplateModal._element.querySelector('#recipientsAddress').innerHTML = ''; newMedicalReportTemplateModal._element.querySelector('#report').innerHTML = ''
                 newMedicalReportTemplateModal.hide()
                 medicalReportTable ? medicalReportTable.draw() : ''
             }
@@ -430,6 +432,7 @@ window.addEventListener('DOMContentLoaded', function () {
         http.patch(`medicalreports/${id}`, {...data}, {'html': editMedicalReportDetailsDiv})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300) {
+                clearValidationErrors(editMedicalReportTemplateModal._element)
                 editMedicalReportTemplateModal.hide()
                 medicalReportTable ? medicalReportTable.draw() : ''
             }
