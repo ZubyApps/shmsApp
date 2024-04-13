@@ -11,6 +11,7 @@
 
 @include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isAnc' => false, 'id' => 'consultationReviewModal'])
 @include('doctors.consultationReviewModal', ['title' => 'ANC Consultation Review', 'isAnc' => true, 'id' => 'ancConsultationReviewModal'])
+@include('doctors.newReviewModal', ['title' => 'New Review', 'isUpdate' => false, 'isNurse' => false, 'id' => 'newReviewModal'])
 @include('doctors.consultationHistoryModal', ['title' => 'Consultation History', 'isAnc' => false, 'id' => 'consultationHistoryModal'])
 @include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isDoctor' => true, 'id' => 'vitalsignsModal'])
 @include('vitalsigns.ancVitalsignsModal', ['title' => 'Anc Vital Signs', 'isDoctor' => true, 'id' => 'ancVitalsignsModal', ])
@@ -24,7 +25,6 @@
 @include('doctors.surgeryModal', ['title' => 'Update Surgery', 'isUpdate' => true, 'isView' => false, 'id' => 'updateSurgeryModal'])
 @include('doctors.surgeryModal', ['title' => 'View Surgery', 'isUpdate' => false, 'isView' => true, 'id' => 'viewSurgeryModal'])
 @include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
-@include('doctors.newReviewModal', ['title' => 'New Review', 'isUpdate' => false, 'isNurse' => false, 'id' => 'newReviewModal'])
 @include('extras.medicalReportListModal', ['title' => 'Medical Report List', 'isDoctor' => true, 'id' => 'medicalReportListModal' ])
 @include('extras.medicalReportTemplateModal', ['title' => 'New Medical Report', 'isUpdate' => false, 'id' => 'newMedicalReportTemplateModal' ])
 @include('extras.medicalReportTemplateModal', ['title' => 'Edit Medical Report', 'isUpdate' => true, 'id' => 'editMedicalReportTemplateModal' ])

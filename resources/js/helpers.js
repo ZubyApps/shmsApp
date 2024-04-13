@@ -305,7 +305,7 @@ const reviewBtn = (row) => {
         </a>
             <ul class="dropdown-menu">
             <li>
-                <a class=" btn btn-outline-primary dropdown-item consultationReviewBtn tooltip-test" title="details" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}" data-selecteddiagnosis="${row.selectedDiagnosis}" data-provisionaldiagnosis="${row.provisionalDiagnosis}">
+                <a class=" btn btn-outline-primary dropdown-item consultationReviewBtn tooltip-test" title="details" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}" data-selecteddiagnosis="${row.selectedDiagnosis}" data-provisionaldiagnosis="${row.provisionalDiagnosis}">
                     Review
                 </a>
                 
@@ -554,6 +554,8 @@ const populateConsultationModal = (modal, btn, visitId, ancRegId, patientType, c
     btn.setAttribute('data-ancregid', ancRegId)
     btn.setAttribute('data-patientType', patientType)
     modal._element.querySelector('#saveConsultationBtn').setAttribute('data-patientType', patientType)
+    modal._element.querySelector('.historyBtn').setAttribute('data-patienttype', patientType)
+    modal._element.querySelector('.historyBtn').setAttribute('data-patientid', conbtn.getAttribute('data-patientid'))
     modal._element.querySelector('#admit').setAttribute('data-admissionstatus', conbtn.getAttribute('data-admissionstatus'))
     modal._element.querySelector('#selectedDiagnosis').value = conbtn.getAttribute('data-selecteddiagnosis')
     modal._element.querySelector('#provisionalDiagnosis').value = conbtn.getAttribute('data-provisionaldiagnosis')

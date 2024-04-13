@@ -46,6 +46,11 @@ const visitDetails = (visitIteration, numberConverter, visit, viewer, isAnc) => 
                                                     <th>Weight</th>
                                                     <th>Height</th>
                                                     <th>BMI</th>
+                                                    <th>Head Circ</th>
+                                                    <th>Mid A Circ</th>
+                                                    <th>Fluid Drain</th>
+                                                    <th>Urine OutPut</th>
+                                                    <th>Fetal HR</th>
                                                     <th>Note</th>
                                                     <th>By</th>
                                                     <th></th>
@@ -69,8 +74,7 @@ const visitDetails = (visitIteration, numberConverter, visit, viewer, isAnc) => 
                                                 <th>Time of Admission</th>
                                                 <th>Time of Delivery</th>
                                                 <th>Mode of Delivery</th>
-                                                <th>Female</th>
-                                                <th>Male</th>
+                                                <th>Sex</th>
                                                 <th>EBL</th>
                                                 <th>Nurse</th>
                                                 <th>Actions</th>

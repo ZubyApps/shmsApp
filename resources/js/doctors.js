@@ -107,7 +107,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     let outPatientsVisitTable = getOutpatientsVisitTable('#outPatientsVisitTable', 'My Patients')
     const waitingTable = getWaitingTable('#waitingTable')
-    // $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #medicalReportTable, #emergencyTable, #patientsFilesTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
+    $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #medicalReportTable, #emergencyTable, #patientsFilesTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
 
     outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw()})
 
@@ -152,7 +152,7 @@ window.addEventListener('DOMContentLoaded', function () {
             })
     })
     
-    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable').forEach(table => {
+    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #newConsultationModal, #consultationReviewModal, #ancConsultationReviewModal, #ancConsultationModal, #ancReviewModal, #newReviewModal, #specialistConsultationModal').forEach(table => {
         table.addEventListener('click', function (event) {
             const consultationReviewBtn = event.target.closest('.consultationReviewBtn')
             const vitalsignsBtn         = event.target.closest('.vitalSignsBtn, .ancVitalSignsBtn')
@@ -168,8 +168,8 @@ window.addEventListener('DOMContentLoaded', function () {
     
             if (consultationReviewBtn) {
                 consultationReviewBtn.setAttribute('disabled', 'disabled')
-                const [visitId, patientType, ancRegId, isDoctorDone, closed] = [consultationReviewBtn.dataset.id, consultationReviewBtn.dataset.patienttype, consultationReviewBtn.dataset.ancregid, consultationReviewBtn.dataset.doctordone, +consultationReviewBtn.dataset.closed] 
-                uploadFileBtn.setAttribute('data-id', visitId); createSurgeryNoteBtn.setAttribute('data-id', visitId)
+                const [visitId, patientType, ancRegId, isDoctorDone, closed, patientId] = [consultationReviewBtn.dataset.id, consultationReviewBtn.dataset.patienttype, consultationReviewBtn.dataset.ancregid, consultationReviewBtn.dataset.doctordone, +consultationReviewBtn.dataset.closed, consultationReviewBtn.dataset.patientid] 
+                uploadFileBtn.setAttribute('data-id', visitId); createSurgeryNoteBtn.setAttribute('data-id', visitId); 
                 const isAnc = patientType === 'ANC'
                 resourceInput.forEach(input => {input.setAttribute('data-sponsorcat', consultationReviewBtn.getAttribute('data-sponsorcat'))})
                 populateConsultationModal(newReviewModal, reviewPatientbtn, visitId, ancRegId, patientType, consultationReviewBtn)
@@ -193,6 +193,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         const lmp           = response.data.latestLmp
 
                         openDoctorModals(modal, div, patientBio)
+                        modal._element.querySelector('.historyBtn').setAttribute('data-patientid', patientId); modal._element.querySelector('.historyBtn').setAttribute('data-patienttype', patientType);
                         isAnc ? lmpCurrentCalculator(lmp.lmp, modal._element.querySelector('.lmpDetailsDiv')) : ''
                         consultations.forEach(line => {
                             iteration++
@@ -287,6 +288,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 historyBtn.setAttribute('disabled', 'disabled')
                 const patientId     = historyBtn.getAttribute('data-patientid')
                 const isAnc         = historyBtn.getAttribute('data-patienttype') === 'ANC'
+                console.log
                 populatePatientSponsor(investigationAndManagementModal, historyBtn)
                 http.get(`/consultation/history/${patientId}`)
                 .then((response) => {
@@ -582,19 +584,21 @@ window.addEventListener('DOMContentLoaded', function () {
         const removeBtn     = event.target.closest('.closeVisitBtn, .deleteVisitBtn')
         const emergencyBtn  = event.target.closest('.emergencyBtn')
         const openVisitBtn  = event.target.closest('.openVisitBtn')
+        const historyBtn    = document.querySelector('.historyBtn')
 
         if (consultBtn) {
             consultBtn.setAttribute('disabled', 'disabled')
-            const [visitId, patientType, ancRegId, age] = [consultBtn.getAttribute('data-id'),consultBtn.getAttribute('data-patientType'),consultBtn.getAttribute('data-ancregid'),consultBtn.getAttribute('data-age')]
+            const [visitId, patientType, ancRegId, patientId] = [consultBtn.getAttribute('data-id'),consultBtn.getAttribute('data-patientType'),consultBtn.getAttribute('data-ancregid'),consultBtn.getAttribute('data-patientid')]
             resourceInput.forEach(input => {input.setAttribute('data-sponsorcat', consultBtn.getAttribute('data-sponsorcat'))})
-
             http.post(`/doctors/consult/${ visitId }`, {patientType})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         if (patientType === 'ANC'){
+                            ancConsultationModal._element.querySelector('.historyBtn').setAttribute('data-patientid', patientId); ancConsultationModal._element.querySelector('.historyBtn').setAttribute('data-patienttype', patientType);
                             openDoctorModals(ancConsultationModal, ancConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                             getAncVitalSignsTable('#vitalSignsTableAnc', ancRegId, ancConsultationModal)
                         } else{
+                            newConsultationModal._element.querySelector('.historyBtn').setAttribute('data-patientid', patientId); newConsultationModal._element.querySelector('.historyBtn').setAttribute('data-patienttype', patientType);
                             openDoctorModals(newConsultationModal, newConsultationModal._element.querySelector('#saveConsultationBtn'), response.data)
                             getVitalSignsTableByVisit('#vitalSignsTableNew', visitId, newConsultationModal)
                         }
@@ -636,7 +640,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.patch(`/visits/open/${visitId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
-                            waitingTable.draw()
+                            waitingTable.draw(false)
                         }
                     })
                     .catch((error) => {
@@ -659,9 +663,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('#dischargeModal, #wardAndBedModal, #vitalsignsModal, #ancVitalsignsModal, #investigationAndManagementModal').forEach(modal => {
         modal.addEventListener('hidden.bs.modal', () => {
-            outPatientsVisitTable ? outPatientsVisitTable.draw() : ''
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+            outPatientsVisitTable ? outPatientsVisitTable.draw(false) : ''
+            ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+            inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
             clearValidationErrors(modal)
         })
     })
@@ -707,7 +711,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     clearDivValues(div)
                 }
                 if ($.fn.DataTable.isDataTable( '#'+tableId )){
-                    $('#'+tableId).dataTable().fnDraw()
+                    $('#'+tableId).dataTable().fnDraw(false)
                 }
                 addBtn.removeAttribute('disabled')
             })
@@ -731,7 +735,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
                             if ($.fn.DataTable.isDataTable( '#'+table.id )){
-                            $('#'+table.id).dataTable().fnDraw()
+                            $('#'+table.id).dataTable().fnDraw(false)
                             }
                         }
                         deleteBtn.removeAttribute('disabled')
@@ -756,13 +760,13 @@ window.addEventListener('DOMContentLoaded', function () {
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300){
                                 if ($.fn.DataTable.isDataTable('#'+table.id)){
-                                $('#'+table.id).dataTable().fnDraw()
+                                $('#'+table.id).dataTable().fnDraw(false)
                                 }
                                 if ($.fn.DataTable.isDataTable('#investigationTable'+conId)){
-                                $('#investigationTable'+conId).dataTable().fnDraw()
+                                $('#investigationTable'+conId).dataTable().fnDraw(false)
                                 }
                                 if ($.fn.DataTable.isDataTable('#treatmentTable'+conId)){
-                                $('#treatmentTable'+conId).dataTable().fnDraw()
+                                $('#treatmentTable'+conId).dataTable().fnDraw(false)
                                 }
                             }
                             deleteBtn.removeAttribute('disabled')
@@ -782,7 +786,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
                             if ($.fn.DataTable.isDataTable('#'+table.id)){
-                            $('#'+table.id).dataTable().fnDraw()
+                            $('#'+table.id).dataTable().fnDraw(false)
                             }
                         }
                         confirmBtn.removeAttribute('disabled')
@@ -827,9 +831,9 @@ window.addEventListener('DOMContentLoaded', function () {
                     if ($.fn.DataTable.isDataTable( '#'+tableId )){$('#'+tableId).dataTable().fnDestroy()}
                     getPrescriptionTableByConsultation(tableId, response.data.id, null, modal)
                     waitingTable.draw()
-                    outPatientsVisitTable.draw()
-                    ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-                    inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+                    outPatientsVisitTable.draw(false)
+                    ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+                    inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
                 }
             })
             .catch((error) => {
@@ -946,9 +950,9 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#newConsultationModal, #ancConsultationModal, #ancReviewModal, #newReviewModal, #specialistConsultationModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function(event) {
             doctorsModalClosingTasks(event, modal, textareaHeight)
-            outPatientsVisitTable.draw()
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+            outPatientsVisitTable.draw(false)
+            ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+            inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
          })
     })
 
@@ -980,12 +984,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 if ($.fn.DataTable.isDataTable('#' + otherPrescriptionsTableId)) {
                     $('#' + otherPrescriptionsTableId).dataTable().fnDestroy()
                 }
-                if ($.fn.DataTable.isDataTable( '#deliveryNoteTable'+conId )){
-                    $('#deliveryNoteTable'+conId).dataTable().fnDestroy()
-                }
-                if ($.fn.DataTable.isDataTable( '#surgeryNoteTable'+conId )){
-                    $('#surgeryNoteTable'+conId).dataTable().fnDestroy()
-                }
 
                 const goto = () => {
                     location.href = collapseConsultationBtn.getAttribute('data-goto')
@@ -1002,12 +1000,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 const ancRegId              = collapseVisitBtn.getAttribute('data-ancregid')
                 const [getVitalsigns, id]   = collapseVisitBtn.getAttribute('data-anc') ? [getAncVitalSignsTable, ancRegId] : [getVitalSignsTableByVisit, visitId]
 
-                if ($.fn.DataTable.isDataTable('#vitalSignsHistory'+visitId)){
-                    $('#vitalSignsHistory'+visitId).dataTable().fnDestroy()
-                }
-                if ($.fn.DataTable.isDataTable('#billingTableHistory'+visitId)){
-                    $('#billingTableHistory'+visitId).dataTable().fnDestroy()
-                }
+                if ($.fn.DataTable.isDataTable('#vitalSignsHistory'+visitId)){$('#vitalSignsHistory'+visitId).dataTable().fnDestroy()}
+                if ($.fn.DataTable.isDataTable('#billingTableHistory'+visitId)){$('#billingTableHistory'+visitId).dataTable().fnDestroy()}
+                if ($.fn.DataTable.isDataTable('#deliveryNoteTable'+visitId )){$('#deliveryNoteTable'+visitId).dataTable().fnDestroy()}
+                if ($.fn.DataTable.isDataTable('#surgeryNoteTableHistory'+visitId )){$('#surgeryNoteTableHistory'+visitId).dataTable().fnDestroy()}
+                if ($.fn.DataTable.isDataTable('#patientsFileTableHistory'+visitId )){$('#patientsFileTableHistory'+visitId).dataTable().fnDestroy()}
 
                 const goto = () => {
                     location.href = collapseVisitBtn.getAttribute('data-gotovisit')
