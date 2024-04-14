@@ -22,7 +22,7 @@
                         </div>
                         @if ($isMedications)
                             <div class="my-2 form-control">
-                                <span class="fw-bold text-primary">Treatment & Medication</span>
+                                <span class="fw-bold text-primary">Injectables & Infusions</span>
                                 <div class="row overflow-auto m-1">
                                     <table id="medicationsTable" class="table table-sm medicationsTable">
                                         <thead>

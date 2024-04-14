@@ -173,7 +173,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #waitingTable, #emergencyTable').forEach(table => {
+    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #waitingTable, #emergencyTable, #treatmentDetailsModal').forEach(table => {
         table.addEventListener('click', function (event) {
             const consultationDetailsBtn    = event.target.closest('.consultationDetailsBtn')
             const vitalsignsBtn             = event.target.closest('.vitalSignsBtn, .ancVitalSignsBtn')
@@ -194,11 +194,12 @@ window.addEventListener('DOMContentLoaded', function () {
                 consultationDetailsBtn.setAttribute('disabled', 'disabled')
                 const btnHtml = consultationDetailsBtn.innerHTML
                 consultationDetailsBtn.innerHTML = loadingSpinners()
-                const [visitId, patientType, ancRegId, closed] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-patientType'), consultationDetailsBtn.getAttribute('data-ancregid'), +consultationDetailsBtn.getAttribute('data-closed')] 
+                const [visitId, patientType, ancRegId, closed, patientId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-patientType'), consultationDetailsBtn.getAttribute('data-ancregid'), +consultationDetailsBtn.getAttribute('data-closed'), consultationDetailsBtn.getAttribute('data-patientid')] 
                 const isAnc = patientType === 'ANC'
                 const [modal, div, displayFunction, vitalSignsTable, id, suffixId] = isAnc ? [ancTreatmentDetailsModal, ancTreatmentDiv, AncPatientReviewDetails, getAncVitalSignsTable, ancRegId, 'AncConDetails'] : [treatmentDetailsModal, regularTreatmentDiv, regularReviewDetails, getVitalSignsTableByVisit, visitId, 'ConDetails']
                 createDeliveryNoteBtn.setAttribute('data-visitid', visitId)
                 closed ? modal._element.querySelector('.addVitalsignsDiv').classList.add('d-none') : modal._element.querySelector('.addVitalsignsDiv').classList.remove('d-none')
+                modal._element.querySelector('.historyBtn').setAttribute('data-patienttype', patientType); modal._element.querySelector('.historyBtn').setAttribute('data-patientid', patientId)
                 http.get(`/consultation/consultations/${visitId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {

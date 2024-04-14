@@ -7,7 +7,7 @@
         <option value="mega">mega</option>
         <option value="IU">IU</option>
         <option value="kg">kg</option>
-        <option value="ltr">ltr</option>
-        <option value="tab">tab</option>
-        <option value="cap">cap</option>
+        <option value="ltr(s)">ltr(s)</option>
+        <option value="tab(s)">tab(s)</option>
+        <option value="cap(s)">cap(s)</option>
 </select>

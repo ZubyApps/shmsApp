@@ -280,6 +280,12 @@ const AncConsultation = (line, iteration, count) => {
                     </div>
                     <div class="col-xl-4 themed-grid-col col-xl-6">
                         <div class="form-outline mb-2">
+                            <label class="form-label" id="diagnosisLabel"> Provisional Diagnosis </label> 
+                            <textarea class="form-control additionalDiagnosis" type="text" name="additionalDiagnosis" cols="10" rows="2" readonly="readonly">${line.provisionalDiagnosis}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 themed-grid-col col-xl-6">
+                        <div class="form-outline mb-2">
                             <label class="form-label" id="diagnosisLabel"> Physician's Notes </label> 
                             <textarea class="form-control notes" type="text" name="notes" cols="10" rows="2" readonly="readonly">${line.notes}</textarea>
                         </div>

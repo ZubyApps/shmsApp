@@ -128,14 +128,14 @@
                     </div>
                 </div>
                 <div class="modal-footer px-5">
+                    <button type="button" class="btn btn-primary historyBtn">
+                        <i class=" bi bi-arrow-up-left-circle-fill"></i>
+                        Consultation History
+                    </button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle me-1"></i>
                         Close
                     </button>
-                    {{-- <button type="button" id="saveBtn" class="btn bg-primary text-white">
-                        <i class="bi bi-check-circle me-1"></i>
-                        Save
-                    </button> --}}
                 </div>
             </div>
         </div>

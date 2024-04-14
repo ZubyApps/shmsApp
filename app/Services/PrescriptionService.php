@@ -202,9 +202,10 @@ class PrescriptionService
                         ->where(function(Builder $query) {
                             $query->whereRelation('resource', 'category', 'Medical Services')
                             ->orWhereRelation('resource', 'category', 'Consumables')
+                            ->orWhereRelation('resource', 'category', 'Medications')
                             ->orWhere('chartable', true);
                         })
-                        ->whereRelation('resource', 'category', '!=', 'Medications')
+                        ->whereRelation('resource', 'sub_category', '!=', 'Injectable')
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         });
@@ -242,12 +243,12 @@ class PrescriptionService
                 
                 'medicationCharts'      => $prescription->medicationCharts->map(fn(MedicationChart $medicationChart)=> [
                     'id'                => $medicationChart->id ?? '',
-                    'chartedAt'         => (new Carbon($medicationChart->created_at))->format('D/m/y g:ia') ?? '',
+                    'chartedAt'         => (new Carbon($medicationChart->created_at))->format('D d/m/y g:ia') ?? '',
                     'chartedBy'         => $medicationChart->user->username ?? '',
                     'dosePrescribed'    => $medicationChart->dose_prescribed ?? '',
                     'scheduledTime'     => (new Carbon($medicationChart->scheduled_time))->format('g:ia D jS') ?? '',
                     'givenDose'         => $medicationChart->dose_given ?? 'Not given' ?? '',
-                    'timeGiven'         => $medicationChart->time_given ? (new Carbon($medicationChart->time_given))->format('g:ia D jS') : '',
+                    'timeGiven'         => $medicationChart->time_given ? (new Carbon($medicationChart->time_given))->format('g:ia D d/m/Y') : '',
                     'givenBy'           => $medicationChart->givenBy->username ?? '',
                     'note'              => $medicationChart->not_given ? $medicationChart->not_given.' - '.$medicationChart->note ?? '' : $medicationChart->note ?? '' ,
                     'status'            => $medicationChart->status ?? '',

@@ -163,8 +163,6 @@ class VisitService
                 }
             }
     
-            
-    
             return $visit;
         });
     }
