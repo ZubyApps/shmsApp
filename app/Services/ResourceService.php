@@ -9,6 +9,7 @@ use App\Models\Resource;
 use App\Models\ResourceSubCategory;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class ResourceService
@@ -149,8 +150,11 @@ class ResourceService
         if (! empty($data->resource)){
             return $this->resource
                         ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
-                        ->where('category', 'Medications')
-                        ->orWhere('category', 'Consumables')
+                        ->where(function(Builder $query) {
+                            $query->where('category', 'Medications')
+                            ->orWhere('category', 'Consumables')
+                            ->orWhere('category', 'Medical Services');
+                        })
                         ->where('is_active', true)
                         ->whereNot('flag','LIKE', '%' . addcslashes($data->sponsorCat, '%_') . '%' )
                         ->orderBy('name', 'asc')
