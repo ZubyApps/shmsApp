@@ -26,7 +26,7 @@ const getWaitingTable = (tableId) => {
             {data: "sex"},
             {data: "age"},
             {data: "sponsor"},
-            {data: "came"},
+            {data: row => `<span class="tooltip-test" title="initiated by ${row.initiatedBy}">${row.came}</span>`},
             {data: "doctor"},
             {data: row => 
                         `
