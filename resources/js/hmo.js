@@ -602,13 +602,13 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.patch(`/hmo/bill/${prescriptionId}`, {bill: hmoBillInput.value})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
-                        visitPrescriptionsTable ?  visitPrescriptionsTable.draw() : ''
+                        visitPrescriptionsTable ?  visitPrescriptionsTable.draw(false) : ''
                         visitPrescriptionsTable.on('draw', removeDisabled(makeBillFieldset))
                     }
                 })
                 .catch((error) => {
                     console.log(error)
-                    visitPrescriptionsTable ?  visitPrescriptionsTable.draw() : ''
+                    visitPrescriptionsTable ?  visitPrescriptionsTable.draw(false) : ''
                     visitPrescriptionsTable.on('draw', removeDisabled(makeBillFieldset))
                 })                
             })
@@ -643,7 +643,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     })
                     .catch((error) => {
                         console.log(error)
-                        reconciliationTable ?  reconciliationTable.draw() : ''
+                        reconciliationTable ?  reconciliationTable.draw(false) : ''
                         reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
                     })                
                 })

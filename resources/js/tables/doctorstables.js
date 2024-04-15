@@ -203,7 +203,7 @@ const getWaitingTable = (tableId) => {
             {data: "sex"},
             {data: "age"},
             {data: "sponsor"},
-            {data: "came"},
+            {data: row => `<span class="tooltip-test" title="initiated by ${row.initiatedBy}">${row.came}</span>`},
             {data: row => function () {
                 if (row.vitalSigns > 0 || row.ancVitalSigns > 0){
                     return `
