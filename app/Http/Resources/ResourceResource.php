@@ -25,6 +25,7 @@ class ResourceResource extends JsonResource
                 'id'                    => $this->id,
                 'name'                  => $this->name,
                 'flag'                  => $this->flag,
+                'markedFor'             => $this->marked_for,
                 'resourceCategory'      => $this->resourceSubCategory->resourceCategory->id,
                 'resourceCategoryId'    => $this->resourceSubCategory->resourceCategory->id,
                 'resourceSubCategory'   => $this->resourceSubCategory->name,

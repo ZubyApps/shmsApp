@@ -5,6 +5,7 @@
 
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
 @include('billing.billingModal', ['title' => 'Billing Details', 'isUpdate' => false, 'id' => 'billingModal'])
+@include('billing.dischargeBillModal', ['title' => 'Add Discharge Bill', 'id' => 'dischargeBillModal'])
 @include('billing.outstandingBillsModal', ['title' => "Patient's Outstanding Bills", 'isUpdate' => false, 'id' => 'outstandingBillsModal'])
 @include('billing.billModal', ['title' => "", 'isSummary' => true, 'id' => 'billModal'])
 @include('billing.expenseModal', ['title' => "New Expense", 'isUpdate' => false, 'id' => 'newExpenseModal'])

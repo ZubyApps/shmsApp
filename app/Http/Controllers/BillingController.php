@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DischargeBillRequest;
 use App\Http\Requests\DiscountRequest;
 use App\Http\Requests\StorePaymentRequest;
 use App\Models\Payment;
@@ -159,5 +160,10 @@ class BillingController extends Controller
             'recordsFiltered' => count($combined)
         ]);
 
+    }
+
+    public function addDischargeBill(DischargeBillRequest $request)
+    {
+        return $this->billingService->saveDischargeBill($request, $request->user());
     }
 }

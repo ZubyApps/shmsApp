@@ -80,7 +80,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) =
                     </a>
                         <ul class="dropdown-menu">
                         <li>
-                            <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details"  data-id="${ row.id }" data-patientId="${ row.patient }" data-patientType="${ row.patientType }">
+                            <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details"  data-id="${ row.id }" data-conid="${ row.conId }" data-patientId="${ row.patient }" data-patientType="${ row.patientType }">
                                 Details
                             </a>
                             <a class="dropdown-item patientsBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-staff="${ row.staff }">

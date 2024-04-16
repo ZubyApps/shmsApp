@@ -56,6 +56,10 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="dischargeBillBtn">
+                    <i class="bi bi-plus-circle-fill"></i>
+                    Discharge Bill
+                </button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle me-1"></i>
                     Close

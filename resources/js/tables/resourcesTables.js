@@ -96,6 +96,10 @@ const getResourceTable = (tableId) => {
             {data: "flag"},
             {
                 visible: false,
+                data: "markedFor"
+            },
+            {
+                visible: false,
                 data: "category"
             },
             {data: "subCategory"},

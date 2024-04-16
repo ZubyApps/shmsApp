@@ -18,6 +18,10 @@
                                 <x-select-flags name="flag" id="{{ $isUpdate ? 'flagUpdate' : 'flag' }}"></x-select-flags>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
+                                <x-input-span id="nameLabel">Marked For<x-required-span /></x-input-span>
+                                <x-form-input type="text" class="markedFor" name="markedFor" id="markedFor" />
+                            </x-form-div>
+                            <x-form-div class="col-xl-12">
                                 <x-input-span>Category<x-required-span /></x-input-span>
                                 <select class="form-select form-select-md" name="resourceCategory" id="{{ $isUpdate ? 'updateResourceCategory' : 'newResourceCategory' }}">
                                     <option value="">Select Category</option>   

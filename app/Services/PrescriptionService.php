@@ -28,7 +28,7 @@ class PrescriptionService
     {
     }
 
-    public function createFromDoctors(Request $data, Resource $resource, User $user): Prescription
+    public function createPrescription(Request $data, Resource $resource, User $user): Prescription
     {
         return DB::transaction(function () use($data, $resource, $user) {
             $bill = 0;
@@ -38,7 +38,7 @@ class PrescriptionService
             }
 
             $prescription = $user->prescriptions()->create([
-                'resource_id'       => $data->resource,
+                'resource_id'       => $resource->id,
                 'prescription'      => $this->arrangePrescription($data),
                 'consultation_id'   => $data->conId,
                 'visit_id'          => $data->visitId,

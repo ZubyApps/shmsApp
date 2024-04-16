@@ -23,6 +23,7 @@ class ResourceService
         return $user->resources()->create([
             'name'                      => $data->name,
             'flag'                      => $data->flag,
+            'marked_for'                => strtolower($data->markedFor),
             'category'                  => ResourceSubCategory::findOrFail($data->resourceSubCategory)->resourceCategory->name,
             'sub_category'              => ResourceSubCategory::findOrFail($data->resourceSubCategory)->name,
             'resource_sub_category_id'  => $data->resourceSubCategory,
@@ -39,6 +40,7 @@ class ResourceService
        $resource->update([
             'name'                      => $data->name,
             'flag'                      => $data->flag,
+            'marked_for'                => strtolower($data->markedFor),
             'category'                  => ResourceSubCategory::findOrFail($data->resourceSubCategory)->resourceCategory->name,
             'sub_category'              => ResourceSubCategory::findOrFail($data->resourceSubCategory)->name,
             'resource_sub_category_id'  => $data->resourceSubCategory,
@@ -82,6 +84,7 @@ class ResourceService
                 'id'                => $resource->id,
                 'name'              => $resource->name,
                 'flag'              => $resource->flag,
+                'markedFor'         => $resource->marked_for,
                 'category'          => $resource->resourceSubCategory->resourceCategory->name,
                 'subCategory'       => $resource->resourceSubCategory->name,
                 'unit'              => $resource->unit_description,

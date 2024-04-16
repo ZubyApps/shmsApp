@@ -296,6 +296,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/load/outstandings', [BillingController::class, 'loadVisitsWithOutstandingBills']);
             Route::get('/load/expenses', [BillingController::class, 'loadExpenses']);
             Route::get('/load/balancing', [BillingController::class, 'loadCashPaymentsAndExpenses']);
+            Route::post('/dischargebill', [BillingController::class, 'addDischargeBill']);
+
         });
 
         Route::prefix('expenses')->group(function () {

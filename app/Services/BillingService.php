@@ -27,7 +27,8 @@ class BillingService
         private readonly PayPercentageService $payPercentageService,
         private readonly Resource $resource,
         private readonly PayMethodService $payMethodService,
-        private readonly ExpenseService $expenseService
+        private readonly ExpenseService $expenseService,
+        private readonly PrescriptionService $prescriptionService
         )
     {
         
@@ -136,6 +137,7 @@ class BillingService
        return  function (Visit $visit) {
             return [
                 'id'                => $visit->id,
+                'conId'             => $visit->consultations->sortDesc()->first()?->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
                 'doctor'            => $visit->doctor->username,
@@ -185,7 +187,6 @@ class BillingService
        return  function (Visit $visit) {
             return [
                 'id'                    => $visit->id,
-                'visitId'               => $visit->id,
                 'patientId'             => $visit->patient->id,
                 'patient'               => $visit->patient->patientId(),
                 'sponsor'               => $visit->sponsor->name,
@@ -327,5 +328,24 @@ class BillingService
                         ->orderBy('service')
                         ->get()
                         ->toArray();   
+    }
+
+    public function saveDischargeBill(Request $request, User $user)
+    {
+        return DB::transaction(function () use($request, $user) {
+
+            $resources = Resource::all()->where('marked_for', 'discharge');
+            $filteredResources = $resources->reject(function (Object $value) use($request) {
+                return $value->sub_category == "Accommodation" && explode(" ", $value->name)[0] !== $request->wardType;
+            });
+
+            $filteredResources->map(function ($resource) use($request, $user){
+                $this->prescriptionService->createPrescription($request, $resource, $user);
+            });
+           
+
+        });
+
+        return response();
     }
 }

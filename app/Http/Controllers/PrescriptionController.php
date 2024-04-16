@@ -22,7 +22,7 @@ class PrescriptionController extends Controller
 
     public function store(StorePrescriptionRequest $request, Resource $resource)
     {
-        $prescription = $this->prescriptionService->createFromDoctors($request, $resource, $request->user());
+        $prescription = $this->prescriptionService->createPrescription($request, $resource, $request->user());
 
         return $prescription;
     }
