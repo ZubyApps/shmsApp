@@ -467,7 +467,6 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                                                     <td class="text-secondary">Result</td>
                                                     <td class="text-secondary">Entered By</td>
                                                     <td class="text-secondary">DateTime</td>
-                                                    <td class="text-secondary">Document </td>
                                                 </tr>
                                             </thead>
                                         <tbody>

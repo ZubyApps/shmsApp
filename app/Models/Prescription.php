@@ -94,6 +94,7 @@ class Prescription extends Model
                         $query->whereRelation('resource', 'category', 'Medications')
                               ->orWhereRelation('resource', 'category', 'Consumables');
                     })
+                    ->orderBy('created_at', 'desc')
                     ->get();
     }
 

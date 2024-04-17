@@ -9,7 +9,45 @@
 @include('pharmacy.billingDispenseModal', ['title' => "Patient's Billing & Dispense", 'isEdit' => false, 'id' => 'billingDispenseModal'])
 @include('extras.bulkRequestModal', ['title' => 'Bulk Request', 'dept' => 'Pharmacy', 'isPharmacy' => true, 'id' => 'bulkRequestModal'])
 
-    <div class="container p-1 mt-5 bg-white">     
+    <div class="container p-1 mt-5 bg-white">    
+        
+        <div class="offcanvas offcanvas-end overflow-auto" data-bs-scroll="true" tabindex="-1" id="emergencyListOffcanvas"
+            aria-labelledby="emergencyListOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-primary" id="emergencyListOffcanvasLabel">Emergency List</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="py-4 ">
+                    <table id="emergencyTable" class="table table-hover table-sm emergencyTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Patient</th>
+                                <th>Sponsor</th>
+                                <th>Medication/Item</th>
+                                <th>Prescription</th>
+                                <th>Qty</th>
+                                <th>Prescribed By</th>
+                                <th>Note</th>
+                                <th>DOC</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-start mb-4">
+            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" id="emergencyListBtn"
+                data-bs-target="#emergencyListOffcanvas" aria-controls="emergencyListOffcanvas">
+                <i class="bi bi-list-check"></i>
+                Emergency Rx <span class="badge text-bg-danger" id="emergencyListCount"></span>
+            </button>
+        </div>
+        
         <div>
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -28,9 +66,6 @@
 
                     <button class="nav-link" id="nav-bulkRequests-tab" data-bs-toggle="tab" data-bs-target="#nav-bulkRequests"
                     type="button" role="tab" aria-controls="nav-bulkRequests" aria-selected="false">Bulk Requests</button>
-
-                    <button class="nav-link" id="nav-emergency-tab" data-bs-toggle="tab" data-bs-target="#nav-emergency"
-                    type="button" role="tab" aria-controls="nav-emergency" aria-selected="false">Emergency</button>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
@@ -149,28 +184,6 @@
                                     <th>Qty Confirmed</th>
                                     <th>Confirmed By</th>
                                     <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-                <!-- emergency medication table -->
-                <div class="tab-pane fade" id="nav-emergency" role="tabpanel" aria-labelledby="nav-emergency-tab" tabindex="0">
-                    <div class="py-4 ">
-                        <table id="emergencyTable" class="table table-hover align-middle table-sm emergencyTable">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Patient</th>
-                                    <th>Sponsor</th>
-                                    <th>Item</th>
-                                    <th>Prescription</th>
-                                    <th>Qty</th>
-                                    <th>Prescribed By</th>
-                                    <th>Note</th>
-                                    <th>DOC</th>
-                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody></tbody>

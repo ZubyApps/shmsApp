@@ -21,6 +21,10 @@
                             </div>
                         </div>
                         @if ($isMedications)
+                        <button type="button" class="btn btn-primary addPrescriptionBtn {{ $isDoctor ? 'd-none' : '' }}">
+                            <i class="bi bi-plus-circle me-1"></i>
+                            Emergency Prescription
+                        </button>
                             <div class="my-2 form-control">
                                 <span class="fw-bold text-primary">Injectables & Infusions</span>
                                 <div class="row overflow-auto m-1">

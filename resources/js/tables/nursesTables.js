@@ -71,7 +71,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                 const chartables = row.chartableMedications
                     return `
                     <div class="d-flex flex">
-                        <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewMedicationBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                        <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewMedicationBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                             ${(chartables < 1 ? '' : chartables) + ' ' + row.givenCount + '/' + row.doseCount}
                         </button>
                     </div>`
@@ -784,7 +784,7 @@ const getEmergencyTable = (tableId, viewer) => {
                 sortable: false,
                 data: row =>  `
                 <div class="d-flex flex- ${viewer === 'doctor' ? '' : 'd-none'}">
-                    <button class="ms-1 btn btn-outline-primary tooltip-test confirmBtn" title="confirm" data-id="${ row.id}" data-tableid="${tableId}">
+                    <button class="ms-1 btn ${row.admissionStatus ? 'btn-primary' : 'btn-outline-primary'} tooltip-test confirmBtn" title="confirm" data-id="${ row.id}" data-tableid="${tableId}">
                         <i class="bi bi-arrow-down-square-fill"></i>
                     </button>
                     <button class="ms-1 btn btn-outline-primary tooltip-test deleteBtn" title="delete" data-id="${ row.id}">

@@ -15,7 +15,7 @@
 @include('doctors.consultationHistoryModal', ['title' => 'Consultation History', 'isAnc' => false, 'id' => 'consultationHistoryModal'])
 @include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isDoctor' => true, 'id' => 'vitalsignsModal'])
 @include('vitalsigns.ancVitalsignsModal', ['title' => 'Anc Vital Signs', 'isDoctor' => true, 'id' => 'ancVitalsignsModal', ])
-@include('nurses.prescriptionsModal', ['title' => 'Medications for this Visit', 'isMedications' => true, 'id' => 'medicationPrescriptionsModal'])
+@include('nurses.prescriptionsModal', ['title' => 'Medications for this Visit', 'isMedications' => true, 'isDoctor' => true, 'id' => 'medicationPrescriptionsModal'])
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
 @include('investigations.addResultModal', ['title' => 'Update Result', 'isUpdate' => true, 'id' => 'updateResultModal'])
@@ -58,12 +58,45 @@
                 </div>
             </div>
         </div>
+        <div class="offcanvas offcanvas-end overflow-auto" data-bs-scroll="true" tabindex="-1" id="emergencyListOffcanvas"
+            aria-labelledby="emergencyListOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-primary" id="emergencyListOffcanvasLabel">Emergency List</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="py-4 ">
+                    <table id="emergencyTable" class="table table-hover table-sm emergencyTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Patient</th>
+                                <th>Sponsor</th>
+                                <th>Medication/Item</th>
+                                <th>Prescription</th>
+                                <th>Qty</th>
+                                <th>Prescribed By</th>
+                                <th>Note</th>
+                                <th>DOC</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
         <div class="text-start mb-4">
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn"
+            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" id="waitingBtn"
                 data-bs-target="#waitingListOffcanvas1" aria-controls="waitingListOffcanvas">
                 <i class="bi bi-list-check"></i>
                 Waiting List
+            </button>
+            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" id="emergencyListBtn"
+                data-bs-target="#emergencyListOffcanvas" aria-controls="emergencyListOffcanvas">
+                <i class="bi bi-list-check"></i>
+                Emergency Rx <span class="badge text-bg-danger" id="emergencyListCount"></span>
             </button>
         </div>
 
@@ -79,9 +112,6 @@
 
                     <button class="nav-link" id="nav-ancPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-ancPatients"
                     type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button>
-
-                    <button class="nav-link" id="nav-emergency-tab" data-bs-toggle="tab" data-bs-target="#nav-emergency"
-                    type="button" role="tab" aria-controls="nav-emergency" aria-selected="false">Emergency</button>
                     
                 </div>
             </nav>
@@ -173,29 +203,6 @@
                                     <th>Vitals</th>
                                     <th>Status</th>
                                     <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- emergency medication table -->
-                <div class="tab-pane fade" id="nav-emergency" role="tabpanel" aria-labelledby="nav-emergency-tab" tabindex="0">
-                    <div class="py-4 ">
-                        <table id="emergencyTable" class="table table-hover align-middle table-sm emergencyTable">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Patient</th>
-                                    <th>Sponsor</th>
-                                    <th>Item</th>
-                                    <th>Prescription</th>
-                                    <th>Qty</th>
-                                    <th>Prescribed By</th>
-                                    <th>Note</th>
-                                    <th>DOC</th>
-                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody></tbody>

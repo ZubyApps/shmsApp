@@ -162,6 +162,7 @@ class DoctorService
     public function getConsultedVisitsTransformer(): callable
     {
        return  function (Visit $visit) {
+        $latestConsultation = $visit->consultations->sortDesc()->first();
             return [
                 'id'                => $visit->id,
                 'patientId'         => $visit->patient->id,
@@ -171,12 +172,10 @@ class DoctorService
                 'age'               => $visit->patient->age(),
                 'sex'               => $visit->patient->sex,
                 'doctor'            => $visit->doctor->username,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment ?? '',
-                'selectedDiagnosis'     => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? '',
-                'provisionalDiagnosis'  => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? '',
-                'conId'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->id,
+                'diagnosis'         => $latestConsultation?->icd11_diagnosis ?? $latestConsultation?->provisional_diagnosis ?? $latestConsultation?->assessment,
+                'selectedDiagnosis'     => $latestConsultation?->icd11_diagnosis ?? '',
+                'provisionalDiagnosis'  => $latestConsultation?->provisional_diagnosis ?? '',
+                'conId'             => $latestConsultation?->id,
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->category_name,
                 'vitalSigns'        => $visit->vitalSigns->count(),
@@ -184,13 +183,13 @@ class DoctorService
                 'admissionStatus'   => $visit->admission_status,
                 'ward'              => $visit->ward ?? '',
                 'bedNo'             => $visit->bed_no ?? '',
-                'updatedBy'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->updatedBy?->username ?? 'Nurse...',
+                'updatedBy'         => $latestConsultation?->updatedBy?->username ?? 'Nurse...',
                 'patientType'       => $visit->patient->patient_type,
                 'labPrescribed'     => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
+                                        ->whereRelation('resource', 'category', '=', 'Investigations')
                                         ->count(),
                 'labDone'           => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
+                                        ->whereRelation('resource', 'category', '=', 'Investigations')
                                         ->where('result_date','!=', null)
                                         ->count(),
                 'chartableMedications'  => (new Prescription())->prescriptionsCharted($visit->id, 'medicationCharts'),

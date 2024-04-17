@@ -9,8 +9,8 @@
 @include('nurses.deliveryNotesModal', ['title' => 'New Delivery Note', 'isUpdate' => false,'isView' => false, 'id' => 'newDeliveryNoteModal'])
 @include('nurses.deliveryNotesModal', ['title' => 'Update Delivery Note', 'isUpdate' => true, 'isView' => false, 'id' => 'updateDeliveryNoteModal'])
 @include('nurses.deliveryNotesModal', ['title' => 'View Delivery Note', 'isUpdate' => true, 'isView' => true, 'id' => 'viewDeliveryNoteModal'])
-@include('nurses.prescriptionsModal', ['title' => 'Medications for this Visit', 'isMedications' => true, 'id' => 'medicationPrescriptionsModal'])
-@include('nurses.prescriptionsModal', ['title' => 'Other prescriptions for this Visit', 'isMedications' => false, 'id' => 'otherPrescriptionsModal'])
+@include('nurses.prescriptionsModal', ['title' => 'Medications for this Visit', 'isMedications' => true, 'isDoctor' => false, 'id' => 'medicationPrescriptionsModal'])
+@include('nurses.prescriptionsModal', ['title' => 'Other prescriptions for this Visit', 'isMedications' => false, 'isDoctor' => false, 'id' => 'otherPrescriptionsModal'])
 @include('nurses.chartPrescriptionModal', ['title' => 'Chart Prescription', 'isUpdate' => false, 'id' => 'chartPrescriptionModal'])
 @include('nurses.chartMedicationModal', ['title' => 'Chart Medication', 'isUpdate' => false, 'id' => 'chartMedicationModal'])
 @include('nurses.ancRegisterationModal', ['title' => 'New ANC Registeration', 'isUpdate' => false, 'isView' => false, 'id' => 'newAncRegisterationModal', ])
@@ -257,7 +257,7 @@
                                 <th>Date</th>
                                 <th>Patient</th>
                                 <th>Sponsor</th>
-                                <th>Item</th>
+                                <th>Medication/Item</th>
                                 <th>Prescription</th>
                                 <th>Qty</th>
                                 <th>Prescribed By</th>

@@ -20,6 +20,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
     const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
     const markDoneBtn               = billingDispenseModal._element.querySelector('#markDoneBtn')
+    const emergencyListBtn          = document.querySelector('#emergencyListBtn')
 
     const regularTreatmentDiv       = treatmentDetailsModal._element.querySelector('#treatmentDiv')
     const ancTreatmentDiv           = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
@@ -27,17 +28,29 @@ window.addEventListener('DOMContentLoaded', function () {
     const filterListOption          = document.querySelector('#filterList')
 
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
+    const emergencyListCount        = document.querySelector('#emergencyListCount')
 
-    const [outPatientsTab, inPatientsTab, ancPatientsTab, expirationStockTab, bulkRequestsTab, emergencyTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-expirationStock-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-emergency-tab')]
+    const [outPatientsTab, inPatientsTab, ancPatientsTab, expirationStockTab, bulkRequestsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-expirationStock-tab'), document.querySelector('#nav-bulkRequests-tab')]
 
     const textareaHeight = 90;
     textareaHeightAdjustment(textareaHeight, document.getElementsByTagName("textarea"))
 
-    let inPatientsVisitTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable, emergencyTable
+    let inPatientsVisitTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable
 
     const outPatientsTable = getPatientsVisitByFilterTable('outPatientsTable', 'Outpatient')
+    const emergencyTable = getEmergencyTable('emergencyTable', 'pharmacy')
 
+    emergencyListBtn.addEventListener('click', function () {emergencyTable.draw()})
     outPatientsTab.addEventListener('click', function() {outPatientsTable.draw()})
+
+    emergencyTable.on('draw.init', function() {
+        const count = emergencyTable.rows().count()
+        if (count > 0 ){
+            emergencyListCount.innerHTML = count
+        } else {
+            emergencyListCount.innerHTML = ''
+        }
+    })
 
     inPatientsTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#inPatientsTable' )){
@@ -68,14 +81,6 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#bulkRequestsTable').dataTable().fnDraw()
         } else {
             bulkRequestsTable = getBulkRequestTable('bulkRequestsTable', 'pharmacy')
-        }
-    })
-
-    emergencyTab.addEventListener('click', function () {
-        if ($.fn.DataTable.isDataTable( '#emergencyTable' )){
-            $('#emergencyTable').dataTable().fnDraw()
-        } else {
-            emergencyTable = getEmergencyTable('emergencyTable', 'pharmacy')
         }
     })
 

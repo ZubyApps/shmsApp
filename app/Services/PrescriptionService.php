@@ -140,7 +140,6 @@ class PrescriptionService
         return $this->prescription
                     ->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
                     ->whereRelation('resource', 'category', 'Investigations')
-                    ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -363,6 +362,7 @@ class PrescriptionService
                 'prescribedBy'      => $prescription->user->username,
                 'doc'               => $prescription->doctorOnCall?->username,
                 'note'              => $prescription->note,
+                'admissionStatus'   => $prescription->visit->admission_status,
                 'prescribedFormatted'   => (new Carbon($prescription->created_at))->format('Y-m-d\TH:i'),
                 'chartable'             => $prescription->chartable,
                 'doseCount'             => $doseCount = $prescription->medicationCharts->count(),

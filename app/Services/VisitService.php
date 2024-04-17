@@ -206,7 +206,7 @@ class VisitService
                 'patient'           => $visit->patient->patientId(),
                 'sex'               => $visit->patient->sex,
                 'age'               => $visit->patient->age(),
-                'sponsor'           => $visit->sponsor->name . ' - ' . $visit->sponsor->category_name,
+                'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->category_name,
                 'came'              => (new Carbon($visit->created_at))->diffForHumans(['parts' => 2, 'short' => true]),
                 'doctor'            => $visit->doctor->username ?? '',

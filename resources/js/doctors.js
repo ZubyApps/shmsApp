@@ -62,6 +62,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const addVitalsignsBtn                  = document.querySelectorAll('#addVitalsignsBtn')
     const saveConsultationBtn               = document.querySelectorAll('#saveConsultationBtn')
     const waitingBtn                        = document.querySelector('#waitingBtn')
+    const emergencyListBtn                  = document.querySelector('#emergencyListBtn')
     const clearDiagnosisBtns                = document.querySelectorAll('.clearDiagnosis')
     const createSurgeryNoteBtn              = newSurgeryModal._element.querySelector('#createSurgeryNoteBtn')
     const saveSurgeryNoteBtn                = updateSurgeryModal._element.querySelector('#saveSurgeryNoteBtn')
@@ -79,8 +80,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const reportModalBody                   = viewMedicalReportModal._element.querySelector('.reportModalBody')
     const patientsFullName                  = viewMedicalReportModal._element.querySelector('#patientsFullName')
     const patientsInfo                      = viewMedicalReportModal._element.querySelector('#patientsInfo')
-    const [outPatientsTab, ancPatientsTab, inPatientsTab, emergencyTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-emergency-tab')]
-    const [resourceInput]                   = [document.querySelectorAll('#resource')]
+    const [outPatientsTab, ancPatientsTab, inPatientsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-inPatients-tab')]
+    const [resourceInput]         = [document.querySelectorAll('#resource')]
+    const emergencyListCount      = document.querySelector('#emergencyListCount')
 
     bmiCalculator(document.querySelectorAll('#height, .weight'))
     lmpCalculator(document.querySelectorAll('#lmp'), consultationDiv)
@@ -103,10 +105,22 @@ window.addEventListener('DOMContentLoaded', function () {
     // ICD11 handler
     ECT.Handler.configure(mySettings, myCallbacks)
     //visit Tables and consultations that are active
-    let inPatientsVisitTable, ancPatientsVisitTable, prescriptionTable, medicalReportTable, emergencyTable, patientsFilesTable, surgeryNoteTable, deliveryNoteTable
+    let inPatientsVisitTable, ancPatientsVisitTable, prescriptionTable, medicalReportTable, patientsFilesTable, surgeryNoteTable, deliveryNoteTable
 
+    
     let outPatientsVisitTable = getOutpatientsVisitTable('#outPatientsVisitTable', 'My Patients')
     const waitingTable = getWaitingTable('#waitingTable')
+    const emergencyTable = getEmergencyTable('emergencyTable', 'doctor')
+
+    emergencyTable.on('draw.init', function() {
+        const count = emergencyTable.rows().count()
+        if (count > 0 ){
+            emergencyListCount.innerHTML = count
+        } else {
+            emergencyListCount.innerHTML = ''
+        }
+    })
+
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #medicalReportTable, #emergencyTable, #patientsFilesTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
 
     outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw()})
@@ -127,13 +141,13 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    emergencyTab.addEventListener('click', function () {
-        if ($.fn.DataTable.isDataTable( '#emergencyTable' )){
-            $('#emergencyTable').dataTable().fnDraw()
-        } else {
-            emergencyTable = getEmergencyTable('emergencyTable', 'doctor')
-        }
-    })
+    // emergencyTab.addEventListener('click', function () {
+    //     if ($.fn.DataTable.isDataTable( '#emergencyTable' )){
+    //         $('#emergencyTable').dataTable().fnDraw()
+    //     } else {
+    //         emergencyTable = getEmergencyTable('emergencyTable', 'doctor')
+    //     }
+    // })
     
     document.querySelectorAll('#filterListOutPatients, #filterListInPatients, #filterListAncPatients').forEach(filterInput => {
             filterInput.addEventListener('change', function () {
@@ -617,7 +631,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (emergencyBtn){
             waitingListOffcanvas.hide()
-            emergencyTab.click()
+            emergencyListBtn.click()
         }
 
         if (removeBtn){                
@@ -656,7 +670,8 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     // Show waiting table
-    waitingBtn.addEventListener('click', function () {waitingTable.draw()})
+    waitingBtn.addEventListener('click', function () {waitingTable.draw(); emergencyTable.draw()})
+    emergencyListBtn.addEventListener('click', function () {emergencyTable.draw()})
 
     waitingListOffcanvas._element.addEventListener('hide.bs.offcanvas', () => {
         outPatientsVisitTable.draw()
@@ -669,6 +684,7 @@ window.addEventListener('DOMContentLoaded', function () {
             outPatientsVisitTable ? outPatientsVisitTable.draw(false) : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
             inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
+            emergencyTable.draw()
             clearValidationErrors(modal)
         })
     })
@@ -956,6 +972,7 @@ window.addEventListener('DOMContentLoaded', function () {
             outPatientsVisitTable.draw(false)
             ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
             inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
+            emergencyTable.draw()
          })
     })
 
@@ -1204,6 +1221,7 @@ window.addEventListener('DOMContentLoaded', function () {
             outPatientsVisitTable.draw()
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+            emergencyTable.draw()
         })
     })
 

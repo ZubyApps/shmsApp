@@ -135,19 +135,19 @@ class BillingService
     public function getVisitsBillingTransformer(): callable
     {
        return  function (Visit $visit) {
+
+        $latestConsultation = $visit->consultations->sortDesc()->first();
             return [
                 'id'                => $visit->id,
-                'conId'             => $visit->consultations->sortDesc()->first()?->id,
+                'conId'             => $latestConsultation?->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
                 'doctor'            => $visit->doctor->username,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
+                'diagnosis'         => $latestConsultation?->icd11_diagnosis ?? $latestConsultation?->provisional_diagnosis ?? $latestConsultation?->assessment,
                 'sponsor'           => $visit->sponsor->name,
-                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
-                'ward'              => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->ward ?? '',
-                'bedNo'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->bed_no ?? '',
+                'admissionStatus'   => $visit->admission_status,
+                'ward'              => $visit->ward ?? '',
+                'bedNo'             => $visit->bed_no ?? '',
                 'patientType'       => $visit->patient->patient_type,
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
