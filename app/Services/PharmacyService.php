@@ -162,7 +162,7 @@ class PharmacyService
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
                 'discharged'        => $visit->discharge_reason,
-                'doctorDoneAt'      => (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') ?? '',
+                'doctorDoneAt'      => $visit->doctor_done_at ? (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') : '',
                 'reason'            => $visit->discharge_reason,
                 'closed'            => $visit->closed,
             ];

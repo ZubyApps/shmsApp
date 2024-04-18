@@ -128,7 +128,7 @@ class InvestigationService
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
-                'doctorDoneAt'      => (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') ?? '',
+                'doctorDoneAt'      => $visit->doctor_done_at ? (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') : '',
                 'discharged'        => $visit->discharge_reason,
                 'reason'            => $visit->discharge_reason,
                 'closed'            => $visit->closed,

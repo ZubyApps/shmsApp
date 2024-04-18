@@ -217,7 +217,7 @@ class HmoService
                 'thirtyDayCount'    => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
                 'discharged'        => $visit->discharge_reason,
                 'reason'            => $visit->discharge_reason,
-                'doctorDoneAt'      => (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') ?? '',
+                'doctorDoneAt'      => $visit->doctor_done_at ? (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') : '',
                 'viewedAt'          => $visit->viewed_at,
                 'viewedBy'          => $visit->viewedBy?->username,
                 'hmoDoneBy'         => $visit->hmoDoneBy?->username,
