@@ -154,7 +154,7 @@ class UserService
 
     public function listStaff(String $designation = null, string $special_note = null)
     {
-        $orderBy    = 'username';
+        $orderBy    = 'created_at';
         $orderDir   =  'asc';
 
         if ($special_note == 'Management'){
