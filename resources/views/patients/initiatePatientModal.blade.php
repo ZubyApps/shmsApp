@@ -12,6 +12,14 @@
                     <x-form-input name="patientId" id="patientId" readonly/>
                     <x-input-span>visit?</x-input-span>
                 </x-form-div>
+                <x-form-div class="col-xl-12">
+                    <x-input-span id="docLabel">To See</x-input-span>
+                    <select type="text" name="doctor" id="doctor" class="form-select form-select-md">
+                        @foreach ($doctors as $doctor)
+                            <option value="{{ $doctor->id }}" name="{{ $doctor->username }}">{{ $doctor->username }}</option>
+                        @endforeach
+                    </select>
+                </x-form-div>
             </div>
             <div class="modal-footer px-5">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">

@@ -23,9 +23,9 @@ class VisitService
     {
     }
 
-    public function create(Patient $patient, User $user): Visit
+    public function create(Request $data, Patient $patient, User $user): Visit
     {
-        return DB::transaction(function () use ($patient, $user) {
+        return DB::transaction(function () use ($data, $patient, $user) {
 
             $sponsorArray = ['Individual', 'Family'];
 
@@ -36,6 +36,7 @@ class VisitService
             $visit = $user->visits()->create([
                     "patient_id" => $patient->id,
                     "sponsor_id" => $patient->sponsor->id,
+                    "waiting_for"=> $data->doctor
             ]);
     
             if (in_array($patient->sponsor->category_name, $sponsorArray)){
@@ -79,7 +80,6 @@ class VisitService
                         ]);
                     }
 
-    
                     $prescription = $user->prescriptions()->create([
                         'resource_id'       => $resource->id,
                         'prescription'      => null,
@@ -209,6 +209,7 @@ class VisitService
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->category_name,
                 'came'              => (new Carbon($visit->created_at))->diffForHumans(['parts' => 2, 'short' => true]),
+                'waitingFor'        => $visit->waitingFor->username ?? '',
                 'doctor'            => $visit->doctor->username ?? '',
                 'patientType'       => $visit->patient->patient_type,
                 'status'            => $visit->status,
@@ -237,6 +238,7 @@ class VisitService
             "discharge_reason"  => $data->reason ? $data->reason : null,
             "discharge_remark"  => $data->reason ? $data->remark : null,
             "doctor_done_by"    => $data->reason ? $user->id : null,
+            "doctor_done_at"    => $data->reason ? new Carbon() : null,
         ]);
 
         return $visit;
@@ -312,6 +314,24 @@ class VisitService
 
         if (! empty($params->searchTerm)) {
             if ($data->startDate && $data->endDate){
+                if ($data->filterListBy){
+                    return $this->visit
+                        ->Where('consulted', '!=', null)
+                        ->where(function (Builder $query) use($data) {
+                            $query->where('admission_status', $data->filterListBy)
+                            ->orWhereRelation('patient', 'patient_type', $data->filterListBy);
+                        })
+                        ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                        ->where(function (Builder $query) use($params) {
+                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                }
                 return $this->visit
                         ->Where('consulted', '!=', null)
                         ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
@@ -340,6 +360,17 @@ class VisitService
         }
 
         if ($data->startDate && $data->endDate){
+            if ($data->filterListBy){
+                return $this->visit
+                    ->Where('consulted', '!=', null)
+                    ->where(function (Builder $query) use($data) {
+                        $query->where('admission_status', $data->filterListBy)
+                        ->orWhereRelation('patient', 'patient_type', $data->filterListBy);
+                    })
+                    ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
             return $this->visit
                     ->Where('consulted', '!=', null)
                     ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
@@ -347,7 +378,6 @@ class VisitService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        
         return $this->visit
                     ->Where('consulted', '!=', null)
                     ->whereDay('created_at', $current->today())

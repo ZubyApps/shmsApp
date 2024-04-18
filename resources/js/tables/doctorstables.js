@@ -204,6 +204,7 @@ const getWaitingTable = (tableId) => {
             {data: "age"},
             {data: "sponsor"},
             {data: row => `<span class="tooltip-test" title="initiated by ${row.initiatedBy}">${row.came}</span>`},
+            {data: "waitingFor"},
             {data: row => function () {
                 if (row.vitalSigns > 0 || row.ancVitalSigns > 0){
                     return `
@@ -354,7 +355,7 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
 }
 
 const getPrescriptionTableByConsultation = (tableId, conId, visitId, modal) => {
-    const prescriptionTable =  new DataTable('#'+tableId, {
+    const prescriptionTable = new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/prescription/load/initial', data: {
             'conId': conId,
@@ -388,6 +389,7 @@ const getPrescriptionTableByConsultation = (tableId, conId, visitId, modal) => {
     
     modal.addEventListener('hidden.bs.modal', function () {
         prescriptionTable.destroy()
+        console.log('ran')
     })
 
     return prescriptionTable
@@ -457,7 +459,7 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
 
     function formatChild(data) {
         // const chart = data.chart
-                if (data.result) {
+                if (data.result || data.removalReason) {
                     return `   
                                 <table class="table align-middle table-sm">
                                             <thead >
@@ -467,17 +469,19 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                                                     <td class="text-secondary">Result</td>
                                                     <td class="text-secondary">Entered By</td>
                                                     <td class="text-secondary">DateTime</td>
+                                                    <td class="text-secondary">Comments</td>
                                                 </tr>
                                             </thead>
                                         <tbody>
                                              <tr>
                                                 <td> </td>
-                                                <td class="text-secondary">${data.sample}</td>
+                                                <td class="text-secondary">${data.sample ?? ''}</td>
                                                 <td class="text-secondary">
-                                                    <div>${data.result}</div>
+                                                    <div>${data.result ?? ''}</div>
                                                 </td>
                                                 <td class="text-secondary">${data.staff}</td>
                                                 <td class="text-secondary">${data.sent}</td>
+                                                <td class="text-secondary">${data.removalReason}</td>
                                             </tr>   
                                      </tbody>
                                 </table>

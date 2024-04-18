@@ -43,6 +43,7 @@ const getInpatientsInvestigationsTable = (tableId, notLab) => {
         ajax:  '/investigations/load/inpatients',
         paging: true,
         orderMulti: false,
+        lengthMenu:[25, 50, 100, 200],
         language: {
             emptyTable: 'No lab investigation requested'
         },
@@ -62,11 +63,14 @@ const getInpatientsInvestigationsTable = (tableId, notLab) => {
                 sortable: false,
                 data: row =>  `
                         <div class="d-flex flex- ${notLab ? 'd-none' : ''}">
-                            <button class=" btn btn-outline-primary addResultBtn tooltip-test" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
-                                Add Result
+                            <button class=" btn btn-primary addResultBtn tooltip-test" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                                <i class="bi bi-plus-square"></i>
+                            </button>
+                            <button class="btn btn-primary removeTestBtn tooltip-test ms-1" id="removeTestBtn" title="remove test" data-id="${row.id}" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                                <i class="bi bi-dash-square"></i>
                             </button>
                         </div>
-                `      
+                `   
             },
         ]
     });
@@ -82,6 +86,7 @@ const getOutpatientsInvestigationTable = (tableId, notLab) => {
         }},
         paging: true,
         orderMulti: false,
+        lengthMenu:[25, 50, 100, 200],
         language: {
             emptyTable: 'No lab investigation requested'
         },
@@ -110,8 +115,11 @@ const getOutpatientsInvestigationTable = (tableId, notLab) => {
                         } else {
                             return `
                             <div class="d-flex flex- ${notLab ? 'd-none' : ''}">
-                                <button class="btn btn-outline-primary addResultBtn tooltip-test" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
-                                    Add Result
+                                <button class="btn btn-primary addResultBtn tooltip-test" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                                    <i class="bi bi-plus-square"></i>
+                                </button>
+                                <button class="btn btn-primary removeTestBtn tooltip-test ms-1" id="removeTestBtn" title="remove test" data-id="${row.id}" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                                    <i class="bi bi-dash-square"></i>
                                 </button>
                             </div>
                             `

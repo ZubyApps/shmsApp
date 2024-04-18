@@ -264,17 +264,18 @@ const getPatientsBySponsorTable = (tableId, sponsorId, modal) => {
     return patientsBySponsorTable
 }
 
-const getVisitsTable = (tableId, startDate, endDate) => {
+const getVisitsTable = (tableId, startDate, endDate, filterListBy) => {
     const visitsTable = new DataTable(`#${tableId}`, {
         serverSide: true,
         ajax: {url: '/patients/load/visits', data: {
-            'startDate' : startDate, 
-            'endDate'   : endDate, 
+            'startDate'      : startDate, 
+            'endDate'        : endDate, 
+            'filterListBy'   : filterListBy, 
         }},
         orderMulti: true,
         search:true,
         
-        lengthMenu:[20, 40, 80, 160, 200],
+        lengthMenu:[50, 100, 150, 200, 250],
         dom: 'l<"my-1 text-center "B>frtip',
         buttons: [
             {

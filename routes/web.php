@@ -233,6 +233,7 @@ Route::middleware('auth')->group(function () {
             Route::patch('/remove/{prescription}', [InvestigationController::class, 'removeLabResult']);
             Route::patch('/create/{prescription}', [InvestigationController::class, 'createLabResult']);
             Route::patch('/update/{prescription}', [InvestigationController::class, 'updateLabResult']);
+            Route::patch('/removalreason/{prescription}', [InvestigationController::class, 'removeLabTest']);
             Route::get('/printall/{prescription}', [InvestigationController::class, 'getAllTestsAndResults']);
         });
     });

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RemovalReasonRequest;
 use App\Http\Requests\SaveLabResultRequest;
 use App\Http\Resources\InvestigationResultResource;
 use App\Http\Resources\PrintLabTestsCollection;
@@ -70,6 +71,11 @@ class InvestigationController extends Controller
     public function removeLabResult(Prescription $prescription)
     {
         return $this->investigationService->removeLabResultRecord($prescription);
+    }
+
+    public function removeLabTest(RemovalReasonRequest $request, Prescription $prescription)
+    {
+        return $this->investigationService->removetTestFromList($request, $prescription, $request->user());
     }
 
     public function edit(Prescription $prescription)

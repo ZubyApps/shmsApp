@@ -27,6 +27,7 @@ const getWaitingTable = (tableId) => {
             {data: "age"},
             {data: "sponsor"},
             {data: row => `<span class="tooltip-test" title="initiated by ${row.initiatedBy}">${row.came}</span>`},
+            {data: "waitingFor"},
             {data: "doctor"},
             {data: row => 
                         `
@@ -105,6 +106,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
         }},
         orderMulti: true,
         search:true,
+        lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: "No patient"
         },
@@ -237,6 +239,7 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
             'visitId': visitId 
         }},
         orderMulti: true,
+        lengthMenu:[25, 50, 100, 150, 200],
         search:true,
         language: {
             emptyTable: "No Bills"
@@ -304,6 +307,7 @@ const getSentBillsTable = (tableId, startDate, endDate) => {
             'endDate'   : endDate, 
         }},
         orderMulti: true,
+        lengthMenu:[25, 50, 100, 150, 200],
         search:true,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
@@ -356,6 +360,7 @@ const getHmoReportsTable = (tableId, category, startDate, endDate) => {
             'endDate': endDate,
         }},
         orderMulti: false,
+        lengthMenu:[25, 50, 100, 150, 200],
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary'},
@@ -402,7 +407,7 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to) => {
         }},
         paging: true,
         orderMulti: false,
-        lengthMenu:[30, 50, 100, 200],
+        lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: 'No Visits'
         },
@@ -522,6 +527,7 @@ const getNhisReconTable = (tableId, date) => {
             'date': date,
         }},
         orderMulti: false,
+        lengthMenu:[25, 50, 100, 150, 200],
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary'},

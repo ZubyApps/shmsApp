@@ -270,8 +270,9 @@ window.addEventListener('DOMContentLoaded', function(){
 
         confirmVisitBtn.setAttribute('disabled', 'disabled')
         const patientId = confirmVisitBtn.getAttribute('data-id')
+        const doctorId  = initiatePatientModal._element.querySelector('#doctor').value
 
-        http.post(`/visits/${patientId}`)
+        http.post(`/visits/${patientId}`, {doctor :doctorId})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 initiatePatientModal.hide()
@@ -290,7 +291,7 @@ window.addEventListener('DOMContentLoaded', function(){
         if ($.fn.DataTable.isDataTable( '#visitsTable' )){
             $('#visitsTable').dataTable().fnDestroy()
         }
-        visitsTable = getVisitsTable('visitsTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value)
+        visitsTable = getVisitsTable('visitsTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value, datesDiv.querySelector('#filterListBy').value)
     })
 
     document.querySelector('#totalPatientsTable').addEventListener('click', function (event) {

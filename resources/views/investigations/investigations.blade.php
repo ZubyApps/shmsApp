@@ -10,6 +10,7 @@
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
 @include('extras.bulkRequestModal', ['title' => 'Bulk Request', 'dept' => 'Lab', 'isPharmacy' => false, 'id' => 'bulkRequestModal'])
 @include('extras.labResultModal', ['title' => 'Lab Result', 'dept' => 'Lab', 'isPharmacy' => false, 'id' => 'labResultModal'])
+@include('investigations.removeTestModal', ['title' => 'Remove Test', 'dept' => 'Lab', 'id' => 'removeTestModal'])
 
 
     <div class="container p-1 mt-5 bg-white">

@@ -140,14 +140,6 @@ window.addEventListener('DOMContentLoaded', function () {
             inPatientsVisitTable = getInpatientsVisitTable('#inPatientsVisitTable', 'My Patients')
         }
     })
-
-    // emergencyTab.addEventListener('click', function () {
-    //     if ($.fn.DataTable.isDataTable( '#emergencyTable' )){
-    //         $('#emergencyTable').dataTable().fnDraw()
-    //     } else {
-    //         emergencyTable = getEmergencyTable('emergencyTable', 'doctor')
-    //     }
-    // })
     
     document.querySelectorAll('#filterListOutPatients, #filterListInPatients, #filterListAncPatients').forEach(filterInput => {
             filterInput.addEventListener('change', function () {
@@ -247,6 +239,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 populatePatientSponsor(investigationAndManagementModal, updateResourceListBtn)
                 btn.setAttribute('data-conid', conId)
                 btn.setAttribute('data-visitid', visitId)
+                if ($.fn.DataTable.isDataTable( '#prescriptionTableConReview' )){
+                    $('#prescriptionTableConReview').dataTable().fnDestroy()
+                }
                 getPrescriptionTableByConsultation('prescriptionTableConReview', conId, visitId, investigationAndManagementModal._element)
                 investigationAndManagementModal.show()
                 setTimeout(()=> {updateResourceListBtn.removeAttribute('disabled')}, 1000)
@@ -981,8 +976,6 @@ window.addEventListener('DOMContentLoaded', function () {
         div.addEventListener('click', function (event) {
             const deleteConsultationBtn                 = event.target.closest('#deleteReviewConsultationBtn')
             const updateResourceListBtn                 = event.target.closest('#updateResourceListBtn')
-            const SurgeryNoteBtn                        = event.target.closest('.updateSurgeryNoteBtn, .viewSurgeryNoteBtn')
-            const deleteSurgeryNoteBtn                  = event.target.closest('.deleteSurgeryNoteBtn')
             const collapseConsultationBtn               = event.target.closest('.collapseConsultationBtn')
             const collapseVisitBtn                      = event.target.closest('.collapseVisitBtn')
             const resultBtn                             = event.target.closest('#addResultBtn, #updateResultBtn')
@@ -1051,6 +1044,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 btn.setAttribute('data-investigationtable', '#investigationTable'+conId)
                 btn.setAttribute('data-treatmenttable', '#treatmentTable'+conId)
                 btn.setAttribute('data-otherprescriptionstable', '#otherPrescriptionsTable'+conId)
+                populatePatientSponsor(investigationAndManagementModal, updateResourceListBtn)
                 getPrescriptionTableByConsultation('prescriptionTableConReview', conId, null, investigationAndManagementModal._element)
                 investigationAndManagementModal.show()
                 setTimeout(()=> {updateResourceListBtn.removeAttribute('disabled')}, 1000)

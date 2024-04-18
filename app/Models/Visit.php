@@ -26,6 +26,11 @@ class Visit extends Model
         return $this->belongsTo(User::class, 'doctor_id');
     }
 
+    public function waitingFor()
+    {
+        return $this->belongsTo(User::class, 'waiting_for');
+    }
+
     public function doctorDoneBy()
     {
         return $this->belongsTo(User::class, 'doctor_done_by');

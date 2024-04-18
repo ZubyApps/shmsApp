@@ -166,7 +166,8 @@ class UserService
         
         if ($designation){
             return $this->user
-                            ->orWhereRelation('designation', 'designation', '=', $designation)
+                            ->where('date_of_exit', null)
+                            ->whereRelation('designation', 'designation', '=', $designation)
                             ->orderBy($orderBy, $orderDir)
                             ->get(['id', 'username']);
         }

@@ -99,7 +99,8 @@
                             <th>Age</th>
                             <th>Sponsor</th>
                             <th>Came</th>
-                            <th>Dr</th>
+                            <th>For</th>
+                            <th>Seeing</th>
                             <th>Vitals</th>
                             <th>Emerg</th>
                         </tr>

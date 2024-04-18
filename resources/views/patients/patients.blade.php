@@ -90,7 +90,14 @@
             </div>
             <!-- Visit Details table -->
             <div class="tab-pane fade" id="nav-visits" role="tabpanel" aria-labelledby="nav-visits-tab" tabindex="0">
-                <x-form-div class="col-xl-6 pt-3 datesDiv">
+                <x-form-div class="col-xl-8 pt-3 datesDiv">
+                    <x-input-span id="filterListLabel">Filter List<x-required-span /></x-input-span>
+                    <select class="form-select form-select-md" name="filterListBy" id="filterListBy">
+                        <option value="">All</option>
+                        <option value="Outpatient">Outpatients</option>
+                        <option value="Inpatient">Inpatients</option>
+                        <option value="ANC">ANC</option>
+                    </select>
                     <x-input-span class="">Start</x-input-span>
                     <x-form-input type="date" name="startDate" id="startDate" />
                     <x-input-span class="">End</x-input-span>

@@ -128,6 +128,7 @@ class InvestigationService
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
+                'doctorDoneAt'      => (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') ?? '',
                 'discharged'        => $visit->discharge_reason,
                 'reason'            => $visit->discharge_reason,
                 'closed'            => $visit->closed,
@@ -153,6 +154,7 @@ class InvestigationService
                         ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                         })
                     ->whereRelation('visit', 'consulted', '!=', null)
+                    ->where('discontinued', false)
                     ->where('result_date', null)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -167,6 +169,7 @@ class InvestigationService
                         ->orWhereRelation('consultation', 'admission_status', '=', 'Observation');
                     })
                     ->where('result_date', null)
+                    ->where('discontinued', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -188,6 +191,7 @@ class InvestigationService
                             ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                             })
+                        ->where('discontinued', false)
                         ->whereRelation('visit', 'consulted', '!=', null)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -209,6 +213,7 @@ class InvestigationService
                     ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
                     ->whereRelation('visit', 'consulted', '!=', null)
                     ->whereRelation('consultation', 'admission_status', '=', 'Outpatient')
+                    ->where('discontinued', false)
                     ->where('result_date', null)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -248,6 +253,8 @@ class InvestigationService
             'result'         => $data->result,
             'result_date'    => Carbon::now(),
             'result_by'      => $user->id,
+            'discontinued'      => false,
+            'dispense_comment'  => null,
             ]);
         
         $resource->update([
@@ -264,6 +271,8 @@ class InvestigationService
             'result'         => $data->result,
             'result_date'    => Carbon::now(),
             'result_by'      => $user->id,
+            'discontinued'      => false,
+            'dispense_comment'  => null,
             ]);
 
         return $prescription;
@@ -278,11 +287,23 @@ class InvestigationService
             'result'         => null,
             'result_date'    => null,
             'result_by'      => null,
-
+            'discontinued'      => false,
+            'dispense_comment'  => null,
             ]);
 
             $resource->update([
                 'stock_level' => $resource->stock_level + 1
+            ]);
+
+        return  $prescription;
+    }
+
+    public function removetTestFromList($data, Prescription $prescription, User $user): Prescription
+    {
+        $prescription->update([
+            'discontinued'      => true,
+            'discontinued_by'   => $user->id,
+            'dispense_comment'  => $data->removalReason,
             ]);
 
         return  $prescription;

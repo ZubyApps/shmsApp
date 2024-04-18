@@ -169,7 +169,8 @@ class PrescriptionService
                 'sent'              => $prescription->result_date ? (new Carbon($prescription->result_at))->format('d/m/y g:ia') : '',
                 'staff'             => $prescription->resultBy->username ?? '',
                 'staffFullName'     => $prescription->resultBy?->nameInFull() ?? '',
-                'thirdParty'        => ThirdParty::whereRelation('thirdPartyServies','prescription_id', $prescription->id)->first()?->short_name ?? ''
+                'thirdParty'        => ThirdParty::whereRelation('thirdPartyServies','prescription_id', $prescription->id)->first()?->short_name ?? '',
+                'removalReason'     => $prescription->dispense_comment ? $prescription->dispense_comment . ' - ' . $prescription->discontinuedBy?->username : ''
             ];
          };
     }

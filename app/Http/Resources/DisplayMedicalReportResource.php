@@ -21,7 +21,7 @@ class DisplayMedicalReportResource extends JsonResource
             'recipientsAddress'   => $this->recipients_address,
             'report'            => $this->report,
             'patientsFullName'  => $this->patient->fullName(),
-            'patientsInfo'      => $this->patient->fullName().', '.$this->patient->age().', '.$this->patient->sex,
+            'patientsInfo'      => strtoupper($this->patient->fullName().', '.$this->patient->age().', '.$this->patient->sex),
             // 'age'               => $this->patient->age(),
             // 'sex'               => $this->patient->sex,
         ];

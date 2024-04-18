@@ -155,6 +155,7 @@ class BillingService
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
                 'discharged'        => $visit->discharge_reason,
                 'reason'            => $visit->discharge_reason,
+                'doctorDoneAt'      => (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') ?? '',
                 'closed'            => $visit->closed,
                 'staff'             => auth()->user()->username,
                 'total_bill'        => $visit->total_hms_bill,

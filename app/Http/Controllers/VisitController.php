@@ -23,7 +23,7 @@ class VisitController extends Controller
 
     public function storeVisit(StoreVisitRequest $request, Patient $patient)
     {
-        return $this->visitService->create($patient, $request->user());
+        return $this->visitService->create($request, $patient, $request->user());
     }
 
     public function loadWaitingTable(Request $request)

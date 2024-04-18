@@ -131,8 +131,10 @@ class NurseService
                 'reason'            => $visit->discharge_reason,
                 'remark'            => $visit->discharge_remark ?? '',
                 'doctorDone'        => $visit->doctorDoneBy?->username ?? '',
+                'doctorDoneAt'      => (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') ?? '',
                 'ancCount'          => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : '',
                 'nurseDoneBy'       => $visit->nurseDoneBy?->username,
+                'nurseDoneAt'       => (new Carbon($visit->nurse_done_at))->format('d/m/y g:ia') ?? '',
                 'closed'            => $visit->closed
             ];
          };
@@ -142,11 +144,13 @@ class NurseService
     {
         if ($visit->nurse_done_by){
             return $visit->update([
-                'nurse_done_by' => null
+                'nurse_done_by' => null,
+                'nurse_done_at' => null,
             ]);
         }
         return $visit->update([
-            'nurse_done_by' => $user->id
+            'nurse_done_by' => $user->id,
+            'nurse_done_at' => new Carbon()
         ]);
     }
 }

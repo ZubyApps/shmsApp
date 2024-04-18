@@ -8,6 +8,7 @@ use App\Http\Resources\PatientResource;
 use App\Models\Patient;
 use App\Services\DatatablesService;
 use App\Services\PatientService;
+use App\Services\UserService;
 use App\Services\VisitService;
 use Illuminate\Http\Request;
 
@@ -17,7 +18,8 @@ class PatientController extends Controller
         private readonly SponsorCategoryController $sponsorCategoryController, 
         private readonly DatatablesService $datatablesService, 
         private readonly PatientService $patientService,
-        private readonly VisitService $visitService
+        private readonly VisitService $visitService,
+        private readonly UserService $userService
         )
     {
         
@@ -26,7 +28,8 @@ class PatientController extends Controller
     public function index()
     {
         return view('patients.patients', 
-        ['categories' => $this->sponsorCategoryController->showAll('id', 'name')]
+        ['categories' => $this->sponsorCategoryController->showAll('id', 'name')],
+        ['doctors' => $this->userService->listStaff(designation: 'Doctor')]
         );
     }
 

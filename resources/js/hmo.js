@@ -278,8 +278,8 @@ window.addEventListener('DOMContentLoaded', function () {
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300){
                                 waitingTable.draw()
-                                hmotreatmentsTable ? hmotreatmentsTable.draw() : ''
-                                sentBillsTable ? sentBillsTable.draw() : ''
+                                hmotreatmentsTable ? hmotreatmentsTable.draw(false) : ''
+                                sentBillsTable ? sentBillsTable.draw(false) : ''
                             }
                         })
                         .catch((error) => {

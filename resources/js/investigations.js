@@ -17,15 +17,18 @@ window.addEventListener('DOMContentLoaded', function () {
     const investigationsModal           = new Modal(document.getElementById('investigationsModal'))
     const bulkRequestModal              = new Modal(document.getElementById('bulkRequestModal'))
     const labResultModal                = new Modal(document.getElementById('labResultModal'))
+    const removeTestModal               = new Modal(document.getElementById('removeTestModal'))
     const inpatientsInvestigationsList  = new Offcanvas(document.getElementById('offcanvasInvestigations'))
     const outpatientsInvestigationsList = new Offcanvas(document.getElementById('offcanvasOutpatientsInvestigations'))
 
     const regularTreatmentDiv       = treatmentDetailsModal._element.querySelector('#treatmentDiv')
     const ancTreatmentDiv           = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
     const addResultDiv              = addResultModal._element.querySelector('#resultDiv')
+    const removalReasonDiv          = removeTestModal._element.querySelector('#removalReasonDiv')
     const updateResultDiv           = updateResultModal._element.querySelector('#resultDiv')
 
     const createResultBtn           = addResultModal._element.querySelector('#createResultBtn')
+    const saveRemovalReasonBtn      = removeTestModal._element.querySelector('#saveRemovalReasonBtn')
     const saveResultBtn             = updateResultModal._element.querySelector('#saveResultBtn')
     const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
     const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
@@ -197,6 +200,7 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#inpatientInvestigationsTable, #outpatientInvestigationsTable').forEach(table => {
         table.addEventListener('click', (event) => {
             const addResultBtn      = event.target.closest('#addResultBtn')
+            const removeResultBtn   = event.target.closest('#removeTestBtn')
     
             if (addResultBtn) {
                 createResultBtn.setAttribute('data-id', addResultBtn.getAttribute('data-id'))
@@ -206,6 +210,16 @@ window.addEventListener('DOMContentLoaded', function () {
                 addResultModal._element.querySelector('#diagnosis').value = addResultBtn.getAttribute('data-diagnosis')
                 addResultModal._element.querySelector('#investigation').value = addResultBtn.getAttribute('data-investigation')
                 addResultModal.show()
+            }
+
+            if (removeResultBtn){
+                saveRemovalReasonBtn.setAttribute('data-id', removeResultBtn.getAttribute('data-id'))
+                saveRemovalReasonBtn.setAttribute('data-table', removeResultBtn.getAttribute('data-table'))
+                removeTestModal._element.querySelector('#patient').value = removeResultBtn.getAttribute('data-patient')
+                removeTestModal._element.querySelector('#sponsorName').value = removeResultBtn.getAttribute('data-sponsor') + ' - ' + removeResultBtn.getAttribute('data-sponsorcat')
+                removeTestModal._element.querySelector('#diagnosis').value = removeResultBtn.getAttribute('data-diagnosis')
+                removeTestModal._element.querySelector('#investigation').value = removeResultBtn.getAttribute('data-investigation')
+                removeTestModal.show()
             }
         })
     })
@@ -379,6 +393,32 @@ window.addEventListener('DOMContentLoaded', function () {
         .catch((error) => {
             console.log(error)
             saveResultBtn.removeAttribute('disabled')
+        })
+    })
+
+    saveRemovalReasonBtn.addEventListener('click', function () {
+        const prescriptionId = saveRemovalReasonBtn.getAttribute('data-id')
+        const investigationTableId = saveRemovalReasonBtn.getAttribute('data-table')
+        saveRemovalReasonBtn.setAttribute('disabled', 'disabled')
+
+        let data = { ...getDivData(removalReasonDiv), prescriptionId }
+
+        http.patch(`/investigations/removalreason/${prescriptionId}`, { ...data }, { "html": removalReasonDiv })
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) {
+                clearDivValues(removalReasonDiv)
+                clearValidationErrors(removalReasonDiv)
+                removeTestModal.hide()
+
+                if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
+                    $('#' + investigationTableId).dataTable().fnDraw()
+                }
+            }
+            saveRemovalReasonBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            console.log(error)
+            saveRemovalReasonBtn.removeAttribute('disabled')
         })
     })
 

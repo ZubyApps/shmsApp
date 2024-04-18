@@ -289,7 +289,7 @@ const detailsBtn1 = (row) => {
                     Report
                 </a>
                 <a class="dropdown-item markDoneBtn btn tooltip-test" title="${row.nurseDoneBy ? 'Unmark?' : 'mark?'}"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
-                    ${row.nurseDoneBy ? 'Marked By ' + row.nurseDoneBy + ' (Unmark?)' : 'Mark as done'}
+                    ${row.nurseDoneBy ? 'Marked By ' + row.nurseDoneBy + ' - ' + row.nurseDoneAt + ' (Unmark?)' : 'Mark as done'}
                 </a>
             </li>
         </ul>
@@ -311,7 +311,7 @@ const reviewBtn = (row) => {
                 
                 <a class="dropdown-item btn btn-outline-primary medicalReportBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-age="${ row.age }" data-sex="${ row.sex }">Report/Refer/Result</a>
 
-                <a class="dropdown-item btn btn-outline-primary dischargedBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">${row.discharged ? 'Patient Discharged' : 'Discharge' }</a>
+                <a class="dropdown-item btn btn-outline-primary dischargedBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">${row.discharged ? 'Patient Discharged' + ' - ' + row.doctorDoneAt : 'Discharge' }</a>
                     
                 <a class="dropdown-item btn btn-outline-primary tooltip-test" title="${row.closed ? 'open?': 'close?'}"  data-id="${ row.id }" id="${row.closed ? 'openVisitBtn' : 'closeVisitBtn'}">
                 ${row.closed ? 'Open? <i class="bi bi-unlock-fill"></i>': 'Close? <i class="bi bi-lock-fill"></i>'}
@@ -375,7 +375,7 @@ const admissionStatus = (row) => {
         <div class="dropdown">
             <a class="d-flex flex- btn tooltip-test text-decoration-none text-primary ${row.ward && row.bedNo ? '' : 'colour-change'} tooltip-test" title="Inpatient" data-bs-toggle="dropdown" href="" >
             <i class="bi bi-hospital-fill"></i>
-                ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged"></i>` : ''}
+                ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged ${row.doctorDoneAt}"></i>` : ''}
             </a>
                 <ul class="dropdown-menu">
                 <li>
@@ -405,7 +405,7 @@ const admissionStatusX = (row) => {
         <div class="dropdown">
             <a class="d-flex flex- btn tooltip-test text-decoration-none text-primary tooltip-test" title="Inpatient" data-bs-toggle="dropdown" href="" >
                 <i class="bi bi-hospital-fill"></i>
-                ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged"></i>` : ''}
+                ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged ${row.doctorDoneAt}"></i>` : ''}
             </a>
         </div>
     </div>` :

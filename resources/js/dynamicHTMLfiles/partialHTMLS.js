@@ -28,7 +28,7 @@ const updateInvestigationAndManagement = (length, iteration, line, isDoctorDone,
     return ` 
                 <div class="investigationAndManagmentDiv mt-2 active" data-div="${iteration}" data-goto=#gotoResource${iteration}>
                     <div class="d-flex justify-content-center">
-                        <button type="button" id="updateResourceListBtn" data-conid="${line.id}" data-visitid="${line.visitId}" data-btn="${iteration}" data-last="${length > iteration || isDoctorDone || closed ? '' : 'last'}" class="btn btn${length > iteration || isDoctorDone || closed ? '-outline' : ''}-primary">
+                        <button type="button" id="updateResourceListBtn" data-conid="${line.id}" data-visitid="${line.visitId}" data-patient="${line.patient}" data-sponsorcat="${line.sponsorCat}" data-sponsor="${line.sponsorName}" data-btn="${iteration}" data-last="${length > iteration || isDoctorDone || closed ? '' : 'last'}" class="btn btn${length > iteration || isDoctorDone || closed ? '-outline' : ''}-primary">
                             Update Resources
                             ${length > iteration || isDoctorDone || closed ? '<i class="bi bi-lock-fill tooltip-test" title="veiwing only"></i>' : '<i class="bi bi-prescription"></i>'}
                         </button>
