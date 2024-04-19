@@ -70,6 +70,7 @@ const getVerificationTable = (tableId) => {
         ajax:  '/hmo/verification/list',
         orderMulti: true,
         search:true,
+        lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: 'No verification requested'
         },
@@ -171,7 +172,7 @@ const getApprovalListTable = (tableId, sponsor) => {
         }},
         orderMulti: true,
         search:true,
-        lengthMenu:[25, 40, 80, 200],
+        lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: 'No items for approval'
         },
@@ -298,13 +299,14 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
     return visitPrescriptionsTable
 }
 
-const getSentBillsTable = (tableId, startDate, endDate) => {
+const getSentBillsTable = (tableId, startDate, endDate, filterByOpen) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
     return new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/sentbills', data: {
-            'startDate' : startDate, 
-            'endDate'   : endDate, 
+            'startDate'      : startDate, 
+            'endDate'        : endDate, 
+            'filterByOpen'   : filterByOpen, 
         }},
         orderMulti: true,
         lengthMenu:[25, 50, 100, 150, 200],

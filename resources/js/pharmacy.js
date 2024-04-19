@@ -359,6 +359,7 @@ window.addEventListener('DOMContentLoaded', function () {
         outPatientsTable.draw()
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+        emergencyTable.draw()
     })
 
     bulkRequestBtn.addEventListener('click', function () {
@@ -443,6 +444,7 @@ window.addEventListener('DOMContentLoaded', function () {
             outPatientsTable.draw()
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+            emergencyTable.draw()
         })
     })
 })

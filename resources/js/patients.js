@@ -386,7 +386,7 @@ window.addEventListener('DOMContentLoaded', function(){
         modal.addEventListener('hide.bs.modal', function(event) {
             regularTreatmentDiv.innerHTML = ''
             ancTreatmentDiv.innerHTML = ''
-            visitsTable ? visitsTable.draw() : ''
+            visitsTable ? visitsTable.draw(false) : ''
         })
     })
     

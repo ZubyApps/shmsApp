@@ -186,6 +186,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 const treatVisitBtn             = event.target.closest('.treatVisitBtn')
                 const closeVisitBtn             = event.target.closest('.closeVisitBtn')
                 const medicalReportBtn          = event.target.closest('.medicalReportBtn')
+                const filterByOpen              = event.target.closest('.filterByOpen')
+                const removeFilter              = event.target.closest('.removeFilter')
                 const viewer                    = 'hmo'
         
                 if (consultationDetailsBtn) {
@@ -299,7 +301,20 @@ window.addEventListener('DOMContentLoaded', function () {
                     medicalReportListModal._element.querySelector('#sex').value = medicalReportBtn.getAttribute('data-sex')
                     medicalReportTable = getMedicalReportTable('medicalReportTable', visitId, medicalReportListModal._element)
                     medicalReportListModal.show()
+                }
 
+                if (filterByOpen){
+                    if ($.fn.DataTable.isDataTable( '#sentBillsTable' )){
+                        $('#sentBillsTable').dataTable().fnDestroy()
+                    }
+                    getSentBillsTable('#sentBillsTable', null, null, 1)
+                }
+
+                if (removeFilter){
+                    if ($.fn.DataTable.isDataTable( '#sentBillsTable' )){
+                        $('#sentBillsTable').dataTable().fnDestroy()
+                    }
+                    getSentBillsTable('#sentBillsTable')
                 }
             })
     })

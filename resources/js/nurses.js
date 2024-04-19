@@ -426,7 +426,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.delete(`/nursesreport/${id}`)
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
-                                nursesReportTable ? nursesReportTable.draw() : ''
+                                nursesReportTable ? nursesReportTable.draw(false) : ''
                             }
                             deleteNursesReportBtn.removeAttribute('disabled')
                         })
@@ -463,7 +463,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
                                 if ($.fn.DataTable.isDataTable('#' + tableId)) {
-                                    $('#' + tableId).dataTable().fnDraw()
+                                    $('#' + tableId).dataTable().fnDraw(false)
                                 }
                             }
                             deleteDeliveryNoteBtn.removeAttribute('disabled')
@@ -486,7 +486,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 newNursesReportTemplateModal.hide()
                 clearDivValues(newNursesReportTemplateModal._element)
                 clearValidationErrors(newNursesReportTemplateModal._element)
-                nursesReportTable ? nursesReportTable.draw() : ''
+                nursesReportTable ? nursesReportTable.draw(false) : ''
             }
             createNursesReportBtn.removeAttribute('disabled')
         })
@@ -504,7 +504,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300) {
                 editNursesReportTemplateModal.hide()
                 clearValidationErrors(editNursesReportTemplateModal._element)
-                nursesReportTable ? nursesReportTable.draw() : ''
+                nursesReportTable ? nursesReportTable.draw(false) : ''
             }
             saveNursesReportBtn.removeAttribute('disabled')
         })
@@ -525,7 +525,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                 newAncRegisterationModal.hide()
                 clearDivValues(newAncRegisterationModal._element)
-                ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+                ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
             }
             registerAncBtn.removeAttribute('disabled')
         })
@@ -543,7 +543,7 @@ window.addEventListener('DOMContentLoaded', function () {
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 updateAncRegisterationModal.hide()
-                ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+                ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
             }
             saveAncBtn.removeAttribute('disabled')
         })
@@ -561,7 +561,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         viewAncRegisterationModal.hide()
-                        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+                        ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
                     }
                     deleteAncBtn.removeAttribute('disabled')
                 })
@@ -624,7 +624,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         clearItemsList(div.querySelector(`#resourceList${div.dataset.div}`))
                     }
                     if ($.fn.DataTable.isDataTable( divPrescriptionTableId )){
-                        $(divPrescriptionTableId).dataTable().fnDraw()
+                        $(divPrescriptionTableId).dataTable().fnDraw(false)
                     }
 
                     div.querySelector('#quantity').value = 1
@@ -641,13 +641,13 @@ window.addEventListener('DOMContentLoaded', function () {
             modal.addEventListener('hide.bs.modal', function(event) {
             inPatientsVisitTable.draw()
             waitingTable.draw()
-            outPatientsVisitTable ? outPatientsVisitTable.draw() : ''
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-            bulkRequestsTable ? bulkRequestsTable.draw() : ''
-            emergencyTable ? emergencyTable.draw() : ''
+            outPatientsVisitTable ? outPatientsVisitTable.draw(false) : ''
+            ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+            bulkRequestsTable ? bulkRequestsTable.draw(false) : ''
+            emergencyTable ? emergencyTable.draw(false) : ''
             medicationsTable ? medicationsTable.draw(false) : ''
-            upcomingMedicationsTable.draw()
-            upcomingNursingChartsTable.draw()
+            upcomingMedicationsTable.draw(false)
+            upcomingNursingChartsTable.draw(false)
         })
     })
 
@@ -657,10 +657,10 @@ window.addEventListener('DOMContentLoaded', function () {
             ancTreatmentDiv.innerHTML = ''
             visitHistoryDiv.innerHTML = ''
             inPatientsVisitTable.draw()
-            outPatientsVisitTable ? outPatientsVisitTable.draw() : ''
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-            bulkRequestsTable ? bulkRequestsTable.draw() : ''
-            emergencyTable ? emergencyTable.draw() : ''
+            outPatientsVisitTable ? outPatientsVisitTable.draw(false) : ''
+            ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+            bulkRequestsTable ? bulkRequestsTable.draw(false) : ''
+            emergencyTable ? emergencyTable.draw(false) : ''
             upcomingMedicationsTable.draw()
             upcomingNursingChartsTable.draw()
         })
@@ -688,7 +688,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             clearValidationErrors(div)
                         }
                         if ($.fn.DataTable.isDataTable('#' + tableId)) {
-                            $('#' + tableId).dataTable().fnDraw()
+                            $('#' + tableId).dataTable().fnDraw(false)
                         }
                         addBtn.removeAttribute('disabled')
                     })
@@ -714,7 +714,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
                                 if ($.fn.DataTable.isDataTable('#' + table.id)) {
-                                    $('#' + table.id).dataTable().fnDraw()
+                                    $('#' + table.id).dataTable().fnDraw(false)
                                 }
                             }
                             deleteBtn.removeAttribute('disabled')
@@ -743,7 +743,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                     $('#' + table.id).dataTable().fnDraw()
                                 }
                                 if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {
-                                    $('#' + treatmentTableId).dataTable().fnDraw()
+                                    $('#' + treatmentTableId).dataTable().fnDraw(false)
                                 }
                             }
                             deleteBtn.removeAttribute('disabled')
@@ -1008,7 +1008,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                             if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {
-                                $('#' + treatmentTableId).dataTable().fnDraw()
+                                $('#' + treatmentTableId).dataTable().fnDraw(false)
                             }
                         }
                     })
@@ -1042,11 +1042,11 @@ window.addEventListener('DOMContentLoaded', function () {
                     clearValidationErrors(medicationChartDiv)
 
                     if ($.fn.DataTable.isDataTable('#' + medicationChartTable.id)) {
-                        $('#' + medicationChartTable.id).dataTable().fnDraw()
+                        $('#' + medicationChartTable.id).dataTable().fnDraw(false)
                     }
 
                     if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {
-                        $('#' + treatmentTableId).dataTable().fnDraw()
+                        $('#' + treatmentTableId).dataTable().fnDraw(false)
                     }
 
                 }
@@ -1077,11 +1077,11 @@ window.addEventListener('DOMContentLoaded', function () {
                     clearValidationErrors(prescriptionChartDiv)
 
                     if ($.fn.DataTable.isDataTable('#' + nursingChartTable.id)) {
-                        $('#' + nursingChartTable.id).dataTable().fnDraw()
+                        $('#' + nursingChartTable.id).dataTable().fnDraw(false)
                     }
 
                     if ($.fn.DataTable.isDataTable('#' + otherPrescriptionsTableId)) {
-                        $('#' + otherPrescriptionsTableId).dataTable().fnDraw()
+                        $('#' + otherPrescriptionsTableId).dataTable().fnDraw(false)
                     }
 
                 }
@@ -1108,7 +1108,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     clearValidationErrors(giveMedicationDiv)
 
                     if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {
-                        $('#' + treatmentTableId).dataTable().fnDraw()
+                        $('#' + treatmentTableId).dataTable().fnDraw(false)
                     }
                 }
                 saveGivenMedicationBtn.removeAttribute('disabled')
@@ -1135,7 +1135,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     clearValidationErrors(saveServiceDoneDiv)
 
                     if ($.fn.DataTable.isDataTable('#' + otherPrescriptionTableId)) {
-                        $('#' + otherPrescriptionTableId).dataTable().fnDraw()
+                        $('#' + otherPrescriptionTableId).dataTable().fnDraw(false)
                     }
                 }
                 saveServiceDoneBtn.removeAttribute('disabled')

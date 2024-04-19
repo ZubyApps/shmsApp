@@ -221,10 +221,9 @@
                                     <th>Doctor</th>
                                     <th>Diagnosis</th>
                                     <th>Sent By</th>
-                                    {{-- <th>Last 30days</th> --}}
                                     <th>Total HmsBill</th>
                                     <th>Total HmoBill</th>
-                                    <th>Details</th>
+                                    <th><span class="removeFilter">Details/</span><span class="filterByOpen">State</span></th>
                                 </tr>
                             </thead>
                             <tbody>

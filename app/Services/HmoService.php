@@ -414,6 +414,21 @@ class HmoService
         $current    = Carbon::now();
 
         if (! empty($params->searchTerm)) {
+            if ($data->startDate && $data->endDate){
+                return $this->visit
+                        ->Where('hmo_done_by', '!=', null)
+                        ->where(function (Builder $query) use($params) {
+                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
+                        ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
             return $this->visit
                         ->Where('hmo_done_by', '!=', null)
                         ->where(function (Builder $query) use($params) {
@@ -421,7 +436,8 @@ class HmoService
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                         })
                         
                         ->orderBy($orderBy, $orderDir)
@@ -429,10 +445,42 @@ class HmoService
         }
 
         if ($data->startDate && $data->endDate){
+
+            if ($data->filterByOpen){
+                return $this->visit
+                        ->where('consulted', '!=', null)
+                        ->where('hmo_done_by', '!=', null)
+                        ->where('closed', false)
+                        ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                        ->where(function (Builder $query) {
+                            $query->whereRelation('sponsor', 'category_name', 'HMO')
+                            ->orWhereRelation('sponsor', 'category_name', 'NHIS')
+                            ->orWhereRelation('sponsor', 'category_name', 'Retainership');
+                        })
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('hmo_done_by', '!=', null)
                     ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                    ->where(function (Builder $query) {
+                        $query->whereRelation('sponsor', 'category_name', 'HMO')
+                        ->orWhereRelation('sponsor', 'category_name', 'NHIS')
+                        ->orWhereRelation('sponsor', 'category_name', 'Retainership');
+                    })
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->filterByOpen){
+            return $this->visit
+                    ->where('consulted', '!=', null)
+                    ->where('hmo_done_by', '!=', null)
+                    ->where('closed', false)
+                    ->whereMonth('created_at', $current->month)
+                    ->whereYear('created_at', $current->year)
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
                         ->orWhereRelation('sponsor', 'category_name', 'NHIS')
