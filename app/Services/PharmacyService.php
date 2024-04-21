@@ -268,7 +268,7 @@ class PharmacyService
                 'diagnosis'             => $consultation->icd11_diagnosis ?? 
                                            $consultation->provisional_diagnosis ?? 
                                            $consultation->assessment, 
-                'consulted'             => (new Carbon($consultation->created_at))->format('D/m/y g:ia'),                
+                'consulted'             => (new Carbon($consultation->created_at))->format('D d/m/y g:ia'),                
                 'conId'                 => $consultation->id,
                 'sponsor'               => $consultation->visit->sponsor->name,
                 'sponsorCategory'       => $consultation->visit->sponsor->sponsorCategory->name,
