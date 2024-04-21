@@ -220,7 +220,7 @@ class PrescriptionService
                 'resource'              => $prescription->resource->name,
                 'resourceCategory'      => $prescription->resource->category,
                 'prescription'          => $prescription->prescription ?? '',
-                'prescribed'            => (new Carbon($prescription->created_at))->format('D/m/y g:ia'),
+                'prescribed'            => (new Carbon($prescription->created_at))->format('D d/m/y g:ia'),
                 'prescribedFormatted'   => (new Carbon($prescription->created_at))->format('Y-m-d\TH:i'),
                 'qtyBilled'             => $prescription->qty_billed > 0 ? $prescription->qty_billed : '',
                 'qtyDispensed'          => $prescription->qty_dispensed,
