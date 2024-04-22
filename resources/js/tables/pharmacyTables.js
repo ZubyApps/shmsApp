@@ -39,6 +39,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
             'filterBy': filter 
         }},
         orderMulti: true,
+        lengthMenu:[25, 50, 100, 150, 200],
         search:true,
         language: {
             emptyTable: 'No patient record'
