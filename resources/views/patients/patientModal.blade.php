@@ -30,7 +30,7 @@
                                 <x-form-div>
                                     <x-input-span id="sponsorCategoryLabel">Sponsor Category<x-required-span /></x-input-span>
                                     <select class="form-select form-select-md" name="sponsorCategory" id="{{ $isUpdate ? 'updateSponsorCategory' : 'newSponsorCategory' }}">
-                                        <option value="">Select Category</option>p
+                                        <option value="">Select Category</option>
                                         @foreach ($categories as $category )
                                         <option @if (Str::lower($category->name) === "family") {!! 'class="familyOption"' !!} @endif value="{{ $category->id}}" name="{{ $category->name }}">{{ $category->name }}</option>
                                         @endforeach
