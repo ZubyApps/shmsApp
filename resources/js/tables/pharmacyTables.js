@@ -122,7 +122,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-secondary">By: ${p.dispensedBy}</td>
                                                 <td class="text-secondary">Time: ${p.dispensed}</td>
                                                 <td class="text-secondary"> 
-                                                    <div class="d-flex text-secondary ${p.dispensed ? '' : 'd-none'}">
+                                                    <div class="d-flex text-secondary ${p.qtyBilled ? '' : 'd-none'}">
                                                         <span class="dispenseCommentSpan btn btn-${p.dispenseComment ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}">${p.dispenseComment ? p.dispenseComment : 'Comment'}</span>
                                                         <input class="ms-1 form-control dispenseCommentInput d-none text-secondary" type="text" style="width:4rem;" value="${p.dispenseComment ?? ''}">
                                                     </div>

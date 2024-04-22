@@ -172,112 +172,115 @@ window.addEventListener('DOMContentLoaded', function () {
         getExpirationStockTable('expirationStockTable', filterListOption.value)
     })
 
-    document.querySelector('#visitPrescriptionsTable').addEventListener('click', function (event) {
-        const billQtySpan               = event.target.closest('.billQtySpan')
-        const dispenseQtySpan           = event.target.closest('.dispenseQtySpan')
-        const dispenseCommentSpan       = event.target.closest('.dispenseCommentSpan')
-        const billingDispenseFieldset   = document.querySelector('#billingDispenseFieldset')
-
-        if (billQtySpan){
-            const prescriptionId    = billQtySpan.getAttribute('data-id')
-            const stock             = +billQtySpan.getAttribute('data-stock')
-            const div               = billQtySpan.parentElement
-            const billQtyInput      = div.querySelector('.billQtyInput')
-
-            if (!stock){
-                alert('Resource is out of stock, please add to stock before billing')
-            } else {
-                billQtySpan.classList.add('d-none')
-                billQtyInput.classList.remove('d-none')
-
-                resetFocusEndofLine(billQtyInput)
-            
-                billQtyInput.addEventListener('blur', function () {
+    document.querySelectorAll('#visitPrescriptionsTable, #emergencyTable').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const billQtySpan               = event.target.closest('.billQtySpan')
+            const dispenseQtySpan           = event.target.closest('.dispenseQtySpan')
+            const dispenseCommentSpan       = event.target.closest('.dispenseCommentSpan')
+            const billingDispenseFieldset   = document.querySelector('#billingDispenseFieldset')
+    
+            if (billQtySpan){
+                const prescriptionId    = billQtySpan.getAttribute('data-id')
+                const stock             = +billQtySpan.getAttribute('data-stock')
+                const div               = billQtySpan.parentElement
+                const billQtyInput      = div.querySelector('.billQtyInput')
+    
+                if (!stock){
+                    alert('Resource is out of stock, please add to stock before billing')
+                } else {
+                    billQtySpan.classList.add('d-none')
+                    billQtyInput.classList.remove('d-none')
+    
+                    resetFocusEndofLine(billQtyInput)
                 
+                    billQtyInput.addEventListener('blur', function () {
+                    
+                        billingDispenseFieldset.setAttribute('disabled', 'disabled')
+                        http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value}, {'html' : div})
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
+                                visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                                billingTable ? billingTable.draw() : ''
+                            }
+                        })
+                        .catch((error) => {
+                            if (error.response.status == 422){
+                                removeDisabled(billingDispenseFieldset)
+                                console.log(error)
+                            } else{
+                                console.log(error)
+                                visitPrescriptionsTable.draw()
+                                visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                            }
+                        })
+                    })
+                }                
+            }
+    
+            if (dispenseQtySpan){
+                const prescriptionId    = dispenseQtySpan.getAttribute('data-id')
+                const qtyBilled         = dispenseQtySpan.getAttribute('data-qtybilled')
+                const div               = dispenseQtySpan.parentElement
+                const dispenseQtyInput  = div.querySelector('.dispenseQtyInput')
+                dispenseQtySpan.classList.add('d-none')
+                dispenseQtyInput.classList.remove('d-none')
+                resetFocusEndofLine(dispenseQtyInput)
+                
+                dispenseQtyInput.addEventListener('blur', function () {
+                    if (dispenseQtyInput.value > +qtyBilled){
+                        alert('Quantity to be dispensed should not be more than Quantity billed')
+                        resetFocusEndofLine(dispenseQtyInput)
+                    } else {
+                        billingDispenseFieldset.setAttribute('disabled', 'disabled')
+                        http.patch(`/pharmacy/dispense/${prescriptionId}`, {quantity: dispenseQtyInput.value}, {'html' : div})
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                visitPrescriptionsTable.draw()
+                                visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                            }
+                        })
+                        .catch((error) => {
+                            if (error.response.status == 422){
+                                removeDisabled(billingDispenseFieldset)
+                                console.log(error)
+                            } else{
+                                console.log(error)
+                                visitPrescriptionsTable.draw()
+                                visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                            }
+                        })
+                    }               
+                })
+            }
+    
+            if (dispenseCommentSpan){
+                const prescriptionId        = dispenseCommentSpan.getAttribute('data-id')
+                const dispenseCommentInput  = dispenseCommentSpan.parentElement.querySelector('.dispenseCommentInput')
+                dispenseCommentSpan.classList.add('d-none')
+                dispenseCommentInput.classList.remove('d-none')
+                resetFocusEndofLine(dispenseCommentInput)
+                
+                dispenseCommentInput.addEventListener('blur', function () {
                     billingDispenseFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value}, {'html' : div})
+                    http.patch(`/pharmacy/dispense/comment/${prescriptionId}`, {comment: dispenseCommentInput.value})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                             visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
-                            visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                            billingTable ? billingTable.draw() : ''
+                            visitPrescriptionsTable ? visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset)) : ''
+                            emergencyTable.draw()
                         }
                     })
                     .catch((error) => {
-                        if (error.response.status == 422){
-                            removeDisabled(billingDispenseFieldset)
-                            console.log(error)
-                        } else{
-                            console.log(error)
-                            visitPrescriptionsTable.draw()
-                            visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                        }
+                        console.log(error)
+                        visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
+                        visitPrescriptionsTable ? visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset)) : ''
+                        emergencyTable.draw()
                     })
+                           
                 })
             }
-                               
-        }
-
-        if (dispenseQtySpan){
-            const prescriptionId    = dispenseQtySpan.getAttribute('data-id')
-            const qtyBilled         = dispenseQtySpan.getAttribute('data-qtybilled')
-            const div               = dispenseQtySpan.parentElement
-            const dispenseQtyInput  = div.querySelector('.dispenseQtyInput')
-            dispenseQtySpan.classList.add('d-none')
-            dispenseQtyInput.classList.remove('d-none')
-            resetFocusEndofLine(dispenseQtyInput)
-            
-            dispenseQtyInput.addEventListener('blur', function () {
-                if (dispenseQtyInput.value > +qtyBilled){
-                    alert('Quantity to be dispensed should not be more than Quantity billed')
-                    resetFocusEndofLine(dispenseQtyInput)
-                } else {
-                    billingDispenseFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/pharmacy/dispense/${prescriptionId}`, {quantity: dispenseQtyInput.value}, {'html' : div})
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300) {
-                            visitPrescriptionsTable.draw()
-                            visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                        }
-                    })
-                    .catch((error) => {
-                        if (error.response.status == 422){
-                            removeDisabled(billingDispenseFieldset)
-                            console.log(error)
-                        } else{
-                            console.log(error)
-                            visitPrescriptionsTable.draw()
-                            visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                        }
-                    })
-                }               
-            })
-        }
-
-        if (dispenseCommentSpan){
-            const prescriptionId        = dispenseCommentSpan.getAttribute('data-id')
-            const dispenseCommentInput  = dispenseCommentSpan.parentElement.querySelector('.dispenseCommentInput')
-            dispenseCommentSpan.classList.add('d-none')
-            dispenseCommentInput.classList.remove('d-none')
-            resetFocusEndofLine(dispenseCommentInput)
-            
-            dispenseCommentInput.addEventListener('blur', function () {
-                billingDispenseFieldset.setAttribute('disabled', 'disabled')
-                http.patch(`/pharmacy/dispense/comment/${prescriptionId}`, {comment: dispenseCommentInput.value})
-                .then((response) => {
-                    if (response.status >= 200 || response.status <= 300) {
-                        visitPrescriptionsTable.draw()
-                        visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                    }
-                })
-                .catch((error) => {
-                    console.log(error)
-                    visitPrescriptionsTable.draw()
-                    visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                })
-                       
-            })
-        }
+        })
     })
 
     document.querySelector('#bulkRequestsTable').addEventListener('click', function (event) {

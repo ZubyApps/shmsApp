@@ -757,8 +757,11 @@ const getAncVitalSignsTable = (tableId, ancRegId, modal, viewer) => {
 const getEmergencyTable = (tableId, viewer) => {
     return new DataTable('#'+tableId, {
         serverSide: true,
-        ajax: `/prescription/load/emergency`,
+        ajax: {url: `/prescription/load/emergency`, data: {
+            'viewer' : viewer
+        }},
         orderMulti: true,
+        lengthMenu:[25, 50, 100, 150, 200],
         search:true,
         language: {
             emptyTable: 'No pending emergency prescriptions'
@@ -798,6 +801,10 @@ const getEmergencyTable = (tableId, viewer) => {
                             ${row.medicationCharts.length ? row.doseComplete ? 'Complete' : 'Charted' : 'Create'}
                         </button>`
                     }
+                </div>
+                <div class="d-flex text-secondary ${viewer === 'pharmacy' ? '' : 'd-none'}">
+                    <span class="dispenseCommentSpan btn btn-${row.dispenseComment ? 'white text-secondary' : 'outline-primary'}" data-id="${row.id}">${row.dispenseComment ? row.dispenseComment : 'Comment'}</span>
+                    <input class="ms-1 form-control dispenseCommentInput d-none text-secondary" type="text" style="width:4rem;" value="${row.dispenseComment ?? ''}">
                 </div>
                 `      
             },

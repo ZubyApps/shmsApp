@@ -319,9 +319,10 @@ class PrescriptionService
 
         if (! empty($params->searchTerm)) {
             return $this->prescription
-                        ->where('consultation_id', null)
                         ->where(function(Builder $query) use($params) {
                             $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                         })
                         ->where(function(Builder $query) {
@@ -332,6 +333,25 @@ class PrescriptionService
                         })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->viewer == 'pharmacy'){
+            return $this->prescription
+                    ->where(function(Builder $query) {
+                        $query->where(function(Builder $query) {
+                                $query->whereTime('created_at', '>=', '20:00:00')
+                                ->orWhereTime('created_at', '<=', '08:00:00');
+                            });
+                    })
+                    ->where('dispense_comment', null)
+                    ->where(function(Builder $query) {
+                        $query->whereRelation('resource', 'category', 'Medications')
+                        ->orWhereRelation('resource', 'category', 'Medical Services')
+                        ->orWhereRelation('resource', 'category', 'Consumables')
+                        ->orWhere('chartable', true);
+                    })
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return $this->prescription
@@ -369,7 +389,8 @@ class PrescriptionService
                 'doseCount'             => $doseCount = $prescription->medicationCharts->count(),
                 'givenCount'            => $givenCount = $prescription->medicationCharts->where('dose_given', '!=', null)->count(),
                 'doseComplete'          => $this->completed($doseCount, $givenCount),
-                'medicationCharts'      => $prescription->medicationCharts
+                'medicationCharts'      => $prescription->medicationCharts,
+                'dispenseComment'       => $prescription->dispense_comment ?? '',
             ];
          };
     }

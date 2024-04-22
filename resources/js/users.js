@@ -36,7 +36,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     document.querySelector('#activeStaffTable').addEventListener('click', function (event) {
-        const logStaffOutBtn    = event.target.closest('.logStaffOutBtn')
+        const logStaffOutBtn = event.target.closest('.logStaffOutBtn')
 
         if(logStaffOutBtn){
             if (confirm('Are you sure you want to log this Staff out?')) {
@@ -45,12 +45,13 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.post(`/users/logout/${staffId}`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300){
-                        activeStaffTable.draw()
+                        activeStaffTable.draw(false)
                     }
                     logStaffOutBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {
                     logStaffOutBtn.removeAttribute('disabled')
+                    activeStaffTable.draw(false)
                     console.log(error)
                 })
             }
