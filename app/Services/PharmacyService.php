@@ -190,10 +190,8 @@ class PharmacyService
 
             $prescription->visit->update([
                 'total_hms_bill'    => $prescription->visit->totalHmsBills(),
-                'total_nhis_bill'   => $isNhis ? $prescription->visit->totalNhisBills() : $prescription->visit->total_nhis_bill,
+                'total_nhis_bill'   => $isNhis ? $prescription->visit->totalNhisBills() : null,//$prescription->visit->total_nhis_bill,
                 'total_capitation'  => $isNhis ? $prescription->visit->totalPrescriptionCapitations() : $prescription->visit->total_capitation,
-                // 'total_hms_bill' => $data->quantity ? $prescription->visit->totalHmsBills() : ($prescription->visit->totalHmsBills() - $bill),
-                // 'total_nhis_bill' => $data->quantity && $isNhis ? $prescription->visit->totalNhisBills() : ($prescription->visit->totalNhisBills() - $bill/10)
             ]);
  
             if ($isNhis){

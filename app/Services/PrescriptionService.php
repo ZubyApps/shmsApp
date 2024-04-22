@@ -59,7 +59,7 @@ class PrescriptionService
             $prescription->visit->update([
                 'viewed_at'         => null,
                 'total_hms_bill'    => $prescription->visit->totalHmsBills(),
-                'total_nhis_bill'   => $isNhis ? $prescription->visit->totalNhisBills() : $prescription->visit->total_nhis_bill,
+                'total_nhis_bill'   => $isNhis ? $prescription->visit->totalNhisBills() : null,//$prescription->visit->total_nhis_bill,
                 'total_capitation'  => $isNhis ? $prescription->visit->totalPrescriptionCapitations() : $prescription->visit->total_capitation,
                 'pharmacy_done_by'  => $resource->category == 'Medications' || $resource->category == 'Consumables' ? null : $prescription->visit->pharmacy_done_by,
                 'nurse_done_by'     => $resource->sub_category == 'Injectable' || $resource->category == 'Consumables' ? null : $prescription->visit->nurse_done_by,
@@ -437,7 +437,7 @@ class PrescriptionService
 
             $prescriptionToDelete->visit->update([
                 'total_hms_bill'    => $prescription->visit->totalHmsBills(),
-                'total_nhis_bill'   => $isNhis ? $prescription->visit->totalNhisBills() : $prescription->visit->total_nhis_bill,
+                'total_nhis_bill'   => $isNhis ? $prescription->visit->totalNhisBills() : null,//$prescription->visit->total_nhis_bill,
                 'total_capitation'  => $isNhis ? $prescription->visit->totalPrescriptionCapitations() : $prescription->visit->total_capitation,
             ]);
 

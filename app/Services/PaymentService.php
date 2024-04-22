@@ -83,7 +83,7 @@ Class PaymentService
             $payment->visit->update([
                 'total_paid'        => $totalPayments,
                 'total_hms_bill'    => $payment->visit->totalHmsBills(),
-                'total_nhis_bill'   => $payment->visit->sponsor->category_name == 'NHIS' ? $payment->visit->totalNhisBills() : $payment->visit->total_nhis_bill,
+                'total_nhis_bill'   => $payment->visit->sponsor->category_name == 'NHIS' ? $payment->visit->totalNhisBills() : null//$payment->visit->total_nhis_bill,
             ]);
 
             $prescriptions = $payment->visit->prescriptions;
