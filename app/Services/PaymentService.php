@@ -88,7 +88,7 @@ Class PaymentService
 
             $prescriptions = $payment->visit->prescriptions;
 
-            if ($payment->visit->sponsor->sponsorCategory->name == 'NHIS'){
+            if ($payment->visit->sponsor->category_name == 'NHIS'){
                 $this->prescriptionsPaymentSeiveNhis($totalPayments, $prescriptions);
             } else {
                 $this->prescriptionsPaymentSeive($totalPayments, $prescriptions);

@@ -4,9 +4,9 @@
 @section('content')
 @vite(['resources/js/accountReports.js'])
 
-@include('reports.modals.byPayMethodModal', ['title' => 'Paymets By Paymethod', 'id' => 'byPayMethodModal'])
+@include('reports.modals.byPayMethodModal', ['title' => 'Payments By Pay Method', 'id' => 'byPayMethodModal'])
 @include('reports.modals.visitsBySponsorModal', ['title' => 'Visits By Sponsor', 'id' => 'visitsBySponsorModal'])
-@include('reports.modals.byExpenseCategoryModal', ['title' => 'Paymets By Paymethod', 'id' => 'byExpenseCategoryModal'])
+@include('reports.modals.byExpenseCategoryModal', ['title' => 'Expenses By Category', 'id' => 'byExpenseCategoryModal'])
 @include('reports.modals.TPSByThirdPartyModal', ['title' => 'Third Party Services By Third Party', 'id' => 'TPSByThirdPartyModal'])
 @include('billing.expenseModal', ['title' => "New Expense", 'isUpdate' => false, 'id' => 'newExpenseModal'])
 @include('billing.expenseModal', ['title' => "Update Expense", 'isUpdate' => true, 'id' => 'updateExpenseModal'])

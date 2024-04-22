@@ -52,7 +52,7 @@ class PrescriptionService
                 'doctor_on_call'    => $data->doc
             ]);
 
-            $isNhis = $prescription->visit->sponsor->sponsorCategory->name == 'NHIS';
+            $isNhis = $prescription->visit->sponsor->category_name == 'NHIS';
 
             $isNhis && $bill ? $prescription->update(['nhis_bill' => $nhisBill($bill)]) : '';
 
@@ -421,14 +421,34 @@ class PrescriptionService
     public function processDeletion(Prescription $prescription)
     {
         return DB::transaction(function () use($prescription) {
+            $prescriptionToDelete = $prescription;
+
             if ($prescription->qty_dispensed){
                 $resource = $prescription->resource;
                 $resource->stock_level = $resource->stock_level + $prescription->qty_dispensed;
     
                 $resource->save();
             }
-    
-            return $prescription->destroy($prescription->id);
+
+            
+            $deleted = $prescription->destroy($prescription->id);
+            
+            $isNhis = $prescriptionToDelete->visit->sponsor->category_name == 'NHIS';
+
+            $prescriptionToDelete->visit->update([
+                'total_hms_bill'    => $prescription->visit->totalHmsBills(),
+                'total_nhis_bill'   => $isNhis ? $prescription->visit->totalNhisBills() : $prescription->visit->total_nhis_bill,
+                'total_capitation'  => $isNhis ? $prescription->visit->totalPrescriptionCapitations() : $prescription->visit->total_capitation,
+            ]);
+
+            if ($isNhis){
+                $this->paymentService->prescriptionsPaymentSeiveNhis($prescription->visit->totalPayments(), $prescription->visit->prescriptions);
+                $this->capitationPaymentService->seiveCapitationPayment($prescription->visit->sponsor, new Carbon($prescription->created_at));
+            } else {
+                $this->paymentService->prescriptionsPaymentSeive($prescription->visit->totalPayments(), $prescription->visit->prescriptions);
+            }
+
+            return $deleted;
         });
     }
 
