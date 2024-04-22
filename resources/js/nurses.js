@@ -139,6 +139,16 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     waitingBtn.addEventListener('click', function () {
+        http.get(`/visits/average`)
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                document.querySelector('#lastWeek').value = response.data.lastWeek
+                document.querySelector('#thisWeek').value = response.data.thisWeek
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+        })
         waitingTable.draw()
     })
 

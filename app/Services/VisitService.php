@@ -13,6 +13,8 @@ use App\Models\ResourceSubCategory;
 use App\Models\User;
 use App\Models\Visit;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
+use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -415,5 +417,15 @@ class VisitService
                 'closed'            => true//$visit->closed,
             ];
          };
+    }
+
+    public function averageWaitingTime(CarbonImmutable $day)
+    {
+        $averageWaitingTime = DB::table('visits')
+                    ->selectRaw('AVG(TIME_TO_SEC(consulted) - TIME_TO_SEC(created_at)) AS averageWaitingTime')
+                    ->whereBetween('created_at', [$day->startOfWeek(), $day->endOfWeek()])
+                    ->get()->first()?->averageWaitingTime;
+
+        return $averageWaitingTime ? CarbonInterval::seconds($averageWaitingTime)->cascade()->forHumans() : $averageWaitingTime;
     }
 }

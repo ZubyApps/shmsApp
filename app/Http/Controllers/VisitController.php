@@ -10,7 +10,12 @@ use App\Http\Requests\StoreVisitRequest;
 use App\Models\Patient;
 use App\Services\DatatablesService;
 use App\Services\VisitService;
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
+use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
+
+use function Pest\Laravel\json;
 
 class VisitController extends Controller
 {
@@ -55,6 +60,18 @@ class VisitController extends Controller
     public function openVisit(OpenVisitRequest $request, Visit $visit)
     {
        return $this->visitService->open($request->user(), $visit);
+    }
+
+    public function getPatientAverageWaitingTime()
+    {
+        $day = new CarbonImmutable();
+        $lastWeek = $this->visitService->averageWaitingTime($day->subWeek());
+        $thisWeek = $this->visitService->averageWaitingTime($day);
+
+        // $lastWeek = $lastWeekInSecs ? CarbonInterval::seconds($lastWeekInSecs)->cascade()->forHumans() : $lastWeekInSecs;
+        // $thisWeek = $thisWeekInSecs ? CarbonInterval::seconds($thisWeekInSecs)->cascade()->forHumans() : $thisWeekInSecs;
+
+        return response()->json(["lastWeek" => $lastWeek, "thisWeek" => $thisWeek]);
     }
 
     public function destroy(Visit $visit)

@@ -90,6 +90,13 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
+            <x-form-div class="col-xl-10 py-3 payMethodDiv">
+                <x-input-span class="">Average Waiting Time</x-input-span>
+                <x-input-span class="">Last Week</x-input-span>
+                <x-form-input name="lastWeek" id="lastWeek" readonly/>
+                <x-input-span class="">This Week</x-input-span>
+                <x-form-input name="thisWeek" id="thisWeek" readonly/>
+            </x-form-div>
             <div class="py-4 ">
                 <table id="waitingTable" class="table table-hover table-sm">
                     <thead>

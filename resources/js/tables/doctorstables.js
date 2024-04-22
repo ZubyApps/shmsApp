@@ -10,6 +10,7 @@ const getOutpatientsVisitTable = (tableId, filter) => {
         }},
         orderMulti: true,
         search:true,
+        lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: "No patient"
         },
@@ -63,6 +64,7 @@ const getInpatientsVisitTable = (tableId, filter) => {
         }},
         orderMulti: true,
         search:true,
+        lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: "No patient"
         },
@@ -117,6 +119,7 @@ const getAncPatientsVisitTable = (tableId, filter) => {
         }},
         orderMulti: true,
         search:true,
+        lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: "No patient"
         },
@@ -195,6 +198,7 @@ const getWaitingTable = (tableId) => {
         ajax:  '/visits/load/waiting',
         orderMulti: true,
         search:true,
+        lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: 'No patient is waiting'
         },

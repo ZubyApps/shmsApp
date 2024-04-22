@@ -356,6 +356,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/close/{visit}', [VisitController::class, 'closeVisit']);
         Route::patch('/delete/{visit}', [VisitController::class, 'destroy']);
         Route::patch('/open/{visit}', [VisitController::class, 'openVisit']);
+        Route::get('/average', [VisitController::class, 'getPatientAverageWaitingTime']);
         Route::delete('/{visit}', [VisitController::class, 'destroy']);
     })->name('Visits');
 

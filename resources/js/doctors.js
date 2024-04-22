@@ -665,13 +665,26 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     // Show waiting table
-    waitingBtn.addEventListener('click', function () {waitingTable.draw(); emergencyTable.draw()})
+    waitingBtn.addEventListener('click', function () {
+        http.get(`/visits/average`)
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                document.querySelector('#lastWeek').value = response.data.lastWeek
+                document.querySelector('#thisWeek').value = response.data.thisWeek
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+        })
+        waitingTable.draw(); emergencyTable.draw()}
+    )
     emergencyListBtn.addEventListener('click', function () {emergencyTable.draw()})
 
     waitingListOffcanvas._element.addEventListener('hide.bs.offcanvas', () => {
         outPatientsVisitTable.draw()
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+        emergencyTable.draw()
     })
 
     document.querySelectorAll('#dischargeModal, #wardAndBedModal, #vitalsignsModal, #ancVitalsignsModal, #investigationAndManagementModal').forEach(modal => {
