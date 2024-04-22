@@ -266,16 +266,16 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.patch(`/pharmacy/dispense/comment/${prescriptionId}`, {comment: dispenseCommentInput.value})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
-                            visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
+                            visitPrescriptionsTable ? visitPrescriptionsTable.draw(false) : ''
                             visitPrescriptionsTable ? visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset)) : ''
-                            emergencyTable.draw()
+                            emergencyTable.draw(false)
                         }
                     })
                     .catch((error) => {
                         console.log(error)
-                        visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
+                        visitPrescriptionsTable ? visitPrescriptionsTable.draw(false) : ''
                         visitPrescriptionsTable ? visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset)) : ''
-                        emergencyTable.draw()
+                        emergencyTable.draw(false)
                     })
                            
                 })
