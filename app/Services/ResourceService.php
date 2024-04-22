@@ -142,7 +142,6 @@ class ResourceService
                             ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
                             ->where('category', 'Consumables')
                             ->where('is_active', true)
-                            ->where('stock_level', '>', 0)
                             ->orderBy('name', 'asc')
                             ->get();
         }    
