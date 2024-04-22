@@ -692,7 +692,7 @@ class AccountsReportService
                     'date'              => (new Carbon($visit->created_at))->format('d/M/y g:ia'),
                     'patient'           => $visit->patient->patientId(),
                     'diagnosis'         => $visit->consultations()->where('visit_id', $visit->id)->first()?->icd11_diagnosis ?? $visit->consultations()->where('visit_id', $visit->id)->first()?->provisional_diagnosis,
-                    'doctor'            => $visit->doctor->username,
+                    'doctor'            => $visit->doctor?->username,
                     'totalHmsBill'      => $visit->total_hms_bill,
                     'totalHmoBill'      => $visit->total_hmo_bill,
                     'totalNhisBill'     => $visit->total_nhis_bill,
