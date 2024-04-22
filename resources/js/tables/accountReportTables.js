@@ -298,6 +298,7 @@ const getVisitSummaryTable2 = (tableId, startDate, endDate, date) => {
             'date'      : date,
         }},
         orderMulti: true,
+        fixedHeader: true,
         lengthMenu:[50, 100, 150, 200, 500],
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
