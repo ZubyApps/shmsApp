@@ -321,7 +321,7 @@ class HmoService
 
 
         return $prescription->visit->update([
-            'total_nhis_bill'   => $prescription->visit->sponsor->category_name == 'NHIS' ? $prescription->visit->totalNhisBills() : $prescription->visit->total_nhis_bill,
+            'total_nhis_bill'   => $prescription->visit->sponsor->category_name == 'NHIS' ? $prescription->visit->totalNhisBills() : 0//$prescription->visit->total_nhis_bill,
         ]);
     }
 
@@ -350,7 +350,7 @@ class HmoService
 
         return $prescription->visit->update([
             'total_hms_bill'    => $prescription->visit->totalHmsBills(),
-            'total_nhis_bill'   => $prescription->visit->sponsor->category_name == 'NHIS' ? $prescription->visit->totalNhisBills() : $prescription->visit->total_nhis_bill,
+            'total_nhis_bill'   => $prescription->visit->sponsor->category_name == 'NHIS' ? $prescription->visit->totalNhisBills() : 0//$prescription->visit->total_nhis_bill,
         ]);
     }
 
