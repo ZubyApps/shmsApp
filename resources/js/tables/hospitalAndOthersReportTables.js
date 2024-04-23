@@ -36,14 +36,14 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate) => {
 
     const patientsByResourceTable = new DataTable(`#${tableId}`, {
         serverSide: true,
-        ajax:  {url: `/reports/pharmacy/byresource`, data: {
+        ajax:  {url: `/reports/hospitalandothers/byresource`, data: {
             'resourceId': resourceId,
             'startDate' : startDate, 
             'endDate'   : endDate,
         }},
         orderMulti: true,
         search:true,
-        lengthMenu:[20, 40, 80, 120, 200],
+        lengthMenu:[50, 100, 150, 200, 300],
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));

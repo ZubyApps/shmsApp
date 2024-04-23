@@ -110,7 +110,7 @@ const getFrequencyTable = (tableId) => {
         ajax:  '/reports/patients/frequency',
         orderMulti: true,
         search:true,
-        lengthMenu:[10, 40, 80, 120, 200],
+        lengthMenu:[50, 100, 150, 200, 300],
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
@@ -167,7 +167,7 @@ const getRegBySponsorTable = (tableId, startDate, endDate, date) => {
         }},
         orderMulti: true,
         search:true,
-        lengthMenu:[40, 80, 120, 160, 200],
+        lengthMenu:[50, 100, 150, 200, 300],
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));

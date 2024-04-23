@@ -49,7 +49,7 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate) => {
         }},
         orderMulti: true,
         search:true,
-        lengthMenu:[20, 40, 80, 120, 200],
+        lengthMenu:[50, 100, 150, 200, 300],
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
