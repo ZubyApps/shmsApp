@@ -31,10 +31,10 @@ class UserReportService
         if (! empty($params->searchTerm)) {
             return $this->user
                         ->whereRelation('designation', 'designation', '=', $data->designation)
-                        ->where('firstname', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('middlename', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('lastname', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->whereRelation('designation', 'access_level', '<', 5)
+                        ->where('first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->whereRelation('designation', 'access_level', '<', 6)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -61,6 +61,7 @@ class UserReportService
                         'consultations'         => $user->consultations()->whereMonth('created_at', $date->month)->count(),
                         'prescriptions'         => $user->prescriptions()->whereMonth('created_at', $date->month)->count(),
                         'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'discountinued1'         => $user->prescriptions()::where('discontinued_by', $user->id)->whereMonth('created_at', $date->month)->count(),
                         'surgeryNotes'          => $user->surgeryNotes()->whereMonth('created_at', $date->month)->count(),
                         'vitalSigns'            => $user->vitalSigns()->whereMonth('created_at', $date->month)->count(),
                         'AncVitalSigns'         => $user->ancVitalSigns()->whereMonth('created_at', $date->month)->count(),

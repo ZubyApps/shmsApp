@@ -55,8 +55,8 @@
                                 <th>Visits Initiated</th>
                                 <th>Initial Visits</th>
                                 <th>Consultations</th>
-                                <th>Px </th>
-                                <th>Px D/C</th>
+                                <th>Rx </th>
+                                <th>Rx D/C</th>
                                 <th>Surgeries</th>
                                 <th>Vitalsigns</th>
                                 <th>Anc Vitalsigns</th>
