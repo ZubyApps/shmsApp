@@ -18,6 +18,7 @@
     <option value="Roll(s)">Roll(s)</option>
     <option value="Sachet(s)">Sachet(s)</option>
     <option value="Scan(s)">Scan(s)</option>
+    <option value="Shot(s)">Shot(s)</option>
     <option value="Service(s)">Service(s)</option>
     <option value="Session(s)">Session(s)</option>
     <option value="Tab(s)">Tab(s)</option>

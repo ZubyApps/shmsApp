@@ -299,7 +299,7 @@ class MedReportService
                     'age'               => $this->helperService->twoPartDiffInTimePast($dVisit->patient->date_of_birth),
                     'sponsor'           => $dVisit->sponsor->name,
                     'category'          => $dVisit->sponsor->category_name,
-                    'noteBy'            => $dVisit->user->username,
+                    'noteBy'            => $deliveryNote->user?->username,
                     'modeOfDelivery'    => $deliveryNote->mode_of_delivery,
                     'sex'               => $deliveryNote->sex,
                 ];
