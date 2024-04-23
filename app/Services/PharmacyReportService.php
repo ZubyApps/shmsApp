@@ -200,7 +200,7 @@ class PharmacyReportService
                     'age'               => $this->helperService->twoPartDiffInTimePast($pVisit->patient->date_of_birth),
                     'sponsor'           => $pVisit->sponsor->name,
                     'category'          => $pVisit->sponsor->category_name,
-                    'diagnosis'         => $pConsultation->icd11_diagnosis ?? $pConsultation->provisional_diagnosis,
+                    'diagnosis'         => $pConsultation?->icd11_diagnosis ?? $pConsultation?->provisional_diagnosis,
                     'doctor'            => $pConsultation->user->username,
                     'Hmsbill'           => $prescription->hms_bill,
                     'Hmobill'           => $prescription->hmo_bill,
