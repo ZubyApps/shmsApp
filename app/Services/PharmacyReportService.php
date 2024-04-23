@@ -205,6 +205,8 @@ class PharmacyReportService
                     'Hmsbill'           => $prescription->hms_bill,
                     'Hmobill'           => $prescription->hmo_bill,
                     'paid'              => $prescription->paid,
+                    'qtyBilled'         => $prescription->qty_billed,
+                    'qtyDispensed'      => $prescription->qty_dispensed,
                 ];
             };
     }

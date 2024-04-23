@@ -4,7 +4,7 @@
 @section('content')
 @vite(['resources/js/pharmacyReports.js'])
 
-@include('reports.modals.byResourceModal', ['title' => 'Patients', 'id' => 'byResourceModal'])
+@include('reports.modals.byResourcePharmacyModal', ['title' => 'Patients', 'id' => 'byResourcePharmacyModal'])
 
 <div class="container mt-5">
     @include('reports.reportGrid')

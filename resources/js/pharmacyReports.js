@@ -3,7 +3,7 @@ import $ from 'jquery';
 import { getByResourceTable, getPharmacySummaryTable } from "./tables/pharmacyReportTables";
 
 window.addEventListener('DOMContentLoaded', function () {
-    const byResourceModal           = new Modal(document.getElementById('byResourceModal'))
+    const byResourcePharmacyModal   = new Modal(document.getElementById('byResourcePharmacyModal'))
 
     const datesDiv                  = document.querySelector('.datesDiv')
 
@@ -44,27 +44,27 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (showPatientsBtn){
             const id = showPatientsBtn.getAttribute('data-id')
-            byResourceModal._element.querySelector('#resource').value = showPatientsBtn.getAttribute('data-resource') 
-            byResourceModal._element.querySelector('#subcategory').value = showPatientsBtn.getAttribute('data-subcategory')
+            byResourcePharmacyModal._element.querySelector('#resource').value = showPatientsBtn.getAttribute('data-resource') 
+            byResourcePharmacyModal._element.querySelector('#subcategory').value = showPatientsBtn.getAttribute('data-subcategory')
 
             if (date) {
-                byResourceModal._element.querySelector('#resourceMonth').value = date
-                byResourceTable = getByResourceTable('byResourceTable', id, byResourceModal, null, null, date)
-                byResourceModal.show()
+                byResourcePharmacyModal._element.querySelector('#resourceMonth').value = date
+                byResourceTable = getByResourceTable('byResourceTable', id, byResourcePharmacyModal, null, null, date)
+                byResourcePharmacyModal.show()
                 return
             }
             
             if (from && to ){
-                byResourceModal._element.querySelector('#from').value = from
-                byResourceModal._element.querySelector('#to').value = to
-                byResourceTable = getByResourceTable('byResourceTable', id, byResourceModal, from, to)
-                byResourceModal.show()
+                byResourcePharmacyModal._element.querySelector('#from').value = from
+                byResourcePharmacyModal._element.querySelector('#to').value = to
+                byResourceTable = getByResourceTable('byResourceTable', id, byResourcePharmacyModal, from, to)
+                byResourcePharmacyModal.show()
                 return
             }
 
-            byResourceModal._element.querySelector('#resourceMonth').value = new Date().toISOString().slice(0,7)
-            byResourceTable = getByResourceTable('byResourceTable', id, byResourceModal)
-            byResourceModal.show()
+            byResourcePharmacyModal._element.querySelector('#resourceMonth').value = new Date().toISOString().slice(0,7)
+            byResourceTable = getByResourceTable('byResourceTable', id, byResourcePharmacyModal)
+            byResourcePharmacyModal.show()
         }
     })
 })

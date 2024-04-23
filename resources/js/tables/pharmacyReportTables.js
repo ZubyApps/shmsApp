@@ -65,6 +65,8 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate) => {
             {data: "category"},
             {data: "diagnosis"},
             {data: "doctor"},
+            {data: "qtyBilled"},
+            {data: "qtyDispensed"},
             {data: "Hmsbill"},
             {data: "Hmobill"},
             {data: "paid"},

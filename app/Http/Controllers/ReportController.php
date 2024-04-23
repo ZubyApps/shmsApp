@@ -221,6 +221,17 @@ class ReportController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
+    public function loadByResourcePharmacy(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->pharmacyReportService->getPatientsByResource($params, $request);
+
+        $loadTransformer = $this->pharmacyReportService->getByResourceTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
     /** Hospital Services and Others Report */
     public function indexHospitalAndOthers()
     {
