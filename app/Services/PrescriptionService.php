@@ -56,21 +56,24 @@ class PrescriptionService
 
             $isNhis && $bill ? $prescription->update(['nhis_bill' => $nhisBill($bill)]) : '';
 
+            $totalPayments = $prescription->visit->totalPayments();
+
             $prescription->visit->update([
                 'viewed_at'         => null,
                 'total_hms_bill'    => $prescription->visit->totalHmsBills(),
                 'total_nhis_bill'   => $isNhis ? $prescription->visit->totalNhisBills() : 0,//$prescription->visit->total_nhis_bill,
                 'total_capitation'  => $isNhis ? $prescription->visit->totalPrescriptionCapitations() : 0,//$prescription->visit->total_capitation,
+                'total_paid'        => $totalPayments,
                 'pharmacy_done_by'  => $resource->category == 'Medications' || $resource->category == 'Consumables' ? null : $prescription->visit->pharmacy_done_by,
                 'nurse_done_by'     => $resource->sub_category == 'Injectable' || $resource->category == 'Consumables' ? null : $prescription->visit->nurse_done_by,
                 'hmo_done_by'       => null
             ]);
 
             if ($isNhis){
-                $this->paymentService->prescriptionsPaymentSeiveNhis($prescription->visit->totalPayments(), $prescription->visit->prescriptions);
+                $this->paymentService->prescriptionsPaymentSeiveNhis($totalPayments, $prescription->visit->prescriptions);
                 $this->capitationPaymentService->seiveCapitationPayment($prescription->visit->sponsor, new Carbon($prescription->created_at));
             } else {
-                $this->paymentService->prescriptionsPaymentSeive($prescription->visit->totalPayments(), $prescription->visit->prescriptions);
+                $this->paymentService->prescriptionsPaymentSeive($totalPayments, $prescription->visit->prescriptions);
             }
             return $prescription;
 
