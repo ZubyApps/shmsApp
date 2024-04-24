@@ -61,7 +61,7 @@ class AccountsReportService
         }
 
         return DB::table('pay_methods')
-            ->selectRaw('COUNT(payments.id) as paymentCount, pay_methods.name AS pMethod, pay_methods.id AS id, SUM(payments.amount_paid) as amountPaid')
+            ->selectRaw('COUNT(DISTINCT(payments.id)) as paymentCount, pay_methods.name AS pMethod, pay_methods.id AS id, SUM(payments.amount_paid) as amountPaid')
             ->leftJoin('payments', 'pay_methods.id', '=', 'payments.pay_method_id')
             ->whereMonth('payments.created_at', $current->month)
             ->whereYear('payments.created_at', $current->year)

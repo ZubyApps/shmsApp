@@ -91,7 +91,7 @@ const getTPSByThirdPartyTable = (tableId, thirdPartyId, modal, startDate, endDat
         }},
         orderMulti: true,
         search:true,
-        lengthMenu:[20, 40, 80, 120, 200],
+        lengthMenu:[50, 100, 150, 200, 500],
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
