@@ -311,7 +311,7 @@ const reviewBtn = (row) => {
                 
                 <a class="dropdown-item btn btn-outline-primary medicalReportBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-age="${ row.age }" data-sex="${ row.sex }">Report/Refer/Result</a>
 
-                <a class="dropdown-item btn btn-outline-primary dischargedBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">${row.discharged ? 'Patient Discharged' + ' - ' + row.doctorDoneAt : 'Discharge' }</a>
+                <a class="dropdown-item btn btn-outline-primary dischargedBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}" data-doctordone="${row.doctorDone}">${row.discharged ? 'Patient Discharged' + ' - ' + row.doctorDoneAt : 'Discharge' }</a>
                     
                 <a class="dropdown-item btn btn-outline-primary tooltip-test" title="${row.closed ? 'open?': 'close?'}"  data-id="${ row.id }" id="${row.closed ? 'openVisitBtn' : 'closeVisitBtn'}">
                 ${row.closed ? 'Open? <i class="bi bi-unlock-fill"></i>': 'Close? <i class="bi bi-lock-fill"></i>'}
@@ -384,7 +384,7 @@ const admissionStatus = (row) => {
                     </a>
                 </li>
                 <li>
-                    <a role="button" class="dropdown-item dischargedBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}">
+                    <a role="button" class="dropdown-item dischargedBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctor="${row.doctor}" data-doctordone="${row.doctorDone}">
                         Discharge Details ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}"></i>` : ''}
                     </a>
                 </li>
@@ -567,7 +567,7 @@ const populateDischargeModal = (modal, btn) => {
     modal._element.querySelector('#admissionStatus').value = btn.getAttribute('data-admissionstatus')
     modal._element.querySelector('#reason').value = btn.getAttribute('data-reason')
     modal._element.querySelector('#remark').value = btn.getAttribute('data-remark')
-    modal._element.querySelector('#doctor').innerHTML = btn.getAttribute('data-doctor')
+    modal._element.querySelector('#doctor').innerHTML = btn.getAttribute('data-doctordone')
     modal._element.querySelector('#saveDischargeBtn').setAttribute('data-id', btn.getAttribute('data-id'))
 }
 
