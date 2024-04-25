@@ -276,6 +276,8 @@ window.addEventListener('DOMContentLoaded', function(){
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 initiatePatientModal.hide()
+                clearDivValues(newPatientModal._element)
+                clearValidationErrors(newPatientModal._element)
                 allPatientsTable.draw()
             }
             confirmVisitBtn.removeAttribute('disabled')
