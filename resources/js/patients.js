@@ -276,13 +276,12 @@ window.addEventListener('DOMContentLoaded', function(){
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 initiatePatientModal.hide()
-                clearDivValues(newPatientModal._element)
-                clearValidationErrors(newPatientModal._element)
                 allPatientsTable.draw()
             }
             confirmVisitBtn.removeAttribute('disabled')
         }).catch((error) => {
             confirmVisitBtn.removeAttribute('disabled')
+            console.log(error)
         })
     })
 
@@ -410,6 +409,11 @@ window.addEventListener('DOMContentLoaded', function(){
     updatePatientModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(updatePatientModal._element)
         savePatientBtn.removeAttribute('disabled')
+    })
+
+    initiatePatientModal._element.addEventListener('hidden.bs.modal', function () {
+        clearValidationErrors(initiatePatientModal._element)
+        clearDivValues(initiatePatientModal._element)
     })
 })
 
