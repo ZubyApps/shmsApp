@@ -540,8 +540,8 @@ window.addEventListener('DOMContentLoaded', function () {
             registerAncBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            alert(error.response.data.message)
             registerAncBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
         })
     })
 
@@ -558,8 +558,8 @@ window.addEventListener('DOMContentLoaded', function () {
             saveAncBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            alert(error.response.data.message)
             saveAncBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
         })
     })
 
@@ -576,8 +576,8 @@ window.addEventListener('DOMContentLoaded', function () {
                     deleteAncBtn.removeAttribute('disabled')
                 })
                 .catch((error) => {
-                    alert(error)
                     deleteAncBtn.removeAttribute('disabled')
+                    alert(error)
                 })
         }
     })
@@ -1063,8 +1063,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 saveMedicationChartBtn.removeAttribute('disabled')
             })
             .catch((error) => {
-                console.log(error)
                 saveMedicationChartBtn.removeAttribute('disabled')
+                console.log(error)
             })
     })
 
@@ -1098,8 +1098,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 savePrescriptionChartBtn.removeAttribute('disabled')
             })
             .catch((error) => {
-                console.log(error)
                 savePrescriptionChartBtn.removeAttribute('disabled')
+                console.log(error)
             })
     })
 
@@ -1125,8 +1125,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 giveMedicationModal.hide()
             })
             .catch((error) => {
-                console.log(error)
                 saveGivenMedicationBtn.removeAttribute('disabled')
+                console.log(error)
             })
     })
 
@@ -1152,7 +1152,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 serviceDoneModal.hide()
             })
             .catch((error) => {
-                saveGivenMedicationBtn.removeAttribute('disabled')
+                saveServiceDoneBtn.removeAttribute('disabled')
                 console.log(error)
             })
     })

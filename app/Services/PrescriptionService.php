@@ -11,7 +11,6 @@ use App\Models\Prescription;
 use App\Models\Resource;
 use App\Models\ThirdParty;
 use App\Models\User;
-use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;

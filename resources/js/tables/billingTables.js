@@ -105,6 +105,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) =
             'patientId': patientId
         }},
         orderMulti: true,
+        lengthMenu:[25, 50, 100, 150, 200],
         search:true,
         language: {
             emptyTable: urlSuffix == 'openvisits' ? 'No open visits' : 'No patient record'
