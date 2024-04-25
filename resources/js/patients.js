@@ -272,7 +272,7 @@ window.addEventListener('DOMContentLoaded', function(){
         const patientId = confirmVisitBtn.getAttribute('data-id')
         const doctorId  = initiatePatientModal._element.querySelector('#doctor').value
 
-        http.post(`/visits/${patientId}`, {doctor :doctorId})
+        http.post(`/visits/${patientId}`, {doctor :doctorId}, {"html": initiatePatientModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 initiatePatientModal.hide()

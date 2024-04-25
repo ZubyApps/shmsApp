@@ -67,7 +67,7 @@ const visitDetails = (visitIteration, numberConverter, visit, viewer, isAnc) => 
                             <div class="my-2 form-control">
                                 <span class="fw-bold text-primary"> Delivery Note </span>
                                 <div class="row overflow-auto m-1">
-                                    <table id="deliveryNoteTable${ visit.id }" class="table table-sm deliveryNoteTable">
+                                    <table id="deliveryNoteTableHistory${ visit.id }" class="table table-sm deliveryNoteTableHistory">
                                         <thead>
                                             <tr>
                                                 <th>Date</th>

@@ -13,8 +13,9 @@
                     <x-input-span>visit?</x-input-span>
                 </x-form-div>
                 <x-form-div class="col-xl-12">
-                    <x-input-span id="docLabel">To See</x-input-span>
-                    <select type="text" name="doctor" id="doctor" class="form-select form-select-md">
+                    <x-input-span id="doctorLabel">To see</x-input-span>
+                    <select class="form-select form-select-md" name="doctor" id="doctor">
+                        <option value="">Select</option>
                         @foreach ($doctors as $doctor)
                             <option value="{{ $doctor->id }}" name="{{ $doctor->username }}">{{ $doctor->username }}</option>
                         @endforeach

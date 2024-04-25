@@ -23,6 +23,14 @@ class StoreVisitRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'doctor' => ['required']
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'doctor' => 'To see',
         ];
     }
 }

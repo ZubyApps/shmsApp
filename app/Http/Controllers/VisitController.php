@@ -68,9 +68,6 @@ class VisitController extends Controller
         $lastWeek = $this->visitService->averageWaitingTime($day->subWeek());
         $thisWeek = $this->visitService->averageWaitingTime($day);
 
-        // $lastWeek = $lastWeekInSecs ? CarbonInterval::seconds($lastWeekInSecs)->cascade()->forHumans() : $lastWeekInSecs;
-        // $thisWeek = $thisWeekInSecs ? CarbonInterval::seconds($thisWeekInSecs)->cascade()->forHumans() : $thisWeekInSecs;
-
         return response()->json(["lastWeek" => $lastWeek, "thisWeek" => $thisWeek]);
     }
 

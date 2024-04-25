@@ -1024,11 +1024,10 @@ window.addEventListener('DOMContentLoaded', function () {
             if (collapseVisitBtn) {
                 const visitId               = collapseVisitBtn.getAttribute('data-id')
                 const ancRegId              = collapseVisitBtn.getAttribute('data-ancregid')
-                const [getVitalsigns, id]   = collapseVisitBtn.getAttribute('data-anc') ? [getAncVitalSignsTable, ancRegId] : [getVitalSignsTableByVisit, visitId]
-
+                const [getVitalsigns, id]   = collapseVisitBtn.getAttribute('data-isanc') ? [getAncVitalSignsTable, ancRegId] : [getVitalSignsTableByVisit, visitId]
                 if ($.fn.DataTable.isDataTable('#vitalSignsHistory'+visitId)){$('#vitalSignsHistory'+visitId).dataTable().fnDestroy()}
                 if ($.fn.DataTable.isDataTable('#billingTableHistory'+visitId)){$('#billingTableHistory'+visitId).dataTable().fnDestroy()}
-                if ($.fn.DataTable.isDataTable('#deliveryNoteTable'+visitId )){$('#deliveryNoteTable'+visitId).dataTable().fnDestroy()}
+                if ($.fn.DataTable.isDataTable('#deliveryNoteTableHistory'+visitId )){$('#deliveryNoteTableHistory'+visitId).dataTable().fnDestroy()}
                 if ($.fn.DataTable.isDataTable('#surgeryNoteTableHistory'+visitId )){$('#surgeryNoteTableHistory'+visitId).dataTable().fnDestroy()}
                 if ($.fn.DataTable.isDataTable('#patientsFileTableHistory'+visitId )){$('#patientsFileTableHistory'+visitId).dataTable().fnDestroy()}
 
