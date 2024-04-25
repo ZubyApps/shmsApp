@@ -901,7 +901,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     getPatientsFileTable('patientsFileTableHistory'+visitId, visitId, consultationHistoryModal._element)
                     getbillingTableByVisit('billingTableHistory'+visitId, visitId, consultationHistoryModal._element)
                 }
-                setTimeout(goto, 300)
+                setTimeout(goto, 500)
             }
     
             if (chartMedicationBtn) {
