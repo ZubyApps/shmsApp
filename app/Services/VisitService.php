@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\DB;
 
 class VisitService
 {
-    public function __construct(private readonly Visit $visit)
+    public function __construct(private readonly Visit $visit, private readonly PaymentService $paymentService,)
     {
     }
 
@@ -231,11 +231,16 @@ class VisitService
                         "sponsor_id" => $data->sponsor,
                         "sponsor_changed_by" => $user->id,
                     ]);
+
+                    $prescriptions  = $visit->prescriptions;
+                    $totalPayments  = $visit->payments;
             
                     if ($visit->sponsor->category_name == 'NHIS'){
-                        foreach($visit->prescriptions as $prescription){
+                        foreach($prescriptions as $prescription){
                             $prescription->update(['nhis_bill' => $prescription->hms_bill/10]);
-                        } 
+                        }
+
+                        $this->paymentService->prescriptionsPaymentSeiveNhis($totalPayments, $prescription->visit->prescriptions);
                     }
 
                     return $visit;
