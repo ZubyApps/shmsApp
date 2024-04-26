@@ -226,12 +226,21 @@ class VisitService
 
     public function changeVisitSponsor(Request $data, Visit $visit, User $user)
     {
-        $visit->update([
-            "sponsor_id" => $data->sponsor,
-            "sponsor_changed_by" => $user->id,
-        ]);
+        return DB::transaction(function () use ($data, $visit, $user) {
+                    $visit->update([
+                        "sponsor_id" => $data->sponsor,
+                        "sponsor_changed_by" => $user->id,
+                    ]);
+            
+                    if ($visit->sponsor->category_name == 'NHIS'){
+                        foreach($visit->prescriptions as $prescription){
+                            $prescription->update(['nhis_bill' => $prescription->hms_bill/10]);
+                        } 
+                    }
 
-        return $visit;
+                    return $visit;
+                });
+
     }
 
     public function discharge(Request $data, Visit $visit, User $user)
