@@ -3,7 +3,7 @@ import http from "./http";
 import $ from 'jquery';
 import { getPayMethodsSummmaryTable, getCapitationPaymentsTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getByPayMethodsTable, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable, getTPSSummaryTable, getTPSByThirdPartyTable } from "./tables/accountReportTables";
 import { getExpensesTable } from "./tables/billingTables";
-import { clearDivValues, getDivData } from "./helpers";
+import { clearDivValues, getDivData, resetFocusEndofLine } from "./helpers";
 
 window.addEventListener('DOMContentLoaded', function () {
     const byPayMethodModal           = new Modal(document.getElementById('byPayMethodModal'))
@@ -151,10 +151,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
     searchByCapitationMonthBtn.addEventListener('click', function () {
         capitationDatesDiv.querySelector('#startDate').value = ''; capitationDatesDiv.querySelector('#endDate').value = ''
-        if ($.fn.DataTable.isDataTable( '#expenseSummaryTable' )){
-            $('#expenseSummaryTable').dataTable().fnDestroy()
+        if ($.fn.DataTable.isDataTable( '#capitationPaymentsTable' )){
+            $('#capitationPaymentsTable').dataTable().fnDestroy()
         }
-        capitationPaymentsTable = getCapitationPaymentsTable('expenseSummaryTable', null, null, capitationDatesDiv.querySelector('#capitationMonth').value)
+        capitationPaymentsTable = getCapitationPaymentsTable('capitationPaymentsTable', null, null, capitationDatesDiv.querySelector('#capitationMonth').value)
     })
 
     searchTPSSummaryByDatesBtn.addEventListener('click', function () {
@@ -356,8 +356,10 @@ window.addEventListener('DOMContentLoaded', function () {
         if (showVisitsBtn){
             showVisitsBtn.setAttribute('disabled', true)
             const id = showVisitsBtn.getAttribute('data-id')
+            
             visitsBySponsorModal._element.querySelector('#sponsor').value = showVisitsBtn.getAttribute('data-sponsor')
             visitsBySponsorModal._element.querySelector('#sponsorCategory').value = showVisitsBtn.getAttribute('data-category')
+            visitsBySponsorModal._element.querySelector('#sponsor').setAttribute('data-sponsorid', id)
 
             if (visitDate){
                 visitsBySponsorModal._element.querySelector('#visitMonth').value = visitDate
@@ -453,6 +455,116 @@ window.addEventListener('DOMContentLoaded', function () {
         .catch((error) => {
             updateExpenseBtn.removeAttribute('disabled')
             console.log(error.response.data.message)
+        })
+    })
+
+    document.querySelectorAll('#visitsBySponsorTable').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const reviewSpan            = event.target.closest('.reviewSpan')
+            const markAsResolvedBtn     = event.target.closest('.markAsResolvedBtn')
+            const sortByreviewed        = event.target.closest('.sortByreviewed')
+            const sortByresolved        = event.target.closest('.sortByresolved')
+            const resetSorting          = event.target.closest('.resetSorting')
+            const id                    = visitsBySponsorModal._element.querySelector('#sponsor').getAttribute('data-sponsorid')
+            
+            if (reviewSpan){
+                const visitId       = reviewSpan.getAttribute('data-id')
+                const reviewInput   = reviewSpan.parentElement.querySelector('.reviewInput')
+                reviewSpan.classList.add('d-none')
+                reviewInput.classList.remove('d-none')
+                resetFocusEndofLine(reviewInput)
+                
+                reviewInput.addEventListener('blur', function () {
+                    http.patch(`/visits/review/${visitId}`, {review: reviewInput.value})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            visitsBySponsorTable ?  visitsBySponsorTable.draw(false) : ''
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        visitsBySponsorTable ?  visitsBySponsorTable.draw(false) : ''
+                    })                
+                })
+            }
+
+            if (markAsResolvedBtn){
+                const visitId   = markAsResolvedBtn.getAttribute('data-id')
+                const state     = +markAsResolvedBtn.getAttribute('data-state')
+                const string    = state ? 'unmark' : 'mark'
+                if (confirm(`Are you sure you want to ${string} as Resolved?`)) {
+                    http.patch(`/visits/resolve/${visitId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            visitsBySponsorTable ?  visitsBySponsorTable.draw(false) : ''
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        visitsBySponsorTable ?  visitsBySponsorTable.draw(false) : ''
+                    })                
+                }
+            }
+
+            if (sortByreviewed){
+                const visitDate = visitsBySponsorModal._element.querySelector('#visitMonth').value
+                const visitFrom = visitsBySponsorModal._element.querySelector('#from').value
+                const visitTo   = visitsBySponsorModal._element.querySelector('#to').value
+
+                if (visitDate){
+                    if ($.fn.DataTable.isDataTable( '#visitsBySponsorTable' )){
+                        $('#visitsBySponsorTable').dataTable().fnDestroy()
+                    }
+                    getVisitsBySponsorTable('visitsBySponsorTable', id, visitsBySponsorModal, null, null, visitDate, 'reviewed')
+                }
+
+                if(visitFrom && visitTo){
+                    if ($.fn.DataTable.isDataTable( '#visitsBySponsorTable' )){
+                        $('#visitsBySponsorTable').dataTable().fnDestroy()
+                    }
+                    getVisitsBySponsorTable('visitsBySponsorTable', id, visitsBySponsorModal, visitFrom, visitTo, null, 'reviewed')
+                }
+            }
+
+            if (sortByresolved){
+                const visitDate = visitsBySponsorModal._element.querySelector('#visitMonth').value
+                const visitFrom = visitsBySponsorModal._element.querySelector('#from').value
+                const visitTo   = visitsBySponsorModal._element.querySelector('#to').value
+
+                if (visitDate){
+                    if ($.fn.DataTable.isDataTable( '#visitsBySponsorTable' )){
+                        $('#visitsBySponsorTable').dataTable().fnDestroy()
+                    }
+                    getVisitsBySponsorTable('visitsBySponsorTable', id, visitsBySponsorModal, null, null, visitDate, 'resolved')
+                }
+
+                if(visitFrom && visitTo){
+                    if ($.fn.DataTable.isDataTable( '#visitsBySponsorTable' )){
+                        $('#visitsBySponsorTable').dataTable().fnDestroy()
+                    }
+                    getVisitsBySponsorTable('visitsBySponsorTable', id, visitsBySponsorModal, visitFrom, visitTo, null, 'resolved')
+                }
+            }
+
+            if (resetSorting){
+                const visitDate = visitsBySponsorModal._element.querySelector('#visitMonth').value
+                const visitFrom = visitsBySponsorModal._element.querySelector('#from').value
+                const visitTo   = visitsBySponsorModal._element.querySelector('#to').value
+
+                if (visitDate){
+                    if ($.fn.DataTable.isDataTable( '#visitsBySponsorTable' )){
+                        $('#visitsBySponsorTable').dataTable().fnDestroy()
+                    }
+                    getVisitsBySponsorTable('visitsBySponsorTable', id, visitsBySponsorModal, null, null, visitDate)
+                }
+
+                if(visitFrom && visitTo){
+                    if ($.fn.DataTable.isDataTable( '#visitsBySponsorTable' )){
+                        $('#visitsBySponsorTable').dataTable().fnDestroy()
+                    }
+                    getVisitsBySponsorTable('visitsBySponsorTable', id, visitsBySponsorModal, visitFrom, visitTo, null)
+                }
+            }
         })
     })
 })

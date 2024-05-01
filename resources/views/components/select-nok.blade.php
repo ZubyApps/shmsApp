@@ -14,6 +14,8 @@
     <option value="Nephew">Nephew</option>
     <option value="Cousin">Cousin</option>
     <option value="Other">Other</option>
+    <option value="Grandmother">Grandmother</option>
+    <option value="Grandfather">Grandfather</option>
     <option value="Mother-in-law">Mother-in-law</option>
     <option value="Father-in-law">Father-in-law</option>
     <option value="Daughter-in-law">Daughter-in-law</option>

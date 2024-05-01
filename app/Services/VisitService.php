@@ -285,6 +285,20 @@ class VisitService
         });
     }
 
+    public function review(Request $data, Visit $visit)
+    {
+        return $visit->update([
+            'reviewed' => $data->review
+        ]);
+    }
+
+    public function resolve(Visit $visit)
+    {
+        return $visit->update([
+            'resolved' => !$visit->resolved
+        ]);
+    }
+
     public function delete($visit)
     {
         return DB::transaction(function() use($visit){
@@ -411,16 +425,16 @@ class VisitService
                 'came'              => (new Carbon($visit->created_at))->format('d/M/y g:ia'),
                 'seen'              => (new Carbon($visit->consulted))->format('d/M/y g:ia'),
                 'patientType'       => explode(".", $visit->patient->patient_type)[0],
-                'doctor'            => $visit->doctor->username ?? '',
+                'doctor'            => $visit->doctor?->username ?? '',
                 'ancRegId'          => $visit->antenatalRegisteration?->id,
                 'patient'           => $visit->patient->patientId(),
                 'phone'             => $visit->patient->phone,
-                'address'           => $visit->patient->address,
+                'address'           => $visit->patient?->address,
                 'state'             => $visit->patient->state_of_residence,
                 'sex'               => $visit->patient->sex,
                 'age'               => $visit->patient->age(),
-                'nok'               => $visit->patient->next_of_kin,
-                'nokPhone'          => $visit->patient->next_of_kin_phone,
+                'nok'               => $visit->patient?->next_of_kin,
+                'nokPhone'          => $visit->patient?->next_of_kin_phone,
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->category_name,
                 'status'            => $visit->admission_status,

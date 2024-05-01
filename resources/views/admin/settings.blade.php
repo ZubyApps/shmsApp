@@ -11,6 +11,8 @@
 @include('admin.modals.resourceCategoryModal', ['title' => 'Edit Resource Category', 'isUpdate' => true, 'id' => 'updateResourceCategoryModal'])
 @include('admin.modals.expenseCategoryModal', ['title' => 'New Expense Category', 'isUpdate' => false, 'id' => 'newExpenseCategoryModal'])
 @include('admin.modals.expenseCategoryModal', ['title' => 'Edit Expense Category', 'isUpdate' => true, 'id' => 'updateExpenseCategoryModal'])
+@include('admin.modals.medicationCategoryModal', ['title' => 'New Medication Category', 'isUpdate' => false, 'id' => 'newMedicationCategoryModal'])
+@include('admin.modals.medicationCategoryModal', ['title' => 'Edit Medication Category', 'isUpdate' => true, 'id' => 'updateMedicationCategoryModal'])
 @include('admin.modals.payMethodModal', ['title' => 'New Pay Method', 'isUpdate' => false, 'id' => 'newPayMethodModal'])
 @include('admin.modals.payMethodModal', ['title' => 'Edit Pay Method', 'isUpdate' => true, 'id' => 'editPayMethodModal'])
 
@@ -33,6 +35,9 @@
 
                     <button class="nav-link" id="nav-expenseCategory-tab" data-bs-toggle="tab" data-bs-target="#nav-expenseCategory"
                         type="button" role="tab" aria-controls="nav-expenseCategory" aria-selected="false">Expense Category</button>
+
+                    <button class="nav-link" id="nav-medicationCategory-tab" data-bs-toggle="tab" data-bs-target="#nav-medicationCategory"
+                        type="button" role="tab" aria-controls="nav-medicationCategory" aria-selected="false">Medication Category</button>
                     </div>
             </nav>
             <div class="tab-content px-2" id="nav-tabContent">
@@ -156,6 +161,32 @@
                     </div>
                     <div class="container">
                         <table id="expenseCategoryTable" class="table table-hover align-middle table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Created By</th>
+                                    <th>Created At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                   
+                </div>
+                <!-- medicationCategory table -->
+                <div class="tab-pane fade" id="nav-medicationCategory" role="tabpanel" aria-labelledby="nav-medicationCategory-tab"
+                    tabindex="0">
+
+                    <div class="text-start my-4">
+                        <button class="btn btn-primary" type="button" id="addMedicationCategoryBtn">
+                            <i class="bi bi-plus-circle"></i>
+                            Medication Category
+                        </button>
+                    </div>
+                    <div class="container">
+                        <table id="medicationCategoryTable" class="table table-hover align-middle table-sm">
                             <thead>
                                 <tr>
                                     <th>Name</th>

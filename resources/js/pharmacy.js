@@ -1,7 +1,7 @@
 
 import {Modal } from "bootstrap";
-import {getOrdinal, textareaHeightAdjustment, loadingSpinners, removeDisabled, resetFocusEndofLine, getDatalistOptionId, clearValidationErrors, handleValidationErrors, clearDivValues, getDivData, displayItemsList} from "./helpers"
-import { getBulkRequestTable, getExpirationStockTable , getPatientsVisitByFilterTable, getPrescriptionsByConsultation } from "./tables/pharmacyTables";
+import {getOrdinal, textareaHeightAdjustment, loadingSpinners, removeDisabled, resetFocusEndofLine, getDatalistOptionId, clearValidationErrors, handleValidationErrors, clearDivValues, getDivData, displayItemsList, openModals} from "./helpers"
+import { getBulkRequestTable, getExpirationStockTable , getPatientsVisitByFilterTable, getPharmacyReportTable, getPrescriptionsByConsultation } from "./tables/pharmacyTables";
 import http from "./http";
 import $ from 'jquery';
 import { getLabTableByConsultation, getMedicationsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
@@ -12,15 +12,23 @@ $.fn.dataTable.ext.errMode = 'throw';
 
 
 window.addEventListener('DOMContentLoaded', function () {
-    const treatmentDetailsModal     = new Modal(document.getElementById('treatmentDetailsModal'))
-    const ancTreatmentDetailsModal  = new Modal(document.getElementById('ancTreatmentDetailsModal'))
-    const billingDispenseModal      = new Modal(document.getElementById('billingDispenseModal'))
-    const bulkRequestModal          = new Modal(document.getElementById('bulkRequestModal'))
+    const treatmentDetailsModal         = new Modal(document.getElementById('treatmentDetailsModal'))
+    const ancTreatmentDetailsModal      = new Modal(document.getElementById('ancTreatmentDetailsModal'))
+    const billingDispenseModal          = new Modal(document.getElementById('billingDispenseModal'))
+    const bulkRequestModal              = new Modal(document.getElementById('bulkRequestModal'))
+    // const shiftReportModal              = new Modal(document.getElementById('shiftReportModal'))
+    const newShiftReportTemplateModal   = new Modal(document.getElementById('newShiftReportTemplateModal'))
+    const editShiftReportTemplateModal  = new Modal(document.getElementById('editShiftReportTemplateModal'))
+    const viewShiftReportTemplateModal  = new Modal(document.getElementById('viewShiftReportTemplateModal'))
 
-    const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
-    const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
-    const markDoneBtn               = billingDispenseModal._element.querySelector('#markDoneBtn')
-    const emergencyListBtn          = document.querySelector('#emergencyListBtn')
+    const bulkRequestBtn        = document.querySelector('#newBulkRequestBtn')
+    const requestBulkBtn        = bulkRequestModal._element.querySelector('#requestBulkBtn')
+    const markDoneBtn           = billingDispenseModal._element.querySelector('#markDoneBtn')
+    const emergencyListBtn      = document.querySelector('#emergencyListBtn')
+    const shiftReportBtn        = document.querySelector('#shiftReportBtn')
+    const newPharmacyReportBtn  = document.querySelector('#newPharmacyReportBtn')
+    const createShiftReportBtn  = newShiftReportTemplateModal._element.querySelector('#createShiftReportBtn')
+    const saveShiftReportBtn    = editShiftReportTemplateModal._element.querySelector('#saveShiftReportBtn')
 
     const regularTreatmentDiv       = treatmentDetailsModal._element.querySelector('#treatmentDiv')
     const ancTreatmentDiv           = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
@@ -29,6 +37,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
     const emergencyListCount        = document.querySelector('#emergencyListCount')
+    const shiftBadgeSpan             = document.querySelector('#shiftBadgeSpan')
 
     const [outPatientsTab, inPatientsTab, ancPatientsTab, expirationStockTab, bulkRequestsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-expirationStock-tab'), document.querySelector('#nav-bulkRequests-tab')]
 
@@ -37,11 +46,20 @@ window.addEventListener('DOMContentLoaded', function () {
 
     let inPatientsVisitTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable
 
-    const outPatientsTable = getPatientsVisitByFilterTable('outPatientsTable', 'Outpatient')
-    const emergencyTable = getEmergencyTable('emergencyTable', 'pharmacy')
+    const outPatientsTable  = getPatientsVisitByFilterTable('outPatientsTable', 'Outpatient')
+    const emergencyTable    = getEmergencyTable('emergencyTable', 'pharmacy')
+    const pharmacyShiftReportTable = getPharmacyReportTable('pharmacyShiftReportTable', 'pharmacy', shiftBadgeSpan)
 
     emergencyListBtn.addEventListener('click', function () {emergencyTable.draw()})
     outPatientsTab.addEventListener('click', function() {outPatientsTable.draw()})
+
+    shiftReportBtn.addEventListener('click', function () {
+        pharmacyShiftReportTable.draw()
+    })
+
+    newPharmacyReportBtn.addEventListener('click', function () {
+        newShiftReportTemplateModal.show()
+    })
 
     emergencyTable.on('draw.init', function() {
         const count = emergencyTable.rows().count()
@@ -162,7 +180,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 markDoneBtn.removeAttribute('disabled')
             })
         }
-
     })
 
     filterListOption.addEventListener('change', function () {
@@ -353,9 +370,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     bulkRequestsTable ?  bulkRequestsTable.draw() : ''
                 })
             }
-
         }
-
     })
 
     billingDispenseModal._element.addEventListener('hide.bs.modal', function () {
@@ -440,7 +455,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
 
-    document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal').forEach(modal => {
+    document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal, #viewShiftReportTemplateModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function(event) {
             regularTreatmentDiv.innerHTML = ''
             ancTreatmentDiv.innerHTML = ''
@@ -448,8 +463,110 @@ window.addEventListener('DOMContentLoaded', function () {
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             emergencyTable.draw()
+            pharmacyShiftReportTable.draw()
         })
     })
+
+    createShiftReportBtn.addEventListener('click', function() {
+        createShiftReportBtn.setAttribute('disabled', 'disabled')
+        http.post(`shiftreport`, {
+            report: newShiftReportTemplateModal._element.querySelector('#report').value, 
+            department: newShiftReportTemplateModal._element.querySelector('#department').value,
+            shift:  newShiftReportTemplateModal._element.querySelector('#shift').value,
+        }, 
+            {'html': newShiftReportTemplateModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) {
+                newShiftReportTemplateModal.hide()
+                clearDivValues(newShiftReportTemplateModal._element)
+                clearValidationErrors(newShiftReportTemplateModal._element)
+                pharmacyShiftReportTable.draw(false)
+            }
+            createShiftReportBtn.removeAttribute('disabled')
+        })
+        .catch((response) => {
+            console.log(response)
+            createShiftReportBtn.removeAttribute('disabled')
+        })
+    })
+
+    saveShiftReportBtn.addEventListener('click', function() {
+        saveShiftReportBtn.setAttribute('disabled', 'disabled')
+        const id = saveShiftReportBtn.getAttribute('data-id')
+        http.patch(`shiftreport/${id}`, {
+            report: editShiftReportTemplateModal._element.querySelector('#report').value,
+            shift:  editShiftReportTemplateModal._element.querySelector('#shift').value,
+    }, {'html': editShiftReportTemplateModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) {
+                editShiftReportTemplateModal.hide()
+                clearValidationErrors(editShiftReportTemplateModal._element)
+                pharmacyShiftReportTable.draw(false)
+            }
+            saveShiftReportBtn.removeAttribute('disabled')
+        })
+        .catch((response) => {
+            console.log(response)
+            saveShiftReportBtn.removeAttribute('disabled')
+        })
+    })
+
+    document.querySelectorAll('#pharmacyShiftReportTable').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const editShiftReportBtn   = event.target.closest('.editShiftReportBtn')
+            const viewShiftReportBtn   = event.target.closest('.viewShiftReportBtn')
+            const deleteShiftReportBtn = event.target.closest('.deleteShiftReportBtn')
+    
+            if (editShiftReportBtn) {
+                editShiftReportBtn.setAttribute('disabled', 'disabled')
+                http.get(`/shiftreport/${editShiftReportBtn.getAttribute('data-id')}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openModals(editShiftReportTemplateModal, saveShiftReportBtn, response.data.data)
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+                setTimeout(()=>{editShiftReportBtn.removeAttribute('disabled')}, 2000)
+            }
+
+            if (viewShiftReportBtn) {
+                viewShiftReportBtn.setAttribute('disabled', 'disabled')
+                http.get(`/shiftreport/view/${viewShiftReportBtn.getAttribute('data-id')}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openModals(viewShiftReportTemplateModal, saveShiftReportBtn, response.data.data)
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+                setTimeout(()=>{viewShiftReportBtn.removeAttribute('disabled')}, 2000)
+            }
+    
+            if (deleteShiftReportBtn) {
+                deleteShiftReportBtn.setAttribute('disabled', 'disabled')
+                if (confirm('Are you sure you want to delete this report?')) {
+                    const id = deleteShiftReportBtn.getAttribute('data-id')
+                    http.delete(`/shiftreport/${id}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                pharmacyShiftReportTable ? pharmacyShiftReportTable.draw(false) : ''
+                            }
+                            deleteShiftReportBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {
+                            alert(error)
+                            deleteShiftReportBtn.removeAttribute('disabled')
+                        })
+                }
+            }
+    
+        })
+    })
+
+
 })
 
 function openPharmacyModals(modal, button, { id, visitId, ancRegId, patientType, ...data }) {

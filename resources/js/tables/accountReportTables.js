@@ -338,7 +338,7 @@ const getVisitSummaryTable2 = (tableId, startDate, endDate, date) => {
     return visitSummaryTable
 }
 
-const getVisitsBySponsorTable = (tableId, sponsorId, modal, startDate, endDate, date) => {
+const getVisitsBySponsorTable = (tableId, sponsorId, modal, startDate, endDate, date, state) => {
     const visitsBySponsorTable = new DataTable(`#${tableId}`, {
         serverSide: true,
         ajax:  {url: `/reports/accounts/byvisitbysponsor`, data: {
@@ -346,6 +346,7 @@ const getVisitsBySponsorTable = (tableId, sponsorId, modal, startDate, endDate, 
             'startDate' : startDate, 
             'endDate'   : endDate,
             'date'      : date,
+            'state'     : state
         }},
         orderMulti: true,
         search:true,
@@ -367,7 +368,26 @@ const getVisitsBySponsorTable = (tableId, sponsorId, modal, startDate, endDate, 
             {data: "totalHmoBill"},
             {data: "totalNhisBill"},
             {data: "amountPaid"},
-            {data: row => row.category == 'NHIS' ? account.format(row.amountPaid - row.totalNhisBill) : row.category == 'HMO' ? account.format(row.amountPaid - row.totalHmoBill): account.format(row.amountPaid - row.totalHmsBill)}
+            {data: row => row.category == 'NHIS' ? account.format(row.amountPaid - row.totalNhisBill) : row.category == 'HMO' ? account.format(row.amountPaid - row.totalHmoBill): account.format(row.amountPaid - row.totalHmsBill)},
+            {data: row => function () {
+                return `
+                <div class="d-flex flex-">
+                    <span class="btn reviewSpan" data-id="${row.id}" data-table="${tableId}">${row.reviewed ? row.reviewed: 'Review'}</span>
+                    <textarea class="ms-1 form-control reviewInput d-none text-secondary" value="" name="reviewed" id="reviewed">${row.reviewed ?? ''}</textarea>
+                </div>
+            `
+                }
+            },
+            {data: row => function () {
+                return `
+                <div class="d-flex flex-">
+                    <button type="submit" class="ms-1 btn  markAsResolvedBtn" data-id="${row.id}" data-table="${tableId}" data-state="${row.resolved}">
+                        ${row.resolved ? '<i class="bi bi-check-circle-fill text-primary"></i>' : 'Resolve'}
+                    </button>
+                </div>
+            `
+                }
+            },
         ]
     })
 

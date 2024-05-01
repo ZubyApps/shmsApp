@@ -40,6 +40,7 @@ class ConsultationReviewResource extends JsonResource
             "assessment"                    => $this->assessment ?? '',
             "notes"                         => $this->notes ?? '',
             "plan"                          => $this->phys_plan ?? '',
+            "historyOfCare"                 => $this->history_of_care ?? '',
             "complaint"                     => $this->complaint ?? '',
             "presentationAndPosition"       => $this->p_position ?? '',
             "heightOfFundus"                => $this->ho_fundus ?? '',

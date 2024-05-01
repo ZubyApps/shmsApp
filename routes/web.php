@@ -16,6 +16,7 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\HmoController;
 use App\Http\Controllers\InvestigationController;
 use App\Http\Controllers\MedicalReportController;
+use App\Http\Controllers\MedicationCategoryController;
 use App\Http\Controllers\MedicationChartController;
 use App\Http\Controllers\NurseController;
 use App\Http\Controllers\NursesReportController;
@@ -31,6 +32,7 @@ use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\ResourceStockDateController;
 use App\Http\Controllers\ResourceSubCategoryController;
 use App\Http\Controllers\ResourceSupplierController;
+use App\Http\Controllers\ShiftReportController;
 use App\Http\Controllers\SponsorCategoryController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\SurgeryNoteController;
@@ -357,6 +359,8 @@ Route::middleware('auth')->group(function () {
         Route::patch('/delete/{visit}', [VisitController::class, 'destroy']);
         Route::patch('/open/{visit}', [VisitController::class, 'openVisit']);
         Route::get('/average', [VisitController::class, 'getPatientAverageWaitingTime']);
+        Route::patch('/review/{visit}', [VisitController::class, 'reviewVisit']);
+        Route::patch('/resolve/{visit}', [VisitController::class, 'resolveVisit']);
         Route::delete('/{visit}', [VisitController::class, 'destroy']);
     })->name('Visits');
 
@@ -470,7 +474,6 @@ Route::middleware('auth')->group(function () {
         Route::patch('/{nursesReport}', [NursesReportController::class, 'update']);
         Route::delete('/{nursesReport}', [NursesReportController::class, 'destroy']);
         Route::get('/{nursesReport}', [NursesReportController::class, 'edit']);
-        Route::get('display/{nursesReport}', [NursesReportController::class, 'displayReport']);
     });
 
     Route::prefix('thirdpartyservices')->group(function () {
@@ -497,6 +500,24 @@ Route::middleware('auth')->group(function () {
         Route::get('/download/{patientsFile}', [PatientsFileController::class, 'download']);
         Route::delete('/{patientsFile}', [PatientsFileController::class, 'destroy']);
     });
+
+    Route::prefix('shiftreport')->group(function () {
+        Route::post('', [ShiftReportController::class, 'store']);
+        Route::get('load', [ShiftReportController::class, 'loadShiftReportTable']);
+        Route::patch('/{shiftReport}', [ShiftReportController::class, 'update']);
+        Route::delete('/{shiftReport}', [ShiftReportController::class, 'destroy']);
+        Route::get('/{shiftReport}', [ShiftReportController::class, 'edit']);
+        Route::get('view/{shiftReport}', [ShiftReportController::class, 'view']);
+    });
+
+    Route::prefix('medicationcategory')->group(function (){
+        Route::post('', [MedicationCategoryController::class, 'store']);
+        Route::get('/load', [MedicationCategoryController::class, 'load']);
+        Route::get('/list', [MedicationCategoryController::class, 'list']);
+        Route::get('/{medicationCategory}', [MedicationCategoryController::class, 'edit']);
+        Route::delete('/{medicationCategory}', [MedicationCategoryController::class, 'destroy']);
+        Route::post('/{medicationCategory}', [MedicationCategoryController::class, 'update']);
+    })->name('Medication Category');
 });
 
 require __DIR__.'/auth.php';

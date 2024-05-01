@@ -649,10 +649,11 @@ window.addEventListener('DOMContentLoaded', function () {
             const payBtnSpan                = event.target.closest('.payBtnSpan')
             const reconciliationFieldset    = document.querySelector('#reconciliationFieldset')
             const enterCapitationPaymentBtn = event.target.closest('.enterCapitationPaymentBtn')
+            const addSpanBtn                = event.target.closest('.addSpanBtn')
     
             if (payBtnSpan){
                 const prescriptionId    = payBtnSpan.getAttribute('data-id')
-                const payInput      = payBtnSpan.parentElement.querySelector('.payInput')
+                const payInput          = payBtnSpan.parentElement.querySelector('.payInput')
                 payBtnSpan.classList.add('d-none')
                 payInput.classList.remove('d-none')
                 resetFocusEndofLine(payInput)
@@ -674,6 +675,36 @@ window.addEventListener('DOMContentLoaded', function () {
                 })
             }
 
+            if (addSpanBtn){
+                const prescriptionId    = addSpanBtn.getAttribute('data-id')
+                const addAmount         = addSpanBtn.parentElement.querySelector('.addAmount')
+                const payInput          = addSpanBtn.parentElement.querySelector('.payInput')
+                const payBtnSpan          = addSpanBtn.parentElement.querySelector('.payBtnSpan')
+                payInput.classList.remove('d-none')
+                payInput.setAttribute('readonly', true)
+                addAmount.classList.remove('d-none')
+                payBtnSpan.classList.add('d-none')
+
+                resetFocusEndofLine(addAmount)
+
+                addAmount.addEventListener('blur', function () {
+                    reconciliationFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/hmo/pay/${prescriptionId}`, {amountPaid: +payInput.value + +addAmount.value})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            reconciliationTable ?  reconciliationTable.draw(false) : ''
+                            reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        reconciliationTable ?  reconciliationTable.draw(false) : ''
+                        reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
+                    })                
+                })
+
+            }
+
             if (enterCapitationPaymentBtn){
                 capitationPaymentModal._element.querySelector('#sponsor').value = enterCapitationPaymentBtn.getAttribute('data-sponsor')
                 capitationPaymentModal._element.querySelector('#monthYear').value = enterCapitationPaymentBtn.getAttribute('data-monthYear')
@@ -683,9 +714,13 @@ window.addEventListener('DOMContentLoaded', function () {
         })    
     })
 
+    capitationPaymentModal._element.querySelector('#numberOfLives').addEventListener('input', function() {
+        capitationPaymentModal._element.querySelector('#amountPaid').value = this.value * capitationPaymentModal._element.querySelector('#perLife').value
+    })
+
     saveCapitationPaymentBtn.addEventListener('click', function () {
         const sponsor = saveCapitationPaymentBtn.getAttribute('data-id')
-
+        const perLife = capitationPaymentModal._element.querySelector('#perLife').value
         let data = {...getDivData(capitationPaymentModal._element), sponsor }
 
         http.post('/capitation', {...data}, {"html": capitationPaymentModal._element})
@@ -694,6 +729,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 capitationPaymentModal.hide()
                     clearDivValues(capitationPaymentModal._element)
                     nhisReconTable ? nhisReconTable.draw() : ''
+                    capitationPaymentModal._element.querySelector('#perLife').value = perLife   
                 }
                 saveCapitationPaymentBtn.removeAttribute('disabled')
         })

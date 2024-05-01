@@ -27,6 +27,7 @@ class ResourceService
             'category'                  => ResourceSubCategory::findOrFail($data->resourceSubCategory)->resourceCategory->name,
             'sub_category'              => ResourceSubCategory::findOrFail($data->resourceSubCategory)->name,
             'resource_sub_category_id'  => $data->resourceSubCategory,
+            'medication_category_id'    => $data->medicationCategory,
             'purchase_price'            => $data->purchasePrice,
             'selling_price'             => $data->sellingPrice,
             'reorder_level'             => $data->reOrder,
@@ -44,6 +45,7 @@ class ResourceService
             'category'                  => ResourceSubCategory::findOrFail($data->resourceSubCategory)->resourceCategory->name,
             'sub_category'              => ResourceSubCategory::findOrFail($data->resourceSubCategory)->name,
             'resource_sub_category_id'  => $data->resourceSubCategory,
+            'medication_category_id'    => $data->medicationCategory,
             'purchase_price'            => $data->purchasePrice,
             'selling_price'             => $data->sellingPrice,
             'reorder_level'             => $data->reOrder,
@@ -64,8 +66,7 @@ class ResourceService
                         ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('resourceSubCategory.resourceCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('resourceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('medicationCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -87,6 +88,7 @@ class ResourceService
                 'markedFor'         => $resource->marked_for,
                 'category'          => $resource->resourceSubCategory->resourceCategory->name,
                 'subCategory'       => $resource->resourceSubCategory->name,
+                'medicationCategory'=> $resource->medicationCategory?->name,
                 'unit'              => $resource->unit_description,
                 'purchasePrice'     => $resource->purchase_price,
                 'sellingPrice'      => $resource->selling_price,

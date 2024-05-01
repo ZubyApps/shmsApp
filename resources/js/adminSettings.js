@@ -10,7 +10,7 @@ import 'datatables.net-fixedcolumns-bs5';
 import 'datatables.net-fixedheader-bs5';
 import 'datatables.net-select-bs5';
 import 'datatables.net-staterestore-bs5';
-import { getExpenseCategoryTable, getPayMethodTable, getResourceCategoryTable, getResourceStockDateTable, getSponsorCategoryTable } from "./tables/settingsTables";
+import { getExpenseCategoryTable, getMedicationCategoryTable, getPayMethodTable, getResourceCategoryTable, getResourceStockDateTable, getSponsorCategoryTable } from "./tables/settingsTables";
 
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -26,6 +26,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const newExpenseCategoryModal          = new Modal(document.getElementById('newExpenseCategoryModal'))
     const updateExpenseCategoryModal       = new Modal(document.getElementById('updateExpenseCategoryModal'))
     
+    const newMedicationCategoryModal       = new Modal(document.getElementById('newMedicationCategoryModal'))
+    const updateMedicationCategoryModal    = new Modal(document.getElementById('updateMedicationCategoryModal'))
+
     const newPayMethodModal                 = new Modal(document.getElementById('newPayMethodModal'))
     const editPayMethodModal                = new Modal(document.getElementById('editPayMethodModal'))
 
@@ -34,6 +37,7 @@ window.addEventListener('DOMContentLoaded', function () {
     // const addResourceCategoryBtn            = document.querySelector('#addResourceCategoryBtn')
     const addPayMethodBtn                   = document.querySelector('#addPayMethodBtn')
     const addExpenseCategoryBtn             = document.querySelector('#addExpenseCategoryBtn')
+    const addMedicationCategoryBtn           = document.querySelector('#addMedicationCategoryBtn')
 
     const createSponsorCategoryBtn          = document.querySelector('#createSponsorCategoryBtn')
     const saveSponsorCategoryBtn            = document.querySelector('#saveSponsorCategoryBtn')
@@ -49,14 +53,18 @@ window.addEventListener('DOMContentLoaded', function () {
     
     const createExpenseCategoryBtn          = document.querySelector('#createExpenseCategoryBtn')
     const saveExpenseCategoryBtn            = document.querySelector('#saveExpenseCategoryBtn')
+
+    const createMedicationCategoryBtn       = document.querySelector('#createMedicationCategoryBtn')
+    const saveMedicationCategoryBtn         = document.querySelector('#saveMedicationCategoryBtn')
     
     const sponsorCategoryTab                = document.querySelector('#nav-sponsorCategory-tab')
     const resourceStockDateTab              = document.querySelector('#nav-resourceStockDate-tab')
     const resourceCategoryTab               = document.querySelector('#nav-resourceCategory-tab')
     const payMethodTab                      = document.querySelector('#nav-payMethod-tab') 
     const expenseCategoryTab                = document.querySelector('#nav-expenseCategory-tab')
+    const medicationCategoryTab             = document.querySelector('#nav-medicationCategory-tab')
 
-    let resourceStockDateTable, resourceCategoryTable, payMethodTable, expenseCategoryTable
+    let resourceStockDateTable, resourceCategoryTable, payMethodTable, expenseCategoryTable, medicationCategoryTable
 
     const sponsorCategoryTable = getSponsorCategoryTable('sponsorCategoryTable')
 
@@ -93,6 +101,14 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#expenseCategoryTable').dataTable().fnDraw()
         } else {
             expenseCategoryTable = getExpenseCategoryTable('expenseCategoryTable')
+        }
+    })
+
+    medicationCategoryTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#medicationCategoryTable' )){
+            $('#medicationCategoryTable').dataTable().fnDraw()
+        } else {
+            medicationCategoryTable = getMedicationCategoryTable('medicationCategoryTable')
         }
     })
 
@@ -491,6 +507,83 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
+    addMedicationCategoryBtn.addEventListener('click', function () {
+        newMedicationCategoryModal.show()
+    })
+
+    document.querySelector('#medicationCategoryTable').addEventListener('click', function (event) {
+        const editBtn    = event.target.closest('.updateBtn')
+        const deleteBtn  = event.target.closest('.deleteBtn')
+
+        if (editBtn) {
+            editBtn.setAttribute('disabled', 'disabled')
+            const medicationCategoryId = editBtn.getAttribute('data-id')
+            http.get(`/medicationcategory/${ medicationCategoryId }`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openModals(updateMedicationCategoryModal, saveMedicationCategoryBtn, response.data.data)
+                    }
+                    editBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
+
+        if (deleteBtn){
+            deleteBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Mediaction Category?')) {
+                const mediactionCategory = deleteBtn.getAttribute('data-id')
+                http.delete(`/medicationcategory/${mediactionCategory}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            expenseCategoryTable ? expenseCategoryTable.draw() : ''
+                        }
+                        deleteBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deleteBtn.removeAttribute('disabled')
+                        console.log(error)
+                    })
+            }
+        }
+    })
+
+    createMedicationCategoryBtn.addEventListener('click', function () {
+        createMedicationCategoryBtn.setAttribute('disabled', 'disabled')
+        http.post('/medicationcategory', getDivData(newMedicationCategoryModal._element), {"html": newMedicationCategoryModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                newMedicationCategoryModal.hide()
+                    clearDivValues(newMedicationCategoryModal._element)
+                    medicationCategoryTable ? medicationCategoryTable.draw() : ''
+                }
+                createMedicationCategoryBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            console.log(error)
+            createMedicationCategoryBtn.removeAttribute('disabled')
+        })
+
+    })
+
+    saveMedicationCategoryBtn.addEventListener('click', function (event) {
+        const medicationCategoryId = event.currentTarget.getAttribute('data-id')
+        saveMedicationCategoryBtn.setAttribute('disabled', 'disabled')
+        http.post(`/expensecategory/${medicationCategoryId}`, getDivData(updateMedicationCategoryModal._element), {"html": updateMedicationCategoryModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                updateMedicationCategoryModal.hide()
+                medicationCategoryTable ? medicationCategoryTable.draw() : ''
+            }
+            saveMedicationCategoryBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            alert(error)
+            saveMedicationCategoryBtn.removeAttribute('disabled')
+        })
+    })
+
     newSponsorCategoryModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(newSponsorCategoryModal._element)
         sponsorCategoryTable.draw()
@@ -504,5 +597,10 @@ window.addEventListener('DOMContentLoaded', function () {
     newResourceCategoryModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(newResourceCategoryModal._element)
         resourceCategoryTable ? resourceCategoryTable.draw() : ''
+    })
+
+    newMedicationCategoryModal._element.addEventListener('hidden.bs.modal', function () {
+        clearValidationErrors(newMedicationCategoryModal._element)
+        medicationCategoryTable ? medicationCategoryTable.draw() : ''
     })
 })

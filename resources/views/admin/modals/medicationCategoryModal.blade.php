@@ -26,7 +26,7 @@
                     <i class="bi bi-x-circle me-1"></i>
                     Close
                 </button>
-                <button type="button" id="{{ $isUpdate ? 'saveExpenseCategory' : 'createExpenseCategory' }}Btn" class="btn btn-primary">
+                <button type="button" id="{{ $isUpdate ? 'saveMedicationCategory' : 'createMedicationCategory' }}Btn" class="btn btn-primary">
                     <i class="bi bi-check-circle me-1"></i>
                     {{ $isUpdate ? 'Save' : 'Create' }}
                 </button>

@@ -159,6 +159,11 @@ class User extends Authenticatable
         return $this->hasMany(NursesReport::class);
     }
 
+    public function shiftReports() 
+    {
+        return $this->hasMany(ShiftReport::class);
+    }
+
     public function capitationPayments() 
     {
         return $this->hasMany(CapitationPayment::class);
@@ -187,6 +192,11 @@ class User extends Authenticatable
     public function patientsFiles() 
     {
         return $this->hasMany(PatientsFile::class);
+    }
+
+    public function medicationCategories(): HasMany 
+    {
+        return $this->hasMany(MedicationCategory::class);
     }
 
     public function nameInFull()

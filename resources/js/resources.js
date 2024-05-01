@@ -41,11 +41,18 @@ window.addEventListener('DOMContentLoaded', function () {
     const newResourceSubCategoryDatalistEl      = document.querySelector('#newSubCategoryList')
     const updateResourceSubCategoryDatalistEl   = document.querySelector('#updateSubCategoryList')
     
+    const newMedicationCategoryDatalistEl      = document.querySelector('#newMedicationCategoryList')
+    const updateMedicationCategoryDatalistEl   = document.querySelector('#updateMedicationCategoryList')
+
+
     const newSupplierDatalistEl                 = document.querySelector('#newSupplierList')
-    const updateSupplierDatalistEl              = document.querySelector('#updateSuppllierList')
+    const updateSupplierDatalistEl              = document.querySelector('#updateSupplierList')
 
     const newResourceSubCategoryInputEl         = document.querySelector('#newResourceSubCategory')
     const updateResourceSubCategoryInputEl      = document.querySelector('#updateResourceSubCategory')
+    
+    const newMedicationCategoryInputEl          = document.querySelector('#newMedicationCategory')
+    const updateMedicationCategoryInputEl       = document.querySelector('#updateMedicationCategory')
 
     const resourcesTab                          = document.querySelector('#nav-resources-tab')
     const resourceSubCategoryTab                = document.querySelector('#nav-resourceSubCategory-tab')
@@ -255,14 +262,18 @@ window.addEventListener('DOMContentLoaded', function () {
     addResourceBtn.addEventListener('click', function () {
         let date = new Date().toISOString().split('T')[0]
         newResourceModal._element.querySelector('[name="expiryDate"]').setAttribute('min', date.slice(0,7))
+        http.get(`/medicationcategory/list`).then((response) => {
+            displayList(newMedicationCategoryDatalistEl, 'medicalCategoryOption', response.data)
+        })
         newResourceModal.show()
     })
 
     createResourceBtn.addEventListener('click', function () {
         const resourceSubCategory = getDatalistOptionId(newResourceModal, newResourceSubCategoryInputEl, newResourceSubCategoryDatalistEl)
+        const medicationCategory = getDatalistOptionId(newResourceModal, newMedicationCategoryInputEl, newMedicationCategoryDatalistEl)
 
         createResourceBtn.setAttribute('disabled', 'disabled')
-        let data = {...getDivData(newResourceModal._element), resourceSubCategory }
+        let data = {...getDivData(newResourceModal._element), resourceSubCategory, medicationCategory }
         let flag = $('#flag').val().toString()
 
         http.post('/resources', {...data, flag}, {"html": newResourceModal._element})
@@ -285,7 +296,8 @@ window.addEventListener('DOMContentLoaded', function () {
         const resourceId = event.currentTarget.getAttribute('data-id')
         saveResourceBtn.setAttribute('disabled', 'disabled')
         const resourceSubCategory = getDatalistOptionId(updateResourceModal, updateResourceSubCategoryInputEl, updateResourceSubCategoryDatalistEl)
-        let data = {...getDivData(updateResourceModal._element), resourceSubCategory }
+        const medicationCategory  = getDatalistOptionId(updateResourceModal, updateMedicationCategoryInputEl, updateMedicationCategoryDatalistEl)
+        let data = {...getDivData(updateResourceModal._element), resourceSubCategory, medicationCategory }
         let flag = $('#flagUpdate').val().toString()
         http.post(`/resources/${resourceId}`, {...data, flag}, {"html": updateResourceModal._element})
         .then((response) => {
@@ -467,7 +479,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 })
 
-function openResourceModal(modal, button, {id, resourceSubCategoryId, resourceCategoryId, ...data}) {
+function openResourceModal(modal, button, {id, resourceSubCategoryId, resourceCategoryId, medicationCategoryId, ...data}) {
  
     for (let name in data) {
         const nameInput = modal._element.querySelector(`[name="${ name }"]`)
@@ -477,10 +489,16 @@ function openResourceModal(modal, button, {id, resourceSubCategoryId, resourceCa
 
     if (modal._element.id === 'updateResourceModal'){    
         modal._element.querySelector('#updateResourceSubCategory').setAttribute('data-id', resourceSubCategoryId)
-        const dataListEl = modal._element.querySelector('#updateSubCategoryList')
+        modal._element.querySelector('#updateMedicationCategory').setAttribute('data-id', medicationCategoryId)
+        const dataListSubCategoryEl = modal._element.querySelector('#updateSubCategoryList')
+        const dataListMedicationCategoryEl = modal._element.querySelector('#updateMedicationCategoryList')
 
         http.get(`/resourcecategory/list_subcategories/${resourceCategoryId}`).then((response) => {
-            displayList(dataListEl, 'subCategoryOption', response.data)
+            displayList(dataListSubCategoryEl, 'subCategoryOption', response.data)
+        })
+
+        http.get(`/medicationcategory/list`).then((response) => {
+            displayList(dataListMedicationCategoryEl, 'medicalCategoryOption', response.data)
         })
     }
 

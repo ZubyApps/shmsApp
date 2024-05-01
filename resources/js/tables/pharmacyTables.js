@@ -278,4 +278,56 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
     });
 }
 
-export {getPatientsVisitByFilterTable, getPrescriptionsByConsultation, getExpirationStockTable, getBulkRequestTable}
+const getPharmacyReportTable = (tableId, department, shiftBadgeSpan) => {
+    let shiftCount = []
+    const pharmacyReportTable = new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:   {url: '/shiftreport/load', data: {
+            'department': department,
+        }},
+        orderMulti: true,
+        language: {
+            emptyTable: 'No Report'
+        },
+        rowCallback: (row, data) => {
+            if (!data.viewedAt){
+                shiftCount.push(row)
+            }
+        },
+        drawCallback: function (settings) {
+            if (shiftCount.length){
+                shiftBadgeSpan.innerHTML = shiftCount.length
+                shiftCount = []
+            } else {
+                shiftBadgeSpan.innerHTML = ''
+            }
+        },
+        columns: [
+            {data: "date"},
+            {data: "shift"},
+            {data: "writtenBy"},
+            {data: "viewedAt"},
+            {data: "viewedBy"},
+            {data: row => function () {
+                return `
+                <div class="d-flex flex-">
+                <button class=" btn btn-outline-primary viewShiftReportBtn tooltip-test ${row.writtenById == row.userId ? 'd-none' : ''}" title="view" id="viewShiftReportBtn" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-zoom-in"></i>
+                    </button>
+                    <button class="ms-1 btn btn-outline-primary editShiftReportBtn tooltip-test ${row.writtenById == row.userId ? '' : 'd-none'}" title="edit report" id="editShiftReportBtn" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button type="submit" class="ms-1 btn btn-outline-primary deleteShiftReportBtn tooltip-test ${row.writtenById == row.userId ? '' : 'd-none'}" title="delete" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+            `
+                }
+            },
+        ]
+    });
+
+    return pharmacyReportTable
+}
+
+export {getPatientsVisitByFilterTable, getPrescriptionsByConsultation, getExpirationStockTable, getBulkRequestTable, getPharmacyReportTable}

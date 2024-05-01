@@ -42,6 +42,11 @@ class Resource extends Model
         return $this->hasMany(BulkRequest::class);
     }
 
+    public function medicationCategory()
+    {
+        return $this->belongsTo(MedicationCategory::class);
+    }
+
     public function nameWithIndicators()
     {
         return $this->name.$this->expiryDateChecker($this->expiry_date).$this->stockLevelChecker($this);

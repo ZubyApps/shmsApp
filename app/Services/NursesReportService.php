@@ -30,14 +30,14 @@ Class NursesReportService
         return $nursesReport;
     }
 
-    public function update(Request $data, NursesReport $nursesNote, User $user): NursesReport
+    public function update(Request $data, NursesReport $nursesReport, User $user): NursesReport
     {
-       $nursesNote->update([
+       $nursesReport->update([
             'report'       => $data->report,
             'user_id'      => $user->id
         ]);
 
-        return $nursesNote;
+        return $nursesReport;
     }
 
     public function getNursesReports(DataTableQueryParams $params, $data)
@@ -66,7 +66,7 @@ Class NursesReportService
        return  function (NursesReport $nursesReport) {
             return [
                 'id'                => $nursesReport->id,
-                'date'              => (new Carbon($nursesReport->created_at))->format('D/m/y g:ia'),
+                'date'              => (new Carbon($nursesReport->created_at))->format('D d/m/y g:ia'),
                 'report'            => $nursesReport->report,
                 'writtenBy'         => $nursesReport->user->username,
                 'closed'            => $nursesReport->visit->closed

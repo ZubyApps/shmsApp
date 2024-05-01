@@ -48,6 +48,6 @@ class NursesReportController extends Controller
 
     public function destroy(NursesReport $nursesReport)
     {
-        return $nursesReport->destroy($nursesReport);
+        return $nursesReport->destroy($nursesReport->id);
     }
 }

@@ -427,8 +427,10 @@ const bmiCalculator = (elements) => {
     elements.forEach(elInput => {
         elInput.addEventListener('input',  function (e){
             const div = elInput.parentElement.parentElement.parentElement
+            const height = div.querySelector('#height').value.split('cm')[0]/100
+            const weight = div.querySelector('#weight').value.split('k')[0]
             if (elInput.dataset.id == div.id){
-                const bmiValue = (div.querySelector('#weight').value.split('k')[0]/(div.querySelector('#height').value.split('m')[0])**2).toFixed(2) 
+                const bmiValue = (weight/(height)**2).toFixed(2) 
                 div.querySelector('#bmi').value = bmiValue > 0 && bmiValue !== 'Infinity' ? bmiValue : ''
             }
         })

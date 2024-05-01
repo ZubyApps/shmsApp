@@ -567,6 +567,8 @@ class HmoService
                             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                             ->where('sponsors.category_name', $data->category)
+                            ->whereMonth('visits.created_at', $current->month)
+                            ->whereYear('visits.created_at', $current->year)
                             ->where('visits.hmo_done_by', '!=', null)
                             ->groupBy('sponsor', 'id', 'category')
                             ->orderBy('sponsor')
@@ -645,7 +647,7 @@ class HmoService
             $visit->update(['total_capitation' => $visit->totalPrescriptionCapitations()]);
             return [
                 'id'                    => $visit->id,
-                'came'                  => (new Carbon($visit->created_at))->format('D/m/y g:ia'),                
+                'came'                  => (new Carbon($visit->created_at))->format('D d/m/y g:ia'),                
                 'patient'               => $visit->patient->patientId(),
                 'consultBy'             => $visit->doctor->username,
                 'diagnosis'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
@@ -661,7 +663,7 @@ class HmoService
                 'totalPaid'             => $visit->total_paid,
                 'prescriptions'         => $visit->prescriptions->map(fn(Prescription $prescription)=> [
                     'id'                => $prescription->id ?? '',
-                    'prescribed'        => (new Carbon($prescription->created_at))->format('D/m/y g:ia') ?? '',
+                    'prescribed'        => (new Carbon($prescription->created_at))->format('D d/m/y g:ia') ?? '',
                     'item'              => $prescription->resource->name,
                     'prescription'      => $prescription->prescription ?? '',
                     'qtyBilled'         => $prescription->qty_billed,

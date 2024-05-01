@@ -53,6 +53,7 @@
                                     <th>Marked For</th>
                                     <th>Category</th>
                                     <th>SubCategory</th>
+                                    <th>Medication Category</th>
                                     <th>Unit</th>
                                     <th>Purchase<br>Price</th>
                                     <th>Selling<br>Price</th>

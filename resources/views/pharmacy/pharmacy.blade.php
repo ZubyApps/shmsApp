@@ -8,9 +8,11 @@
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
 @include('pharmacy.billingDispenseModal', ['title' => "Patient's Billing & Dispense", 'isEdit' => false, 'id' => 'billingDispenseModal'])
 @include('extras.bulkRequestModal', ['title' => 'Bulk Request', 'dept' => 'Pharmacy', 'isPharmacy' => true, 'id' => 'bulkRequestModal'])
+@include('extras.shiftReportTemplateModal', ['title' => 'New Report', 'isUpdate' => false, 'dept' => 'pharmacy', 'isView' => false, 'id' => 'newShiftReportTemplateModal'])
+@include('extras.shiftReportTemplateModal', ['title' => 'Edit Report', 'isUpdate' => true, 'dept' => 'pharmacy', 'isView' => false, 'id' => 'editShiftReportTemplateModal'])
+@include('extras.shiftReportTemplateModal', ['title' => 'New Report', 'isUpdate' => false, 'dept' => 'pharmacy', 'isView' => true, 'id' => 'viewShiftReportTemplateModal'])
 
-    <div class="container p-1 mt-5 bg-white">    
-        
+    <div class="container p-1 mt-5 bg-white">   
         <div class="offcanvas offcanvas-end overflow-auto" data-bs-scroll="true" tabindex="-1" id="emergencyListOffcanvas"
             aria-labelledby="emergencyListOffcanvasLabel">
             <div class="offcanvas-header">
@@ -39,12 +41,45 @@
                 </div>
             </div>
         </div>
+        <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="shiftReportOffcanvas"
+            aria-labelledby="shiftReportOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-primary" id="shiftReportOffcanvasLabel">Shift Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="py-4 ">
+                    <div class="text-start py-4">
+                        <button type="button" id="newPharmacyReportBtn" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i>
+                            New Shift Report
+                        </button>
+                    </div>
+                    <table id="pharmacyShiftReportTable" class="table table-sm pharmacyShiftReportTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Shift</th>
+                                <th>Written By</th>
+                                <th>Viewed</th>
+                                <th>Viewed By</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
         <div class="text-start mb-4">
             <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" id="emergencyListBtn"
                 data-bs-target="#emergencyListOffcanvas" aria-controls="emergencyListOffcanvas">
                 <i class="bi bi-list-check"></i>
                 Emergency Rx <span class="badge text-bg-danger" id="emergencyListCount"></span>
+            </button>
+            <button type="button" id="shiftReportBtn" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#shiftReportOffcanvas" aria-controls="emergencyListOffcanvas">
+                Shift Reports <span class="badge text-bg-danger" id="shiftBadgeSpan"></span>
             </button>
         </div>
         

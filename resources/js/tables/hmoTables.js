@@ -473,6 +473,7 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to) => {
                                                     <div class="d-flex text-secondary">
                                                         <span class="btn payBtnSpan" data-id="${p.id}">${p.paid ? p.paid : 'Pay'}</span>
                                                         <input class="ms-1 form-control payInput d-none text-secondary" type="number" style="width:6rem;" value="${p.paid ?? ''}" name="amountPaid" id="amountPaid">
+                                                        <span class="ms-1 ${p.paid > 0 ? '' : 'd-none'} btn addSpanBtn text-primary" data-id="${p.id}">Add </span> <input class="ms-1 form-control addAmount d-none" type="number" style="width:6rem;" name="addAmount" id="addAmount">
                                                     </div>
                                                 </td>
                                             </tr>

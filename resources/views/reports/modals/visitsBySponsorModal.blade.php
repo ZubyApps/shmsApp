@@ -37,7 +37,7 @@
                                 <table id="visitsBySponsorTable" class="table table-sm">
                                     <thead>
                                         <tr>
-                                            <th>Seen</th>
+                                            <th class="resetSorting">Seen</th>
                                             <th>Patient</th>
                                             <th>Doctor</th>
                                             <th>Current Diagnosis</th>
@@ -46,6 +46,8 @@
                                             <th>NHIS Bill</th>
                                             <th>Paid</th>
                                             <th>Diff</th>
+                                            <th class="sortByreviewed">Reviewed</th>
+                                            <th class="sortByresolved">Resolved</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -55,6 +57,8 @@
                                             <td class="fw-semibold"></td>
                                             <td class="fw-semibold"></td>
                                             <td class="fw-semibold">Total</td>
+                                            <td class="fw-semibold"></td>
+                                            <td class="fw-semibold"></td>
                                             <td class="fw-semibold"></td>
                                             <td class="fw-semibold"></td>
                                             <td class="fw-semibold"></td>

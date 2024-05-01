@@ -93,7 +93,7 @@ class CapitationPaymentService
         $currentdate = new Carbon();
 
         if (! empty($params->searchTerm)) {
-            if($data->startedDate && $data->endDate){
+            if($data->startDate && $data->endDate){
                 return $this->capitationPayment
                         ->whereRelation('sponsor.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
@@ -118,9 +118,9 @@ class CapitationPaymentService
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        if($data->startedDate && $data->endDate){
+        if($data->startDate && $data->endDate){
             return $this->capitationPayment
-                    ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                    ->whereBetween('month_paid_for', [$data->startDate, $data->endDate])
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }

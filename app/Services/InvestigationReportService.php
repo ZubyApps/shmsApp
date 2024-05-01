@@ -39,6 +39,11 @@ class InvestigationReportService
                                 if ($data->startDate && $data->endDate){
                                     $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                                     ->orderBy('created_at');
+                                } elseif ($data->date) {
+                                    $date = new Carbon($data->date);
+                                    $query->whereMonth('created_at', $date->month)
+                                            ->whereYear('created_at', $date->year)
+                                    ->orderBy('created_at');
                                 } else {
                                     $query->whereMonth('created_at', $current->month)
                                             ->whereYear('created_at', $current->year)
@@ -57,6 +62,11 @@ class InvestigationReportService
                         'prescriptions' => function ($query) use ($data, $current) {
                             if ($data->startDate && $data->endDate){
                                 $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                                ->orderBy('created_at');
+                            } elseif ($data->date) {
+                                $date = new Carbon($data->date);
+                                $query->whereMonth('created_at', $date->month)
+                                        ->whereYear('created_at', $date->year)
                                 ->orderBy('created_at');
                             } else {
                                 $query->whereMonth('created_at', $current->month)

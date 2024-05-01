@@ -62,6 +62,16 @@ class VisitController extends Controller
        return $this->visitService->open($request->user(), $visit);
     }
 
+    public function reviewVisit(Request $request, Visit $visit)
+    {
+       return $this->visitService->review($request, $visit);
+    }
+
+    public function resolveVisit(Visit $visit)
+    {
+       return $this->visitService->resolve($visit);
+    }
+
     public function getPatientAverageWaitingTime()
     {
         $day = new CarbonImmutable();

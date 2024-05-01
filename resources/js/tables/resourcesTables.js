@@ -58,7 +58,7 @@ const getResourceTable = (tableId) => {
         orderMulti: true,
         search:true,
         fixedHeader: true,
-        lengthMenu:[20, 40, 80, 200],
+        lengthMenu:[50, 100, 150, 200, 500],
         dom: 'l<"my-1 text-center "B>frtip',
         buttons: [
             {
@@ -103,6 +103,7 @@ const getResourceTable = (tableId) => {
                 data: "category"
             },
             {data: "subCategory"},
+            {data: "medicationCategory"},
             {data: "unit"},
             {data: "purchasePrice"},
             {data: "sellingPrice"},
