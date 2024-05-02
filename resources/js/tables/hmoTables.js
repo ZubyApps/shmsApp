@@ -387,7 +387,7 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
                 $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: row => `<span class="btn text-decoration-underline showVisitsBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}" ${row.yearMonth ? `data-yearmonth="${row.year + '-' + row.month}"` : ''}>${row.sponsor}</span>`},
+            {data: row => `<span class="btn text-decoration-underline showVisitsBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}" ${row.yearMonth ? `data-yearmonth="${row.year + '-' + row.month}"` : ''}>${row.sponsor + '-' + row.category}</span>`},
             {data: row => row.monthName + ' ' + row.year},
             {data: "visitsCount"},
             {data: row => account.format(row.totalHmoBill)},
