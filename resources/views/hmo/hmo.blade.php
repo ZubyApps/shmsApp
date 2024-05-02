@@ -284,10 +284,11 @@
                                     <th>Mon/Year</th>
                                     <th>Visits</th>
                                     <th>Bills Sent</th>
+                                    <th>HMO Bill</th>
                                     <th>HMS Bill</th>
                                     <th>Bill Difference</th>
                                     <th>Total Paid</th>
-                                    <th>Paid - Bills Sent</th>
+                                    <th>Paid - HMO Bill</th>
                                     <th>Paid - HMS Bill</th>
                                 </tr>
                             </thead>
@@ -295,6 +296,7 @@
                             </tbody>
                             <tfoot>
                                 <tr class="">
+                                    <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>

@@ -385,11 +385,13 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
                 $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
                 $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
                 $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
+                $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: row => `<span class="btn text-decoration-underline showVisitsBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}" ${row.yearMonth ? `data-yearmonth="${row.year + '-' + row.month}"` : ''}>${row.sponsor + '-' + row.category}</span>`},
             {data: row => row.monthName + ' ' + row.year},
             {data: "visitsCount"},
+            {data: "billsSent"},
             {data: row => account.format(row.totalHmoBill)},
             {data: row => account.format(row.totalHmsBill)},
             {data: row => account.format(row.totalHmoBill - row.totalHmsBill)},

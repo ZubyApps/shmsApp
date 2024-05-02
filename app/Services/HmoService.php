@@ -13,6 +13,7 @@ use App\Models\Visit;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -581,16 +582,19 @@ class HmoService
 
     public function getReportSummaryTable(DataTableQueryParams $params, $data)
     {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
         $current    = Carbon::now();
 
         if (! empty($params->searchTerm)) {
             return DB::table('visits')
-                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.id)) as visitsCount, MONTHNAME(visits.created_at) as monthName, DATE_FORMAT(visits.created_at, "%m") as month, YEAR(visits.created_at) as year, EXTRACT(YEAR_MONTH FROM visits.created_at) as yearMonth')
+                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsors.category_name as category, COUNT(DISTINCT visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, SUM(CASE WHEN visits.hmo_done_by IS NOT NULL THEN 1 ELSE 0 END) AS billsSent, DATE_FORMAT(visits.created_at, "%m") as month, YEAR(visits.created_at) as year, EXTRACT(YEAR_MONTH FROM visits.created_at) as yearMonth')
                         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-                        ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-                        ->where('visits.hmo_done_by', '!=', null)
+                        // ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                        // ->where('visits.hmo_done_by', '!=', null)
+                        ->where(function (QueryBuilder $query) {
+                            $query->where('sponsors.category_name', 'HMO')
+                            ->orWhere('sponsors.category_name', 'NHIS' )
+                            ->orWhere('sponsors.category_name', 'Retainership' );
+                        })
                         ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->groupBy('yearMonth', 'sponsor', 'id', 'category', 'monthName', 'year', 'month')
                         ->orderBy('sponsor')
@@ -603,12 +607,17 @@ class HmoService
             if ($data->startDate && $data->endDate){
                 
                 return DB::table('visits')
-                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.id)) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
+                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsors.category_name as category, COUNT(DISTINCT visits.id) as visitsCount, SUM(CASE WHEN visits.hmo_done_by IS NOT NULL THEN 1 ELSE 0 END) AS billsSent, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
                             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-                            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                            // ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                             ->where('sponsors.category_name', $data->category)
                             ->WhereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                            ->where('visits.hmo_done_by', '!=', null)
+                            // ->where('visits.hmo_done_by', '!=', null)
+                            ->where(function (QueryBuilder $query) {
+                                $query->where('sponsors.category_name', 'HMO')
+                                ->orWhere('sponsors.category_name', 'NHIS' )
+                                ->orWhere('sponsors.category_name', 'Retainership' );
+                            })
                             ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
                             ->orderBy('sponsor')
                             ->orderBy('visitsCount')
@@ -620,13 +629,18 @@ class HmoService
                 $date = new Carbon($data->date);
 
                 return DB::table('visits')
-                ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.id)) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
+                ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsors.category_name as category, COUNT(DISTINCT visits.id) as visitsCount, SUM(CASE WHEN visits.hmo_done_by IS NOT NULL THEN 1 ELSE 0 END) AS billsSent, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
                 ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-                ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                // ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                 ->where('sponsors.category_name', $data->category)
                 ->whereMonth('visits.created_at', $date->month)
                 ->whereYear('visits.created_at', $date->year)
-                ->where('visits.hmo_done_by', '!=', null)
+                // ->where('visits.hmo_done_by', '!=', null)
+                ->where(function (QueryBuilder $query) {
+                    $query->where('sponsors.category_name', 'HMO')
+                    ->orWhere('sponsors.category_name', 'NHIS' )
+                    ->orWhere('sponsors.category_name', 'Retainership' );
+                })
                 ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
                 ->orderBy('sponsor')
                 ->orderBy('visitsCount')
@@ -635,13 +649,18 @@ class HmoService
             }
 
             return DB::table('visits')
-                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.id)) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
+                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsors.category_name as category, COUNT(DISTINCT visits.id) as visitsCount, SUM(CASE WHEN visits.hmo_done_by IS NOT NULL THEN 1 ELSE 0 END) AS billsSent, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
                             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-                            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                            // ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                             ->where('sponsors.category_name', $data->category)
                             ->whereMonth('visits.created_at', $current->month)
                             ->whereYear('visits.created_at', $current->year)
-                            ->where('visits.hmo_done_by', '!=', null)
+                            // ->where('visits.hmo_done_by', '!=', null)
+                            ->where(function (QueryBuilder $query) {
+                                $query->where('sponsors.category_name', 'HMO')
+                                ->orWhere('sponsors.category_name', 'NHIS' )
+                                ->orWhere('sponsors.category_name', 'Retainership' );
+                            })
                             ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
                             ->orderBy('sponsor')
                             ->orderBy('visitsCount')
@@ -651,11 +670,16 @@ class HmoService
 
         if ($data->startDate && $data->endDate){
             return DB::table('visits')
-                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.id)) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
+                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsors.category_name as category, COUNT(DISTINCT visits.id) as visitsCount, SUM(CASE WHEN visits.hmo_done_by IS NOT NULL THEN 1 ELSE 0 END) AS billsSent, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
                         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-                        ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                        // ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                         ->WhereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                        ->where('visits.hmo_done_by', '!=', null)
+                        // ->where('visits.hmo_done_by', '!=', null)
+                        ->where(function (QueryBuilder $query) {
+                            $query->where('sponsors.category_name', 'HMO')
+                            ->orWhere('sponsors.category_name', 'NHIS' )
+                            ->orWhere('sponsors.category_name', 'Retainership' );
+                        })
                         ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
                         ->orderBy('sponsor')
                         ->orderBy('visitsCount')
@@ -667,12 +691,17 @@ class HmoService
             $date = new Carbon($data->date);
 
             return DB::table('visits')
-            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.id)) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
+            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsors.category_name as category, COUNT(DISTINCT visits.id) as visitsCount, SUM(CASE WHEN visits.hmo_done_by IS NOT NULL THEN 1 ELSE 0 END) AS billsSent, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+            // ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->whereMonth('visits.created_at', $date->month)
             ->whereYear('visits.created_at', $date->year)
-            ->where('visits.hmo_done_by', '!=', null)
+            // ->where('visits.hmo_done_by', '!=', null)
+            ->where(function (QueryBuilder $query) {
+                $query->where('sponsors.category_name', 'HMO')
+                ->orWhere('sponsors.category_name', 'NHIS' )
+                ->orWhere('sponsors.category_name', 'Retainership' );
+            })
             ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
             ->orderBy('sponsor')
             ->orderBy('visitsCount')
@@ -681,12 +710,17 @@ class HmoService
         }
 
         return DB::table('visits')
-                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsors.category_name as category, COUNT(DISTINCT visits.id) as visitsCount, SUM(CASE WHEN visits.hmo_done_by IS NOT NULL) THEN 1 ELSE 0 END) AS billsSent, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
+                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsors.category_name as category, COUNT(DISTINCT visits.id) as visitsCount, SUM(CASE WHEN visits.hmo_done_by IS NOT NULL THEN 1 ELSE 0 END) AS billsSent, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
                         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                         // ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                         ->whereMonth('visits.created_at', $current->month)
                         ->whereYear('visits.created_at', $current->year)
                         // ->where('visits.hmo_done_by', '!=', null)
+                        ->where(function (QueryBuilder $query) {
+                            $query->where('sponsors.category_name', 'HMO')
+                            ->orWhere('sponsors.category_name', 'NHIS' )
+                            ->orWhere('sponsors.category_name', 'Retainership' );
+                        })
                         ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
                         ->orderBy('sponsor')
                         ->orderBy('visitsCount')
