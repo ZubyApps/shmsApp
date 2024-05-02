@@ -587,7 +587,7 @@ class HmoService
 
         if (! empty($params->searchTerm)) {
             return DB::table('visits')
-                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, DATE_FORMAT(visits.created_at, "%m") as month, YEAR(visits.created_at) as year, EXTRACT(YEAR_MONTH FROM visits.created_at) as yearMonth')
+                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.id)) as visitsCount, MONTHNAME(visits.created_at) as monthName, DATE_FORMAT(visits.created_at, "%m") as month, YEAR(visits.created_at) as year, EXTRACT(YEAR_MONTH FROM visits.created_at) as yearMonth')
                         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                         ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                         ->where('visits.hmo_done_by', '!=', null)
@@ -603,7 +603,7 @@ class HmoService
             if ($data->startDate && $data->endDate){
                 
                 return DB::table('visits')
-                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
+                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.id)) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
                             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                             ->where('sponsors.category_name', $data->category)
@@ -620,7 +620,7 @@ class HmoService
                 $date = new Carbon($data->date);
 
                 return DB::table('visits')
-                ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
+                ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.id)) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
                 ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                 ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                 ->where('sponsors.category_name', $data->category)
@@ -635,7 +635,7 @@ class HmoService
             }
 
             return DB::table('visits')
-                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
+                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.id)) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
                             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                             ->where('sponsors.category_name', $data->category)
@@ -651,7 +651,7 @@ class HmoService
 
         if ($data->startDate && $data->endDate){
             return DB::table('visits')
-                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
+                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.id)) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
                         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                         ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                         ->WhereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
@@ -667,7 +667,7 @@ class HmoService
             $date = new Carbon($data->date);
 
             return DB::table('visits')
-            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
+            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.id)) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->whereMonth('visits.created_at', $date->month)
@@ -681,7 +681,7 @@ class HmoService
         }
 
         return DB::table('visits')
-                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
+                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.id)) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
                         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                         ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                         ->whereMonth('visits.created_at', $current->month)
