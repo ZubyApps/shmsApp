@@ -686,7 +686,7 @@ class HmoService
                         // ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                         ->whereMonth('visits.created_at', $current->month)
                         ->whereYear('visits.created_at', $current->year)
-                        ->where('visits.hmo_done_by', '!=', null)
+                        // ->where('visits.hmo_done_by', '!=', null)
                         ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
                         ->orderBy('sponsor')
                         ->orderBy('visitsCount')
