@@ -410,7 +410,7 @@ class VisitService
 
         return $this->visit
                     ->Where('consulted', '!=', null)
-                    ->whereDay('created_at', $current->today())
+                    ->whereDate('created_at', $current->format('Y-m-d'))
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
