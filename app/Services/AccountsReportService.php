@@ -13,6 +13,7 @@ use App\Models\Visit;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\DB;
 
 class AccountsReportService
@@ -481,7 +482,6 @@ class AccountsReportService
             ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-            // ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
             ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
             ->groupBy('category')
             ->orderBy('patientsCount', 'desc')
@@ -495,7 +495,6 @@ class AccountsReportService
             ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-            // ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
             ->whereMonth('visits.created_at', $date->month)
             ->whereYear('visits.created_at', $date->year)
             ->groupBy('category')
@@ -503,22 +502,10 @@ class AccountsReportService
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        // return DB::table('visits')
-        //     ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(DISTINCT(visits.total_paid)) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
-        //     ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-        //     ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-        //     // ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
-        //     ->whereMonth('visits.created_at', $current->month)
-        //     ->whereYear('visits.created_at', $current->year)
-        //     ->groupBy('category')
-        //     ->orderBy('patientsCount', 'desc')
-        //     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-
         return DB::table('visits')
             ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-            // ->leftJoin('patients', 'patients.sponsor_id', '=', 'sponsors.id')
             ->whereMonth('visits.created_at', $current->month)
             ->whereYear('visits.created_at', $current->year)
             ->groupBy('category')
@@ -537,7 +524,7 @@ class AccountsReportService
                 ->selectRaw('sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
                 ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                 ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-                ->where(function (Builder $query) use($params) {
+                ->where(function (QueryBuilder $query) use($params) {
                     $query->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                     ->orWhere('sponsor_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                 })
@@ -551,12 +538,12 @@ class AccountsReportService
                 $date = new Carbon($data->date);
     
                 return DB::table('visits')
-                ->selectRaw('v sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
+                ->selectRaw('sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
                 ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                 ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-                ->where(function (Builder $query) use($params) {
+                ->where(function (QueryBuilder $query) use($params) {
                     $query->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                    ->orWherehere('sponsor_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    ->orWhere('sponsor_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                 })
                 ->whereMonth('visits.created_at', $date->month)
                 ->whereYear('visits.created_at', $date->year)
@@ -569,9 +556,9 @@ class AccountsReportService
                 ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
                 ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                 ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-                ->where(function (Builder $query) use($params) {
+                ->where(function (QueryBuilder $query) use($params) {
                     $query->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                    ->orWherehere('sponsor_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    ->orWhere('sponsor_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                 })
                 ->whereMonth('visits.created_at', $current->month)
                 ->whereYear('visits.created_at', $current->year)

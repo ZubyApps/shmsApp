@@ -299,13 +299,14 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
     return visitPrescriptionsTable
 }
 
-const getSentBillsTable = (tableId, startDate, endDate, filterByOpen) => {
+const getSentBillsTable = (tableId, startDate, endDate, date, filterByOpen) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
     return new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/sentbills', data: {
             'startDate'      : startDate, 
-            'endDate'        : endDate, 
+            'endDate'        : endDate,
+            'date'           : date,
             'filterByOpen'   : filterByOpen, 
         }},
         orderMulti: true,
@@ -353,13 +354,14 @@ const getSentBillsTable = (tableId, startDate, endDate, filterByOpen) => {
     });
 }
 
-const getHmoReportsTable = (tableId, category, startDate, endDate) => {
+const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
     const reportSummayTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/summary', data: {
             'category': category,
             'startDate': startDate,
             'endDate': endDate,
+            'date'   : date,
         }},
         orderMulti: false,
         lengthMenu:[25, 50, 100, 150, 200],
@@ -376,16 +378,17 @@ const getHmoReportsTable = (tableId, category, startDate, endDate) => {
         },
         drawCallback: function (settings) {
             var api = this.api()
-                $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
                 $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
                 $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
                 $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
                 $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
                 $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
                 $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
+                $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: row => `<span class="btn text-decoration-underline showVisitisBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}">${row.sponsor}</span>`},
+            {data: row => `<span class="btn text-decoration-underline showVisitsBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}" ${row.yearMonth ? `data-yearmonth="${row.year + '-' + row.month}"` : ''}>${row.sponsor}</span>`},
+            {data: row => row.monthName + ' ' + row.year},
             {data: "visitsCount"},
             {data: row => account.format(row.totalHmoBill)},
             {data: row => account.format(row.totalHmsBill)},
@@ -399,13 +402,14 @@ const getHmoReportsTable = (tableId, category, startDate, endDate) => {
     return reportSummayTable
 }
 
-const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to) => {
+const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to, date) => {
     const reconciliationTable =  new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/reconciliation', data: {
             'sponsorId': sponsorId,
-            'from': from,
-            'to': to,
+            'from'  : from,
+            'to'    : to,
+            'date'  : date,
         }},
         paging: true,
         orderMulti: false,

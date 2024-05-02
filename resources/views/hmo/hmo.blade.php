@@ -211,12 +211,16 @@
                 </div>
                 <!-- bills table -->
                 <div class="tab-pane fade" id="nav-sentBills" role="tabpanel" aria-labelledby="nav-sentBills-tab" tabindex="0">
-                    <x-form-div class="col-xl-6 pt-3 datesDiv">
+                    <x-form-div class="col-xl-8 pt-3 datesDiv">
                         <x-input-span class="">Start</x-input-span>
                         <x-form-input type="date" name="startDate" id="startDate" />
                         <x-input-span class="">End</x-input-span>
                         <x-form-input type="date" name="endDate" id="endDate" />
                         <button class="input-group-text searchWithDatesBtn">Search</button>
+                        <x-input-span class="">OR</x-input-span>
+                        <x-input-span class="">Month/Year</x-input-span>
+                        <x-form-input type="month" name="monthYear" id="monthYear" />
+                        <button class="input-group-text searchBillsMonthBtn">Search</button>
                     </x-form-div>
                     <div class="pt-3 ">
                         <table id="sentBillsTable" class="table table-hover align-middle table-sm sentBillsTable">
@@ -254,7 +258,7 @@
                 <!-- reports table -->
                 <div class="tab-pane fade" id="nav-hmoReports" role="tabpanel" aria-labelledby="nav-hmoReports-tab"
                     tabindex="0">
-                    <x-form-div class="col-xl-8 pt-2 reportsDatesDiv">
+                    <x-form-div class="col-xl-10 pt-2 reportsDatesDiv">
                         <x-input-span id="filterListLabel">Category List<x-required-span /></x-input-span>
                         <select class="form-select form-select-md" name="category" id="category">
                             <option value="">All</option>
@@ -267,12 +271,17 @@
                         <x-input-span class="">End</x-input-span>
                         <x-form-input type="date" name="endDate" id="endDate" />
                         <button class="input-group-text searchReportsBtn">Search</button>
+                        <x-input-span class="">OR</x-input-span>
+                        <x-input-span class="">Month/Year</x-input-span>
+                        <x-form-input type="month" name="monthYear" id="monthYear" />
+                        <button class="input-group-text searchReportsMonthBtn">Search</button>
                     </x-form-div>
                     <div class="py-2 justify-content-center">
                         <table id="hmoReportsTable" class="table table-sm hmoReportsTable">
                             <thead>
                                 <tr>
                                     <th>Sponsor</th>
+                                    <th>Mon/Year</th>
                                     <th>Visits</th>
                                     <th>Bills Sent</th>
                                     <th>HMS Bill</th>
@@ -286,6 +295,7 @@
                             </tbody>
                             <tfoot>
                                 <tr class="">
+                                    <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>

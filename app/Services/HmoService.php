@@ -429,6 +429,25 @@ class HmoService
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
+
+            if ($data->date){
+                $date = new Carbon($data->date);
+
+                return $this->visit
+                        ->Where('hmo_done_by', '!=', null)
+                        ->where(function (Builder $query) use($params) {
+                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
+                        ->whereMonth('created_at', $date->month)
+                        ->whereYear('created_at', $date->year)
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
             return $this->visit
                         ->Where('hmo_done_by', '!=', null)
                         ->where(function (Builder $query) use($params) {
@@ -465,6 +484,39 @@ class HmoService
                     ->where('consulted', '!=', null)
                     ->where('hmo_done_by', '!=', null)
                     ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                    ->where(function (Builder $query) {
+                        $query->whereRelation('sponsor', 'category_name', 'HMO')
+                        ->orWhereRelation('sponsor', 'category_name', 'NHIS')
+                        ->orWhereRelation('sponsor', 'category_name', 'Retainership');
+                    })
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->date){
+            $date = new Carbon($data->date);
+
+            if ($data->filterByOpen){
+                return $this->visit
+                        ->where('consulted', '!=', null)
+                        ->where('hmo_done_by', '!=', null)
+                        ->where('closed', false)
+                        ->whereMonth('created_at', $date->month)
+                        ->whereYear('created_at', $date->year)
+                        ->where(function (Builder $query) {
+                            $query->whereRelation('sponsor', 'category_name', 'HMO')
+                            ->orWhereRelation('sponsor', 'category_name', 'NHIS')
+                            ->orWhereRelation('sponsor', 'category_name', 'Retainership');
+                        })
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            return $this->visit
+                    ->where('consulted', '!=', null)
+                    ->where('hmo_done_by', '!=', null)
+                    ->whereMonth('created_at', $date->month)
+                    ->whereYear('created_at', $date->year)
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
                         ->orWhereRelation('sponsor', 'category_name', 'NHIS')
@@ -535,12 +587,12 @@ class HmoService
 
         if (! empty($params->searchTerm)) {
             return DB::table('visits')
-                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount')
+                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, DATE_FORMAT(visits.created_at, "%m") as month, YEAR(visits.created_at) as year, EXTRACT(YEAR_MONTH FROM visits.created_at) as yearMonth')
                         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                         ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                         ->where('visits.hmo_done_by', '!=', null)
                         ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->groupBy('sponsor', 'id', 'category')
+                        ->groupBy('yearMonth', 'sponsor', 'id', 'category', 'monthName', 'year', 'month')
                         ->orderBy('sponsor')
                         ->orderBy('visitsCount')
                         ->get()
@@ -549,28 +601,48 @@ class HmoService
 
         if ($data->category){
             if ($data->startDate && $data->endDate){
+                
                 return DB::table('visits')
-                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount')
+                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
                             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                             ->where('sponsors.category_name', $data->category)
                             ->WhereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                             ->where('visits.hmo_done_by', '!=', null)
-                            ->groupBy('sponsor', 'id', 'category')
+                            ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
                             ->orderBy('sponsor')
                             ->orderBy('visitsCount')
                             ->get()
                             ->toArray();
             }
+
+            if ($data->date){
+                $date = new Carbon($data->date);
+
+                return DB::table('visits')
+                ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
+                ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+                ->where('sponsors.category_name', $data->category)
+                ->whereMonth('visits.created_at', $date->month)
+                ->whereYear('visits.created_at', $date->year)
+                ->where('visits.hmo_done_by', '!=', null)
+                ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
+                ->orderBy('sponsor')
+                ->orderBy('visitsCount')
+                ->get()
+                ->toArray();
+            }
+
             return DB::table('visits')
-                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount')
+                            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
                             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                             ->where('sponsors.category_name', $data->category)
                             ->whereMonth('visits.created_at', $current->month)
                             ->whereYear('visits.created_at', $current->year)
                             ->where('visits.hmo_done_by', '!=', null)
-                            ->groupBy('sponsor', 'id', 'category')
+                            ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
                             ->orderBy('sponsor')
                             ->orderBy('visitsCount')
                             ->get()
@@ -579,26 +651,43 @@ class HmoService
 
         if ($data->startDate && $data->endDate){
             return DB::table('visits')
-                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount')
+                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
                         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                         ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                         ->WhereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                         ->where('visits.hmo_done_by', '!=', null)
-                        ->groupBy('sponsor', 'id', 'category')
+                        ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
                         ->orderBy('sponsor')
                         ->orderBy('visitsCount')
                         ->get()
                         ->toArray();
         }
 
+        if ($data->date){
+            $date = new Carbon($data->date);
+
+            return DB::table('visits')
+            ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
+            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+            ->whereMonth('visits.created_at', $date->month)
+            ->whereYear('visits.created_at', $date->year)
+            ->where('visits.hmo_done_by', '!=', null)
+            ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
+            ->orderBy('sponsor')
+            ->orderBy('visitsCount')
+            ->get()
+            ->toArray();
+        }
+
         return DB::table('visits')
-                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount')
+                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, YEAR(visits.created_at) as year')
                         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                         ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                         ->whereMonth('visits.created_at', $current->month)
                         ->whereYear('visits.created_at', $current->year)
                         ->where('visits.hmo_done_by', '!=', null)
-                        ->groupBy('sponsor', 'id', 'category')
+                        ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
                         ->orderBy('sponsor')
                         ->orderBy('visitsCount')
                         ->get()
@@ -611,6 +700,41 @@ class HmoService
         $orderDir   =  'asc';
 
             if (! empty($params->searchTerm)) {
+
+                if ($data->from && $data->to){
+                    return $this->visit
+                            ->where('sponsor_id', $data->sponsorId)
+                            ->where('consulted', '!=', null)
+                            ->where(function (Builder $query) use($params) {
+                                $query->where('icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
+                                ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('prescriptions.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            })
+                            ->WhereBetween('created_at', [$data->from.' 00:00:00', $data->to.' 23:59:59'])
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                }
+
+                if ($data->date){
+                    $date = new Carbon($data->date);
+                    return $this->visit
+                    ->where('sponsor_id', $data->sponsorId)
+                    ->where('consulted', '!=', null)
+                    ->where(function (Builder $query) use($params) {
+                        $query->where('icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
+                        ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('prescriptions.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    })
+                    ->whereMonth('created_at', $date->month)
+                    ->whereYear('created_at', $date->year)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                }
+
                 return $this->visit
                             ->where('sponsor_id', $data->sponsorId)
                             ->where('consulted', '!=', null)
@@ -630,6 +754,18 @@ class HmoService
                         ->where('sponsor_id', $data->sponsorId)
                         ->where('consulted', '!=', null)
                         ->WhereBetween('created_at', [$data->from.' 00:00:00', $data->to.' 23:59:59'])
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
+            if ($data->date){
+                $date = new Carbon($data->date);
+
+                return $this->visit
+                        ->where('sponsor_id', $data->sponsorId)
+                        ->where('consulted', '!=', null)
+                        ->whereMonth('created_at', $date->month)
+                        ->whereYear('created_at', $date->year)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }

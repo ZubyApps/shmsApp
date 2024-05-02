@@ -15,11 +15,19 @@
                                     <x-form-input name="sposnor" value="" id="sponsor" readonly/>
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
+                                    <x-input-span>Sponsor Category</x-input-span>
+                                    <x-form-input name="sponsorCategory" value="" id="sponsorCategory" readonly/>
+                                </x-form-div>
+                                <x-form-div class="col-xl-6">
                                     <x-input-span>Visits</x-input-span>
                                     <x-input-span class="">From</x-input-span>
                                     <x-form-input type="date" name="from" id="from" readonly/>
                                     <x-input-span class="">To</x-input-span>
                                     <x-form-input type="date" name="to" id="to" readonly/>
+                                </x-form-div>
+                                <x-form-div class="col-xl-6">
+                                    <x-input-span class="">Month/Year</x-input-span>
+                                    <x-form-input type="month" name="visitMonth" id="visitMonth" readonly/>
                                 </x-form-div>
                             </div>
                         </div>

@@ -27,7 +27,7 @@
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
                                     <x-input-span class="">Month/Year</x-input-span>
-                                    <x-form-input type="month" name="visitMonth" id="visitMonth" />
+                                    <x-form-input type="month" name="visitMonth" id="visitMonth" readonly/>
                                 </x-form-div>
                             </div>
                         </div>

@@ -37,7 +37,7 @@ const getPharmacySummaryTable = (tableId, startDate, endDate, date) => {
     return summaryTable
 }
 
-const getByResourceTable = (tableId, resourceId, modal, startDate, endDate) => {
+const getByResourceTable = (tableId, resourceId, modal, startDate, endDate, date) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
     const patientsByResourceTable = new DataTable(`#${tableId}`, {
@@ -46,6 +46,7 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate) => {
             'resourceId': resourceId,
             'startDate' : startDate, 
             'endDate'   : endDate,
+            'date'      : date
         }},
         orderMulti: true,
         search:true,

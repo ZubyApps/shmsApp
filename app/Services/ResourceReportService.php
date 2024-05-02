@@ -28,7 +28,7 @@ class ResourceReportService
     {
         return DB::table('resources')
         ->selectRaw('COUNT(DISTINCT(resources.resource_sub_category_id)) as subCategoryCount, resource_categories.name AS rCategory, COUNT(resources.id) as resourceCount, SUM(purchase_price * stock_level) as purchacedValue, SUM(selling_price * stock_level) as sellValue, SUM(stock_level) as stockLevel')
-            // ->leftJoin('resource_sub_categories', 'resources.resource_sub_category_id', '=', 'resource_sub_categories.id')
+            ->leftJoin('resource_sub_categories', 'resources.resource_sub_category_id', '=', 'resource_sub_categories.id')
             ->leftJoin('resource_categories', 'resource_sub_categories.resource_category_id', '=', 'resource_categories.id')
             ->groupBy('rCategory')
             ->orderBy('resourceCount', 'desc')

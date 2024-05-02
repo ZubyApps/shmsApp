@@ -51,15 +51,19 @@ window.addEventListener('DOMContentLoaded', function () {
     const newPatientSponsorInputEl          = document.querySelector('#newPatientSponsor')
     const newPatientSponsorDatalistEl       = document.querySelector('#newSponsorList')
 
+    const searchWithDatesBtn                = document.querySelector('.searchWithDatesBtn')
+    const searchBillsMonthBtn               = document.querySelector('.searchBillsMonthBtn')
+    const searchReportsBtn                  = document.querySelector('.searchReportsBtn')
+    const searchReportsMonthBtn             = document.querySelector('.searchReportsMonthBtn')
+    const searchNhisConBtn                  = document.querySelector('.searchNhisConBtn')
+    const saveCapitationPaymentBtn          = capitationPaymentModal._element.querySelector('#saveCapitationPaymentBtn')
+
+
     const filterListOption                  = document.querySelector('#filterList')
     const datesDiv                          = document.querySelector('.datesDiv')
-    const searchWithDatesBtn                = document.querySelector('.searchWithDatesBtn')
     const reportDatesDiv                    = document.querySelector('.reportsDatesDiv')
-    const searchReportsBtn                  = document.querySelector('.searchReportsBtn')
     const nhisMonthYearDiv                  = document.querySelector('.nhisMonthYearDiv')
-    const searchNhisConBtn                  = document.querySelector('.searchNhisConBtn')
     const downloadReportBtn                 = viewMedicalReportModal._element.querySelector('#downloadReportBtn')
-    const saveCapitationPaymentBtn          = capitationPaymentModal._element.querySelector('#saveCapitationPaymentBtn')
 
     const reportModalBody                   = viewMedicalReportModal._element.querySelector('.reportModalBody')
     const patientsFullName                  = viewMedicalReportModal._element.querySelector('#patientsFullName')
@@ -130,6 +134,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     sentBillsTab.addEventListener('click', function () {
+        datesDiv.querySelector('#monthYear').value = new Date().toISOString().slice(0,7)
         if ($.fn.DataTable.isDataTable( '#sentBillsTable' )){
             $('#sentBillsTable').dataTable().fnDraw()
             hmoApprovalListTable.draw()
@@ -142,6 +147,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     hmoReportsTab.addEventListener('click', function () {
+        reportDatesDiv.querySelector('#monthYear').value = new Date().toISOString().slice(0,7)
         if ($.fn.DataTable.isDataTable( '#hmoReportsTable' )){
             $('#hmoReportsTable').dataTable().fnDraw()
             hmoApprovalListTable.draw()
@@ -314,17 +320,19 @@ window.addEventListener('DOMContentLoaded', function () {
                 }
 
                 if (filterByOpen){
+                    datesDiv.querySelector('#monthYear').value ? (datesDiv.querySelector('#startDate').value = '', datesDiv.querySelector('#endDate').value = '') : ''
                     if ($.fn.DataTable.isDataTable( '#sentBillsTable' )){
                         $('#sentBillsTable').dataTable().fnDestroy()
                     }
-                    getSentBillsTable('#sentBillsTable', null, null, 1)
+                    getSentBillsTable('#sentBillsTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value, datesDiv.querySelector('#monthYear').value, 1)
                 }
 
                 if (removeFilter){
+                    datesDiv.querySelector('#monthYear').value ? (datesDiv.querySelector('#startDate').value = '', datesDiv.querySelector('#endDate').value = '') : ''
                     if ($.fn.DataTable.isDataTable( '#sentBillsTable' )){
                         $('#sentBillsTable').dataTable().fnDestroy()
                     }
-                    getSentBillsTable('#sentBillsTable')
+                    getSentBillsTable('#sentBillsTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value, datesDiv.querySelector('#monthYear').value)
                 }
             })
     })
@@ -453,23 +461,39 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     searchWithDatesBtn.addEventListener('click', function () {
-        if (!datesDiv.querySelector('#startDate').value && !datesDiv.querySelector('#endDate').value){
-            return alert('Please pick valid dates')
-        }
+        datesDiv.querySelector('#monthYear').value = ''
+
         if ($.fn.DataTable.isDataTable( '#sentBillsTable' )){
             $('#sentBillsTable').dataTable().fnDestroy()
         }
         sentBillsTable = getSentBillsTable('#sentBillsTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value)
     })
 
-    searchReportsBtn.addEventListener('click', function () {
-        if ((datesDiv.querySelector('#startDate').value && !datesDiv.querySelector('#endDate').value) || (!datesDiv.querySelector('#startDate').value && datesDiv.querySelector('#endDate').value)){
-            return alert('Please fill both dates')
+    searchBillsMonthBtn.addEventListener('click', function () {
+        datesDiv.querySelector('#startDate').value = ''; datesDiv.querySelector('#endDate').value = '';
+
+        if ($.fn.DataTable.isDataTable( '#sentBillsTable' )){
+            $('#sentBillsTable').dataTable().fnDestroy()
         }
+        sentBillsTable = getSentBillsTable('#sentBillsTable', null, null, datesDiv.querySelector('#monthYear').value)
+    })
+
+    searchReportsBtn.addEventListener('click', function () {
+        reportDatesDiv.querySelector('#monthYear').value = ''
+
         if ($.fn.DataTable.isDataTable( '#hmoReportsTable' )){
             $('#hmoReportsTable').dataTable().fnDestroy()
         }
         hmoReportsTable = getHmoReportsTable('hmoReportsTable', reportDatesDiv.querySelector('#category').value, reportDatesDiv.querySelector('#startDate').value, reportDatesDiv.querySelector('#endDate').value)
+    })
+
+    searchReportsMonthBtn.addEventListener('click', function () {
+        reportDatesDiv.querySelector('#startDate').value = ''; reportDatesDiv.querySelector('#endDate').value = '';
+
+        if ($.fn.DataTable.isDataTable( '#hmoReportsTable' )){
+            $('#hmoReportsTable').dataTable().fnDestroy()
+        }
+        hmoReportsTable = getHmoReportsTable('hmoReportsTable', reportDatesDiv.querySelector('#category').value, null, null, reportDatesDiv.querySelector('#monthYear').value)
     })
 
     searchNhisConBtn.addEventListener('click', function () {
@@ -597,16 +621,33 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     document.querySelector('#hmoReportsTable').addEventListener('click', function (event) {
-        const showVisitisBtn    = event.target.closest('.showVisitisBtn')
+        const showVisitsBtn     = event.target.closest('.showVisitsBtn')
         const from              = reportDatesDiv.querySelector('#startDate').value
         const to                = reportDatesDiv.querySelector('#endDate').value
 
-        if (showVisitisBtn){
-            const id = showVisitisBtn.getAttribute('data-id')
-            reconciliationModal._element.querySelector('#sponsor').value = showVisitisBtn.getAttribute('data-sponsor') + ' - ' + showVisitisBtn.getAttribute('data-category')
+        if (showVisitsBtn){
+            const id = showVisitsBtn.getAttribute('data-id')
+            const date = showVisitsBtn.getAttribute('data-yearmonth') ?? reportDatesDiv.querySelector('#monthYear').value
+            reconciliationModal._element.querySelector('#sponsor').value = showVisitsBtn.getAttribute('data-sponsor')
+            reconciliationModal._element.querySelector('#sponsorCategory').value = showVisitsBtn.getAttribute('data-category')
             reconciliationModal._element.querySelector('#from').value = from
             reconciliationModal._element.querySelector('#to').value = to
-            reconciliationTable = getHmoReconciliationTable('#reconciliationTable', id, reconciliationModal, from, to)
+            reconciliationModal._element.querySelector('#visitMonth').value = date
+            
+            if (date){
+                reconciliationTable = getHmoReconciliationTable('#reconciliationTable', id, reconciliationModal, null, null, date)
+                reconciliationModal.show()
+                return
+            }
+
+            if(from && to){
+                reconciliationTable = getHmoReconciliationTable('#reconciliationTable', id, reconciliationModal, from, to)
+                reconciliationModal.show()
+                return
+            }
+
+            reconciliationModal._element.querySelector('#visitMonth').value = date
+            reconciliationTable = getHmoReconciliationTable('#reconciliationTable', id, reconciliationModal)
             reconciliationModal.show()
         }
     })
