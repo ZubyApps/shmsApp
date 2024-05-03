@@ -453,7 +453,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelectorAll('#medicalReportTable, #patientsFileTable, #surgeryNoteTable').forEach(table => {
+    document.querySelectorAll('#medicalReportTable, #patientsFileTableAncConReview, #patientsFileTableConReview, #surgeryNoteTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const medicalReportBtn          = event.target.closest('.editMedicalReportBtn')
             const viewMedicalReportbtn      = event.target.closest('.viewMedicalReportBtn')
@@ -461,7 +461,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const deleteFileBtn             = event.target.closest('.deleteFileBtn')
             const SurgeryNoteBtn            = event.target.closest('.updateSurgeryNoteBtn, .viewSurgeryNoteBtn')
             const deleteSurgeryNoteBtn      = event.target.closest('.deleteSurgeryNoteBtn')
-    
+            
             if (medicalReportBtn) {
                 medicalReportBtn.setAttribute('disabled', 'disabled')
                 saveMedicalReportBtn.setAttribute('data-table', medicalReportBtn.dataset.table)

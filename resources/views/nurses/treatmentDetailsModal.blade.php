@@ -123,6 +123,32 @@
                             </div>
                         </div>
                         @endif
+                        <div class="mb-2 form-control">
+                            <x-form-span>Files/Documents</x-form-span>
+                            <div class="text-start py-3">
+                                <button type="button" id="fileBtn" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle me-1"></i>
+                                    File
+                                    <i class="bi bi-file-earmark-medical"></i>
+                                </button>
+                            </div>
+                            <div class="row overflow-auto m-1">
+                                <table id="patientsFileTable" class="table align-middle table-sm bg-primary">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>File Name</th>
+                                            <th>Third Party</th>
+                                            <th>Comment</th>
+                                            <th>File</th>
+                                            <th>UploadedBy</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
                         @if ($isAnc)
                         <x-bill-summary :number="'AncConDetails'" class="{{ $isLab ? 'd-none' : '' }}"></x-bill-summary> @else <x-bill-summary :number="'ConDetails'" class="{{ $isLab ? 'd-none' : '' }}"></x-bill-summary> @endif
                     </div>

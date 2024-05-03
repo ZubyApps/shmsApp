@@ -16,6 +16,7 @@ class NurseController extends Controller
         private readonly NurseService $nurseService,
         private readonly UserService $userService,
         private readonly ResourceService $resourceService,
+        private readonly ThirdPartyController $thirdPartyController
         )
     {
         
@@ -23,7 +24,10 @@ class NurseController extends Controller
 
     public function index()
     {
-        return view('nurses.nurses', ['doctors' => $this->userService->listStaff(designation: 'Doctor')]);
+        return view('nurses.nurses', [
+            'doctors' => $this->userService->listStaff(designation: 'Doctor'),
+            'thirdParties'  => $this->thirdPartyController->showAll('id', 'short_name')
+        ]);
     }
 
     public function loadVisitsNurses(Request $request)

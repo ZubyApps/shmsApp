@@ -26,19 +26,20 @@ window.addEventListener('DOMContentLoaded', function () {
     const chartMedicationModal          = new Modal(document.getElementById('chartMedicationModal'))
     const chartPrescriptionModal        = new Modal(document.getElementById('chartPrescriptionModal'))
     const vitalsignsModal               = new Modal(document.getElementById('vitalsignsModal'))
-    const ancVitalsignsModal           = new Modal(document.getElementById('ancVitalsignsModal'))
-    const giveMedicationModal          = new Modal(document.getElementById('giveMedicationModal'))
-    const serviceDoneModal             = new Modal(document.getElementById('serviceDoneModal'))
-    const newAncRegisterationModal     = new Modal(document.getElementById('newAncRegisterationModal'))
-    const updateAncRegisterationModal  = new Modal(document.getElementById('updateAncRegisterationModal'))
-    const viewAncRegisterationModal    = new Modal(document.getElementById('viewAncRegisterationModal'))
-    const dischargeModal               = new Modal(document.getElementById('dischargeModal'))
+    const ancVitalsignsModal            = new Modal(document.getElementById('ancVitalsignsModal'))
+    const giveMedicationModal           = new Modal(document.getElementById('giveMedicationModal'))
+    const serviceDoneModal              = new Modal(document.getElementById('serviceDoneModal'))
+    const newAncRegisterationModal      = new Modal(document.getElementById('newAncRegisterationModal'))
+    const updateAncRegisterationModal   = new Modal(document.getElementById('updateAncRegisterationModal'))
+    const viewAncRegisterationModal     = new Modal(document.getElementById('viewAncRegisterationModal'))
+    const dischargeModal                = new Modal(document.getElementById('dischargeModal'))
     const wardAndBedModal               = new Modal(document.getElementById('wardAndBedModal'))
-    const bulkRequestModal             = new Modal(document.getElementById('bulkRequestModal'))
+    const bulkRequestModal              = new Modal(document.getElementById('bulkRequestModal'))
     const investigationAndManagementModal   = new Modal(document.getElementById('investigationAndManagementModal'))
-    const nursesReportModal            = new Modal(document.getElementById('nursesReportModal'))
-    const newNursesReportTemplateModal = new Modal(document.getElementById('newNursesReportTemplateModal'))
+    const nursesReportModal             = new Modal(document.getElementById('nursesReportModal'))
+    const newNursesReportTemplateModal  = new Modal(document.getElementById('newNursesReportTemplateModal'))
     const editNursesReportTemplateModal = new Modal(document.getElementById('editNursesReportTemplateModal'))
+    const fileModal                     = new Modal(document.getElementById('fileModal'))
 
     const visitHistoryDiv           = consultationHistoryModal._element.querySelector('#visitHistoryDiv')
     const addVitalsignsDiv          = document.querySelectorAll('#addVitalsignsDiv')
@@ -77,6 +78,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const createNursesReportBtn     = newNursesReportTemplateModal._element.querySelector('#createNursesReportBtn')
     const saveNursesReportBtn       = editNursesReportTemplateModal._element.querySelector('#saveNursesReportBtn')
     const saveDischargeBtn          = document.querySelector('#saveDischargeBtn')
+    const fileBtns                  = document.querySelectorAll('#fileBtn')
+    const uploadFileBtn                     = fileModal._element.querySelector('#uploadFileBtn')
 
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
     const [outPatientsTab, inPatientsTab, ancPatientsTab, bulkRequestsTab, emergencyTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-emergency-tab')]
@@ -84,7 +87,7 @@ window.addEventListener('DOMContentLoaded', function () {
     bmiCalculator(document.querySelectorAll('#height, .weight'))
     lmpCalculator(document.querySelectorAll('#lmp'), document.querySelectorAll('#registerationDiv'))
 
-    let outPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable, emergencyTable, nursesReportTable, surgeryNoteTable, deliveryNoteTable, medicationsTable
+    let outPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable, emergencyTable, nursesReportTable, surgeryNoteTable, deliveryNoteTable, medicationsTable, patientsFilesTable
 
     const inPatientsVisitTable = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient')
     const waitingTable                  = getWaitingTable('waitingTable')
@@ -152,6 +155,24 @@ window.addEventListener('DOMContentLoaded', function () {
         waitingTable.draw()
     })
 
+    fileBtns.forEach(btn => {btn.addEventListener('click', function() {fileModal.show()})});
+
+    uploadFileBtn.addEventListener('click', function() { uploadFileBtn.setAttribute('disabled', 'disabled')
+        const visitId = uploadFileBtn.getAttribute('data-id')
+        http.post(`/patientsfiles/${visitId}`, { filename : fileModal._element.querySelector('#filename').value,
+            patientsFile: fileModal._element.querySelector('#patientsFile').files[0],
+            thirdParty : fileModal._element.querySelector('#thirdParty').value,
+            comment : fileModal._element.querySelector('#comment').value,
+        }, {"html": fileModal._element, headers: {'Content-Type' : 'multipart/form-data'}})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) { fileModal.hide()
+                clearDivValues(fileModal._element); clearValidationErrors(fileModal._element); patientsFilesTable ? patientsFilesTable.draw() : ''
+            }
+            uploadFileBtn.removeAttribute('disabled')
+        })
+        .catch((response) => { console.log(response); uploadFileBtn.removeAttribute('disabled')})
+    })
+
     waitingListCanvas._element.addEventListener('hide.bs.offcanvas', function () {
         inPatientsVisitTable.draw()
         outPatientsVisitTable ? outPatientsVisitTable.draw() : ''
@@ -207,7 +228,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const [visitId, patientType, ancRegId, closed, patientId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-patientType'), consultationDetailsBtn.getAttribute('data-ancregid'), +consultationDetailsBtn.getAttribute('data-closed'), consultationDetailsBtn.getAttribute('data-patientid')] 
                 const isAnc = patientType === 'ANC'
                 const [modal, div, displayFunction, vitalSignsTable, id, suffixId] = isAnc ? [ancTreatmentDetailsModal, ancTreatmentDiv, AncPatientReviewDetails, getAncVitalSignsTable, ancRegId, 'AncConDetails'] : [treatmentDetailsModal, regularTreatmentDiv, regularReviewDetails, getVitalSignsTableByVisit, visitId, 'ConDetails']
-                createDeliveryNoteBtn.setAttribute('data-visitid', visitId)
+                createDeliveryNoteBtn.setAttribute('data-visitid', visitId); uploadFileBtn.setAttribute('data-id', visitId);
                 closed ? modal._element.querySelector('.addVitalsignsDiv').classList.add('d-none') : modal._element.querySelector('.addVitalsignsDiv').classList.remove('d-none')
                 modal._element.querySelector('.historyBtn').setAttribute('data-patienttype', patientType); modal._element.querySelector('.historyBtn').setAttribute('data-patientid', patientId)
                 http.get(`/consultation/consultations/${visitId}`)
@@ -230,6 +251,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             vitalSignsTable(`#vitalSignsTableNurses${suffixId}`, id, modal)
                             deliveryNoteTable   = getDeliveryNoteTable('deliveryNoteTable', visitId, true, modal._element)
                             surgeryNoteTable    = getSurgeryNoteTable('surgeryNoteTable', visitId, false, modal._element)
+                            patientsFilesTable  = getPatientsFileTable(`patientsFileTable`, visitId, modal._element)
                             getbillingTableByVisit(`billingTable${suffixId}`, visitId, modal._element)
                             modal.show()
                         }
@@ -407,12 +429,13 @@ window.addEventListener('DOMContentLoaded', function () {
     newNursesReportBtn.addEventListener('click', function() {newNursesReportTemplateModal.show()})
     newDeliveryNoteBtn.addEventListener('click', function() {newDeliveryNoteModal.show()})
 
-    document.querySelectorAll('#nursesReportTable, #deliveryNoteTable').forEach(table => {
+    document.querySelectorAll('#nursesReportTable, #deliveryNoteTable, #patientsFileTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const editNursesReportBtn   = event.target.closest('.editNursesReportBtn')
             const deleteNursesReportBtn = event.target.closest('.deleteNursesReportBtn')
             const deliveryNoteBtn       = event.target.closest('.updateDeliveryNoteBtn, .viewDeliveryNoteBtn')
             const deleteDeliveryNoteBtn = event.target.closest('.deleteDeliveryNoteBtn')
+            const deleteFileBtn         = event.target.closest('.deleteFileBtn')
     
             if (editNursesReportBtn) {
                 editNursesReportBtn.setAttribute('disabled', 'disabled')
@@ -483,6 +506,27 @@ window.addEventListener('DOMContentLoaded', function () {
                             deleteDeliveryNoteBtn.removeAttribute('disabled')
                         })
                 } deleteDeliveryNoteBtn.removeAttribute('disabled')
+            }
+
+            if (deleteFileBtn){
+                deleteFileBtn.setAttribute('disabled', 'disabled')
+                    if (confirm('Are you sure you want to delete this file?')) {
+                        const id = deleteFileBtn.getAttribute('data-id')
+                        http.delete(`/patientsfiles/${id}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300){
+                                if ($.fn.DataTable.isDataTable( '#'+this.id )){
+                                $('#'+this.id).dataTable().fnDraw()
+                                }
+                                if (response.status == 222){
+                                    alert(response.data)
+                                }
+                                table.draw()
+                            }
+                            deleteFileBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {console.log(error);deleteFileBtn.removeAttribute('disabled')})
+                    } deleteFileBtn.removeAttribute('disabled')
             }
         })
     })

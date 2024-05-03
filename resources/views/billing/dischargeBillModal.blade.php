@@ -19,6 +19,7 @@
                             <option value="General">General</option>
                             <option value="Private">Private</option>
                             <option value="Children">Children</option>
+                            <option value="Observation">Observation</option>
                             <option value="VIP">VIP</option>
                         </select>
                     </x-form-div>

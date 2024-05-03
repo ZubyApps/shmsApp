@@ -887,7 +887,7 @@ class HmoService
         if ($searchDate){
             return $this->sponsor
                     ->whereRelation('sponsorCategory', 'name', '=', 'NHIS')
-                    ->whereHas('visits.prescriptions', function(Builder $query) use($searchDate){
+                    ->whereHas('visits', function(Builder $query) use($searchDate){
                         $query->whereMonth('created_at', $searchDate->month)
                                 ->whereYear('created_at', $searchDate->year);
                     })
@@ -896,7 +896,7 @@ class HmoService
         }
         return $this->sponsor
                     ->whereRelation('sponsorCategory', 'name', '=', 'NHIS')
-                    ->whereHas('visits.prescriptions', function(Builder $query) use($current){
+                    ->whereHas('visits', function(Builder $query) use($current){
                         $query->whereMonth('created_at', $current->month)
                               ->whereYear('created_at', $current->year);
                     })
