@@ -83,7 +83,7 @@ class PatientsFileService
         $storageFilename    = $patientsFile->storage_filename;
         $filename           = $patientsFile->filename;
         $extension          = $patientsFile->extension;
-        $thirdParty          = $patientsFile->thirdParty?->short_name;
+        $thirdParty         = $patientsFile->thirdParty?->short_name;
         $patient            = $patientsFile->visit->patient->patientId();
         $name = $filename. ' ' .($thirdParty ?? ''). ' - '. str_replace('/', ' ', $patient).'.'.$extension;
        
@@ -95,8 +95,8 @@ class PatientsFileService
     {
         $storageFilename    = $patientsFile->storage_filename;
 
-        if (Storage::exists('patients/'.$storageFilename)){
-            Storage::delete('patients/'.$storageFilename);
+        if (Storage::exists('public/patients/'.$storageFilename)){
+            Storage::delete('public/patients/'.$storageFilename);
             return $patientsFile->destroy($patientsFile->id);
         }
         return response("We couldn't find this file", 222);
