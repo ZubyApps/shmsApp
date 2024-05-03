@@ -323,8 +323,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 addBillBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            console.log(error.response.data.message)
             addBillBtn.removeAttribute('disabled')
+            console.log(error)
         })
     })
 
