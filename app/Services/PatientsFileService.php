@@ -28,7 +28,7 @@ class PatientsFileService
 
         $storageFilename = bin2hex(random_bytes(10));
 
-        $file->storeAs('patients', $storageFilename);
+        $file->storeAs('public/patients', $storageFilename);
 
         return $user->patientsFiles()->create([
             'filename'          => $data->filename,
@@ -87,7 +87,7 @@ class PatientsFileService
         $patient            = $patientsFile->visit->patient->patientId();
         $name = $filename. ' ' .($thirdParty ?? ''). ' - '. str_replace('/', ' ', $patient).'.'.$extension;
        
-        return  Storage::download('patients/'.$storageFilename, $name, ['Content-Type' => 'application/pdf']);
+        return  Storage::download('public/patients/'.$storageFilename, $name, ['Content-Type' => 'application/pdf']);
 
     }
 
