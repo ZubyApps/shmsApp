@@ -832,7 +832,7 @@ const getPatientsFileTable = (tableId, visitId, modal) => {
             {data: "filename"},
             {data: "thirdParty"},
             {data: "comment"},
-            {data: row =>  `<span class="position-relative"><a href="/patientsfiles/download/${row.id}" target="blank">
+            {data: row =>  `<span class="position-relative"><a href="/https://shms.sandrahospitalmkd.com.ng/patientsfiles/download/${row.id}" target="blank">
                                 <i class="bi bi-file-earmark-text download-receipt text-primary fs-4"></i></a>
                             </span>`},
             {data: "uploadedBy"},
