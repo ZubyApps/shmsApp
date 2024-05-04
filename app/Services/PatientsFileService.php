@@ -87,7 +87,7 @@ class PatientsFileService
         $patient            = $patientsFile->visit->patient->patientId();
         $name = $filename. ' ' .($thirdParty ?? ''). ' - '. str_replace('/', ' ', $patient).'.'.$extension;
        
-        return  Storage::download('public/'.$storageFilename, $name, ['Content-Type' => 'application/pdf']);
+        return  Storage::download('public/public'.$storageFilename, $name, ['Content-Type' => 'application/pdf']);
 
     }
 
