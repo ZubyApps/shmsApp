@@ -28,7 +28,7 @@ class PatientsFileService
 
         $storageFilename = bin2hex(random_bytes(10));
 
-        $file->storeAs('public/patients', $storageFilename);
+        $file->storeAs('public/', $storageFilename);
 
         return $user->patientsFiles()->create([
             'filename'          => $data->filename,
@@ -87,7 +87,7 @@ class PatientsFileService
         $patient            = $patientsFile->visit->patient->patientId();
         $name = $filename. ' ' .($thirdParty ?? ''). ' - '. str_replace('/', ' ', $patient).'.'.$extension;
        
-        return  Storage::download('public/patients/'.$storageFilename, $name, ['Content-Type' => 'application/pdf']);
+        return  Storage::download('public/'.$storageFilename, $name, ['Content-Type' => 'application/pdf']);
 
     }
 
@@ -95,8 +95,8 @@ class PatientsFileService
     {
         $storageFilename    = $patientsFile->storage_filename;
 
-        if (Storage::exists('public/patients/'.$storageFilename)){
-            Storage::delete('public/patients/'.$storageFilename);
+        if (Storage::exists('public/'.$storageFilename)){
+            Storage::delete('public/'.$storageFilename);
             return $patientsFile->destroy($patientsFile->id);
         }
         return response("We couldn't find this file", 222);
