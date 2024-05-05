@@ -383,7 +383,7 @@ class HmoService
     public function saveBill(Request $data, Prescription $prescription, User $user): Prescription
     {
         $prescription->update([
-            'hmo_bill'       => $data->bill,
+            'hmo_bill'       => $data->bill ?? 0,
             'hmo_bill_date'  => new Carbon(),
             'hmo_bill_by'    => $user->id,
             'hmo_bill_note'  => $data->note

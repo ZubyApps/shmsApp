@@ -52,14 +52,16 @@ class ConsultationService
                 "specialist_consultation"   => $data->specialConsultation
             ]);  
 
-            if ($consultation->visit->consulted){
-                $consultation->visit()->update([
+            $visit = $consultation->visit;
+
+            if ($visit->consulted){
+                $visit->update([
                     'admission_status'  => $data->admit,
-                    'ward'              => $data->ward,
-                    'bed_no'            => $data->bedNumber,
+                    'ward'              => $data->ward ? $data->ward : $visit->ward,
+                    'bed_no'            => $data->bedNumber ? $data->bedNumber : $visit->bed_no,
                 ]);
             } else {
-                $consultation->visit()->update([
+                $consultation->visit->update([
                     'consulted'         => new Carbon(),
                     'admission_status'  => $data->admit,
                     'ward'              => $data->ward,
@@ -75,7 +77,6 @@ class ConsultationService
     {
         return DB::transaction(function () use ($data, $consultation, $user) {
             $consultation->update([
-                // "visit_id"                  => $data->visitId,
                 "p_complain"                => $data->presentingComplain,
                 "hop_complain"              => $data->historyOfPresentingComplain,
                 "med_surg_history"          => $data->pastMedicalHistory,
@@ -105,14 +106,16 @@ class ConsultationService
                 "user_id"                   => $user->id
             ]);
 
-            if ($consultation->visit->consulted){
-                $consultation->visit()->update([
+            $visit = $consultation->visit;
+
+            if ($visit->consulted){
+                $visit()->update([
                     'admission_status'  => $data->admit,
-                    'ward'              => $data->ward,
-                    'bed_no'            => $data->bedNumber,
+                    'ward'              => $data->ward ? $data->ward : $visit->ward,
+                    'bed_no'            => $data->bedNumber ? $data->bedNumber : $visit->bed_no,
                 ]);
             } else {
-                $consultation->visit()->update([
+                $visit()->update([
                     'consulted'         => new Carbon(),
                     'admission_status'  => $data->admit,
                     'ward'              => $data->ward,
