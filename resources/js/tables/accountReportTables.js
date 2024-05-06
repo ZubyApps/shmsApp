@@ -348,6 +348,7 @@ const getVisitsBySponsorTable = (tableId, sponsorId, modal, startDate, endDate, 
             'date'      : date,
             'state'     : state
         }},
+        fixedHeader: true,
         orderMulti: true,
         search:true,
         lengthMenu:[50, 100, 150, 200, 500],
