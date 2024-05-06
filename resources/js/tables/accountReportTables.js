@@ -320,6 +320,7 @@ const getVisitSummaryTable2 = (tableId, startDate, endDate, date) => {
             $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
             $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
             $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
+            $( api.column(10).footer() ).html(account.format(api.column( 10, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: row => `<span class="btn text-decoration-underline showVisitsBtn tooltip-test" title="show visits" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}" >${row.sponsor}</span>`},
@@ -330,8 +331,9 @@ const getVisitSummaryTable2 = (tableId, startDate, endDate, date) => {
             {data: row => account.format(row.totalHmoBill)},
             {data: row => account.format(row.totalNhisBill)},
             {data: row => account.format(row.totalPaid)},
+            {data: row => account.format(row.discount)},
             {data: row => account.format(row.totalCapitation)},
-            {data: row => account.format((+row.totalPaid + +row.totalCapitation) - +row.totalHmsBill)},
+            {data: row => account.format((+row.totalPaid + +row.totalCapitation + +row.discount) - +row.totalHmsBill)},
         ]
     })
 

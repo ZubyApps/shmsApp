@@ -307,23 +307,25 @@
                                 <th>HMO Bill</th>
                                 <th>NHIS Bill</th>
                                 <th>Paid</th>
+                                <th>Discount</th>
                                 <th>Capitation</th>
                                 <th>(Paid+Captation) - HMS</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
-                        <tfoot class="fw-bolder text-primary">
+                        <tfoot>
                             <tr>
                                 <td class="text-center">Total</td>
                                 <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td class="fw-bold"></td>
+                                <td class="fw-bold"></td>
+                                <td class="fw-bold"></td>
+                                <td class="fw-bold"></td>
+                                <td class="fw-bold"></td>
+                                <td class="fw-bold"></td>
+                                <td class="text-danger fw-bold"></td>
+                                <td class="fw-bold"></td>
+                                <td class="text-danger fw-bold"></td>
                             </tr>
                         </tfoot>
                     </table>
