@@ -276,12 +276,7 @@ class BillingService
         return DB::transaction(function () use($request, $visit, $user) {
             $visit->update([
                 'total_hms_bill'    => $visit->totalHmsBills(),
-                'total_nhis_bill'   => $visit->totalNhisBills(),
-            ]);
-    
-            $visit->update([
-                'total_hms_bill'    => $visit->discount ? ($visit->total_hms_bill + $visit->discount) - $request->discount : $visit->total_hms_bill - $request->discount,
-                'total_nhis_bill'   => $visit->discount ? ($visit->total_nhis_bill + $visit->discount) - $request->discount : $visit->total_nhis_bill - $request->discount,
+                'total_nhis_bill'   => $visit->sponsor->category_name == 'NHIS' ? $visit->totalNhisBills() : 0,
                 'discount'          => $request->discount,
                 'discount_by'       => $user->id
             ]);

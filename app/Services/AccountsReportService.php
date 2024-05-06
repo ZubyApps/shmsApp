@@ -733,6 +733,7 @@ class AccountsReportService
                     'totalHmoBill'      => $visit->total_hmo_bill,
                     'totalNhisBill'     => $visit->total_nhis_bill,
                     'amountPaid'        => $visit->total_paid,
+                    'discount'          => $visit->discount ?? 0,
                     'reviewed'          => $visit->reviewed,
                     'resolved'          => $visit->resolved,
                 ];

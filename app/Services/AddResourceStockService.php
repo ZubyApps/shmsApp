@@ -24,26 +24,17 @@ class AddResourceStockService
             'unit_purchase'         => $data->unitPurchase,
             'purchase_price'        => $data->purchasePrice,
             'selling_price'         => $data->sellingPrice,
-            'expiry_date'           => $data->expiryDate ? (new Carbon($data->expiryDate))->lastOfMonth() : null,
             'resource_supplier_id'  => $data->resourceSupplierId,
         ]);
 
         if ($data->expiryDate){
             $addedStock->resource()->update([
-                    'stock_level'       => $addedStock->resource->stock_level + $data->quantity,
-                    'unit_description'  => $data->unitPurchase, 
-                    'purchase_price'    => $data->purchasePrice, 
-                    'selling_price'     => $data->sellingPrice, 
                     'expiry_date'       => new Carbon($data->expiryDate), 
                 ]);
-                return $addedStock;
             }
         
         $addedStock->resource()->update([
             'stock_level'       => $addedStock->resource->stock_level + $data->quantity,
-            'unit_description'  => $data->unitPurchase, 
-            'purchase_price'    => $data->purchasePrice, 
-            'selling_price'     => $data->sellingPrice, 
         ]);
         return $addedStock;
     }

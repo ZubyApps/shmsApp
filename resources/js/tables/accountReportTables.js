@@ -358,6 +358,7 @@ const getVisitsBySponsorTable = (tableId, sponsorId, modal, startDate, endDate, 
             $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
             $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
             $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
+            $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: "date"},
@@ -368,7 +369,8 @@ const getVisitsBySponsorTable = (tableId, sponsorId, modal, startDate, endDate, 
             {data: "totalHmoBill"},
             {data: "totalNhisBill"},
             {data: "amountPaid"},
-            {data: row => row.category == 'NHIS' ? account.format(row.amountPaid - row.totalNhisBill) : row.category == 'HMO' ? account.format(row.amountPaid - row.totalHmoBill): account.format(row.amountPaid - row.totalHmsBill)},
+            {data: "discount"},
+            {data: row => row.category == 'NHIS' ? account.format((row.amountPaid + row.discount) - row.totalNhisBill) : row.category == 'HMO' ? account.format((row.amountPaid + row.discount) - row.totalHmoBill): account.format((row.amountPaid + row.discount) - row.totalHmsBill)},
             {data: row => function () {
                 return `
                 <div class="d-flex flex-">
