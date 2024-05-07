@@ -55,11 +55,12 @@ class PharmacyService
         if ($data->filterBy == 'Outpatient'){
             return $this->visit
             ->where('consulted', '!=', null)
-            ->where('closed', false)
+            // ->where('closed', false)
             ->where('pharmacy_done_by', null)
             ->where(function (Builder $query) {
                 $query->whereHas('prescriptions', function(Builder $query){
-                    $query->where('qty_dispensed', '=', 0)
+                    // $query->Where('qty_dispensed', '=', 0)
+                    $query->WhereColumn('qty_billed', '>', 'qty_dispensed')
                     ->where(function (Builder $query) {
                         $query->whereRelation('resource', 'category', '=', 'Medications')
                         ->orWhereRelation('resource', 'category', '=', 'Consumables');
@@ -76,10 +77,12 @@ class PharmacyService
         if ($data->filterBy == 'Inpatient'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('closed', false)
+                    // ->where('closed', false)
                     ->where('pharmacy_done_by', null)
                     ->whereHas('prescriptions', function(Builder $query){
-                        $query->where('qty_dispensed', '=', 0)
+                        // $query->where('qty_dispensed', '=', 0)
+                        // ->orWhere('qty_dispensed', '<', 'qty_billed')
+                        $query->WhereColumn('qty_billed', '>', 'qty_dispensed')
                         ->where(function (Builder $query) {
                             $query->whereRelation('resource', 'category', '=', 'Medications')
                             ->orWhereRelation('resource', 'category', '=', 'Consumables');
@@ -97,10 +100,12 @@ class PharmacyService
         if ($data->filterBy == 'ANC'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where('closed', false)
+                    // ->where('closed', false)
                     ->where('pharmacy_done_by', null)
                     ->whereHas('prescriptions', function(Builder $query){
-                        $query->where('qty_dispensed', '=', 0)
+                        // $query->where('qty_dispensed', '=', 0)
+                        // ->orWhere('qty_dispensed', '<', 'qty_billed')
+                        $query->WhereColumn('qty_billed', '>', 'qty_dispensed')
                         ->where(function (Builder $query) {
                             $query->whereRelation('resource', 'category', '=', 'Medications')
                             ->orWhereRelation('resource', 'category', '=', 'Consumables');
@@ -115,7 +120,7 @@ class PharmacyService
         return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('pharmacy_done_by', null)
-                    ->where('closed', false)
+                    // ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
