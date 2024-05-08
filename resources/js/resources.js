@@ -1,5 +1,5 @@
 import { Modal } from "bootstrap";
-import { clearDivValues, getDivData, clearValidationErrors, openModals, displayList, getDatalistOptionId} from "./helpers"
+import { clearDivValues, getDivData, clearValidationErrors, openModals, displayList, getDatalistOptionId, handleValidationErrors} from "./helpers"
 import http from "./http";
 import $ from 'jquery';
 import { getAddResourceStockTable, getResourceSubCategoryTable, getResourceSupplierTable, getResourceTable } from "./tables/resourcesTables";
@@ -34,6 +34,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const newResourceCategoryInput              = document.querySelector('#newResourceCategory')
     const updateResourceCategoryInput           = document.querySelector('#updateResourceCategory')
+
+    const hmsStockInput                         = newAddResourceStockModal._element.querySelector('#hmsStock')
+    const actualStockInput                      = newAddResourceStockModal._element.querySelector('#actualStock')
+    const differenceInput                       = newAddResourceStockModal._element.querySelector('#difference')
+    const quantityInput                         = newAddResourceStockModal._element.querySelector('#quantity')
+    const finalQuantityInput                    = newAddResourceStockModal._element.querySelector('#finalQuantity')
 
     const newSupplierInput                      = document.querySelector('#newSupplierInput')
     const updateSupplierInput                   = document.querySelector('#updateSupplierInput')
@@ -259,6 +265,20 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    actualStockInput.addEventListener('input', function () {
+        differenceInput.value = hmsStockInput.value - actualStockInput.value
+        if (differenceInput.value < 0){
+            const message = {"hmsStock": ["Please rectify the the HMS Stock level"], "difference" : ["You could not have used more stock than you received"]}
+            handleValidationErrors(message, newAddResourceStockModal._element)
+            return
+        }
+            clearValidationErrors(newAddResourceStockModal._element)
+    })
+
+    quantityInput.addEventListener('input', function() {
+        finalQuantityInput.value = quantityInput.value - differenceInput.value
+    })
+
     addResourceBtn.addEventListener('click', function () {
         let date = new Date().toISOString().split('T')[0]
         newResourceModal._element.querySelector('[name="expiryDate"]').setAttribute('min', date.slice(0,7))
@@ -354,8 +374,8 @@ window.addEventListener('DOMContentLoaded', function () {
             createAddResourceStockBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            alert(error.response.data.message)
             createAddResourceStockBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
         })
 
     })

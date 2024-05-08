@@ -103,7 +103,12 @@
                             <thead>
                                 <tr>
                                     <th>Resource</th>
+                                    <th>HMS Stock</th>
+                                    <th>Actual Stock</th>
+                                    <th>Diff</th>
                                     <th>Qty</th>
+                                    <th>Final Qty</th>
+                                    <th>Comment</th>
                                     <th>Purchase Price</th>
                                     <th>Selling Price</th>
                                     <th>Expiry Date</th>

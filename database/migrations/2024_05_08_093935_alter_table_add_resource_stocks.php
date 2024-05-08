@@ -12,12 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('add_resource_stocks', function (Blueprint $table) {
+            $table->after('resource_id', function (Blueprint $table) {
+                $table->integer('hms_stock')->nullable();
+                $table->integer('actual_stock')->nullable();
+                $table->integer('difference')->nullable();
+                
+            });
             $table->after('quantity', function (Blueprint $table) {
-                $table->string('hms_stock')->nullable();
-                $table->string('actual_stock')->nullable();
-                $table->string('difference')->nullable();
-                $table->string('quantity_added')->nullable();
-
+                $table->integer('final_quantity')->nullable();
+                $table->string('comment', 500)->nullable();
             });
         });
     }
@@ -28,7 +31,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('add_resource_stocks', function (Blueprint $table) {
-            $table->dropColumn(['hms_stock', 'actual_stock', 'difference', 'quantity_added']);
+            $table->dropColumn(['hms_stock', 'actual_stock', 'difference', 'final_quantity', 'comment']);
         });
     }
 };

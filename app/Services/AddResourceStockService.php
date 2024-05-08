@@ -20,7 +20,12 @@ class AddResourceStockService
     {
         $addedStock = $user->addResources()->create([
             'resource_id'           => $data->resourceId,
+            'hms_stock'             => $data->hmsStock,
+            'actual_stock'          => $data->actualStock,
+            'difference'            => $data->difference,
             'quantity'              => $data->quantity,
+            'final_quantity'        => $data->finalQuantity,
+            'comment'               => $data->comment,
             'unit_purchase'         => $data->unitPurchase,
             'purchase_price'        => $data->purchasePrice,
             'selling_price'         => $data->sellingPrice,
@@ -73,14 +78,18 @@ class AddResourceStockService
             return [
                 'id'                => $addResourceStock->id,
                 'resource'          => $addResourceStock->resource?->name,
+                'hmsStock'          => $addResourceStock->hms_stock,
+                'actualStock'       => $addResourceStock->actual_stock,
+                'diff'              => $addResourceStock->difference,
                 'qty'               => $addResourceStock->quantity,
+                'finalQty'          => $addResourceStock->final_quantity,
+                'comment'           => $addResourceStock->comment,
                 'purchasePrice'     => $addResourceStock->purchase_price,
                 'sellingPrice'      => $addResourceStock->selling_price,
                 'expiryDate'        => (new Carbon($addResourceStock->expiry_date))->format('d/m/y'),
                 'supplier'          => $addResourceStock->resourceSupplier?->company,
                 'createdBy'         => $addResourceStock->user->username,
                 'createdAt'         => (new Carbon($addResourceStock->created_at))->format('d/m/y'),
-                // 'count'             => $addResource->resourceSubCategories()->count(),
             ];
          };
     }

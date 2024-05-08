@@ -25,12 +25,24 @@ class StoreAddResourceStockRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'purchasePrice' => ['required', 'numeric'],
+            'hmsStock'      => ['required', 'integer'],
+            'actualStock'   => ['required', 'integer'],
+            'difference'    => ['required', 'integer', 'min:0'],
+            'finalQuantity' => ['required', 'integer'],
             'sellingPrice'  => ['required', 'numeric'],
             'unitPurchase'  => ['required', 'string'],
-            'quantity'      => ['required', 'numeric'],
+            'quantity'      => ['required', 'integer'],
+            'comment'       => ['required_unless:difference,0'],
             'expiryDate'    => ['nullable', 'date', 'after_or_equal:'.date('d-m-Y')],
             'resourceId'    => ['required', 'numeric', 'exists:'.Resource::class.',id'],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'comment.required_unless' => 'The comment field is required when difference is not 0.',
+            'difference.min'          => 'Please balance the stock before adding new stock.'
         ];
     }
 }

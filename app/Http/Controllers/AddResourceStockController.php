@@ -23,7 +23,7 @@ class AddResourceStockController extends Controller
     {
         $addResourceStock = $this->addResourceStockService->create($request, $request->user());
 
-        return $addResourceStock->load('user');
+        return $addResourceStock;
     }
 
     public function load(Request $request)

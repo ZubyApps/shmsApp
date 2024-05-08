@@ -19,6 +19,7 @@ class ResourceResource extends JsonResource
             return [
                 'id'       => $this->id,
                 'resource' => $this->name,
+                'hmsStock' => $this->stock_level,
             ];
         }
         return [

@@ -1,5 +1,6 @@
 <select {{ $attributes->merge(['class' => 'form-select form-select-md']) }}>
     <option value="">Select</option>
+    <option value="Application(s)">Application(s)</option>
     <option value="Ampoule(s)">Ampoule(s)</option>
     <option value="Bottle(s)">Bottle(s)</option>
     <option value="Box(es)">Box(es)</option>

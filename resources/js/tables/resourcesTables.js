@@ -205,7 +205,12 @@ const getAddResourceStockTable = () => {
              ],
         columns: [
             {data: "resource"},
+            {data: "hmsStock"},
+            {data: "actualStock"},
+            {data: "diff"},
             {data: "qty"},
+            {data: "finalQty"},
+            {data: "comment"},
             {data: "purchasePrice"},
             {data: "sellingPrice"},
             {data: "expiryDate"},
