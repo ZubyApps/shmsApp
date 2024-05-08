@@ -30,7 +30,7 @@
                                 <x-form-span class="fs-5">Enter Details</x-form-span>                        
                                 <x-form-div class="col-xl-12">
                                     <x-input-span id="reportLabel">Report<x-required-span /></x-input-span>
-                                    <textarea class="form-control" type="text" name="report" id="report" rows="7" cols="10" {{ $isView ? 'readonly' : '' }}></textarea>
+                                    <textarea class="form-control" type="text" name="report" id="report" rows="7" cols="20" {{ $isView ? 'readonly' : '' }}></textarea>
                                 </x-form-div>                        
                             </div>
                         </div>
