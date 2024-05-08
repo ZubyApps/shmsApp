@@ -239,8 +239,7 @@ class VisitService
                     //     foreach($prescriptions as $prescription){
                     //         $prescription->update(['nhis_bill' => $prescription->hms_bill/10]);
                     //     }
-                    //     dd($prescription->visit->prescriptions);
-                    //     $this->paymentService->prescriptionsPaymentSeiveNhis($totalPayments, $prescription->visit->prescriptions);
+                    //     $this->paymentService->prescriptionsPaymentSeiveNhis($totalPayments, $visit->prescriptions);
                     // }
 
                     return $visit;
