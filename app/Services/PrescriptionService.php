@@ -339,13 +339,8 @@ class PrescriptionService
 
         if ($data->viewer == 'pharmacy'){
             return $this->prescription
-                    ->where(function(Builder $query) {
-                        $query->where(function(Builder $query) {
-                                $query->whereTime('created_at', '>=', '20:00:00')
-                                ->orWhereTime('created_at', '<=', '08:00:00');
-                            });
-                    })
-                    ->where('dispense_comment', null)
+                    ->where('consultation_id', null)
+                    ->where('qty_dispensed', 0)
                     ->where(function(Builder $query) {
                         $query->whereRelation('resource', 'category', 'Medications')
                         ->orWhereRelation('resource', 'category', 'Medical Services')
@@ -392,7 +387,9 @@ class PrescriptionService
                 'givenCount'            => $givenCount = $prescription->medicationCharts->where('dose_given', '!=', null)->count(),
                 'doseComplete'          => $this->completed($doseCount, $givenCount),
                 'medicationCharts'      => $prescription->medicationCharts,
-                'dispenseComment'       => $prescription->dispense_comment ?? '',
+                'qtyBilled'             => $prescription->qty_billed,
+                'qtyDispensed'          => $prescription->qty_dispensed,
+                //'closed'                => $prescription->visit->closed,
             ];
          };
     }

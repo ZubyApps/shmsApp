@@ -253,18 +253,23 @@ window.addEventListener('DOMContentLoaded', function () {
                         http.patch(`/pharmacy/dispense/${prescriptionId}`, {quantity: dispenseQtyInput.value}, {'html' : div})
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
-                                visitPrescriptionsTable.draw()
-                                visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                                if (visitPrescriptionsTable){
+                                    visitPrescriptionsTable.draw()
+                                    visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                                } 
+                                emergencyTable.draw(false)
                             }
                         })
                         .catch((error) => {
+                            console.log(error)
                             if (error.response.status == 422){
                                 removeDisabled(billingDispenseFieldset)
                                 console.log(error)
                             } else{
                                 console.log(error)
-                                visitPrescriptionsTable.draw()
+                                visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
                                 visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                                emergencyTable.draw(false)
                             }
                         })
                     }               
@@ -285,14 +290,12 @@ window.addEventListener('DOMContentLoaded', function () {
                         if (response.status >= 200 || response.status <= 300) {
                             visitPrescriptionsTable ? visitPrescriptionsTable.draw(false) : ''
                             visitPrescriptionsTable ? visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset)) : ''
-                            emergencyTable.draw(false)
                         }
                     })
                     .catch((error) => {
                         console.log(error)
                         visitPrescriptionsTable ? visitPrescriptionsTable.draw(false) : ''
                         visitPrescriptionsTable ? visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset)) : ''
-                        emergencyTable.draw(false)
                     })
                            
                 })
