@@ -19,6 +19,7 @@ class ConsultationReviewResource extends JsonResource
             "id"                            => $this->id,
             "visitId"                       => $this->visit_id,
             "patient"                       => $this->visit->patient->patientId(),
+            "patientType"                   => $this->visit->patient->patient_type,
             "sponsorCat"                    => $this->visit->sponsor->category_name,
             "sponsorName"                   => $this->visit->sponsor->name,
             'date'                          => (new Carbon($this->created_at))->format('D jS M Y - g:ia'),

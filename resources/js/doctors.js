@@ -200,7 +200,6 @@ window.addEventListener('DOMContentLoaded', function () {
                         const consultations = response.data.consultations.data
                         const patientBio    = response.data.bio
                         const lmp           = response.data.latestLmp
-                        console.log(lmp.lmp)
                         openDoctorModals(modal, div, patientBio)
                         modal._element.querySelector('.historyBtn').setAttribute('data-patientid', patientId); modal._element.querySelector('.historyBtn').setAttribute('data-patienttype', patientType);
                         isAnc ? lmpCurrentCalculator(lmp.lmp, modal._element.querySelector('.lmpDetailsDiv')) : ''
@@ -757,7 +756,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelectorAll('#vitalSignsTable, #ancVitalSignsTable, #vitalSignsTableNew, #vitalSignsTableSpecialist, #vitalSignsTableAnc, #vitalSignsTableAncReview, #vitalSignsConsultationConReview, #vitalSignsConsultationAncConReview').forEach(table => {
+    document.querySelectorAll('#vitalSignsTable, #ancVitalSignsTable, #vitalSignsTableNew, #vitalSignsTableSpecialist, #vitalSignsTableAnc, #vitalSignsTableAncReview, #vitalSignsConsultationConReview, #vitalSignsConsultationAncConReview, #vitalSignsTableAncReviewDiv').forEach(table => {
         table.addEventListener('click', function (event) {
             const deleteBtn  = event.target.closest('.deleteBtn')
             if (deleteBtn){
@@ -782,7 +781,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelectorAll('#prescriptionTableNew, #prescriptionTableSpecialist, #prescriptionTableAnc, #prescriptionTableAncReview, #prescriptionTableConReview, #emergencyTable').forEach(table => {
+    document.querySelectorAll('#prescriptionTableNew, #prescriptionTableSpecialist, #prescriptionTableAnc, #prescriptionTableAncReview, #prescriptionTableConReview, #emergencyTable, #prescriptionTableAncReviewDiv').forEach(table => {
         table.addEventListener('click', function (event) {
             const deleteBtn  = event.target.closest('.deleteBtn')
             const confirmBtn  = event.target.closest('.confirmBtn')
@@ -847,7 +846,6 @@ window.addEventListener('DOMContentLoaded', function () {
             const [visitId, tableId, conId] = [saveBtn.getAttribute('data-id'), investigationAndManagementDiv.querySelector('.prescriptionTable').id, saveBtn.getAttribute('data-conid')]
             const urlSuffix = modal.id == 'newReviewModal'  ? '/review' : ''
             const id = conId ? `/${conId}` : ''
-            console.log(urlSuffix, conId)
             let data = {...getDivData(div), visitId}
             http.post(`/consultation${urlSuffix}${id}`, {...data}, {"html": div})
             .then((response) => {
@@ -881,7 +879,6 @@ window.addEventListener('DOMContentLoaded', function () {
     resourceInput.forEach(input => {
         input.addEventListener('input', function () {
             const div = input.parentElement.parentElement.parentElement.parentElement.parentElement
-            console.log(div)
             const datalistEl = div.querySelector(`#resourceList${div.dataset.div}`)
             if (input.value < 2) {
             datalistEl.innerHTML = ''
@@ -1075,9 +1072,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 if (confirm('If you delete this consultation you cannot get it back! Are you sure you want to delete?')) {
                     const id = deleteConsultationBtn.getAttribute('data-id')
                     const anc = deleteConsultationBtn.getAttribute('data-patienttype') == 'ANC'
+                    
                     http.delete(`/consultation/${id}`)
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300){   
+                                console.log(anc)
                                 anc ? ancConsultationReviewModal.hide() : consultationReviewModal.hide()
                             }
                             deleteConsultationBtn.removeAttribute('disabled')

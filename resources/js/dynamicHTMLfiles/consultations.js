@@ -18,7 +18,7 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                                 ${length == iteration && viewer == 'doctor' ? 
                                 `<div class="d-flex justify-content-end my-2">                                  
                                     ${closed || isHistory ? '' : 
-                                        `<button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" data-patienttype="Regular" class="btn btn-outline-primary">
+                                        `<button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" data-patienttype="${line.patientType}" class="btn btn-outline-primary">
                                         <i class="bi bi-trash"></i>
                                             Delete
                                         </button>`
@@ -55,7 +55,7 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
                                 ${length == iteration && viewer == 'doctor' ? 
                                 `<div class="d-flex justify-content-between my-2">
                                     ${closed || isHistory ? '' : 
-                                    `<button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" data-patienttype="Regular" class="btn btn-outline-primary">
+                                    `<button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" data-patienttype="${line.patientType}" class="btn btn-outline-primary">
                                         <i class="bi bi-trash"></i>
                                         Delete
                                     </button>`
