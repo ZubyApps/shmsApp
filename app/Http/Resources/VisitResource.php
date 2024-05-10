@@ -17,7 +17,7 @@ class VisitResource extends JsonResource
     {
         return [
             'id'            => $this->id,
-            'ancRegId'      => $this->patient->antenatalRegisteration?->id,
+            'ancRegId'      => $this->antenatalRegisteration?->id,
             'came'          => (new Carbon($this->created_at))->format('D jS M Y - g:ia'),
             'consultations' => new ConsultationReviewCollection($this->consultations)
         ];

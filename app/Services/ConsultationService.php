@@ -107,9 +107,9 @@ class ConsultationService
             ]);
 
             $visit = $consultation->visit;
-
+            // dd($visit->id);
             if ($visit->consulted){
-                $visit()->update([
+                $visit->update([
                     'admission_status'  => $data->admit,
                     'ward'              => $data->ward ? $data->ward : $visit->ward,
                     'bed_no'            => $data->bedNumber ? $data->bedNumber : $visit->bed_no,

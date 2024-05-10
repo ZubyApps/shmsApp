@@ -146,6 +146,11 @@
                             </div>
                         </div>
                         @endif
+                        @if ($isAnc)
+                            <div class="my-2 ancReviewDiv">
+                                @include('doctors.ancReview',  ['isReview' => true])
+                            </div>
+                        @endif
                         <div class="mb-2 form-control">
                             <x-form-span>Files/Documents</x-form-span>
                             <div class="text-start py-3">
@@ -182,9 +187,9 @@
                         Consultation History
                     </button>
                     @if ($isAnc)
-                        <button type="button" id="reviewAncPatientBtn" class="btn btn-primary me-auto reviewConBtns">
-                            <i class="bi bi-plus-circle me-1"></i>
-                            Anc Review
+                        <button type="button" id="reviewAncPatientBtn" class="btn btn-white me-auto reviewConBtns">
+                            {{-- <i class="bi bi-plus-circle me-1"></i> --}}
+                          
                         </button>
                     @else
                         <button type="button" id="reviewPatientBtn" class="btn btn-primary reviewConBtns">

@@ -22,7 +22,7 @@ class StoreAncVitalSignsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'bloodPressure' => 'required',
+            // 'bloodPressure' => 'required',
         ];
     }
 }

@@ -1,7 +1,7 @@
 import { Modal, Toast, Offcanvas } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal, populateAncReviewDiv} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
 import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable, getOtherPrescriptionsByFilter, getMedicalReportTable, getPatientsFileTable} from "./tables/doctorstables"
@@ -41,6 +41,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const viewMedicalReportModal            = new Modal(document.getElementById('viewMedicalReportModal'))
     
     const regularConsultationReviewDiv      = consultationReviewModal._element.querySelector('#consultationReviewDiv')
+    const ancReviewDiv                      = ancConsultationReviewModal._element.querySelector('.ancReviewDiv')
     const ancConsultationReviewDiv          = ancConsultationReviewModal._element.querySelector('#consultationReviewDiv')
     const visitHistoryDiv                   = consultationHistoryModal._element.querySelector('#visitHistoryDiv')
     const knownClinicalInfoDiv              = document.querySelectorAll('#knownClinicalInfoDiv')
@@ -194,10 +195,12 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.get(`/consultation/consultations/${visitId}`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
+                        populateAncReviewDiv(ancReviewDiv, consultationReviewBtn)
+
                         const consultations = response.data.consultations.data
                         const patientBio    = response.data.bio
                         const lmp           = response.data.latestLmp
-
+                        console.log(lmp.lmp)
                         openDoctorModals(modal, div, patientBio)
                         modal._element.querySelector('.historyBtn').setAttribute('data-patientid', patientId); modal._element.querySelector('.historyBtn').setAttribute('data-patienttype', patientType);
                         isAnc ? lmpCurrentCalculator(lmp.lmp, modal._element.querySelector('.lmpDetailsDiv')) : ''
@@ -206,8 +209,9 @@ window.addEventListener('DOMContentLoaded', function () {
                             iteration > 1 ? count++ : ''
                             displayConsultations(div, displayFunction, iteration, getOrdinal, count, consultations.length, line, viewer, isDoctorDone, closed)
                         })
-    
+
                         vitalSignsTable(`#vitalSignsConsultation${suffixId}`, id, modal)
+                        isAnc ? vitalSignsTable(`#vitalSignsTableAncReviewDiv`, id, modal) : ''
                         http.get(`/${url}/load/chart`,{params: {  visitId: id, ancRegId: id }})
                         .then((response) => {
                             vitalSignsChart(modal._element.querySelector(`#vitalsignsChart${suffixId}`), response, modal)
@@ -740,6 +744,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 if ($.fn.DataTable.isDataTable( '#'+tableId )){
                     $('#'+tableId).dataTable().fnDraw(false)
                 }
+                if ($.fn.DataTable.isDataTable( '#vitalSignsConsultationAncConReview' )){
+                    $('#vitalSignsConsultationAncConReview').dataTable().fnDraw(false)
+                }
                 addBtn.removeAttribute('disabled')
             })
             .catch((error) => {
@@ -874,6 +881,7 @@ window.addEventListener('DOMContentLoaded', function () {
     resourceInput.forEach(input => {
         input.addEventListener('input', function () {
             const div = input.parentElement.parentElement.parentElement.parentElement.parentElement
+            console.log(div)
             const datalistEl = div.querySelector(`#resourceList${div.dataset.div}`)
             if (input.value < 2) {
             datalistEl.innerHTML = ''
@@ -1024,18 +1032,18 @@ window.addEventListener('DOMContentLoaded', function () {
             if (collapseVisitBtn) {
                 const visitId               = collapseVisitBtn.getAttribute('data-id')
                 const ancRegId              = collapseVisitBtn.getAttribute('data-ancregid')
-                const [getVitalsigns, id]   = collapseVisitBtn.getAttribute('data-isanc') ? [getAncVitalSignsTable, ancRegId] : [getVitalSignsTableByVisit, visitId]
+                const [getVitalsigns, id]   = collapseVisitBtn.getAttribute('data-isanc') == 'true' ? [getAncVitalSignsTable, ancRegId] : [getVitalSignsTableByVisit, visitId]
                 if ($.fn.DataTable.isDataTable('#vitalSignsHistory'+visitId)){$('#vitalSignsHistory'+visitId).dataTable().fnDestroy()}
                 if ($.fn.DataTable.isDataTable('#billingTableHistory'+visitId)){$('#billingTableHistory'+visitId).dataTable().fnDestroy()}
                 if ($.fn.DataTable.isDataTable('#deliveryNoteTableHistory'+visitId )){$('#deliveryNoteTableHistory'+visitId).dataTable().fnDestroy()}
                 if ($.fn.DataTable.isDataTable('#surgeryNoteTableHistory'+visitId )){$('#surgeryNoteTableHistory'+visitId).dataTable().fnDestroy()}
                 if ($.fn.DataTable.isDataTable('#patientsFileTableHistory'+visitId )){$('#patientsFileTableHistory'+visitId).dataTable().fnDestroy()}
-
+                console.log(id, visitId, ancRegId, collapseVisitBtn.getAttribute('data-isanc'))
                 const goto = () => {
                     location.href = collapseVisitBtn.getAttribute('data-gotovisit')
                     window.history.replaceState({}, document.title, "/" + "doctors" )
                     getVitalsigns('#vitalSignsHistory'+visitId, id, consultationHistoryModal)
-                    getDeliveryNoteTable('deliveryNoteTable'+visitId, visitId, false, consultationHistoryModal._element)
+                    getDeliveryNoteTable('deliveryNoteTableHistory'+visitId, visitId, false, consultationHistoryModal._element)
                     getSurgeryNoteTable('surgeryNoteTableHistory'+visitId, visitId, true, consultationHistoryModal._element)
                     getPatientsFileTable('patientsFileTableHistory'+visitId, visitId, consultationHistoryModal._element)
                     getbillingTableByVisit('billingTableHistory'+visitId, visitId, consultationHistoryModal._element)
@@ -1224,6 +1232,7 @@ window.addEventListener('DOMContentLoaded', function () {
             regularConsultationReviewDiv.innerHTML = ''
             ancConsultationReviewDiv.innerHTML = ''
             visitHistoryDiv.innerHTML = ''
+            modal.id == 'ancConsultationReviewModal' ? (clearDivValues(modal.querySelector('.ancReviewDiv')), modal.querySelector('.investigationAndManagementDiv').classList.add('d-none')) : ''
             outPatientsVisitTable.draw()
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''

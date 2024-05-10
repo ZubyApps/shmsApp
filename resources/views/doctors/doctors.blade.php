@@ -10,7 +10,7 @@
 @include('doctors.ancConsultationModal', ['title' => 'New ANC Review', 'isReview' => true, 'isNurse' => false, 'id' => 'ancReviewModal'])
 
 @include('doctors.consultationReviewModal', ['title' => 'Consultation Review', 'isAnc' => false, 'id' => 'consultationReviewModal'])
-@include('doctors.consultationReviewModal', ['title' => 'ANC Consultation Review', 'isAnc' => true, 'id' => 'ancConsultationReviewModal'])
+@include('doctors.consultationReviewModal', ['title' => 'ANC Consultation Review', 'isAnc' => true, 'isNurse' => false, 'id' => 'ancConsultationReviewModal'])
 @include('doctors.newReviewModal', ['title' => 'New Review', 'isUpdate' => false, 'isNurse' => false, 'id' => 'newReviewModal'])
 @include('doctors.consultationHistoryModal', ['title' => 'Consultation History', 'isAnc' => false, 'id' => 'consultationHistoryModal'])
 @include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isDoctor' => true, 'id' => 'vitalsignsModal'])

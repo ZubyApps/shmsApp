@@ -12,7 +12,7 @@ const visitDetails = (visitIteration, numberConverter, visit, viewer, isAnc) => 
                 })
 
             return `
-                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseVisitBtn" id="collapseVisit" data-bs-toggle="collapse" href="#collapseVisit${visitIteration}" role="button" aria-expanded="true" aria-controls="collapseVisit" data-gotovisit="#gotovisit${visitIteration}" data-id="${visit.id}" data-isanc="${isAnc}">
+                <div class="d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseVisitBtn" id="collapseVisit" data-bs-toggle="collapse" href="#collapseVisit${visitIteration}" role="button" aria-expanded="true" aria-controls="collapseVisit" data-gotovisit="#gotovisit${visitIteration}" data-id="${visit.id}" data-isanc="${isAnc}" data-ancregid="${visit.ancRegId}">
                     <span class="mx-2 fw-semibold">${visitIteration + numberConverter(visitIteration) + ' Visit ' + `(${visit.came})` }</span>
                     <i class="bi bi-chevron-double-down text-warning fw-semibold"> </i>
                 </div>
