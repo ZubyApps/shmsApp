@@ -567,4 +567,8 @@ window.addEventListener('DOMContentLoaded', function () {
             }
         })
     })
+
+    visitsBySponsorModal._element.addEventListener('hidden.bs.modal', function () {
+        visitSummaryTable2 ? visitSummaryTable2.draw() : ''
+    })
 })

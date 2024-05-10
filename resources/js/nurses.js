@@ -390,6 +390,8 @@ window.addEventListener('DOMContentLoaded', function () {
                         if (response.status >= 200 || response.status <= 300) {
                             markDoneBtn.removeAttribute('disabled') 
                             inPatientsVisitTable.draw(false); upcomingMedicationsTable.draw(); upcomingNursingChartsTable.draw()
+                            outPatientsVisitTable ? outPatientsVisitTable.draw() : ''
+                            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
                         }
                       })
                     .catch((error) => {

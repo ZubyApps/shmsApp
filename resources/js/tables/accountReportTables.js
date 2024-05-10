@@ -323,7 +323,7 @@ const getVisitSummaryTable2 = (tableId, startDate, endDate, date) => {
             $( api.column(10).footer() ).html(account.format(api.column( 10, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: row => `<span class="btn text-decoration-underline showVisitsBtn tooltip-test" title="show visits" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}" >${row.sponsor}</span>`},
+            {data: row => `<span class="btn text-decoration-underline showVisitsBtn tooltip-test" title="show visits" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}" >${row.sponsor}${row.resolved == 0 ? '  <i class="bi bi-check-circle-fill text-primary"></i>' : ''}</span>`},
             {data: "category"},
             {data: row => account.format(row.patientsCount)},
             {data: row => account.format(row.visitCount)},

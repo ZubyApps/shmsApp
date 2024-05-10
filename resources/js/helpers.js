@@ -260,11 +260,30 @@ function loadingSpinners() {
         `
 }
 
-const detailsBtn = (row) => {
+const detailsBtn2 = (row) => {
     return `
             <div class="d-flex flex-">
                 <button class="btn btn-outline-primary tooltip-test consultationDetailsBtn ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed': ''}" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">Details${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}</button>
             </div>
+            `      
+}
+const detailsBtn = (row) => {
+    return `
+        <div class="dropdown">
+            <a class="btn btn-outline-primary tooltip-test text-decoration-none ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown">
+                More${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
+            </a>
+                <ul class="dropdown-menu">
+                <li>
+                    <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-patientid="${ row.patientId }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">
+                        Details
+                    </a>
+                    <a class="dropdown-item markDoneBtn btn tooltip-test" title="${row.nurseDoneBy ? 'Unmark?' : 'mark?'}"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                        ${row.nurseDoneBy ? 'Marked By ' + row.nurseDoneBy + ' - ' + row.nurseDoneAt + ' (Unmark?)' : 'Mark as done'}
+                    </a>
+                </li>
+            </ul>
+        </div>
             `      
 }
 
