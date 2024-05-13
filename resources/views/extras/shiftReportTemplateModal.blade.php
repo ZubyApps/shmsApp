@@ -13,10 +13,11 @@
                                 <x-form-div class="col-xl-6">
                                     <x-input-span>Shift</x-input-span>
                                     <select class="form-select form-select-md" name="shift" id="shift" {{ $isView ? 'disabled' : '' }}>
-                                        <option value="">Not Applicable</option>
+                                        <option value="">Select</option>
                                         <option value="Morning Shift">Morning Shift</option>
                                         <option value="Afternoon Shift">Afternoon Shift</option>
                                         <option value="Night Shift">Night Shift</option>
+                                        <option value="Whole Day">Whole Day</option>
                                     </select>
                                 </x-form-div>
                                 <x-form-div class="col-xl-6  d-none">
@@ -30,8 +31,14 @@
                                 <x-form-span class="fs-5">Enter Details</x-form-span>                        
                                 <x-form-div class="col-xl-12">
                                     <x-input-span id="reportLabel">Report<x-required-span /></x-input-span>
-                                    <textarea class="form-control" type="text" name="report" id="report" rows="7" cols="20" {{ $isView ? 'readonly' : '' }}></textarea>
-                                </x-form-div>                        
+                                    <textarea class="form-control" type="text" name="report" id="report" rows="10" cols="5" {{ $isView ? 'readonly' : '' }}></textarea>
+                                </x-form-div>
+                                <x-form-div class="col-xl-12 {{ $title == 'New Report' ? 'd-none' : '' }}">
+                                    <x-input-span>Written By</x-input-span>
+                                    <x-form-input name="writtenBy" id="writtenBy" readonly/>
+                                    <x-input-span>Written At</x-input-span>
+                                    <x-form-input name="writtenAt" id="writtenAt" readonly/>
+                                </x-form-div>                      
                             </div>
                         </div>
                     </div>

@@ -126,14 +126,17 @@ const getAllPatientsTable = (tableId) => {
     return allPatientsTable
 }
 
-const getTotalPatientsTable = (tableId) => {
+const getNewRegisteredPatientsTable = (tableId, date) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
-    const totalPatientsTable = new DataTable(`#${tableId}`, {
+    const newRegisteredPatientsTable = new DataTable(`#${tableId}`, {
         serverSide: true,
-        ajax:  '/patients/load/summary/sponsor',
+        ajax: {url: '/patients/load/summary/sponsor', data: {
+            'date' : date
+        }},
         orderMulti: true,
         search:true,
+        lengthMenu:[50, 100, 150, 200, 300],
         "sAjaxDataProp": "data.data",
         drawCallback: function (settings) {
             var api = this.api()
@@ -146,19 +149,19 @@ const getTotalPatientsTable = (tableId) => {
         ]
     })
 
-    return totalPatientsTable
+    return newRegisteredPatientsTable
 }
 
 const getSexAggregateTable = (tableId) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
-    const totalPatientsTable = new DataTable(`#${tableId}`, {
+    const sexAggregateTable = new DataTable(`#${tableId}`, {
         serverSide: true,
         ajax:  '/patients/load/summary/sex',
         orderMulti: true,
         search:false,
         searching:false,
-        lengthMenu:[40, 80, 120, 160, 200],
+        lengthChange: false,
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
@@ -169,18 +172,18 @@ const getSexAggregateTable = (tableId) => {
         ]
     })
 
-    return totalPatientsTable
+    return sexAggregateTable
 }
 const getAgeAggregateTable = (tableId) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
-    const totalPatientsTable = new DataTable(`#${tableId}`, {
+    const ageAggregateTable = new DataTable(`#${tableId}`, {
         serverSide: true,
         ajax:  '/patients/load/summary/age',
         orderMulti: true,
         search:false,
         searching:false,
-        lengthMenu:[40, 80, 120, 160, 200],
+        lengthChange: false,
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
@@ -207,18 +210,28 @@ const getAgeAggregateTable = (tableId) => {
         ]
     })
 
-    return totalPatientsTable
+    return ageAggregateTable
 }
 
-const getVisitsSummaryTable = (tableId) => {
+const getVisitsSummaryTable = (tableId, date) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
     const visitsSummaryTable = new DataTable(`#${tableId}`, {
         serverSide: true,
-        ajax:  '/patients/load/summary/visits',
+        ajax: {url: '/patients/load/summary/visits', data : {
+            'date' : date,
+        }} ,
         orderMulti: true,
         search:true,
-        lengthMenu:[40, 80, 120, 160, 200],
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
+        lengthMenu:[50, 100, 150, 200, 300],
         "sAjaxDataProp": "data.data",
         drawCallback: function (settings) {
             var api = this.api()
@@ -228,7 +241,7 @@ const getVisitsSummaryTable = (tableId) => {
             $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: "sponsor"},
+            {data: row => row.sponsor + ' - ' + row.category},
             {data: "outpatients"},
             {data: "inpatients"},
             {data: "observations"},
@@ -239,11 +252,12 @@ const getVisitsSummaryTable = (tableId) => {
     return visitsSummaryTable
 }
 
-const getPatientsBySponsorTable = (tableId, sponsorId, modal) => {
+const getPatientsBySponsorTable = (tableId, sponsorId, modal, date) => {
     const patientsBySponsorTable = new DataTable(`#${tableId}`, {
         serverSide: true,
         ajax:  {url: '/patients/load/bysponsor', data: {
             'sponsorId': sponsorId,
+            'date'     : date
         }},
         orderMulti: true,
         search:true,
@@ -253,6 +267,7 @@ const getPatientsBySponsorTable = (tableId, sponsorId, modal) => {
             {data: "phone"},
             {data: "sex"},
             {data: "age"},
+            {data: "createdAt"},
             {data: "count"},
         ]
     })
@@ -328,4 +343,4 @@ const getVisitsTable = (tableId, startDate, endDate, filterListBy) => {
     return visitsTable
 }
 
-export {getSponsorsTable, getAllPatientsTable, getTotalPatientsTable, getSexAggregateTable, getAgeAggregateTable, getVisitsSummaryTable, getPatientsBySponsorTable, getVisitsTable}
+export {getSponsorsTable, getAllPatientsTable, getNewRegisteredPatientsTable, getSexAggregateTable, getAgeAggregateTable, getVisitsSummaryTable, getPatientsBySponsorTable, getVisitsTable}

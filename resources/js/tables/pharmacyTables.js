@@ -116,7 +116,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-secondary">Time: ${p.billed}</td>
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
-                                                        <span class="${closed ? '' : p.qtyBilled ? 'dispenseQtySpan' : ''} btn btn-${p.qtyDispensed ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}" data-qtybilled="${p.qtyBilled}">${p.qtyDispensed ? 'Dispensed: '+p.qtyDispensed : 'Dispense'}</span>
+                                                        <span class="${closed ? '' : p.qtyBilled ? 'dispenseQtySpan' : ''} btn btn-${p.qtyDispensed ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}" data-qtybilled="${p.qtyBilled}" data-stock="${p.stock}">${p.qtyDispensed ? 'Dispensed: '+p.qtyDispensed : 'Dispense'}</span>
                                                         <input class="ms-1 form-control dispenseQtyInput d-none text-secondary" type="number" style="width:6rem;" value="${p.qtyDispensed ?? ''}" name="quantity" id="quantity">
                                                     </div>
                                                 </td>
@@ -185,6 +185,7 @@ const getExpirationStockTable = (tableId, filter) => {
         }},
         orderMulti: true,
         search:true,
+        lengthMenu:[50, 100, 150, 200, 300],
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary'},
@@ -247,7 +248,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
                 data: 'qtyDispensed',
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
-                    <span class="btn ${ !data ? 'dispenseQtyBtn' : ''} ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${data ?? (urlSuffix !== 'pharmacy' ? 'Pending' : 'Dispense')}</span>
+                    <span class="btn ${ row.qtyApproved ? '' : 'dispenseQtyBtn'}  ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}" data-stock="${row.stock}">${data ?? (urlSuffix !== 'pharmacy' ? 'Pending' : 'Dispense')}</span>
                     <input class="ms-1 form-control qtyDispensedInput d-none" id="qtyDispensedInput" value="${data ?? ''}">
                 </div>
                 `}
@@ -259,7 +260,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
                     <span class="${ row.qtyDispensed ? 'approveRequestBtn' : ''} btn ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${ data ?? (urlSuffix !== 'pharmacy' ? 'Pending' : 'Confirm')}</span>
-                    <input class="ms-1 form-control qtyApprovedInput d-none" id="qtyApprovedInput" value="${data ?? ''}">
+                    <input class="ms-1 form-control qtyApprovedInput d-none" id="qtyApprovedInput" value="${data ?? row.qtyDispensed ?? ''}">
                 </div>
                 `}
             },
@@ -268,7 +269,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
                 sortable: false,
                 data: row =>  `
                 <div class="d-flex flex-">
-                    <button type="submit" class="ms-1 btn btn-outline-primary ${row.dispensed || urlSuffix !== 'pharmacy' ? 'd-none' : 'deleteRequestBtn'} tooltip-test" title="delete" data-id="${ row.id}">
+                    <button type="submit" class="ms-1 btn btn-outline-primary ${!row.access || row.dispensed || urlSuffix !== 'pharmacy' ? 'd-none' : 'deleteRequestBtn'} tooltip-test" title="delete" data-id="${ row.id}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>
                 </div>
@@ -278,9 +279,9 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
     });
 }
 
-const getPharmacyReportTable = (tableId, department, shiftBadgeSpan) => {
+const getShiftReportTable = (tableId, department, shiftBadgeSpan) => {
     let shiftCount = []
-    const pharmacyReportTable = new DataTable('#'+tableId, {
+    const shiftReportTable = new DataTable('#'+tableId, {
         serverSide: true,
         ajax:   {url: '/shiftreport/load', data: {
             'department': department,
@@ -327,7 +328,7 @@ const getPharmacyReportTable = (tableId, department, shiftBadgeSpan) => {
         ]
     });
 
-    return pharmacyReportTable
+    return shiftReportTable
 }
 
-export {getPatientsVisitByFilterTable, getPrescriptionsByConsultation, getExpirationStockTable, getBulkRequestTable, getPharmacyReportTable}
+export {getPatientsVisitByFilterTable, getPrescriptionsByConsultation, getExpirationStockTable, getBulkRequestTable, getShiftReportTable}

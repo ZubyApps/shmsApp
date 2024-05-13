@@ -47,7 +47,7 @@ class PharmacyController extends Controller
     public function billPrescription(Request $request, Prescription $prescription)
     {
         $request->validate([
-            'quantity' => ['nullable', 'integer']
+            'quantity' => ['nullable', 'integer', 'lte:'.$prescription->resource->stock_level]
         ]);
         
        return $this->pharmacyService->bill($request, $prescription, $request->user());
@@ -56,8 +56,9 @@ class PharmacyController extends Controller
     public function dispensePrescription(Request $request, Prescription $prescription)
     {
         $request->validate([
-                'quantity' => ['nullable', 'integer']
+                'quantity' => ['nullable', 'integer', 'lte:'.$prescription->resource->stock_level]
         ]);
+        
 
        return $this->pharmacyService->dispense($request, $prescription, $request->user());
     }

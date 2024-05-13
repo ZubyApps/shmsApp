@@ -268,6 +268,7 @@ window.addEventListener('DOMContentLoaded', function () {
     actualStockInput.addEventListener('input', function () {
         differenceInput.value = hmsStockInput.value - actualStockInput.value
         if (differenceInput.value < 0){
+            clearValidationErrors(newAddResourceStockModal._element)
             const message = {"hmsStock": ["Please rectify the the HMS Stock level"], "difference" : ["You could not have used more stock than you received"]}
             handleValidationErrors(message, newAddResourceStockModal._element)
             return

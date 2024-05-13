@@ -26,14 +26,22 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            <x-form-div class="col-xl-10 py-3 payMethodDiv">
-                <x-input-span class="">Average Waiting Time</x-input-span>
-                <x-input-span class="">Last Week</x-input-span>
-                <x-form-input name="lastWeek" id="lastWeek" readonly/>
-                <x-input-span class="">This Week</x-input-span>
-                <x-form-input name="thisWeek" id="thisWeek" readonly/>
-            </x-form-div>
-            <div class="py-4 ">
+            <div class="form-control mb-2">
+                <h5>Average Waiting Time</h5>
+                <x-form-div class="col-xl-12">
+                    <x-input-span class="">Last Month</x-input-span>
+                    <x-form-input name="lastMonth" id="lastMonth" readonly/>
+                    <x-input-span class="">This Month</x-input-span>
+                    <x-form-input name="thisMonth" id="thisMonth" readonly/>
+                </x-form-div>
+                <x-form-div class="col-xl-12">
+                    <x-input-span class="">Last Week</x-input-span>
+                    <x-form-input name="lastWeek" id="lastWeek" readonly/>
+                    <x-input-span class="">This Week</x-input-span>
+                    <x-form-input name="thisWeek" id="thisWeek" readonly/>
+                </x-form-div>
+            </div>
+            <div class="py-3 form-control">
                 <table id="waitingTable" class="table table-hover align-middle table-sm bg-primary">
                     <thead>
                         <tr>

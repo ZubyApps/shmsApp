@@ -70,7 +70,7 @@ Class ShiftReportService
                 'shift'             => $shiftReport->shift,
                 'report'            => $shiftReport->report,
                 'writtenBy'         => $shiftReport->user->username,
-                'viewedAt'          => $shiftReport->viewed_at ? (new Carbon($shiftReport->viewed_at))->format('d/M/y g:ia') : '',
+                'viewedAt'          => $shiftReport->viewed_at ? (new Carbon($shiftReport->viewed_at))->format('D d/M/y g:ia') : '',
                 'viewedBy'          => $shiftReport->viewedBy?->username,
                 'writtenById'       => $shiftReport->user->id,
                 'userId'            => request()->user()->id,

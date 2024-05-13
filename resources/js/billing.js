@@ -5,6 +5,7 @@ import { clearDivValues, getDivData, clearValidationErrors, resetFocusEndofLine,
 import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable, getBalancingTable } from "./tables/billingTables";
 import { getOutpatientsInvestigationTable } from "./tables/investigationTables";
 import html2pdf  from "html2pdf.js"
+import { getShiftReportTable } from "./tables/pharmacyTables";
 $.fn.dataTable.ext.errMode = 'throw';
 
 
@@ -17,6 +18,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const newExpenseModal               = new Modal(document.getElementById('newExpenseModal'))
     const updateExpenseModal            = new Modal(document.getElementById('updateExpenseModal'))
     const thirdPartyServiceModal        = new Modal(document.getElementById('thirdPartyServiceModal'))
+    const newShiftReportTemplateModal   = new Modal(document.getElementById('newShiftReportTemplateModal'))
+    const editShiftReportTemplateModal  = new Modal(document.getElementById('editShiftReportTemplateModal'))
+    const viewShiftReportTemplateModal  = new Modal(document.getElementById('viewShiftReportTemplateModal'))
 
     const balancingDateDiv              = document.querySelector('.balancingDateDiv')
 
@@ -29,6 +33,10 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveThirPartyServiceBtn       = thirdPartyServiceModal._element.querySelector('#saveThirPartyServiceBtn')
     const dischargeBillBtn              = billingModal._element.querySelector('#dischargeBillBtn')
     const addBillBtn                    = dischargeBillModal._element.querySelector('#addBillBtn')
+    const shiftReportBtn                = document.querySelector('#shiftReportBtn')
+    const newBillingReportBtn           = document.querySelector('#newBillingReportBtn')
+    const createShiftReportBtn          = newShiftReportTemplateModal._element.querySelector('#createShiftReportBtn')
+    const saveShiftReportBtn            = editShiftReportTemplateModal._element.querySelector('#saveShiftReportBtn')
 
     const outPatientsTab                = document.querySelector('#nav-outPatients-tab')
     const inPatientsTab                 = document.querySelector('#nav-inPatients-tab')
@@ -40,6 +48,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const changeBillSpan                = billModal._element.querySelector('.changeBill')
     const downloadBillSummaryBtn        = billModal._element.querySelector('#downloadBillSummaryBtn')
     const billSummaryBody               = billModal._element.querySelector('.billSummaryBody')
+    const shiftBadgeSpan                = document.querySelector('#shiftBadgeSpan')
 
 
     let inPatientsVisitTable, ancPatientsVisitTable, billingTable, paymentTable, openVisitsTable, expensesTable, balancingTable
@@ -47,10 +56,17 @@ window.addEventListener('DOMContentLoaded', function () {
     const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient', 'consulted')
     const waitingTable = getWaitingTable('waitingTable')
     const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable', true)
+    const billingShiftReportTable = getShiftReportTable('billingShiftReportTable', 'billing', shiftBadgeSpan)
 
-    // $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #inpatientInvestigationsTable, #outpatientInvestigationsTable, #waitingTable, #billingTable, #openVisitsTable, #expensesTable, #balancingTable, #outstandingBillsTable, #paymentTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})    
+    $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #outpatientInvestigationsTable, #waitingTable, #billingTable, #openVisitsTable, #expensesTable, #balancingTable, #billingShiftReportTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})    
 
     outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw()})
+    outpatientsInvestigationBtn.addEventListener('click', function () {outpatientInvestigationTable.draw()})
+    shiftReportBtn.addEventListener('click', function () {billingShiftReportTable.draw()})
+
+    newBillingReportBtn.addEventListener('click', function () {
+        newShiftReportTemplateModal.show()
+    })
 
     inPatientsTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#inPatientsVisitTable' )){
@@ -58,6 +74,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             inPatientsVisitTable = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient', 'consulted')
         }
+        billingShiftReportTable.draw()
     })
 
     ancPatientsTab.addEventListener('click', function () {
@@ -66,6 +83,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             ancPatientsVisitTable = getPatientsVisitsByFilterTable('ancPatientsVisitTable', 'ANC', 'consulted')
         }
+        billingShiftReportTable.draw()
     })
 
     openVisitsTab.addEventListener('click', function () {
@@ -74,6 +92,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             openVisitsTable = getPatientsVisitsByFilterTable('openVisitsTable', '', 'openvisits')
         }
+        billingShiftReportTable.draw()
     })
 
     expensesTab.addEventListener('click', function () {
@@ -82,6 +101,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             expensesTable = getExpensesTable('expensesTable', 'billing')
         }
+        billingShiftReportTable.draw()
     })
 
     balancingTab.addEventListener('click', function () {
@@ -90,6 +110,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             balancingTable = getBalancingTable('balancingTable')
         }
+        billingShiftReportTable.draw()
     })
 
     searchBalanceByDateBtn.addEventListener('click', function () {
@@ -105,6 +126,8 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                 document.querySelector('#lastWeek').value = response.data.lastWeek
                 document.querySelector('#thisWeek').value = response.data.thisWeek
+                document.querySelector('#lastMonth').value = response.data.lastMonth
+                document.querySelector('#thisMonth').value = response.data.thisMonth
             }
         })
         .catch((error) => {
@@ -117,17 +140,14 @@ window.addEventListener('DOMContentLoaded', function () {
         newExpenseModal.show()
     })
 
-    document.querySelectorAll('#waitingListOffcanvas2, #offcanvasInvestigations').forEach(canvas => {
+    document.querySelectorAll('#waitingListOffcanvas2, #offcanvasInvestigations, #viewShiftReportTemplateModal, #newShiftReportTemplateModal').forEach(canvas => {
         canvas.addEventListener('hide.bs.offcanvas', function () {
             outPatientsVisitTable.draw()
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+            billingShiftReportTable.draw()
         })
 
-    })
-
-    outpatientsInvestigationBtn.addEventListener('click', function () {
-        outpatientInvestigationTable.draw()
     })
     
     document.querySelector('#waitingTable').addEventListener('click', function (event) {
@@ -456,6 +476,7 @@ window.addEventListener('DOMContentLoaded', function () {
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             openVisitsTable ? openVisitsTable.draw() : ''
+            billingShiftReportTable.draw()
         })
     })
 
@@ -466,6 +487,7 @@ window.addEventListener('DOMContentLoaded', function () {
         outPatientsVisitTable.draw()
         inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+        billingShiftReportTable.draw()
     })
 
     downloadBillSummaryBtn.addEventListener('click', function () {
@@ -480,4 +502,104 @@ window.addEventListener('DOMContentLoaded', function () {
         };
         html2pdf().set(opt).from(billSummaryBody).save()
     })
+
+    createShiftReportBtn.addEventListener('click', function() {
+        createShiftReportBtn.setAttribute('disabled', 'disabled')
+        http.post(`shiftreport`, {
+            report: newShiftReportTemplateModal._element.querySelector('#report').value, 
+            department: newShiftReportTemplateModal._element.querySelector('#department').value,
+            shift:  newShiftReportTemplateModal._element.querySelector('#shift').value,
+        }, 
+            {'html': newShiftReportTemplateModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) {
+                newShiftReportTemplateModal.hide()
+                clearDivValues(newShiftReportTemplateModal._element)
+                clearValidationErrors(newShiftReportTemplateModal._element)
+                billingShiftReportTable.draw(false)
+            }
+            createShiftReportBtn.removeAttribute('disabled')
+        })
+        .catch((response) => {
+            console.log(response)
+            createShiftReportBtn.removeAttribute('disabled')
+        })
+    })
+
+    saveShiftReportBtn.addEventListener('click', function() {
+        saveShiftReportBtn.setAttribute('disabled', 'disabled')
+        const id = saveShiftReportBtn.getAttribute('data-id')
+        http.patch(`shiftreport/${id}`, {
+            report: editShiftReportTemplateModal._element.querySelector('#report').value,
+            shift:  editShiftReportTemplateModal._element.querySelector('#shift').value,
+    }, {'html': editShiftReportTemplateModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) {
+                editShiftReportTemplateModal.hide()
+                clearValidationErrors(editShiftReportTemplateModal._element)
+                billingShiftReportTable.draw(false)
+            }
+            saveShiftReportBtn.removeAttribute('disabled')
+        })
+        .catch((response) => {
+            console.log(response)
+            saveShiftReportBtn.removeAttribute('disabled')
+        })
+    })
+
+    document.querySelectorAll('#billingShiftReportTable').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const editShiftReportBtn   = event.target.closest('.editShiftReportBtn')
+            const viewShiftReportBtn   = event.target.closest('.viewShiftReportBtn')
+            const deleteShiftReportBtn = event.target.closest('.deleteShiftReportBtn')
+    
+            if (editShiftReportBtn) {
+                editShiftReportBtn.setAttribute('disabled', 'disabled')
+                http.get(`/shiftreport/${editShiftReportBtn.getAttribute('data-id')}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openModals(editShiftReportTemplateModal, saveShiftReportBtn, response.data.data)
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+                setTimeout(()=>{editShiftReportBtn.removeAttribute('disabled')}, 2000)
+            }
+
+            if (viewShiftReportBtn) {
+                viewShiftReportBtn.setAttribute('disabled', 'disabled')
+                http.get(`/shiftreport/view/${viewShiftReportBtn.getAttribute('data-id')}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openModals(viewShiftReportTemplateModal, saveShiftReportBtn, response.data.data)
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+                setTimeout(()=>{viewShiftReportBtn.removeAttribute('disabled')}, 2000)
+            }
+    
+            if (deleteShiftReportBtn) {
+                deleteShiftReportBtn.setAttribute('disabled', 'disabled')
+                if (confirm('Are you sure you want to delete this report?')) {
+                    const id = deleteShiftReportBtn.getAttribute('data-id')
+                    http.delete(`/shiftreport/${id}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                billingShiftReportTable.draw(false)
+                            }
+                            deleteShiftReportBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {
+                            alert(error)
+                            deleteShiftReportBtn.removeAttribute('disabled')
+                        })
+                }
+            }
+    
+        })
+    })
+
 })

@@ -74,11 +74,13 @@ class VisitController extends Controller
 
     public function getPatientAverageWaitingTime()
     {
-        $day = new CarbonImmutable();
-        $lastWeek = $this->visitService->averageWaitingTime($day->subWeek());
-        $thisWeek = $this->visitService->averageWaitingTime($day);
+        $day        = new CarbonImmutable();
+        $lastWeek   = $this->visitService->averageWaitingTime($day->subWeek(), 'startOfWeek', 'endOfWeek');
+        $thisWeek   = $this->visitService->averageWaitingTime($day, 'startOfWeek', 'endOfWeek');
+        $lastMonth  = $this->visitService->averageWaitingTime($day->subMonth(), 'startOfMonth', 'endOfMonth');
+        $thisMonth  = $this->visitService->averageWaitingTime($day, 'startOfMonth', 'endOfMonth');
 
-        return response()->json(["lastWeek" => $lastWeek, "thisWeek" => $thisWeek]);
+        return response()->json(["lastWeek" => $lastWeek, "thisWeek" => $thisWeek, "lastMonth" => $lastMonth, "thisMonth" => $thisMonth]);
     }
 
     public function destroy(Visit $visit)

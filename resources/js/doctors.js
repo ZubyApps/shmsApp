@@ -34,7 +34,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const medicationPrescriptionsModal      = new Modal(document.getElementById('medicationPrescriptionsModal'))
     const investigationsModal               = new Modal(document.getElementById('investigationsModal'))
     const investigationAndManagementModal   = new Modal(document.getElementById('investigationAndManagementModal'))
-    const dischargeModal                    = new Modal(document.getElementById('dischargeModal')); const wardAndBedModal = new Modal(document.getElementById('wardAndBedModal'))
+    const dischargeModal                    = new Modal(document.getElementById('dischargeModal'))
+    const wardAndBedModal                   = new Modal(document.getElementById('wardAndBedModal'))
     const medicalReportListModal            = new Modal(document.getElementById('medicalReportListModal'))
     const newMedicalReportTemplateModal     = new Modal(document.getElementById('newMedicalReportTemplateModal'))
     const editMedicalReportTemplateModal    = new Modal(document.getElementById('editMedicalReportTemplateModal'))
@@ -674,6 +675,8 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                 document.querySelector('#lastWeek').value = response.data.lastWeek
                 document.querySelector('#thisWeek').value = response.data.thisWeek
+                document.querySelector('#lastMonth').value = response.data.lastMonth
+                document.querySelector('#thisMonth').value = response.data.thisMonth
             }
         })
         .catch((error) => {

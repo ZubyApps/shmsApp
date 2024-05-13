@@ -311,8 +311,24 @@ class VisitService
         $current = Carbon::now();
 
         if (! empty($params->searchTerm)) {
+
+            if($data->date){
+                $date = new Carbon($data->date);
+
+                return DB::table('visits')
+                ->selectRaw('sponsors.name as sponsor, sponsors.category_name as category, COUNT(visits.patient_id) as patientsCount, SUM(CASE WHEN admission_status = "Outpatient" THEN 1 ELSE 0 END) AS outpatients, SUM(CASE WHEN admission_status = "Inpatient" THEN 1 ELSE 0 END) AS inpatients, SUM(CASE WHEN admission_status = "Observation" THEN 1 ELSE 0 END) AS observations')
+                ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                ->whereMonth('visits.created_at', $date->month)
+                ->whereYear('visits.created_at', $date->year)
+                ->groupBy('sponsor')
+                ->orderBy('sponsor')
+                ->orderBy('patientsCount')
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
             return DB::table('visits')
-            ->selectRaw('sponsors.name as sponsor, COUNT(visits.patient_id) as patientsCount, SUM(CASE WHEN admission_status = "Outpatient" THEN 1 ELSE 0 END) AS outpatients, SUM(CASE WHEN admission_status = "Inpatient" THEN 1 ELSE 0 END) AS inpatients, SUM(CASE WHEN admission_status = "Observation" THEN 1 ELSE 0 END) AS observations')
+            ->selectRaw('sponsors.name as sponsor, sponsors.category_name as category, COUNT(visits.patient_id) as patientsCount, SUM(CASE WHEN admission_status = "Outpatient" THEN 1 ELSE 0 END) AS outpatients, SUM(CASE WHEN admission_status = "Inpatient" THEN 1 ELSE 0 END) AS inpatients, SUM(CASE WHEN admission_status = "Observation" THEN 1 ELSE 0 END) AS observations')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
             ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
             ->whereMonth('visits.created_at', $current->month)
@@ -323,8 +339,23 @@ class VisitService
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
+        if($data->date){
+            $date = new Carbon($data->date);
+
+            return DB::table('visits')
+            ->selectRaw('sponsors.name as sponsor, sponsors.category_name as category, COUNT(visits.patient_id) as patientsCount, SUM(CASE WHEN admission_status = "Outpatient" THEN 1 ELSE 0 END) AS outpatients, SUM(CASE WHEN admission_status = "Inpatient" THEN 1 ELSE 0 END) AS inpatients, SUM(CASE WHEN admission_status = "Observation" THEN 1 ELSE 0 END) AS observations')
+            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            ->where('consulted', '!=', null)
+            ->whereMonth('visits.created_at', $date->month)
+            ->whereYear('visits.created_at', $date->year)
+            ->groupBy('sponsor')
+            ->orderBy('sponsor')
+            ->orderBy('patientsCount')
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
         return DB::table('visits')
-            ->selectRaw('sponsors.name as sponsor, COUNT(visits.patient_id) as patientsCount, SUM(CASE WHEN admission_status = "Outpatient" THEN 1 ELSE 0 END) AS outpatients, SUM(CASE WHEN admission_status = "Inpatient" THEN 1 ELSE 0 END) AS inpatients, SUM(CASE WHEN admission_status = "Observation" THEN 1 ELSE 0 END) AS observations')
+            ->selectRaw('sponsors.name as sponsor, sponsors.category_name as category, COUNT(visits.patient_id) as patientsCount, SUM(CASE WHEN admission_status = "Outpatient" THEN 1 ELSE 0 END) AS outpatients, SUM(CASE WHEN admission_status = "Inpatient" THEN 1 ELSE 0 END) AS inpatients, SUM(CASE WHEN admission_status = "Observation" THEN 1 ELSE 0 END) AS observations')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
             ->where('consulted', '!=', null)
             ->whereMonth('visits.created_at', $current->month)
@@ -441,16 +472,16 @@ class VisitService
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
                 'ancCount'          => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : '',
-                'closed'            => true//$visit->closed,
+                'closed'            => true
             ];
          };
     }
 
-    public function averageWaitingTime(CarbonImmutable $day)
+    public function averageWaitingTime(CarbonImmutable $day, $startDay, $endDay)
     {
         $averageWaitingTime = DB::table('visits')
                     ->selectRaw('AVG(TIME_TO_SEC(consulted) - TIME_TO_SEC(created_at)) AS averageWaitingTime')
-                    ->whereBetween('created_at', [$day->startOfWeek(), $day->endOfWeek()])
+                    ->whereBetween('created_at', [$day->$startDay(), $day->$endDay()])
                     ->get()->first()?->averageWaitingTime;
 
         return $averageWaitingTime ? CarbonInterval::seconds($averageWaitingTime)->cascade()->forHumans() : $averageWaitingTime;

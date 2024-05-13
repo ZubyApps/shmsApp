@@ -30,8 +30,8 @@ class PharmacyReportService
         if (! empty($params->searchTerm)) {
             return $this->resource
                         ->where(function (Builder $query) use($params) {
-                            $query->whereRelation('resourceSubCategory.resourceCategory', 'name', '=', 'Medications')
-                                ->orWhereRelation('resourceSubCategory.resourceCategory', 'name', '=', 'Consumables');
+                            $query->where('category', '=', 'Medications')
+                                ->orWhere('category', '=', 'Consumables');
                         })
                         ->where(function (Builder $query) use($params) {
                             $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -75,8 +75,8 @@ class PharmacyReportService
         
         return $this->resource
                     ->where(function (Builder $query) use($params) {
-                        $query->whereRelation('resourceSubCategory.resourceCategory', 'name', '=', 'Medications')
-                            ->orWhereRelation('resourceSubCategory.resourceCategory', 'name', '=', 'Consumables');
+                        $query->where('category', '=', 'Medications')
+                            ->orWhere('category', '=', 'Consumables');
                     })
                     ->with([
                         'prescriptions' => function ($query) use ($data, $current) {
@@ -220,5 +220,88 @@ class PharmacyReportService
                     'qtyDispensed'      => $prescription->qty_dispensed,
                 ];
             };
+    }
+
+    public function getMissingSummary(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+        $current = new CarbonImmutable();
+
+        if (! empty($params->searchTerm)) {
+            return $this->resource
+                        ->where(function (Builder $query) use($params) {
+                            $query->where('category', '=', 'Medications')
+                                ->orWhere('category', '=', 'Consumables');
+                        })
+                        ->where(function (Builder $query) use($params) {
+                            $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhere('sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
+                        ->with([
+                            'addResources' => function ($query) use ($data, $current) {
+                                if ($data->startDate && $data->endDate){
+                                    $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                                    ->orderBy('created_at');
+                                } else if($data->date){
+                                    $date = new Carbon($data->date);
+                                    $query->whereMonth('created_at', $date->month)
+                                          ->whereYear('created_at', $date->year)
+                                          ->orderBy('created_at');
+                                } else {
+                                    $query->whereMonth('created_at', $current->month)
+                                            ->whereYear('created_at', $current->year)
+                                    ->orderBy('created_at');
+                                }
+                            }
+                        ])
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        
+        return $this->resource
+                    ->where(function (Builder $query) use($params) {
+                        $query->where('category', '=', 'Medications')
+                            ->orWhere('category', '=', 'Consumables');
+                    })
+                    ->whereRelation('addResources', 'difference', '>', 0)
+                    ->with([
+                        'addResources' => function ($query) use ($data, $current) {
+                            if ($data->startDate && $data->endDate){
+                                $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                                ->orderBy('created_at');
+                            } else if($data->date){
+                                $date = new Carbon($data->date);
+                                $query->whereMonth('created_at', $date->month)
+                                      ->whereYear('created_at', $date->year)
+                                      ->orderBy('created_at');
+                            } else {
+                                $query->whereMonth('created_at', $current->month)
+                                        ->whereYear('created_at', $current->year)
+                                ->orderBy('created_at');
+                            }
+                        }
+                    ])
+                    ->withCount('addResources as addResourcesCount')
+                    ->orderBy('addResourcesCount', $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));       
+    }
+
+    public function getMissingTransformer(): callable
+    {
+       return  function (Resource $resource) {
+            return [
+                'id'                => $resource->id,
+                'name'              => $resource->name,
+                'category'          => $resource->category,
+                'addedResourceCount'=> $resource->addResources->count(),
+                'quantity'          => $resource->addResources->sum('quantity'),
+                'finalQuantity'     => $resource->addResources->sum('final_quantity'),
+                'diff'              => $resource->addResources->sum('difference'),
+                'diffPurchase'      => $resource->addResources->sum('difference') * $resource->purchase_price,
+                'diffSelling'       => $resource->addResources->sum('difference') * $resource->selling_price,
+            ];
+         };
     }
 }

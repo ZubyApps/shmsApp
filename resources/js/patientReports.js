@@ -40,7 +40,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
     
     registrationsTab.addEventListener('click', function() {
-        registrationDatesDiv.querySelector('#registrationMonth').value = new Date().toISOString().slice(0,7)
+        registrationDatesDiv.querySelector('#registrationMonth').value == '' ? registrationDatesDiv.querySelector('#registrationMonth').value = new Date().toISOString().slice(0,7) : ''
         if ($.fn.DataTable.isDataTable( '#registerationsTable' )){
             $('#registerationsTable').dataTable().fnDraw()
         } else {

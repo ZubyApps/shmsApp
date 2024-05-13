@@ -94,6 +94,7 @@ function textareaHeightAdjustment(setHeight, tag){
         }
         tag[i].addEventListener("input", OnInput, false);
     }
+    console.log(tag)
 }
 
 function OnInput(e){
@@ -162,7 +163,16 @@ function getDatalistOptionId(modal, inputEl, datalistEl) {
         } else {
             return ""
         }
-    }
+}
+
+function getDatalistOptionStock(modal, inputEl, datalistEl) {    
+    const selectedOption = datalistEl.options.namedItem(inputEl.value)    
+        if (selectedOption) {
+            return selectedOption.getAttribute('data-stock')
+        } else {
+            return ""
+        }
+}
 
 function openModals(modal, button, {id, ...data}) {
     for (let name in data) {
@@ -260,14 +270,14 @@ function loadingSpinners() {
         `
 }
 
-const detailsBtn2 = (row) => {
+const detailsBtn = (row) => {
     return `
             <div class="d-flex flex-">
                 <button class="btn btn-outline-primary tooltip-test consultationDetailsBtn ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed': ''}" data-id="${ row.id }" data-patienttype="${ row.patientType }" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">Details${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}</button>
             </div>
             `      
 }
-const detailsBtn = (row) => {
+const detailsBtn2 = (row) => {
     return `
         <div class="dropdown">
             <a class="btn btn-outline-primary tooltip-test text-decoration-none ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown">
@@ -624,6 +634,7 @@ const displayItemsList = (datalistEl, data, optionName) => {
         option.setAttribute('data-id', line.id)
         option.setAttribute('name', line.name)
         option.setAttribute('data-cat', line.category)
+        option.setAttribute('data-stock', +line.stock)
 
         !datalistEl.options.namedItem(line.name) ? datalistEl.appendChild(option) : ''
     })
@@ -652,4 +663,4 @@ const populateAncReviewDiv = (div, conbtn) => {
     div.querySelector('#provisionalDiagnosis').value = conbtn.getAttribute('data-provisionaldiagnosis')
 }
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals,doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv}
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2}

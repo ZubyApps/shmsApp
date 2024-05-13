@@ -22,7 +22,7 @@ class StoreShiftReportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'shift' => ['required']
         ];
     }
 }

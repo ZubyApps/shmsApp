@@ -14,7 +14,7 @@ const getPharmacySummaryTable = (tableId, startDate, endDate, date) => {
         },
         orderMulti: true,
         search:true,
-        lengthMenu:[20, 40, 80, 120, 200],
+        lengthMenu:[50, 150, 200, 300, 500],
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
@@ -84,4 +84,42 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate, date
     return patientsByResourceTable
 }
 
-export {getPharmacySummaryTable, getByResourceTable}
+const getMissingPharmacySummaryTable = (tableId, startDate, endDate, date) => {
+    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
+
+    const summaryTable = new DataTable(`#${tableId}`, {
+        serverSide: true,
+        ajax:  {url: '/reports/pharmacy/missing', data: {
+            'startDate' : startDate, 
+            'endDate'   : endDate,
+            'date'      : date
+            }
+        },
+        orderMulti: true,
+        search:true,
+        lengthMenu:[50, 150, 200, 300, 500],
+        drawCallback: function (settings) {
+            var api = this.api()
+            $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
+            $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
+            $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
+            $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
+            $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
+            $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {data: "name"},
+            {data: "category"},
+            {data: "addedResourceCount"},
+            {data: "quantity"},
+            {data: "finalQuantity"},
+            {data: "diff"},
+            {data: "diffPurchase"},
+            {data: "diffSelling"},
+        ]
+    })
+
+    return summaryTable
+}
+
+export {getPharmacySummaryTable, getByResourceTable, getMissingPharmacySummaryTable}

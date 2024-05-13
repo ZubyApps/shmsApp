@@ -296,7 +296,7 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
         }},
         orderMulti: false,
         searching: false,
-        lengthMenu:[40, 80, 120, 160, 200],
+        lengthMenu:[50, 100, 150, 200, 250],
         language: {
             emptyTable: 'No vital sign has been recorded'
         },

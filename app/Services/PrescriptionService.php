@@ -41,7 +41,7 @@ class PrescriptionService
                 'prescription'      => $this->arrangePrescription($data),
                 'consultation_id'   => $data->conId,
                 'visit_id'          => $data->visitId,
-                'qty_billed'        => $data->quantity ?? 0,
+                'qty_billed'        => $this->determineBillQuantity($resource, $data), // $data->quantity ?? 0,
                 'qty_dispensed'     => $this->determineDispense($resource, $data),
                 'hms_bill'          => $bill,
                 'hms_bill_date'     => $bill ? new Carbon() : null,
@@ -80,17 +80,28 @@ class PrescriptionService
         
     }
 
-    public function arrangePrescription($data){
+    public function arrangePrescription($data)
+    {
         return $data->dose ? $data->dose.$data->unit.' '.$data->frequency.' for '.$data->days.'day(s)' : null;
     }
 
-    public function determineDispense(Resource $resource, $data){
+    public function determineDispense(Resource $resource, $data)
+    {
         if ($resource->category == 'Medications' || $resource->category == 'Consumables' || $resource->category == 'Investigations'){
             return 0;
         }
         $resource->stock_level = $resource->stock_level - $data->quantity; 
         $resource->save();
         return $data->quantity;
+    }
+
+    public function determineBillQuantity(Resource $resource, $data)
+    {
+        if ($resource->category == 'Medications' || $resource->category == 'Consumables'){
+            return $resource->stock_level - $data->quantity < 0 ? 0 : $data->quantity ?? 0;
+        }
+
+        return $data->quantity ?? 0;
     }
 
     public function getPaginatedInitialPrescriptions(DataTableQueryParams $params, $data)
@@ -248,7 +259,7 @@ class PrescriptionService
                     'chartedAt'         => (new Carbon($medicationChart->created_at))->format('D d/m/y g:ia') ?? '',
                     'chartedBy'         => $medicationChart->user->username ?? '',
                     'dosePrescribed'    => $medicationChart->dose_prescribed ?? '',
-                    'scheduledTime'     => (new Carbon($medicationChart->scheduled_time))->format('g:ia D jS') ?? '',
+                    'scheduledTime'     => (new Carbon($medicationChart->scheduled_time))->format('g:ia D d/m/y') ?? '',
                     'givenDose'         => $medicationChart->dose_given ?? 'Not given' ?? '',
                     'timeGiven'         => $medicationChart->time_given ? (new Carbon($medicationChart->time_given))->format('g:ia D d/m/Y') : '',
                     'givenBy'           => $medicationChart->givenBy->username ?? '',

@@ -11,25 +11,35 @@
 @include('billing.expenseModal', ['title' => "New Expense", 'isUpdate' => false, 'id' => 'newExpenseModal'])
 @include('billing.expenseModal', ['title' => "Update Expense", 'isUpdate' => true, 'id' => 'updateExpenseModal'])
 @include('billing.thirdPartyServiceModal', ['title' => "Initiate Third Party Service", 'id' => 'thirdPartyServiceModal'])
+@include('extras.shiftReportTemplateModal', ['title' => 'New Report', 'isUpdate' => false, 'dept' => 'billing', 'isView' => false, 'id' => 'newShiftReportTemplateModal'])
+@include('extras.shiftReportTemplateModal', ['title' => 'Edit Report', 'isUpdate' => true, 'dept' => 'billing', 'isView' => false, 'id' => 'editShiftReportTemplateModal'])
+@include('extras.shiftReportTemplateModal', ['title' => 'View Report', 'isUpdate' => false, 'dept' => 'billing', 'isView' => true, 'id' => 'viewShiftReportTemplateModal'])
 
     <div class="container mt-5 bg-white">
 
         <div class="container p-1 mt-5 bg-white">
-            <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2"
-            aria-labelledby="waitingListOffcanvasLabel" aria-expanded="false">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
+            <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2" aria-labelledby="waitingListOffcanvasLabel" aria-expanded="false">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
             <div class="offcanvas-body">
-                <x-form-div class="col-xl-10 py-3 payMethodDiv">
-                    <x-input-span class="">Average Waiting Time</x-input-span>
-                    <x-input-span class="">Last Week</x-input-span>
-                    <x-form-input name="lastWeek" id="lastWeek" readonly/>
-                    <x-input-span class="">This Week</x-input-span>
-                    <x-form-input name="thisWeek" id="thisWeek" readonly/>
-                </x-form-div>
-                <div class="py-4 ">
+                <div class="form-control mb-2">
+                    <h5>Average Waiting Time</h5>
+                    <x-form-div class="col-xl-12">
+                        <x-input-span class="">Last Month</x-input-span>
+                        <x-form-input name="lastMonth" id="lastMonth" readonly/>
+                        <x-input-span class="">This Month</x-input-span>
+                        <x-form-input name="thisMonth" id="thisMonth" readonly/>
+                    </x-form-div>
+                    <x-form-div class="col-xl-12">
+                        <x-input-span class="">Last Week</x-input-span>
+                        <x-form-input name="lastWeek" id="lastWeek" readonly/>
+                        <x-input-span class="">This Week</x-input-span>
+                        <x-form-input name="thisWeek" id="thisWeek" readonly/>
+                    </x-form-div>
+                </div>
+                <div class="py-3 form-control">
                     <table id="waitingTable" class="table align-middle table-sm bg-primary">
                         <thead>
                             <tr>
@@ -53,12 +63,11 @@
         <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="offcanvasInvestigations"
             aria-labelledby="offcanvasInvestigationsLabel">
             <div class="offcanvas-header">
-                <h5 class="offcanvas-title text-primary" id="offcanvasInvestigations">Investigations</h5>
+                <h5 class="offcanvas-title text-primary" id="offcanvasInvestigations">Outpatient Investigations</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas2-body">
-                <div class="my-2 form-control">
-                    <span class="fw-bold text-primary"> Outpatient's Investigations </span>
+                <div class="my-2">
                     <div class="row overflow-auto m-1">
                         <table id="outpatientInvestigationsTable" class="table table-sm">
                             <thead>
@@ -79,6 +88,37 @@
             </div>
         </div>
 
+        <div class="offcanvas offcanvas-end overflow-auto" data-bs-scroll="true" tabindex="-1" id="shiftReportOffcanvas"
+            aria-labelledby="shiftReportOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-primary" id="shiftReportOffcanvasLabel">Shift Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="py-4 ">
+                    <div class="text-start py-4">
+                        <button type="button" id="newBillingReportBtn" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i>
+                            New Shift Report
+                        </button>
+                    </div>
+                    <table id="billingShiftReportTable" class="table table-sm billingShiftReportTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Shift</th>
+                                <th>Written By</th>
+                                <th>Viewed</th>
+                                <th>Viewed By</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <div class="text-start mb-4">
             <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn" data-bs-target="#waitingListOffcanvas2" aria-controls="waitingListOffcanvas2">
                 <i class="bi bi-list-check"></i>
@@ -87,7 +127,10 @@
             <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="outpatientsInvestigationBtn"
                 data-bs-target="#offcanvasInvestigations" aria-controls="offcanvasInvestigations">
                 <i class="bi bi-list-check"></i>
-                Outpatient's Investigation Table
+                Outpatient Investigations
+            </button>
+            <button type="button" id="shiftReportBtn" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#shiftReportOffcanvas" aria-controls="emergencyListOffcanvas">
+                Shift Reports <span class="badge text-bg-danger" id="shiftBadgeSpan"></span>
             </button>
         </div>
 

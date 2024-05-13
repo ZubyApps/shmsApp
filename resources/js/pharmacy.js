@@ -1,7 +1,7 @@
 
 import {Modal } from "bootstrap";
-import {getOrdinal, textareaHeightAdjustment, loadingSpinners, removeDisabled, resetFocusEndofLine, getDatalistOptionId, clearValidationErrors, handleValidationErrors, clearDivValues, getDivData, displayItemsList, openModals} from "./helpers"
-import { getBulkRequestTable, getExpirationStockTable , getPatientsVisitByFilterTable, getPharmacyReportTable, getPrescriptionsByConsultation } from "./tables/pharmacyTables";
+import {getOrdinal, textareaHeightAdjustment, loadingSpinners, removeDisabled, resetFocusEndofLine, getDatalistOptionId, clearValidationErrors, handleValidationErrors, clearDivValues, getDivData, displayItemsList, openModals, getDatalistOptionStock} from "./helpers"
+import { getBulkRequestTable, getExpirationStockTable , getPatientsVisitByFilterTable, getPrescriptionsByConsultation, getShiftReportTable } from "./tables/pharmacyTables";
 import http from "./http";
 import $ from 'jquery';
 import { getLabTableByConsultation, getMedicationsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
@@ -37,25 +37,19 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
     const emergencyListCount        = document.querySelector('#emergencyListCount')
-    const shiftBadgeSpan             = document.querySelector('#shiftBadgeSpan')
+    const shiftBadgeSpan            = document.querySelector('#shiftBadgeSpan')
 
     const [outPatientsTab, inPatientsTab, ancPatientsTab, expirationStockTab, bulkRequestsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-expirationStock-tab'), document.querySelector('#nav-bulkRequests-tab')]
-
-    const textareaHeight = 90;
-    textareaHeightAdjustment(textareaHeight, document.getElementsByTagName("textarea"))
 
     let inPatientsVisitTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable
 
     const outPatientsTable  = getPatientsVisitByFilterTable('outPatientsTable', 'Outpatient')
     const emergencyTable    = getEmergencyTable('emergencyTable', 'pharmacy')
-    const pharmacyShiftReportTable = getPharmacyReportTable('pharmacyShiftReportTable', 'pharmacy', shiftBadgeSpan)
+    const pharmacyShiftReportTable = getShiftReportTable('pharmacyShiftReportTable', 'pharmacy', shiftBadgeSpan)
 
     emergencyListBtn.addEventListener('click', function () {emergencyTable.draw()})
     outPatientsTab.addEventListener('click', function() {outPatientsTable.draw()})
-
-    shiftReportBtn.addEventListener('click', function () {
-        pharmacyShiftReportTable.draw()
-    })
+    shiftReportBtn.addEventListener('click', function () {pharmacyShiftReportTable.draw()})
 
     newPharmacyReportBtn.addEventListener('click', function () {
         newShiftReportTemplateModal.show()
@@ -201,7 +195,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const stock             = +billQtySpan.getAttribute('data-stock')
                 const div               = billQtySpan.parentElement
                 const billQtyInput      = div.querySelector('.billQtyInput')
-    
+
                 if (!stock){
                     alert('Resource is out of stock, please add to stock before billing')
                 } else {
@@ -211,7 +205,11 @@ window.addEventListener('DOMContentLoaded', function () {
                     resetFocusEndofLine(billQtyInput)
                 
                     billQtyInput.addEventListener('blur', function () {
-                    
+                        if(stock - billQtyInput.value < 0) {
+                            alert('This quantity is more than the available stock, please add to stock or reduce the quantity before billing')
+                            resetFocusEndofLine(billQtyInput)
+                            return
+                        }
                         billingDispenseFieldset.setAttribute('disabled', 'disabled')
                         http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value}, {'html' : div})
                         .then((response) => {
@@ -238,6 +236,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (dispenseQtySpan){
                 const prescriptionId    = dispenseQtySpan.getAttribute('data-id')
                 const qtyBilled         = dispenseQtySpan.getAttribute('data-qtybilled')
+                const stock             = dispenseQtySpan.getAttribute('data-stock') ; 
                 const div               = dispenseQtySpan.parentElement
                 const dispenseQtyInput  = div.querySelector('.dispenseQtyInput')
                 dispenseQtySpan.classList.add('d-none')
@@ -249,6 +248,11 @@ window.addEventListener('DOMContentLoaded', function () {
                         alert('Quantity to be dispensed should not be more than Quantity billed')
                         resetFocusEndofLine(dispenseQtyInput)
                     } else {
+                        if(stock - dispenseQtyInput.value < 0) {
+                            alert('This quantity is more than the available stock, please rebill quantity and dispense according the quantity of stock')
+                            resetFocusEndofLine(dispenseQtyInput)
+                            return
+                        }
                         billingDispenseFieldset.setAttribute('disabled', 'disabled')
                         http.patch(`/pharmacy/dispense/${prescriptionId}`, {quantity: dispenseQtyInput.value}, {'html' : div})
                         .then((response) => {
@@ -336,12 +340,18 @@ window.addEventListener('DOMContentLoaded', function () {
         if (dispenseQtyBtn){
             const bulkRequestId     = dispenseQtyBtn.getAttribute('data-id')
             const div               = dispenseQtyBtn.parentElement
-            const qtyDispensedInput  = div.querySelector('.qtyDispensedInput')
+            const qtyDispensedInput = div.querySelector('.qtyDispensedInput')
+            const stock             = dispenseQtyBtn.getAttribute('data-stock')
             dispenseQtyBtn.classList.add('d-none')
             qtyDispensedInput.classList.remove('d-none')
             resetFocusEndofLine(qtyDispensedInput)
             
             qtyDispensedInput.addEventListener('blur', function () {
+                if (stock - qtyDispensedInput.value < 0){
+                    alert('This quantity is more than the available stock, please add to stock or reduce the quantity before dispensing')
+                    resetFocusEndofLine(qtyDispensedInput)
+                    return
+                }
                 http.patch(`/bulkrequests/dispense/${bulkRequestId}`, {qty: qtyDispensedInput.value}, {'html' : div})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
@@ -430,9 +440,17 @@ window.addEventListener('DOMContentLoaded', function () {
     requestBulkBtn.addEventListener('click', function () {
         requestBulkBtn.setAttribute('disabled', 'disabled')
         const itemId =  getDatalistOptionId(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList`))
+        const itemStock =  getDatalistOptionStock(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList`))
+        const quantity  = bulkRequestModal._element.querySelector('#quantity').value
         if (!itemId) {
             clearValidationErrors(bulkRequestModal._element)
             const message = {"item": ["Please pick an item from the list"]}               
+            handleValidationErrors(message, bulkRequestModal._element)
+            requestBulkBtn.removeAttribute('disabled')
+            return
+        } else if (itemStock - quantity < 0){
+            clearValidationErrors(bulkRequestModal._element)
+            const message = {"quantity": ["This quantity is more than the available stock, please reduce the quantity or add to the stock"]}               
             handleValidationErrors(message, bulkRequestModal._element)
             requestBulkBtn.removeAttribute('disabled')
             return
@@ -458,7 +476,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
 
-    document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal, #viewShiftReportTemplateModal').forEach(modal => {
+    document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal, #viewShiftReportTemplateModal ,#newShiftReportTemplateModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function(event) {
             regularTreatmentDiv.innerHTML = ''
             ancTreatmentDiv.innerHTML = ''
@@ -555,7 +573,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.delete(`/shiftreport/${id}`)
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
-                                pharmacyShiftReportTable ? pharmacyShiftReportTable.draw(false) : ''
+                                pharmacyShiftReportTable.draw(false)
                             }
                             deleteShiftReportBtn.removeAttribute('disabled')
                         })

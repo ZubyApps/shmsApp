@@ -10,7 +10,7 @@
 @include('extras.bulkRequestModal', ['title' => 'Bulk Request', 'dept' => 'Pharmacy', 'isPharmacy' => true, 'id' => 'bulkRequestModal'])
 @include('extras.shiftReportTemplateModal', ['title' => 'New Report', 'isUpdate' => false, 'dept' => 'pharmacy', 'isView' => false, 'id' => 'newShiftReportTemplateModal'])
 @include('extras.shiftReportTemplateModal', ['title' => 'Edit Report', 'isUpdate' => true, 'dept' => 'pharmacy', 'isView' => false, 'id' => 'editShiftReportTemplateModal'])
-@include('extras.shiftReportTemplateModal', ['title' => 'New Report', 'isUpdate' => false, 'dept' => 'pharmacy', 'isView' => true, 'id' => 'viewShiftReportTemplateModal'])
+@include('extras.shiftReportTemplateModal', ['title' => 'View Report', 'isUpdate' => false, 'dept' => 'pharmacy', 'isView' => true, 'id' => 'viewShiftReportTemplateModal'])
 
     <div class="container p-1 mt-5 bg-white">   
         <div class="offcanvas offcanvas-end overflow-auto" data-bs-scroll="true" tabindex="-1" id="emergencyListOffcanvas"

@@ -99,6 +99,8 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                 document.querySelector('#lastWeek').value = response.data.lastWeek
                 document.querySelector('#thisWeek').value = response.data.thisWeek
+                document.querySelector('#lastMonth').value = response.data.lastMonth
+                document.querySelector('#thisMonth').value = response.data.thisMonth
             }
         })
         .catch((error) => {
@@ -134,7 +136,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     sentBillsTab.addEventListener('click', function () {
-        datesDiv.querySelector('#monthYear').value = new Date().toISOString().slice(0,7)
+        datesDiv.querySelector('#monthYear').value == '' ? datesDiv.querySelector('#monthYear').value = new Date().toISOString().slice(0,7) : ''
         if ($.fn.DataTable.isDataTable( '#sentBillsTable' )){
             $('#sentBillsTable').dataTable().fnDraw()
             hmoApprovalListTable.draw()
@@ -147,7 +149,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     hmoReportsTab.addEventListener('click', function () {
-        reportDatesDiv.querySelector('#monthYear').value = new Date().toISOString().slice(0,7)
+        reportDatesDiv.querySelector('#monthYear').value == '' ? reportDatesDiv.querySelector('#monthYear').value = new Date().toISOString().slice(0,7) : ''
         if ($.fn.DataTable.isDataTable( '#hmoReportsTable' )){
             $('#hmoReportsTable').dataTable().fnDraw()
             hmoApprovalListTable.draw()
@@ -160,6 +162,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     nhisReconTab.addEventListener('click', function () {
+        nhisMonthYearDiv.querySelector('#nhisDate').value == '' ? nhisMonthYearDiv.querySelector('#nhisDate').value = new Date().toISOString().slice(0,7) : ''
         let date = new Date().toISOString().split('T')[0]
         document.querySelector('#nhisDate').setAttribute('max', date.slice(0,7))
         if ($.fn.DataTable.isDataTable( '#nhisReconTable' )){

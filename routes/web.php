@@ -175,6 +175,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/pharmacy', [ReportController::class, 'indexPharmacy'])->name('Pharmacy Reports');
             Route::get('/pharmacy/summary', [ReportController::class, 'loadPharmacySummary']);
             Route::get('/pharmacy/byresource', [ReportController::class, 'loadByResourcePharmacy']);
+            Route::get('/pharmacy/missing', [ReportController::class, 'loadMissingPharmacySummary']);
             Route::get('/hospitalandothers', [ReportController::class, 'indexHospitalAndOthers'])->name('Hospital Services Reports');
             Route::get('/hospitalandothers/summary', [ReportController::class, 'loadHospitalAndOthersSummary']);
             Route::get('/hospitalandothers/byresource', [ReportController::class, 'loadByResource']);
@@ -507,7 +508,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/{shiftReport}', [ShiftReportController::class, 'update']);
         Route::delete('/{shiftReport}', [ShiftReportController::class, 'destroy']);
         Route::get('/{shiftReport}', [ShiftReportController::class, 'edit']);
-        Route::get('view/{shiftReport}', [ShiftReportController::class, 'view']);
+        Route::get('view/{shiftReport}', [ShiftReportController::class, 'view'])->name('View Shift Report');
     });
 
     Route::prefix('medicationcategory')->group(function (){

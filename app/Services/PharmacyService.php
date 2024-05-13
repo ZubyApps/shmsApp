@@ -60,8 +60,8 @@ class PharmacyService
             ->where(function (Builder $query) {
                 $query->whereHas('prescriptions', function(Builder $query){
                     // $query->Where('qty_dispensed', '=', 0)
-                    $query->WhereColumn('qty_billed', '>', 'qty_dispensed')
-                    ->where(function (Builder $query) {
+                    // $query->WhereColumn('qty_billed', '>', 'qty_dispensed')
+                    $query->where(function (Builder $query) {
                         $query->whereRelation('resource', 'category', '=', 'Medications')
                         ->orWhereRelation('resource', 'category', '=', 'Consumables');
     
@@ -229,11 +229,19 @@ class PharmacyService
                 }
             }
 
-            return $prescription->update([
+            $prescription->update([
                 'qty_dispensed'     => $data->quantity ?? 0,
                 'dispense_date'     => new Carbon(),
                 'dispensed_by'      => $user->id
             ]);
+
+            if ($prescription->qty_billed == $prescription->qty_dispensed){
+                return $prescription->visit->update([
+                    'pharmacy_done_by' => $user->id
+                ]);
+            }
+
+            return $prescription;
         });
     }
 
@@ -368,6 +376,7 @@ class PharmacyService
             return [
                 'id'                    => $resource->id,
                 'name'                  => $resource->name,
+                'category'              => $resource->category,
                 'stockLevel'            => $resource->stock_level,
                 'reOrderLevel'          => $resource->reorder_level,
                 'description'           => $resource->unit_description,

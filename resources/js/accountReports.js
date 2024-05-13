@@ -58,14 +58,14 @@ window.addEventListener('DOMContentLoaded', function () {
     let payMethodsSummmaryTable, capitationPaymentsTable, TPSSummaryTable, TPSByThirdPartyTable, visitSummaryTable1, visitSummaryTable2, expensesTable, expenseSummaryTable, byPayMethodTable, byExpenseCategoryTable, visitsBySponsorTable, yearlyIncomeAndExpenseTable
 
     payMethodsSummmaryTable = getPayMethodsSummmaryTable('payMethodSummaryTable')
-    payMethodDiv.querySelector('#payMethodMonth').value = new Date().toISOString().slice(0,7)
+    payMethodDiv.querySelector('#payMethodMonth').value == '' ? payMethodDiv.querySelector('#payMethodMonth').value = new Date().toISOString().slice(0,7) : ''
 
     payMethodSummaryTab.addEventListener('click', function() {
         payMethodsSummmaryTable.draw()
     })
 
     capitationPaymentsTab.addEventListener('click', function() {
-        capitationDatesDiv.querySelector('#capitationMonth').value = new Date().toISOString().slice(0,7)
+        capitationDatesDiv.querySelector('#capitationMonth').value == '' ? capitationDatesDiv.querySelector('#capitationMonth').value = new Date().toISOString().slice(0,7) : ''
         if ($.fn.DataTable.isDataTable( '#capitationPaymentsTable' )){
             $('#capitationPaymentsTable').dataTable().fnDraw()
         } else {
@@ -74,7 +74,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     TPSSummaryTab.addEventListener('click', function() {
-        TPSSummaryDatesDiv.querySelector('#TPSSummaryMonth').value = new Date().toISOString().slice(0,7)
+        TPSSummaryDatesDiv.querySelector('#TPSSummaryMonth').value == '' ? TPSSummaryDatesDiv.querySelector('#TPSSummaryMonth').value = new Date().toISOString().slice(0,7) : ''
         if ($.fn.DataTable.isDataTable( '#TPSSummaryTable' )){
             $('#TPSSummaryTable').dataTable().fnDraw()
         } else {
@@ -91,7 +91,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     expenseSummaryTab.addEventListener('click', function () {
-        expenseSummaryDatesDiv.querySelector('#expenseMonth').value = new Date().toISOString().slice(0,7)
+        expenseSummaryDatesDiv.querySelector('#expenseMonth').value == '' ? expenseSummaryDatesDiv.querySelector('#expenseMonth').value = new Date().toISOString().slice(0,7) : ''
         if ($.fn.DataTable.isDataTable( '#expenseSummaryTable' )){
             $('#expenseSummaryTable').dataTable().fnDraw()
         } else {
@@ -100,7 +100,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     visitSummaryTab1.addEventListener('click', function () {
-        visistSummaryDiv1.querySelector('#visitSummaryMonth1').value = new Date().toISOString().slice(0,7)
+        visistSummaryDiv1.querySelector('#visitSummaryMonth1').value == '' ? visistSummaryDiv1.querySelector('#visitSummaryMonth1').value = new Date().toISOString().slice(0,7) : ''
         if ($.fn.DataTable.isDataTable( '#visitSummaryTable1' )){
             $('#visitSummaryTable1').dataTable().fnDraw()
         } else {
@@ -109,7 +109,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     visitSummaryTab2.addEventListener('click', function () {
-        visistSummaryDiv2.querySelector('#visitSummaryMonth2').value = new Date().toISOString().slice(0,7)
+        visistSummaryDiv2.querySelector('#visitSummaryMonth2').value == '' ? visistSummaryDiv2.querySelector('#visitSummaryMonth2').value = new Date().toISOString().slice(0,7) : ''
         if ($.fn.DataTable.isDataTable( '#visitSummaryTable2' )){
             $('#visitSummaryTable2').dataTable().fnDraw()
         } else {

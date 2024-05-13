@@ -32,7 +32,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     newBirthsTab.addEventListener('click', function() {
-        newBirthsDatesDiv.querySelector('#newBirthsMonth').value = new Date().toISOString().slice(0,7)
+        newBirthsDatesDiv.querySelector('#newBirthsMonth').value == '' ? newBirthsDatesDiv.querySelector('#newBirthsMonth').value = new Date().toISOString().slice(0,7) : ''
         if ($.fn.DataTable.isDataTable( '#newBirthsTable' )){
             $('#newBirthsTable').dataTable().fnDraw()
         } else {
@@ -41,7 +41,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     dischargeSummaryTab.addEventListener('click', function() {
-        dischargeSummaryDatesDiv.querySelector('#dischargeSummaryMonth').value = new Date().toISOString().slice(0,7)
+        dischargeSummaryDatesDiv.querySelector('#dischargeSummaryMonth').value == '' ? dischargeSummaryDatesDiv.querySelector('#dischargeSummaryMonth').value = new Date().toISOString().slice(0,7) : ''
         if ($.fn.DataTable.isDataTable( '#dischargeSummaryTable' )){
             $('#dischargeSummaryTable').dataTable().fnDraw()
         } else {

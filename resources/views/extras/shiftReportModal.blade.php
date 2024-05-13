@@ -11,7 +11,7 @@
                         <div class="mb-2 form-control">
                             <x-form-span class="fs-5">Shift Reports</x-form-span>
                             <div class="text-start py-4">
-                                <button type="button" id="newPharmacyReportBtn" class="btn btn-primary">
+                                <button type="button" id="new{{ $dept }}ReportBtn" class="btn btn-primary">
                                     <i class="bi bi-plus-circle me-1"></i>
                                     New Shift Report
                                 </button>

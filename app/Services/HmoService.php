@@ -106,11 +106,11 @@ class HmoService
         if (! empty($params->searchTerm)) {
             return $this->visit
                     ->where('consulted', '!=', null)
-                    ->where(function (Builder $query) {
-                        $query->whereRelation('sponsor', 'category_name', 'HMO')
-                        ->orWhereRelation('sponsor', 'category_name', 'NHIS')
-                        ->orWhereRelation('sponsor', 'category_name', 'Retainership');
-                    })
+                    // ->where(function (Builder $query) {
+                    //     $query->whereRelation('sponsor', 'category_name', 'HMO')
+                    //     ->orWhereRelation('sponsor', 'category_name', 'NHIS')
+                    //     ->orWhereRelation('sponsor', 'category_name', 'Retainership');
+                    // })
                     ->where(function (Builder $query) use($params) {
                         $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -322,7 +322,7 @@ class HmoService
 
 
         return $prescription->visit->update([
-            'total_nhis_bill'   => $prescription->visit->sponsor->category_name == 'NHIS' ? $prescription->visit->totalNhisBills() : 0//$prescription->visit->total_nhis_bill,
+            'total_nhis_bill'   => $prescription->visit->sponsor->category_name == 'NHIS' ? $prescription->visit->totalNhisBills() : 0
         ]);
     }
 

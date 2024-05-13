@@ -232,6 +232,17 @@ class ReportController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
+    public function loadMissingPharmacySummary(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->pharmacyReportService->getMissingSummary($params, $request);
+
+        $loadTransformer = $this->pharmacyReportService->getMissingTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
     /** Hospital Services and Others Report */
     public function indexHospitalAndOthers()
     {

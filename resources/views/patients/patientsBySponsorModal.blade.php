@@ -15,8 +15,8 @@
                                     <x-form-input name="sposnor" value="" id="sponsor" readonly/>
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
-                                    <x-input-span>Category</x-input-span>
-                                    <x-form-input name="category" value="" id="category" readonly/>
+                                    <x-input-span class="">Month/Year</x-input-span>
+                                    <x-form-input type="month" name="regMonth" id="regMonth" />
                                 </x-form-div>
                             </div>
                         </div>
@@ -32,6 +32,7 @@
                                                 <th>Phone</th>
                                                 <th>Sex</th>
                                                 <th>Age</th>
+                                                <th>Created</th>
                                                 <th>Total Visits</th>
                                             </tr>
                                         </thead>

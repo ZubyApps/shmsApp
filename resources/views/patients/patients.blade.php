@@ -202,7 +202,12 @@
                           <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">New Registrations by Sponsor This Month</h5>
-                                <table  id="totalPatientsTable" class="table table-sm">
+                                <x-form-div class="col-xl-8 py-3 newRegisterationsDiv">
+                                    <x-input-span class="">Month/Year</x-input-span>
+                                    <x-form-input type="month" name="regMonth" id="regMonth" />
+                                    <button class="input-group-text searchNewRegPatientsByMonthBtn">Search</button>
+                                </x-form-div>
+                                <table  id="newRegPatientsTable" class="table table-sm">
                                     <thead>
                                         <tr>
                                             <th>Sponsor</th>
@@ -226,6 +231,11 @@
                           <div class="card">
                             <div class="card-body">
                             <h5 class="card-title">Visits Summary by Sponsor This Month</h5>
+                            <x-form-div class="col-xl-8 py-3 visistSummaryDiv">
+                                <x-input-span class="">Month/Year</x-input-span>
+                                <x-form-input type="month" name="visitSummaryMonth" id="visitSummaryMonth" />
+                                <button class="input-group-text searchVisitsByMonthBtn">Search</button>
+                            </x-form-div>
                             <table  id="visitsSummaryTable" class="table table-sm">
                                 <thead>
                                     <tr>

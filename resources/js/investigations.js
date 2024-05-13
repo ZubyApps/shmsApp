@@ -1,7 +1,7 @@
 import { Offcanvas, Modal } from "bootstrap";
 import $ from 'jquery';
 import http from "./http";
-import { clearDivValues, getOrdinal, getDivData, textareaHeightAdjustment, loadingSpinners, clearValidationErrors, openModals, populatePatientSponsor, displayItemsList, getDatalistOptionId, handleValidationErrors} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, textareaHeightAdjustment, loadingSpinners, clearValidationErrors, openModals, populatePatientSponsor, displayItemsList, getDatalistOptionId, handleValidationErrors, getDatalistOptionStock} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getPatientsVisitsByFilterTable, getInpatientsInvestigationsTable, getOutpatientsInvestigationTable } from "./tables/investigationTables";
 import { getLabTableByConsultation } from "./tables/doctorstables";
@@ -428,7 +428,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     itemInput.addEventListener('input', function () {
         const datalistEl = bulkRequestModal._element.querySelector(`#itemList`)
-            if (itemInput.value < 2) {
+            if (itemInput.value <= 2) {
             datalistEl.innerHTML = ''
             }
             if (itemInput.value.length > 2) {
@@ -440,10 +440,18 @@ window.addEventListener('DOMContentLoaded', function () {
 
     requestBulkBtn.addEventListener('click', function () {
         requestBulkBtn.setAttribute('disabled', 'disabled')
-        const itemId =  getDatalistOptionId(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList`))
+        const itemId    =  getDatalistOptionId(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList`))
+        const itemStock =  getDatalistOptionStock(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList`))
+        const quantity  = bulkRequestModal._element.querySelector('#quantity').value
         if (!itemId) {
             clearValidationErrors(bulkRequestModal._element)
             const message = {"item": ["Please pick an item from the list"]}               
+            handleValidationErrors(message, bulkRequestModal._element)
+            requestBulkBtn.removeAttribute('disabled')
+            return
+        } else if (itemStock - quantity < 0){
+            clearValidationErrors(bulkRequestModal._element)
+            const message = {"quantity": ["This quantity is more than the available stock, please reduce the quantity"]}               
             handleValidationErrors(message, bulkRequestModal._element)
             requestBulkBtn.removeAttribute('disabled')
             return

@@ -122,6 +122,8 @@ class BulkRequestService
                 'qtyDispensed'      => $bulkRequest->qty_dispensed < 1 ? null : $bulkRequest->qty_dispensed,
                 'dispensedBy'       => $bulkRequest->dispensedBy?->username,
                 'dispensed'         => $bulkRequest->dispensed ? (new Carbon($bulkRequest->dispensed))->format('d/m/y g:ia'): $bulkRequest->dispensed,
+                'stock'             => $bulkRequest->resource->stock_level,
+                'access'            => request()->user()->designation->access_level > 4
             ];
          };
     }
@@ -129,7 +131,7 @@ class BulkRequestService
     public function toggleRequest(Request $data, BulkRequest $bulkRequest, User $user)
     {
         return $bulkRequest->update([
-            'qty_approved'  => $data->qty ? $data->qty : null,
+            'qty_approved'  => $data->qty ? $data->qty : 0,
             'approved_by'   => $data->qty ? $user->id : null
         ]);
     }
@@ -157,7 +159,7 @@ class BulkRequestService
             }
 
             return $bulkRequest->update([
-                'qty_dispensed'     => $data->qty,
+                'qty_dispensed'     => $data->qty ?? 0,
                 'dispensed'         => $data->qty ? new Carbon() : null,
                 'dispensed_by'      => $data->qty ? $user->id : null,
             ]);

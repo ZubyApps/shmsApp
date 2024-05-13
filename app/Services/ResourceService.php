@@ -185,7 +185,8 @@ class ResourceService
             return [
                 'id'        => $resource->id,
                 'name'      => $resource->name,
-                'category'  => $resource->category
+                'category'  => $resource->category,
+                'stock'     => $resource->stock_level,
             ];
         };
     }

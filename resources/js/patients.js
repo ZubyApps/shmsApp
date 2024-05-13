@@ -2,7 +2,7 @@ import { Modal } from "bootstrap"
 import { getDivData, clearDivValues, clearValidationErrors, displayList, openModals, getPatientSponsorDatalistOptionId, getOrdinal } from "./helpers"
 import http from "./http"
 import $ from 'jquery';
-import { getAgeAggregateTable, getAllPatientsTable, getPatientsBySponsorTable, getSexAggregateTable, getSponsorsTable, getTotalPatientsTable, getVisitsSummaryTable, getVisitsTable } from "./tables/patientsTables";
+import { getAgeAggregateTable, getAllPatientsTable, getNewRegisteredPatientsTable, getPatientsBySponsorTable, getSexAggregateTable, getSponsorsTable, getVisitsSummaryTable, getVisitsTable } from "./tables/patientsTables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getAncVitalSignsTable } from "./tables/nursesTables";
 import { getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
@@ -21,6 +21,8 @@ window.addEventListener('DOMContentLoaded', function(){
     const regularTreatmentDiv               = treatmentDetailsModal._element.querySelector('#treatmentDiv')
     const ancTreatmentDiv                   = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
     const datesDiv                          = document.querySelector('.datesDiv')
+    const newRegisterationsDiv              = document.querySelector('.newRegisterationsDiv')
+    const visistSummaryDiv                  = document.querySelector('.visistSummaryDiv')
 
     const newSponsorBtn                     = document.getElementById('newSponsor')
     const createSponsorBtn                  = document.querySelector('#createSponsorBtn')
@@ -29,6 +31,8 @@ window.addEventListener('DOMContentLoaded', function(){
     const registerPatientBtn                = document.querySelector('#registerPatientBtn')
     const savePatientBtn                    = document.querySelector('#savePatientBtn')
     const confirmVisitBtn                   = document.querySelector('#confirmVisitBtn')
+    const searchNewRegPatientsByMonthBtn    = document.querySelector('.searchNewRegPatientsByMonthBtn')
+    const searchVisitsByMonthBtn            = document.querySelector('.searchVisitsByMonthBtn')
 
     const newPatientSponsorInputEl          = document.querySelector('#newPatientSponsor')
     const updatePatientSponsorInputEl       = document.querySelector('#updatePatientSponsor')
@@ -43,10 +47,10 @@ window.addEventListener('DOMContentLoaded', function(){
     const visitsTab                         = document.querySelector('#nav-visits-tab')
     const summariesTab                      = document.querySelector('#nav-summaries-tab')
 
-    let sponsorsTable, visitsTable, totalPatientsTable, sexAggregateTable, patientsBySponsorTable, visitsSummaryTable
+    let sponsorsTable, visitsTable, newRegPatientsTable, sexAggregateTable, patientsBySponsorTable, visitsSummaryTable
 
     const allPatientsTable = getAllPatientsTable('allPatientsTable')
-    $('#allPatientsTable, #sponsorsTable, #visitsTable, #totalPatientsTable, #sexAggregateTable, #patientsBySponsorTable, #visitsSummaryTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
+    $('#allPatientsTable, #sponsorsTable, #visitsTable, #newRegPatientsTable, #sexAggregateTable, #patientsBySponsorTable, #visitsSummaryTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
     newSponsorBtn.addEventListener('click', function() {
         newSponsorModal.show()
     })
@@ -78,10 +82,12 @@ window.addEventListener('DOMContentLoaded', function(){
     })
 
     summariesTab.addEventListener('click', function() {
-        if ($.fn.DataTable.isDataTable( '#totalPatientsTable' )){
-            $('#totalPatientsTable').dataTable().fnDraw()
+        newRegisterationsDiv.querySelector('#regMonth').value == '' ? newRegisterationsDiv.querySelector('#regMonth').value = new Date().toISOString().slice(0,7) : ''
+        visistSummaryDiv.querySelector('#visitSummaryMonth').value == '' ? visistSummaryDiv.querySelector('#visitSummaryMonth').value = new Date().toISOString().slice(0,7) : ''
+        if ($.fn.DataTable.isDataTable( '#newRegPatientsTable' )){
+            $('#newRegPatientsTable').dataTable().fnDraw()
         } else {
-            totalPatientsTable = getTotalPatientsTable('totalPatientsTable')
+            newRegPatientsTable = getNewRegisteredPatientsTable('newRegPatientsTable')
         }
         if ($.fn.DataTable.isDataTable( '#sexAggregateTable' )){
             $('#sexAggregateTable').dataTable().fnDraw()
@@ -98,6 +104,20 @@ window.addEventListener('DOMContentLoaded', function(){
         } else {
             visitsSummaryTable = getVisitsSummaryTable('visitsSummaryTable')
         }
+    })
+
+    searchNewRegPatientsByMonthBtn.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#newRegPatientsTable' )){
+            $('#newRegPatientsTable').dataTable().fnDestroy()
+        }
+        newRegPatientsTable = getNewRegisteredPatientsTable('newRegPatientsTable', newRegisterationsDiv.querySelector('#regMonth').value)
+    })
+
+    searchVisitsByMonthBtn.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#visitsSummaryTable' )){
+            $('#visitsSummaryTable').dataTable().fnDestroy()
+        }
+        visitsSummaryTable = getVisitsSummaryTable('visitsSummaryTable', visistSummaryDiv.querySelector('#visitSummaryMonth').value)
     })
 
     document.querySelector('#sponsorsTable').addEventListener('click', function (event) {
@@ -295,14 +315,14 @@ window.addEventListener('DOMContentLoaded', function(){
         visitsTable = getVisitsTable('visitsTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value, datesDiv.querySelector('#filterListBy').value)
     })
 
-    document.querySelector('#totalPatientsTable').addEventListener('click', function (event) {
+    document.querySelector('#newRegPatientsTable').addEventListener('click', function (event) {
         const showPatientsBtn   = event.target.closest('.showPatientsBtn')
-
+        const date              = newRegisterationsDiv.querySelector('#regMonth').value
         if (showPatientsBtn){
             const id = showPatientsBtn.getAttribute('data-id')
-            patientsBySponsorModal._element.querySelector('#sponsor').value = showPatientsBtn.getAttribute('data-sponsor') 
-            patientsBySponsorModal._element.querySelector('#category').value = showPatientsBtn.getAttribute('data-category')
-            patientsBySponsorTable = getPatientsBySponsorTable('patientsBySponsorTable', id, patientsBySponsorModal)
+            patientsBySponsorModal._element.querySelector('#sponsor').value = showPatientsBtn.getAttribute('data-sponsor') + ' - ' + showPatientsBtn.getAttribute('data-category')
+            patientsBySponsorModal._element.querySelector('#regMonth').value = date
+            patientsBySponsorTable = getPatientsBySponsorTable('patientsBySponsorTable', id, patientsBySponsorModal, date)
             patientsBySponsorModal.show()
         }
     })

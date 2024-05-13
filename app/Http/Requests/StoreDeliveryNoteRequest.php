@@ -34,6 +34,7 @@ class StoreDeliveryNoteRequest extends FormRequest
             'headCircumference' => ['required'],
             'sex'               => ['required'],
             'ebl'               => ['required'],
+            'note'              => ['required'],
             'visitId'           => ['required', 'numeric', 'exists:'.Visit::class.',id'],
         ];
     }

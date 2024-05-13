@@ -17,45 +17,45 @@
                             </x-form-div>
                             <x-form-div class="col-xl-4">
                                 <x-input-span>Type of Operation<x-required-span /></x-input-span>
-                                <x-form-input name="typeOfOperation" id="typeOfOperation" :readonly="$isView"/>
+                                <input class="form-control" name="typeOfOperation" id="typeOfOperation" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-4">
                                 <x-input-span>Type of Aneasthesia<x-required-span /></x-input-span>
-                                <x-form-input name="typeOfAneasthesia" id="typeOfAneasthesia" :readonly="$isView"/>
+                                <input class="form-control" name="typeOfAneasthesia" id="typeOfAneasthesia" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Surgeon<x-required-span /></x-input-span>
-                                <x-form-input name="surgeon" id="surgeon" :readonly="$isView"/>
+                                <input class="form-control" name="surgeon" id="surgeon" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Assistant Surgeon</x-input-span>
-                                <x-form-input name="assistantSurgeon" id="assistantSurgeon" :readonly="$isView"/>
+                                <input class="form-control" name="assistantSurgeon" id="assistantSurgeon" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Aneasthetist</x-input-span>
-                                <x-form-input name="aneasthetist" :readonly="$isView"/>
+                                <input class="form-control" name="aneasthetist" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Scrub Nurse<x-required-span /></x-input-span>
-                                <x-form-input name="scrubNurse" id="scrubNurse" :readonly="$isView"/>
+                                <input class="form-control" name="scrubNurse" id="scrubNurse" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                         </div>
                         <div class="row">
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Surgical Procedure<x-required-span /></x-input-span>
-                                <x-form-textarea name="surgicalProcedure" id="surgicalProcedure" :readonly="$isView"></x-form-textarea>
+                                <textarea class="form-control" name="surgicalProcedure" id="surgicalProcedure" {{ $isView ? 'readonly' : '' }} autocomplete="on"></textarea>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Surgeon's Notes<x-required-span /></x-input-span>
-                                <x-form-textarea name="surgeonsNotes" id="surgeonsNotes" :readonly="$isView"></x-form-textarea>
+                                <textarea class="form-control" name="surgeonsNotes" id="surgeonsNotes" {{ $isView ? 'readonly' : '' }} autocomplete="on"></textarea>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Aneasthetist's Notes<x-required-span /></x-input-span>
-                                <x-form-textarea name="aneasthetistsNotes" id="aneasthetistsNotes" :readonly="$isView"></x-form-textarea>
+                                <textarea class="form-control" name="aneasthetistsNotes" id="aneasthetistsNotes" {{ $isView ? 'readonly' : '' }} autocomplete="on"></textarea>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Post Operarion <br> Notes<x-required-span /></x-input-span>
-                                <x-form-textarea name="postOperationNotes" id="postOperationNotes" :readonly="$isView"></x-form-textarea>
+                                <textarea class="form-control" name="postOperationNotes" id="postOperationNotes" {{ $isView ? 'readonly' : '' }} autocomplete="on"></textarea>
                             </x-form-div>
                         </div>
                     </div>
@@ -67,113 +67,113 @@
                         <div class="row">
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Pre-assessment</x-input-span>
-                                <x-form-input name="preAssessment" :readonly="$isView"/>
+                                <input class="form-control" name="preAssessment" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Indication</x-input-span>
-                                <x-form-input name="indication" :readonly="$isView"/>
+                                <input class="form-control" name="indication" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Surgery</x-input-span>
-                                <x-form-input name="surgery" :readonly="$isView"/>
+                                <input class="form-control" name="surgery" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Plan</x-input-span>
-                                <x-form-input name="plan" :readonly="$isView"/>
+                                <input class="form-control" name="plan" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Pre-med</x-input-span>
-                                <x-form-input name="preMed" :readonly="$isView"/>
+                                <input class="form-control" name="preMed" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Baseline</x-input-span>
-                                <x-form-input name="baseline" :readonly="$isView"/>
+                                <input class="form-control" name="baseline" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Cannulation</x-input-span>
-                                <x-form-input name="cannulation" :readonly="$isView"/>
+                                <input class="form-control" name="cannulation" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Preloading</x-input-span>
-                                <x-form-input name="preloading" :readonly="$isView"/>
+                                <input class="form-control" name="preloading" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Induction</x-input-span>
-                                <x-form-input name="induction" :readonly="$isView"/>
+                                <input class="form-control" name="induction" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Maintenance</x-input-span>
-                                <x-form-input name="maintenance" :readonly="$isView"/>
+                                <input class="form-control" name="maintenance" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Infusion</x-input-span>
-                                <x-form-input name="infusion" :readonly="$isView"/>
+                                <input class="form-control" name="infusion" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Analgesics</x-input-span>
-                                <x-form-input name="analgesics" :readonly="$isView"/>
+                                <input class="form-control" name="analgesics" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Transfusion</x-input-span>
-                                <x-form-input name="transfusion" :readonly="$isView"/>
+                                <input class="form-control" name="transfusion" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Antibiotics</x-input-span>
-                                <x-form-input name="antibiotics" :readonly="$isView"/>
+                                <input class="form-control" name="antibiotics" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>KOS</x-input-span>
-                                <x-form-input type="datetime-local" name="kos" :readonly="$isView"/>
+                                <input class="form-control" type="datetime-local" name="kos" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>EOS</x-input-span>
-                                <x-form-input type="datetime-local" name="eos" :readonly="$isView"/>
+                                <input class="form-control" type="datetime-local" name="eos" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>EBL</x-input-span>
-                                <x-form-input name="ebl" :readonly="$isView"/>
+                                <input class="form-control" name="ebl" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Immediate post-op<x-required-span /></x-input-span>
-                                <x-form-textarea name="immediatePostOp" id="immediatePostOp" :readonly="$isView"></x-form-textarea>
+                                <textarea class="form-control" name="immediatePostOp" id="immediatePostOp" {{ $isView ? 'readonly' : '' }} autocomplete="on"></textarea>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Tourniquet time</x-input-span>
-                                <x-form-input type="datetime-local" name="tourniquetTime" :readonly="$isView"/>
+                                <input class="form-control" type="datetime-local" name="tourniquetTime" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Tourniquet out</x-input-span>
-                                <x-form-input type="datetime-local" name="tourniquetOut" :readonly="$isView"/>
+                                <input class="form-control" type="datetime-local" name="tourniquetOut" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                         </div>
                         <x-form-span>Baby Details </x-form-span>
                         <div class="row">
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Baby out</x-input-span>
-                                <x-form-input type="datetime-local" name="babyOut" :readonly="$isView"/>
+                                <input class="form-control" type="datetime-local" name="babyOut" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Sex<x-required-span /></x-input-span>
                                 <x-input-span class="">Female</x-input-span>
-                                <x-form-input type="number" name="female" id="female" :readonly="$isView"/>
+                                <input class="form-control" type="number" name="female" id="female" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                                 <x-input-span class="">Male</x-input-span>
-                                <x-form-input type="number" name="male" id="male" :readonly="$isView"/>
+                                <input class="form-control" type="number" name="male" id="male" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Apgar Score</x-input-span>
-                                <x-form-input name="apgarScore" :readonly="$isView"/>
+                                <input class="form-control" name="apgarScore" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Birth Weight</x-input-span>
-                                <x-form-input name="birthWeight" :readonly="$isView"/>
+                                <input class="form-control" name="birthWeight" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>CS Surgeon</x-input-span>
-                                <x-form-input name="csSurgeon" :readonly="$isView"/>
+                                <input class="form-control" name="csSurgeon" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>CS Anaesthetist</x-input-span>
-                                <x-form-input name="csAneasthetist" :readonly="$isView"/>
+                                <input class="form-control" name="csAneasthetist" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                             </x-form-div>
                         </div>
                     </div>
