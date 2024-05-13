@@ -387,10 +387,10 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     billingDispenseModal._element.addEventListener('hide.bs.modal', function () {
-        outPatientsTable.draw()
-        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
-        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-        emergencyTable.draw()
+        outPatientsTable.draw(false)
+        inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
+        ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+        emergencyTable.draw(false)
     })
 
     bulkRequestBtn.addEventListener('click', function () {
