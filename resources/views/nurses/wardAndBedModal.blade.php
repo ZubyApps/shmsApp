@@ -34,7 +34,7 @@
                         <div class="row">
                             <x-form-div class="col-xl-4">
                                 <x-input-span id="admitLabel">Admit?<x-required-span /></x-input-span>
-                                <x-select-admit name="admit" id="admit" :disabled="false"></x-select-admit>
+                                <x-select-admit name="admit" id="admit" :disabled="$isNurses"></x-select-admit>
                             </x-form-div>
                             <x-form-div class="col-xl-4">
                                 <x-input-span id="wardLabel">Ward</x-input-span>
