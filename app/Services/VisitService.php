@@ -321,7 +321,7 @@ class VisitService
                 ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                 ->whereMonth('visits.created_at', $date->month)
                 ->whereYear('visits.created_at', $date->year)
-                ->groupBy('sponsor')
+                ->groupBy('sponsor', 'category')
                 ->orderBy('sponsor')
                 ->orderBy('patientsCount')
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -333,7 +333,7 @@ class VisitService
             ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
             ->whereMonth('visits.created_at', $current->month)
             ->whereYear('visits.created_at', $current->year)
-            ->groupBy('sponsor')
+            ->groupBy('sponsor', 'category')
             ->orderBy('sponsor')
             ->orderBy('patientsCount')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -348,7 +348,7 @@ class VisitService
             ->where('consulted', '!=', null)
             ->whereMonth('visits.created_at', $date->month)
             ->whereYear('visits.created_at', $date->year)
-            ->groupBy('sponsor')
+            ->groupBy('sponsor', 'category')
             ->orderBy('sponsor')
             ->orderBy('patientsCount')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -360,7 +360,7 @@ class VisitService
             ->where('consulted', '!=', null)
             ->whereMonth('visits.created_at', $current->month)
             ->whereYear('visits.created_at', $current->year)
-            ->groupBy('sponsor')
+            ->groupBy('sponsor', 'category')
             ->orderBy('sponsor')
             ->orderBy('patientsCount')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
