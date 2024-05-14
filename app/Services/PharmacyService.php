@@ -82,8 +82,8 @@ class PharmacyService
                     ->whereHas('prescriptions', function(Builder $query){
                         // $query->where('qty_dispensed', '=', 0)
                         // ->orWhere('qty_dispensed', '<', 'qty_billed')
-                        $query->WhereColumn('qty_billed', '>', 'qty_dispensed')
-                        ->where(function (Builder $query) {
+                        // $query->WhereColumn('qty_billed', '>', 'qty_dispensed')
+                        $query->where(function (Builder $query) {
                             $query->whereRelation('resource', 'category', '=', 'Medications')
                             ->orWhereRelation('resource', 'category', '=', 'Consumables');
         
@@ -105,8 +105,8 @@ class PharmacyService
                     ->whereHas('prescriptions', function(Builder $query){
                         // $query->where('qty_dispensed', '=', 0)
                         // ->orWhere('qty_dispensed', '<', 'qty_billed')
-                        $query->WhereColumn('qty_billed', '>', 'qty_dispensed')
-                        ->where(function (Builder $query) {
+                        // $query->WhereColumn('qty_billed', '>', 'qty_dispensed')
+                        $query->where(function (Builder $query) {
                             $query->whereRelation('resource', 'category', '=', 'Medications')
                             ->orWhereRelation('resource', 'category', '=', 'Consumables');
         
