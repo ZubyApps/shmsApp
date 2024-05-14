@@ -35,7 +35,7 @@ class AddResourceStockService
 
         if ($data->expiryDate){
             $addedStock->resource()->update([
-                    'stock_level'       => $addedStock->resource->stock_level + $data->quantity,
+                    'stock_level'       => $addedStock->resource->stock_level + $data->finalQuantity,
                     'unit_description'  => $data->unitPurchase, 
                     'purchase_price'    => $data->purchasePrice, 
                     'selling_price'     => $data->sellingPrice, 
@@ -45,7 +45,7 @@ class AddResourceStockService
             }
         
         $addedStock->resource()->update([
-            'stock_level'       => $addedStock->resource->stock_level + $data->quantity,
+            'stock_level'       => $addedStock->resource->stock_level + $data->finalQuantity,
             'unit_description'  => $data->unitPurchase, 
             'purchase_price'    => $data->purchasePrice, 
             'selling_price'     => $data->sellingPrice, 
