@@ -804,7 +804,7 @@ const getEmergencyTable = (tableId, viewer) => {
                     }
                 </div>
                 <div class="d-flex text-secondary  ${viewer === 'pharmacy' ? '' : 'd-none'}">
-                    <span class="${row.qtyBilled ? 'dispenseQtySpan' : ''} btn btn-${row.qtyDispensed ? 'white text-secondary' : 'outline-primary'}" data-id="${row.id}" data-qtybilled="${row.qtyBilled}">${row.qtyDispensed ? 'Dispensed: '+row.qtyDispensed : 'Dispense'}</span>
+                    <span class="${row.qtyBilled ? 'dispenseQtySpan' : ''} btn btn-${row.qtyDispensed ? 'white text-secondary' : 'outline-primary'}" data-id="${row.id}" data-qtybilled="${row.qtyBilled}" data-stock="${row.stock}">${row.qtyDispensed ? 'Dispensed: '+row.qtyDispensed : 'Dispense'}</span>
                     <input class="ms-1 form-control dispenseQtyInput d-none text-secondary" type="number" style="width:6rem;" value="${row.qtyDispensed ?? ''}" name="quantity" id="quantity">
                 </div>
                 `      

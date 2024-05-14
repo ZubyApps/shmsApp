@@ -400,7 +400,7 @@ class PrescriptionService
                 'medicationCharts'      => $prescription->medicationCharts,
                 'qtyBilled'             => $prescription->qty_billed,
                 'qtyDispensed'          => $prescription->qty_dispensed,
-                //'closed'                => $prescription->visit->closed,
+                'stock'                 => $prescription->resource->stock_level,
             ];
          };
     }

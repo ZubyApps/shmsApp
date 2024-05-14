@@ -235,8 +235,8 @@ window.addEventListener('DOMContentLoaded', function () {
     
             if (dispenseQtySpan){
                 const prescriptionId    = dispenseQtySpan.getAttribute('data-id')
-                const qtyBilled         = dispenseQtySpan.getAttribute('data-qtybilled')
-                const stock             = dispenseQtySpan.getAttribute('data-stock') ; 
+                const qtyBilled         = +dispenseQtySpan.getAttribute('data-qtybilled')
+                const stock             = +dispenseQtySpan.getAttribute('data-stock') ; 
                 const div               = dispenseQtySpan.parentElement
                 const dispenseQtyInput  = div.querySelector('.dispenseQtyInput')
                 dispenseQtySpan.classList.add('d-none')
@@ -244,6 +244,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 resetFocusEndofLine(dispenseQtyInput)
                 
                 dispenseQtyInput.addEventListener('blur', function () {
+                    console.log( +dispenseQtyInput.value, stock)
                     if (dispenseQtyInput.value > +qtyBilled){
                         alert('Quantity to be dispensed should not be more than Quantity billed')
                         resetFocusEndofLine(dispenseQtyInput)
