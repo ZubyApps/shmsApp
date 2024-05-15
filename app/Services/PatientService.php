@@ -53,9 +53,11 @@ class PatientService
 
     public function update(Request $data, Patient $patient, User $user): Patient
     {
+       $cardNumber = $user->designation->access_level > 4 && $patient->card_no != $data->cardNumber ? $data->cardNumber : $patient->card_no;
        $patient->update([
                 "patient_type"          => $data->patientType,
                 "address"               => $data->address,
+                "card_no"               => $cardNumber,
                 "blood_group"           => $data->bloodGroup,
                 "date_of_birth"         => $data->dateOfBirth,
                 "email"                 => $data->email,

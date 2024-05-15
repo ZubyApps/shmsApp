@@ -4,7 +4,7 @@ import {getOrdinal, textareaHeightAdjustment, loadingSpinners, removeDisabled, r
 import { getBulkRequestTable, getExpirationStockTable , getPatientsVisitByFilterTable, getPrescriptionsByConsultation, getShiftReportTable } from "./tables/pharmacyTables";
 import http from "./http";
 import $ from 'jquery';
-import { getLabTableByConsultation, getMedicationsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
+import { getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getbillingTableByVisit } from "./tables/billingTables";
 import { getEmergencyTable } from "./tables/nursesTables";
@@ -417,8 +417,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (collapseConsultationBtn) {
             const gotoDiv = document.querySelector(collapseConsultationBtn.getAttribute('data-goto'))
-            const investigationTableId = gotoDiv.querySelector('.investigationTable').id
-            const treatmentTableId = gotoDiv.querySelector('.treatmentTable').id
+            const investigationTableId      = gotoDiv.querySelector('.investigationTable').id
+            const treatmentTableId          = gotoDiv.querySelector('.treatmentTable').id
+            const otherPrescriptionsTableId = gotoDiv.querySelector('.otherPrescriptionsTable').id
             const conId = gotoDiv.querySelector('.investigationTable').dataset.id
 
             if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
@@ -433,6 +434,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 window.history.replaceState({}, document.title, "/" + "pharmacy")
                 getLabTableByConsultation(investigationTableId, treatmentDetailsModal._element, viewer, conId, null)
                 getMedicationsByFilter(treatmentTableId, conId, treatmentDetailsModal._element)
+                getOtherPrescriptionsByFilter(otherPrescriptionsTableId, conId, treatmentDetailsModal._element, null)
             }
             setTimeout(goto, 300)
         }

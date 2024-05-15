@@ -138,9 +138,9 @@ class PharmacyService
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
                 'sponsor'           => $visit->sponsor->name,
-                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
-                'ward'              => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->ward ?? '',
-                'bedNo'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->bed_no ?? '',
+                'admissionStatus'   => $visit->admission_status,
+                'ward'              => $visit->ward ?? '',
+                'bedNo'             => $visit->bed_no ?? '',
                 'patientType'       => $visit->patient->patient_type,
                 'countPrescribed'   => Prescription::where('visit_id', $visit->id)
                                         ->where(function (Builder $query) {
