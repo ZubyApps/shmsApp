@@ -428,6 +428,9 @@ window.addEventListener('DOMContentLoaded', function () {
             if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {
                 $('#' + treatmentTableId).dataTable().fnDestroy()
             }
+            if ($.fn.DataTable.isDataTable('#' + otherPrescriptionsTableId)) {
+                $('#' + otherPrescriptionsTableId).dataTable().fnDestroy()
+            }
 
             const goto = () => {
                 location.href = collapseConsultationBtn.getAttribute('data-goto')

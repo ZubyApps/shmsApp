@@ -122,7 +122,6 @@
                                 </table>
                             </div>
                         </div>
-                        @endif
                         <div class="mb-2 form-control">
                             <x-form-span>Files/Documents</x-form-span>
                             <div class="text-start py-3">
@@ -149,6 +148,7 @@
                                 </table>
                             </div>
                         </div>
+                        @endif
                         @if ($isAnc)
                         <x-bill-summary :number="'AncConDetails'" class="{{ $isLab ? 'd-none' : '' }}"></x-bill-summary> @else <x-bill-summary :number="'ConDetails'" class="{{ $isLab ? 'd-none' : '' }}"></x-bill-summary> @endif
                     </div>

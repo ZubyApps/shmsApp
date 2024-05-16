@@ -102,7 +102,8 @@
                                 <th>Employed</th>
                                 <th>Vitalsigns</th>
                                 <th>ANC Vitalsigns</th>
-                                <th>Prescriptions D/C</th>
+                                <th>Rx</th>
+                                <th>Rx D/C</th>
                                 <th>Delivery</th>
                                 <th>Med Charted</th>
                                 <th>Med Served</th>
@@ -279,6 +280,7 @@
                         <tfoot class="fw-bolder">
                             <tr>
                                 <td class="text-center">Total</td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

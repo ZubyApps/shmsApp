@@ -179,7 +179,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#billOfficersActivityTable' )){
             $('#billOfficersActivityTable').dataTable().fnDestroy()
         }
-        billOfficersActivityTable = getLabTechActivityTable('billOfficersActivityTable', 'Bill Officer', billOfficersDatesDiv.querySelector('#startDate').value, billOfficersDatesDiv.querySelector('#endDate').value)
+        billOfficersActivityTable = getBillOfficersActivityTable('billOfficersActivityTable', 'Bill Officer', billOfficersDatesDiv.querySelector('#startDate').value, billOfficersDatesDiv.querySelector('#endDate').value)
     })
 
     searchBillOfficersByMonthBtn.addEventListener('click', function () {
@@ -187,6 +187,6 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#billOfficersActivityTable' )){
             $('#billOfficersActivityTable').dataTable().fnDestroy()
         }
-        billOfficersActivityTable = getLabTechActivityTable('billOfficersActivityTable', 'Bill Officer', null, null, billOfficersDatesDiv.querySelector('#billOffersActivityMonth').value)
+        billOfficersActivityTable = getBillOfficersActivityTable('billOfficersActivityTable', 'Bill Officer', null, null, billOfficersDatesDiv.querySelector('#billOffersActivityMonth').value)
     })
 })

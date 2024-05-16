@@ -82,6 +82,7 @@ const getNursesActivityTable = (tableId, designation, startDate, endDate, date) 
             {data: "dateOfEmployment"},
             {data: "vitalSigns"},
             {data: "AncVitalSigns"},
+            {data: "prescriptions"},
             {data: "discountinued"},
             {data: "deiveryNotes"},
             {data: "charted"},
@@ -212,6 +213,7 @@ const getBillOfficersActivityTable = (tableId, designation, startDate, endDate, 
             $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
             $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
             $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
+            $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: "billOfficer"},
