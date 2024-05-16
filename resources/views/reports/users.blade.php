@@ -222,6 +222,7 @@
                                 <th>Patients</th>
                                 <th>Visits Initiated</th>
                                 <th>Visits Verified</th>
+                                <th>Visits Treated</th>
                                 <th>Visits closed</th>
                                 <th>Bills Processed</th>
                                 <th>Hmo Bills</th>
@@ -234,6 +235,8 @@
                         <tfoot class="fw-bolder">
                             <tr>
                                 <td class="text-center">Total</td>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
