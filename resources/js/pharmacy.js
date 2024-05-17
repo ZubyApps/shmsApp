@@ -325,14 +325,14 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.patch(`/bulkrequests/approve/${bulkRequestId}`, {qty: qtyApprovedInput.value}, {'html' : div})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
-                        bulkRequestsTable ?  bulkRequestsTable.draw() : ''
+                        bulkRequestsTable ?  bulkRequestsTable.draw(false) : ''
                     }
                 })
                 .catch((error) => {
                     if (error.response.status === 403){
                         alert(error.response.data.message); 
                     }
-                    bulkRequestsTable ?  bulkRequestsTable.draw() : ''
+                    bulkRequestsTable ?  bulkRequestsTable.draw(false) : ''
                     console.log(error)
                 })                
             })
@@ -356,12 +356,12 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.patch(`/bulkrequests/dispense/${bulkRequestId}`, {qty: qtyDispensedInput.value}, {'html' : div})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
-                        bulkRequestsTable ?  bulkRequestsTable.draw() : ''
+                        bulkRequestsTable ?  bulkRequestsTable.draw(false) : ''
                     }
                 })
                 .catch((error) => {
                     console.log(error)
-                    bulkRequestsTable ?  bulkRequestsTable.draw() : ''
+                    bulkRequestsTable ?  bulkRequestsTable.draw(false) : ''
                 })                
             })
         }
@@ -373,7 +373,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.delete(`/bulkrequests/${bulkRequestId}`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
-                        bulkRequestsTable ?  bulkRequestsTable.draw() : ''
+                        bulkRequestsTable ?  bulkRequestsTable.draw(false) : ''
                     }
                 })
                 .catch((error) => {
@@ -381,7 +381,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         alert(error.response.data.message); 
                     }
                     console.log(error)
-                    bulkRequestsTable ?  bulkRequestsTable.draw() : ''
+                    bulkRequestsTable ?  bulkRequestsTable.draw(false) : ''
                 })
             }
         }

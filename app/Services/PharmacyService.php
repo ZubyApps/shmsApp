@@ -334,7 +334,7 @@ class PharmacyService
             return $this->resource
                         ->where(function (Builder $query) {
                             $query->where('category', 'Medications')
-                            ->orWhere('category', 'Consumables');
+                            ->orWhere('category', 'Consumables')->whereNot('sub_category', 'Lab');
                         })
                         ->where(function (Builder $query) use($params) {
                             $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -350,7 +350,7 @@ class PharmacyService
                     ->where('is_active', true)
                     ->where(function (Builder $query) {
                         $query->where('category', 'Medications')
-                        ->orWhere('category', 'Consumables');
+                        ->orWhere('category', 'Consumables')->whereNot('sub_category', 'Lab');
                     })
                     ->where('expiry_date', '<', (new Carbon())->addMonths(6))
                     ->orderBy($orderBy, $orderDir)
@@ -362,7 +362,7 @@ class PharmacyService
                     ->where('is_active', true)
                     ->where(function (Builder $query) {
                         $query->where('category', 'Medications')
-                        ->orWhere('category', 'Consumables');
+                        ->orWhere('category', 'Consumables')->whereNot('sub_category', 'Lab');
                     })
                     ->whereColumn('stock_level', '<=','reorder_level')
                     ->orderBy($orderBy, $orderDir)
