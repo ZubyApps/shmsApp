@@ -364,7 +364,7 @@ class PharmacyService
                         $query->where('category', 'Medications')
                         ->orWhere('category', 'Consumables')->whereNot('sub_category', 'Lab');
                     })
-                    ->whereColumn('stock_level', '<=','reorder_level')
+                    ->whereColumn('stock_level', '<','reorder_level')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
