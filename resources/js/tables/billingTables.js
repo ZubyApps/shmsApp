@@ -46,6 +46,11 @@ const getWaitingTable = (tableId) => {
                         </a>
                         <ul class="dropdown-menu">
                             <li>
+                                <a role="button" class="dropdown-item consultationDetailsBtn tooltip-test" title="details" id="consultationDetailsBtn" data-id="${ row.id }">
+                                    <i class="bi bi-distribute-vertical text-primary"></i> Details
+                                </a>
+                            </li>
+                            <li>
                                 <a role="button" class="dropdown-item closeVisitBtn tooltip-test" title="close visits" id="closeVisitBtn" data-id="${ row.id }">
                                     <i class="bi bi-lock-fill text-primary"></i> Close Visit
                                 </a>

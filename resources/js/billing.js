@@ -171,7 +171,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #outstandingBillsTable, #openVisitsTable').forEach(table => {
+    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #outstandingBillsTable, #openVisitsTable, #waitingTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const billingDetailsBtn = event.target.closest('.consultationDetailsBtn')
             const patientsBillBtn   = event.target.closest('.patientsBillBtn')
