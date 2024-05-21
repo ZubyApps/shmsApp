@@ -479,7 +479,7 @@ class AccountsReportService
 
         if ($data->startDate && $data->endDate){
             return DB::table('visits')
-            ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
+            ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(CASE WHEN visits.consulted IS NOT NULL THEN 1 ELSE 0 END) AS visitConsulted, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
@@ -492,7 +492,7 @@ class AccountsReportService
             $date = new Carbon($data->date);
 
             return DB::table('visits')
-            ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
+            ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(CASE WHEN visits.consulted IS NOT NULL THEN 1 ELSE 0 END) AS visitConsulted, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->whereMonth('visits.created_at', $date->month)
@@ -503,7 +503,7 @@ class AccountsReportService
         }
 
         return DB::table('visits')
-            ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
+            ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(CASE WHEN visits.consulted IS NOT NULL THEN 1 ELSE 0 END) AS visitConsulted, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->whereMonth('visits.created_at', $current->month)

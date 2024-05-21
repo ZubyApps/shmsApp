@@ -255,6 +255,7 @@
                                 <th>Sponsors</th>
                                 <th>Patients</th>
                                 <th>Visits</th>
+                                <th>VisitsC</th>
                                 <th>HMS Bill</th>
                                 <th>HMO Bill</th>
                                 <th>NHIS Bill</th>

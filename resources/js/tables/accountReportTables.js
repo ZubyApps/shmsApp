@@ -272,12 +272,14 @@ const getVisitSummaryTable1 = (tableId, startDate, endDate, date) => {
             $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
             $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
             $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
+            $( api.column(10).footer() ).html(account.format(api.column( 10, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: "category"},
             {data: row => account.format(row.sponsorCount)},
             {data: row => account.format(row.patientsCount)},
             {data: row => account.format(row.visitCount)},
+            {data: row => account.format(row.visitConsulted)},
             {data: row => account.format(row.totalHmsBill)},
             {data: row => account.format(row.totalHmoBill)},
             {data: row => account.format(row.totalNhisBill)},
