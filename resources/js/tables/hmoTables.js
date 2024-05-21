@@ -310,7 +310,7 @@ const getSentBillsTable = (tableId, startDate, endDate, date, filterByOpen) => {
             'filterByOpen'   : filterByOpen, 
         }},
         orderMulti: true,
-        lengthMenu:[25, 50, 100, 150, 200],
+        lengthMenu:[25, 50, 100, 150, 200, 500],
         search:true,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
