@@ -1,5 +1,5 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
-import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, populateWardAndBedModal, clearItemsList, getSelectedResourceValues, getDatalistOptionStock } from "./helpers"
+import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, populateWardAndBedModal, clearItemsList, getSelectedResourceValues, getDatalistOptionStock, getShiftPerformance } from "./helpers"
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
@@ -52,6 +52,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const regularTreatmentDiv       = treatmentDetailsModal._element.querySelector('#treatmentDiv')
     const ancTreatmentDiv           = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
     const dischargeDetailsDiv       = dischargeModal._element.querySelector('#dischargeDetails')
+    const shiftPerformanceDiv       = document.querySelector('#shiftPerformanceDiv')
 
     const waitingBtn                = document.querySelector('#waitingBtn')
     const addVitalsignsBtn          = document.querySelectorAll('#addVitalsignsBtn')
@@ -89,11 +90,13 @@ window.addEventListener('DOMContentLoaded', function () {
 
     let outPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable, emergencyTable, nursesReportTable, surgeryNoteTable, deliveryNoteTable, medicationsTable, patientsFilesTable
 
-    const inPatientsVisitTable = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient')
+    const inPatientsVisitTable          = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient')
     const waitingTable                  = getWaitingTable('waitingTable')
     const upcomingMedicationsTable      = getUpcomingMedicationsTable('upcomingMedicationsTable', inpatientsMedChartBtn, inpatientMedicationBadgeSpan)
     const upcomingNursingChartsTable    = getUpcomingNursingChartsTable('upcomingNursingChartsTable', nursingChartBtn, inpatientNursingBadgeSpan)
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #bulkRequestsTable, #emergencyTable, #nursesReportTable, #upcomingMedicationsTable, #upcomingNursingChartsTable, #waitingTable, #medicationsTable, #otherPrescriptionsTable, #ancVitalSignsTable, #vitalSignsTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
+
+    const shiftPerformance = getShiftPerformance('Nurse')
 
     inPatientsTab.addEventListener('click', function() {
         inPatientsVisitTable.draw()

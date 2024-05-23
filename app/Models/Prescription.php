@@ -72,6 +72,11 @@ class Prescription extends Model
         return $this->belongsTo(User::class, 'doctor_on_call');
     }
 
+    public function heldBy()
+    {
+        return $this->belongsTo(User::class, 'held_by');
+    }
+
     public function payment()
     {
         return $this->belongsTo(Payment::class);
@@ -111,6 +116,17 @@ class Prescription extends Model
                         $query->whereDoesntHave($chartTable)
                               ->whereRelation('resource', 'category', $comparism ,'Medications');
                     })
+                    ->count();
+    }
+
+    public function prescriptionsChartedPerShift(array $shift, $chartTable, $comparism = '=')
+    {
+        return $this->where('chartable', true)
+                    ->where(function(Builder $query) use($chartTable, $comparism) {
+                        $query->whereDoesntHave($chartTable)
+                            ->whereRelation('resource', 'category', $comparism ,'Medications');
+                    })
+                    ->whereBetween('created_at', [$shift['start'], $shift['end']])
                     ->count();
     }
 }

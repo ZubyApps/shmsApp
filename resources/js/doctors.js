@@ -1235,6 +1235,7 @@ window.addEventListener('DOMContentLoaded', function () {
             ancConsultationReviewDiv.innerHTML = ''
             visitHistoryDiv.innerHTML = ''
             modal.id == 'ancConsultationReviewModal' ? (clearDivValues(modal.querySelector('.ancReviewDiv')), modal.querySelector('.investigationAndManagementDiv').classList.add('d-none')) : ''
+            modal.querySelector('#saveConsultationBtn').removeAttribute('data-conid')
             outPatientsVisitTable.draw()
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''

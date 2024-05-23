@@ -32,6 +32,7 @@ use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\ResourceStockDateController;
 use App\Http\Controllers\ResourceSubCategoryController;
 use App\Http\Controllers\ResourceSupplierController;
+use App\Http\Controllers\ShiftPerformanceController;
 use App\Http\Controllers\ShiftReportController;
 use App\Http\Controllers\SponsorCategoryController;
 use App\Http\Controllers\SponsorController;
@@ -519,6 +520,15 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{medicationCategory}', [MedicationCategoryController::class, 'destroy']);
         Route::post('/{medicationCategory}', [MedicationCategoryController::class, 'update']);
     })->name('Medication Category');
+
+    Route::prefix('shiftperformance')->group(function () {
+        // Route::post('', [ShiftReportController::class, 'store']);
+        // Route::get('load', [ShiftReportController::class, 'loadShiftReportTable']);
+        Route::get('', [ShiftPerformanceController::class, 'UpdateDeptPreformance']);
+        // Route::delete('/{shiftReport}', [ShiftReportController::class, 'destroy']);
+        // Route::get('/{shiftReport}', [ShiftReportController::class, 'edit']);
+        // Route::get('view/{shiftReport}', [ShiftReportController::class, 'view'])->name('View Shift Report');
+    });
 });
 
 require __DIR__.'/auth.php';
