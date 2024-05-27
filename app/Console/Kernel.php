@@ -3,7 +3,6 @@
 namespace App\Console;
 
 use App\InvokableObjects\NursesAfternoonShift;
-use App\InvokableObjects\NurseShifts;
 use App\InvokableObjects\NursesMorningShift;
 use App\InvokableObjects\NursesNightShift;
 use Illuminate\Console\Scheduling\Schedule;
@@ -18,9 +17,9 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
-        $schedule->call(new NursesMorningShift)->dailyAt('15:48');
-        $schedule->call(new NursesAfternoonShift)->dailyAt('15:49');
-        $schedule->call(new NursesNightShift)->dailyAt('15:50');
+        $schedule->call(new NursesMorningShift)->dailyAt('08:01');
+        $schedule->call(new NursesAfternoonShift)->dailyAt('14:01');
+        $schedule->call(new NursesNightShift)->dailyAt('20:01');
     }
 
     /**

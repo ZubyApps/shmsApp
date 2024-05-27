@@ -119,14 +119,28 @@ class Prescription extends Model
                     ->count();
     }
 
-    public function prescriptionsChartedPerShift(array $shift, $chartTable, $comparism = '=')
+    public function prescriptionsChartedPerShift($shift, $chartTable, $comparism = '=')
     {
         return $this->where('chartable', true)
+                    ->where('held', null)
                     ->where(function(Builder $query) use($chartTable, $comparism) {
-                        $query->whereDoesntHave($chartTable)
+                        $query->whereHas($chartTable)
                             ->whereRelation('resource', 'category', $comparism ,'Medications');
                     })
-                    ->whereBetween('created_at', [$shift['start'], $shift['end']])
+                    ->whereBetween('created_at', [$shift->shift_start, $shift->shift_end])
+                    ->count();
+    }
+
+    public function prescriptionsGivenPerShift($shift, $chartTable, $comparism = '=')
+    {
+        return $this->where('chartable', true)
+                    ->where('held', null)
+                    ->where(function(Builder $query) use($chartTable, $comparism) {
+                        $query->whereHas($chartTable)
+                            ->whereRelation('resource', 'category', $comparism ,'Medications')
+                            ->whereRelation($chartTable, 'time_given', '!=', null);
+                    })
+                    ->whereBetween('created_at', [$shift->shift_start, $shift->shift_end])
                     ->count();
     }
 }

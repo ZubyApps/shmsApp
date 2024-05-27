@@ -1,0 +1,284 @@
+<?php
+
+declare(strict_types = 1);
+
+namespace App\Services;
+
+use App\Models\MedicationChart;
+use App\Models\Prescription;
+use App\Models\ShiftPerformance;
+use App\Models\Visit;
+use Carbon\CarbonInterval;
+use Illuminate\Support\Facades\DB;
+
+Class ShiftPerformanceService
+{
+    public function __construct(
+        private readonly ShiftPerformance $shiftPerformance,
+        private readonly Prescription $prescription,
+        private readonly MedicationChart $medicationChart,
+        private readonly Visit $visit
+        )
+    {
+        
+    }
+
+    public function create($department, $shift): ShiftPerformance
+    {
+       $shiftPerformance = $this->shiftPerformance->create([
+            'department'   => $department,
+            'shift'        => $shift,
+        ]);
+
+        return $shiftPerformance;
+    }
+
+    public function update()
+    {
+        $shiftPerformance = $this->shiftPerformance->where('department', 'Nurse')->where('is_closed', false)->orderBy('id', 'desc')->first();
+        
+        $shiftPerformance->update([
+                'chart_rate'                => $this->chartRate($shiftPerformance),
+                'given_rate'                => $this->givenRate($shiftPerformance),
+                'first_med_res'             => $this->firstMedicationResolution($shiftPerformance),
+                'first_vitals_res'          => $this->firstVitalsignsResolution($shiftPerformance),
+                'medication_time'           => $this->medicationTime($shiftPerformance),
+                'inpatient_vitals_count'    => $this->inpatientsVitalsignsCount($shiftPerformance),
+                'outpatient_vitals_count'   => $this->outpatientssVitalsignsCount($shiftPerformance),
+            ]);
+
+            $shiftPerformance->update([
+                'performance'  => $this->getPerformance($shiftPerformance),
+            ]);
+
+            $shiftPerformance->first_med_res    = CarbonInterval::seconds($shiftPerformance->first_med_res)->cascade()->forHumans();
+            $shiftPerformance->first_vitals_res = CarbonInterval::seconds($shiftPerformance->first_vitals_res)->cascade()->forHumans();
+            $shiftPerformance->medication_time  = CarbonInterval::seconds($shiftPerformance->medication_time)->cascade()->forHumans();
+
+        return response()->json(['shiftPerformance' => $shiftPerformance]);
+    }
+
+    public function chartRate($shiftPerformance)
+    {
+        if ($shiftPerformance?->shift == 'Morning Shift'){
+            $totalPrescriptions         = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->count();
+            $totalPrescriptionsCharted  = $this->prescription->prescriptionsChartedPerShift($shiftPerformance, 'medicationCharts');
+
+            return $totalPrescriptions ? $totalPrescriptionsCharted . '/' . $totalPrescriptions : null;
+        }
+        if ($shiftPerformance?->shift == 'Afternoon Shift'){
+            $totalPrescriptions         = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->count();
+            $totalPrescriptionsCharted  = $this->prescription->prescriptionsChartedPerShift($shiftPerformance, 'medicationCharts');
+
+            return $totalPrescriptions ? $totalPrescriptionsCharted . '/' . $totalPrescriptions : null;
+        }
+
+        if ($shiftPerformance?->shift == 'Night Shift'){
+            $totalPrescriptions         = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->count();
+            $totalPrescriptionsCharted  = $this->prescription->prescriptionsChartedPerShift($shiftPerformance, 'medicationCharts');
+
+            return $totalPrescriptions ? $totalPrescriptionsCharted . '/' . $totalPrescriptions : null; 
+        }
+    }
+
+    public function givenRate($shiftPerformance)
+    {
+        if ($shiftPerformance?->shift == 'Morning Shift'){
+            $totalPrescriptions         = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->count();
+            $totalPrescriptionsStarted  = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'medicationCharts');
+
+            return $totalPrescriptions ? $totalPrescriptionsStarted . '/' . $totalPrescriptions : null; 
+
+        }
+
+        if ($shiftPerformance?->shift == 'Afternoon Shift'){
+            $totalPrescriptions         = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->count();
+            $totalPrescriptionsStarted  = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'medicationCharts');
+
+            return $totalPrescriptions ? $totalPrescriptionsStarted . '/' . $totalPrescriptions : null; 
+
+        }
+
+        if ($shiftPerformance?->shift == 'Night Shift'){
+            $totalPrescriptions         = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->count();
+            $totalPrescriptionsStarted  = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'medicationCharts');
+
+            return $totalPrescriptions ? $totalPrescriptionsStarted . '/' . $totalPrescriptions : null; 
+        }
+    }
+
+    public function firstMedicationResolution($shiftPerformance)
+    {
+        $prescriptionsWithoutMc = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->whereDoesntHave('medicationCharts')->count();
+
+        $prescriptionsWitMc = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->whereHas('medicationCharts')->count();
+
+        $averageFMRTime = DB::table('prescriptions')
+                    ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, prescriptions.created_at))) AS averageFMRTime')
+                    ->leftJoin('medication_charts', 'prescriptions.id', 'medication_charts.prescription_id')
+                    ->where('medication_charts.dose_count', 1)
+                    ->where('prescriptions.held', null)
+                    ->whereBetween('prescriptions.created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+                    ->get()->first()->averageFMRTime;
+
+        return $prescriptionsWithoutMc > 0 || $prescriptionsWitMc > 0 ? $averageFMRTime : null;     
+    }
+
+    public function firstChartResolution($shiftPerformance)
+    {
+        $prescriptionsWithoutMc = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->whereDoesntHave('medicationCharts')->count();
+
+        $prescriptionsWitMc = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->whereHas('medicationCharts')->count();
+
+        $averageFMRTime = DB::table('prescriptions')
+                    ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, prescriptions.created_at))) AS averageFMRTime')
+                    ->leftJoin('medication_charts', 'prescriptions.id', 'medication_charts.prescription_id')
+                    ->where('medication_charts.dose_count', 1)
+                    ->where('prescriptions.held', null)
+                    ->whereBetween('prescriptions.created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+                    ->get()->first()->averageFMRTime;
+
+        $seconds = $averageFMRTime ? CarbonInterval::seconds($averageFMRTime)->cascade()->totalSeconds : $averageFMRTime;
+        
+        return $prescriptionsWithoutMc > 0 || $prescriptionsWitMc > 0 ? ($seconds ? $this->secondsToPercent($seconds, 'FMR') : 0) : null;        
+    }
+
+    public function firstVitalsignsResolution($shiftPerformance)
+    {
+        $visitsWithoutVs    = $this->visit->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->whereDoesntHave('vitalSigns')->count();
+
+        $visitsWithVs       = $this->visit->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->whereHas('vitalSigns')->count();
+
+        $averageFVRTime = DB::table('visits')
+                    ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(vital_signs.created_at, visits.created_at))) AS averageFVRTime')
+                    ->leftJoin('vital_signs', 'visits.id', 'vital_signs.visit_id')
+                    ->oldest('vital_signs.created_at')
+                    ->whereBetween('visits.created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+                    ->get()->first()?->averageFVRTime;
+
+        return $visitsWithoutVs > 0 || $visitsWithVs > 0 ? $averageFVRTime : null;        
+    }
+
+    public function medicationTime($shiftPerformance)
+    {
+        $medicatonsDueInShift = $this->medicationChart
+                                ->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+                                ->orWhereBetween('time_given', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+                                ->whereRelation('visit', 'admission_status', '!=', 'Outpatient')
+                                ->count();
+
+        $averageMedicationTimes = DB::table('medication_charts')
+                                ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, medication_charts.scheduled_time))) AS averageMedicationTime, visits.admission_status')
+                                ->leftJoin('visits', 'visits.id', 'medication_charts.visit_id')
+                                ->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+                                ->where('visits.admission_status', '!=', 'OutPatient')
+                                ->orWhere('visits.admission_status', null)
+                                ->groupBy('visits.admission_status')
+                                ->get()->map?->averageMedicationTime;
+
+        $averageMedicationTime = ($averageMedicationTimes->sum()/$averageMedicationTimes->count());
+
+        return $medicatonsDueInShift > 0 ? $averageMedicationTime : null;        
+    }
+
+    public function inpatientsVitalsignsCount($shiftPerformance)
+    {
+        $visitsCount = $this->visit
+                ->whereNot('admission_status', 'Outpatient')
+                ->where('doctor_done_by', null)
+                ->count();
+
+        $visitsVCount = $this->visit
+                ->whereNot('admission_status', 'Outpatient')
+                ->where('doctor_done_by', '=', null)
+                ->whereHas('vitalSigns', function ($query) use ($shiftPerformance) {
+                            $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
+                    }, '>=', 3)->count();
+
+        return $visitsCount ? $visitsVCount . '/' . $visitsCount : null;
+    }
+
+    public function outpatientssVitalsignsCount($shiftPerformance)
+    {
+        $visitsCount = $this->visit
+                ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+                ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+                ->count();
+
+        $visitsVCount = $this->visit
+                ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+                ->whereHas('vitalSigns', function ($query) use ($shiftPerformance) {
+                            $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
+                    }, '>=', 1
+                )
+                ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+                ->count();
+
+        return $visitsCount ? $visitsVCount . '/' . $visitsCount : null;
+    }
+
+    public function secondsToPercent($seconds, $indicator)
+    {
+        if ($indicator == 'FMR'){
+            return $seconds < 600 ? 100 : ($seconds > 600 && $seconds < 1200 ? 90 : ($seconds > 1200 && $seconds < 2400 ? 80 : ($seconds > 2400 && $seconds < 3600 ? 60 : ($seconds > 3600 && $seconds < 5400 ? 40 : 20))));
+        }
+        if ($indicator == 'FVR'){
+            return $seconds < 300 ? 100 : ($seconds > 300 && $seconds < 600 ? 90 : ($seconds > 600 && $seconds < 900 ? 80 : ($seconds > 900 && $seconds < 1200 ? 70 : ($seconds > 1200 && $seconds < 1500 ? 60 : ($seconds > 1500 && $seconds < 2400 ? 40 : 20)))));
+        }
+        if ($indicator == 'MT'){
+            return $seconds < 120 ? 100 : ($seconds > 120 && $seconds < 300 ? 80 : ($seconds > 300 && $seconds < 600 ? 70 : ($seconds > 600 && $seconds < 900 ? 50 : ($seconds > 900 && $seconds < 1200 ? 40 : 20))));
+        }
+    }
+
+    public function getPerformance($shiftPerformance)
+    {
+        $totalPoints = 0;
+
+        $convertChartRate = $shiftPerformance->chart_rate === null ? null : 
+                            ($this->percentFromStringFraction($shiftPerformance->chart_rate) / 100) * 20 ; 
+                            $shiftPerformance->chart_rate === null ? '' : $totalPoints++;
+
+        $convertGivenRate = $shiftPerformance->given_rate === null ? 
+                            null: ($this->percentFromStringFraction($shiftPerformance->given_rate) / 100) * 20; 
+                            $shiftPerformance->given_rate === null ? '': $totalPoints++;
+
+        $convertFirstMedRes =   $shiftPerformance->first_med_res === null ? null :
+                                ($this->secondsToPercent($shiftPerformance->first_med_res, 'FMR') /100 ) * 20; 
+                                $shiftPerformance->first_med_res === null ? '' : $totalPoints++;
+
+        $convertFirstVitalsRes  =   $shiftPerformance->first_vitals_res === null ? null :
+                                    ($this->secondsToPercent($shiftPerformance->first_vitals_res, 'FVR') / 100) * 20; 
+                                    $shiftPerformance->first_vitals_res === null ? '' : $totalPoints++;
+
+        $convertMedicationTime =    $shiftPerformance->medication_time === null ? null : 
+                                    ($this->secondsToPercent($shiftPerformance->medication_time, 'MT') / 100) * 20; 
+                                    $shiftPerformance->medication_time === null ? '' : $totalPoints++;
+
+        $convertInPsVC  =   $shiftPerformance->inpatient_vitals_count === null ? null : 
+                            ($this->percentFromStringFraction($shiftPerformance->inpatient_vitals_count) / 100) * 20; 
+                            $shiftPerformance->inpatient_vitals_count === null ? '' : $totalPoints++;
+
+        $convertOutPsVC =   $shiftPerformance->outpatient_vitals_count === null ? null : 
+                            ($this->percentFromStringFraction($shiftPerformance->outpatient_vitals_count) / 100) * 20; 
+                            $shiftPerformance->outpatient_vitals_count === null ? '' : $totalPoints++;
+
+
+        $preformance = ($convertChartRate + $convertGivenRate + $convertFirstMedRes + $convertFirstVitalsRes + $convertMedicationTime + $convertInPsVC + $convertOutPsVC)/($totalPoints*20) * 100;
+
+        return round($preformance, 1);
+    }
+
+    public function percentFromStringFraction($fraction){
+        $exploded = explode('/', $fraction);
+        return round($exploded[0] / $exploded[1] * 100, 1);
+    }
+
+    public function getShiftPerformance($department)
+    {
+        return $this->shiftPerformance
+                    ->where('department', $department)
+                    ->where('is_closed', false)
+                    ->get()->first()?->performance;
+
+    }
+}

@@ -1,9 +1,7 @@
 <?php
 
 use App\Models\AntenatalRegisteration;
-use App\Models\Patient;
 use App\Models\User;
-use App\Models\Visit;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

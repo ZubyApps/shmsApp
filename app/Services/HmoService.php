@@ -77,9 +77,9 @@ class HmoService
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->category_name,
                 'doctor'            => $visit->doctor->username ?? '',
-                'codeText'          => $visit->verification_code,
+                'codeText'          => $visit->verification_code ?? '',
                 'phone'             => $visit->patient->phone,
-                'status'            => $visit->verification_status,
+                'status'            => $visit->verification_status ?? '',
                 '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
             ];
          };
@@ -118,6 +118,7 @@ class HmoService
                         ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                     })
                     

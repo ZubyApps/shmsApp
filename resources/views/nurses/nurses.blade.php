@@ -144,18 +144,7 @@
             <i class="bi bi-list-check"></i>
             Inpatients Nursing Chart <span class="badge text-bg-danger" id="inpatientNursingBadgeSpan"></span>
         </button>
-        {{-- <div class="text-end mb-4" id="shiftPerfomanceDiv">
-            <button type="button" id="newPatient" class="btn p-0 " data-bs-toggle="dropdown" aria-expanded="false">
-                <div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
-                    <div class="progress-bar text-dark fw-semibold fs-6 px-3 overflow-visible bg-primary-subtle" style="width: 34%">Morning Shift Performance 34%</div>
-                </div>
-            </button>
-            <ul class="dropdown-menu">
-                <li><button class="dropdown-item" type="button">Action Another action omething else here</button></li>
-                <li><button class="dropdown-item" type="button">Another action</button></li>
-                <li><button class="dropdown-item" type="button">Something else here</button></li>
-              </ul>
-        </div> --}}
+        <div class="text-end mb-4 d-none" id="shiftPerformanceDiv"></div>
     </div>
 
     <div>

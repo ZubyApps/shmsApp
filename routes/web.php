@@ -524,7 +524,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('shiftperformance')->group(function () {
         // Route::post('', [ShiftReportController::class, 'store']);
         // Route::get('load', [ShiftReportController::class, 'loadShiftReportTable']);
-        Route::get('', [ShiftPerformanceController::class, 'UpdateDeptPreformance']);
+        Route::get('/Nurse', [ShiftPerformanceController::class, 'UpdateDeptPreformance']);
         // Route::delete('/{shiftReport}', [ShiftReportController::class, 'destroy']);
         // Route::get('/{shiftReport}', [ShiftReportController::class, 'edit']);
         // Route::get('view/{shiftReport}', [ShiftReportController::class, 'view'])->name('View Shift Report');

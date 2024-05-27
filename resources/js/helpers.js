@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import http from "./http";
 import { getAncPatientsVisitTable, getInpatientsVisitTable, getOutpatientsVisitTable } from './tables/doctorstables';
+import { isNumber } from 'chart.js/helpers';
 
 function clearDivValues(div) {
     const tagName = div.querySelectorAll('input, select, textarea')
@@ -664,14 +665,27 @@ const populateAncReviewDiv = (div, conbtn) => {
     div.querySelector('#provisionalDiagnosis').value = conbtn.getAttribute('data-provisionaldiagnosis')
 }
 
-const getShiftPerformance = (dept) => {
-    http.get(`/visits/average`)
+const getShiftPerformance = (dept, div) => {
+    http.get(`/shiftperformance/${dept}`)
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
-                document.querySelector('#lastWeek').value = response.data.lastWeek
-                document.querySelector('#thisWeek').value = response.data.thisWeek
-                document.querySelector('#lastMonth').value = response.data.lastMonth
-                document.querySelector('#thisMonth').value = response.data.thisMonth
+                const shiftPerformance   = response.data.shiftPerformance
+                div.innerHTML = `
+                <button type="button" id="newPatient" class="btn p-0 " data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
+                    <div class="progress-bar text-dark fw-semibold fs-6 overflow-visible bg-${shiftPerformance.performance <= 50 ? 'danger' : shiftPerformance.performance > 50 && shiftPerformance.performance < 70 ? 'warning' : shiftPerformance.performance >= 70 && shiftPerformance.performance <= 95 ? 'primary' : 'success'}-subtle px-1" style="width: ${shiftPerformance.performance}%;"> ${shiftPerformance.shift} Performance ${shiftPerformance.performance}% </div>
+                    </div>
+                </button>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-item text-secondary">Chart Rate ${shiftPerformance.chart_rate ? '- '+ shiftPerformance.chart_rate :'- no activity'}</li>
+                    <li class="dropdown-item text-secondary">Given Rate ${shiftPerformance.given_rate ? '- '+ shiftPerformance.given_rate :'- no activity'}</li>
+                    <li class="dropdown-item text-secondary">Avg First Medication Time ${shiftPerformance.first_med_res ? '- '+ shiftPerformance.first_med_res :'- no activity'}</li>
+                    <li class="dropdown-item text-secondary">Avg First Vitalsigns Time ${isNumber(shiftPerformance.first_vitals_res) ? shiftPerformance.first_vitals_res+'%' :'- no activity'}</li>
+                    <li class="dropdown-item text-secondary">Avg Medication Giving Time ${shiftPerformance.medication_time ? '- '+ shiftPerformance.medication_time :'- no activity'}</li>
+                    <li class="dropdown-item text-secondary">Inpatient Vitalsigns Rate ${shiftPerformance.inpatient_vitals_count ? '- '+ shiftPerformance.inpatient_vitals_count :'- no activity'}</li>
+                    <li class="dropdown-item text-secondary">Outpatient Vitalsigns Rate ${shiftPerformance.outpatient_vitals_count ? '- '+ shiftPerformance.outpatient_vitals_count :'- no activity'}</li>
+                </ul>
+                `
             }
         })
         .catch((error) => {

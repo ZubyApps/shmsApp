@@ -96,12 +96,17 @@ window.addEventListener('DOMContentLoaded', function () {
     const upcomingNursingChartsTable    = getUpcomingNursingChartsTable('upcomingNursingChartsTable', nursingChartBtn, inpatientNursingBadgeSpan)
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #bulkRequestsTable, #emergencyTable, #nursesReportTable, #upcomingMedicationsTable, #upcomingNursingChartsTable, #waitingTable, #medicationsTable, #otherPrescriptionsTable, #ancVitalSignsTable, #vitalSignsTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
 
-    const shiftPerformance = getShiftPerformance('Nurse')
+    const shiftPerformance = () => {
+        getShiftPerformance('Nurse', shiftPerformanceDiv)
+    }
+
+    shiftPerformance()
 
     inPatientsTab.addEventListener('click', function() {
         inPatientsVisitTable.draw()
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
+        shiftPerformance()
     })
 
     outPatientsTab.addEventListener('click', function () {
@@ -112,6 +117,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
+        shiftPerformance()
     })
 
     ancPatientsTab.addEventListener('click', function () {
@@ -122,6 +128,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
+        shiftPerformance()
     })
 
     bulkRequestsTab.addEventListener('click', function () {
@@ -132,6 +139,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
+        shiftPerformance()
     })
 
     emergencyTab.addEventListener('click', function () {
@@ -142,6 +150,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
+        shiftPerformance()
     })
 
     waitingBtn.addEventListener('click', function () {
@@ -184,6 +193,7 @@ window.addEventListener('DOMContentLoaded', function () {
         ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
+        shiftPerformance()
     })
 
     document.querySelectorAll('#upcomingMedicationsoffcanvas, #upcomingNursingChartsoffcanvas').forEach(canvas => {
@@ -205,7 +215,7 @@ window.addEventListener('DOMContentLoaded', function () {
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             upcomingMedicationsTable.draw()
             upcomingNursingChartsTable.draw()
-            
+            shiftPerformance()
         })
     })
 
@@ -709,6 +719,7 @@ window.addEventListener('DOMContentLoaded', function () {
             medicationsTable ? medicationsTable.draw(false) : ''
             upcomingMedicationsTable.draw(false)
             upcomingNursingChartsTable.draw(false)
+            shiftPerformance()
         })
     })
 
@@ -724,6 +735,7 @@ window.addEventListener('DOMContentLoaded', function () {
             emergencyTable ? emergencyTable.draw(false) : ''
             upcomingMedicationsTable.draw()
             upcomingNursingChartsTable.draw()
+            shiftPerformance()
         })
     })
 
@@ -1096,7 +1108,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const treatmentTableId = saveMedicationChartBtn.getAttribute('data-table')
         const conId = saveMedicationChartBtn.getAttribute('data-consultation') == 'null' ? '' : saveMedicationChartBtn.getAttribute('data-consultation')
         const visitId = saveMedicationChartBtn.getAttribute('data-visit')
-        console.log(conId)
+
         saveMedicationChartBtn.setAttribute('disabled', 'disabled')
 
         let data = { ...getDivData(medicationChartDiv), prescriptionId, conId, visitId }

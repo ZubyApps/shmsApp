@@ -88,7 +88,7 @@ const getVerificationTable = (tableId) => {
             {data: row => 
                         `
                     <div class="d-flex flex-">
-                        <button class=" btn btn-outline-primary ${row.status == 'Verified' ? '' : 'verifyPatientBtn'} tooltip-test" title="${row.status ? row.status : 'verify'}" data-id="${ row.id }" data-patient="${ row.patient }" data-phone="${ row.phone }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-staffid="${ row.staffId }">
+                        <button class=" btn btn-outline-primary verifyPatientBtn tooltip-test" title="${row.status ? row.status : 'verify'}" data-id="${ row.id }" data-patient="${ row.patient }" data-phone="${ row.phone }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-staffid="${ row.staffId }" data-status="${ row.status }" data-codeText="${ row.codeText }">
                             ${row.status ? row.status : 'Verify'}
                         </button>
                     </div>

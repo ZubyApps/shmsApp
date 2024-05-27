@@ -23,7 +23,7 @@ class ShiftPerformanceController extends Controller
      */
     public function UpdateDeptPreformance(Request $request)
     {
-        return $this->shiftPerformanceService->update($request);
+        return $this->shiftPerformanceService->update();
     }
 
     /**

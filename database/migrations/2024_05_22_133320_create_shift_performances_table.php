@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('shift_performances', function (Blueprint $table) {
             $table->id();
-            $table->string('shift');
             $table->string('department');
+            $table->string('shift');
+            $table->dateTime('shift_start');
+            $table->dateTime('shift_end');
             $table->string('billing_res')->nullable();
             $table->string('inpatient_dispense_res')->nullable();
             $table->string('chart_rate')->nullable();
+            $table->string('given_rate')->nullable();
             $table->string('first_med_res')->nullable();
             $table->string('first_vitals_res')->nullable();
             $table->string('medication_time')->nullable();

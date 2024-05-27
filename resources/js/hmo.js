@@ -533,6 +533,8 @@ window.addEventListener('DOMContentLoaded', function () {
             verifyModal._element.querySelector('#sponsorName').value = verifyPatientBtn.getAttribute('data-sponsor') + ' - ' + verifyPatientBtn.getAttribute('data-sponsorcat')
             verifyModal._element.querySelector('#staffId').value = verifyPatientBtn.getAttribute('data-staffid')
             verifyModal._element.querySelector('#phoneNumber').value = verifyPatientBtn.getAttribute('data-phone')
+            verifyModal._element.querySelector('#status').value = verifyPatientBtn.getAttribute('data-status')
+            verifyModal._element.querySelector('#codeText').value = verifyPatientBtn.getAttribute('data-codeText')
             verifyModal.show()
         }
 
