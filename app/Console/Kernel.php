@@ -21,11 +21,11 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(new NursesMorningShift)->dailyAt('08:00');
         $schedule->call(new NursesAfternoonShift)->dailyAt('14:00');
-        $schedule->call(new NursesNightShift)->dailyAt('04:26');
+        $schedule->call(new NursesNightShift)->dailyAt('20:00');
 
-        // $schedule->call(function() {
-        //     Log::info("this scheduler is running");
-        // })->everyMinute();
+        $schedule->call(function() {
+            Log::info("this scheduler is running");
+        })->everyMinute();
     }
 
     /**
