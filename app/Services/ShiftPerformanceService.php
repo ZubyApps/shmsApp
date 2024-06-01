@@ -157,7 +157,7 @@ Class ShiftPerformanceService
                                 ->leftJoin('visits', 'visits.id', 'medication_charts.visit_id')
                                 ->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
                                 ->where('visits.admission_status', '!=', 'OutPatient')
-                                ->orWhere('visits.admission_status', null)
+                                // ->orWhere('visits.admission_status', null)
                                 ->get()->first()->averageMedicationTime;
 
         $averageMedicationTime = $medicatonsDueInShift ? ($averageMedicationTimes ? $averageMedicationTimes : null) : null;
