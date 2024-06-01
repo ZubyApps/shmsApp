@@ -6,6 +6,7 @@ namespace App\InvokableObjects;
 
 use App\Models\ShiftPerformance;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Log;
 
 class NursesAfternoonShift
 {
@@ -21,5 +22,7 @@ class NursesAfternoonShift
          'shift_start'  => $date->format('Y-m-d').' 14:00:01',
          'shift_end'    => $date->format('Y-m-d').' 20:00:00'
          ]);
+
+         Log::info('Afternoon Shift created');
    }
 }
