@@ -144,7 +144,7 @@
             <i class="bi bi-list-check"></i>
             Inpatients Nursing Chart <span class="badge text-bg-danger" id="inpatientNursingBadgeSpan"></span>
         </button>
-        <div class="text-end mb-4 d-none" id="shiftPerformanceDiv"></div>
+        <div class="text-end my-2" id="shiftPerformanceDiv"></div>
     </div>
 
     <div>

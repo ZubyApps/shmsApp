@@ -231,4 +231,9 @@ class Visit extends Model
         
         return $totalPayments;
     }
+
+    public function oldestVitalSign(): HasOne
+    {
+        return $this->hasOne(vitalSigns::class)->oldestOfMany();
+    }
 }

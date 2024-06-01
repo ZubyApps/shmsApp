@@ -7,8 +7,10 @@ namespace App\Services;
 use App\Models\MedicationChart;
 use App\Models\Prescription;
 use App\Models\ShiftPerformance;
+use App\Models\User;
 use App\Models\Visit;
 use Carbon\CarbonInterval;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 Class ShiftPerformanceService
@@ -23,39 +25,42 @@ Class ShiftPerformanceService
         
     }
 
-    public function create($department, $shift): ShiftPerformance
-    {
-       $shiftPerformance = $this->shiftPerformance->create([
-            'department'   => $department,
-            'shift'        => $shift,
-        ]);
-
-        return $shiftPerformance;
-    }
-
     public function update()
     {
-        $shiftPerformance = $this->shiftPerformance->where('department', 'Nurse')->where('is_closed', false)->orderBy('id', 'desc')->first();
-        
-        $shiftPerformance->update([
-                'chart_rate'                => $this->chartRate($shiftPerformance),
-                'given_rate'                => $this->givenRate($shiftPerformance),
-                'first_med_res'             => $this->firstMedicationResolution($shiftPerformance),
-                'first_vitals_res'          => $this->firstVitalsignsResolution($shiftPerformance),
-                'medication_time'           => $this->medicationTime($shiftPerformance),
-                'inpatient_vitals_count'    => $this->inpatientsVitalsignsCount($shiftPerformance),
-                'outpatient_vitals_count'   => $this->outpatientssVitalsignsCount($shiftPerformance),
-            ]);
+        return DB::transaction(function () {
+            $shiftPerformance = $this->shiftPerformance->where('department', 'Nurse')->where('is_closed', false)->orderBy('id', 'desc')->first();
+            $nursesOnDuty = User::whereRelation('designation', 'designation', 'Nurse')->where('is_active', true)->get();
+            $nurses = [];
+      
+            foreach($nursesOnDuty as $nurse){
+               $nurses[] = $nurse->username;
+            }
+            
+            if (!$shiftPerformance){
+                return;
+            }
 
             $shiftPerformance->update([
-                'performance'  => $this->getPerformance($shiftPerformance),
-            ]);
+                    'chart_rate'                => $this->chartRate($shiftPerformance),
+                    'given_rate'                => $this->givenRate($shiftPerformance),
+                    'first_med_res'             => $this->firstMedicationResolution($shiftPerformance),
+                    'first_vitals_res'          => $this->firstVitalsignsResolution($shiftPerformance),
+                    'medication_time'           => $this->medicationTime($shiftPerformance),
+                    'inpatient_vitals_count'    => $this->inpatientsVitalsignsCount($shiftPerformance),
+                    'outpatient_vitals_count'   => $this->outpatientssVitalsignsCount($shiftPerformance),
+                ]);
+    
+                $shiftPerformance->update([
+                    'performance'  => $this->getPerformance($shiftPerformance),
+                    'staff'        => $nurses
+                ]);
+    
+                $shiftPerformance->first_med_res    = $shiftPerformance->first_med_res ? CarbonInterval::seconds($shiftPerformance->first_med_res)->cascade()->forHumans() : null;
+                $shiftPerformance->first_vitals_res = $shiftPerformance->first_vitals_res ? CarbonInterval::seconds($shiftPerformance->first_vitals_res)->cascade()->forHumans() : null;
+                $shiftPerformance->medication_time  = $shiftPerformance->medication_time ? ($shiftPerformance->medication_time < 0 ? 'Many served before scheduled time': CarbonInterval::seconds($shiftPerformance->medication_time)->cascade()->forHumans()) : null;
 
-            $shiftPerformance->first_med_res    = CarbonInterval::seconds($shiftPerformance->first_med_res)->cascade()->forHumans();
-            $shiftPerformance->first_vitals_res = CarbonInterval::seconds($shiftPerformance->first_vitals_res)->cascade()->forHumans();
-            $shiftPerformance->medication_time  = CarbonInterval::seconds($shiftPerformance->medication_time)->cascade()->forHumans();
-
-        return response()->json(['shiftPerformance' => $shiftPerformance]);
+            return response()->json(['shiftPerformance' => $shiftPerformance]);
+        }, 2);
     }
 
     public function chartRate($shiftPerformance)
@@ -120,27 +125,8 @@ Class ShiftPerformanceService
                     ->where('prescriptions.held', null)
                     ->whereBetween('prescriptions.created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
                     ->get()->first()->averageFMRTime;
-
-        return $prescriptionsWithoutMc > 0 || $prescriptionsWitMc > 0 ? $averageFMRTime : null;     
-    }
-
-    public function firstChartResolution($shiftPerformance)
-    {
-        $prescriptionsWithoutMc = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->whereDoesntHave('medicationCharts')->count();
-
-        $prescriptionsWitMc = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->whereHas('medicationCharts')->count();
-
-        $averageFMRTime = DB::table('prescriptions')
-                    ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, prescriptions.created_at))) AS averageFMRTime')
-                    ->leftJoin('medication_charts', 'prescriptions.id', 'medication_charts.prescription_id')
-                    ->where('medication_charts.dose_count', 1)
-                    ->where('prescriptions.held', null)
-                    ->whereBetween('prescriptions.created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
-                    ->get()->first()->averageFMRTime;
-
-        $seconds = $averageFMRTime ? CarbonInterval::seconds($averageFMRTime)->cascade()->totalSeconds : $averageFMRTime;
         
-        return $prescriptionsWithoutMc > 0 || $prescriptionsWitMc > 0 ? ($seconds ? $this->secondsToPercent($seconds, 'FMR') : 0) : null;        
+        return $prescriptionsWithoutMc > 0 || $prescriptionsWitMc > 0 ? $averageFMRTime : null;     
     }
 
     public function firstVitalsignsResolution($shiftPerformance)
@@ -150,9 +136,7 @@ Class ShiftPerformanceService
         $visitsWithVs       = $this->visit->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->whereHas('vitalSigns')->count();
 
         $averageFVRTime = DB::table('visits')
-                    ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(vital_signs.created_at, visits.created_at))) AS averageFVRTime')
-                    ->leftJoin('vital_signs', 'visits.id', 'vital_signs.visit_id')
-                    ->oldest('vital_signs.created_at')
+                    ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(first_vitalsigns, created_at))) AS averageFVRTime')
                     ->whereBetween('visits.created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
                     ->get()->first()?->averageFVRTime;
 
@@ -168,15 +152,14 @@ Class ShiftPerformanceService
                                 ->count();
 
         $averageMedicationTimes = DB::table('medication_charts')
-                                ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, medication_charts.scheduled_time))) AS averageMedicationTime, visits.admission_status')
+                                ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, medication_charts.scheduled_time))) AS averageMedicationTime')
                                 ->leftJoin('visits', 'visits.id', 'medication_charts.visit_id')
                                 ->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
                                 ->where('visits.admission_status', '!=', 'OutPatient')
                                 ->orWhere('visits.admission_status', null)
-                                ->groupBy('visits.admission_status')
-                                ->get()->map?->averageMedicationTime;
+                                ->get()->first()->averageMedicationTime;
 
-        $averageMedicationTime = ($averageMedicationTimes->sum()/$averageMedicationTimes->count());
+        $averageMedicationTime = $medicatonsDueInShift ? ($averageMedicationTimes ? $averageMedicationTimes : null) : null;
 
         return $medicatonsDueInShift > 0 ? $averageMedicationTime : null;        
     }
@@ -262,9 +245,8 @@ Class ShiftPerformanceService
                             ($this->percentFromStringFraction($shiftPerformance->outpatient_vitals_count) / 100) * 20; 
                             $shiftPerformance->outpatient_vitals_count === null ? '' : $totalPoints++;
 
-
-        $preformance = ($convertChartRate + $convertGivenRate + $convertFirstMedRes + $convertFirstVitalsRes + $convertMedicationTime + $convertInPsVC + $convertOutPsVC)/($totalPoints*20) * 100;
-
+        $preformance = $totalPoints ? ($convertChartRate + $convertGivenRate + $convertFirstMedRes + $convertFirstVitalsRes + $convertMedicationTime + $convertInPsVC + $convertOutPsVC)/($totalPoints*20) * 100 : 0;
+            
         return round($preformance, 1);
     }
 

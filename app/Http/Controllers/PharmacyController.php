@@ -63,6 +63,16 @@ class PharmacyController extends Controller
        return $this->pharmacyService->dispense($request, $prescription, $request->user());
     }
 
+    public function holdPrescription(Request $request, Prescription $prescription)
+    {
+        $request->validate([
+                'reason' => ['nullable', 'string']
+        ]);
+        
+
+       return $this->pharmacyService->hold($request, $prescription, $request->user());
+    }
+
     public function dispenseComment(Request $request, Prescription $prescription)
     {
         return $this->pharmacyService->saveDispenseComment($request, $prescription);

@@ -300,8 +300,8 @@ const detailsBtn2 = (row) => {
 }
 
 const prescriptionStatusContorller = (row, tableId) => {
-    return `<span class="text-decoration-underline btn tootip-test ${row.doseComplete ? '' : 'discontinueBtn'}" title="${row.doseComplete ? 'completed' : 'discontinue'}" data-id="${row.id}"           data-table="${tableId}">
-                ${row.prescription == '' ? row.note ?? '' : row.prescription} 
+    return `<span class="text-decoration-underline btn tootip-test ${row.doseComplete ? '' : 'discontinueBtn'} position-relative" title="${row.doseComplete ? 'completed' : 'discontinue'}" data-id="${row.id}"           data-table="${tableId}">
+                ${row.prescription == '' ? row.note ?? '' : row.prescription}  ${row.held ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">${'held - '+ row.held}</span>` : ''}
             </span>`      
 }
 
@@ -669,7 +669,8 @@ const getShiftPerformance = (dept, div) => {
     http.get(`/shiftperformance/${dept}`)
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
-                const shiftPerformance   = response.data.shiftPerformance
+                const shiftPerformance  = response.data.shiftPerformance
+                const staff             = shiftPerformance.staff
                 div.innerHTML = `
                 <button type="button" id="newPatient" class="btn p-0 " data-bs-toggle="dropdown" aria-expanded="false">
                     <div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
@@ -680,10 +681,12 @@ const getShiftPerformance = (dept, div) => {
                     <li class="dropdown-item text-secondary">Chart Rate ${shiftPerformance.chart_rate ? '- '+ shiftPerformance.chart_rate :'- no activity'}</li>
                     <li class="dropdown-item text-secondary">Given Rate ${shiftPerformance.given_rate ? '- '+ shiftPerformance.given_rate :'- no activity'}</li>
                     <li class="dropdown-item text-secondary">Avg First Medication Time ${shiftPerformance.first_med_res ? '- '+ shiftPerformance.first_med_res :'- no activity'}</li>
-                    <li class="dropdown-item text-secondary">Avg First Vitalsigns Time ${isNumber(shiftPerformance.first_vitals_res) ? shiftPerformance.first_vitals_res+'%' :'- no activity'}</li>
+                    <li class="dropdown-item text-secondary">Avg First Vitalsigns Time ${shiftPerformance.first_vitals_res ?'- '+ shiftPerformance.first_vitals_res :'- no activity'}</li>
                     <li class="dropdown-item text-secondary">Avg Medication Giving Time ${shiftPerformance.medication_time ? '- '+ shiftPerformance.medication_time :'- no activity'}</li>
                     <li class="dropdown-item text-secondary">Inpatient Vitalsigns Rate ${shiftPerformance.inpatient_vitals_count ? '- '+ shiftPerformance.inpatient_vitals_count :'- no activity'}</li>
                     <li class="dropdown-item text-secondary">Outpatient Vitalsigns Rate ${shiftPerformance.outpatient_vitals_count ? '- '+ shiftPerformance.outpatient_vitals_count :'- no activity'}</li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="dropdown-item text-secondary">Nurses on Duty - ${staff.toString().replaceAll(',', ', ')}</li>
                 </ul>
                 `
             }

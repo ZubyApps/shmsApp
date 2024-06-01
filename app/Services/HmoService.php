@@ -106,11 +106,6 @@ class HmoService
         if (! empty($params->searchTerm)) {
             return $this->visit
                     ->where('consulted', '!=', null)
-                    // ->where(function (Builder $query) {
-                    //     $query->whereRelation('sponsor', 'category_name', 'HMO')
-                    //     ->orWhereRelation('sponsor', 'category_name', 'NHIS')
-                    //     ->orWhereRelation('sponsor', 'category_name', 'Retainership');
-                    // })
                     ->where(function (Builder $query) use($params) {
                         $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -236,25 +231,25 @@ class HmoService
 
             if (! empty($params->searchTerm)) {
                 return $this->prescription
-                            ->where(function (Builder $query) use($data) {
-                                $query->whereRelation('visit.sponsor.sponsorCategory', 'name', ($data->sponsor == 'NHIS' ? '' : 'HMO'))
-                                ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', ($data->sponsor == 'NHIS' ? 'NHIS' : ''))
-                                ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', ($data->sponsor == 'NHIS' ? '' : 'Retainership'));
-                            })
-                            ->where(function (Builder $query) use($params) {
-                                $query->whereRelation('visit.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('resource.resourceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('approvedBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
-                                ->orWhereRelation('rejectedBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%');
-                            })
-                            ->orderBy($orderBy, $orderDir)
-                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                    ->where(function (Builder $query) use($data) {
+                        $query->whereRelation('visit.sponsor.sponsorCategory', 'name', ($data->sponsor == 'NHIS' ? '' : 'HMO'))
+                        ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', ($data->sponsor == 'NHIS' ? 'NHIS' : ''))
+                        ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', ($data->sponsor == 'NHIS' ? '' : 'Retainership'));
+                    })
+                    ->where(function (Builder $query) use($params) {
+                        $query->whereRelation('visit.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('resource.resourceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('approvedBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
+                        ->orWhereRelation('rejectedBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%');
+                    })
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
             if ($data->sponsor == 'NHIS'){
@@ -727,7 +722,7 @@ class HmoService
                             ->where('sponsor_id', $data->sponsorId)
                             ->where('consulted', '!=', null)
                             ->where(function (Builder $query) use($params) {
-                                $query->where('icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
                                 ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -744,7 +739,7 @@ class HmoService
                     ->where('sponsor_id', $data->sponsorId)
                     ->where('consulted', '!=', null)
                     ->where(function (Builder $query) use($params) {
-                        $query->where('icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
                         ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -760,7 +755,7 @@ class HmoService
                             ->where('sponsor_id', $data->sponsorId)
                             ->where('consulted', '!=', null)
                             ->where(function (Builder $query) use($params) {
-                                $query->where('icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
                                 ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )

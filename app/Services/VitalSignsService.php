@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\VitalSigns;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class VitalSignsService
 {
@@ -16,26 +17,33 @@ class VitalSignsService
     {
     }
 
-    public function create(Request $data, User $user): VitalSigns
+    public function create(Request $data, User $user)
     {
+        return DB::transaction(function () use($data, $user) {
+            $vitalSign =  $user->vitalSigns()->create([
+                    "visit_id"              => $data->visitId,
+                    "temperature"           => $data->temperature,
+                    "blood_pressure"        => $data->bloodPressure,
+                    "respiratory_rate"      => $data->respiratoryRate,
+                    "spO2"                  => $data->spO2,
+                    "pulse_rate"            => $data->pulseRate,
+                    "weight"                => $data->weight,
+                    "height"                => $data->height,
+                    "bmi"                   => $data->bmi,
+                    "head_circumference"    => $data->headCircumference,
+                    "mid_arm_circumference" => $data->midArmCircuference,
+                    "fluid_drain"           => $data->fluidDrain,
+                    "urine_output"          => $data->urineOutput,
+                    "fetal_heart_rate"      => $data->fetalHr,
+                    "note"                  => $data->note,
+            ]);
 
-        return $user->vitalSigns()->create([
-                "visit_id"              => $data->visitId,
-                "temperature"           => $data->temperature,
-                "blood_pressure"        => $data->bloodPressure,
-                "respiratory_rate"      => $data->respiratoryRate,
-                "spO2"                  => $data->spO2,
-                "pulse_rate"            => $data->pulseRate,
-                "weight"                => $data->weight,
-                "height"                => $data->height,
-                "bmi"                   => $data->bmi,
-                "head_circumference"    => $data->headCircumference,
-                "mid_arm_circumference" => $data->midArmCircuference,
-                "fluid_drain"           => $data->fluidDrain,
-                "urine_output"          => $data->urineOutput,
-                "fetal_heart_rate"      => $data->fetalHr,
-                "note"                  => $data->note,
-        ]);
+            if ($vitalSign->visit->vitalSigns->count() == 1){
+                $vitalSign->visit->update(['first_vitalsigns' => Carbon::now()]);
+            }
+
+            return;
+    }, 2);
     }
 
     public function getPaginatedVitalSignsByVisit(DataTableQueryParams $params, $data)

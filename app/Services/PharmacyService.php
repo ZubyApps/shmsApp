@@ -55,12 +55,9 @@ class PharmacyService
         if ($data->filterBy == 'Outpatient'){
             return $this->visit
             ->where('consulted', '!=', null)
-            // ->where('closed', false)
             ->where('pharmacy_done_by', null)
             ->where(function (Builder $query) {
                 $query->whereHas('prescriptions', function(Builder $query){
-                    // $query->Where('qty_dispensed', '=', 0)
-                    // $query->WhereColumn('qty_billed', '>', 'qty_dispensed')
                     $query->where(function (Builder $query) {
                         $query->whereRelation('resource', 'category', '=', 'Medications')
                         ->orWhereRelation('resource', 'category', '=', 'Consumables');
@@ -77,22 +74,15 @@ class PharmacyService
         if ($data->filterBy == 'Inpatient'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    // ->where('closed', false)
                     ->where('pharmacy_done_by', null)
+                    ->where('admission_status', '!=', 'Outpatient')
                     ->whereHas('prescriptions', function(Builder $query){
-                        // $query->where('qty_dispensed', '=', 0)
-                        // ->orWhere('qty_dispensed', '<', 'qty_billed')
-                        // $query->WhereColumn('qty_billed', '>', 'qty_dispensed')
                         $query->where(function (Builder $query) {
                             $query->whereRelation('resource', 'category', '=', 'Medications')
-                            ->orWhereRelation('resource', 'category', '=', 'Consumables');
-        
+                            ->orWhereRelation('resource', 'category', '=', 'Consumables');  
                         });
                     })
-                    ->where(function (Builder $query) {
-                        $query->where('admission_status', '=', 'Inpatient')
-                        ->orWhere('admission_status', '=', 'Observation');
-                    })
+                    ->where('admission_status', '!=', 'Outpatient')
                     ->whereRelation('patient', 'patient_type', '!=', 'ANC')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -100,16 +90,11 @@ class PharmacyService
         if ($data->filterBy == 'ANC'){
             return $this->visit
                     ->where('consulted', '!=', null)
-                    // ->where('closed', false)
                     ->where('pharmacy_done_by', null)
                     ->whereHas('prescriptions', function(Builder $query){
-                        // $query->where('qty_dispensed', '=', 0)
-                        // ->orWhere('qty_dispensed', '<', 'qty_billed')
-                        // $query->WhereColumn('qty_billed', '>', 'qty_dispensed')
                         $query->where(function (Builder $query) {
                             $query->whereRelation('resource', 'category', '=', 'Medications')
-                            ->orWhereRelation('resource', 'category', '=', 'Consumables');
-        
+                            ->orWhereRelation('resource', 'category', '=', 'Consumables');     
                         });
                     })
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
@@ -120,7 +105,6 @@ class PharmacyService
         return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('pharmacy_done_by', null)
-                    // ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -239,10 +223,23 @@ class PharmacyService
                 return $prescription->visit->update([
                     'pharmacy_done_by' => $user->id
                 ]);
+            }  else {
+                return $prescription->visit->update([
+                    'pharmacy_done_by' => null
+                ]);
             }
 
             return $prescription;
         });
+    }
+
+    public function hold(Request $data, Prescription $prescription, User $user)
+    {
+        return $prescription->update([
+            'held' => $data->reason,
+            'held_at' => new Carbon(),
+            'held_by' => $user->id,
+        ]);
     }
 
     public function saveDispenseComment(Request $data, Prescription $prescription)
@@ -314,6 +311,7 @@ class PharmacyService
                     'qtyDispensed'      => $prescription->qty_dispensed,
                     'dispensedBy'       => $prescription->dispensedBy->username ?? '',
                     'dispensed'         => $prescription->dispense_date ? (new Carbon($prescription->dispense_date))->format('d/m/y g:ia') : '',
+                    'reason'            => $prescription->held ?? '',
                     'dispenseComment'   => $prescription->dispense_comment ?? '',
                     'note'              => $prescription->note ?? '',
                     'status'            => $prescription->status ?? '',

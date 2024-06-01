@@ -11,6 +11,8 @@ class NursesMorningShift
 {
    public function __invoke()
    {
+      (new CloseNursesShift)();
+      
       $date = CarbonImmutable::now();
 
       ShiftPerformance::create([

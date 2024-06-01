@@ -76,7 +76,7 @@ class PrescriptionService
             }
             return $prescription;
 
-        });
+        }, 2);
         
     }
 
@@ -237,6 +237,7 @@ class PrescriptionService
                 'prescribedFormatted'   => (new Carbon($prescription->created_at))->format('Y-m-d\TH:i'),
                 'qtyBilled'             => $prescription->qty_billed > 0 ? $prescription->qty_billed : '',
                 'qtyDispensed'          => $prescription->qty_dispensed,
+                'held'                  => $prescription->held,
                 'note'                  => $prescription->note,
                 'conId'                 => $prescription->consultation?->id,
                 'visitId'               => $prescription->visit->id,

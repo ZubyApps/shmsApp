@@ -86,6 +86,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                     <td class="text-secondary">Note</td>
                                                     ${credit ? '<td class="text-secondary">HMO Approval</td>' : ''}
                                                     <td class="text-secondary">Bill Qty</td>
+                                                    <td class="text-secondary"></td>
                                                     <td class="text-secondary">Comment</td>
                                                 </tr>
                                             </thead>
@@ -108,6 +109,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                     </div>
                                                 </td>
                                                 <td class="text-secondary"></td>
+                                                <td class="text-secondary"></td>
                                             </tr>
                                             <tr class="${p.qtyBilled ? '' : 'd-none'}">
                                                 <td class="text-secondary">Price: ${p.hmsBill ? p.price : ''}</td>
@@ -122,6 +124,21 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 </td>
                                                 <td class="text-secondary">By: ${p.dispensedBy}</td>
                                                 <td class="text-secondary">Time: ${p.dispensed}</td>
+                                                <td class="text-secondary"> 
+                                                    <div class="d-flex text-secondary ${p.qtyDispensed && !p.reason ? 'd-none' : ''}">
+                                                        <span class="${closed ? '' : 'holdSpan'} btn btn-${p.reason ? 'danger' : 'outline-primary'}" data-id="${p.id}">${p.reason ? p.reason : 'Hold'}</span>
+                                                
+                                                        <select class ="form-select form-select-md holdSpanSelect d-none">
+                                                            <option value="">Select Reason</option>
+                                                            <option value="Not Paid">Not Paid</option>
+                                                            <option value="No Cannulation">No Cannulation</option>
+                                                            <option value="Patient Absent">Patient Absent</option>
+                                                            <option value="Not Available">Not Available</option>
+                                                            <option value="Doctor's Orders">Doctor's Orders</option>
+                                                            <option value="Patient Declined">Patient Declined</option>
+                                                        </select>
+                                                    </div>
+                                                </td>
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary ${p.qtyBilled ? '' : 'd-none'}">
                                                         <span class="dispenseCommentSpan btn btn-${p.dispenseComment ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}">${p.dispenseComment ? p.dispenseComment : 'Comment'}</span>

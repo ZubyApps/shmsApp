@@ -2,11 +2,13 @@
 
 namespace App\Console;
 
+use App\InvokableObjects\CloseNursesShift;
 use App\InvokableObjects\NursesAfternoonShift;
 use App\InvokableObjects\NursesMorningShift;
 use App\InvokableObjects\NursesNightShift;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -17,9 +19,13 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
-        $schedule->call(new NursesMorningShift)->dailyAt('08:01');
-        $schedule->call(new NursesAfternoonShift)->dailyAt('14:01');
-        $schedule->call(new NursesNightShift)->dailyAt('20:01');
+        $schedule->call(new NursesMorningShift)->dailyAt('08:00');
+        $schedule->call(new NursesAfternoonShift)->dailyAt('14:00');
+        $schedule->call(new NursesNightShift)->dailyAt('04:26');
+
+        // $schedule->call(function() {
+        //     Log::info("this scheduler is running");
+        // })->everyMinute();
     }
 
     /**

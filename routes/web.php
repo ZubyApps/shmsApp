@@ -248,6 +248,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/load/consulted', [PharmacyController::class, 'loadVisitsByFilterPharmacy']);
             Route::patch('/bill/{prescription}', [PharmacyController::class, 'billPrescription']);
             Route::patch('/dispense/{prescription}', [PharmacyController::class, 'dispensePrescription']);
+            Route::patch('/hold/{prescription}', [PharmacyController::class, 'holdPrescription']);
             Route::patch('/dispense/comment/{prescription}', [PharmacyController::class, 'dispenseComment']);
             Route::get('/load/visit/prescriptions', [PharmacyController::class, 'loadVisitPrescriptions']);
             Route::get('/load/consultation/prescriptions', [PharmacyController::class, 'loadConsultationPrescriptions']);
