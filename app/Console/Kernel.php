@@ -19,17 +19,13 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
-        $schedule->call(new NursesMorningShift)->dailyAt('08:00');
-        $schedule->call(new NursesAfternoonShift)->dailyAt('14:00');
-        $schedule->call(new NursesNightShift)->dailyAt('20:00');
-
-        $schedule->call(function() {
-            Log::info("this scheduler is running");
-        })->everyMinute();//->daily('06:13')->timezone('Africa/Lagos');
+        $schedule->call(new NursesMorningShift)->timezone('Africa/Lagos')->dailyAt('08:00');
+        $schedule->call(new NursesAfternoonShift)->timezone('Africa/Lagos')->dailyAt('14:00');
+        $schedule->call(new NursesNightShift)->timezone('Africa/Lagos')->dailyAt('20:00');
 
         $schedule->call(function() {
             Log::info("this is the special schedule also");
-        })->timezone('Africa/Lagos')->dailyAt('06:34');
+        })->timezone('Africa/Lagos')->dailyAt('06:39');
     }
 
     /**
