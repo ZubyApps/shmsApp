@@ -28,8 +28,8 @@ class Kernel extends ConsoleKernel
         })->everyMinute();//->daily('06:13')->timezone('Africa/Lagos');
 
         $schedule->call(function() {
-            Log::info("this is the special schedule");
-        })->timezone('Africa/Lagos')->dailyAt('06:30');
+            Log::info("this is the special schedule also");
+        })->timezone('Africa/Lagos')->dailyAt('06:34');
     }
 
     /**
