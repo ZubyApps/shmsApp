@@ -10,6 +10,7 @@ use App\Models\ShiftPerformance;
 use App\Models\User;
 use App\Models\Visit;
 use Carbon\CarbonInterval;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -168,7 +169,7 @@ Class ShiftPerformanceService
     {
         $visitsCount = $this->visit
                 // ->whereNot('admission_status', 'Outpatient')
-                ->where(function (Builder $query) {
+                ->where(function (EloquentBuilder $query) {
                     $query->where('admission_status', '=', 'Inpatient')
                     ->orWhere('admission_status', '=', 'Observation');
                 })
@@ -177,7 +178,7 @@ Class ShiftPerformanceService
 
         $visitsVCount = $this->visit
                 // ->whereNot('admission_status', 'Outpatient')
-                ->where(function (Builder $query) {
+                ->where(function (EloquentBuilder $query) {
                     $query->where('admission_status', '=', 'Inpatient')
                     ->orWhere('admission_status', '=', 'Observation');
                 })
