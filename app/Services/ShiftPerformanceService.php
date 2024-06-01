@@ -168,7 +168,6 @@ Class ShiftPerformanceService
     public function inpatientsVitalsignsCount($shiftPerformance)
     {
         $visitsCount = $this->visit
-                // ->whereNot('admission_status', 'Outpatient')
                 ->where(function (EloquentBuilder $query) {
                     $query->where('admission_status', '=', 'Inpatient')
                     ->orWhere('admission_status', '=', 'Observation');
@@ -177,7 +176,6 @@ Class ShiftPerformanceService
                 ->count();
 
         $visitsVCount = $this->visit
-                // ->whereNot('admission_status', 'Outpatient')
                 ->where(function (EloquentBuilder $query) {
                     $query->where('admission_status', '=', 'Inpatient')
                     ->orWhere('admission_status', '=', 'Observation');

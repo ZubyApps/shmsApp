@@ -96,6 +96,7 @@
                         <option value="">All</option>
                         <option value="Outpatient">Outpatients</option>
                         <option value="Inpatient">Inpatients</option>
+                        <option value="Observation">Observation</option>
                         <option value="ANC">ANC</option>
                     </select>
                     <x-input-span class="">Start</x-input-span>
