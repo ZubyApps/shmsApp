@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(function() {
             Log::info("this scheduler is running");
-        })->everyMinute();
+        })->daily('05:15');
     }
 
     /**
