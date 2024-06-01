@@ -167,12 +167,20 @@ Class ShiftPerformanceService
     public function inpatientsVitalsignsCount($shiftPerformance)
     {
         $visitsCount = $this->visit
-                ->whereNot('admission_status', 'Outpatient')
+                // ->whereNot('admission_status', 'Outpatient')
+                ->where(function (Builder $query) {
+                    $query->where('admission_status', '=', 'Inpatient')
+                    ->orWhere('admission_status', '=', 'Observation');
+                })
                 ->where('doctor_done_by', null)
                 ->count();
 
         $visitsVCount = $this->visit
-                ->whereNot('admission_status', 'Outpatient')
+                // ->whereNot('admission_status', 'Outpatient')
+                ->where(function (Builder $query) {
+                    $query->where('admission_status', '=', 'Inpatient')
+                    ->orWhere('admission_status', '=', 'Observation');
+                })
                 ->where('doctor_done_by', '=', null)
                 ->whereHas('vitalSigns', function ($query) use ($shiftPerformance) {
                             $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
