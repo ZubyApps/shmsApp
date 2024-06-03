@@ -67,7 +67,6 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
     });
 
     function format(data, tableId) {
-        // `d` is the original data object for the row
         const credit = data.sponsorCategoryClass == 'Credit'
         const NHIS = data.sponsorCategory == 'NHIS'
         const prescriptions = data.prescriptions
@@ -84,7 +83,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                     <td class="text-secondary">Item</td>
                                                     <td class="text-secondary">Prescription</td>
                                                     <td class="text-secondary">Note</td>
-                                                    ${credit ? '<td class="text-secondary">HMO Approval</td>' : ''}
+                                                    ${credit || NHIS ? '<td class="text-secondary">HMO Approval</td>' : ''}
                                                     <td class="text-secondary">Bill Qty</td>
                                                     <td class="text-secondary"></td>
                                                     <td class="text-secondary">Comment</td>
@@ -101,7 +100,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold">${p.item +' '+ displayPaystatus(p, credit, NHIS)}</td>                
                                                 <td class="text-secondary">${p.prescription}</td>                
                                                 <td class="text-secondary">${p.note}</td>
-                                                ${credit ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>` : ''}
+                                                ${credit || NHIS ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>` : ''}
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
                                                         <span class="${p.qtyDispensed || closed ? '': 'billQtySpan'} btn btn-${p.qtyBilled ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}" data-stock="${p.stock}">${p.qtyBilled ? p.qtyBilled+' '+p.unit : 'Bill'}</span>

@@ -174,11 +174,11 @@ class AccountsReportService
         if (! empty($params->searchTerm)) {
             if ($data->startDate && $data->endDate){
                 return DB::table('expenses')
-                ->selectRaw('expense_categories.name AS eCategory, COUNT(expenses.id) as expenseCount, SUM(expenses.amount) as totalExpense')
+                ->selectRaw('expense_categories.name AS eCategory, expense_categories.id AS id, COUNT(expenses.id) as expenseCount, SUM(expenses.amount) as totalExpense')
                 ->leftJoin('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
                 ->whereBetween('expenses.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                 ->where('expense_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                ->groupBy('eCategory')
+                ->groupBy('eCategory', 'id')
                 ->orderBy('eCategory', 'desc')
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
@@ -199,22 +199,22 @@ class AccountsReportService
 
             
             return DB::table('expenses')
-            ->selectRaw('expense_categories.name AS eCategory, COUNT(expenses.id) as expenseCount, SUM(expenses.amount) as totalExpense')
+            ->selectRaw('expense_categories.name AS eCategory, expense_categories.id AS id, COUNT(expenses.id) as expenseCount, SUM(expenses.amount) as totalExpense')
             ->leftJoin('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
             ->whereMonth('expenses.created_at', $current->month)
             ->whereYear('expenses.created_at', $current->year)
             ->where('expense_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-            ->groupBy('eCategory')
+            ->groupBy('eCategory', 'id')
             ->orderBy('eCategory', 'desc')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         if ($data->startDate && $data->endDate){
             return DB::table('expenses')
-            ->selectRaw('expense_categories.name AS eCategory, COUNT(expenses.id) as expenseCount, SUM(expenses.amount) as totalExpense')
+            ->selectRaw('expense_categories.name AS eCategory, expense_categories.id AS id, COUNT(expenses.id) as expenseCount, SUM(expenses.amount) as totalExpense')
                 ->leftJoin('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
                 ->whereBetween('expenses.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                ->groupBy('eCategory')
+                ->groupBy('eCategory', 'id')
                 ->orderBy('eCategory', 'desc')
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }

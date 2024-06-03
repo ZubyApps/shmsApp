@@ -146,6 +146,17 @@ class HospitalAndOthersReportService
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
+        if($data->date){
+            $date = new Carbon($data->date);
+
+            return $this->prescription
+                ->whereRelation('resource', 'id', '=', $data->resourceId)
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
         
         return $this->prescription
                 ->whereRelation('resource', 'id', '=', $data->resourceId)

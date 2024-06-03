@@ -22,6 +22,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     searchWithDatesBtn.addEventListener('click', function () {
+        datesDiv.querySelector('#hospitalAndOthersMonth').value = ''
         if ($.fn.DataTable.isDataTable( '#summaryTable' )){
             $('#summaryTable').dataTable().fnDestroy()
         }
@@ -29,6 +30,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     searchHospitalAndOthersByMonthBtn.addEventListener('click', function () {
+        datesDiv.querySelector('#startDate').value = ''; datesDiv.querySelector('#endDate').value = ''
         if ($.fn.DataTable.isDataTable( '#summaryTable' )){
             $('#summaryTable').dataTable().fnDestroy()
         }
@@ -39,7 +41,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const showPatientsBtn    = event.target.closest('.showPatientsBtn')
         const from               = datesDiv.querySelector('#startDate').value
         const to                 = datesDiv.querySelector('#endDate').value
-        const date                 = datesDiv.querySelector('#hospitalAndOthersMonth').value
+        const date               = datesDiv.querySelector('#hospitalAndOthersMonth').value
 
         if (showPatientsBtn){
             const id = showPatientsBtn.getAttribute('data-id')

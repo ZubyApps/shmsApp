@@ -306,6 +306,7 @@ window.addEventListener('DOMContentLoaded', function () {
             byExpenseCategoryModal._element.querySelector('#expenseCategory').value = showExpensesBtn.getAttribute('data-expensecategory')
 
             if (expensesDate){
+                console.log(id)
                 byExpenseCategoryModal._element.querySelector('#expenseMonth').value = expensesDate
                 byExpenseCategoryTable = getExpensesTable('byExpenseCategoryTable', 'byExpenseCategory', id, byExpenseCategoryModal, null, null, expensesDate)
                 byExpenseCategoryModal.show()
@@ -313,8 +314,10 @@ window.addEventListener('DOMContentLoaded', function () {
             }
 
             if(expensesFrom && expensesTo){
+                console.log(id, showExpensesBtn)
                 byExpenseCategoryModal._element.querySelector('#from').value = expensesFrom
                 byExpenseCategoryModal._element.querySelector('#to').value = expensesTo
+                byExpenseCategoryModal._element.querySelector('#expenseMonth').value = ''
                 byExpenseCategoryTable = getExpensesTable('byExpenseCategoryTable', 'byExpenseCategory', id, byExpenseCategoryModal, expensesFrom, expensesTo)
                 byExpenseCategoryModal.show()
                 return

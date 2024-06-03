@@ -219,7 +219,17 @@ class PharmacyService
                 'dispensed_by'      => $user->id
             ]);
 
-            if ($prescription->qty_billed == $prescription->qty_dispensed){
+            // if ($prescription->qty_billed == $prescription->qty_dispensed){
+            //     return $prescription->visit->update([
+            //         'pharmacy_done_by' => $user->id
+            //     ]);
+            // }  else {
+            //     return $prescription->visit->update([
+            //         'pharmacy_done_by' => null
+            //     ]);
+            // }
+            
+            if ($prescription->visit->prescriptions->sum('qty_billed') == $prescription->visit->prescriptions->sum('qty_dispensed')){
                 return $prescription->visit->update([
                     'pharmacy_done_by' => $user->id
                 ]);

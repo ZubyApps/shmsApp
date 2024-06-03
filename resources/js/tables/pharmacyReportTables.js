@@ -114,8 +114,8 @@ const getMissingPharmacySummaryTable = (tableId, startDate, endDate, date) => {
             {data: "quantity"},
             {data: "finalQuantity"},
             {data: "diff"},
-            {data: "diffPurchase"},
-            {data: "diffSelling"},
+            {data: row => account.format(row.diffPurchase)},
+            {data: row => account.format(row.diffSelling)},
         ]
     })
 
