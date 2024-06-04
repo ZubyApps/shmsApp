@@ -267,7 +267,7 @@ Class ShiftPerformanceService
     public function getShiftPerformance(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
-        $orderDir   =  'asc';
+        $orderDir   =  'desc';
         return $this->shiftPerformance
                     ->where('department', $data->department)
                     ->orderBy($orderBy, $orderDir)
