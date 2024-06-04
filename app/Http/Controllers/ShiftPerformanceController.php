@@ -29,9 +29,15 @@ class ShiftPerformanceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ShiftPerformance $shiftPerformance)
+    public function loadShiftPerformanceTable(Request $request)
     {
-        //
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $nursesShiftPerformance = $this->shiftPerformanceService->getShiftPerformance($params, $request);
+       
+        $loadTransformer = $this->shiftPerformanceService->getNursesShiftPerformanceTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $nursesShiftPerformance, $params);
     }
 
     /**

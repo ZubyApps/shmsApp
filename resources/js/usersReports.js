@@ -1,6 +1,6 @@
 import {Modal } from "bootstrap";
 import $ from 'jquery';
-import { getBillOfficersActivityTable, getDoctorsActivityTable, getHmoOfficersActivityTable, getLabTechActivityTable, getNursesActivityTable, getPharmacyTechActivityTable } from "./tables/usersReportTables";
+import { getBillOfficersActivityTable, getDoctorsActivityTable, getHmoOfficersActivityTable, getLabTechActivityTable, getNursesActivityTable, getNursesShiftPerformanceTable, getPharmacyTechActivityTable } from "./tables/usersReportTables";
 
 window.addEventListener('DOMContentLoaded', function () {
     const doctorsDatesDiv           = document.querySelector('.doctorsDatesDiv')
@@ -16,6 +16,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const pharmacyTechsActivityTab  = document.querySelector('#nav-pharmacyTechsActivity-tab')
     const hmoOfficersActivityTab    = document.querySelector('#nav-hmoOfficersActivity-tab')
     const billOfficersActivityTab   = document.querySelector('#nav-billOfficersActivity-tab')
+    const nursesShiftPerfomanceTab  = document.querySelector('#nav-nursesShiftPerfomance-tab')
 
     const searchDoctorsWithDatesBtn = document.querySelector('.searchDoctorsWithDatesBtn')
     const searchDoctorsByMonthBtn   = document.querySelector('.searchDoctorsByMonthBtn')
@@ -35,7 +36,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const searchBillOfficersWithDatesBtn  = document.querySelector('.searchBillOfficersWithDatesBtn')
     const searchBillOfficersByMonthBtn    = document.querySelector('.searchBillOfficersByMonthBtn')
 
-    let doctorsActivityTable, nursesActivityTable, labTechActivityTable, pharmacyTechsActivityTable, hmoOfficersActivityTable, billOfficersActivityTable
+    let doctorsActivityTable, nursesActivityTable, labTechActivityTable, pharmacyTechsActivityTable, hmoOfficersActivityTable, billOfficersActivityTable, nursesShiftPerfomanceTable
     doctorsActivityTable = getDoctorsActivityTable('doctorsActivityTable', 'Doctor')
     doctorsDatesDiv.querySelector('#doctorsActivityMonth').value = new Date().toISOString().slice(0,7)
 
@@ -85,6 +86,14 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#billOfficersActivityTable').dataTable().fnDraw()
         } else {
             billOfficersActivityTable = getBillOfficersActivityTable('billOfficersActivityTable', 'Bill Officer')
+        }
+    })
+
+    nursesShiftPerfomanceTab.addEventListener('click', function() {
+        if ($.fn.DataTable.isDataTable( '#nursesShiftPerfomanceTable' )){
+            $('#nursesShiftPerfomanceTable').dataTable().fnDraw()
+        } else {
+            nursesShiftPerfomanceTable = getNursesShiftPerformanceTable('nursesShiftPerfomanceTable', 'Nurse')
         }
     })
 
@@ -189,4 +198,21 @@ window.addEventListener('DOMContentLoaded', function () {
         }
         billOfficersActivityTable = getBillOfficersActivityTable('billOfficersActivityTable', 'Bill Officer', null, null, billOfficersDatesDiv.querySelector('#billOffersActivityMonth').value)
     })
+
+    // //nurses shift performance
+    // searchBillOfficersWithDatesBtn.addEventListener('click', function () {
+    // //     billOfficersDatesDiv.querySelector('#billOffersActivityMonth').value = ''
+    //     if ($.fn.DataTable.isDataTable( '#nursesShiftPerfomanceTable' )){
+    //         $('#nursesShiftPerfomanceTable').dataTable().fnDestroy()
+    //     }
+    //     nursesShiftPerfomanceTable = getNursesShiftPerformanceTable('nursesShiftPerfomanceTable', 'Nurse')
+    // })
+
+    // searchBillOfficersByMonthBtn.addEventListener('click', function () {
+    //     billOfficersDatesDiv.querySelector('#startDate').value = ''; billOfficersDatesDiv.querySelector('#endDate').value = ''
+    //     if ($.fn.DataTable.isDataTable( '#billOfficersActivityTable' )){
+    //         $('#billOfficersActivityTable').dataTable().fnDestroy()
+    //     }
+    //     billOfficersActivityTable = getBillOfficersActivityTable('billOfficersActivityTable', 'Bill Officer', null, null, billOfficersDatesDiv.querySelector('#billOffersActivityMonth').value)
+    // })
 })

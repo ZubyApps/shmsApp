@@ -233,4 +233,73 @@ const getBillOfficersActivityTable = (tableId, designation, startDate, endDate, 
     return billOfficersActivityTable
 }
 
-export {getDoctorsActivityTable, getNursesActivityTable, getLabTechActivityTable, getPharmacyTechActivityTable, getHmoOfficersActivityTable, getBillOfficersActivityTable}
+const getNursesShiftPerformanceTable = (tableId, department) => {
+    const billOfficersActivityTable = new DataTable(`#${tableId}`, {
+        serverSide: true,
+        ajax:  {url: '/shiftperformance/load', data: {
+            'department' : department, 
+            }
+        },
+        orderMulti: true,
+        search:true,
+        lengthMenu:[20, 40, 80, 120, 200],
+        dom: 'l<"my-1 text-center "B>frtip',
+        buttons: [
+            {
+                extend:'colvis',
+                text:'Show/Hide',
+                className:'btn btn-primary'       
+            },
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+        ],
+        // drawCallback: function (settings) {
+        //     var api = this.api()
+        //     $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
+        //     $( api.column(3).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
+        //     $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
+        //     $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
+        //     $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
+        //     $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
+        // },
+        columns: [
+            {data: "shift"},
+            {data: row => row.start + ' - ' + row.end},
+            {
+                visible: false,
+                data: "chartRate"},
+            {
+                visible: false,
+                data: "givenRate"},
+            {
+                visible: false,
+                data: "firstMedRes"},
+            {
+                visible: false,
+                data: "firstVitalsRes"},
+            {
+                visible: false,
+                data: "medicationTime"},
+            {
+                visible: false,
+                data: "intpatientVitalsCount"},
+            {
+                visible: false,
+                data: "outpatientVitalsCount"},
+            {data: "staff"},
+            {data: row => `<button type="button" id="newPatient" class="btn p-0 " data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
+            <div class="progress-bar text-dark fw-semibold fs-6 overflow-visible bg-${row.performance <= 50 ? 'danger' : row.performance > 50 && row.performance < 70 ? 'warning' : row.performance >= 70 && row.performance <= 95 ? 'primary' : 'success'}-subtle px-1" style="width: ${row.performance}%;"> Performance ${row.performance}% </div>
+            </div>
+        </button>`},
+            {data: row => row.performance > 85 ? 'Yes' : 'No'},
+        ]
+    })
+
+    return billOfficersActivityTable
+}
+
+export {getDoctorsActivityTable, getNursesActivityTable, getLabTechActivityTable, getPharmacyTechActivityTable, getHmoOfficersActivityTable, getBillOfficersActivityTable, getNursesShiftPerformanceTable}

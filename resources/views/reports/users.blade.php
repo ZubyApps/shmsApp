@@ -29,6 +29,9 @@
                 <button class="nav-link"  id="nav-billOfficersActivity-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-billOfficersActivity" type="button" role="tab" aria-controls="nav-billOfficersActivity"
                     aria-selected="true">Bill Officers</button>
+                <button class="nav-link"  id="nav-nursesShiftPerfomance-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-nursesShiftPerfomance" type="button" role="tab" aria-controls="nav-nursesShiftPerfomance"
+                    aria-selected="true">Nurses Perfomance</button>
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
@@ -283,6 +286,58 @@
                         <tfoot class="fw-bolder">
                             <tr>
                                 <td class="text-center">Total</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <!-- Nurses Shift Perfomance table -->
+            <div class="tab-pane fade" id="nav-nursesShiftPerfomance" role="tabpanel" aria-labelledby="nav-nursesShiftPerfomance-tab" tabindex="0">
+                <div class="">
+                    <h5 class="card-title py-4">Nurses Shift Perfomance</h5>
+                    {{-- <x-form-div class="col-xl-8 py-3 billOfficersDatesDiv">
+                        <x-input-span class="">Start</x-input-span>
+                        <x-form-input type="date" name="startDate" id="startDate" />
+                        <x-input-span class="">End</x-input-span>
+                        <x-form-input type="date" name="endDate" id="endDate" />
+                        <button class="input-group-text searchBillOfficersWithDatesBtn">Search</button>
+                        <x-input-span class="">OR</x-input-span>
+                        <x-input-span class="">Month/Year</x-input-span>
+                        <x-form-input type="month" name="billOffersActivityMonth" id="billOffersActivityMonth" />
+                        <button class="input-group-text searchBillOfficersByMonthBtn">Search</button>
+                    </x-form-div> --}}
+                    <table  id="nursesShiftPerfomanceTable" class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Shift</th>
+                                <th>Duration</th>
+                                <th>Chart Rate</th>
+                                <th>Given Rate</th>
+                                <th>1st Med Avg</th>
+                                <th>1st Vitals Avg</th>
+                                <th>Med Time</th>
+                                <th>Intpatient Vitals Count</th>
+                                <th>Outpatient Vitals Count</th>
+                                <th>Nurses</th>
+                                <th>Performance</th>
+                                <th>Bonus</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot class="fw-bolder">
+                            <tr>
+                                <td class="text-center">Total</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

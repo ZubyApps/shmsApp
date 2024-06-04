@@ -4,11 +4,13 @@ declare(strict_types = 1);
 
 namespace App\Services;
 
+use App\DataObjects\DataTableQueryParams;
 use App\Models\MedicationChart;
 use App\Models\Prescription;
 use App\Models\ShiftPerformance;
 use App\Models\User;
 use App\Models\Visit;
+use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
@@ -262,12 +264,35 @@ Class ShiftPerformanceService
         return round($exploded[0] / $exploded[1] * 100, 1);
     }
 
-    public function getShiftPerformance($department)
+    public function getShiftPerformance(DataTableQueryParams $params, $data)
     {
+        $orderBy    = 'created_at';
+        $orderDir   =  'asc';
         return $this->shiftPerformance
-                    ->where('department', $department)
-                    ->where('is_closed', false)
-                    ->get()->first()?->performance;
+                    ->where('department', $data->department)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
 
+    public function getNursesShiftPerformanceTransformer(): callable
+    {
+       return  function (ShiftPerformance $shiftPerformance) {
+            return [
+                'department'            => $shiftPerformance->department,
+                'shift'                 => $shiftPerformance->shift,
+                'start'                 => (new Carbon($shiftPerformance->shift_start))->format('d/M/y g:ia'),
+                'end'                   => (new Carbon($shiftPerformance->shift_end))->format('d/M/y g:ia'),
+                'chartRate'             => $shiftPerformance->chart_rate,
+                'givenRate'             => $shiftPerformance->given_rate,
+                'firstMedRes'           => $shiftPerformance->first_med_res,
+                'firstVitalsRes'        => $shiftPerformance->first_vitals_res,
+                'medicationTime'        => $shiftPerformance->medication_time,
+                'intpatientVitalsCount' => $shiftPerformance->inpatient_vitals_count,
+                'outpatientVitalsCount' => $shiftPerformance->outpatient_vitals_count,
+                'performance'           => $shiftPerformance->performance,
+                'staff'                 => $shiftPerformance->staff,
+                'closed'                => $shiftPerformance->is_closed,
+            ];
+       };
     }
 }
