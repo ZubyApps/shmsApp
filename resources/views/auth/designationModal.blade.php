@@ -16,6 +16,7 @@
                         <x-input-span>Designation<x-required-span /></x-input-span>
                         <select class="form-select form-select-md" name="designation" id="designation">
                             <option value="">Select</option>
+                            <option value="None">None</option>
                             <option value="Doctor">Doctor</option>
                             <option value="Nurse">Nurse</option>
                             <option value="Lab Tech">Lab Tech</option>
