@@ -295,7 +295,7 @@ const getNursesShiftPerformanceTable = (tableId, department) => {
             <div class="progress-bar text-dark fw-semibold fs-6 overflow-visible bg-${row.performance <= 45 ? 'danger' : row.performance > 45 && row.performance < 65 ? 'warning' : row.performance >= 65 && row.performance < 85 ? 'primary' : 'success'}-subtle px-1" style="width: ${row.performance}%;"> Performance ${row.performance}% </div>
             </div>
         </button>`},
-            {data: row => row.performance > 85 ? 'Yes' : 'No'},
+            {data: row => row.performance >= 85 ? 'Yes' : 'No'},
         ]
     })
 
