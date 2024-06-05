@@ -663,7 +663,7 @@ const populateAncReviewDiv = (div, conbtn) => {
     div.querySelector('#admit').setAttribute('data-admissionstatus', conbtn.getAttribute('data-admissionstatus'))
     div.querySelector('#selectedDiagnosis').value = conbtn.getAttribute('data-selecteddiagnosis')
     div.querySelector('#provisionalDiagnosis').value = conbtn.getAttribute('data-provisionaldiagnosis')
-}
+} 
 
 const getShiftPerformance = (dept, div) => {
     http.get(`/shiftperformance/${dept}`)
@@ -672,9 +672,9 @@ const getShiftPerformance = (dept, div) => {
                 const shiftPerformance  = response.data.shiftPerformance
                 const staff             = shiftPerformance.staff
                 div.innerHTML = `
-                <button type="button" id="newPatient" class="btn p-0 " data-bs-toggle="dropdown" aria-expanded="false">
+                <button type="button" id="newPatient" class="btn p-0 position-relative" data-bs-toggle="dropdown" aria-expanded="false">
                     <div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
-                    <div class="progress-bar text-dark fw-semibold fs-6 overflow-visible bg-${shiftPerformance.performance <= 50 ? 'danger' : shiftPerformance.performance > 50 && shiftPerformance.performance < 70 ? 'warning' : shiftPerformance.performance >= 70 && shiftPerformance.performance <= 95 ? 'primary' : 'success'}-subtle px-1" style="width: ${shiftPerformance.performance}%;"> ${shiftPerformance.shift} Performance ${shiftPerformance.performance}% </div>
+                    <div class="progress-bar text-dark fw-semibold fs-6 overflow-visible bg-${shiftPerformance.performance <= 50 ? 'danger' : shiftPerformance.performance > 50 && shiftPerformance.performance < 70 ? 'warning' : shiftPerformance.performance >= 70 && shiftPerformance.performance <= 95 ? 'primary' : 'success'}-subtle px-1" style="width: ${shiftPerformance.performance}%;"> ${shiftPerformance.shift} Performance ${shiftPerformance.performance}% <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="timeLeft">${getTimeToEndOfShift(shiftPerformance.shift_end)}</span></div>
                     </div>
                 </button>
                 <ul class="dropdown-menu">
@@ -696,4 +696,31 @@ const getShiftPerformance = (dept, div) => {
         })
 }
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance}
+const getTimeToEndOfShift = (shiftEnd) => {
+    const shiftTimeLeft = getMinsDiff(new Date(), new Date(shiftEnd))
+
+    let setInt
+
+    if (shiftTimeLeft <= 30 && shiftTimeLeft >= 0){
+        setInt = setInterval(function () {
+            
+            const shiftTimeLeftNow = new Date(shiftEnd).getTime() - new Date().getTime()
+            
+            let mins = Math.floor((shiftTimeLeftNow % (1000 * 60 * 60)) / (1000 * 60))
+            let secs = Math.floor((shiftTimeLeftNow % (1000 * 60)) / 1000)
+            
+            if (shiftTimeLeftNow > 0 ){
+                document.getElementById("timeLeft").innerHTML = mins + ' mins ' + secs + ' secs' + ' left';
+            } else {
+                document.getElementById("timeLeft").innerHTML
+            }
+
+        }, 1000)
+    } else {
+        clearInterval(setInt)
+    }
+
+    return ''
+}
+
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift}
