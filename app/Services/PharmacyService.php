@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PharmacyService
 {
@@ -161,11 +162,15 @@ class PharmacyService
     public function bill(Request $data, Prescription $prescription, User $user)
     {
         return DB::transaction(function () use($data, $prescription, $user) {
-            $bill = 0;
+            $visit    = $prescription->visit;
+            $bill     = 0;
+
             $nhisBill = fn($value)=>$value/10;
+
             if ($data->quantity){
                 $bill = $prescription->resource->selling_price * $data->quantity;
             }
+
             $prescription->update([
                 'qty_billed'        => $data->quantity ?? 0,
                 'hms_bill'          => $bill,
@@ -173,20 +178,20 @@ class PharmacyService
                 'hms_bill_by'       => $bill ? $user->id : null,
             ]);
 
-            $isNhis = $prescription->visit->sponsor->category_name == 'NHIS';
+            $isNhis = $visit->sponsor->category_name == 'NHIS';
 
             $isNhis && $bill ? $prescription->update(['nhis_bill' => $nhisBill($bill)]) : '';
 
             $prescription->visit->update([
-                'total_hms_bill'    => $prescription->visit->totalHmsBills(),
-                'total_nhis_bill'   => $isNhis ? $prescription->visit->totalNhisBills() : 0,
-                'total_capitation'  => $isNhis ? $prescription->visit->totalPrescriptionCapitations() : 0
+                'total_hms_bill'    => $visit->totalHmsBills(),
+                'total_nhis_bill'   => $isNhis ? $visit->totalNhisBills() : 0,
+                'total_capitation'  => $isNhis ? $visit->totalPrescriptionCapitations() : 0
             ]);
  
             if ($isNhis){
-                $this->paymentService->prescriptionsPaymentSeiveNhis($prescription->visit->totalPayments(), $prescription->visit->prescriptions);
+                $this->paymentService->prescriptionsPaymentSeiveNhis($visit->totalPayments(), $visit->prescriptions);
             } else {
-                $this->paymentService->prescriptionsPaymentSeive($prescription->visit->totalPayments(), $prescription->visit->prescriptions);
+                $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit->prescriptions);
             }
         });
     }
@@ -194,8 +199,9 @@ class PharmacyService
     public function dispense(Request $data, Prescription $prescription, User $user)
     {
         return DB::transaction(function () use($data, $prescription, $user) {
-            $resource = $prescription->resource;
-            $qtyDispensed = $prescription->qty_dispensed;
+            $resource       = $prescription->resource;
+            $qtyDispensed   = $prescription->qty_dispensed;
+            $visit          = $prescription->visit;
 
             if ($data->quantity){
                 if ($qtyDispensed){
@@ -219,15 +225,17 @@ class PharmacyService
                 'dispensed_by'      => $user->id
             ]);
 
-            if ($prescription->visit->prescriptions->sum('qty_billed') == $prescription->visit->prescriptions->sum('qty_dispensed')){
-                $prescription->visit->update([
+            if ($visit->prescriptions()->sum('qty_billed') == $visit->prescriptions()->sum('qty_dispensed')){
+                $visit->update([
                     'pharmacy_done_by' => $user->id
                 ]);
             }  else {
-                $prescription->visit->update([
+                $visit->update([
                     'pharmacy_done_by' => null
                 ]);
             }
+
+            Log::info($visit->prescriptions()->sum('qty_billed'), $visit->prescriptions()->sum('qty_dispensed'));
 
             return $prescription;
         });

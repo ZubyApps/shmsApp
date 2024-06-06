@@ -28,17 +28,19 @@ Class PaymentService
                 'visit_id'      => $data->visitId,
             ]);
 
-            $totalPayments = $payment->visit->totalPayments();
+            $visit = $payment->visit;
 
-            $payment->visit->update([
+            $totalPayments = $visit->totalPayments();
+
+            $visit->update([
                 'total_paid'        => $totalPayments,
-                'total_hms_bill'    => $payment->visit->totalHmsBills(),
-                'total_nhis_bill'   => $payment->visit->sponsor->category_name == 'NHIS' ? $payment->visit->totalNhisBills() : 0,
+                'total_hms_bill'    => $visit->totalHmsBills(),
+                'total_nhis_bill'   => $visit->sponsor->category_name == 'NHIS' ? $visit->totalNhisBills() : 0,
             ]);
 
-            $prescriptions = $payment->visit->prescriptions;
+            $prescriptions = $visit->prescriptions;
 
-            if ($payment->visit->sponsor->sponsorCategory->name == 'NHIS'){
+            if ($visit->sponsor->sponsorCategory->name == 'NHIS'){
                 $this->prescriptionsPaymentSeiveNhis($totalPayments, $prescriptions);
             } else {
                 $this->prescriptionsPaymentSeive($totalPayments, $prescriptions);

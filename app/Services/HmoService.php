@@ -25,7 +25,8 @@ class HmoService
         private readonly Visit $visit, 
         private readonly Prescription $prescription,
         private readonly PayPercentageService $payPercentageService,
-        private readonly Sponsor $sponsor
+        private readonly Sponsor $sponsor,
+        private readonly PaymentService $paymentService,
         )
     {
         
@@ -309,17 +310,29 @@ class HmoService
         if ($prescription->approved == true || $prescription->rejected == true){
             return response('Already treated by ' . $prescription->approvedBy->username ?? $prescription->rejectedBy->username, 222);
         }
-        
-        $prescription->update([
-            'approved'         => true,
-            'hmo_note'          => $data->note,
-            'approved_by'      => $user->id,
-        ]);
 
+        return DB::transaction(function () use($data, $prescription, $user) {
 
-        return $prescription->visit->update([
-            'total_nhis_bill'   => $prescription->visit->sponsor->category_name == 'NHIS' ? $prescription->visit->totalNhisBills() : 0
-        ]);
+            $prescription->update([
+                'approved'         => true,
+                'hmo_note'         => $data->note,
+                'approved_by'      => $user->id,
+            ]);
+
+            $visit  = $prescription->visit;
+
+            $isNhis = $visit->sponsor->category_name == 'NHIS';
+
+            if ($isNhis){
+                $this->paymentService->prescriptionsPaymentSeiveNhis($visit->totalPayments(), $visit->prescriptions);
+            } else {
+                $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit->prescriptions);
+            }
+
+            return $visit->update([
+                'total_nhis_bill'   => $visit->sponsor->category_name == 'NHIS' ? $visit->totalNhisBills() : 0
+            ]);
+        });
     }
 
     public function reject($data, Prescription $prescription, User $user)
@@ -327,28 +340,62 @@ class HmoService
         if ($prescription->approved == true || $prescription->rejected == true){
             return response('Already treated by ' . $prescription->rejectedBy->username ??  $prescription->approvedBy->username, 222);
         }
-        return  $prescription->update([
-            'rejected'          => true,
-            'hmo_note'          => $data->note,
-            'rejected_by'       => $user->id,
-        ]);
+
+        return DB::transaction(function () use($data, $prescription, $user) {
+
+            $prescription->update([
+                'rejected'          => true,
+                'hmo_note'          => $data->note,
+                'rejected_by'       => $user->id,
+            ]);
+
+            $visit  = $prescription->visit;
+
+            $isNhis = $visit->sponsor->category_name == 'NHIS';
+
+            if ($isNhis){
+                $this->paymentService->prescriptionsPaymentSeiveNhis($visit->totalPayments(), $visit->prescriptions);
+            } else {
+                $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit->prescriptions);
+            }
+
+            return $visit->update([
+                'total_hms_bill'    => $prescription->visit->totalHmsBills(),
+                'total_nhis_bill'   => $prescription->visit->sponsor->category_name == 'NHIS' ? $prescription->visit->totalNhisBills() : 0,
+            ]);
+        });
+
     }
 
     public function reset(Prescription $prescription)
     {
-        $prescription->update([
-            'approved'          => false,
-            'hmo_note'          => null,
-            'approved_by'       => null,
-            'rejected'          => false,
-            'hmo_note'          => null,
-            'rejected_by'       => null,
-        ]);
+        return DB::transaction(function () use($prescription) {
 
-        return $prescription->visit->update([
-            'total_hms_bill'    => $prescription->visit->totalHmsBills(),
-            'total_nhis_bill'   => $prescription->visit->sponsor->category_name == 'NHIS' ? $prescription->visit->totalNhisBills() : 0//$prescription->visit->total_nhis_bill,
-        ]);
+            $prescription->update([
+                'approved'          => false,
+                'hmo_note'          => null,
+                'approved_by'       => null,
+                'rejected'          => false,
+                'hmo_note'          => null,
+                'rejected_by'       => null,
+            ]);
+
+            $visit    = $prescription->visit;
+
+            $isNhis = $visit->sponsor->category_name == 'NHIS';
+
+            if ($isNhis){
+                $this->paymentService->prescriptionsPaymentSeiveNhis($visit->totalPayments(), $visit->prescriptions);
+            } else {
+                $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit->prescriptions);
+            }
+    
+            return $visit->update([
+                'total_hms_bill'    => $prescription->visit->totalHmsBills(),
+                'total_nhis_bill'   => $prescription->visit->sponsor->category_name == 'NHIS' ? $prescription->visit->totalNhisBills() : 0//$prescription->visit->total_nhis_bill,
+            ]);
+        });
+
     }
 
     public function getPaginatedVisitPrescriptionsRequest(DataTableQueryParams $params, $data)
