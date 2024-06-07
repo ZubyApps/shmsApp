@@ -235,7 +235,7 @@ class PharmacyService
                 ]);
             }
 
-            // Log::info($visit->prescriptions()->sum('qty_billed'), $visit->prescriptions()->sum('qty_dispensed'));
+            Log::info('{qtyBilled} = {qtyDispensed}', ['qtyBilled' => $visit->prescriptions()->sum('qty_billed'), 'qtyDispensed' => $visit->prescriptions()->sum('qty_dispensed')]);
 
             return $prescription;
         });
