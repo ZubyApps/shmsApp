@@ -140,7 +140,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 </td>
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary ${p.qtyBilled ? '' : 'd-none'}">
-                                                        <span class="dispenseCommentSpan btn btn-${p.dispenseComment ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}">${p.dispenseComment ? p.dispenseComment : 'Comment'}</span>
+                                                        <span class="dispenseCommentSpan btn ${p.qtyDispensed && p.qtyBilled !== p.qtyDispensed && !p.dispenseComment ? 'colour-change' : p.dispenseComment ? 'btn-white text-secondary' : 'btn-outline-primary'}" data-id="${p.id}">${p.dispenseComment ? p.dispenseComment : 'Comment'}</span>
                                                         <input class="ms-1 form-control dispenseCommentInput d-none text-secondary" type="text" style="width:4rem;" value="${p.dispenseComment ?? ''}">
                                                     </div>
                                                 </td>
