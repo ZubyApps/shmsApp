@@ -201,7 +201,6 @@ class PharmacyService
         return DB::transaction(function () use($data, $prescription, $user) {
             $resource       = $prescription->resource;
             $qtyDispensed   = $prescription->qty_dispensed;
-            $visit          = $prescription->visit;
 
             if ($data->quantity){
                 if ($qtyDispensed){
@@ -225,8 +224,10 @@ class PharmacyService
                 'dispensed_by'      => $user->id
             ]);
 
-            $qtyBilled = $visit->prescriptions()->count('qty_billed');
-            $qtyDispensed = $visit->prescriptions()->count('qty_dispensed');
+            $visit          = $prescription->visit;
+
+            $qtyBilled      = $visit->prescriptions()->count('qty_billed');
+            $qtyDispensed   = $visit->prescriptions()->count('qty_dispensed');
 
             // if ($qtyBilled == $qtyDispensed){
             //     $visit->update([
