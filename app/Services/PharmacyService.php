@@ -225,23 +225,27 @@ class PharmacyService
             ]);
 
             $visit          = $prescription->visit;
+            $vPrescriptions = $prescription->visit
+                                ->prescriptions()
+                                ->whereRelation('resource', 'category', '=', 'Medications')
+                                ->whereRelation('resource', 'category', '=', 'Consumables');
 
-            $qtyBilled      = $visit->prescriptions()->sum('qty_billed');
-            $qtyDispensed   = $visit->prescriptions()->sum('qty_dispensed');
+            $qtyBilled      = $vPrescriptions->sum('qty_billed');
+            $qtyDispensed   = $vPrescriptions->sum('qty_dispensed');
 
-            if ($qtyBilled == $qtyDispensed){
-                $visit->update([
-                    'pharmacy_done_by' => $user->id
-                ]);
+            // if ($qtyBilled == $qtyDispensed){
+            //     $visit->update([
+            //         'pharmacy_done_by' => $user->id
+            //     ]);
 
-                Log::info('', ['pDone' => $visit->pharmacy_done_by]);
-            }  else {
-                $visit->update([
-                    'pharmacy_done_by' => null
-                ]);
-                
-                Log::info('', ['pDone' => $visit->pharmacy_done_by]);
-            }
+            //     Log::info('', ['pDone' => $visit->pharmacy_done_by]);
+            // }  else {
+            //     $visit->update([
+            //         'pharmacy_done_by' => null
+            //     ]);
+
+            //     Log::info('', ['pDone' => $visit->pharmacy_done_by]);
+            // }
 
             Log::info('{qtyBilled} = {qtyDispensed}', ['qtyBilled' => $qtyBilled, 'qtyDispensed' => $qtyDispensed, 'equal' => $qtyBilled == $qtyDispensed]);
 
