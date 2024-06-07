@@ -228,7 +228,7 @@ class PharmacyService
             $vPrescriptions = $prescription->visit
                                 ->prescriptions()
                                 ->whereRelation('resource', 'category', '=', 'Medications')
-                                ->whereRelation('resource', 'category', '=', 'Consumables')
+                                ->orWhereRelation('resource', 'category', '=', 'Consumables')
                                 ->get();
 
             $qtyBilled      = $vPrescriptions->sum('qty_billed');
