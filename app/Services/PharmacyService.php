@@ -247,7 +247,7 @@ class PharmacyService
             //     Log::info('', ['pDone' => $visit->pharmacy_done_by]);
             // }
 
-            Log::info('{qtyBilled} = {qtyDispensed}', ['qtyBilled' => $qtyBilled, 'qtyDispensed' => $qtyDispensed, 'equal' => $qtyBilled == $qtyDispensed]);
+            Log::info('{qtyBilled} = {qtyDispensed}', ['qtyBilled' => $qtyBilled, 'qtyDispensed' => $qtyDispensed, 'equal' => $qtyBilled == $qtyDispensed, 'count' => $vPrescriptions->count()]);
 
             return $prescription;
         });
