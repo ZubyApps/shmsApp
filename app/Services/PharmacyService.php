@@ -225,30 +225,30 @@ class PharmacyService
             ]);
 
             $visit          = $prescription->visit;
-            $vPrescriptions = $visit
-                                ->prescriptions()
-                                ->whereRelation('resource', 'category', '=', 'Medications')
-                                ->orWhereRelation('resource', 'category', '=', 'Consumables')
+
+            $vPrescriptions = Prescription::where('visit_id', $visit->id)
+                                ->where(function (Builder $query) {
+                                    $query->whereRelation('resource', 'category', '=', 'Medications')
+                                    ->orWhereRelation('resource', 'category', '=', 'Consumables');
+                                })
                                 ->get();
 
             $qtyBilled      = $vPrescriptions->sum('qty_billed');
             $qtyDispensed   = $vPrescriptions->sum('qty_dispensed');
 
-            // if ($qtyBilled == $qtyDispensed){
-            //     $visit->update([
-            //         'pharmacy_done_by' => $user->id
-            //     ]);
+            if ($qtyBilled == $qtyDispensed){
+                $visit->update([
+                    'pharmacy_done_by' => $user->id
+                ]);
+                Log::info('', ['pDone' => $visit->pharmacy_done_by]);
+            }  else {
+                $visit->update([
+                    'pharmacy_done_by' => null
+                ]);
+                Log::info('', ['pDone' => $visit->pharmacy_done_by]);
+            }
 
-            //     Log::info('', ['pDone' => $visit->pharmacy_done_by]);
-            // }  else {
-            //     $visit->update([
-            //         'pharmacy_done_by' => null
-            //     ]);
-
-            //     Log::info('', ['pDone' => $visit->pharmacy_done_by]);
-            // }
-
-            Log::info('{qtyBilled} = {qtyDispensed}', ['qtyBilled' => $qtyBilled, 'qtyDispensed' => $qtyDispensed, 'equal' => $qtyBilled == $qtyDispensed, 'count' => $vPrescriptions->count()]);
+            Log::info('{qtyBilled} = {qtyDispensed}', ['qtyBilled' => $qtyBilled, 'qtyDispensed' => $qtyDispensed, 'equal' => $qtyBilled == $qtyDispensed]);
 
             return $prescription;
         });
