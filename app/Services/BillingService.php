@@ -280,9 +280,10 @@ class BillingService
                 'discount'          => $request->discount,
                 'discount_by'       => $user->id
             ]);
+            
+            return $visit;
         });
 
-        return $visit;
     }
 
     public function processPaymentDestroy(Payment $payment)
