@@ -225,7 +225,7 @@ class PharmacyService
             ]);
 
             $visit          = $prescription->visit;
-            $vPrescriptions = $prescription->visit
+            $vPrescriptions = $visit
                                 ->prescriptions()
                                 ->whereRelation('resource', 'category', '=', 'Medications')
                                 ->orWhereRelation('resource', 'category', '=', 'Consumables')
