@@ -226,7 +226,7 @@ class PharmacyService
             ]);
 
             $qtyBilled = $visit->prescriptions()->count('qty_billed');
-            $qtyDispensed = $visit->prescriptions()->count('qtyDispensed');
+            $qtyDispensed = $visit->prescriptions()->count('qty_dispensed');
 
             if ($qtyBilled == $qtyDispensed){
                 $visit->update([
