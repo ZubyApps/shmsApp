@@ -229,15 +229,15 @@ class PharmacyService
             $qtyBilled      = $visit->prescriptions()->sum('qty_billed');
             $qtyDispensed   = $visit->prescriptions()->sum('qty_dispensed');
 
-            // if ($qtyBilled == $qtyDispensed){
-            //     $visit->update([
-            //         'pharmacy_done_by' => $user->id
-            //     ]);
-            // }  else {
-            //     $visit->update([
-            //         'pharmacy_done_by' => null
-            //     ]);
-            // }
+            if ($qtyBilled == $qtyDispensed){
+                $visit->update([
+                    'pharmacy_done_by' => $user->id
+                ]);
+            }  else {
+                $visit->update([
+                    'pharmacy_done_by' => null
+                ]);
+            }
 
             Log::info('{qtyBilled} = {qtyDispensed}', ['qtyBilled' => $qtyBilled, 'qtyDispensed' => $qtyDispensed, 'equal' => $qtyBilled == $qtyDispensed]);
 
