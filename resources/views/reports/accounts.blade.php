@@ -172,8 +172,8 @@
                     <thead>
                         <tr>
                             <th>Date</th>
-                            <th>Category</th>
                             <th>Desription</th>
+                            <th>Category</th>
                             <th>Amount</th>
                             <th>Given to</th>
                             <th>Given By</th>

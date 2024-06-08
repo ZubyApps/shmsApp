@@ -518,8 +518,8 @@ const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate
         },
         columns: [
             {data: "date"},
-            {data: "category"},
             {data: "description"},
+            {data: "category"},
             {data: row => account.format(row.amount)},
             {data: "givenTo"},
             {data: "givenBy"},

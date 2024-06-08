@@ -12,6 +12,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ExpenseService
 {
@@ -68,20 +69,24 @@ class ExpenseService
                     return $this->expense
                             ->whereRelation('user.designation', 'access_level', '<', 5)
                             ->where(function (Builder $query) use($params){
-                                $query->whereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                                $query->where('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                      ->orWhere('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                      ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                      ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                             })
                             ->orderBy($orderBy, $orderDir)
                             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
             if ($data->accessor == 'byExpenseCategory'){
+
                 if ($data->startDate && $data->endDate){
                     return $this->expense
                             ->where('expense_category_id', $data->expenseCategoryId)
                             ->where(function (Builder $query) use($params){
-                                $query->whereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhere('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                                $query->where('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                      ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                      ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                             })
                             ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                             ->orderBy($orderBy, $orderDir)
@@ -93,8 +98,9 @@ class ExpenseService
                     return $this->expense
                         ->where('expense_category_id', $data->expenseCategoryId)
                         ->where(function (Builder $query) use($params){
-                            $query->whereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            $query->where('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                  ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                  ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                         })
                         ->whereMonth('created_at', $date->month)
                         ->whereYear('created_at', $date->year)
@@ -105,20 +111,21 @@ class ExpenseService
                 return $this->expense
                         ->where('expense_category_id', $data->expenseCategoryId)
                         ->where(function (Builder $query) use($params){
-                            $query->whereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                            $query->where('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                  ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                  ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                         })
                         ->whereMonth('created_at', $currentDate->month)
                         ->whereYear('created_at', $currentDate->year)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
-                
-
+            }          
             return $this->expense
                     ->where(function (Builder $query) use($params){
-                        $query->whereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        $query->where('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhere('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
