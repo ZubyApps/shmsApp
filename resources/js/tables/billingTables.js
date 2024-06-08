@@ -500,6 +500,7 @@ const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate
             'date'              : date,
         }},
         orderMulti: true,
+        lengthMenu:[50, 100, 200, 300, 500],
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary', footer: true},
