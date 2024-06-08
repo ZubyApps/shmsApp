@@ -561,8 +561,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 createMedicationCategoryBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            console.log(error)
             createMedicationCategoryBtn.removeAttribute('disabled')
+            console.log(error)
         })
 
     })
@@ -570,7 +570,7 @@ window.addEventListener('DOMContentLoaded', function () {
     saveMedicationCategoryBtn.addEventListener('click', function (event) {
         const medicationCategoryId = event.currentTarget.getAttribute('data-id')
         saveMedicationCategoryBtn.setAttribute('disabled', 'disabled')
-        http.post(`/expensecategory/${medicationCategoryId}`, getDivData(updateMedicationCategoryModal._element), {"html": updateMedicationCategoryModal._element})
+        http.post(`/medicationcategory/${medicationCategoryId}`, getDivData(updateMedicationCategoryModal._element), {"html": updateMedicationCategoryModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 updateMedicationCategoryModal.hide()
@@ -579,8 +579,8 @@ window.addEventListener('DOMContentLoaded', function () {
             saveMedicationCategoryBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            alert(error)
             saveMedicationCategoryBtn.removeAttribute('disabled')
+            console.log(error)
         })
     })
 

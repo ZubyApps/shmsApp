@@ -21,6 +21,17 @@ class ExpenseService
 
     public function create(Request $data, User $user): Expense
     {
+        if ($data->backdate){
+            return $user->expenses()->create([
+                'description'           => $data->description,
+                'expense_category_id'   => $data->expenseCategory,
+                'given_to'              => $data->givenTo,
+                'amount'                => $data->amount,
+                'comment'               => $data->comment,
+                'approved_by'           => $data->approvedBy,
+                'created_at'            => $data->backdate,
+            ]);
+        }
         return $user->expenses()->create([
             'description'           => $data->description,
             'expense_category_id'   => $data->expenseCategory,
@@ -50,7 +61,7 @@ class ExpenseService
         $orderBy    = 'created_at';
         $orderDir   = 'desc';
         $currentDate = new CarbonImmutable();
-        // dd($data->accessor == 'byExpenseCategory');
+
         if (! empty($params->searchTerm)) {
 
             if ($data->accessor == 'billing'){
@@ -166,7 +177,7 @@ class ExpenseService
                 'givenBy'           => $expense->user->username,
                 'approvedBy'        => $expense->approvedBy->username,
                 'comment'           => $expense->comment,
-                'date'              => (new Carbon($expense->created_at))->format('d/m/Y gi:a'),
+                'date'              => (new Carbon($expense->created_at))->format('d/m/Y g:ia'),
             ];
          };
     }

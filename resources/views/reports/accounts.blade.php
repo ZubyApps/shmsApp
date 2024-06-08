@@ -8,8 +8,8 @@
 @include('reports.modals.visitsBySponsorModal', ['title' => 'Visits By Sponsor', 'id' => 'visitsBySponsorModal'])
 @include('reports.modals.byExpenseCategoryModal', ['title' => 'Expenses By Category', 'id' => 'byExpenseCategoryModal'])
 @include('reports.modals.TPSByThirdPartyModal', ['title' => 'Third Party Services By Third Party', 'id' => 'TPSByThirdPartyModal'])
-@include('billing.expenseModal', ['title' => "New Expense", 'isUpdate' => false, 'id' => 'newExpenseModal'])
-@include('billing.expenseModal', ['title' => "Update Expense", 'isUpdate' => true, 'id' => 'updateExpenseModal'])
+@include('billing.expenseModal', ['title' => "New Expense", 'isUpdate' => false, 'isManagement' => true, 'id' => 'newExpenseModal'])
+@include('billing.expenseModal', ['title' => "Update Expense", 'isUpdate' => true, 'isManagement' => true, 'id' => 'updateExpenseModal'])
 
 <div class="container mt-5">
     @include('reports.reportGrid')
@@ -268,6 +268,7 @@
                         <tfoot class="fw-bolder text-primary">
                             <tr>
                                 <td class="text-center">Total</td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

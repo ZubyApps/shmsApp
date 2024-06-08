@@ -43,6 +43,12 @@
                             <x-input-span>Comment </x-input-span>
                             <x-form-input type="text" name="comment" id="comment"/>
                         </x-form-div>
+                        @if ($isManagement)
+                            <x-form-div  class="col-xl-12">
+                                <x-input-span>Back Date</x-input-span>
+                                <x-form-input type="datetime-local" name="backdate" id="backdate"/>
+                            </x-form-div>
+                        @endif
                     </div>
                 </div>
             </div>
