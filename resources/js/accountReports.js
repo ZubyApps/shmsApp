@@ -3,7 +3,7 @@ import http from "./http";
 import $ from 'jquery';
 import { getPayMethodsSummmaryTable, getCapitationPaymentsTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getByPayMethodsTable, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable, getTPSSummaryTable, getTPSByThirdPartyTable } from "./tables/accountReportTables";
 import { getExpensesTable } from "./tables/billingTables";
-import { clearDivValues, getDivData, resetFocusEndofLine } from "./helpers";
+import { clearDivValues, getDivData, openModals, resetFocusEndofLine } from "./helpers";
 
 window.addEventListener('DOMContentLoaded', function () {
     const byPayMethodModal           = new Modal(document.getElementById('byPayMethodModal'))
