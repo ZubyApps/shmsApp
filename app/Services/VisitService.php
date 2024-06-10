@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -318,7 +319,10 @@ class VisitService
                 return DB::table('visits')
                 ->selectRaw('sponsors.name as sponsor, sponsors.category_name as category, COUNT(visits.patient_id) as patientsCount, SUM(CASE WHEN admission_status = "Outpatient" THEN 1 ELSE 0 END) AS outpatients, SUM(CASE WHEN admission_status = "Inpatient" THEN 1 ELSE 0 END) AS inpatients, SUM(CASE WHEN admission_status = "Observation" THEN 1 ELSE 0 END) AS observations')
                 ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-                ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                ->where(function (QueryBuilder $query) use($params) {
+                    $query->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                    ->orWhere('sponsors.category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                })
                 ->whereMonth('visits.created_at', $date->month)
                 ->whereYear('visits.created_at', $date->year)
                 ->groupBy('sponsor', 'category')
@@ -330,7 +334,10 @@ class VisitService
             return DB::table('visits')
             ->selectRaw('sponsors.name as sponsor, sponsors.category_name as category, COUNT(visits.patient_id) as patientsCount, SUM(CASE WHEN admission_status = "Outpatient" THEN 1 ELSE 0 END) AS outpatients, SUM(CASE WHEN admission_status = "Inpatient" THEN 1 ELSE 0 END) AS inpatients, SUM(CASE WHEN admission_status = "Observation" THEN 1 ELSE 0 END) AS observations')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-            ->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            ->where(function (QueryBuilder $query) use($params) {
+                $query->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                ->orWhere('sponsors.category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            })
             ->whereMonth('visits.created_at', $current->month)
             ->whereYear('visits.created_at', $current->year)
             ->groupBy('sponsor', 'category')
