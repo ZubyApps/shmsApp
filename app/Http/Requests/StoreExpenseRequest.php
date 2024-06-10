@@ -22,10 +22,11 @@ class StoreExpenseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'description'   => ['required'],
-            'amount'        => ['required'],
-            'approvedBy'    => ['required', 'integer'],
-            'givenTo'       => ['required'],
+            'description'       => ['required'],
+            'expenseCategory'   => ['required', 'integer'],
+            'amount'            => ['required'],
+            'approvedBy'        => ['required', 'integer'],
+            'givenTo'           => ['required'],
         ];
     }
 }

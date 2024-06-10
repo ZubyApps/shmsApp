@@ -399,18 +399,20 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     saveExpenseBtn.addEventListener('click', function () {
+        saveExpenseBtn.setAttribute('disabled', 'disabled')
         http.post('/expenses', {...getDivData(newExpenseModal._element)}, {"html": newExpenseModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 newExpenseModal.hide()
                     clearDivValues(newExpenseModal._element)
+                    clearValidationErrors(newExpenseModal._element)
                     expensesTable ? expensesTable.draw() : ''
                 }
                 saveExpenseBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            console.log(error.response.data.message)
             saveExpenseBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
         })
     })
 
@@ -460,6 +462,7 @@ window.addEventListener('DOMContentLoaded', function () {
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 updateExpenseModal.hide()
+                clearValidationErrors(updateExpenseModal._element)
                 expensesTable ? expensesTable.draw() : ''
             }
             updateExpenseBtn.removeAttribute('disabled')
@@ -477,6 +480,12 @@ window.addEventListener('DOMContentLoaded', function () {
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             openVisitsTable ? openVisitsTable.draw() : ''
             billingShiftReportTable.draw()
+        })
+    })
+
+    document.querySelectorAll('#newExpenseModal, #updateExpenseModal').forEach(modal => {
+        modal.addEventListener('hide.bs.modal', function () {
+            clearValidationErrors(modal)
         })
     })
 

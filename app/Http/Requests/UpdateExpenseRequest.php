@@ -22,7 +22,11 @@ class UpdateExpenseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'description'       => ['required'],
+            'expenseCategory'   => ['required', 'integer'],
+            'amount'            => ['required'],
+            'approvedBy'        => ['required', 'integer'],
+            'givenTo'           => ['required'],
         ];
     }
 }
