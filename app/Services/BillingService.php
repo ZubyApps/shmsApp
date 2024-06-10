@@ -156,10 +156,11 @@ class BillingService
                 'discharged'        => $visit->discharge_reason,
                 'reason'            => $visit->discharge_reason,
                 'doctorDoneAt'      => $visit->doctor_done_at ? (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') : '',
-                'closed'            => $visit->closed,
                 'staff'             => auth()->user()->username,
                 'total_bill'        => $visit->total_hms_bill,
                 'total_paid'        => $visit->total_paid,
+                'closed'            => $visit->closed,
+                'closedBy'          => $visit->closedOpenedBy?->username
             ];
          };
     }

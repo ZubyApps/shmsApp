@@ -72,9 +72,9 @@ class Visit extends Model
         return $this->belongsTo(User::class, 'viewed_by');
     }
 
-    public function closedBy()
+    public function closedOpenedBy()
     {
-        return $this->belongsTo(User::class, 'closed_by');
+        return $this->belongsTo(User::class, 'closed_opened_by');
     }
 
     public function discountBy()

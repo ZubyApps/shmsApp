@@ -209,7 +209,8 @@ class DoctorService
                 'doctorDone'        => $visit->doctorDoneBy->username ?? '',
                 'doctorDoneAt'      => $visit->doctor_done_at ? (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') : '',
                 'ancCount'          => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : '',
-                'closed'            => $visit->closed
+                'closed'            => $visit->closed,
+                'closedBy'          => $visit->closedOpenedBy?->username
 
             ];
          };

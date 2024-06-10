@@ -31,7 +31,8 @@ class NurseService
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where(function (Builder $query) use($params) {
-                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        $query->where('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -135,7 +136,8 @@ class NurseService
                 'ancCount'          => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : '',
                 'nurseDoneBy'       => $visit->nurseDoneBy?->username,
                 'nurseDoneAt'       => $visit->nurse_done_at ? (new Carbon($visit->nurse_done_at))->format('d/m/y g:ia') : '',
-                'closed'            => $visit->closed
+                'closed'            => $visit->closed,
+                'closedBy'          => $visit->closedOpenedBy?->username
             ];
          };
     }
