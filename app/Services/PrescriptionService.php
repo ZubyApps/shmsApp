@@ -181,7 +181,7 @@ class PrescriptionService
                 'dr'                => $prescription->user->username,
                 'sample'            => $prescription->test_sample,
                 'result'            => $prescription->result,
-                'sent'              => $prescription->result_date ? (new Carbon($prescription->result_at))->format('d/m/y g:ia') : '',
+                'sent'              => $prescription->result_date ? (new Carbon($prescription->result_date))->format('d/m/y g:ia') : '',
                 'staff'             => $prescription->resultBy->username ?? '',
                 'staffFullName'     => $prescription->resultBy?->nameInFull() ?? '',
                 'thirdParty'        => ThirdParty::whereRelation('thirdPartyServies','prescription_id', $prescription->id)->first()?->short_name ?? '',

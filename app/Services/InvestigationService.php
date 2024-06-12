@@ -268,10 +268,10 @@ class InvestigationService
     public function updateLabResultRecord(Request $data, Prescription $prescription, User $user): Prescription
     {
         $prescription->update([
-            'test_sample'    => $data->sample,
-            'result'         => $data->result,
-            'result_date'    => Carbon::now(),
-            'result_by'      => $user->id,
+            'test_sample'       => $data->sample,
+            'result'            => $data->result,
+            'result_date'       => Carbon::now(),
+            'result_by'         => $user->id,
             'discontinued'      => false,
             'dispense_comment'  => null,
             ]);
@@ -284,10 +284,10 @@ class InvestigationService
         $resource = $prescription->resource;
 
         $prescription->update([
-            'test_sample'    => null,
-            'result'         => null,
-            'result_date'    => null,
-            'result_by'      => null,
+            'test_sample'       => null,
+            'result'            => null,
+            'result_date'       => null,
+            'result_by'         => null,
             'discontinued'      => false,
             'dispense_comment'  => null,
             ]);
