@@ -79,12 +79,11 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                 }
             },
             {data: row => function () {
-                const chartables = row.otherChartables
                 const isAnc = row.patientType == 'ANC'
                         return `
                         <div class="d-flex flex" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-patientid="${ row.patientId }" data-ancregid="${ row.ancRegId }" data-sponsorcat="${row.sponsorCategory}">
-                                <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewOtherPrescriptionsBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${row.sponsor}" data-sponsorcat="${row.sponsorCategory}">
-                                    ${(chartables < 1 ? '' : chartables) + ' ' + row.doneCount + '/' + row.scheduleCount}
+                                <button class=" btn btn-outline-primary viewOtherPrescriptionsBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${row.sponsor}" data-sponsorcat="${row.sponsorCategory}">
+                                    ${row.otherPrescriptions}
                                 </button>
                                 ${ row.ancRegId ? 
                                     `<div class="dropdown ${isAnc ? '' : 'd-none'}">
@@ -195,6 +194,7 @@ const getNurseMedicationsByFilter = (tableId, conId, modal, visitId, isHistory) 
             {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) }</span>`},
             {data: row => prescriptionStatusContorller(row, tableId)},
             {data: "qtyBilled"},
+            {data: "qtyDispensed"},
             {data: "prescribedBy"},
             {data: "prescribed"},
             {data: "note"},
@@ -333,6 +333,7 @@ const getOtherPrescriptionsByFilterNurses = (tableId, conId, modal, visitId, isH
             {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) }</span>`},
             {data: row => prescriptionStatusContorller(row, tableId)},
             {data: "qtyBilled"},
+            {data: "qtyDispensed"},
             {data: "prescribedBy"},
             {data: "note"},
             {data: row =>  row.chartable ? 'Yes' : 'No'},

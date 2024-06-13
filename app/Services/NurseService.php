@@ -118,7 +118,7 @@ class NurseService
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
                 'chartableMedications'  => (new Prescription())->prescriptionsCharted($visit->id, 'medicationCharts'),
-                'otherChartables'       => (new Prescription())->prescriptionsCharted($visit->id, 'nursingCharts', '!='),
+                'otherPrescriptions'    => (new Prescription())->otherPrescriptions($visit->id),
                 'doseCount'         => $visit->medicationCharts->count(),
                 'givenCount'        => $visit->medicationCharts->where('dose_given', '!=', null)->count(),
                 'scheduleCount'     => $visit->nursingCharts->count(),

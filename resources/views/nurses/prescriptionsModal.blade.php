@@ -33,7 +33,8 @@
                                             <tr>
                                                 <th>Treatment</th>
                                                 <th>Prescription</th>
-                                                <th>Qty</th>
+                                                <th>Qty Billed</th>
+                                                <th>Qty Dispensed</th>
                                                 <th>Dr</th>
                                                 <th>Prescribed</th>
                                                 <th>Note</th>
@@ -54,7 +55,8 @@
                                             <tr>
                                                 <th>Item</th>
                                                 <th>Note/Instruction</th>
-                                                <th>Qty</th>
+                                                <th>Qty Billed</th>
+                                                <th>Qty Dispensed</th>
                                                 <th>Dr</th>
                                                 <th>Prescribed</th>
                                                 <th>Chartable</th>

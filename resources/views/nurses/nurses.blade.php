@@ -140,7 +140,7 @@
             <i class="bi bi-list-check"></i>
             Inpatients Medication Chart <span class="badge text-bg-danger" id="inpatientMedicationBadgeSpan"></span>
         </button>
-        <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="nursingChartBtn" data-bs-target="#upcomingNursingChartsoffcanvas" aria-controls="upcomingNursingChartsoffcanvas">
+        <button class="btn btn-primary text-white d-none" type="button" data-bs-toggle="offcanvas" id="nursingChartBtn" data-bs-target="#upcomingNursingChartsoffcanvas" aria-controls="upcomingNursingChartsoffcanvas">
             <i class="bi bi-list-check"></i>
             Inpatients Nursing Chart <span class="badge text-bg-danger" id="inpatientNursingBadgeSpan"></span>
         </button>
@@ -181,7 +181,7 @@
                                 <th>Current Diagnosis</th>
                                 <th>Sponsor</th>
                                 <th>Rx count</th>
-                                <th>AdditionalRx</th>
+                                <th>Other Rx</th>
                                 <th>Vitals</th>
                                 <th>Status</th>
                                 <th>Ward</th>
@@ -204,7 +204,7 @@
                                 <th>Current Diagnosis</th>
                                 <th>Sponsor</th>
                                 <th>Rx count</th>
-                                <th>Other</th>
+                                <th>Other Rx</th>
                                 <th>Vitals</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -227,7 +227,7 @@
                                 <th>Current Diagnosis</th>
                                 <th>Sponsor</th>
                                 <th>Rx count</th>
-                                <th>Other/Register</th>
+                                <th>Others/Register</th>
                                 <th>Vitals</th>
                                 <th>Status</th>
                                 <th>Actions</th>

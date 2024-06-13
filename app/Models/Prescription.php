@@ -112,9 +112,22 @@ class Prescription extends Model
     {
         return $this->where('visit_id', $visiId)
                     ->where('chartable', true)
-                    ->where(function(Builder $query) use($chartTable, $comparism) {
-                        $query->whereDoesntHave($chartTable)
-                              ->whereRelation('resource', 'category', $comparism ,'Medications');
+                    ->whereDoesntHave($chartTable)
+                    ->whereRelation('resource', 'category', $comparism ,'Medications')
+                    // ->where(function(Builder $query) use($chartTable, $comparism) {
+                    //     $query->whereDoesntHave($chartTable)
+                    //           ->whereRelation('resource', 'category', $comparism ,'Medications');
+                    // })
+                    ->count();
+    }
+
+    public function otherPrescriptions($visiId)
+    {
+        return $this->where('visit_id', $visiId)
+                    ->where('chartable', false)
+                    ->where(function(Builder $query) {
+                        $query->whereRelation('resource', 'category', 'Medications')
+                              ->orWhereRelation('resource', 'category', 'Consumables');
                     })
                     ->count();
     }
