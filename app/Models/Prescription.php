@@ -135,10 +135,12 @@ class Prescription extends Model
     {
         return $this->where('chartable', true)
                     ->where('held', null)
-                    ->where(function(Builder $query) use($chartTable, $comparism) {
+                    ->where(function(Builder $query) use($chartTable, $comparism, $shift) {
                         $query->whereHas($chartTable)
                             ->whereRelation('resource', 'category', $comparism ,'Medications')
-                            ->whereRelation($chartTable, 'time_given', '!=', null);
+                            ->whereRelation($chartTable, 'time_given', '!=', null)
+                            ->whereRelation($chartTable, 'scheduled_time', '>=', $shift->shift_start)
+                            ->whereRelation($chartTable, 'scheduled_time', '<=', $shift->shift_end);
                     })
                     ->whereBetween('created_at', [$shift->shift_start, $shift->shift_end])
                     ->whereBetween('scheduled_time', [$shift->shift_start, $shift->shift_end])
