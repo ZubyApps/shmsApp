@@ -92,15 +92,19 @@ Class ShiftPerformanceService
     public function givenRate($shiftPerformance)
     {
         if ($shiftPerformance?->shift == 'Morning Shift'){
-            $totalPrescriptions         = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->count();
-            $totalPrescriptionsStarted  = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'medicationCharts');
+            $totalPrescriptions         = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->whereHas('medicationCharts', function (EloquentBuilder $query) use($shiftPerformance) {
+                $query->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
+            })->count();
+            $totalPrescriptionsStarted = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'medicationCharts');
 
             return $totalPrescriptions ? $totalPrescriptionsStarted . '/' . $totalPrescriptions : null; 
 
         }
 
         if ($shiftPerformance?->shift == 'Afternoon Shift'){
-            $totalPrescriptions         = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->count();
+            $totalPrescriptions = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->whereHas('medicationCharts', function (EloquentBuilder $query) use($shiftPerformance) {
+                $query->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
+            })->count();
             $totalPrescriptionsStarted  = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'medicationCharts');
 
             return $totalPrescriptions ? $totalPrescriptionsStarted . '/' . $totalPrescriptions : null; 
@@ -108,12 +112,12 @@ Class ShiftPerformanceService
         }
 
         if ($shiftPerformance?->shift == 'Night Shift'){
-            $totalPrescriptions         = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->whereHas('medicationCharts', function (EloquentBuilder $query) use($shiftPerformance) {
+            $totalPrescriptions = $this->prescription->where('chartable', true)->where('held', null)->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->whereHas('medicationCharts', function (EloquentBuilder $query) use($shiftPerformance) {
                 $query->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
             })->count();
-            $totalPrescriptionsStarted  = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'medicationCharts');
+            $totalPrescriptionsStarted = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'medicationCharts');
 
-            return $totalPrescriptions ? $totalPrescriptionsStarted . '/' . $totalPrescriptions : null; 
+            return $totalPrescriptions ? $totalPrescriptionsStarted . '/' . $totalPrescriptions : null;
         }
     }
 
