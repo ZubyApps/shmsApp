@@ -143,7 +143,6 @@ class Prescription extends Model
                             ->whereRelation($chartTable, 'scheduled_time', '<=', $shift->shift_end);
                     })
                     ->whereBetween('created_at', [$shift->shift_start, $shift->shift_end])
-                    ->whereBetween('scheduled_time', [$shift->shift_start, $shift->shift_end])
                     ->count();
     }
 }
