@@ -199,7 +199,8 @@ class PrescriptionService
     
             return $this->prescription
                         ->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
-                        ->whereRelation('resource', 'sub_category', 'Injectable')
+                        // ->whereRelation('resource', 'sub_category', 'Injectable')
+                        ->where('chartable', true)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         });
@@ -218,7 +219,7 @@ class PrescriptionService
                             $query->whereRelation('resource', 'category', 'Medical Services')
                             ->orWhereRelation('resource', 'category', 'Consumables')
                             ->orWhereRelation('resource', 'category', 'Medications')
-                            ->orWhere('chartable', true);
+                            ->where('chartable', false);
                         })
                         ->whereRelation('resource', 'sub_category', '!=', 'Injectable')
                         ->orderBy($orderBy, $orderDir)
