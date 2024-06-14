@@ -51,7 +51,7 @@ class VisitService
                     'resource_category_id' => 6
                 ]);
     
-                if ($patient->visits->count() < 2 && $patient->sponsor->category_name == 'Individual' && $patient->patient_type == 'Regular.New'){
+                if ($patient->visits->count() < 2 && $patient->sponsor->category_name == 'Individual'){
                     
                     if ($patient->patient_type == 'ANC'){
                         $resource = Resource::firstOrCreate(['name' => 'Antenatal Card'],[
@@ -67,7 +67,7 @@ class VisitService
                             'resource_sub_category_id' => $subcat->id,
                             'user_id'           => 1,
                         ]);
-                    } else {
+                    } else if ($patient->patient_type == 'Regular.New') {
                         $resource = Resource::firstOrCreate(['name' => 'Individual Card'],[
                             'name'              => 'Individual Card',
                             'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
