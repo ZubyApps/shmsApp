@@ -67,6 +67,23 @@ class VisitService
                             'resource_sub_category_id' => $subcat->id,
                             'user_id'           => 1,
                         ]);
+
+                        $prescription = $user->prescriptions()->create([
+                            'resource_id'       => $resource->id,
+                            'prescription'      => null,
+                            'consultation_id'   => null,
+                            'visit_id'          => $visit->id,
+                            'qty_billed'        => 1,
+                            'qty_dispensed'     => 1,
+                            'hms_bill'          => $resource->selling_price,
+                            'hms_bill_date'     => new Carbon(),
+                            'hms_bill_by'       => $user->id,
+                        ]);
+    
+                        $prescription->visit->update([
+                            'total_hms_bill'    => $prescription->visit->totalHmsBills(),
+                        ]);
+                        
                     } else if ($patient->patient_type == 'Regular.New') {
                         $resource = Resource::firstOrCreate(['name' => 'Individual Card'],[
                             'name'              => 'Individual Card',
@@ -81,23 +98,23 @@ class VisitService
                             'resource_sub_category_id' => $subcat->id,
                             'user_id'           => 1,
                         ]);
+
+                        $prescription = $user->prescriptions()->create([
+                            'resource_id'       => $resource->id,
+                            'prescription'      => null,
+                            'consultation_id'   => null,
+                            'visit_id'          => $visit->id,
+                            'qty_billed'        => 1,
+                            'qty_dispensed'     => 1,
+                            'hms_bill'          => $resource->selling_price,
+                            'hms_bill_date'     => new Carbon(),
+                            'hms_bill_by'       => $user->id,
+                        ]);
+    
+                        $prescription->visit->update([
+                            'total_hms_bill'    => $prescription->visit->totalHmsBills(),
+                        ]);
                     }
-
-                    $prescription = $user->prescriptions()->create([
-                        'resource_id'       => $resource->id,
-                        'prescription'      => null,
-                        'consultation_id'   => null,
-                        'visit_id'          => $visit->id,
-                        'qty_billed'        => 1,
-                        'qty_dispensed'     => 1,
-                        'hms_bill'          => $resource->selling_price,
-                        'hms_bill_date'     => new Carbon(),
-                        'hms_bill_by'       => $user->id,
-                    ]);
-
-                    $prescription->visit->update([
-                        'total_hms_bill'    => $prescription->visit->totalHmsBills(),
-                    ]);
                 }
     
                 if ($patient->sponsor->category_name == 'Family' && $patient->sponsor->visits->count() < 2 && $patient->visits->count() < 2 && $patient->patient_type == 'Regular.New'){
