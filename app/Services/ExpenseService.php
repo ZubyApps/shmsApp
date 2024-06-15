@@ -46,12 +46,12 @@ class ExpenseService
     public function update(Request $data, Expense $expense, User $user): Expense
     {
        $expense->update([
-            'description'   => $data->description,
-            'given_to'      => $data->givenTo,
-            'amount'        => $data->amount,
-            'comment'       => $data->comment,
-            'approved_by'   => $data->approvedBy,
-            // 'user_id'       => $user->id
+            'description'           => $data->description,
+            'expense_category_id'   => $data->expenseCategory,
+            'given_to'              => $data->givenTo,
+            'amount'                => $data->amount,
+            'comment'               => $data->comment,
+            'approved_by'           => $data->approvedBy,
         ]);
 
         return $expense;
