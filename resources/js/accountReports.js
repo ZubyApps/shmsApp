@@ -194,7 +194,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#visitSummaryTable1' )){
             $('#visitSummaryTable1').dataTable().fnDestroy()
         }
-        visitSummaryTable1 = getVisitSummaryTable1('visitSummaryTable', visistSummaryDiv1.querySelector('#startDate').value, visistSummaryDiv1.querySelector('#endDate').value)
+        visitSummaryTable1 = getVisitSummaryTable1('visitSummaryTable1', visistSummaryDiv1.querySelector('#startDate').value, visistSummaryDiv1.querySelector('#endDate').value)
     })
     
     searchVisitsByMonthBtn1.addEventListener('click', function () {
@@ -390,6 +390,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     saveExpenseBtn.addEventListener('click', function () {
+        saveExpenseBtn.setAttribute('disabled', 'disabled')
         http.post('/expenses', {...getDivData(newExpenseModal._element)}, {"html": newExpenseModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
@@ -400,8 +401,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 saveExpenseBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            console.log(error.response.data.message)
             saveExpenseBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
         })
     })
 
