@@ -95,7 +95,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#expenseSummaryTable' )){
             $('#expenseSummaryTable').dataTable().fnDraw()
         } else {
-            expensesTable = getExpenseSummaryTable('expenseSummaryTable')
+            expenseSummaryTable = getExpenseSummaryTable('expenseSummaryTable')
         }
     })
 
