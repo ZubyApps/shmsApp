@@ -331,7 +331,7 @@ const detailsBtn1 = (row) => {
 const reviewBtn = (row) => {
     return `
     <div class="dropdown">
-        <a class="btn btn-outline-primary tooltip-test text-decoration-none ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed': ''}" data-bs-toggle="dropdown">
+        <a class="btn btn-outline-primary tooltip-test text-decoration-none ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed by ' + row.closedBy: ''}" data-bs-toggle="dropdown">
             More${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
         </a>
             <ul class="dropdown-menu">
