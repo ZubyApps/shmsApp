@@ -471,12 +471,11 @@ class PrescriptionService
     {
         $currentDate = new Carbon();
 
-        if ($data->date){
-            $date = new Carbon($data->date);
+        if ($data->year){
 
             return DB::table('prescriptions')
                             ->selectRaw('SUM(hms_bill) as bill, SUM(hmo_bill) as totalHmoBill, SUM(nhis_bill) as totalNhisBill, SUM(paid + capitation) as paid, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
-                            ->whereYear('created_at', $date->year)
+                            ->whereYear('created_at', $data->year)
                             ->groupBy('month_name', 'month')
                             ->orderBy('month')
                             ->get();

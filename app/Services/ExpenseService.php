@@ -216,12 +216,11 @@ class ExpenseService
     {
         $currentDate = new Carbon();
 
-        if ($data->date){
-            $date = new Carbon($data->date);
+        if ($data->year){
 
             return DB::table('expenses')
                             ->selectRaw('SUM(amount) as amount, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
-                            ->whereYear('created_at', $date->year)
+                            ->whereYear('created_at', $data->year)
                             ->groupBy('month_name', 'month')
                             ->orderBy('month')
                             ->get();
