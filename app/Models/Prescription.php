@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -114,10 +115,6 @@ class Prescription extends Model
                     ->where('chartable', true)
                     ->whereDoesntHave($chartTable)
                     ->whereRelation('resource', 'category', $comparism ,'Medications')
-                    // ->where(function(Builder $query) use($chartTable, $comparism) {
-                    //     $query->whereDoesntHave($chartTable)
-                    //           ->whereRelation('resource', 'category', $comparism ,'Medications');
-                    // })
                     ->count();
     }
 
@@ -134,26 +131,32 @@ class Prescription extends Model
 
     public function prescriptionsChartedPerShift($shift, $chartTable, $comparism = '=')
     {
+        $shiftEnd = new Carbon($shift->shift_end);
+        $shiftEndTimer = $shiftEnd->subMinutes(20);
+
         return $this->where('chartable', true)
                     ->where('held', null)
                     ->where(function(Builder $query) use($chartTable, $comparism) {
                         $query->whereHas($chartTable)
                             ->whereRelation('resource', 'category', $comparism ,'Medications');
                     })
-                    ->whereBetween('created_at', [$shift->shift_start, $shift->shift_end])
+                    ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
                     ->count();
     }
 
     public function prescriptionsGivenPerShift($shift, $chartTable, $comparism = '=')
     {
+        $shiftEnd = new Carbon($shift->shift_end);
+        $shiftEndTimer = $shiftEnd->subMinutes(20);
+
         return $this->where('chartable', true)
                     ->where('held', null)
                     ->whereRelation('resource', 'category', $comparism ,'Medications')
-                    ->whereHas($chartTable, function(Builder $query) use($shift) {
+                    ->whereHas($chartTable, function(Builder $query) use($shift, $shiftEndTimer) {
                             $query->where('time_given', '!=', null)
-                            ->whereBetween('scheduled_time', [$shift->shift_start, $shift->shift_end]);
+                            ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
                         })                
-                    ->whereBetween('created_at', [$shift->shift_start, $shift->shift_end])
+                    ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
                     ->count();
     }
 }
