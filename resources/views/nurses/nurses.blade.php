@@ -140,7 +140,7 @@
             <i class="bi bi-list-check"></i>
             Inpatients Medication Chart <span class="badge text-bg-danger" id="inpatientMedicationBadgeSpan"></span>
         </button>
-        <button class="btn btn-primary text-white d-none" type="button" data-bs-toggle="offcanvas" id="nursingChartBtn" data-bs-target="#upcomingNursingChartsoffcanvas" aria-controls="upcomingNursingChartsoffcanvas">
+        <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="nursingChartBtn" data-bs-target="#upcomingNursingChartsoffcanvas" aria-controls="upcomingNursingChartsoffcanvas">
             <i class="bi bi-list-check"></i>
             Inpatients Nursing Chart <span class="badge text-bg-danger" id="inpatientNursingBadgeSpan"></span>
         </button>
