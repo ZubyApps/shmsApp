@@ -79,11 +79,12 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                 }
             },
             {data: row => function () {
+                const chartables = row.otherChartables
                 const isAnc = row.patientType == 'ANC'
                         return `
                         <div class="d-flex flex" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-patientid="${ row.patientId }" data-ancregid="${ row.ancRegId }" data-sponsorcat="${row.sponsorCategory}">
-                                <button class=" btn btn-outline-primary viewOtherPrescriptionsBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${row.sponsor}" data-sponsorcat="${row.sponsorCategory}">
-                                    ${row.otherPrescriptions}
+                                <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-2'} viewOtherPrescriptionsBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${row.sponsor}" data-sponsorcat="${row.sponsorCategory}">
+                                    ${(chartables < 1 ? '' : chartables + ' | ') + ' ' + (row.scheduleCount ? (row.doneCount + '/' + row.scheduleCount) + ' | ' : '' )+ ' ' + row.otherPrescriptions}
                                 </button>
                                 ${ row.ancRegId ? 
                                     `<div class="dropdown ${isAnc ? '' : 'd-none'}">

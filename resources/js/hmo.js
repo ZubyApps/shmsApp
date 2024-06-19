@@ -774,14 +774,15 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                 capitationPaymentModal.hide()
                     clearDivValues(capitationPaymentModal._element)
-                    nhisReconTable ? nhisReconTable.draw() : ''
+                    nhisReconTable ? nhisReconTable.draw(false) : ''
                     capitationPaymentModal._element.querySelector('#perLife').value = perLife   
                 }
                 saveCapitationPaymentBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            console.log(error.response.data.message)
+            nhisReconTable ? nhisReconTable.draw(false) : ''
             saveCapitationPaymentBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
         })
     })
 
