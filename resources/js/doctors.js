@@ -1213,6 +1213,7 @@ window.addEventListener('DOMContentLoaded', function () {
             http.patch(`/investigations/${url}/${prescriptionId}`, { ...data }, { "html": resultDiv })
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
+                        resultDiv.querySelector('#result').innerHTML = ''
                         clearDivValues(resultDiv)
                         clearValidationErrors(resultDiv)
     

@@ -191,7 +191,8 @@ window.addEventListener('DOMContentLoaded', function () {
             outPatientsVisitsTable.draw()
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-            modal.id == 'addResultModal' || modal.id == 'updateResultModal' ? '':
+            modal.id == 'addResultModal' || modal.id == 'updateResultModal' ?
+             '':
             regularTreatmentDiv.innerHTML = ''
             ancTreatmentDiv.innerHTML = ''
         })
@@ -355,6 +356,7 @@ window.addEventListener('DOMContentLoaded', function () {
         .then((response) => {
             if (response.status >= 200 || response.status <= 300) {
                 clearDivValues(addResultDiv)
+                addResultDiv.querySelector('#result').innerHTML = ''
                 clearValidationErrors(addResultDiv)
                 addResultModal.hide()
 
@@ -380,8 +382,8 @@ window.addEventListener('DOMContentLoaded', function () {
         http.patch(`/investigations/update/${prescriptionId}`, { ...data }, { "html": updateResultDiv })
         .then((response) => {
             if (response.status >= 200 || response.status <= 300) {
-
                 clearDivValues(updateResultDiv)
+                updateResultDiv.querySelector('#result').innerHTML = ''
                 clearValidationErrors(updateResultDiv)
 
                 if ($.fn.DataTable.isDataTable('#' + investigationTableId)) {
