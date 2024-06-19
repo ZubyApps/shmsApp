@@ -46,9 +46,31 @@ class NursingChartService
         return $charts;
     }
 
-    public function updateRecord(Request $data, NursingChart $nursingChart, User $user): NursingChart
+    public function updateRecord(Request $data, NursingChart $nursingChart, User $user)
     {
-       $nursingChart->update([
+        $scheduledTime = New Carbon($nursingChart->scheduled_time);
+
+        if($data->notDone == 'Snooze 30 mins'){
+            return $nursingChart->update([
+                'time_done'         => Carbon::now(),
+                'not_done'          => $data->notDone,
+                'done_by'           => $user->id,
+                'note'              => $data->note,
+                'scheduled_time'    => $scheduledTime->addMinutes(30),    
+             ]);
+        }
+
+        if($data->notDone == 'Snooze 60 mins'){
+            return $nursingChart->update([
+                'time_done'         => Carbon::now(),
+                'not_done'          => $data->notDone,
+                'done_by'           => $user->id,
+                'note'              => $data->note,
+                'scheduled_time'    => $scheduledTime->addMinutes(60),    
+             ]);
+        }
+
+       return $nursingChart->update([
            'time_done'  => Carbon::now(),
            'not_done'   => $data->notDone,
            'done_by'    => $user->id,
@@ -57,7 +79,6 @@ class NursingChartService
 
         ]);
 
-        return $nursingChart;
     }
 
     public function removeRecord(NursingChart $nursingChart): NursingChart
@@ -160,7 +181,9 @@ class NursingChartService
                 'scheduleCount'     => $nursingChart->schedule_count,
                 'count'             => $nursingChart::where('prescription_id', $nursingChart->prescription->id)->count(),
                 'discontinued'      => $nursingChart->prescription->discontinued,
-                'rawDateTime'       => $nursingChart->scheduled_time
+                'rawDateTime'       => $nursingChart->scheduled_time,
+                'timeDone'          => $nursingChart->time_done ? (new Carbon($nursingChart->time_done))->format('jS/M/y g:iA') : '',
+                'notDone'           => $nursingChart->not_done
             ];
          };
     }

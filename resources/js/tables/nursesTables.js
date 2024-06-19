@@ -83,7 +83,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                 const isAnc = row.patientType == 'ANC'
                         return `
                         <div class="d-flex flex" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-patientid="${ row.patientId }" data-ancregid="${ row.ancRegId }" data-sponsorcat="${row.sponsorCategory}">
-                                <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-2'} viewOtherPrescriptionsBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${row.sponsor}" data-sponsorcat="${row.sponsorCategory}">
+                                <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewOtherPrescriptionsBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${row.sponsor}" data-sponsorcat="${row.sponsorCategory}">
                                     ${(chartables < 1 ? '' : chartables + ' | ') + ' ' + (row.scheduleCount ? (row.doneCount + '/' + row.scheduleCount) + ' | ' : '' )+ ' ' + row.otherPrescriptions}
                                 </button>
                                 ${ row.ancRegId ? 
@@ -570,12 +570,12 @@ const getUpcomingMedicationsTable = (tableId, button, span) => {
         columns: [
             {data: "patient"},
             {data: row => () => {
-                return row.status == 'Inpatient' ? 
+                return row.status == 'Inpatient' || row.status == 'Observation' ? 
                 `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
                 `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
             } },
             {data: row => row.ward + '-' + row.bedNo},
-            {data: "treatment"},
+            {data: row => `<span class="position-relative p-2"> ${row.treatment} ${row.notGiven == 'Snooze 60 mins' ||  row.notGiven == 'Snooze 30 mins' ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">${row.notGiven + ' at ' + row.timeGiven}</span>` : ''} </span>`},
             {data: "prescription"},
             {data: "dose"},
             {data: "chartedBy"},
@@ -641,7 +641,7 @@ const getUpcomingNursingChartsTable = (tableId, button, span) => {
                 `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
             } },
             {data: row => row.ward + '-' + row.bedNo},
-            {data: "care"},
+            {data: row => `<span class="position-relative p-2"> ${row.care} ${row.notDone == 'Snooze 60 mins' ||  row.notDone == 'Snooze 30 mins' ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">${row.notDone + ' at ' + row.timeDone}</span>` : ''} </span>`},
             {data: "instruction"},
             {data: "chartedBy"},
             {data: "date"},

@@ -23,7 +23,7 @@ class UpdateNursingChartRequest extends FormRequest
     {
         return [
             'note'      => ['required_if:notDone,null'],
-            'notGiven'  => ['required_if:note,null'],
+            'notDone'   => ['required_if:note,null'],
         ];
     }
 }

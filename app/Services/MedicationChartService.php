@@ -47,9 +47,31 @@ class MedicationChartService
         return $charts;
     }
 
-    public function updateRecord(Request $data, MedicationChart $medicationChart, User $user): MedicationChart
+    public function updateRecord(Request $data, MedicationChart $medicationChart, User $user)
     {
-       $medicationChart->update([
+        $scheduledTime = New Carbon($medicationChart->scheduled_time);
+
+        if($data->notGiven == 'Snooze 30 mins'){
+            return $medicationChart->update([
+                'time_given' => Carbon::now(),
+                'not_given'  => $data->notGiven,
+                'given_by'   => $user->id,
+                'note'       => $data->note,
+                'scheduled_time'    => $scheduledTime->addMinutes(30),    
+             ]);
+        };
+
+        if($data->notGiven == 'Snooze 60 mins'){
+            return $medicationChart->update([
+                'time_given'    => Carbon::now(),
+                'not_given'     => $data->notGiven,
+                'given_by'      => $user->id,
+                'note'          => $data->note,
+                'scheduled_time'    =>  $scheduledTime->addMinutes(60),    
+             ]);
+        };
+
+       return $medicationChart->update([
            'dose_given' => $data->doseGiven ? $data->doseGiven.$data->unit : null,
            'time_given' => Carbon::now(),
            'not_given'  => $data->notGiven,
@@ -58,8 +80,6 @@ class MedicationChartService
            'status'     => true,
 
         ]);
-
-        return $medicationChart;
     }
 
     public function removeRecord(MedicationChart $medicationChart): MedicationChart
@@ -166,7 +186,9 @@ class MedicationChartService
                 'doseCount'         => $medicationChart->dose_count,
                 'count'             => $medicationChart::where('prescription_id', $medicationChart->prescription->id)->count(),
                 'discontinued'      => $medicationChart->prescription->discontinued,
-                'rawDateTime'       => $medicationChart->scheduled_time
+                'rawDateTime'       => $medicationChart->scheduled_time,
+                'timeGiven'         => $medicationChart->time_given ? (new Carbon($medicationChart->time_given))->format('jS/M/y g:iA') : '',
+                'notGiven'          => $medicationChart->not_given ?? ''
             ];
          };
     }
