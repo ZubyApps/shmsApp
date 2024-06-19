@@ -270,6 +270,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         openModals(updateResultModal, saveResultBtn, response.data.data)
+                        updateResultModal._element.querySelector('#result').innerHTML = response.data.data?.result ?? ''
                     }
                 })
                 .catch((error) => {
@@ -348,7 +349,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const investigationTableId = createResultBtn.getAttribute('data-table')
         createResultBtn.setAttribute('disabled', 'disabled')
 
-        let data = { ...getDivData(addResultDiv), prescriptionId }
+        let data = { ...getDivData(addResultDiv), prescriptionId, result: addResultDiv.querySelector('#result').innerHTML }
 
         http.patch(`/investigations/create/${prescriptionId}`, { ...data }, { "html": addResultDiv })
         .then((response) => {
@@ -374,7 +375,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const investigationTableId = saveResultBtn.getAttribute('data-table')
         saveResultBtn.setAttribute('disabled', 'disabled')
 
-        let data = { ...getDivData(updateResultDiv), prescriptionId }
+        let data = { ...getDivData(updateResultDiv), prescriptionId, result: updateResultDiv.querySelector('#result').innerHTML }
 
         http.patch(`/investigations/update/${prescriptionId}`, { ...data }, { "html": updateResultDiv })
         .then((response) => {

@@ -96,7 +96,6 @@ function textareaHeightAdjustment(setHeight, tag){
         }
         tag[i].addEventListener("input", OnInput, false);
     }
-    console.log(tag)
 }
 
 function OnInput(e){

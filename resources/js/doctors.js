@@ -1124,6 +1124,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                             openModals(updateResultModal, saveResultBtn, response.data.data)
+                            updateResultModal._element.querySelector('#result').innerHTML = response.data.data?.result ?? ''
                         }
                     })
                     .catch((error) => { alert(error)
