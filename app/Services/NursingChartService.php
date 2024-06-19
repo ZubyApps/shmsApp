@@ -49,7 +49,6 @@ class NursingChartService
     public function updateRecord(Request $data, NursingChart $nursingChart, User $user): NursingChart
     {
        $nursingChart->update([
-        //    'dose_given' => $data->doseGiven.$data->unit,
            'time_done'  => Carbon::now(),
            'not_done'   => $data->notDone,
            'done_by'    => $user->id,
@@ -64,7 +63,6 @@ class NursingChartService
     public function removeRecord(NursingChart $nursingChart): NursingChart
     {
        $nursingChart->update([
-        //    'dose_given' => null,
            'time_done'  => null,
            'not_done'   => null,
            'done_by'    => null,

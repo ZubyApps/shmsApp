@@ -118,7 +118,7 @@ class MedicationChartService
             return $this->medicationChart
                         ->where('status', false)
                         ->whereRelation('visit', 'discharge_reason', null)
-                        ->whereRelation('visit', 'nurse_done_by', null)
+                        // ->whereRelation('visit', 'nurse_done_by', null)
                         ->where(function (Builder $query){
                             $query->whereRelation('visit', 'admission_status', '=', 'Inpatient')
                             ->orWhereRelation('visit', 'admission_status', '=','Observation');
@@ -139,7 +139,7 @@ class MedicationChartService
                     ->where('status', false)
                     ->whereRelation('prescription', 'discontinued', false)
                     ->whereRelation('visit', 'discharge_reason', null)
-                    ->whereRelation('visit', 'nurse_done_by', null)
+                    // ->whereRelation('visit', 'nurse_done_by', null)
                     ->where(function (Builder $query){
                         $query->whereRelation('visit', 'admission_status', '=', 'Inpatient')
                         ->orWhereRelation('visit', 'admission_status', '=','Observation');

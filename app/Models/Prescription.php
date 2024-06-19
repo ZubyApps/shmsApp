@@ -113,6 +113,7 @@ class Prescription extends Model
     {
         return $this->where('visit_id', $visiId)
                     ->where('chartable', true)
+                    ->where('discontinued', false)
                     ->whereDoesntHave($chartTable)
                     ->whereRelation('resource', 'category', $comparism ,'Medications')
                     ->count();
@@ -136,6 +137,7 @@ class Prescription extends Model
 
         return $this->where('chartable', true)
                     ->where('held', null)
+                    ->where('discontinued', false)
                     ->where(function(Builder $query) use($chartTable, $comparism) {
                         $query->whereHas($chartTable)
                             ->orWhereHas('nursingCharts')
@@ -152,6 +154,7 @@ class Prescription extends Model
 
         return $this->where('chartable', true)
                     ->where('held', null)
+                    ->where('discontinued', false)
                     ->whereRelation('resource', 'category', $comparism ,'Medications')
                     ->where(function(Builder $query) use($chartTable, $shift, $shiftEndTimer) {
                         $query->whereHas($chartTable, function(Builder $query) use($shift, $shiftEndTimer) {
