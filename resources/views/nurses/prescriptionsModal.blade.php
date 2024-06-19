@@ -59,6 +59,7 @@
                                                 <th>Qty Dispensed</th>
                                                 <th>Dr</th>
                                                 <th>Prescribed</th>
+                                                <th>Note</th>
                                                 <th>Chartable</th>
                                                 <th>Chart</th>
                                             </tr>

@@ -541,8 +541,10 @@ const getMedicationsByFilter = (tableId, conId, modal, visitId) => {
             {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) } ${(row.chartable ? `<span class="text-secondary">(${row.givenCount + '/' + row.doseCount})</span>` : '')}</span>`},
             {data: row => prescriptionStatusContorller(row, tableId)},
             {data: "qtyBilled"},
+            {data: "qtyDispensed"},
             {data: "prescribedBy"},
             {data: "prescribed"},
+            {data: "note"},
             {data: row => () => {
                     return row.qtyBilled ? '<i class=" text-primary bi bi-check-circle-fill"></i>' : '-'
             } },
@@ -645,8 +647,10 @@ const getOtherPrescriptionsByFilter = (tableId, conId, modal, visitId) => {
             {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) } ${(row.chartable ? `<span class="text-secondary">(${row.givenCount + '/' + row.doseCount})</span>` : '')}</span>`},
             {data: row => prescriptionStatusContorller(row, tableId)},
             {data: "qtyBilled"},
+            {data: "qtyDispensed"},
             {data: "prescribedBy"},
             {data: "prescribed"},
+            {data: "note"},
             {data: row => () => {
                     return row.qtyBilled ? '<i class=" text-primary bi bi-check-circle-fill"></i>' : '-'
             } },

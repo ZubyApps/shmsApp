@@ -24,7 +24,8 @@ class NursingChartService
     {
         $tz = 'Africa/Lagos';
         $interval = CarbonInterval::hours($data->frequency);
-        $start = $data->date ? (new CarbonImmutable($data->date, $tz)) : (new CarbonImmutable($data->date, $tz))->addMinutes(15); //CarbonImmutable::now($tz)->addMinutes(30);
+        // $start = $data->date ? (new CarbonImmutable($data->date, $tz)) : (new CarbonImmutable($data->date, $tz))->addMinutes(15); //CarbonImmutable::now($tz)->addMinutes(30);
+        $start = $data->date ? (new CarbonImmutable($data->date, $tz)) : (new CarbonImmutable($data->date, $tz)); //CarbonImmutable::now($tz)->addMinutes(30);
         $end    = $start->addDays($data->days);
         $dates = new CarbonPeriod($start, $interval, $end, CarbonPeriod::EXCLUDE_END_DATE);
 

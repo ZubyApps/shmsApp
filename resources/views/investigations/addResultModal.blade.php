@@ -46,9 +46,17 @@
                                     <option value="Other">Other</option>
                                 </select>
                             </x-form-div>
-                            <x-form-div class="col-xl-12">
+                            {{-- <x-form-div class="col-xl-12">
                                 <x-input-span id="statusLabel">Result/Report<x-required-span /></x-input-span>
                                 <x-form-textarea name="result"></x-form-textarea>
+                            </x-form-div> --}}
+                            <x-form-div class="col-xl-12">
+                                <x-input-span id="physiciansPlanLabel">Report<x-required-span />
+                                    <i class="btn bi bi-type-bold emboldenBtn"></i>
+                                    <i class="btn bi bi-type-italic italicsBtn"></i>
+                                    <i class="btn bi bi-type-underline underlineBtn"></i>
+                                </x-input-span>
+                                <div class="form-control" type="text" name="result" id="result" contentEditable></div>
                             </x-form-div>
                         </div>
                     </div>

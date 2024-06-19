@@ -1207,7 +1207,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const [resultDiv, modal, url] = btn.id == 'createResultBtn' ? [addResultDiv, addResultModal, 'create'] : [updateResultDiv, updateResultModal, 'update']
             const [prescriptionId, investigationTableId] = [btn.getAttribute('data-id'), btn.getAttribute('data-table')]
             btn.setAttribute('disabled', 'disabled')
-            let data = { ...getDivData(resultDiv), prescriptionId }
+            let data = { ...getDivData(resultDiv), prescriptionId, result: resultDiv.querySelector('#result').innerHTML }
     
             http.patch(`/investigations/${url}/${prescriptionId}`, { ...data }, { "html": resultDiv })
                 .then((response) => {

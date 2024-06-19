@@ -336,6 +336,7 @@ const getOtherPrescriptionsByFilterNurses = (tableId, conId, modal, visitId, isH
             {data: "qtyBilled"},
             {data: "qtyDispensed"},
             {data: "prescribedBy"},
+            {data: "prescribed"},
             {data: "note"},
             {data: row =>  row.chartable ? 'Yes' : 'No'},
             {
