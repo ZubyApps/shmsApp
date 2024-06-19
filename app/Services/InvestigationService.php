@@ -270,8 +270,8 @@ class InvestigationService
         $prescription->update([
             'test_sample'       => $data->sample,
             'result'            => $data->result,
-            'result_date'       => Carbon::now(),
-            'result_by'         => $user->id,
+            // 'result_date'       => Carbon::now(),
+            // 'result_by'         => $user->id,
             'discontinued'      => false,
             'dispense_comment'  => null,
             ]);
