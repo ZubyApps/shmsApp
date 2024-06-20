@@ -24,7 +24,7 @@
             <div class="offcanvas2-body">
                 <div class="my-2 form-control">
                     <span class="fw-bold text-primary"> Inpatient's Investigations </span>
-                    <div class="row m-1">
+                    <div class="row overflow-auto m-1">
                         <table id="inpatientInvestigationsTable" class="table table-sm">
                             <thead>
                                 <tr>

@@ -355,6 +355,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (wardBedBtn){ populateWardAndBedModal(wardAndBedModal, wardBedBtn); wardAndBedModal.show()}
 
             if (historyBtn){
+                historyBtn.setAttribute('disabled', 'disabled')
                 const patientId     = historyBtn.getAttribute('data-patientid')
                 const isAnc         = historyBtn.getAttribute('data-patienttype') === 'ANC'
                 http.get(`/consultation/history/${patientId}`)
@@ -371,6 +372,11 @@ window.addEventListener('DOMContentLoaded', function () {
 
                         consultationHistoryModal.show()
                     }
+                    historyBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    historyBtn.removeAttribute('disabled')
+                    console.log(error)
                 })
             }
 

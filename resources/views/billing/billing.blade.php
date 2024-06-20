@@ -60,14 +60,14 @@
             </div>
         </div>
 
-        <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="offcanvasInvestigations"
+        <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="offcanvasInvestigations"
             aria-labelledby="offcanvasInvestigationsLabel">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title text-primary" id="offcanvasInvestigations">Outpatient Investigations</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas2-body">
-                <div class="my-2">
+                <div class="my-2 form-control">
                     <div class="row overflow-auto m-1">
                         <table id="outpatientInvestigationsTable" class="table table-sm">
                             <thead>

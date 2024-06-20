@@ -576,7 +576,7 @@ const getUpcomingMedicationsTable = (tableId, button, span) => {
                 `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
             } },
             {data: row => row.ward + '-' + row.bedNo},
-            {data: row => `<span class="position-relative p-2"> ${row.treatment} ${row.notGiven == 'Snooze 60 mins' ||  row.notGiven == 'Snooze 30 mins' ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">${row.notGiven + ' at ' + row.timeGiven}</span>` : ''} </span>`},
+            {data: row => `<span class="position-relative p-2"> ${row.treatment} ${row.notGiven == 'Snooze 60 mins' ||  row.notGiven == 'Snooze 30 mins' ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">${row.notGiven + ' by ' + row.givenBy +' at ' + row.timeGiven}</span>` : ''} </span>`},
             {data: "prescription"},
             {data: "dose"},
             {data: "chartedBy"},
