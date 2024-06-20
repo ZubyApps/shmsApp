@@ -13,6 +13,7 @@ use App\Models\Visit;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\DB;
 
 class MedReportService
@@ -468,7 +469,10 @@ class MedReportService
 
             return DB::table('visits')
             ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, visits.discharge_reason as reason')
-            ->where('visits.admission_status', 'Inpatient')
+            ->where(function (QueryBuilder $query) {
+                $query->where('visits.admission_status', 'Inpatient')
+                    ->orWhere('visits.admission_status', 'Observation');
+            })
             ->whereMonth('visits.created_at', $date->month)
             ->whereYear('visits.created_at', $date->year)
             ->groupBy('reason')
@@ -478,7 +482,10 @@ class MedReportService
 
         return DB::table('visits')
             ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, visits.discharge_reason as reason')
-            ->where('visits.admission_status', 'Inpatient')
+            ->where(function (QueryBuilder $query) {
+                $query->where('visits.admission_status', 'Inpatient')
+                    ->orWhere('visits.admission_status', 'Observation');
+            })
             ->whereMonth('visits.created_at', $current->month)
             ->whereYear('visits.created_at', $current->year)
             ->groupBy('reason')

@@ -184,7 +184,8 @@ class NursingChartService
                 'discontinued'      => $nursingChart->prescription->discontinued,
                 'rawDateTime'       => $nursingChart->scheduled_time,
                 'timeDone'          => $nursingChart->time_done ? (new Carbon($nursingChart->time_done))->format('jS/M/y g:iA') : '',
-                'notDone'           => $nursingChart->not_done
+                'notDone'           => $nursingChart->not_done,
+                'doneBy'            => $nursingChart->doneBy?->username ?? ''
             ];
          };
     }
