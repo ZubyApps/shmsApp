@@ -415,9 +415,17 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to, date) =>
         }},
         paging: true,
         orderMulti: false,
-        lengthMenu:[25, 50, 100, 150, 200],
+        lengthMenu:[50, 100, 200, 300],
         language: {
             emptyTable: 'No Visits'
+        },
+        drawCallback: function (settings) {
+            var api = this.api()
+                $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
+                $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
+                $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
+                $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
+                $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
         },
         rowCallback: (row, data) => {
                 row.classList.add('table-light')
