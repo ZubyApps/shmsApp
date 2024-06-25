@@ -115,7 +115,7 @@ class Prescription extends Model
                     ->where('chartable', true)
                     ->where('discontinued', false)
                     ->whereDoesntHave($chartTable)
-                    ->whereRelation('resource', 'category', $comparism ,'Medications')
+                    ->whereRelation('resource', 'sub_category', $comparism ,'Injectable')
                     ->count();
     }
 
