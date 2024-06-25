@@ -703,7 +703,7 @@ const getShiftPerformance = (dept, div) => {
                         <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
                             <li class="dropdown-item text-secondary">Chart Rate ${shiftPerformance.chart_rate ? '- '+ shiftPerformance.chart_rate :'- no activity'}</li>
                         </button>
-                        <ul class="dropdown-menu ${details.notCharted.toString() ? '' : 'd-none'}">
+                        <ul class="dropdown-menu ${details.notCharted.length > 0 ? '' : 'd-none'}">
                             ${noChatPatients}
                         </ul>
                     </li>
@@ -711,7 +711,7 @@ const getShiftPerformance = (dept, div) => {
                         <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
                             <li class="dropdown-item text-secondary">Given Rate ${shiftPerformance.given_rate ? '- '+ shiftPerformance.given_rate :'- no activity'}</li>
                         </button>
-                        <ul class="dropdown-menu ${details.notGiven.toString() ? '' : 'd-none'}">
+                        <ul class="dropdown-menu ${details.notGiven.length > 0 ? '' : 'd-none'}">
                             ${noGivenPatients }
                         </ul>
                     </li>
@@ -722,7 +722,7 @@ const getShiftPerformance = (dept, div) => {
                         <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
                             <li class="dropdown-item text-secondary">Inpatient Vitalsigns Rate ${shiftPerformance.inpatient_vitals_count ? '- '+ shiftPerformance.inpatient_vitals_count :'- no activity'}</li>
                         </button>
-                        <ul class="dropdown-menu ${details.inpatientsNoV.toString() ? '' : 'd-none'}">
+                        <ul class="dropdown-menu ${details.inpatientsNoV.length > 0 ? '' : 'd-none'}">
                             ${inpatients}
                         </ul>
                     </li>
@@ -730,7 +730,7 @@ const getShiftPerformance = (dept, div) => {
                         <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
                             <li class="dropdown-item text-secondary">Outpatient Vitalsigns Rate ${shiftPerformance.outpatient_vitals_count ? '- '+ shiftPerformance.outpatient_vitals_count :'- no activity'}</li>
                         </button>
-                        <ul class="dropdown-menu ${details.outpatientsNoV.toString() ? '' : 'd-none'}">
+                        <ul class="dropdown-menu ${details.outpatientsNoV.length > 0 ? '' : 'd-none'}">
                             ${outpatients}
                         </ul>
                     </li>
