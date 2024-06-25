@@ -147,6 +147,23 @@ class Prescription extends Model
                     ->count();
     }
 
+    public function prescriptionsNotChartedPerShift($shift, $chartTable, $comparism = '=')
+    {
+        $shiftEnd = new Carbon($shift->shift_end);
+        $shiftEndTimer = $shiftEnd->subMinutes(20);
+
+        return $this->where('chartable', true)
+                    ->where('held', null)
+                    ->where('discontinued', false)
+                    ->where(function(Builder $query) use($chartTable, $comparism) {
+                        $query->whereDoesntHave($chartTable)
+                            ->whereDoesntHave('nursingCharts')
+                            ->whereRelation('resource', 'category', $comparism ,'Medications');
+                        })
+                    ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
+                    ->get();
+    }
+
     public function prescriptionsGivenPerShift($shift, $chartTable, $comparism = '=')
     {
         $shiftEnd = new Carbon($shift->shift_end);
@@ -168,5 +185,28 @@ class Prescription extends Model
                     })              
                     ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
                     ->count();
+    }
+
+    public function prescriptionsNotGivenPerShift($shift, $chartTable, $comparism = '=')
+    {
+        $shiftEnd = new Carbon($shift->shift_end);
+        $shiftEndTimer = $shiftEnd->subMinutes(20);
+
+        return $this->where('chartable', true)
+                    ->where('held', null)
+                    ->where('discontinued', false)
+                    ->whereRelation('resource', 'category', $comparism ,'Medications')
+                    ->where(function(Builder $query) use($chartTable, $shift, $shiftEndTimer) {
+                        $query->whereHas($chartTable, function(Builder $query) use($shift, $shiftEndTimer) {
+                            $query->whereNull('time_given')
+                            ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
+                        })                
+                            ->orWhereHas('nursingCharts', function(Builder $query) use($shift, $shiftEndTimer) {
+                            $query->whereNull('time_done')
+                            ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
+                        });
+                    })              
+                    ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
+                    ->get();
     }
 }

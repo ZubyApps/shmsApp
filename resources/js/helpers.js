@@ -670,20 +670,70 @@ const getShiftPerformance = (dept, div) => {
             if (response.status >= 200 || response.status <= 300){
                 const shiftPerformance  = response.data.shiftPerformance
                 const staff             = shiftPerformance.staff
+                const details           = response.data.details
+                let inpatients          = ''
+                let outpatients         = ''
+                let noChatPatients      = ''
+                let noGivenPatients     = ''
+
+                details.inpatientsNoV.length > 0 ? details.inpatientsNoV.forEach(patient => {
+                    inpatients +=  `<li class="dropdown-item text-secondary">${patient}</li>`
+                 }) : ''
+
+                details.outpatientsNoV.length > 0 ? details.outpatientsNoV.forEach(patient => {
+                    outpatients +=  `<li class="dropdown-item text-secondary">${patient}</li>`
+                 }) : ''
+
+                details.notCharted.length > 0 ? details.notCharted.forEach(patient => {
+                    noChatPatients +=  `<li class="dropdown-item text-secondary">${patient}</li>`
+                 }) : ''
+                
+                details.notGiven.length > 0 ? details.notGiven.forEach(patient => {
+                    noGivenPatients +=  `<li class="dropdown-item text-secondary">${patient}</li>`
+                 }) : ''
+                
                 div.innerHTML = `
-                <button type="button" id="newPatient" class="btn p-0 position-relative" data-bs-toggle="dropdown" aria-expanded="false">
+                <button type="button" id="newPatient" class="btn p-0 position-relative" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     <div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
                     <div class="progress-bar text-dark fw-semibold fs-6 overflow-visible bg-${shiftPerformance.performance <= 45 ? 'danger' : shiftPerformance.performance > 45 && shiftPerformance.performance < 65 ? 'warning' : shiftPerformance.performance >= 65 && shiftPerformance.performance <= 85 ? 'primary' : 'success'}-subtle px-1" style="width: ${shiftPerformance.performance}%;"> ${shiftPerformance.shift} Performance ${shiftPerformance.performance}% <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="timeLeft">${getTimeToEndOfShift(shiftPerformance.shift_end)}</span></div>
                     </div>
                 </button>
                 <ul class="dropdown-menu">
-                    <li class="dropdown-item text-secondary">Chart Rate ${shiftPerformance.chart_rate ? '- '+ shiftPerformance.chart_rate :'- no activity'}</li>
-                    <li class="dropdown-item text-secondary">Given Rate ${shiftPerformance.given_rate ? '- '+ shiftPerformance.given_rate :'- no activity'}</li>
+                    <li class=" text-secondary p-0">
+                        <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
+                            <li class="dropdown-item text-secondary">Chart Rate ${shiftPerformance.chart_rate ? '- '+ shiftPerformance.chart_rate :'- no activity'}</li>
+                        </button>
+                        <ul class="dropdown-menu ${details.notCharted.toString() ? '' : 'd-none'}">
+                            ${noChatPatients}
+                        </ul>
+                    </li>
+                    <li class=" text-secondary p-0">
+                        <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
+                            <li class="dropdown-item text-secondary">Given Rate ${shiftPerformance.given_rate ? '- '+ shiftPerformance.given_rate :'- no activity'}</li>
+                        </button>
+                        <ul class="dropdown-menu ${details.notGiven.toString() ? '' : 'd-none'}">
+                            ${noGivenPatients }
+                        </ul>
+                    </li>
                     <li class="dropdown-item text-secondary">Avg First Medication Time ${shiftPerformance.first_med_res ? '- '+ shiftPerformance.first_med_res :'- no activity'}</li>
                     <li class="dropdown-item text-secondary">Avg First Vitalsigns Time ${shiftPerformance.first_vitals_res ?'- '+ shiftPerformance.first_vitals_res :'- no activity'}</li>
                     <li class="dropdown-item text-secondary">Avg Medication Giving Time ${shiftPerformance.medication_time ? '- '+ shiftPerformance.medication_time :'- no activity'}</li>
-                    <li class="dropdown-item text-secondary">Inpatient Vitalsigns Rate ${shiftPerformance.inpatient_vitals_count ? '- '+ shiftPerformance.inpatient_vitals_count :'- no activity'}</li>
-                    <li class="dropdown-item text-secondary">Outpatient Vitalsigns Rate ${shiftPerformance.outpatient_vitals_count ? '- '+ shiftPerformance.outpatient_vitals_count :'- no activity'}</li>
+                    <li class=" text-secondary p-0">
+                        <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
+                            <li class="dropdown-item text-secondary">Inpatient Vitalsigns Rate ${shiftPerformance.inpatient_vitals_count ? '- '+ shiftPerformance.inpatient_vitals_count :'- no activity'}</li>
+                        </button>
+                        <ul class="dropdown-menu ${details.inpatientsNoV.toString() ? '' : 'd-none'}">
+                            ${inpatients}
+                        </ul>
+                    </li>
+                    <li class=" text-secondary p-0">
+                        <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
+                            <li class="dropdown-item text-secondary">Outpatient Vitalsigns Rate ${shiftPerformance.outpatient_vitals_count ? '- '+ shiftPerformance.outpatient_vitals_count :'- no activity'}</li>
+                        </button>
+                        <ul class="dropdown-menu ${details.outpatientsNoV.toString() ? '' : 'd-none'}">
+                            ${outpatients}
+                        </ul>
+                    </li>
                     <li><hr class="dropdown-divider"></li>
                     <li class="dropdown-item text-secondary">Nurses on Duty - ${staff.toString().replaceAll(',', ', ')}</li>
                 </ul>
