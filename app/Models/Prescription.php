@@ -175,12 +175,12 @@ class Prescription extends Model
                     ->whereRelation('resource', 'category', $comparism ,'Medications')
                     ->where(function(Builder $query) use($chartTable, $shift, $shiftEndTimer) {
                         $query->whereHas($chartTable, function(Builder $query) use($shift, $shiftEndTimer) {
-                            // $query->where('time_given', '!=', null)
-                            // ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
+                            $query->where('time_given', '!=', null)
+                            ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
                         })                
                             ->orWhereHas('nursingCharts', function(Builder $query) use($shift, $shiftEndTimer) {
-                            // $query->where('time_done', '!=', null)
-                            // ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
+                            $query->where('time_done', '!=', null)
+                            ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
                         });
                     })              
                     ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
