@@ -88,6 +88,18 @@ const review = (count, line) => {
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
+                            <label class="form-label fw-bold text-secondary"> Provisional Diagnosis </label>
+                            <div>${line.provisionalDiagnosis}</div>
+                        </div>
+                    </div>
+                    <div class="themed-grid-col col-xl-6 mt-4">
+                        <div class="form-outline mb-2">
+                            <label class="form-label fw-bold text-secondary"> History Of Care </label>
+                            <div>${line.historyOfCare}</div>
+                        </div>
+                    </div>
+                    <div class="themed-grid-col col-xl-6 mt-4">
+                        <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Assessment </label>
                             <div>${line.assessment}</div>
                         </div>
