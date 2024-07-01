@@ -423,7 +423,7 @@ Class ShiftPerformanceService
         if (! empty($params->searchTerm)) {
             return $this->shiftPerformance
                     ->where('department', $data->department)
-                    ->where(function (Builder $query) use($params) {
+                    ->where(function (EloquentBuilder $query) use($params) {
                         $query->where('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('performance', '>', $params->searchTerm );
                     })
