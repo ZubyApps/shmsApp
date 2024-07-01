@@ -419,6 +419,15 @@ Class ShiftPerformanceService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        
+        if (! empty($params->searchTerm)) {
+            return $this->shiftPerformance
+                    ->where('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                    ->where('department', $data->department)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
         return $this->shiftPerformance
                     ->where('department', $data->department)
                     ->orderBy($orderBy, $orderDir)
