@@ -6,13 +6,15 @@ use App\Models\Prescription;
 use App\Models\Visit;
 use App\Services\DatatablesService;
 use App\Services\PharmacyService;
+use App\Services\PrescriptionService;
 use Illuminate\Http\Request;
 
 class PharmacyController extends Controller
 {
     public function __construct(
         private readonly DatatablesService $datatablesService, 
-        private readonly PharmacyService $pharmacyService)
+        private readonly PharmacyService $pharmacyService,
+        private readonly PrescriptionService $prescriptionService)
     {
         
     }
@@ -70,7 +72,7 @@ class PharmacyController extends Controller
         ]);
         
 
-       return $this->pharmacyService->hold($request, $prescription, $request->user());
+       return $this->prescriptionService->hold($request, $prescription, $request->user());
     }
 
     public function dispenseComment(Request $request, Prescription $prescription)

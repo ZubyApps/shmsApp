@@ -256,14 +256,14 @@ class PharmacyService
         });
     }
 
-    public function hold(Request $data, Prescription $prescription, User $user)
-    {
-        return $prescription->update([
-            'held' => $data->reason,
-            'held_at' => new Carbon(),
-            'held_by' => $user->id,
-        ]);
-    }
+    // public function hold(Request $data, Prescription $prescription, User $user)
+    // {
+    //     return $prescription->update([
+    //         'held' => $data->reason,
+    //         'held_at' => new Carbon(),
+    //         'held_by' => $user->id,
+    //     ]);
+    // }
 
     public function saveDispenseComment(Request $data, Prescription $prescription)
     {

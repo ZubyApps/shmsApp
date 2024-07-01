@@ -241,6 +241,7 @@ class PrescriptionService
                 'qtyBilled'             => $prescription->qty_billed ?? '',
                 'qtyDispensed'          => $prescription->qty_dispensed ?? '',
                 'held'                  => $prescription->held,
+                'heldBy'                => $prescription->heldBy?->username,
                 'note'                  => $prescription->note,
                 'conId'                 => $prescription->consultation?->id,
                 'visitId'               => $prescription->visit->id,
@@ -487,5 +488,14 @@ class PrescriptionService
                         ->groupBy('month_name', 'month')
                         ->orderBy('month')
                         ->get();
+    }
+
+    public function hold(Request $data, Prescription $prescription, User $user)
+    {   var_dump($data->reason);
+        return $prescription->update([
+            'held' => $data->reason,
+            'held_at' => new Carbon(),
+            'held_by' => $user->id,
+        ]);
     }
 }
