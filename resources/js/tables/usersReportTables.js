@@ -270,26 +270,40 @@ const getNursesShiftPerformanceTable = (tableId, department) => {
             {data: row => row.start + ' - ' + row.end},
             {
                 visible: false,
-                data: "chartRate"},
+                data: "chartRate"
+            },
             {
                 visible: false,
-                data: "givenRate"},
+                data: "givenRate"
+            },
             {
                 visible: false,
-                data: "firstMedRes"},
+                data: "firstMedRes"
+            },
             {
                 visible: false,
-                data: "firstVitalsRes"},
+                data: "firstVitalsRes"
+            },
             {
                 visible: false,
-                data: "medicationTime"},
+                data: "medicationTime"
+            },
             {
                 visible: false,
-                data: "intpatientVitalsCount"},
+                data: "intpatientVitalsCount"
+            },
             {
                 visible: false,
-                data: "outpatientVitalsCount"},
-            {data: "staff"},
+                data: "outpatientVitalsCount"
+            },
+            {data: row => `
+                <div class="d-flex">
+                        <button type="submit" class="ms-1 btn btn-outline-white staffBtn tooltip-test" title="approve" data-id="${row.id}">
+                                ${row.staff ?? ''}
+                        </button>
+                        <input class="ms-1 form-control staffInput d-none" id="staffInput" value="${row.staff}">
+                    </div>
+                   `},
             {data: row => `<button type="button" id="newPatient" class="btn p-0 " data-bs-toggle="dropdown" aria-expanded="false">
             <div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
             <div class="progress-bar text-dark fw-semibold fs-6 overflow-visible bg-${row.performance <= 45 ? 'danger' : row.performance > 45 && row.performance < 65 ? 'warning' : row.performance >= 65 && row.performance <= 85 ? 'primary' : 'success'}-subtle px-1" style="width: ${row.performance}%;"> Performance ${row.performance}% </div>

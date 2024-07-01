@@ -157,11 +157,6 @@ class ConsultationService
     {
         return DB::transaction(function () use ($request, $visit) {
 
-            // $visit->update([
-            //     'viewed_at' => new Carbon(),
-            //     'viewed_by' => $request->user()->id,
-            // ]);
-
             return $this->consultation
                         ->where('visit_id', $visit->id)
                         ->orderBy('created_at', 'asc')

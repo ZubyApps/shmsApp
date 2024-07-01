@@ -16,6 +16,7 @@ use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 Class ShiftPerformanceService
@@ -441,6 +442,7 @@ Class ShiftPerformanceService
     {
        return  function (ShiftPerformance $shiftPerformance) {
             return [
+                'id'                    => $shiftPerformance->id,
                 'department'            => $shiftPerformance->department,
                 'shift'                 => $shiftPerformance->shift,
                 'start'                 => (new Carbon($shiftPerformance->shift_start))->format('d/M/y g:ia'),
@@ -457,5 +459,12 @@ Class ShiftPerformanceService
                 'closed'                => $shiftPerformance->is_closed,
             ];
        };
+    }
+
+    public function updateStaff(Request $data, ShiftPerformance $shiftPerformance)
+    {
+        return $shiftPerformance->update([
+            'staff' => $data->staff
+        ]);
     }
 }

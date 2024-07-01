@@ -525,6 +525,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('shiftperformance')->group(function () {
         Route::get('load', [ShiftPerformanceController::class, 'loadShiftPerformanceTable']);
         Route::get('/Nurse', [ShiftPerformanceController::class, 'UpdateDeptPreformance']);
+        Route::patch('/staff/{shiftPerformance}', [ShiftPerformanceController::class, 'UpdateStaffNames']);
     });
 });
 

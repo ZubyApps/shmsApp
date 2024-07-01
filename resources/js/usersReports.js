@@ -1,6 +1,7 @@
 import {Modal } from "bootstrap";
 import $ from 'jquery';
 import { getBillOfficersActivityTable, getDoctorsActivityTable, getHmoOfficersActivityTable, getLabTechActivityTable, getNursesActivityTable, getNursesShiftPerformanceTable, getPharmacyTechActivityTable } from "./tables/usersReportTables";
+import http from "./http";
 
 window.addEventListener('DOMContentLoaded', function () {
     const doctorsDatesDiv           = document.querySelector('.doctorsDatesDiv')
@@ -199,20 +200,30 @@ window.addEventListener('DOMContentLoaded', function () {
         billOfficersActivityTable = getBillOfficersActivityTable('billOfficersActivityTable', 'Bill Officer', null, null, billOfficersDatesDiv.querySelector('#billOffersActivityMonth').value)
     })
 
-    // //nurses shift performance
-    // searchBillOfficersWithDatesBtn.addEventListener('click', function () {
-    // //     billOfficersDatesDiv.querySelector('#billOffersActivityMonth').value = ''
-    //     if ($.fn.DataTable.isDataTable( '#nursesShiftPerfomanceTable' )){
-    //         $('#nursesShiftPerfomanceTable').dataTable().fnDestroy()
-    //     }
-    //     nursesShiftPerfomanceTable = getNursesShiftPerformanceTable('nursesShiftPerfomanceTable', 'Nurse')
-    // })
+    document.querySelectorAll('#nursesShiftPerfomanceTable').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const staffBtn = event.target.closest('.staffBtn')
 
-    // searchBillOfficersByMonthBtn.addEventListener('click', function () {
-    //     billOfficersDatesDiv.querySelector('#startDate').value = ''; billOfficersDatesDiv.querySelector('#endDate').value = ''
-    //     if ($.fn.DataTable.isDataTable( '#billOfficersActivityTable' )){
-    //         $('#billOfficersActivityTable').dataTable().fnDestroy()
-    //     }
-    //     billOfficersActivityTable = getBillOfficersActivityTable('billOfficersActivityTable', 'Bill Officer', null, null, billOfficersDatesDiv.querySelector('#billOffersActivityMonth').value)
-    // })
+            if (staffBtn) {
+                const performanceId = staffBtn.getAttribute('data-id')
+                staffBtn.classList.add('d-none')
+
+                const staffInput = staffBtn.parentElement.querySelector('.staffInput')
+                staffInput.classList.remove('d-none')
+                staffInput.focus()
+
+                staffInput.addEventListener('blur', function() {
+                    http.patch(`/shiftperformance/staff/${performanceId}`, {staff: staffInput.value})
+                    .then((response) => {
+                        if (response.status == 200) {
+                            nursesShiftPerfomanceTable.draw()
+                        }
+                    })
+                        .catch((error) => {
+                            console.log(error.response)                            
+                        })
+                    })
+            }
+        })
+    })
 })

@@ -51,9 +51,9 @@ class ShiftPerformanceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateShiftPerformanceRequest $request, ShiftPerformance $shiftPerformance)
+    public function UpdateStaffNames(UpdateShiftPerformanceRequest $request, ShiftPerformance $shiftPerformance)
     {
-        //
+        return $this->shiftPerformanceService->updateStaff($request, $shiftPerformance);
     }
 
     /**
