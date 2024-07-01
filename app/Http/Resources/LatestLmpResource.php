@@ -18,7 +18,7 @@ class LatestLmpResource extends JsonResource
     public function toArray(Request $request): array
     {
         $lmp = Consultation::where('visit_id', $this->id)->whereNotNull('lmp')->orderBy('id', 'desc')->first()?->lmp;
-        Log::info('lmp', [$lmp]);
+        // Log::info('lmp', [$lmp]);
         return [
             'lmp' => $lmp ? Carbon::parse($lmp)->format('Y-m-d') : null
         ];

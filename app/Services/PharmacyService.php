@@ -242,15 +242,15 @@ class PharmacyService
                 $visit->update([
                     'pharmacy_done_by' => $user->id
                 ]);
-                Log::info('', ['pDone' => $visit->pharmacy_done_by]);
+                // Log::info('', ['pDone' => $visit->pharmacy_done_by]);
             }  else {
                 $visit->update([
                     'pharmacy_done_by' => null
                 ]);
-                Log::info('', ['pDone' => $visit->pharmacy_done_by]);
+                // Log::info('', ['pDone' => $visit->pharmacy_done_by]);
             }
 
-            Log::info('{qtyBilled} = {qtyDispensed}', ['qtyBilled' => $qtyBilled, 'qtyDispensed' => $qtyDispensed, 'equal' => $qtyBilled == $qtyDispensed]);
+            // Log::info('{qtyBilled} = {qtyDispensed}', ['qtyBilled' => $qtyBilled, 'qtyDispensed' => $qtyDispensed, 'equal' => $qtyBilled == $qtyDispensed]);
 
             return $prescription;
         });
