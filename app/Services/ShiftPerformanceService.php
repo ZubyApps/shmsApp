@@ -425,7 +425,7 @@ Class ShiftPerformanceService
                     ->where('department', $data->department)
                     ->where(function (Builder $query) use($params) {
                         $query->where('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('performance', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        ->orWhere('performance', '>', $params->searchTerm );
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
