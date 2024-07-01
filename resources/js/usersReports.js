@@ -10,6 +10,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const pharmacyTechsDatesDiv     = document.querySelector('.pharmacyTechsDatesDiv')
     const hmoOfficersDatesDiv       = document.querySelector('.hmoOfficersDatesDiv')
     const billOfficersDatesDiv      = document.querySelector('.billOfficersDatesDiv')
+    const nursesPerfomanceDatesDiv  = document.querySelector('.nursesPerfomanceDatesDiv')
 
     const doctorsActivityTab        = document.querySelector('#nav-doctorsActivity-tab')
     const nursesActivityTab         = document.querySelector('#nav-nursesActivity-tab')
@@ -36,6 +37,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const searchBillOfficersWithDatesBtn  = document.querySelector('.searchBillOfficersWithDatesBtn')
     const searchBillOfficersByMonthBtn    = document.querySelector('.searchBillOfficersByMonthBtn')
+
+    const searchNursesPerfomanceWithDatesBtn    = document.querySelector('.searchNursesPerfomanceWithDatesBtn')
+    const searchNursesPerfomanceByMonthBtn      = document.querySelector('.searchNursesPerfomanceByMonthBtn')
 
     let doctorsActivityTable, nursesActivityTable, labTechActivityTable, pharmacyTechsActivityTable, hmoOfficersActivityTable, billOfficersActivityTable, nursesShiftPerfomanceTable
     doctorsActivityTable = getDoctorsActivityTable('doctorsActivityTable', 'Doctor')
@@ -91,6 +95,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     nursesShiftPerfomanceTab.addEventListener('click', function() {
+        nursesPerfomanceDatesDiv.querySelector('#nursesPerfomanceMonth').value = new Date().toISOString().slice(0,7)
         if ($.fn.DataTable.isDataTable( '#nursesShiftPerfomanceTable' )){
             $('#nursesShiftPerfomanceTable').dataTable().fnDraw()
         } else {
@@ -198,6 +203,22 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#billOfficersActivityTable').dataTable().fnDestroy()
         }
         billOfficersActivityTable = getBillOfficersActivityTable('billOfficersActivityTable', 'Bill Officer', null, null, billOfficersDatesDiv.querySelector('#billOffersActivityMonth').value)
+    })
+
+    searchNursesPerfomanceWithDatesBtn.addEventListener('click', function () {
+        nursesPerfomanceDatesDiv.querySelector('#nursesPerfomanceMonth').value = ''
+        if ($.fn.DataTable.isDataTable( '#nursesShiftPerfomanceTable' )){
+            $('#nursesShiftPerfomanceTable').dataTable().fnDestroy()
+        }
+        nursesShiftPerfomanceTable = getNursesShiftPerformanceTable('nursesShiftPerfomanceTable', 'Nurse', nursesPerfomanceDatesDiv.querySelector('#startDate').value, nursesPerfomanceDatesDiv.querySelector('#endDate').value)
+    })
+
+    searchNursesPerfomanceByMonthBtn.addEventListener('click', function () {
+        nursesPerfomanceDatesDiv.querySelector('#startDate').value = ''; nursesPerfomanceDatesDiv.querySelector('#endDate').value = ''
+        if ($.fn.DataTable.isDataTable( '#nursesShiftPerfomanceTable' )){
+            $('#nursesShiftPerfomanceTable').dataTable().fnDestroy()
+        }
+        nursesShiftPerfomanceTable = getNursesShiftPerformanceTable('nursesShiftPerfomanceTable', 'Nurse', null, null, nursesPerfomanceDatesDiv.querySelector('#nursesPerfomanceMonth').value)
     })
 
     document.querySelectorAll('#nursesShiftPerfomanceTable').forEach(table => {

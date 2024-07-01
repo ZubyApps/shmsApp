@@ -233,11 +233,14 @@ const getBillOfficersActivityTable = (tableId, designation, startDate, endDate, 
     return billOfficersActivityTable
 }
 
-const getNursesShiftPerformanceTable = (tableId, department) => {
+const getNursesShiftPerformanceTable = (tableId, department, startDate, endDate, date) => {
     const billOfficersActivityTable = new DataTable(`#${tableId}`, {
         serverSide: true,
         ajax:  {url: '/shiftperformance/load', data: {
-            'department' : department, 
+            'department' : department,
+            'startDate' : startDate, 
+            'endDate'   : endDate,
+            'date'      : date 
             }
         },
         orderMulti: true,

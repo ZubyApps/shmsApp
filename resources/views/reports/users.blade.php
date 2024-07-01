@@ -302,17 +302,17 @@
             <div class="tab-pane fade" id="nav-nursesShiftPerfomance" role="tabpanel" aria-labelledby="nav-nursesShiftPerfomance-tab" tabindex="0">
                 <div class="">
                     <h5 class="card-title py-4">Nurses Shift Perfomance</h5>
-                    {{-- <x-form-div class="col-xl-8 py-3 billOfficersDatesDiv">
+                    <x-form-div class="col-xl-8 py-3 nursesPerfomanceDatesDiv">
                         <x-input-span class="">Start</x-input-span>
                         <x-form-input type="date" name="startDate" id="startDate" />
                         <x-input-span class="">End</x-input-span>
                         <x-form-input type="date" name="endDate" id="endDate" />
-                        <button class="input-group-text searchBillOfficersWithDatesBtn">Search</button>
+                        <button class="input-group-text searchNursesPerfomanceWithDatesBtn">Search</button>
                         <x-input-span class="">OR</x-input-span>
                         <x-input-span class="">Month/Year</x-input-span>
-                        <x-form-input type="month" name="billOffersActivityMonth" id="billOffersActivityMonth" />
-                        <button class="input-group-text searchBillOfficersByMonthBtn">Search</button>
-                    </x-form-div> --}}
+                        <x-form-input type="month" name="nursesPerfomanceMonth" id="nursesPerfomanceMonth" />
+                        <button class="input-group-text searchNursesPerfomanceByMonthBtn">Search</button>
+                    </x-form-div>
                     <table  id="nursesShiftPerfomanceTable" class="table table-sm">
                         <thead>
                             <tr>
