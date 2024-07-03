@@ -271,7 +271,7 @@ window.addEventListener('DOMContentLoaded', function () {
             clearValidationErrors(newAddResourceStockModal._element)
             const message = {"hmsStock": ["Please rectify the the HMS Stock level"], "difference" : ["You could not have used more stock than you received"]}
             handleValidationErrors(message, newAddResourceStockModal._element)
-            resetFocusEndofLine(actualStockInput)
+            setTimeout(()=>{actualStockInput.focus()}, 100)
             return
         }
             clearValidationErrors(newAddResourceStockModal._element)
