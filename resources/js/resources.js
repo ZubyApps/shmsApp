@@ -1,5 +1,5 @@
 import { Modal } from "bootstrap";
-import { clearDivValues, getDivData, clearValidationErrors, openModals, displayList, getDatalistOptionId, handleValidationErrors} from "./helpers"
+import { clearDivValues, getDivData, clearValidationErrors, openModals, displayList, getDatalistOptionId, handleValidationErrors, resetFocusEndofLine} from "./helpers"
 import http from "./http";
 import $ from 'jquery';
 import { getAddResourceStockTable, getResourceSubCategoryTable, getResourceSupplierTable, getResourceTable } from "./tables/resourcesTables";
@@ -271,6 +271,7 @@ window.addEventListener('DOMContentLoaded', function () {
             clearValidationErrors(newAddResourceStockModal._element)
             const message = {"hmsStock": ["Please rectify the the HMS Stock level"], "difference" : ["You could not have used more stock than you received"]}
             handleValidationErrors(message, newAddResourceStockModal._element)
+            resetFocusEndofLine(actualStockInput)
             return
         }
             clearValidationErrors(newAddResourceStockModal._element)

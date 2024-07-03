@@ -547,13 +547,13 @@ const removeDisabled = (element) => {
     setTimeout(() => element.removeAttribute('disabled'), 1500 ) 
 }
 
-const resetFocusEndofLine = (element) => {
+const resetFocusEndofLine = (element, time = 100) => {
     let value = element.value
     setTimeout(function(){
         element.focus()
         element.value = ''
         element.value = value
-    }, 100)
+    }, time)
 }
 
 const dischargeColour = (reason) => {
