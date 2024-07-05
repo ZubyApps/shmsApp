@@ -491,7 +491,7 @@ class PrescriptionService
     }
 
     public function hold(Request $data, Prescription $prescription, User $user)
-    {   var_dump($data->reason);
+    {
         return $prescription->update([
             'held' => $data->reason,
             'held_at' => new Carbon(),

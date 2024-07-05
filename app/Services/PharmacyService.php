@@ -242,28 +242,15 @@ class PharmacyService
                 $visit->update([
                     'pharmacy_done_by' => $user->id
                 ]);
-                // Log::info('', ['pDone' => $visit->pharmacy_done_by]);
             }  else {
                 $visit->update([
                     'pharmacy_done_by' => null
                 ]);
-                // Log::info('', ['pDone' => $visit->pharmacy_done_by]);
             }
-
-            // Log::info('{qtyBilled} = {qtyDispensed}', ['qtyBilled' => $qtyBilled, 'qtyDispensed' => $qtyDispensed, 'equal' => $qtyBilled == $qtyDispensed]);
 
             return $prescription;
         });
     }
-
-    // public function hold(Request $data, Prescription $prescription, User $user)
-    // {
-    //     return $prescription->update([
-    //         'held' => $data->reason,
-    //         'held_at' => new Carbon(),
-    //         'held_by' => $user->id,
-    //     ]);
-    // }
 
     public function saveDispenseComment(Request $data, Prescription $prescription)
     {
@@ -341,6 +328,7 @@ class PharmacyService
                     'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
                     'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
                     'amountPaid'        => $prescription->paid ?? 0,
+                    'blink'             => $prescription->resource->stock_level <= $prescription->resource->reorder_level,
                 ]),
             ];
          };

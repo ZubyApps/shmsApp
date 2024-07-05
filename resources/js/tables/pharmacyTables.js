@@ -97,7 +97,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-secondary">${count++}</td>
                                                 <td class="text-secondary">${p.prescribed}</td>                
                                                 <td class="text-secondary">${p.prescribedBy}</td>                
-                                                <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold">${p.item +' '+ displayPaystatus(p, credit, NHIS)}</td>                
+                                                <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold">${`<span class="${p.blink ? 'colour-change2' : ''}">${p.item}</span>` +' '+ displayPaystatus(p, credit, NHIS)}</td>                
                                                 <td class="text-secondary">${p.prescription}</td>                
                                                 <td class="text-secondary">${p.note}</td>
                                                 ${credit || NHIS ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>` : ''}
