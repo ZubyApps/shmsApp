@@ -143,6 +143,8 @@ class BillingService
                 'conId'             => $latestConsultation?->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
+                'age'               => $visit->patient->age(),
+                'sex'               => $visit->patient->sex,
                 'doctor'            => $visit->doctor->username,
                 'diagnosis'         => $latestConsultation?->icd11_diagnosis ?? $latestConsultation?->provisional_diagnosis ?? $latestConsultation?->assessment,
                 'sponsor'           => $visit->sponsor->name,

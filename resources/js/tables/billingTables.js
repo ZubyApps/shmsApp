@@ -92,6 +92,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) =
                             <a class="dropdown-item patientsBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-staff="${ row.staff }">
                                 Bill Summary
                             </a>
+                            <a class="dropdown-item btn btn-outline-primary medicalReportBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-age="${ row.age }" data-sex="${ row.sex }">Report/Refer/Result</a>
                             <a class="dropdown-item closeVisitBtn btn tooltip-test" title="${row.closed ? 'closed': 'close'}"  data-id="${ row.id }">
                             ${row.closed ? '': 'Close'}
                             </a>

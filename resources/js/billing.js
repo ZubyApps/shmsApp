@@ -1,11 +1,12 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { clearDivValues, getDivData, clearValidationErrors, resetFocusEndofLine, openModals} from "./helpers"
+import { clearDivValues, getDivData, clearValidationErrors, resetFocusEndofLine, openModals, displayMedicalReportModal} from "./helpers"
 import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable, getBalancingTable } from "./tables/billingTables";
 import { getOutpatientsInvestigationTable } from "./tables/investigationTables";
 import html2pdf  from "html2pdf.js"
 import { getShiftReportTable } from "./tables/pharmacyTables";
+import { getMedicalReportTable } from "./tables/doctorstables";
 $.fn.dataTable.ext.errMode = 'throw';
 
 
@@ -21,6 +22,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const newShiftReportTemplateModal   = new Modal(document.getElementById('newShiftReportTemplateModal'))
     const editShiftReportTemplateModal  = new Modal(document.getElementById('editShiftReportTemplateModal'))
     const viewShiftReportTemplateModal  = new Modal(document.getElementById('viewShiftReportTemplateModal'))
+    const medicalReportListModal        = new Modal(document.getElementById('medicalReportListModal'))
+    const viewMedicalReportModal        = new Modal(document.getElementById('viewMedicalReportModal'))
 
     const balancingDateDiv              = document.querySelector('.balancingDateDiv')
 
@@ -37,13 +40,18 @@ window.addEventListener('DOMContentLoaded', function () {
     const newBillingReportBtn           = document.querySelector('#newBillingReportBtn')
     const createShiftReportBtn          = newShiftReportTemplateModal._element.querySelector('#createShiftReportBtn')
     const saveShiftReportBtn            = editShiftReportTemplateModal._element.querySelector('#saveShiftReportBtn')
+    const downloadReportBtn             = viewMedicalReportModal._element.querySelector('#downloadReportBtn')
 
     const outPatientsTab                = document.querySelector('#nav-outPatients-tab')
     const inPatientsTab                 = document.querySelector('#nav-inPatients-tab')
     const ancPatientsTab                = document.querySelector('#nav-ancPatients-tab')
     const openVisitsTab                 = document.querySelector('#nav-openVisits-tab')
     const expensesTab                   = document.querySelector('#nav-expenses-tab')
-    const balancingTab                   = document.querySelector('#nav-balancing-tab')
+    const balancingTab                  = document.querySelector('#nav-balancing-tab')
+
+    const reportModalBody               = viewMedicalReportModal._element.querySelector('.reportModalBody')
+    const patientsFullName              = viewMedicalReportModal._element.querySelector('#patientsFullName')
+    const patientsInfo                  = viewMedicalReportModal._element.querySelector('#patientsInfo')
 
     const changeBillSpan                = billModal._element.querySelector('.changeBill')
     const downloadBillSummaryBtn        = billModal._element.querySelector('#downloadBillSummaryBtn')
@@ -51,7 +59,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const shiftBadgeSpan                = document.querySelector('#shiftBadgeSpan')
 
 
-    let inPatientsVisitTable, ancPatientsVisitTable, billingTable, paymentTable, openVisitsTable, expensesTable, balancingTable
+    let inPatientsVisitTable, ancPatientsVisitTable, billingTable, paymentTable, openVisitsTable, expensesTable, balancingTable, medicalReportTable
 
     const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient', 'consulted')
     const waitingTable = getWaitingTable('waitingTable')
@@ -175,6 +183,7 @@ window.addEventListener('DOMContentLoaded', function () {
         table.addEventListener('click', function (event) {
             const billingDetailsBtn = event.target.closest('.consultationDetailsBtn')
             const patientsBillBtn   = event.target.closest('.patientsBillBtn')
+            const medicalReportBtn  = event.target.closest('.medicalReportBtn')
             const closeVisitBtn     = event.target.closest('.closeVisitBtn')
             
             if (billingDetailsBtn){
@@ -193,6 +202,16 @@ window.addEventListener('DOMContentLoaded', function () {
                 changeBillSpan.setAttribute('data-visitid', visitId)
                 getPatientsBill('billTable', visitId, billModal._element, 'category')
                 billModal.show()
+            }
+
+            if (medicalReportBtn){
+                const visitId = medicalReportBtn.getAttribute('data-id')
+                medicalReportListModal._element.querySelector('#patient').value = medicalReportBtn.getAttribute('data-patient')
+                medicalReportListModal._element.querySelector('#sponsorName').value = medicalReportBtn.getAttribute('data-sponsor') + ' - ' + medicalReportBtn.getAttribute('data-sponsorcat')
+                medicalReportListModal._element.querySelector('#age').value = medicalReportBtn.getAttribute('data-age')
+                medicalReportListModal._element.querySelector('#sex').value = medicalReportBtn.getAttribute('data-sex')
+                medicalReportTable = getMedicalReportTable('medicalReportTable', visitId, medicalReportListModal._element)
+                medicalReportListModal.show()
             }
 
             if (closeVisitBtn){
@@ -217,6 +236,41 @@ window.addEventListener('DOMContentLoaded', function () {
                 }
             }
         })
+    })
+
+    document.querySelector('#medicalReportTable').addEventListener('click', function (event) {
+        const viewMedicalReportbtn = event.target.closest('.viewMedicalReportBtn')
+
+        if (viewMedicalReportbtn) {
+            viewMedicalReportbtn.setAttribute('disabled', 'disabled')
+            http.get(`/medicalreports/display/${viewMedicalReportbtn.getAttribute('data-id')}`)
+            .then((response) => {
+                if (response.status >= 200 || response.status <= 300) {
+                    displayMedicalReportModal(viewMedicalReportModal, response.data.data)
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+            setTimeout(()=>{viewMedicalReportbtn.removeAttribute('disabled')}, 2000)
+        }
+    })
+
+    patientsInfo.addEventListener('click', function(){patientsInfo.setAttribute('hidden', 'hidden'); patientsFullName.removeAttribute('hidden')})
+    patientsFullName.addEventListener('click', function(){patientsFullName.setAttribute('hidden', 'hidden'); patientsInfo.removeAttribute('hidden')})
+
+    downloadReportBtn.addEventListener('click', function () {
+        const patientFullName = reportModalBody.querySelector('#patientsFullName').innerHTML
+        const type = reportModalBody.querySelector('#type').innerHTML
+
+        var opt = {
+        margin:       0.5,
+        filename:     patientFullName + `'s ${type}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 3 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(reportModalBody).save()
     })
 
     changeBillSpan.addEventListener('click', function () {

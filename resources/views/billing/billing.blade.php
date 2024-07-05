@@ -14,6 +14,8 @@
 @include('extras.shiftReportTemplateModal', ['title' => 'New Report', 'isUpdate' => false, 'dept' => 'billing', 'isView' => false, 'id' => 'newShiftReportTemplateModal'])
 @include('extras.shiftReportTemplateModal', ['title' => 'Edit Report', 'isUpdate' => true, 'dept' => 'billing', 'isView' => false, 'id' => 'editShiftReportTemplateModal'])
 @include('extras.shiftReportTemplateModal', ['title' => 'View Report', 'isUpdate' => false, 'dept' => 'billing', 'isView' => true, 'id' => 'viewShiftReportTemplateModal'])
+@include('extras.medicalReportListModal', ['title' => 'Medical Report List', 'isDoctor' => false, 'id' => 'medicalReportListModal' ])
+@include('extras.viewMedicalReportModal', ['title' => '', 'isUpdate' => true, 'id' => 'viewMedicalReportModal' ])
 
     <div class="container mt-5 bg-white">
 
