@@ -14,6 +14,7 @@ const getResourceSubCategoryTable = (tableId) => {
         ajax:  '/resourcesubcategory/load',
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         columns: [
             {data: "name"},
             {data: "description"},
@@ -57,6 +58,7 @@ const getResourceTable = (tableId) => {
         ajax:  '/resources/load',
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         fixedHeader: true,
         lengthMenu:[50, 100, 150, 200, 500],
         dom: 'l<"my-1 text-center "B>frtip',
@@ -195,6 +197,7 @@ const getAddResourceStockTable = () => {
         ajax:  '/addresourcestock/load',
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary', footer: true},
@@ -240,6 +243,7 @@ const getResourceSupplierTable = () => {
         ajax:  '/resourcesupplier/load',
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary', footer: true},

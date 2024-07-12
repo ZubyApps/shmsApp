@@ -22,6 +22,7 @@ const getAllStaffTable = (tableId) => {
             {extend: 'print', className: 'btn-primary'},
              ],
         search:true,
+        searchDelay: 1500,
         columns: [
             {data: "name"},
             {data: "employed"},
@@ -107,6 +108,7 @@ const getResourceStockDateTable = (tableId) => {
         ajax:  '/resourcestockdate/load',
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         columns: [
             {data: "date"},
             {data: "description"},
@@ -139,6 +141,7 @@ const getResourceCategoryTable = () => {
         serverSide: true,
         ajax:  '/resourcecategory/load',
         orderMulti: true,
+        searchDelay: 1500,
         search:true,
         columns: [
             {data:row => () => {

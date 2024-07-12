@@ -20,6 +20,7 @@ const getResourceValueSummaryTable = (tableId, startDate, endDate) => {
         },
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -53,6 +54,7 @@ const getUsedResourcesSummaryTable = (tableId, startDate, endDate, date) => {
         },
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[20, 40, 80, 120, 200],
         dom: 'l<"my-1 text-center "B>frtip',
         buttons: [
@@ -113,6 +115,7 @@ const getByResourceCategoryTable = (tableId, resourceCategoryId, modal, startDat
         }},
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -159,6 +162,7 @@ const getExpirationStockTable = (tableId, filter) => {
         }},
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary'},

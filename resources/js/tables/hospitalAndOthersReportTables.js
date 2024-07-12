@@ -14,6 +14,7 @@ const getHospitalAndOthersTable = (tableId, startDate, endDate, date) => {
         },
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -44,6 +45,7 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate, date
         }},
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[50, 100, 150, 200, 300],
         drawCallback: function (settings) {
             var api = this.api()

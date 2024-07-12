@@ -45,6 +45,7 @@ const getDistribution2Table = (tableId) => {
         ajax:  '/reports/patients/dist2',
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         "sAjaxDataProp": "data.data",
         drawCallback: function (settings) {
             var api = this.api()
@@ -75,6 +76,7 @@ const getBySponsorTable = (tableId, urlSuffix, sponsorId, modal, startDate, endD
         }},
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         columns: [
             {data: "patient"},
             {data: "phone"},
@@ -110,6 +112,7 @@ const getFrequencyTable = (tableId) => {
         ajax:  '/reports/patients/frequency',
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[50, 100, 150, 200, 300],
         drawCallback: function (settings) {
             var api = this.api()
@@ -167,6 +170,7 @@ const getRegBySponsorTable = (tableId, startDate, endDate, date) => {
         }},
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[50, 100, 150, 200, 300],
         drawCallback: function (settings) {
             var api = this.api()

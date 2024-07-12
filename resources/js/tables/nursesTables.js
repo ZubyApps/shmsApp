@@ -8,6 +8,7 @@ const getWaitingTable = (tableId) => {
         ajax:  '/visits/load/waiting',
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         language: {
             emptyTable: 'No patient is waiting'
         },
@@ -162,6 +163,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
         orderMulti: true,
         lengthMenu:[25, 50, 75, 100, 125],
         search:true,
+        searchDelay: 1500,
         language: {
             emptyTable: 'No patient record'
         },
@@ -539,6 +541,7 @@ const getUpcomingMedicationsTable = (tableId, button, span) => {
         serverSide: true,
         ajax: '/medicationchart/load/upcoming',
         orderMulti: false,
+        searchDelay: 1500,
         lengthMenu:[20, 40, 60, 80, 100],
         language: {
             emptyTable: 'No medication has been charted'
@@ -606,6 +609,7 @@ const getUpcomingNursingChartsTable = (tableId, button, span) => {
         ajax: '/nursingchart/load/upcoming',
         orderMulti: false,
         lengthMenu:[20, 40, 60, 80, 100],
+        searchDelay: 1500,
         language: {
             emptyTable: 'No service has been charted'
         },
@@ -767,6 +771,7 @@ const getEmergencyTable = (tableId, viewer) => {
         orderMulti: true,
         lengthMenu:[25, 50, 100, 150, 200],
         search:true,
+        searchDelay: 1500,
         language: {
             emptyTable: 'No pending emergency prescriptions'
         },
@@ -823,6 +828,7 @@ const getNursesReportTable = (tableId, visitId, modal) => {
             'visitId': visitId,
         }},
         orderMulti: true,
+        searchDelay: 1500,
         language: {
             emptyTable: 'No Report'
         },

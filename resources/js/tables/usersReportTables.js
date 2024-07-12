@@ -23,6 +23,7 @@ const getDoctorsActivityTable = (tableId, designation, startDate, endDate, date)
         },
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -64,6 +65,7 @@ const getNursesActivityTable = (tableId, designation, startDate, endDate, date) 
         },
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -107,6 +109,7 @@ const getLabTechActivityTable = (tableId, designation, startDate, endDate, date)
         },
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -134,6 +137,7 @@ const getPharmacyTechActivityTable = (tableId, designation, startDate, endDate, 
         },
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -163,6 +167,7 @@ const getHmoOfficersActivityTable = (tableId, designation, startDate, endDate, d
         },
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -208,6 +213,7 @@ const getBillOfficersActivityTable = (tableId, designation, startDate, endDate, 
         },
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -245,6 +251,7 @@ const getNursesShiftPerformanceTable = (tableId, department, startDate, endDate,
         },
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[20, 40, 80, 120, 200],
         dom: 'l<"my-1 text-center "B>frtip',
         buttons: [

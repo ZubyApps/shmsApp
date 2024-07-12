@@ -14,6 +14,7 @@ const getPharmacySummaryTable = (tableId, startDate, endDate, date) => {
         },
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[50, 150, 200, 300, 500],
         drawCallback: function (settings) {
             var api = this.api()
@@ -50,6 +51,7 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate, date
         }},
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[50, 100, 150, 200, 300],
         drawCallback: function (settings) {
             var api = this.api()
@@ -97,6 +99,7 @@ const getMissingPharmacySummaryTable = (tableId, startDate, endDate, date) => {
         },
         orderMulti: true,
         search:true,
+        searchDelay: 1500,
         lengthMenu:[50, 150, 200, 300, 500],
         drawCallback: function (settings) {
             var api = this.api()
