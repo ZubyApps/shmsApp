@@ -23,7 +23,7 @@ const getPayMethodsSummmaryTable = (tableId, startDate, endDate, date) => {
         },
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -51,7 +51,7 @@ const getByPayMethodsTable = (tableId, payMethodId, modal, startDate, endDate, d
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[50, 100, 150, 200, 500],
         drawCallback: function (settings) {
             var api = this.api()
@@ -93,7 +93,7 @@ const getTPSByThirdPartyTable = (tableId, thirdPartyId, modal, startDate, endDat
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -150,7 +150,7 @@ const getCapitationPaymentsTable = (tableId, startDate, endDate, date) => {
         },
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary', footer: true},
@@ -201,7 +201,7 @@ const getExpenseSummaryTable = (tableId, startDate, endDate, date) => {
             'date'      : date,
         }},
         orderMulti: true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[20, 40, 80, 120, 200],
         language: {
             emptyTable: 'No expense'
@@ -232,7 +232,7 @@ const getTPSSummaryTable = (tableId, startDate, endDate, date) => {
             'date'      : date,
         }},
         orderMulti: true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[20, 40, 80, 120, 200],
         language: {
             emptyTable: 'No expense'
@@ -266,7 +266,7 @@ const getVisitSummaryTable1 = (tableId, startDate, endDate, date) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         "sAjaxDataProp": "data.data",
         drawCallback: function (settings) {
             var api = this.api()
@@ -307,7 +307,7 @@ const getVisitSummaryTable2 = (tableId, startDate, endDate, date) => {
             'date'      : date,
         }},
         orderMulti: true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         fixedHeader: true,
         lengthMenu:[50, 100, 150, 200, 500],
         dom: 'lfrtip<"my-5 text-center "B>',
@@ -363,7 +363,7 @@ const getVisitsBySponsorTable = (tableId, sponsorId, modal, startDate, endDate, 
         fixedHeader: true,
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[50, 100, 150, 200, 500],
         drawCallback: function (settings) {
             var api = this.api()

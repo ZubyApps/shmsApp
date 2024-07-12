@@ -10,7 +10,7 @@ const getOutpatientsVisitTable = (tableId, filter) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: "No patient"
@@ -65,7 +65,7 @@ const getInpatientsVisitTable = (tableId, filter) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: "No patient"
@@ -121,7 +121,7 @@ const getAncPatientsVisitTable = (tableId, filter) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: "No patient"
@@ -201,7 +201,7 @@ const getWaitingTable = (tableId) => {
         ajax:  '/visits/load/waiting',
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: 'No patient is waiting'
@@ -371,7 +371,7 @@ const getPrescriptionTableByConsultation = (tableId, conId, visitId, modal) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         language: {
             emptyTable: 'No resource has been added'
         },
@@ -485,7 +485,7 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                                                 <td> </td>
                                                 <td class="text-secondary">${data.sample ?? ''}</td>
                                                 <td class="text-secondary">
-                                                    <div>${data.result ?? ''}</div>
+                                                    <p>${data.result ?? ''}</p>
                                                 </td>
                                                 <td class="text-secondary">${data.staff}</td>
                                                 <td class="text-secondary">${data.sent}</td>
@@ -787,7 +787,7 @@ const getMedicalReportTable = (tableId, visitId, modal, isDoctor) => {
         }},
         orderMulti: true,
         searching:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthChange: true,
         language: {
             emptyTable: 'No medical report'
@@ -832,7 +832,7 @@ const getPatientsFileTable = (tableId, visitId, modal) => {
         }},
         orderMulti: true,
         searching:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthChange: true,
         language: {
             emptyTable: 'No file/document'

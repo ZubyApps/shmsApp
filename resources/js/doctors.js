@@ -1203,6 +1203,21 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
+    const editor = document.querySelector('#result')
+    editor.addEventListener('paste', handlePaste)
+
+    function handlePaste(e) {
+        e.preventDefault()
+
+        const text = (e.clipboardData || window.clipboardData).getData('text')
+        const selection = window.getSelection()
+
+        if (selection.rangeCount) {
+            selection.deleteFromDocument()
+            selection.getRangeAt(0).insertNode(document.createTextNode(text))
+        }
+    }
+
     document.querySelectorAll('#createResultBtn, #saveResultBtn').forEach(btn => {
         btn.addEventListener('click', function () {
             const [resultDiv, modal, url] = btn.id == 'createResultBtn' ? [addResultDiv, addResultModal, 'create'] : [updateResultDiv, updateResultModal, 'update']

@@ -14,7 +14,7 @@ const getSponsorsTable = (tableId) => {
         ajax:  '/sponsors/load',
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary'},
@@ -73,7 +73,7 @@ const getAllPatientsTable = (tableId) => {
         orderMulti: true,
         lengthMenu:[20, 40, 80, 120, 200],
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary'},
@@ -225,7 +225,7 @@ const getVisitsSummaryTable = (tableId, date) => {
         }} ,
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary'},
@@ -264,7 +264,7 @@ const getPatientsBySponsorTable = (tableId, sponsorId, modal, date) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         columns: [
             {data: "card"},
             {data: "name"},
@@ -293,7 +293,7 @@ const getVisitsTable = (tableId, startDate, endDate, filterListBy) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[50, 100, 150, 200, 250],
         dom: 'l<"my-1 text-center "B>frtip',
         buttons: [

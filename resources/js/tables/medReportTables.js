@@ -23,7 +23,7 @@ const getMedServiceSummaryTable = (tableId, startDate, endDate, date) => {
         },
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary', footer: true},
@@ -60,7 +60,7 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate, date
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[50, 100, 150, 200, 300],
         drawCallback: function (settings) {
             var api = this.api()
@@ -103,7 +103,7 @@ const getNewBirthsTable = (tableId, startDate, endDate, date) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[20, 40, 80, 120, 200],
         columns: [
             {data: "date"},
@@ -146,7 +146,7 @@ const getDischargeReasonTable = (tableId, filterBy, modal, startDate, endDate, d
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary', footer: true},
@@ -183,7 +183,7 @@ const getDischargeSummaryTable = (tableId, startDate, endDate, date) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary', footer: true},

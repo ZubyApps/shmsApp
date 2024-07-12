@@ -345,6 +345,21 @@ window.addEventListener('DOMContentLoaded', function () {
         multipleTestsListDiv.innerHTML = ''
     })
 
+    const editor = document.querySelector('#result')
+    editor.addEventListener('paste', handlePaste)
+
+    function handlePaste(e) {
+        e.preventDefault()
+
+        const text = (e.clipboardData || window.clipboardData).getData('text')
+        const selection = window.getSelection()
+
+        if (selection.rangeCount) {
+            selection.deleteFromDocument()
+            selection.getRangeAt(0).insertNode(document.createTextNode(text))
+        }
+    }
+
     createResultBtn.addEventListener('click', function () {
         const prescriptionId = createResultBtn.getAttribute('data-id')
         const investigationTableId = createResultBtn.getAttribute('data-table')

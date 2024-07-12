@@ -30,7 +30,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         language: {
             emptyTable: 'No patient record'
         },
@@ -44,7 +44,7 @@ const getInpatientsInvestigationsTable = (tableId, notLab) => {
         ajax:  '/investigations/load/inpatients',
         paging: true,
         orderMulti: false,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[25, 50, 100, 200],
         language: {
             emptyTable: 'No lab investigation requested'
@@ -88,7 +88,7 @@ const getOutpatientsInvestigationTable = (tableId, notLab) => {
         }},
         paging: true,
         orderMulti: false,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[25, 50, 100, 200],
         language: {
             emptyTable: 'No lab investigation requested'

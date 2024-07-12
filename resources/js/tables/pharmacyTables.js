@@ -41,7 +41,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
         orderMulti: true,
         lengthMenu:[25, 50, 100, 150, 200],
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         language: {
             emptyTable: 'No patient record'
         },
@@ -56,7 +56,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
             'visitId': visitId,
         }},
         paging: true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         orderMulti: false,
         language: {
             emptyTable: 'No Consultations'
@@ -214,7 +214,7 @@ const getExpirationStockTable = (tableId, filter) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         lengthMenu:[50, 100, 150, 200, 300],
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
@@ -256,7 +256,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
         ajax: `/bulkrequests/load/${urlSuffix}`,
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary'},
@@ -318,7 +318,7 @@ const getShiftReportTable = (tableId, department, shiftBadgeSpan) => {
             'department': department,
         }},
         orderMulti: true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         language: {
             emptyTable: 'No Report'
         },

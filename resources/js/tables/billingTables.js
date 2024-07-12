@@ -113,7 +113,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) =
         orderMulti: true,
         lengthMenu:[25, 50, 100, 150, 200],
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         language: {
             emptyTable: urlSuffix == 'openvisits' ? 'No open visits' : 'No patient record'
         },
@@ -503,7 +503,7 @@ const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate
         }},
         orderMulti: true,
         lengthMenu:[50, 100, 200, 300, 500],
-        searchDelay: 1500,
+        searchDelay: 1000,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary', footer: true},

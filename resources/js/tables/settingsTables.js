@@ -14,7 +14,7 @@ const getSponsorCategoryTable = (tableId) => {
         ajax:  '/sponsorcategory/load',
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         columns: [
             {data: "name"},
             {data: "description"},
@@ -80,7 +80,7 @@ const getResourceStockDateTable = (tableId) => {
             {extend: 'print', className: 'btn-primary'},
              ],
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         columns: [
             {data: "date"},
             {data: "description"},
@@ -114,7 +114,7 @@ const getResourceCategoryTable = () => {
         ajax:  '/resourcecategory/load',
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         columns: [
             {data:row => () => {
                 return `<span class="text-primary"> ${row.name}</span>`
@@ -159,7 +159,7 @@ const getPayMethodTable = () => {
         ajax:  '/paymethod/load',
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         columns: [
             {data:row => () => {
                 return `<span class="text-primary"> ${row.name}</span>`
@@ -204,7 +204,7 @@ const getExpenseCategoryTable = (table) => {
         ajax:  '/expensecategory/load',
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         columns: [
             {data:row => () => {
                 return `<span class="text-primary"> ${row.name}</span>`
@@ -249,7 +249,7 @@ const getMedicationCategoryTable = (table) => {
         ajax:  '/medicationcategory/load',
         orderMulti: true,
         search:true,
-        searchDelay: 1500,
+        searchDelay: 1000,
         columns: [
             {data:row => () => {
                 return `<span class="text-primary"> ${row.name}</span>`
