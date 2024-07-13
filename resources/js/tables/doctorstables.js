@@ -434,12 +434,12 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
 
                             <ul class="dropdown-menu">
                                 <li class="${row.sent || (viewer !== 'lab' && viewer !== 'doctor') ? 'd-none' : ''}">
-                                    <a class="btn btn-outline-primary dropdown-item addResultBtn" id="addResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
+                                    <a class="btn btn-outline-primary dropdown-item addResultBtn" id="addResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${ row.sponsorCategory }" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-plus-square"></i> Add Result
                                     </a>
                                 </li>
                                 <li  class="${!row.sent || (viewer !== 'lab' && viewer !== 'doctor') ? 'd-none' : ''}">
-                                    <a class="btn btn-outline-primary dropdown-item updateResultBtn" id="updateResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-table="${tableId}" title="update result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
+                                    <a class="btn btn-outline-primary dropdown-item updateResultBtn" id="updateResultBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${ row.sponsorCategory }" data-table="${tableId}" title="update result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}">
                                         <i class="bi bi-pencil-fill"></i> Update Result
                                     </a>
                                 </li>
