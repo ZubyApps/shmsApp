@@ -386,7 +386,7 @@ const sponsorAndPayPercent = (row) => {
     }
     return payPercent !== null ? 
             `<div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
-            <div class="progress-bar text-dark fs-6 px-1 overflow-visible bg-${payPercent <= 50 ? 'danger' : payPercent => 50 && payPercent < 90 ? 'warning' : payPercent => 90 && payPercent < 100 ? 'primary-subtle' : 'primary'}" style="width: ${payPercent}%";>${row.sponsor+'-'+ row.sponsorCategory +' '+payPercent+'%'}</div>
+            <div class="progress-bar text-dark fs-6 px-1 overflow-visible bg-${payPercent <= 50 ? 'danger' : payPercent >= 50 && payPercent < 90 ? 'warning' : payPercent >= 90 && payPercent < 100 ? 'primary-subtle' : 'primary'}" style="width: ${payPercent}%";>${row.sponsor+'-'+ row.sponsorCategory +' '+payPercent+'%'}</div>
             </div>` : 
            row.sponsor+'-'+ row.sponsorCategory
 }
