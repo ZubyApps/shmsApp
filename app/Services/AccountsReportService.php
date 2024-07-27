@@ -342,7 +342,7 @@ class AccountsReportService
                     'sponsor'           => $pVisit->sponsor->name,
                     'category'          => $pVisit->sponsor->category_name,
                     'diagnosis'         => $pVisit->consultations()->where('visit_id', $pVisit->id)->first()?->icd11_diagnosis ?? $pVisit->consultations()->where('visit_id', $pVisit->id)->first()?->provisional_diagnosis,
-                    'doctor'            => $pVisit->doctor->username,
+                    'doctor'            => $pVisit->doctor?->username,
                     'totalHmsBill'      => $pVisit->total_hms_bill,
                     'totalHmoBill'      => $pVisit->total_hmo_bill,
                     'totalNhisBill'     => $pVisit->total_nhis_bill,
