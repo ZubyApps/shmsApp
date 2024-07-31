@@ -26,6 +26,7 @@ use App\Http\Controllers\PatientsFileController;
 use App\Http\Controllers\PayMethodController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResourceCategoryController;
 use App\Http\Controllers\ResourceController;
@@ -526,6 +527,24 @@ Route::middleware('auth')->group(function () {
         Route::get('load', [ShiftPerformanceController::class, 'loadShiftPerformanceTable']);
         Route::get('/Nurse', [ShiftPerformanceController::class, 'UpdateDeptPreformance']);
         Route::patch('/staff/{shiftPerformance}', [ShiftPerformanceController::class, 'UpdateStaffNames']);
+    });
+
+    Route::prefix('reminders')->group(function () {
+        Route::post('hmo', [ReminderController::class, 'storeHmo']);
+        Route::post('cash', [ReminderController::class, 'storeCash']);
+        Route::get('load/hmo', [ReminderController::class, 'loadHmoRemindersTable']);
+        Route::get('load/hmo/due', [ReminderController::class, 'loadDueHmoRemindersTable']);
+        Route::get('load/cash', [ReminderController::class, 'loadCashRemindersTable']);
+        Route::get('load/cash/due', [ReminderController::class, 'loadDueCashRemindersTable']);
+        Route::patch('/firstreminder/{reminder}', [ReminderController::class, 'updateFirstReminder']);
+        Route::patch('/secondreminder/{reminder}', [ReminderController::class, 'updateSecondReminder']);
+        Route::patch('/finalreminder/{reminder}', [ReminderController::class, 'updateFinalReminder']);
+        Route::patch('/confirmedpaid/{reminder}', [ReminderController::class, 'updateConfirmedPayment']);
+        Route::patch('/deletefirst/{reminder}', [ReminderController::class, 'deleteFirstReminder']);
+        Route::patch('/deletesecond/{reminder}', [ReminderController::class, 'deleteSecondReminder']);
+        Route::patch('/deletefinal/{reminder}', [ReminderController::class, 'deleteFinalReminder']);
+        Route::patch('/deletepaid/{reminder}', [ReminderController::class, 'deletePaid']);
+        Route::delete('/{reminder}', [ReminderController::class, 'destroy']);
     });
 });
 

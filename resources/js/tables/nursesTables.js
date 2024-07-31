@@ -13,10 +13,10 @@ const getWaitingTable = (tableId) => {
             emptyTable: 'No patient is waiting'
         },
         columns: [
-            {data: "patient"},
+            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}">${row.patient}</span>`},
             {data: "sex"},
             {data: "age"},
-            {data: "sponsor"},
+            {data: row => `<span class="${row.flagSponsor ? 'fw-bold colour-change3' : ''}">${row.sponsor}</span>`},
             {data: row => `<span class="tooltip-test" title="initiated by ${row.initiatedBy}">${row.came}</span>`},
             {data: "waitingFor"},
             {data: "doctor"},

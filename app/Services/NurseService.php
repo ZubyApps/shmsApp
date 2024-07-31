@@ -109,6 +109,8 @@ class NurseService
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
                 'sponsor'           => $visit->sponsor->name,
+                'sponsorCategory'   => $visit->sponsor->sponsorCategory?->name,
+                'flagPatient'       => $visit->patient->flag,
                 'admissionStatus'   => $visit->admission_status,
                 'ward'              => $visit->ward ?? '',
                 'bedNo'             => $visit->bed_no ?? '',
@@ -125,7 +127,6 @@ class NurseService
                 'scheduleCount'     => $visit->nursingCharts->count(),
                 'doneCount'         => $visit->nursingCharts->where('time_done', '!=', null)->count(),
                 'viewed'            => !!$visit->viewed_at,
-                'sponsorCategory'   => $visit->sponsor->sponsorCategory?->name,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),

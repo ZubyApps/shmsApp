@@ -2,7 +2,7 @@
 
 
 @section('content')
-@vite(['resources/js/patients.js'])
+@vite(['resources/css/colourblink.scss', 'resources/js/patients.js'])
 
 @include('patients.patientModal', ['title' => 'New Patient', 'isUpdate' => false, 'id' => 'newPatientModal'])
 @include('patients.patientModal', ['title' => 'Update Patient', 'isUpdate' => true, 'id' => 'updatePatientModal'])
@@ -80,6 +80,8 @@
                                 <th>Category</th>
                                 <th>Approval</th>
                                 <th>Registration Bill</th>
+                                <th>Max Pay Days</th>
+                                <th>Flag</th>
                                 <th>Created</th>
                                 <th>Actions</th>
                             </tr>

@@ -68,6 +68,14 @@
                                     <x-input-span>Staff ID/No.</x-input-span>
                                     <x-form-input name="staffId" class="staffId" value=""/>
                                 </x-form-div>
+                                <x-form-div class="">
+                                    <x-input-span>Flag Patient</x-input-span>
+                                    <select class="form-select form-select-md" name="flagPatient">
+                                        <option value="">Select</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>   
+                                    </select>
+                                </x-form-div>
                                     
                             </div>
                         </div>

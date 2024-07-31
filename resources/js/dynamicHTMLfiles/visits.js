@@ -8,7 +8,7 @@ const visitDetails = (visitIteration, numberConverter, visit, viewer, isAnc) => 
                 consultations.forEach(line => {
                     consultationIteration++
                     consultationIteration > 1 ? consultationCount++ : ''
-                    consultationsDiv += displayfunction(consultationIteration, numberConverter, consultationCount, consultations.length, line, viewer, isDoctorDone, closed, isHistory);
+                    consultationsDiv += displayfunction(consultationIteration, numberConverter, consultationCount, consultations.length, line, viewer, isDoctorDone, closed, isHistory, visitIteration);
                 })
 
             return `

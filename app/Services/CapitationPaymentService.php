@@ -93,27 +93,29 @@ class CapitationPaymentService
         $currentdate = new Carbon();
 
         if (! empty($params->searchTerm)) {
+        
             if($data->startDate && $data->endDate){
                 return $this->capitationPayment
-                        ->whereRelation('sponsor.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->whereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
             if($data->date){
+        
                 $date = new Carbon($data->date);
 
                 return $this->capitationPayment
-                        ->whereRelation('sponsor.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->whereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->whereMonth('month_paid_for', $date->month)
                         ->whereYear('month_paid_for', $date->year)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
-
+        
             return $this->capitationPayment
-                        ->whereRelation('sponsor.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->whereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }

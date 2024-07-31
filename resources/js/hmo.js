@@ -2,7 +2,7 @@ import { Offcanvas, Modal } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
 import { clearDivValues, getOrdinal, getDivData, clearValidationErrors, loadingSpinners, removeDisabled, displayList, getPatientSponsorDatalistOptionId, resetFocusEndofLine, displayMedicalReportModal} from "./helpers"
-import { getAllHmoPatientsVisitTable, getApprovalListTable, getHmoReconciliationTable, getHmoReportsTable, getNhisReconTable, getSentBillsTable, getVerificationTable, getVisitPrescriptionsTable, getWaitingTable } from "./tables/hmoTables";
+import { getAllHmoPatientsVisitTable, getApprovalListTable, getBillReminderTable, getDueHmoRemindersTable, getHmoReconciliationTable, getHmoReportsTable, getNhisReconTable, getSentBillsTable, getVerificationTable, getVisitPrescriptionsTable, getWaitingTable } from "./tables/hmoTables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getLabTableByConsultation, getMedicalReportTable, getMedicationsByFilter, getOtherPrescriptionsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
 import { getbillingTableByVisit } from "./tables/billingTables";
@@ -27,6 +27,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const medicalReportListModal    = new Modal(document.getElementById('medicalReportListModal'))
     const viewMedicalReportModal    = new Modal(document.getElementById('viewMedicalReportModal'))
     const capitationPaymentModal    = new Modal(document.getElementById('capitationPaymentModal'))
+    const registerBillSentModal     = new Modal(document.getElementById('registerBillSentModal'))
 
     const codeTextDiv               = verifyModal._element.querySelector('#codeTextDiv')
     const sponsorDetailsDiv         = changeSponsorModal._element.querySelector('#sponsorDetailsDiv')
@@ -38,6 +39,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const hmoApprovalListCount      = document.querySelector('#hmoApprovalListCount')
     const nhisApprovalListBtn       = document.querySelector('#nhisApprovalListBtn')
     const nhisApprovalListCount     = document.querySelector('#nhisApprovalListCount')
+    const dueHmoRemindersListBtn    = document.querySelector('#dueRemindersListBtn')
+    const dueHmoRemindersListCount  = document.querySelector('#dueRemindersListCount')
     const verifyBtn                 = verifyModal._element.querySelector('#verifyBtn')
     const saveNewSponsorBtn         = changeSponsorModal._element.querySelector('#saveNewSponsorBtn')
     const markAsSentBtn             = makeBillModal._element.querySelector('#markAsSentBtn')
@@ -47,6 +50,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const sentBillsTab              = document.querySelector('#nav-sentBills-tab')
     const hmoReportsTab             = document.querySelector('#nav-hmoReports-tab')
     const nhisReconTab              = document.querySelector('#nav-nhisRecon-tab')
+    const billRemindersTab          = document.querySelector('#nav-billReminders-tab')
     const newSponsorCategoryInput           = document.querySelector('#newSponsorCategory')
     const newPatientSponsorInputEl          = document.querySelector('#newPatientSponsor')
     const newPatientSponsorDatalistEl       = document.querySelector('#newSponsorList')
@@ -56,13 +60,17 @@ window.addEventListener('DOMContentLoaded', function () {
     const searchReportsBtn                  = document.querySelector('.searchReportsBtn')
     const searchReportsMonthBtn             = document.querySelector('.searchReportsMonthBtn')
     const searchNhisConBtn                  = document.querySelector('.searchNhisConBtn')
+    const searchBillRemindersWithDatesBtn       = document.querySelector('.searchBillRemindersWithDatesBtn')
+    const searchBillRemindersMonthBtn       = document.querySelector('.searchBillRemindersMonthBtn')
     const saveCapitationPaymentBtn          = capitationPaymentModal._element.querySelector('#saveCapitationPaymentBtn')
+    const saveReminderBtn                   = registerBillSentModal._element.querySelector('#saveReminderBtn')
 
 
     const filterListOption                  = document.querySelector('#filterList')
     const datesDiv                          = document.querySelector('.datesDiv')
     const reportDatesDiv                    = document.querySelector('.reportsDatesDiv')
     const nhisMonthYearDiv                  = document.querySelector('.nhisMonthYearDiv')
+    const billRemindersDatesDiv             = document.querySelector('.billRemindersDatesDiv')
     const downloadReportBtn                 = viewMedicalReportModal._element.querySelector('#downloadReportBtn')
 
     const reportModalBody                   = viewMedicalReportModal._element.querySelector('.reportModalBody')
@@ -71,9 +79,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const waitingTable = getWaitingTable('waitingTable')
     const verificationTable = getVerificationTable('verificationTable')
-    const hmoApprovalListTable = getApprovalListTable('hmoApprovalListTable',null, hmoApprovalListCount)
+    const hmoApprovalListTable = getApprovalListTable('hmoApprovalListTable',null)
     const nhisApprovalListTable = getApprovalListTable('nhisApprovalListTable', 'NHIS')
-    let hmotreatmentsTable, visitPrescriptionsTable, sentBillsTable, hmoReportsTable, reconciliationTable, medicalReportTable, nhisReconTable
+    const dueHmoRemindersTable = getDueHmoRemindersTable('dueRemindersListTable')
+    let hmotreatmentsTable, visitPrescriptionsTable, sentBillsTable, hmoReportsTable, reconciliationTable, medicalReportTable, nhisReconTable, billRemindersTable
 
     hmoApprovalListTable.on('draw.init', function() {
         const count = hmoApprovalListTable.rows().count()
@@ -90,6 +99,15 @@ window.addEventListener('DOMContentLoaded', function () {
             nhisApprovalListCount.innerHTML = count
         } else {
             nhisApprovalListCount.innerHTML = ''
+        }
+    })
+
+    dueHmoRemindersTable.on('draw.init', function() {
+        const count = dueHmoRemindersTable.rows().count()
+        if (count > 0 ){
+            dueHmoRemindersListCount.innerHTML = count
+        } else {
+            dueHmoRemindersListCount.innerHTML = ''
         }
     })
 
@@ -117,10 +135,15 @@ window.addEventListener('DOMContentLoaded', function () {
         nhisApprovalListTable.draw()
     })
 
+    dueHmoRemindersListBtn.addEventListener('click', function () {
+        dueHmoRemindersTable.draw()
+    })
+
     verificationTab.addEventListener('click', function() {
         verificationTable.draw()
         hmoApprovalListTable.draw()
         nhisApprovalListTable.draw()
+        dueHmoRemindersTable.draw()
     })
 
     treatmentsTab.addEventListener('click', function () {
@@ -128,10 +151,12 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#hmoTreatmentsTable').dataTable().fnDraw()
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
+            dueHmoRemindersTable.draw()
         } else {
             hmotreatmentsTable = getAllHmoPatientsVisitTable('#hmoTreatmentsTable')
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
+            dueHmoRemindersTable.draw()
         }
     })
 
@@ -141,10 +166,12 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#sentBillsTable').dataTable().fnDraw()
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
+            dueHmoRemindersTable.draw()
         } else {
             sentBillsTable = getSentBillsTable('#sentBillsTable')
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
+            dueHmoRemindersTable.draw()
         }
     })
 
@@ -154,10 +181,12 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#hmoReportsTable').dataTable().fnDraw()
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
+            dueHmoRemindersTable.draw()
         } else {
             hmoReportsTable = getHmoReportsTable('hmoReportsTable')
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
+            dueHmoRemindersTable.draw()
         }
     })
 
@@ -169,10 +198,30 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#nhisReconTable').dataTable().fnDraw()
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
+            dueHmoRemindersTable.draw()
         } else {
             nhisReconTable = getNhisReconTable('nhisReconTable')
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
+            dueHmoRemindersTable.draw()
+        }
+    })
+
+    billRemindersTab.addEventListener('click', function () {
+        billRemindersDatesDiv.querySelector('#monthYear').value == '' ? billRemindersDatesDiv.querySelector('#monthYear').value = new Date().toISOString().slice(0,7) : ''
+        let date = new Date().toISOString().split('T')[0]
+        document.querySelector('#monthYear').setAttribute('max', date.slice(0,7))
+        if ($.fn.DataTable.isDataTable( '#billRemindersTable' )){
+            $('#billRemindersTable').dataTable().fnDraw()
+            hmoApprovalListTable.draw()
+            nhisApprovalListTable.draw()
+            dueHmoRemindersTable.draw()
+        } else {
+            billRemindersTable = getBillReminderTable('billRemindersTable')
+            hmoApprovalListTable.draw()
+            nhisApprovalListTable.draw()
+            dueHmoRemindersTable.draw()
+
         }
     })
 
@@ -185,7 +234,7 @@ window.addEventListener('DOMContentLoaded', function () {
         nhisApprovalListTable.draw()
     })
 
-    document.querySelectorAll('#hmoApprovalListOffcanvas, #nhisApprovalListOffcanvas, waitingListOffcanvas2').forEach(table => {
+    document.querySelectorAll('#hmoApprovalListOffcanvas, #nhisApprovalListOffcanvas, #waitingListOffcanvas2, #dueRemindersListOffcanvas').forEach(table => {
         table.addEventListener('hide.bs.offcanvas', function() {
             verificationTable.draw()
             hmotreatmentsTable ? hmotreatmentsTable.draw() : ''
@@ -194,6 +243,8 @@ window.addEventListener('DOMContentLoaded', function () {
             nhisReconTable ? nhisReconTable.draw() : ''
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
+            dueHmoRemindersTable.draw()
+            billRemindersTable ? billRemindersTable.draw() : ''
         })
     })
     
@@ -506,6 +557,22 @@ window.addEventListener('DOMContentLoaded', function () {
         nhisReconTable = getNhisReconTable('nhisReconTable', nhisMonthYearDiv.querySelector('#nhisDate').value)
     })
 
+    searchBillRemindersWithDatesBtn.addEventListener('click', function () {
+        billRemindersDatesDiv.querySelector('#monthYear').value = ''
+
+        if ($.fn.DataTable.isDataTable( '#billRemindersTable' )){
+            $('#billRemindersTable').dataTable().fnDestroy()
+        }
+        billRemindersTable = getBillReminderTable('billRemindersTable', billRemindersDatesDiv.querySelector('#startDate').value, billRemindersDatesDiv.querySelector('#endDate').value)
+    })
+
+    searchBillRemindersMonthBtn.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#billRemindersTable' )){
+            $('#billRemindersTable').dataTable().fnDestroy()
+        }
+        billRemindersTable = getBillReminderTable('billRemindersTable', null, null, billRemindersDatesDiv.querySelector('#monthYear').value)
+    })
+
     markAsSentBtn.addEventListener('click', function() {
         const visitId = markAsSentBtn.getAttribute('data-id')
         markAsSentBtn.setAttribute('disabled', 'disabled')
@@ -627,6 +694,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelector('#hmoReportsTable').addEventListener('click', function (event) {
         const showVisitsBtn     = event.target.closest('.showVisitsBtn')
+        const registerBillSent  = event.target.closest('.registerBillSent')
         const from              = reportDatesDiv.querySelector('#startDate').value
         const to                = reportDatesDiv.querySelector('#endDate').value
 
@@ -655,6 +723,36 @@ window.addEventListener('DOMContentLoaded', function () {
             reconciliationTable = getHmoReconciliationTable('#reconciliationTable', id, reconciliationModal)
             reconciliationModal.show()
         }
+
+        if (registerBillSent){
+            registerBillSentModal._element.querySelector('#sponsor').value = registerBillSent.getAttribute('data-sponsor')
+            registerBillSentModal._element.querySelector('#monthYear').value = registerBillSent.getAttribute('data-monthYear')
+            saveReminderBtn.setAttribute('data-id', registerBillSent.getAttribute('data-id'))
+            registerBillSentModal.show()
+        }
+    })
+
+    saveReminderBtn.addEventListener('click', function () {
+        const sponsorId = saveReminderBtn.getAttribute('data-id')
+        saveReminderBtn.setAttribute('disabled', 'disabled')
+
+        let data = {...getDivData(registerBillSentModal._element), sponsorId }
+
+        http.post('/reminders/hmo', {...data}, {"html": registerBillSentModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                registerBillSentModal.hide()
+                    clearDivValues(registerBillSentModal._element)
+                    clearValidationErrors(registerBillSentModal._element)
+                    hmoReportsTable ? hmoReportsTable.draw(false) : ''
+                }
+                saveReminderBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            // hmoReportsTable ? hmoReportsTable.draw(false) : ''
+            saveReminderBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
+        })
     })
 
     document.querySelector('#visitPrescriptionsTable').addEventListener('click', function (event) {
@@ -796,6 +894,7 @@ window.addEventListener('DOMContentLoaded', function () {
             nhisReconTable ?  nhisReconTable.draw() : ''
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
+            dueHmoRemindersTable.draw()
         })
     })
 
@@ -803,6 +902,7 @@ window.addEventListener('DOMContentLoaded', function () {
         verificationTable.draw()
         hmoApprovalListTable.draw()
         nhisApprovalListTable.draw()
+        dueHmoRemindersTable.draw()
     })
 
     waitingListCanvas._element.addEventListener('hide.bs.offcanvas', function () {
@@ -810,6 +910,7 @@ window.addEventListener('DOMContentLoaded', function () {
         hmotreatmentsTable ?hmotreatmentsTable.draw() : ''
         hmoApprovalListTable.draw()
         nhisApprovalListTable.draw()
+        dueHmoRemindersTable.draw()
     })
 
     document.querySelectorAll('#treatmentDiv, #investigationModalDiv').forEach(table => {
@@ -852,6 +953,189 @@ window.addEventListener('DOMContentLoaded', function () {
                 labResultModal.show()
             }
         })
+    })
+
+    document.querySelector('#billRemindersTable').addEventListener('click', function (event) {
+        const deleteFirstReminderBtn    = event.target.closest('.deleteFirstReminderBtn')
+        const deleteSecondReminderBtn   = event.target.closest('.deleteSecondReminderBtn')
+        const deleteFinalReminderBtn    = event.target.closest('.deleteFinalReminderBtn')
+        const deletePaidBtn             = event.target.closest('.deletePaidBtn')
+        const deleteBillReminderBtn     = event.target.closest('.deleteBillReminderBtn')
+
+        if (deleteFirstReminderBtn){
+            deleteFirstReminderBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this First reminder?')) {
+                const billReminderId = deleteFirstReminderBtn.getAttribute('data-id')
+                http.patch(`/reminders/deletefirst/${billReminderId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            billRemindersTable ? billRemindersTable.draw() : ''
+                        }
+                        deleteFirstReminderBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deleteFirstReminderBtn.removeAttribute('disabled')
+                        alert(error)
+                    })
+            }
+        }
+        if (deleteSecondReminderBtn){
+            deleteSecondReminderBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Second reminder?')) {
+                const billReminderId = deleteSecondReminderBtn.getAttribute('data-id')
+                http.patch(`/reminders/deletesecond/${billReminderId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            billRemindersTable ? billRemindersTable.draw() : ''
+                        }
+                        deleteSecondReminderBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deleteSecondReminderBtn.removeAttribute('disabled')
+                        alert(error)
+                    })
+            }
+        }
+        if (deleteFinalReminderBtn){
+            deleteFinalReminderBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Final reminder?')) {
+                const billReminderId = deleteFinalReminderBtn.getAttribute('data-id')
+                http.patch(`/reminders/deletefinal/${billReminderId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            billRemindersTable ? billRemindersTable.draw() : ''
+                        }
+                        deleteFinalReminderBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deleteFinalReminderBtn.removeAttribute('disabled')
+                        alert(error)
+                    })
+            }
+        }
+        if (deletePaidBtn){
+            deletePaidBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Paid Confirmation?')) {
+                const billReminderId = deletePaidBtn.getAttribute('data-id')
+                http.patch(`/reminders/deletepaid/${billReminderId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            billRemindersTable ? billRemindersTable.draw() : ''
+                        }
+                        deletePaidBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deletePaidBtn.removeAttribute('disabled')
+                        alert(error)
+                    })
+            }
+        }
+
+        if (deleteBillReminderBtn){
+            deleteBillReminderBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Reminder?')) {
+                const billReminderId = deleteBillReminderBtn.getAttribute('data-id')
+                http.delete(`/reminders/${billReminderId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            billRemindersTable ? billRemindersTable.draw() : ''
+                        }
+                        deleteBillReminderBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deleteBillReminderBtn.removeAttribute('disabled')
+                        alert(error)
+                    })
+            }
+        }
+    })
+
+    document.querySelector('#dueRemindersListTable').addEventListener('click', function (event) {
+        const firstReminderSelect   = event.target.closest('.firstReminderSelect')
+        const secondReminderSelect  = event.target.closest('.secondReminderSelect')
+        const finalReminderSelect   = event.target.closest('.finalReminderSelect')
+        const confirmedPaidInput    = event.target.closest('.confirmedPaidInput')
+        const dueRemindersFieldset  = document.querySelector('#dueRemindersFieldset')
+
+       if (firstReminderSelect){
+            const reminderId  = firstReminderSelect.getAttribute('data-id')
+                
+            firstReminderSelect.addEventListener('blur', function () {
+                dueRemindersFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/reminders/hmo/firstreminder/${reminderId}`, {firstReminder: firstReminderSelect.value})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            dueHmoRemindersTable.draw()
+                            dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset)) 
+                        }
+                    })
+                    .catch((error) => {
+                        dueHmoRemindersTable.draw()
+                        dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                        console.log(error)
+                    })               
+            })
+        }
+
+       if (secondReminderSelect){
+            const reminderId  = secondReminderSelect.getAttribute('data-id')
+                
+            secondReminderSelect.addEventListener('blur', function () {
+                dueRemindersFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/reminders/hmo/secondreminder/${reminderId}`, {secondReminder: secondReminderSelect.value})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                                dueHmoRemindersTable.draw()
+                                dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset)) 
+                        }
+                    })
+                    .catch((error) => {
+                        dueHmoRemindersTable.draw()
+                        dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                        console.log(error)
+                    })               
+            })
+        }
+
+       if (finalReminderSelect){
+            const reminderId  = finalReminderSelect.getAttribute('data-id')
+                
+            finalReminderSelect.addEventListener('blur', function () {
+                dueRemindersFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/reminders/hmo/finalreminder/${reminderId}`, {finalReminder: finalReminderSelect.value})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                                dueHmoRemindersTable.draw()
+                                dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                        }
+                    })
+                    .catch((error) => {
+                        dueHmoRemindersTable.draw()
+                        dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                        console.log(error)
+                    })               
+            })
+        }
+
+       if (confirmedPaidInput){
+            const reminderId  = confirmedPaidInput.getAttribute('data-id')
+                
+            confirmedPaidInput.addEventListener('blur', function () {
+                dueRemindersFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/reminders/hmo/confirmedpaid/${reminderId}`, {confirmedPaidDate: confirmedPaidInput.value})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                                dueHmoRemindersTable.draw()
+                                dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                        }
+                    })
+                    .catch((error) => {
+                        dueHmoRemindersTable.draw()
+                        dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                        console.log(error)
+                    })               
+            })
+        }
     })
 
 })

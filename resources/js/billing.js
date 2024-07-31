@@ -1,8 +1,8 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { clearDivValues, getDivData, clearValidationErrors, resetFocusEndofLine, openModals, displayMedicalReportModal} from "./helpers"
-import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable, getBalancingTable } from "./tables/billingTables";
+import { clearDivValues, getDivData, clearValidationErrors, resetFocusEndofLine, openModals, displayMedicalReportModal, removeDisabled} from "./helpers"
+import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable, getBalancingTable, getDueCashRemindersTable, getBillReminderTable } from "./tables/billingTables";
 import { getOutpatientsInvestigationTable } from "./tables/investigationTables";
 import html2pdf  from "html2pdf.js"
 import { getShiftReportTable } from "./tables/pharmacyTables";
@@ -24,8 +24,10 @@ window.addEventListener('DOMContentLoaded', function () {
     const viewShiftReportTemplateModal  = new Modal(document.getElementById('viewShiftReportTemplateModal'))
     const medicalReportListModal        = new Modal(document.getElementById('medicalReportListModal'))
     const viewMedicalReportModal        = new Modal(document.getElementById('viewMedicalReportModal'))
+    const registerBillReminderModal     = new Modal(document.getElementById('registerBillReminderModal'))
 
     const balancingDateDiv              = document.querySelector('.balancingDateDiv')
+    const billRemindersDatesDiv         = document.querySelector('.billRemindersDatesDiv')
 
     const waitingBtn                    = document.querySelector('#waitingBtn')
     const outpatientsInvestigationBtn   = document.querySelector('#outpatientsInvestigationBtn')
@@ -41,6 +43,12 @@ window.addEventListener('DOMContentLoaded', function () {
     const createShiftReportBtn          = newShiftReportTemplateModal._element.querySelector('#createShiftReportBtn')
     const saveShiftReportBtn            = editShiftReportTemplateModal._element.querySelector('#saveShiftReportBtn')
     const downloadReportBtn             = viewMedicalReportModal._element.querySelector('#downloadReportBtn')
+    const saveBillReminderBtn           = registerBillReminderModal._element.querySelector('#saveBillReminderBtn')
+    const dueCashRemindersListBtn        = document.querySelector('#dueRemindersListBtn')
+    const dueCashRemindersListCount      = document.querySelector('#dueRemindersListCount')
+    const searchBillRemindersWithDatesBtn   = document.querySelector('.searchBillRemindersWithDatesBtn')
+    const searchBillRemindersMonthBtn       = document.querySelector('.searchBillRemindersMonthBtn')
+    
 
     const outPatientsTab                = document.querySelector('#nav-outPatients-tab')
     const inPatientsTab                 = document.querySelector('#nav-inPatients-tab')
@@ -48,6 +56,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const openVisitsTab                 = document.querySelector('#nav-openVisits-tab')
     const expensesTab                   = document.querySelector('#nav-expenses-tab')
     const balancingTab                  = document.querySelector('#nav-balancing-tab')
+    const billRemindersTab              = document.querySelector('#nav-billReminders-tab')
 
     const reportModalBody               = viewMedicalReportModal._element.querySelector('.reportModalBody')
     const patientsFullName              = viewMedicalReportModal._element.querySelector('#patientsFullName')
@@ -59,21 +68,31 @@ window.addEventListener('DOMContentLoaded', function () {
     const shiftBadgeSpan                = document.querySelector('#shiftBadgeSpan')
 
 
-    let inPatientsVisitTable, ancPatientsVisitTable, billingTable, paymentTable, openVisitsTable, expensesTable, balancingTable, medicalReportTable
+    let inPatientsVisitTable, ancPatientsVisitTable, billingTable, paymentTable, openVisitsTable, expensesTable, balancingTable, medicalReportTable, billRemindersTable
 
     const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient', 'consulted')
     const waitingTable = getWaitingTable('waitingTable')
     const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable', true)
     const billingShiftReportTable = getShiftReportTable('billingShiftReportTable', 'billing', shiftBadgeSpan)
+    const dueCashRemindersTable = getDueCashRemindersTable('dueRemindersListTable')
 
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #outpatientInvestigationsTable, #waitingTable, #billingTable, #openVisitsTable, #expensesTable, #balancingTable, #billingShiftReportTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})    
 
-    outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw()})
+    outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw(); dueCashRemindersTable.draw()})
     outpatientsInvestigationBtn.addEventListener('click', function () {outpatientInvestigationTable.draw()})
     shiftReportBtn.addEventListener('click', function () {billingShiftReportTable.draw()})
 
     newBillingReportBtn.addEventListener('click', function () {
         newShiftReportTemplateModal.show()
+    })
+
+    dueCashRemindersTable.on('draw.init', function() {
+        const count = dueCashRemindersTable.rows().count()
+        if (count > 0 ){
+            dueCashRemindersListCount.innerHTML = count
+        } else {
+            dueCashRemindersListCount.innerHTML = ''
+        }
     })
 
     inPatientsTab.addEventListener('click', function () {
@@ -83,6 +102,7 @@ window.addEventListener('DOMContentLoaded', function () {
             inPatientsVisitTable = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient', 'consulted')
         }
         billingShiftReportTable.draw()
+        dueCashRemindersTable.draw()
     })
 
     ancPatientsTab.addEventListener('click', function () {
@@ -92,6 +112,7 @@ window.addEventListener('DOMContentLoaded', function () {
             ancPatientsVisitTable = getPatientsVisitsByFilterTable('ancPatientsVisitTable', 'ANC', 'consulted')
         }
         billingShiftReportTable.draw()
+        dueCashRemindersTable.draw()
     })
 
     openVisitsTab.addEventListener('click', function () {
@@ -101,6 +122,7 @@ window.addEventListener('DOMContentLoaded', function () {
             openVisitsTable = getPatientsVisitsByFilterTable('openVisitsTable', '', 'openvisits')
         }
         billingShiftReportTable.draw()
+        dueCashRemindersTable.draw()
     })
 
     expensesTab.addEventListener('click', function () {
@@ -110,6 +132,7 @@ window.addEventListener('DOMContentLoaded', function () {
             expensesTable = getExpensesTable('expensesTable', 'billing')
         }
         billingShiftReportTable.draw()
+        dueCashRemindersTable.draw()
     })
 
     balancingTab.addEventListener('click', function () {
@@ -119,6 +142,20 @@ window.addEventListener('DOMContentLoaded', function () {
             balancingTable = getBalancingTable('balancingTable')
         }
         billingShiftReportTable.draw()
+        dueCashRemindersTable.draw()
+    })
+
+    billRemindersTab.addEventListener('click', function () {
+        billRemindersDatesDiv.querySelector('#monthYear').value == '' ? billRemindersDatesDiv.querySelector('#monthYear').value = new Date().toISOString().slice(0,7) : ''
+        let date = new Date().toISOString().split('T')[0]
+        document.querySelector('#monthYear').setAttribute('max', date.slice(0,7))
+        if ($.fn.DataTable.isDataTable( '#billRemindersTable' )){
+            $('#billRemindersTable').dataTable().fnDraw()
+            dueCashRemindersTable.draw()
+        } else {
+            billRemindersTable = getBillReminderTable('billRemindersTable')
+            dueCashRemindersTable.draw()
+        }
     })
 
     searchBalanceByDateBtn.addEventListener('click', function () {
@@ -126,6 +163,22 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#balancingTable').dataTable().fnDestroy()
         }
         balancingTable = getBalancingTable('balancingTable', null, balancingDateDiv.querySelector('#balanceDate').value)
+    })
+
+    searchBillRemindersWithDatesBtn.addEventListener('click', function () {
+        billRemindersDatesDiv.querySelector('#monthYear').value = ''
+
+        if ($.fn.DataTable.isDataTable( '#billRemindersTable' )){
+            $('#billRemindersTable').dataTable().fnDestroy()
+        }
+        billRemindersTable = getBillReminderTable('billRemindersTable', billRemindersDatesDiv.querySelector('#startDate').value, billRemindersDatesDiv.querySelector('#endDate').value)
+    })
+
+    searchBillRemindersMonthBtn.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#billRemindersTable' )){
+            $('#billRemindersTable').dataTable().fnDestroy()
+        }
+        billRemindersTable = getBillReminderTable('billRemindersTable', null, null, billRemindersDatesDiv.querySelector('#monthYear').value)
     })
 
     waitingBtn.addEventListener('click', function () {
@@ -148,12 +201,18 @@ window.addEventListener('DOMContentLoaded', function () {
         newExpenseModal.show()
     })
 
-    document.querySelectorAll('#waitingListOffcanvas2, #offcanvasInvestigations, #viewShiftReportTemplateModal, #newShiftReportTemplateModal').forEach(canvas => {
+    dueCashRemindersListBtn.addEventListener('click', function () {
+        dueCashRemindersTable.draw()
+    })
+
+    document.querySelectorAll('#waitingListOffcanvas2, #offcanvasInvestigations, #viewShiftReportTemplateModal, #newShiftReportTemplateModal, #dueRemindersListOffcanvas').forEach(canvas => {
         canvas.addEventListener('hide.bs.offcanvas', function () {
             outPatientsVisitTable.draw()
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             billingShiftReportTable.draw()
+            dueCashRemindersTable.draw()
+            billRemindersTable ? billRemindersTable.draw() : ''
         })
 
     })
@@ -298,11 +357,12 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     document.querySelector('#billingTable').addEventListener('click',  function (event) {
-            const payBtn                = event.target.closest('.payBtn')
-            const paymentDetailsDiv     = document.querySelector('.paymentDetailsDiv')
-            const discountBtn           = event.target.closest('.discountBtn')
-            const outstandingsBtn       = event.target.closest('.outstandingsBtn')
-            const thirdPartyServiceBtn  = event.target.closest('.thirdPartyServiceBtn')
+            const payBtn                    = event.target.closest('.payBtn')
+            const paymentDetailsDiv         = document.querySelector('.paymentDetailsDiv')
+            const discountBtn               = event.target.closest('.discountBtn')
+            const outstandingsBtn           = event.target.closest('.outstandingsBtn')
+            const thirdPartyServiceBtn      = event.target.closest('.thirdPartyServiceBtn')
+            const registerBillReminderBtn   = event.target.closest('.registerBillReminderBtn')
             
 
             if (payBtn) {
@@ -375,6 +435,36 @@ window.addEventListener('DOMContentLoaded', function () {
                 thirdPartyServiceModal._element.querySelector('#saveThirPartyServiceBtn').setAttribute('data-id', thirdPartyServiceBtn.getAttribute('data-id'))
                 thirdPartyServiceModal.show()
             }
+
+            if (registerBillReminderBtn){
+                registerBillReminderModal._element.querySelector('#patient').value = registerBillReminderBtn.getAttribute('data-patient')
+                registerBillReminderModal._element.querySelector('#sponsor').value = registerBillReminderBtn.getAttribute('data-sponsor')
+                saveBillReminderBtn.setAttribute('data-id', registerBillReminderBtn.getAttribute('data-id'))
+                registerBillReminderModal.show()
+            }
+    })
+
+    saveBillReminderBtn.addEventListener('click', function () {
+        const visitId = saveBillReminderBtn.getAttribute('data-id')
+        saveBillReminderBtn.setAttribute('disabled', 'disabled')
+
+        let data = {...getDivData(registerBillReminderModal._element), visitId }
+
+        http.post('/reminders/cash', {...data}, {"html": registerBillReminderModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                registerBillReminderModal.hide()
+                    clearDivValues(registerBillReminderModal._element)
+                    clearValidationErrors(registerBillReminderModal._element)
+                    billingTable ? billingTable.draw(false) : ''
+                }
+                saveBillReminderBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            // hmoReportsTable ? hmoReportsTable.draw(false) : ''
+            saveBillReminderBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
+        })
     })
 
     dischargeBillBtn.addEventListener('click', function () {
@@ -663,6 +753,189 @@ window.addEventListener('DOMContentLoaded', function () {
             }
     
         })
+    })
+
+    document.querySelector('#billRemindersTable').addEventListener('click', function (event) {
+        const deleteFirstReminderBtn    = event.target.closest('.deleteFirstReminderBtn')
+        const deleteSecondReminderBtn   = event.target.closest('.deleteSecondReminderBtn')
+        const deleteFinalReminderBtn    = event.target.closest('.deleteFinalReminderBtn')
+        const deletePaidBtn             = event.target.closest('.deletePaidBtn')
+        const deleteBillReminderBtn     = event.target.closest('.deleteBillReminderBtn')
+
+        if (deleteFirstReminderBtn){
+            deleteFirstReminderBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this First reminder?')) {
+                const billReminderId = deleteFirstReminderBtn.getAttribute('data-id')
+                http.patch(`/reminders/deletefirst/${billReminderId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            billRemindersTable ? billRemindersTable.draw() : ''
+                        }
+                        deleteFirstReminderBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deleteFirstReminderBtn.removeAttribute('disabled')
+                        alert(error)
+                    })
+            }
+        }
+        if (deleteSecondReminderBtn){
+            deleteSecondReminderBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Second reminder?')) {
+                const billReminderId = deleteSecondReminderBtn.getAttribute('data-id')
+                http.patch(`/reminders/deletesecond/${billReminderId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            billRemindersTable ? billRemindersTable.draw() : ''
+                        }
+                        deleteSecondReminderBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deleteSecondReminderBtn.removeAttribute('disabled')
+                        alert(error)
+                    })
+            }
+        }
+        if (deleteFinalReminderBtn){
+            deleteFinalReminderBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Final reminder?')) {
+                const billReminderId = deleteFinalReminderBtn.getAttribute('data-id')
+                http.patch(`/reminders/deletefinal/${billReminderId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            billRemindersTable ? billRemindersTable.draw() : ''
+                        }
+                        deleteFinalReminderBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deleteFinalReminderBtn.removeAttribute('disabled')
+                        alert(error)
+                    })
+            }
+        }
+        if (deletePaidBtn){
+            deletePaidBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Paid Confirmation?')) {
+                const billReminderId = deletePaidBtn.getAttribute('data-id')
+                http.patch(`/reminders/deletepaid/${billReminderId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            billRemindersTable ? billRemindersTable.draw() : ''
+                        }
+                        deletePaidBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deletePaidBtn.removeAttribute('disabled')
+                        alert(error)
+                    })
+            }
+        }
+
+        if (deleteBillReminderBtn){
+            deleteBillReminderBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Reminder?')) {
+                const billReminderId = deleteBillReminderBtn.getAttribute('data-id')
+                http.delete(`/reminders/${billReminderId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            billRemindersTable ? billRemindersTable.draw() : ''
+                        }
+                        deleteBillReminderBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deleteBillReminderBtn.removeAttribute('disabled')
+                        alert(error)
+                    })
+            }
+        }
+    })
+
+    document.querySelector('#dueRemindersListTable').addEventListener('click', function (event) {
+        const firstReminderSelect   = event.target.closest('.firstReminderSelect')
+        const secondReminderSelect  = event.target.closest('.secondReminderSelect')
+        const finalReminderSelect   = event.target.closest('.finalReminderSelect')
+        const confirmedPaidInput    = event.target.closest('.confirmedPaidInput')
+        const dueRemindersFieldset  = document.querySelector('#dueRemindersFieldset')
+
+       if (firstReminderSelect){
+            const reminderId  = firstReminderSelect.getAttribute('data-id')
+                
+            firstReminderSelect.addEventListener('blur', function () {
+                dueRemindersFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/reminders/firstreminder/${reminderId}`, {firstReminder: firstReminderSelect.value})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            dueCashRemindersTable.draw()
+                            dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset)) 
+                        }
+                    })
+                    .catch((error) => {
+                        dueCashRemindersTable.draw()
+                        dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                        console.log(error)
+                    })               
+            })
+        }
+
+       if (secondReminderSelect){
+            const reminderId  = secondReminderSelect.getAttribute('data-id')
+                
+            secondReminderSelect.addEventListener('blur', function () {
+                dueRemindersFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/reminders/secondreminder/${reminderId}`, {secondReminder: secondReminderSelect.value})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                                dueHmoRemindersTable.draw()
+                                dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset)) 
+                        }
+                    })
+                    .catch((error) => {
+                        dueCashRemindersTable.draw()
+                        dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                        console.log(error)
+                    })               
+            })
+        }
+
+       if (finalReminderSelect){
+            const reminderId  = finalReminderSelect.getAttribute('data-id')
+                
+            finalReminderSelect.addEventListener('blur', function () {
+                dueRemindersFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/reminders/finalreminder/${reminderId}`, {finalReminder: finalReminderSelect.value})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                                dueCashRemindersTable.draw()
+                                dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                        }
+                    })
+                    .catch((error) => {
+                        dueCashRemindersTable.draw()
+                        dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                        console.log(error)
+                    })               
+            })
+        }
+
+       if (confirmedPaidInput){
+            const reminderId  = confirmedPaidInput.getAttribute('data-id')
+                
+            confirmedPaidInput.addEventListener('blur', function () {
+                dueRemindersFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/reminders/confirmedpaid/${reminderId}`, {confirmedPaidDate: confirmedPaidInput.value})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                                dueCashRemindersTable.draw()
+                                dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                        }
+                    })
+                    .catch((error) => {
+                        dueCashRemindersTable.draw()
+                        dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                        console.log(error)
+                    })               
+            })
+        }
     })
 
 })

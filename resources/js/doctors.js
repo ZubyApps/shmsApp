@@ -1038,7 +1038,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 if ($.fn.DataTable.isDataTable('#deliveryNoteTableHistory'+visitId )){$('#deliveryNoteTableHistory'+visitId).dataTable().fnDestroy()}
                 if ($.fn.DataTable.isDataTable('#surgeryNoteTableHistory'+visitId )){$('#surgeryNoteTableHistory'+visitId).dataTable().fnDestroy()}
                 if ($.fn.DataTable.isDataTable('#patientsFileTableHistory'+visitId )){$('#patientsFileTableHistory'+visitId).dataTable().fnDestroy()}
-                console.log(id, visitId, ancRegId, collapseVisitBtn.getAttribute('data-isanc'))
                 const goto = () => {
                     location.href = collapseVisitBtn.getAttribute('data-gotovisit')
                     window.history.replaceState({}, document.title, "/" + "doctors" )
@@ -1251,11 +1250,14 @@ window.addEventListener('DOMContentLoaded', function () {
             regularConsultationReviewDiv.innerHTML = ''
             ancConsultationReviewDiv.innerHTML = ''
             visitHistoryDiv.innerHTML = ''
-            modal.id == 'ancConsultationReviewModal' ? (clearDivValues(modal.querySelector('.ancReviewDiv')), modal.querySelector('.investigationAndManagementDiv').classList.add('d-none')) : ''
-            modal.querySelector('#saveConsultationBtn').removeAttribute('data-conid')
-            modal.querySelector('#lmp').value = ''
-            modal.querySelector('#edd').value = ''
-            modal.querySelector('#ega').value = ''
+            modal.querySelector('#saveConsultationBtn')?.removeAttribute('data-conid')
+            if (modal.id == 'ancConsultationReviewModal') {
+                clearDivValues(modal.querySelector('.ancReviewDiv'))
+                modal.querySelector('.investigationAndManagementDiv').classList.add('d-none')
+                modal.querySelector('#lmp').value = ''
+                modal.querySelector('#edd').value = ''
+                modal.querySelector('#ega').value = ''
+            }
             outPatientsVisitTable.draw()
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''

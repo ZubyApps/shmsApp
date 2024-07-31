@@ -229,6 +229,8 @@ class VisitService
                 'age'               => $visit->patient->age(),
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->category_name,
+                'flagSponsor'       => $visit->sponsor->flag,
+                'flagPatient'       => $visit->patient->flag,
                 'came'              => (new Carbon($visit->created_at))->diffForHumans(['parts' => 2, 'short' => true]),
                 'waitingFor'        => $visit->waitingFor->username ?? '',
                 'doctor'            => $visit->doctor->username ?? '',

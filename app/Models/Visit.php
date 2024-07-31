@@ -162,6 +162,11 @@ class Visit extends Model
         return $this->hasMany(PatientsFile::class);
     }
 
+    public function reminders()
+    {
+        return $this->hasMany(Reminder::class);
+    }
+
     public function totalHmsBills()
     {
         $totalBill = 0;

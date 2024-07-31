@@ -25,7 +25,9 @@ class SponsorService
             'email'                 => $data->email,
             'registration_bill'     => $data->registrationBill,
             'sponsor_category_id'   => $data->category,
-            'category_name'         => SponsorCategory::findOrFail($data->category)->name
+            'category_name'         => SponsorCategory::findOrFail($data->category)->name,
+            'max_pay_days'          => $data->maxPayDays,
+            'flag'                  => $data->flagSponsor,
         ]);
     }
 
@@ -37,7 +39,9 @@ class SponsorService
             'email'                 => $data->email,
             'registration_bill'     => $data->registerationBill,
             'sponsor_category_id'   => $data->category,
-            'user_id'               => $user->id
+            'user_id'               => $user->id,
+            'max_pay_days'          => $data->maxPayDays,
+            'flag'                  => $data->flagSponsor,
 
         ]);
 
@@ -52,6 +56,7 @@ class SponsorService
         if (! empty($params->searchTerm)) {
             return $this->sponsor
                         ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -74,6 +79,8 @@ class SponsorService
                 'category'          => $sponsor->sponsorCategory->name,
                 'approval'          => $sponsor->sponsorCategory->approval === 0 ? 'false' : 'true',
                 'registrationBill'  => $sponsor->registration_bill,
+                'maxPayDays'        => $sponsor->max_pay_days,
+                'flag'              => $sponsor->flag,
                 'createdAt'         => (new Carbon($sponsor->created_at))->format('d/m/Y'),
                 'count'             => $sponsor->patients()->count()
             ];

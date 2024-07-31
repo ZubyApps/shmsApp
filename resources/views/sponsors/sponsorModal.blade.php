@@ -39,7 +39,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Email</x-input-span>
-                                <x-form-input name="email" />
+                                <x-form-input type="email" name="email" />
                             </x-form-div>
                             <x-form-div class="registrationBillDiv1 col-xl-6">
                                 <x-input-span>Registration Bill</x-input-span>
@@ -49,6 +49,18 @@
                                     <option value="old">Old</option>
                                     <option class="{{ !$isUpdate ? 'd-none' : ''  }}" value="">N/A</option>
                                     
+                                </select>
+                            </x-form-div>
+                            <x-form-div class="col-xl-6">
+                                <x-input-span>Max Pay Days</x-input-span>
+                                <x-form-input type="number" name="maxPayDays" />
+                            </x-form-div>
+                            <x-form-div class="col-xl-6">
+                                <x-input-span>Flag Sponsor</x-input-span>
+                                <select class="form-select form-select-md" name="flagSponsor">
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>  
                                 </select>
                             </x-form-div>
                         </div>

@@ -6,6 +6,7 @@ use App\InvokableObjects\CloseNursesShift;
 use App\InvokableObjects\NursesAfternoonShift;
 use App\InvokableObjects\NursesMorningShift;
 use App\InvokableObjects\NursesNightShift;
+use App\InvokableObjects\Remind;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
@@ -17,11 +18,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
-
         $schedule->call(new NursesMorningShift)->timezone('Africa/Lagos')->dailyAt('08:00');
         $schedule->call(new NursesAfternoonShift)->timezone('Africa/Lagos')->dailyAt('14:00');
         $schedule->call(new NursesNightShift)->timezone('Africa/Lagos')->dailyAt('19:30');
+        $schedule->call(new Remind)->timezone('Africa/Lagos')->dailyAt('11:00');
     }
 
     /**

@@ -13,6 +13,7 @@ const getSponsorsTable = (tableId) => {
         serverSide: true,
         ajax:  '/sponsors/load',
         orderMulti: true,
+        lengthMenu:[20, 40, 80, 120, 200],
         search:true,
         searchDelay: 1000,
         dom: 'lfrtip<"my-5 text-center "B>',
@@ -36,6 +37,8 @@ const getSponsorsTable = (tableId) => {
                 }
                 }},
             {data: "registrationBill"},
+            {data: "maxPayDays"},
+            {data: row => row.flag ? '<span class="fw-bold text-danger">Yes</span>' : 'No' },
             {data: "createdAt"},
             {
                 sortable: false,
@@ -84,11 +87,11 @@ const getAllPatientsTable = (tableId) => {
              ],
         columns: [
             {data: "card"},
-            {data: "name"},
+            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}">${row.name}</span>`},
             {data: "phone"},
             {data: "sex"},
             {data: "age"},
-            {data: "sponsor"},
+            {data: row => `<span class="${row.flagSponsor ? 'fw-bold colour-change3' : ''}">${row.sponsor}</span>`},
             {data: "category"},
             {data: "createdAt"},
             {data: "createdBy"},

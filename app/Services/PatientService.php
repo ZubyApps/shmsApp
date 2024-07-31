@@ -46,6 +46,7 @@ class PatientService
                 "sex"                   => $data->sex,
                 "sponsor_id"            => $data->sponsor,
                 "staff_Id"              => $data->staffId,
+                "flag"                  => $data->flagPatient,
                 "state_of_origin"       => $data->stateOrigin,
                 "state_of_residence"    => $data->stateResidence,
         ]);
@@ -79,6 +80,7 @@ class PatientService
                 "sex"                   => $data->sex,
                 "sponsor_id"            => $data->sponsor,
                 "staff_id"              => $data->staffId,
+                "flag"                  => $data->flagPatient,
                 "state_of_origin"       => $data->stateOrigin,
                 "state_of_residence"    => $data->stateResidence,
 
@@ -135,6 +137,8 @@ class PatientService
                 'age'               => $this->helperService->twoPartDiffInTimePast($patient->date_of_birth),
                 'sponsor'           => $patient->sponsor->name,
                 'category'          => $patient->sponsor->sponsorCategory->name,
+                'flagPatient'       => $patient->flag,
+                'flagSponsor'       => $patient->sponsor->flag,
                 'createdAt'         => (new Carbon($patient->created_at))->format('d/m/Y'),
                 'createdBy'         => $patient->user->username,
                 'active'            => $patient->is_active,

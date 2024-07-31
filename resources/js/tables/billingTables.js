@@ -22,10 +22,10 @@ const getWaitingTable = (tableId) => {
             emptyTable: 'No patient is waiting'
         },
         columns: [
-            {data: "patient"},
+            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}">${row.patient}</span>`},
             {data: "sex"},
             {data: "age"},
-            {data: "sponsor"},
+            {data: row => `<span class="${row.flagSponsor ? 'fw-bold colour-change3' : ''}">${row.sponsor}</span>`},
             {data: row => `<span class="tooltip-test" title="initiated by ${row.initiatedBy}">${row.came}</span>`},
             {data: "waitingFor"},
             {data: "doctor"},
@@ -72,35 +72,35 @@ const getWaitingTable = (tableId) => {
 const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) => {
     const preparedColumns = [
         {data: "came"},
-            {data: "patient"},
-            {data: "doctor"},
-            {data: "diagnosis"},
-            {data: row => sponsorAndPayPercent(row)},
-            {data: row => admissionStatusX(row)},
-            {
-                sortable: false,
-                data: row => `
-                <div class="dropdown">
-                    <a class="btn btn-outline-primary tooltip-test text-decoration-none ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed by ' + row.closedBy: ''}" data-bs-toggle="dropdown">
-                        More${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
-                    </a>
-                        <ul class="dropdown-menu">
-                        <li>
-                            <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details"  data-id="${ row.id }" data-conid="${ row.conId }" data-patientId="${ row.patient }" data-patientType="${ row.patientType }">
-                                Details
-                            </a>
-                            <a class="dropdown-item patientsBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-staff="${ row.staff }">
-                                Bill Summary
-                            </a>
-                            <a class="dropdown-item btn btn-outline-primary medicalReportBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-age="${ row.age }" data-sex="${ row.sex }">Report/Refer/Result</a>
-                            <a class="dropdown-item closeVisitBtn btn tooltip-test" title="${row.closed ? 'closed': 'close'}"  data-id="${ row.id }">
-                            ${row.closed ? '': 'Close'}
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                `
-            },
+        {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}">${row.patient}</span>`},
+        {data: "doctor"},
+        {data: "diagnosis"},
+        {data: row => sponsorAndPayPercent(row)},
+        {data: row => admissionStatusX(row)},
+        {
+            sortable: false,
+            data: row => `
+            <div class="dropdown">
+                <a class="btn btn-outline-primary tooltip-test text-decoration-none ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed by ' + row.closedBy: ''}" data-bs-toggle="dropdown">
+                    More${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
+                </a>
+                    <ul class="dropdown-menu">
+                    <li>
+                        <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details"  data-id="${ row.id }" data-conid="${ row.conId }" data-patientId="${ row.patient }" data-patientType="${ row.patientType }">
+                            Details
+                        </a>
+                        <a class="dropdown-item patientsBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-staff="${ row.staff }">
+                            Bill Summary
+                        </a>
+                        <a class="dropdown-item btn btn-outline-primary medicalReportBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-age="${ row.age }" data-sex="${ row.sex }">Report/Refer/Result</a>
+                        <a class="dropdown-item closeVisitBtn btn tooltip-test" title="${row.closed ? 'closed': 'close'}"  data-id="${ row.id }">
+                        ${row.closed ? '': 'Close'}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            `
+        },
     ]
     filter === 'Inpatient' ? preparedColumns.splice(6, 0, {data: row => `<small>${row.ward + '-' + row.bedNo}</small>`},) : ''
 
@@ -332,6 +332,9 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                         </div>
                                     </div>
                                 </div>
+                                <button type="button" class="btn btn-${data.reminder ? 'outline-primary' : 'primary registerBillReminderBtn'}" data-id="${data.id}" data-patient="${patient}" data-sponsor="${data.sponsor +' - '+ data.sponsorCategory}">
+                                ${data.reminder ? 'Reminder Set' : 'Set Bill Reminder'}
+                                </button>
                                 ` : ''}
                                 `
                     return (child);
@@ -577,4 +580,183 @@ const getBalancingTable = (tableId, accessor, date) => {
     return balancingTable
 }
 
-export {getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable, getBalancingTable}
+const getBillReminderTable = (tableId, startDate, endDate, date) => {
+    const billReimndersTable = new DataTable(`#${tableId}`, {
+        serverSide: true,
+        ajax:  {url: '/reminders/load/cash', data: {
+            'startDate' : startDate, 
+            'endDate'   : endDate,
+            'date'      : date,
+            }
+        },
+        orderMulti: true,
+        search:true,
+        searchDelay: 1000,
+        dom: 'l<"my-1 text-center "B>frtip',
+        buttons: [
+            {
+                extend:'colvis',
+                text:'Show/Hide',
+                className:'btn btn-primary'       
+            },
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+        ],
+        lengthMenu:[20, 40, 80, 120, 200],
+        columns: [
+            {data: "patient"},
+            // {data: "monthSentFor"},
+            {
+                visible: false,
+                data: "setFrom"
+            },
+            {data: row => `<span class="${row.daysAgo > row.maxDays && row.paid == 'Pending' ? 'fw-bold colour-change3' : ''} ${row.paid != 'Pending' ? 'd-none' : ''}">${row.daysAgo}</span>`},
+            {data: "maxDays"},
+            {data: "daysToPay"},
+            {data: row => `<span class="${row.secondReminder ? '' : 'deleteFirstReminderBtn'}" data-id="${ row.id}">${row.firstReminder}</span>`},
+            {
+                visible: false,
+                data: "firstDate"
+            },
+            {data: row => `<span class="${row.finalReminder ? '' : 'deleteSecondReminderBtn'}" data-id="${ row.id}">${row.secondReminder}</span>`},
+            {
+                visible: false,
+                data: "secondDate"
+            },
+            {data: row => `<span class="deleteFinalReminderBtn" data-id="${ row.id}">${row.finalReminder}</span>`},
+            {
+                visible: false,
+                data: "finalDate"
+            },
+            {data: "remind"},
+            {data: row => () => {
+                return `<span class="fw-bold ${row.paid == 'Pending' ? '' : 'deletePaidBtn'} ${row.paid == 'Pending' ? row.daysAgo > row.maxDays ? 'colour-change3' :'text-warning' : 'text-primary'}" data-id="${row.id}">${row.paid}</span> ${row.paid == 'Pending' ? 
+                   `<i class=" bi-dash-circle-fill text-secondary"></i>` : `<i class="ms-1 text-primary bi bi-p-circle-fill tooltip-test" title="paid"></i>`}`
+            }},
+            {
+                visible: false,
+                data: "createdAt"
+            },
+            {
+                visible: false,
+                data: "setBy"
+            },
+            {
+                visible: false,
+                data: "comment"
+            },
+            {
+                visible: false,
+                sortable: false,
+                data: row => () => {
+                        return `
+                        <div class="d-flex flex- ${row.paid != 'Pending' ? 'd-none' : ''}">
+                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBillReminderBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
+                        </div>
+                        `  
+                }      
+            },
+        ]
+    })
+
+    return billReimndersTable
+}
+
+const getDueCashRemindersTable = (tableId) => {
+    const dueHmoRemindersTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  {url: '/reminders/load/cash/due', data: {
+        }},
+        orderMulti: true,
+        search:true,
+        searchDelay: 1000,
+        lengthMenu:[50, 100, 150, 200],
+        language: {
+            emptyTable: 'No reminders due'
+        },
+        drawCallback: function (settings) {
+            var api = this.api() 
+        },
+        columns: [
+            {data: "patient"},
+            {data: "phone"},
+            {data: "daysAgo"},
+            {data: "maxDays"},
+            {data: "firstReminder", 
+                render: (data, type, row) => {
+                    if (data){
+                        return data
+                    }
+                    return  `
+                    <div class="d-flex text-secondary">            
+                        <select class="form-select form-select-md firstReminderSelect ms-1" data-id="${row.id}">
+                            <option value="">Select</option>
+                            <option value="Email">Email</option>
+                            <option value="Text">Text</option>
+                            <option value="WhatsApp">WhatsApp</option>
+                            <option value="Call">Call</option>
+                        </select>
+                    </div>   
+                    `
+                }
+            },
+            {data: "secondReminder", 
+                render: (data, type, row) => {
+                    if (data){
+                        return data
+                    }
+                    return  `
+                    <div class="d-flex text-secondary ${row.firstReminder ? '' : 'd-none'}">            
+                        <select class ="form-select form-select-md secondReminderSelect ms-1" data-id="${row.id}">
+                            <option value="">Select</option>
+                            <option value="Email">Email</option>
+                            <option value="Text">Text</option>
+                            <option value="WhatsApp">WhatsApp</option>
+                            <option value="Call">Call</option>
+                        </select>
+                    </div>   
+                    `
+                }
+            },
+            {data: "finalReminder", 
+                render: (data, type, row) => {
+                    if (data){
+                        return data
+                    }
+                    return  `
+                    <div class="d-flex text-secondary ${row.firstReminder && row.secondReminder ? '' : 'd-none'}">            
+                        <select class ="form-select form-select-md finalReminderSelect ms-1" data-id="${row.id}">
+                            <option value="">Select</option>
+                            <option value="Email">Email</option>
+                            <option value="Text">Text</option>
+                            <option value="WhatsApp">WhatsApp</option>
+                            <option value="Call">Call</option>
+                        </select>
+                    </div>   
+                    `
+                }
+            },
+            {data: "paid", 
+                render: (data, type, row) => {
+                    if (data != 'Pending'){
+                        return data
+                    }
+                    return  `
+                    <input class="ms-1 form-control confirmedPaidInput text-secondary" type="date" style="width:8rem;" data-id="${row.id}">  
+                    `
+                }
+            },
+            {data: "comment"},
+            {data: "setBy"},
+        ]
+    });
+
+    return dueHmoRemindersTable
+}
+
+export {getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable, getBalancingTable, getBillReminderTable, getDueCashRemindersTable}

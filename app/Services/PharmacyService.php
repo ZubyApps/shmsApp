@@ -14,7 +14,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class PharmacyService
 {
@@ -319,7 +318,7 @@ class PharmacyService
                     'hmoNote'           => $prescription->hmo_note ?? '',
                     'statusBy'          => $prescription->approvedBy?->username ?? $prescription->rejectedBy?->username ?? '',
                     'qtyDispensed'      => $prescription->qty_dispensed,
-                    'dispensedBy'       => $prescription->dispensedBy->username ?? '',
+                    'dispensedBy'       => $prescription->dispensedBy?->username ?? '',
                     'dispensed'         => $prescription->dispense_date ? (new Carbon($prescription->dispense_date))->format('d/m/y g:ia') : '',
                     'reason'            => $prescription->held ?? '',
                     'dispenseComment'   => $prescription->dispense_comment ?? '',

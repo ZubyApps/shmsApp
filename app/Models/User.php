@@ -199,6 +199,11 @@ class User extends Authenticatable
         return $this->hasMany(MedicationCategory::class);
     }
 
+    public function reminders()
+    {
+        return $this->hasMany(Reminder::class);
+    }
+
     public function nameInFull()
     {
         return $this->firstname.' '.$this->middlename.' '.$this->lastname;

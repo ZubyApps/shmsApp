@@ -19,6 +19,8 @@ class SponsorResource extends JsonResource
             'name'              => $this->name,
             'phone'             => $this->phone,
             'email'             => $this->email,
+            'maxPayDays'        => $this->max_pay_days,
+            'flagSponsor'       => $this->flag,
             'registerationBill' => $this->registration_bill?? '',
             'category'          => $this->sponsor_category_id
         ];

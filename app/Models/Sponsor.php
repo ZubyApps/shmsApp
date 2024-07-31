@@ -35,4 +35,9 @@ class Sponsor extends Model
     {
         return $this->hasMany(CapitationPayment::class);
     }
+
+    public function reminders()
+    {
+        return $this->hasMany(Reminder::class);
+    }
 }

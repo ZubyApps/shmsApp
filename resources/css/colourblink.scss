@@ -36,3 +36,16 @@
     color: #ffc107;
   }
 }
+
+.colour-change3 {
+  animation:colour-blink3 1s infinite;
+}
+
+@keyframes colour-blink3 {
+  100% {
+    color: #202020;
+  }
+  100% {
+    color: #dc3545;
+  }
+}

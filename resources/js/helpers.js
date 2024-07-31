@@ -353,7 +353,7 @@ const reviewBtn = (row) => {
 }
 
 const histroyBtn = (row) => {
-    return `<button class="btn p-0 historyBtn tooltip-test text-decoration-none text-dark" href="#" title="history" data-patientid="${row.patientId}" data-patientType="${ row.patientType }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">${row.patient}</button>`
+    return `<button class="btn p-0 historyBtn tooltip-test text-decoration-none text-dark" href="#" title="history" data-patientid="${row.patientId}" data-patientType="${ row.patientType }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">${`<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}">${row.patient}</span>`}</button>`
 }
 
 const displayConsultations = (div, displayFunction, iteration, getOrdinal, count, length, data, viewer, isDoctorDone, closed) => {
@@ -386,9 +386,9 @@ const sponsorAndPayPercent = (row) => {
     }
     return payPercent !== null ? 
             `<div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
-            <div class="progress-bar text-dark fs-6 px-1 overflow-visible bg-${payPercent <= 50 ? 'danger' : payPercent >= 50 && payPercent < 90 ? 'warning' : payPercent >= 90 && payPercent < 100 ? 'primary-subtle' : 'primary'}" style="width: ${payPercent}%";>${row.sponsor+'-'+ row.sponsorCategory +' '+payPercent+'%'}</div>
-            </div>` : 
-           row.sponsor+'-'+ row.sponsorCategory
+            <div class="progress-bar text-dark fs-6 px-1 overflow-visible bg-${payPercent <= 50 ? 'danger' : payPercent >= 50 && payPercent < 90 ? 'warning' : payPercent >= 90 && payPercent < 100 ? 'primary-subtle' : 'primary'}" style="width: ${payPercent}%";>${`<span class="${row.flagSponsor ? 'fw-bold colour-change3' : ''}">${row.sponsor+'-'+ row.sponsorCategory +' '+payPercent+'%'}</span>`}</div>
+            </div>` : `<span class="${row.sponsorFlag ? 'colour-change2' : ''}">${row.sponsor+'-'+ row.sponsorCategory}</span>`
+        //    row.sponsor+'-'+ row.sponsorCategory
 }
 
 const displayPaystatus = (row, credit, NHIS) => {
@@ -544,7 +544,7 @@ const filterPatients = (elements) => {
 }
 
 const removeDisabled = (element) => {
-    setTimeout(() => element.removeAttribute('disabled'), 1500 ) 
+    setTimeout(() => element.removeAttribute('disabled'), 1000 ) 
 }
 
 const resetFocusEndofLine = (element, time = 100) => {
