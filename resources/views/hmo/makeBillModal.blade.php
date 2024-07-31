@@ -10,13 +10,29 @@
                     <div class="">
                         <div class="mb-2 form-control">
                             <div class="row">
-                                <x-form-div class="col-xl-6">
+                                <x-form-div class="col-xl-4">
                                     <x-input-span>Patient</x-input-span>
-                                    <x-form-input name="patient" value="" id="patient"/>
+                                    <x-form-input name="patient" value="" id="patient" readonly/>
                                 </x-form-div>
-                                <x-form-div class="col-xl-6">
+                                <x-form-div class="col-xl-4">
                                     <x-input-span>Sponsor</x-input-span>
-                                    <x-form-input name="sponsor" value="" id="sponsor"/>
+                                    <x-form-input name="sponsor" value="" id="sponsor" readonly/>
+                                </x-form-div>
+                                <x-form-div class="col-xl-4 staffIdDiv">
+                                    <x-input-span>Staff ID/No.</x-input-span>
+                                    <x-form-input name="staffId" class="staffId" id="staffId" readonly />
+                                </x-form-div>
+                                <x-form-div class="col-xl-4">
+                                    <x-input-span>Age</x-input-span>
+                                    <x-form-input name="age" class="age" id="age" readonly />
+                                </x-form-div>
+                                <x-form-div class="">
+                                    <x-input-span>Sex</x-input-span>
+                                    <x-form-input name="sex" class="" id="sex" readonly />
+                                </x-form-div>
+                                <x-form-div class="col-xl-4">
+                                    <x-input-span>Phone Number</x-input-span>
+                                    <x-form-input type="tel" name="phone" id="phone" value="" readonly />
                                 </x-form-div>
                             </div>
                         </div>

@@ -78,7 +78,7 @@ const getVerificationTable = (tableId) => {
         },
         columns: [
             {data: "came"},
-            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}">${row.patient}</span>`},
+            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''} tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.patient}</span>`},
             {data: "sex"},
             {data: "age"},
             {data: row => 
@@ -116,7 +116,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
         },
         columns: [
             {data: "came"},
-            {data: "patient"},
+            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''} tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.patient}</span>`},
             {data: "doctor"},
             {data: "diagnosis"},
             {data: row => sponsorAndPayPercent(row)},
@@ -151,7 +151,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                             <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }" data-ancregid="${row.ancRegId}">
                                 Details
                             </a>
-                            <a class="dropdown-item patientBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-hmodoneby="${ row.hmoDoneBy }">
+                            <a class="dropdown-item patientBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-hmodoneby="${ row.hmoDoneBy }" data-age="${ row.age }" data-sex="${ row.sex }" data-staffId="${ row.staffId }" data-phone="${ row.phone }">
                                 ${row.hmoDoneBy ? 'Bill sent <i class="bi bi-check-circle-fill tooltip-test text-primary" title="sent"></i>' : 'Make bill'}
                             </a>
                             <a class="dropdown-item btn btn-outline-primary medicalReportBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-age="${ row.age }" data-sex="${ row.sex }">Report/Refer/Result</a>

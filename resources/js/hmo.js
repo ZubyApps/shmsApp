@@ -307,6 +307,10 @@ window.addEventListener('DOMContentLoaded', function () {
                     const hmoDoneBy = patientBillBtn.getAttribute('data-hmodoneby')
                     makeBillModal._element.querySelector('#patient').value = patientBillBtn.getAttribute('data-patient')
                     makeBillModal._element.querySelector('#sponsor').value = patientBillBtn.getAttribute('data-sponsor') + ' - ' + patientBillBtn.getAttribute('data-sponsorcat')
+                    makeBillModal._element.querySelector('#staffId').value = patientBillBtn.getAttribute('data-staffId')
+                    makeBillModal._element.querySelector('#age').value     = patientBillBtn.getAttribute('data-age')
+                    makeBillModal._element.querySelector('#sex').value     = patientBillBtn.getAttribute('data-sex')
+                    makeBillModal._element.querySelector('#phone').value   = patientBillBtn.getAttribute('data-phone')
                     makeBillModal._element.querySelector('#markAsSentBtn').setAttribute('data-id', visitId)
                     makeBillModal._element.querySelector('#markAsSentBtn').innerHTML = hmoDoneBy === 'null' ? '<i class="bi bi-check-circle me-1"></i> Mark as Sent' : 'Sent (Unmark)'
                     visitPrescriptionsTable = getVisitPrescriptionsTable(tableId, visitId, makeBillModal)

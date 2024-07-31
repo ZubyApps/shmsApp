@@ -196,7 +196,9 @@ class HmoService
                 'patient'           => $visit->patient->patientId(),
                 'age'               => $visit->patient->age(),
                 'sex'               => $visit->patient->sex,
-                'doctor'            => $visit->doctor->username,
+                'staffId'           => $visit->patient?->staff_id,
+                'phone'             => $visit->patient?->phone,
+                'doctor'            => $visit->doctor?->username,
                 'ancRegId'          => $visit->antenatalRegisteration?->id,
                 'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
@@ -204,6 +206,8 @@ class HmoService
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->category_name,
                 'flagSponsor'       => $visit->sponsor->flag,
+                'flagPatient'       => $visit->patient->flag,
+                'flagReason'        => $visit->patient?->flag_reason,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
                 'patientType'       => $visit->patient->patient_type,
