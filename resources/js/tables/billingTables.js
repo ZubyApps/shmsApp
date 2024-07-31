@@ -22,7 +22,7 @@ const getWaitingTable = (tableId) => {
             emptyTable: 'No patient is waiting'
         },
         columns: [
-            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}">${row.patient}</span>`},
+            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''} tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.patient}</span>`},
             {data: "sex"},
             {data: "age"},
             {data: row => `<span class="${row.flagSponsor ? 'fw-bold colour-change3' : ''}">${row.sponsor}</span>`},
@@ -72,7 +72,7 @@ const getWaitingTable = (tableId) => {
 const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) => {
     const preparedColumns = [
         {data: "came"},
-        {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}">${row.patient}</span>`},
+        {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}  tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.patient}</span>`},
         {data: "doctor"},
         {data: "diagnosis"},
         {data: row => sponsorAndPayPercent(row)},

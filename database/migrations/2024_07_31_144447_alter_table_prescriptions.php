@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('patients', function (Blueprint $table) {
-            $table->after('is_active', function (Blueprint $table) {
-                $table->boolean('flag')->default(false)->nullable();
-                $table->string('flag_reason')->nullable();
+        Schema::table('prescriptions', function (Blueprint $table) {
+            $table->after('note', function (Blueprint $table) {
+                $table->string('route')->nullable();
             });
         });
     }
@@ -24,8 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('patients', function (Blueprint $table) {
-            $table->dropColumn(['flag']);
+        Schema::table('prescriptions', function (Blueprint $table) {
+            $table->dropColumn(['route']);
         });
     }
 };

@@ -76,7 +76,10 @@
                                         <option value="0">No</option>   
                                     </select>
                                 </x-form-div>
-                                    
+                                <x-form-div class="">
+                                    <x-input-span>Flag Reason</x-input-span>
+                                    <x-form-input name="flagReason" class="FlagReason" value=""/>
+                                </x-form-div>
                             </div>
                         </div>
                         <div class="mb-2">

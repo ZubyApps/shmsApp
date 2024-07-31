@@ -1062,7 +1062,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 
             firstReminderSelect.addEventListener('blur', function () {
                 dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/hmo/firstreminder/${reminderId}`, {firstReminder: firstReminderSelect.value})
+                    http.patch(`/reminders/firstreminder/${reminderId}`, {firstReminder: firstReminderSelect.value})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                             dueHmoRemindersTable.draw()
@@ -1082,7 +1082,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 
             secondReminderSelect.addEventListener('blur', function () {
                 dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/hmo/secondreminder/${reminderId}`, {secondReminder: secondReminderSelect.value})
+                    http.patch(`/reminders/secondreminder/${reminderId}`, {secondReminder: secondReminderSelect.value})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                                 dueHmoRemindersTable.draw()
@@ -1102,7 +1102,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 
             finalReminderSelect.addEventListener('blur', function () {
                 dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/hmo/finalreminder/${reminderId}`, {finalReminder: finalReminderSelect.value})
+                    http.patch(`/reminders/finalreminder/${reminderId}`, {finalReminder: finalReminderSelect.value})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                                 dueHmoRemindersTable.draw()
@@ -1122,7 +1122,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 
             confirmedPaidInput.addEventListener('blur', function () {
                 dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/hmo/confirmedpaid/${reminderId}`, {confirmedPaidDate: confirmedPaidInput.value})
+                    http.patch(`/reminders/confirmedpaid/${reminderId}`, {confirmedPaidDate: confirmedPaidInput.value})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                                 dueHmoRemindersTable.draw()

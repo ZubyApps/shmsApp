@@ -48,6 +48,7 @@ class PrescriptionService
                 'hms_bill_by'       => $bill ? $user->id : null,
                 'chartable'         => $resource->sub_category == 'Injectable' ? true : $data->chartable ?? false,
                 'note'              => $data->note,
+                'route'             => $data->route,
                 'doctor_on_call'    => $data->doc
             ]);
 
@@ -142,7 +143,8 @@ class PrescriptionService
                 'quantity'          => $prescription->qty_billed < 1 ? '' : $prescription->qty_billed,
                 'by'                => $prescription->user->username,
                 'chartable'         => $prescription->chartable ? 'Yes' : 'No',
-                'note'              => $prescription->note
+                'note'              => $prescription->note,
+                'route'             => $prescription->route
             ];
          };
     }
@@ -200,7 +202,6 @@ class PrescriptionService
             return $this->prescription
                         ->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
                         ->whereRelation('resource', 'sub_category', 'Injectable')
-                        // ->where('chartable', true)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         });
@@ -243,6 +244,7 @@ class PrescriptionService
                 'held'                  => $prescription->held,
                 'heldBy'                => $prescription->heldBy?->username,
                 'note'                  => $prescription->note,
+                'route'                 => $prescription->route,
                 'conId'                 => $prescription->consultation?->id,
                 'visitId'               => $prescription->visit->id,
                 'patient'               => $prescription->visit->patient->patientId(),

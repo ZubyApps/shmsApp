@@ -74,7 +74,7 @@ const getAllPatientsTable = (tableId) => {
         serverSide: true,
         ajax:  '/patients/load',
         orderMulti: true,
-        lengthMenu:[20, 40, 80, 120, 200],
+        lengthMenu:[50, 100, 150, 200, 300],
         search:true,
         searchDelay: 1000,
         dom: 'lfrtip<"my-5 text-center "B>',
@@ -87,7 +87,7 @@ const getAllPatientsTable = (tableId) => {
              ],
         columns: [
             {data: "card"},
-            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}">${row.name}</span>`},
+            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''} tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.name}</span>`},
             {data: "phone"},
             {data: "sex"},
             {data: "age"},

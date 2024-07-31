@@ -13,7 +13,7 @@ const getWaitingTable = (tableId) => {
             emptyTable: 'No patient is waiting'
         },
         columns: [
-            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}">${row.patient}</span>`},
+            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''} tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.patient}</span>`},
             {data: "sex"},
             {data: "age"},
             {data: row => `<span class="${row.flagSponsor ? 'fw-bold colour-change3' : ''}">${row.sponsor}</span>`},
@@ -196,6 +196,7 @@ const getNurseMedicationsByFilter = (tableId, conId, modal, visitId, isHistory) 
         columns: [
             {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) }</span>`},
             {data: row => prescriptionStatusContorller(row, tableId)},
+            {data: "route"},
             {data: "qtyBilled"},
             {data: "qtyDispensed"},
             {data: "prescribedBy"},
@@ -335,6 +336,7 @@ const getOtherPrescriptionsByFilterNurses = (tableId, conId, modal, visitId, isH
         columns: [
             {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) }</span>`},
             {data: row => prescriptionStatusContorller(row, tableId)},
+            {data: "route"},
             {data: "qtyBilled"},
             {data: "qtyDispensed"},
             {data: "prescribedBy"},

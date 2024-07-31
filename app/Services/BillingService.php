@@ -151,6 +151,7 @@ class BillingService
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
                 'flagSponsor'       => $visit->sponsor->flag,
                 'flagPatient'       => $visit->patient->flag,
+                'flagReason'        => $visit->patient->flag_reason,
                 'admissionStatus'   => $visit->admission_status,
                 'ward'              => $visit->ward ?? '',
                 'bedNo'             => $visit->bed_no ?? '',

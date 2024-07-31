@@ -33,6 +33,7 @@
                                             <tr>
                                                 <th>Treatment</th>
                                                 <th>Prescription</th>
+                                                <th>Route</th>
                                                 <th>Qty Billed</th>
                                                 <th>Qty Dispensed</th>
                                                 <th>Dr</th>
@@ -55,6 +56,7 @@
                                             <tr>
                                                 <th>Item</th>
                                                 <th>Note/Instruction</th>
+                                                <th>Route</th>
                                                 <th>Qty Billed</th>
                                                 <th>Qty Dispensed</th>
                                                 <th>Dr</th>

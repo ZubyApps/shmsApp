@@ -30,16 +30,26 @@
                         @endforeach
                     </select>
                 </x-form-div>
+                <x-form-div class="col-xl-6">
+                    <x-input-span id="noteLabel">Route</x-input-span>
+                    <x-select-route aria-label="route" name="route" id="route"></x-select-route>
+                </x-form-div>
+                <x-form-div class="col-xl-6">
+                    <x-input-span id="noteLabel">Note/Instruction</x-input-span>
+                    <x-form-input type="text" name="note" id="note"/>
+                </x-form-div>
             @else
                 <x-form-div class="col-xl-6 chartableDiv d-none" id="chartableDiv">
                         <x-input-span id="chartableLabel" class="py-0">Chartable?</x-input-span>
                         <x-form-input class="form-check-input py-3 mt-0" type="checkbox" id="chartable" />
                 </x-form-div>
+                <x-form-div class="col-xl-6">
+                    <x-input-span id="noteLabel">Route</x-input-span>
+                    <x-select-route aria-label="route" name="route" id="route"></x-select-route>
+                    <x-input-span id="noteLabel">Note/Instruction</x-input-span>
+                    <x-form-input type="text" name="note" id="note"/>
+                </x-form-div>
             @endif
-            <x-form-div class="col-xl-{{ $isNurse ? '12' : '6' }}">
-                <x-input-span id="noteLabel">Note/Instruction</x-input-span>
-                <x-form-input type="text" name="note" id="note"/>
-            </x-form-div>
         </div>
         <div class="d-flex justify-content-center">
             <button type="button" id="addInvestigationAndManagementBtn" data-btn="{{ strtolower($type) }}" class="btn btn-primary">
@@ -56,6 +66,7 @@
                     <th>Prescribed</th>
                     <th>Resource</th>
                     <th>Prescription</th>
+                    <th>Route</th>
                     <th>Qty</th>
                     <th>Note</th>
                     <th>Chartable</th>

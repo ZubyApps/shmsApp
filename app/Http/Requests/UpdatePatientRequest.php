@@ -50,6 +50,7 @@ class UpdatePatientRequest extends FormRequest
                 "staffId"           => ['nullable'],
                 "stateOrigin"       => ['nullable'],
                 "stateResidence"    => ['required'],
+                "flagReason"        => ['required_if_accepted:flagPatient'],
             ];
     }
 }

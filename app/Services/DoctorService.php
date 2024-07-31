@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
 use App\Http\Resources\PatientBioResource;
-use App\Models\Consultation;
 use App\Models\Prescription;
 use App\Models\User;
 use App\Models\Visit;
@@ -182,8 +181,9 @@ class DoctorService
                 'conId'             => $latestConsultation?->id,
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->category_name,
-                'sponsorFlag'       => $visit->sponsor->flag,
+                'flagSponsor'       => $visit->sponsor->flag,
                 'flagPatient'       => $visit->patient->flag,
+                'flagReason'        => $visit->patient->flag_reason,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
                 'admissionStatus'   => $visit->admission_status,

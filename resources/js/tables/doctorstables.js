@@ -207,7 +207,7 @@ const getWaitingTable = (tableId) => {
             emptyTable: 'No patient is waiting'
         },
         columns: [
-            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}">${row.patient}</span>`},
+            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''} tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.patient}</span>`},
             {data: "sex"},
             {data: "age"},
             {data: row => `<span class="${row.flagSponsor ? 'fw-bold colour-change3' : ''}">${row.sponsor}</span>`},
@@ -379,6 +379,7 @@ const getPrescriptionTableByConsultation = (tableId, conId, visitId, modal) => {
             {data: "prescribed"},
             {data: "resource"},
             {data: "prescription"},
+            {data: "route"},
             {data: "quantity"},
             {data: "note"},
             {data: "chartable"},
@@ -545,6 +546,7 @@ const getMedicationsByFilter = (tableId, conId, modal, visitId) => {
             {data: row => `<i role="button" class="text-primary fs-5 bi bi-prescription2"></i>`},
             {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) } ${(row.chartable ? `<span class="text-secondary">(${row.givenCount + '/' + row.doseCount})</span>` : '')}</span>`},
             {data: row => prescriptionStatusContorller(row, tableId)},
+            {data: "route"},
             {data: "qtyBilled"},
             {data: "qtyDispensed"},
             {data: "prescribedBy"},
@@ -651,6 +653,7 @@ const getOtherPrescriptionsByFilter = (tableId, conId, modal, visitId) => {
             {data: row => `<i role="button" class="text-primary fs-5 bi bi-prescription2"></i>`},
             {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) } ${(row.chartable ? `<span class="text-secondary">(${row.givenCount + '/' + row.doseCount})</span>` : '')}</span>`},
             {data: row => prescriptionStatusContorller(row, tableId)},
+            {data: "route"},
             {data: "qtyBilled"},
             {data: "qtyDispensed"},
             {data: "prescribedBy"},

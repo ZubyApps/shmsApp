@@ -47,6 +47,7 @@ class PatientService
                 "sponsor_id"            => $data->sponsor,
                 "staff_Id"              => $data->staffId,
                 "flag"                  => $data->flagPatient,
+                "flag_reason"           => $data->flagReason,
                 "state_of_origin"       => $data->stateOrigin,
                 "state_of_residence"    => $data->stateResidence,
         ]);
@@ -81,6 +82,7 @@ class PatientService
                 "sponsor_id"            => $data->sponsor,
                 "staff_id"              => $data->staffId,
                 "flag"                  => $data->flagPatient,
+                "flag_reason"           => $data->flagReason,
                 "state_of_origin"       => $data->stateOrigin,
                 "state_of_residence"    => $data->stateResidence,
 
@@ -91,9 +93,10 @@ class PatientService
 
     public function updateKnownClinicalInfo(Request $data, Patient $patient, User $user): Patient
     {
+        $knownConditions = $patient->known_conditions ? $patient->known_conditions.', '.$data->knownConditions : $data->knownConditions;
         $data->bloodGroup ? $patient->update(["blood_group" => $data->bloodGroup]) : '';
         $data->genotype ? $patient->update(["genotype" => $data->genotype]): '';
-        $data->knownConditions ? $patient->update(["known_conditions" => $patient->known_conditions . ', '.$data->knownConditions]) : '';
+        $data->knownConditions ? $patient->update(["known_conditions" => $knownConditions]) : '';
         
         return $patient;
     }
@@ -137,8 +140,9 @@ class PatientService
                 'age'               => $this->helperService->twoPartDiffInTimePast($patient->date_of_birth),
                 'sponsor'           => $patient->sponsor->name,
                 'category'          => $patient->sponsor->sponsorCategory->name,
-                'flagPatient'       => $patient->flag,
                 'flagSponsor'       => $patient->sponsor->flag,
+                'flagPatient'       => $patient->flag,
+                'flagReason'        => $patient->flag_reason,
                 'createdAt'         => (new Carbon($patient->created_at))->format('d/m/Y'),
                 'createdBy'         => $patient->user->username,
                 'active'            => $patient->is_active,

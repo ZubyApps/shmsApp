@@ -359,6 +359,7 @@ const medicationAndTreatment = (line) => {
                                 <th></th>
                                 <th>Treatment</th>
                                 <th>Prescription</th>
+                                <th>Route</th>
                                 <th>Qty Billed</th>
                                 <th>Qty Dispensed</th>
                                 <th>Dr</th>
@@ -387,6 +388,7 @@ const otherPrescriptions = (line) => {
                                 <th></th>
                                 <th>Item</th>
                                 <th>Note/Instruction</th>
+                                <th>Route</th>
                                 <th>Qty Billed</th>
                                 <th>Qty Dispensed</th>
                                 <th>Dr</th>
@@ -414,6 +416,7 @@ const medicationAndTreatmentNurses = (line) => {
                             <tr>
                                 <th>Treatment</th>
                                 <th>Prescription</th>
+                                <th>Route</th>
                                 <th>Qty Billed</th>
                                 <th>Qty Dispensed</th>
                                 <th>Dr</th>
@@ -440,6 +443,7 @@ const otherPrescriptionsNurses = (line) => {
                             <tr>
                                 <th>Item</th>
                                 <th>Note/Instruction</th>
+                                <th>Route</th>
                                 <th>Qty Billed</th>
                                 <th>Qty Dispensed</th>
                                 <th>Dr</th>

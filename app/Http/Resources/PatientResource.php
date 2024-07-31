@@ -43,6 +43,7 @@ class PatientResource extends JsonResource
                  'sponsorCategoryId'=> $this->sponsor->sponsorCategory->id,
                  'staffId'          => $this->staff_id,
                  'flagPatient'      => $this->flag,
+                 'flagReason'       => $this->flag_reason,
                  'stateOrigin'      => $this->state_of_origin,
                  'stateResidence'   => $this->state_of_residence,  
         ];

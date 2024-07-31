@@ -23,7 +23,6 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     { 
-        // dd($this->user->id);
         return [
             'firstName1'             => ['required', 'string', 'max:255'],
             'lastName1'              => ['required', 'string', 'max:255'],
