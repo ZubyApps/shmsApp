@@ -16,6 +16,7 @@ use App\Services\ResourceReportService;
 use App\Services\UserReportService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ReportController extends Controller
 {
@@ -446,7 +447,7 @@ class ReportController extends Controller
         
         $totalIncomes   = $this->prescriptionService->totalYearlyIncomeFromPrescription($request);
         $totalExpenses  = $this->expenseService->totalYearlyExpense($request);
-
+        Log::info('ttotalIncome', [$totalIncomes]);
         $incomeArray = [...$totalIncomes, ...$totalExpenses];
 
         $months = [
