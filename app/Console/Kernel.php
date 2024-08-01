@@ -21,7 +21,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(new NursesMorningShift)->timezone('Africa/Lagos')->dailyAt('08:00');
         $schedule->call(new NursesAfternoonShift)->timezone('Africa/Lagos')->dailyAt('14:00');
         $schedule->call(new NursesNightShift)->timezone('Africa/Lagos')->dailyAt('19:30');
-        $schedule->call(new Remind)->timezone('Africa/Lagos')->dailyAt('12:43');
+        $schedule->call(new Remind)->timezone('Africa/Lagos')->twiceDaily(9, 3);
     }
 
     /**

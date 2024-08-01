@@ -27,6 +27,7 @@ class StoreExpenseRequest extends FormRequest
             'amount'            => ['required'],
             'approvedBy'        => ['required', 'integer'],
             'givenTo'           => ['required'],
+            'backdate'          => ['nullable', 'date', 'before_or_equal:'.date('d-m-Y').' 23:59:59'],
         ];
     }
 }
