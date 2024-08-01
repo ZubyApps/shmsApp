@@ -45,7 +45,7 @@ class Remind
                   }
                }
             }
-            Log::info('info', [$diffInDays, $maxDays, $reminder->visit_id]);
+            Log::info('Reminder details', [$diffInDays, $maxDays, $reminder->visit_id]);
             if ($diffInDays > $maxDays){
                if ($reminder->visit_id){
                   $reminder->visit->patient->update(['flag' => true]);
