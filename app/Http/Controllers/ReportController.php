@@ -468,6 +468,7 @@ class ReportController extends Controller
         foreach($incomeArray as $income){
             foreach($months as $key => $month){
                 if ($month['m'] === $income->month){
+                    Log::info('check', [$income]);
                     $months[$key]['bill'] === 0 && $income?->bill ? $months[$key]['bill'] = $income->bill : 0 ;
                     
                     $months[$key]['paid'] === 0 && $income?->paid ? $months[$key]['paid'] = $income->paid : 0 ;
