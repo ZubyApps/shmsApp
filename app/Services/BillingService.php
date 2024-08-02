@@ -145,7 +145,7 @@ class BillingService
                 'patient'           => $visit->patient->patientId(),
                 'age'               => $visit->patient->age(),
                 'sex'               => $visit->patient->sex,
-                'doctor'            => $visit->doctor->username,
+                'doctor'            => $visit->doctor?->username,
                 'diagnosis'         => $latestConsultation?->icd11_diagnosis ?? $latestConsultation?->provisional_diagnosis ?? $latestConsultation?->assessment,
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
