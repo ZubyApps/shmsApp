@@ -123,6 +123,7 @@ class ExpenseService
             return $this->expense
                     ->where(function (Builder $query) use($params){
                         $query->where('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhere('comment', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhere('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
