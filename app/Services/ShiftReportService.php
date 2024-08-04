@@ -5,10 +5,8 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
-use App\Models\NursesReport;
 use App\Models\ShiftReport;
 use App\Models\User;
-use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 

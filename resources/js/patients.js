@@ -184,7 +184,7 @@ window.addEventListener('DOMContentLoaded', function(){
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 updateSponsorModal.hide()
-                sponsorsTable.draw()
+                sponsorsTable ? sponsorsTable.draw(false) : ''
             }
             saveSponsorBtn.removeAttribute('disabled')
         })
@@ -277,7 +277,7 @@ window.addEventListener('DOMContentLoaded', function(){
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 updatePatientModal.hide()
-                allPatientsTable.draw()
+                allPatientsTable.draw(false)
             }
             savePatientBtn.removeAttribute('disabled')
         })

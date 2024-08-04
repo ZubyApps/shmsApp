@@ -10,9 +10,7 @@ use App\Http\Requests\StoreVisitRequest;
 use App\Models\Patient;
 use App\Services\DatatablesService;
 use App\Services\VisitService;
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
-use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
 
 use function Pest\Laravel\json;

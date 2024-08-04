@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace App\InvokableObjects;
 
 use App\Models\Reminder;
-use App\Models\ShiftPerformance;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

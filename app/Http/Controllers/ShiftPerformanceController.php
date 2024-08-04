@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\ShiftPerformance;
-use App\Http\Requests\StoreShiftPerformanceRequest;
 use App\Http\Requests\UpdateShiftPerformanceRequest;
 use App\Services\DatatablesService;
 use App\Services\ShiftPerformanceService;

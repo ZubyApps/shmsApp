@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\ShiftReport;
 use App\Http\Requests\StoreShiftReportRequest;
 use App\Http\Requests\UpdateShiftReportRequest;
-use App\Http\Resources\NursesReportResource;
 use App\Http\Resources\ShiftReportResource;
 use App\Services\DatatablesService;
 use App\Services\ShiftReportService;

@@ -11,7 +11,7 @@ class DiscountRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->designation?->access_level > 4;
     }
 
     /**

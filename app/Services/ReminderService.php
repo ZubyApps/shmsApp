@@ -40,49 +40,6 @@ class ReminderService
         });
     }
 
-    public function seiveCapitationPayment(Sponsor $sponsor, Carbon $date, float $amount = 0): void
-    {
-        DB::transaction(function () use($sponsor, $date, $amount) {
-            $amount == 0 ? $amount = $sponsor->capitationPayments()->whereMonth('month_paid_for', $date->month)->whereYear('month_paid_for', $date->year)->first()?->amount_paid : 0;
-    
-            if ($amount > 0 ){
-                $prescriptions  = $this->getPrescriptonsByMonthAndYear($sponsor, $date);
-    
-                $pCount = $prescriptions->count();
-        
-                array_reduce([$prescriptions], function($carry, $prescription) use($pCount, $amount) {
-                    foreach($prescription as $p){
-                        $avgCapitation =  $amount/$pCount;
-                        $p->update(['capitation' => $carry >= $avgCapitation ? $avgCapitation : ($carry < $avgCapitation && $carry > 0 ? $carry : null)]);
-                        $carry = $carry - $avgCapitation;
-                    }
-                    return $carry;
-        
-                }, $amount);
-            }
-            $this->recalculateVisitsCapitations($sponsor, $date);
-        });
-
-    }
-
-    public function getPrescriptonsByMonthAndYear(Sponsor $sponsor, Carbon $date)
-    {
-        return $sponsor->through('visits')->has('prescriptions')
-        ->whereMonth('prescriptions.created_at', $date->month)
-        ->whereYear('prescriptions.created_at', $date->year)->get();
-    }
-
-    public function recalculateVisitsCapitations(Sponsor $sponsor, Carbon $date)
-    {
-        DB::transaction(function () use($sponsor, $date){
-            $visits = $sponsor->visits()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->get();
-    
-            $visits->map(function(Visit $visit){
-                $visit->update(['total_capitation' => $visit->totalPrescriptionCapitations()]);
-            });
-        });
-    }
-
     public function getAllReminders(DataTableQueryParams $params, $data, $dept)
     {
         $orderBy    = 'created_at';
@@ -329,17 +286,19 @@ class ReminderService
 
     public function notePayment(Request $data, Reminder $reminder, User $user)
     {
-        if ($reminder->visit_id){
-            $data->confirmedPaidDate ? $reminder->visit->patient->update(['flag' => false]) : '';
-        }else{
-            $data->confirmedPaidDate ? $reminder->sponsor->update(['flag' => false]) : '';
-        }
-
-        return $reminder->update([
-            'confirmed_paid'        => $data->confirmedPaidDate ? new Carbon($data->confirmedPaidDate) : null,
-            'confirmed_paid_by'     => $data->confirmedPaidDate ? $user->id : null,
-            'remind'                => $data->confirmedPaidDate ? false : $reminder->remind
-        ]);
+        return DB::transaction(function () use($data, $reminder, $user){
+            if ($reminder->visit_id){
+                $data->confirmedPaidDate ? $reminder->visit->patient->update(['flag' => false]) : '';
+            }else{
+                $data->confirmedPaidDate ? $reminder->sponsor->update(['flag' => false]) : '';
+            }
+    
+            return $reminder->update([
+                'confirmed_paid'        => $data->confirmedPaidDate ? new Carbon($data->confirmedPaidDate) : null,
+                'confirmed_paid_by'     => $data->confirmedPaidDate ? $user->id : null,
+                'remind'                => $data->confirmedPaidDate ? false : $reminder->remind
+            ]);
+        });
     }
 
 }

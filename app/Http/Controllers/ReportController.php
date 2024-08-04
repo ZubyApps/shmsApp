@@ -16,7 +16,6 @@ use App\Services\ResourceReportService;
 use App\Services\UserReportService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class ReportController extends Controller
 {

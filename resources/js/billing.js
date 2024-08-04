@@ -280,10 +280,10 @@ window.addEventListener('DOMContentLoaded', function () {
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
                             waitingTable.draw()
-                            outPatientsVisitTable.draw()
-                            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
-                            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-                            openVisitsTable ? openVisitsTable.draw() : ''
+                            outPatientsVisitTable.draw(false)
+                            inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
+                            ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+                            openVisitsTable ? openVisitsTable.draw(false) : ''
                         }
                     })
                     .catch((error) => {
