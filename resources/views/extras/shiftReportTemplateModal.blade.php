@@ -17,7 +17,7 @@
                                         <option value="Morning Shift">Morning Shift</option>
                                         <option value="Afternoon Shift">Afternoon Shift</option>
                                         <option value="Night Shift">Night Shift</option>
-                                        <option value="Whole Day">Whole Day</option>
+                                        <option {{ $dept == 'nurses' ? 'disabled' : '' }} value="Whole Day">Whole Day</option>
                                     </select>
                                 </x-form-div>
                                 <x-form-div class="col-xl-6  d-none">

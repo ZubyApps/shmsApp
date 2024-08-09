@@ -44,10 +44,11 @@ class Remind
                   }
                }
             }
-            Log::info('Reminder details', [$diffInDays, $maxDays, $reminder->visit_id]);
+
             if ($diffInDays > $maxDays){
                if ($reminder->visit_id){
-                  $reminder->visit->patient->update(['flag' => true]);
+                  Log::info('patient', [$reminder->visit->patient->card_no]);
+                  $reminder->visit->patient->update(['flag' => true, 'flag_reason' => 'Failed to keep the promise to pay bill']);
                } else {
                   $reminder->sponsor->update(['flag' => true]);
                }

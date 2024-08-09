@@ -28,6 +28,9 @@
 @include('extras.nursesReportTemplateModal', ['title' => 'Edit Report', 'isUpdate' => true, 'id' => 'editNursesReportTemplateModal' ])
 @include('nurses.wardAndBedModal', ['title' => 'Update Admission Details', 'isNurses' => true, 'id' => 'wardAndBedModal'])
 @include('doctors.fileModal', ['title' => 'Upload Docs', 'isUpdate' => false, 'id' => 'fileModal'])
+@include('extras.shiftReportTemplateModal', ['title' => 'New Report', 'isUpdate' => false, 'dept' => 'nurses', 'isView' => false, 'id' => 'newShiftReportTemplateModal'])
+@include('extras.shiftReportTemplateModal', ['title' => 'Edit Report', 'isUpdate' => true, 'dept' => 'nurses', 'isView' => false, 'id' => 'editShiftReportTemplateModal'])
+@include('extras.shiftReportTemplateModal', ['title' => 'View Report', 'isUpdate' => false, 'dept' => 'nurses', 'isView' => true, 'id' => 'viewShiftReportTemplateModal'])
 
 <div class="container mt-5">
     <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="upcomingMedicationsoffcanvas"
@@ -127,10 +130,37 @@
             </div>
         </div>
     </div>
-
-        <div class="text-start mb-4">
-           
+    <div class="offcanvas offcanvas-end overflow-auto" data-bs-scroll="true" tabindex="-1" id="shiftReportOffcanvas"
+            aria-labelledby="shiftReportOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-primary" id="shiftReportOffcanvasLabel">Shift Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="py-4 ">
+                    <div class="text-start py-4">
+                        <button type="button" id="newNursesShiftReportBtn" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i>
+                            New Shift Report
+                        </button>
+                    </div>
+                    <table id="nursesShiftReportTable" class="table table-sm nursesShiftReportTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Shift</th>
+                                <th>Written By</th>
+                                {{-- <th>Viewed</th>
+                                <th>Viewed By</th> --}}
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+
     <div class="text-start mb-4">
         <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn" data-bs-target="#waitingListOffcanvas2" aria-controls="waitingListOffcanvas2">
             <i class="bi bi-list-check"></i>
@@ -143,6 +173,9 @@
         <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="nursingChartBtn" data-bs-target="#upcomingNursingChartsoffcanvas" aria-controls="upcomingNursingChartsoffcanvas">
             <i class="bi bi-list-check"></i>
             Inpatients Nursing Chart <span class="badge text-bg-danger" id="inpatientNursingBadgeSpan"></span>
+        </button>
+        <button type="button" id="shiftReportBtn" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#shiftReportOffcanvas" aria-controls="emergencyListOffcanvas">
+            General Shift Reports <span class="badge text-bg-danger" id="shiftBadgeSpan"></span>
         </button>
         <div class="text-end my-2" id="shiftPerformanceDiv"></div>
     </div>

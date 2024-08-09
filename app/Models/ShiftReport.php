@@ -20,4 +20,14 @@ class ShiftReport extends Model
     {
         return $this->belongsTo(User::class, 'viewed_by');
     }
+
+    public function viewedBy1()
+    {
+        return $this->belongsTo(User::class, 'viewed_by_1');
+    }
+
+    public function viewedBy2()
+    {
+        return $this->belongsTo(User::class, 'viewed_by_2');
+    }
 }

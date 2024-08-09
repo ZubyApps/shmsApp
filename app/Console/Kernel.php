@@ -2,14 +2,12 @@
 
 namespace App\Console;
 
-use App\InvokableObjects\CloseNursesShift;
 use App\InvokableObjects\NursesAfternoonShift;
 use App\InvokableObjects\NursesMorningShift;
 use App\InvokableObjects\NursesNightShift;
 use App\InvokableObjects\Remind;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {

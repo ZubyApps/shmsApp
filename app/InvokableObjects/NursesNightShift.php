@@ -25,5 +25,6 @@ class NursesNightShift
 
       Log::info('Night Shift created');
 
+      (new ShiftReportNotifier)();
    }
 }

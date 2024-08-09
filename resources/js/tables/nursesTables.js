@@ -861,4 +861,111 @@ const getNursesReportTable = (tableId, visitId, modal) => {
     return nursesRportTable
 }
 
-export {getWaitingTable, getPatientsVisitsByFilterTable, getNurseMedicationsByFilter, getMedicationChartByPrescription, getPrescriptionChartByPrescription, getOtherPrescriptionsByFilterNurses, getUpcomingMedicationsTable, getDeliveryNoteTable, getAncVitalSignsTable, getUpcomingNursingChartsTable, getEmergencyTable, getNursesReportTable}
+const getShiftReportTable = (tableId, department, shiftBadgeSpan) => {
+    let shiftCount = []
+    const shiftReportTable = new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:   {url: '/shiftreport/load', data: {
+            'department': department,
+        }},
+        orderMulti: true,
+        searchDelay: 1000,
+        language: {
+            emptyTable: 'No Report'
+        },
+        rowCallback: (row, data) => {
+            if (data.notify){
+                shiftCount.push(row)
+            }
+            row.classList.add('fw-semibold')
+        },
+        drawCallback: function (settings) {
+            if (shiftCount.length){
+                shiftBadgeSpan.innerHTML = shiftCount.length
+                shiftCount = []
+            } else {
+                shiftBadgeSpan.innerHTML = ''
+            }
+        },
+        columns: [
+            {data: "date"},
+            {data: "shift"},
+            {data: "writtenBy"},
+            // {data: "viewedAt"},
+            // {data: "viewedBy"},
+            {data: row => function () {
+                return `
+                <div class="d-flex flex-">
+                <button class=" btn btn-outline-primary viewShiftReportBtn tooltip-test ${row.writtenById == row.userId ? 'd-none' : ''}" title="view" id="viewShiftReportBtn" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-zoom-in"></i>
+                    </button>
+                    <button class="ms-1 btn btn-outline-primary editShiftReportBtn tooltip-test ${row.writtenById == row.userId ? '' : 'd-none'}" title="edit report" id="editShiftReportBtn" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button type="submit" class="ms-1 btn btn-outline-primary deleteShiftReportBtn tooltip-test ${row.writtenById == row.userId ? '' : 'd-none'}" title="delete" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+            `
+                }
+            },
+        ]
+    });
+
+    function format(data, tableId) {
+                if (data.viewedAt) {
+                    let child = `<table class="table align-middle ">
+                                            <thead >
+                                                <tr class="fw-semibold fs-italics">
+                                                    <td class="text-secondary">Shift</td>
+                                                    <td class="text-secondary">Viewed At</td>
+                                                    <td class="text-secondary">Viewed By</td>
+                                                </tr>
+                                            </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="text-secondary">${data.viewedShift}</td>
+                                                <td class="text-secondary">${data.viewedAt}</td>
+                                                <td class="text-secondary">${data.viewedBy}</td>
+                                            </tr>
+                                            <tr class="${data.viewedAt1 ? '' : 'd-none'}">
+                                                <td class="text-secondary">${data.viewedShift1}</td>
+                                                <td class="text-secondary">${data.viewedAt1}</td>
+                                                <td class="text-secondary">${data.viewedBy1}</td>
+                                            </tr>
+                                            <tr class="${data.viewedAt2 ? '' : 'd-none'}">
+                                                <td class="text-secondary">${data.viewedShift2}</td>
+                                                <td class="text-secondary">${data.viewedAt2}</td>
+                                                <td class="text-secondary">${data.viewedBy2}</td>
+                                            </tr>
+                                        </tbody>
+                                        `
+                                        return (child);
+                                    } 
+                else {
+                   let noChild = `
+                   <table class="table align-middle table-sm">
+                        <tr>
+                            <td align="center" colspan="3" class="text-secondary">
+                                No views yet
+                            </td>
+                        </tr>
+                    </table>
+                   `
+                   return (noChild)
+                }
+    }
+
+    shiftReportTable.on('draw', function() {
+        const tableId = shiftReportTable.table().container().id.split('_')[0]
+        shiftReportTable.rows().every(function () {
+            let tr = $(this.node())
+            let row = this.row(tr);
+            this.child(format(row.data(), tableId)).show()
+        })
+    })
+
+    return shiftReportTable
+}
+
+export {getWaitingTable, getPatientsVisitsByFilterTable, getNurseMedicationsByFilter, getMedicationChartByPrescription, getPrescriptionChartByPrescription, getOtherPrescriptionsByFilterNurses, getUpcomingMedicationsTable, getDeliveryNoteTable, getAncVitalSignsTable, getUpcomingNursingChartsTable, getEmergencyTable, getNursesReportTable, getShiftReportTable}

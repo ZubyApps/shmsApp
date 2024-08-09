@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
+use App\Models\ShiftPerformance;
 use App\Models\ShiftReport;
 use App\Models\User;
 use Carbon\Carbon;
@@ -69,22 +70,106 @@ Class ShiftReportService
                 'report'            => $shiftReport->report,
                 'writtenBy'         => $shiftReport->user->username,
                 'viewedAt'          => $shiftReport->viewed_at ? (new Carbon($shiftReport->viewed_at))->format('D d/M/y g:ia') : '',
+                'viewedAt1'         => $shiftReport->viewed_at_1 ? (new Carbon($shiftReport->viewed_at_1))->format('D d/M/y g:ia') : '',
+                'viewedAt2'         => $shiftReport->viewed_at_2 ? (new Carbon($shiftReport->viewed_at_2))->format('D d/M/y g:ia') : '',
                 'viewedBy'          => $shiftReport->viewedBy?->username,
+                'viewedBy1'         => $shiftReport->viewedBy1?->username,
+                'viewedBy2'         => $shiftReport->viewedBy2?->username,
+                'viewedShift'       => $shiftReport->viewed_shift,
+                'viewedShift1'      => $shiftReport->viewed_shift_1,
+                'viewedShift2'      => $shiftReport->viewed_shift_2,
+                'notify'            => $shiftReport->notify,
                 'writtenById'       => $shiftReport->user->id,
                 'userId'            => request()->user()->id,
             ];
          };
     }
 
+    // public function mark(ShiftReport $shiftReport, User $user)
+    // {
+    //     if ($shiftReport->department == 'nurses'){
+    //         $shiftPerformance = ShiftPerformance::where('department', 'Nurse')->where('is_closed', false)->orderBy('id', 'desc')->first();
+
+    //         if ($shiftReport->viewed_at){
+    //             if ($shiftReport->viewed_at_1){
+    //                 if ($shiftReport->viewed_at_1){
+            
+    //                 } else {
+    //                     $shiftReport->update([
+    //                         'viewed_at_2'       => new Carbon(),
+    //                         'viewed_by_2'       => $user->id,
+    //                         'viewed_shift_2'    => $shiftPerformance->shift,
+    //                         'notify'            => false
+    //                         ]);
+    //                 }
+    //             } else {
+    //                 $shiftReport->update([
+    //                     'viewed_at_1' => new Carbon(),
+    //                     'viewed_by_1' => $user->id,
+    //                     'viewed_shift_1' => $shiftPerformance->shift,
+    //                     'notify'            => false
+    //                     ]);
+    //             }
+    //         } else {
+    //             $shiftReport->update([
+    //             'viewed_at' => new Carbon(),
+    //             'viewed_by' => $user->id,
+    //             'viewed_shift' => $shiftPerformance->shift,
+    //             'notify'            => false
+    //             ]);
+    //         }
+    //     }else {
+
+    //         if ($shiftReport->viewed_at){
+                
+    //         } else {
+    //             $shiftReport->update([
+    //             'viewed_at' => new Carbon(),
+    //             'viewed_by' => $user->id
+    //             ]);
+    //         }
+    //     }
+
+    // }
+
     public function mark(ShiftReport $shiftReport, User $user)
     {
-        if ($shiftReport->viewed_at){
-            
-        } else {
-            $shiftReport->update([
-            'viewed_at' => new Carbon(),
-            'viewed_by' => $user->id
-            ]);
+        if ($shiftReport->department == 'nurses'){
+            $shiftPerformance = ShiftPerformance::where('department', 'Nurse')->where('is_closed', false)->orderBy('id', 'desc')->first();
+
+            if (!$shiftReport->viewed_at && $shiftReport->notify){
+                return $shiftReport->update([
+                    'viewed_at'     => new Carbon(),
+                    'viewed_by'     => $user->id,
+                    'viewed_shift'  => $shiftPerformance->shift,
+                    'notify'        => false
+                    ]);
+            }
+
+            if (!$shiftReport->viewed_at_1 && $shiftReport->notify){
+                return $shiftReport->update([
+                    'viewed_at_1'       => new Carbon(),
+                    'viewed_by_1'       => $user->id,
+                    'viewed_shift_1'    => $shiftPerformance->shift,
+                    'notify'            => false
+                    ]);
+            }
+
+            if (!$shiftReport->viewed_at_2 && $shiftReport->notify){
+                return  $shiftReport->update([
+                    'viewed_at_2'       => new Carbon(),
+                    'viewed_by_2'       => $user->id,
+                    'viewed_shift_2'    => $shiftPerformance->shift,
+                    'notify'            => false
+                    ]);
+            }     
         }
+
+        if (!$shiftReport->viewed_at){
+            return $shiftReport->update([
+                'viewed_at' => new Carbon(),
+                'viewed_by' => $user->id
+                ]);
+        }  
     }
 }

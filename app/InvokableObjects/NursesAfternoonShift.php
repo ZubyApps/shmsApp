@@ -23,6 +23,8 @@ class NursesAfternoonShift
          'shift_end'    => $date->format('Y-m-d').' 19:30:00'
          ]);
 
-         Log::info('Afternoon Shift created');
+      Log::info('Afternoon Shift created');
+      
+      (new ShiftReportNotifier)();
    }
 }

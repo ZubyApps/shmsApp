@@ -24,5 +24,7 @@ class NursesMorningShift
          ]);
 
       Log::info('Morning Shift created');
+
+      (new ShiftReportNotifier)();
    }
 }
