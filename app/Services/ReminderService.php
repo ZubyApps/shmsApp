@@ -238,7 +238,7 @@ class ReminderService
     {
         return $reminder->update([
             'first_reminder'        => $data->firstReminder ? $data->firstReminder : null,
-            'first_reminder_date'   => $data->firstReminder ? new Carbon() : null,
+            'first_reminder_date'   => $data->firstReminder && $data->firstReminder !== 'Deferred' ? new Carbon() : null,
             'first_reminder_by'     => $data->firstReminder ? $user->id : null,
             'remind'                => $data->firstReminder ? false : $reminder->remind
         ]);
@@ -248,7 +248,7 @@ class ReminderService
     {
         return $reminder->update([
             'second_reminder'       => $data->secondReminder ? $data->secondReminder : null,
-            'second_reminder_date'  => $data->secondReminder ? new Carbon() : null,
+            'second_reminder_date'  => $data->secondReminder && $data->secondReminder !== 'Deferred' ? new Carbon() : null,
             'second_reminder_by'    => $data->secondReminder ? $user->id : null,
             'remind'                => $data->secondReminder ? false : $reminder->remind
         ]);
@@ -258,7 +258,7 @@ class ReminderService
     {
         return $reminder->update([
             'final_reminder'        => $data->finalReminder ? $data->finalReminder : null,
-            'final_reminder_date'   => $data->finalReminder ? new Carbon() : null,
+            'final_reminder_date'   => $data->finalReminder && $data->finalReminder !== 'Deferred' ? new Carbon() : null,
             'final_reminder_by'     => $data->finalReminder ? $user->id : null,
             'remind'                => $data->finalReminder ? false : $reminder->remind
         ]);

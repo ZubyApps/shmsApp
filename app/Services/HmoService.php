@@ -79,6 +79,7 @@ class HmoService
                 'sponsorCategory'   => $visit->sponsor->category_name,
                 'flagSponsor'       => $visit->sponsor->flag,
                 'flagPatient'       => $visit->patient->flag,
+                'flagReason'        => $visit->patient?->flag_reason,
                 'doctor'            => $visit->doctor->username ?? '',
                 'codeText'          => $visit->verification_code ?? '',
                 'phone'             => $visit->patient->phone,

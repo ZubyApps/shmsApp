@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import {admissionStatusX, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import {admissionStatusX, deferredCondition, displayPaystatus, selectReminderOptions, sponsorAndPayPercent } from "../helpers";
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -689,56 +689,26 @@ const getDueCashRemindersTable = (tableId) => {
             {data: "maxDays"},
             {data: "firstReminder", 
                 render: (data, type, row) => {
-                    if (data){
+                    if (deferredCondition(data)){
                         return data
                     }
-                    return  `
-                    <div class="d-flex text-secondary">            
-                        <select class="form-select form-select-md firstReminderSelect ms-1" data-id="${row.id}">
-                            <option value="">Select</option>
-                            <option value="Email">Email</option>
-                            <option value="Text">Text</option>
-                            <option value="WhatsApp">WhatsApp</option>
-                            <option value="Call">Call</option>
-                        </select>
-                    </div>   
-                    `
+                    return  selectReminderOptions(row, 'firstReminderSelect')
                 }
             },
             {data: "secondReminder", 
                 render: (data, type, row) => {
-                    if (data){
+                    if (deferredCondition(data)){
                         return data
                     }
-                    return  `
-                    <div class="d-flex text-secondary ${row.firstReminder ? '' : 'd-none'}">            
-                        <select class ="form-select form-select-md secondReminderSelect ms-1" data-id="${row.id}">
-                            <option value="">Select</option>
-                            <option value="Email">Email</option>
-                            <option value="Text">Text</option>
-                            <option value="WhatsApp">WhatsApp</option>
-                            <option value="Call">Call</option>
-                        </select>
-                    </div>   
-                    `
+                    return  selectReminderOptions(row, 'secondReminderSelect')
                 }
             },
             {data: "finalReminder", 
                 render: (data, type, row) => {
-                    if (data){
+                    if (deferredCondition(data)){
                         return data
                     }
-                    return  `
-                    <div class="d-flex text-secondary ${row.firstReminder && row.secondReminder ? '' : 'd-none'}">            
-                        <select class ="form-select form-select-md finalReminderSelect ms-1" data-id="${row.id}">
-                            <option value="">Select</option>
-                            <option value="Email">Email</option>
-                            <option value="Text">Text</option>
-                            <option value="WhatsApp">WhatsApp</option>
-                            <option value="Call">Call</option>
-                        </select>
-                    </div>   
-                    `
+                    return selectReminderOptions(row, 'finalReminderSelect')
                 }
             },
             {data: "paid", 
