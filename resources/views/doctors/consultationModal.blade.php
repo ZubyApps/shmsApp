@@ -1,4 +1,3 @@
-{{-- <div class="container"> --}}
     <div class="modal fade" id="{{ $id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
@@ -172,4 +171,3 @@
             </div>
         </div>
     </div>
-{{-- </div> --}}

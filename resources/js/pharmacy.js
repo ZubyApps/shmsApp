@@ -1,6 +1,6 @@
 
 import {Modal } from "bootstrap";
-import {getOrdinal, textareaHeightAdjustment, loadingSpinners, removeDisabled, resetFocusEndofLine, getDatalistOptionId, clearValidationErrors, handleValidationErrors, clearDivValues, getDivData, displayItemsList, openModals, getDatalistOptionStock} from "./helpers"
+import {getOrdinal, loadingSpinners, removeDisabled, resetFocusEndofLine, getDatalistOptionId, clearValidationErrors, handleValidationErrors, clearDivValues, getDivData, displayItemsList, openModals, getDatalistOptionStock} from "./helpers"
 import { getBulkRequestTable, getExpirationStockTable , getPatientsVisitByFilterTable, getPrescriptionsByConsultation, getShiftReportTable } from "./tables/pharmacyTables";
 import http from "./http";
 import $ from 'jquery';
@@ -16,7 +16,6 @@ window.addEventListener('DOMContentLoaded', function () {
     const ancTreatmentDetailsModal      = new Modal(document.getElementById('ancTreatmentDetailsModal'))
     const billingDispenseModal          = new Modal(document.getElementById('billingDispenseModal'))
     const bulkRequestModal              = new Modal(document.getElementById('bulkRequestModal'))
-    // const shiftReportModal              = new Modal(document.getElementById('shiftReportModal'))
     const newShiftReportTemplateModal   = new Modal(document.getElementById('newShiftReportTemplateModal'))
     const editShiftReportTemplateModal  = new Modal(document.getElementById('editShiftReportTemplateModal'))
     const viewShiftReportTemplateModal  = new Modal(document.getElementById('viewShiftReportTemplateModal'))

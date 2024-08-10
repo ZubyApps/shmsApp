@@ -11,8 +11,6 @@ import { visitDetails } from "./dynamicHTMLfiles/visits";
 $.fn.dataTable.ext.errMode = 'throw';
 
 window.addEventListener('DOMContentLoaded', function () {
-    const upcomingMedicationsCanvas         = new Offcanvas(document.getElementById('upcomingMedicationsoffcanvas'))
-    const upcomingNursingChartsCanvas       = new Offcanvas(document.getElementById('upcomingNursingChartsoffcanvas'))
     const waitingListCanvas                 = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
 
     const treatmentDetailsModal         = new Modal(document.getElementById('treatmentDetailsModal'))

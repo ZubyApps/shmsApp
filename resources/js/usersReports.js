@@ -1,4 +1,3 @@
-import {Modal } from "bootstrap";
 import $ from 'jquery';
 import { getBillOfficersActivityTable, getDoctorsActivityTable, getHmoOfficersActivityTable, getLabTechActivityTable, getNursesActivityTable, getNursesShiftPerformanceTable, getPharmacyTechActivityTable } from "./tables/usersReportTables";
 import http from "./http";

@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\InvokableObjects\CleanUpTables;
 use App\InvokableObjects\NursesAfternoonShift;
 use App\InvokableObjects\NursesMorningShift;
 use App\InvokableObjects\NursesNightShift;
@@ -20,6 +21,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(new NursesAfternoonShift)->timezone('Africa/Lagos')->dailyAt('14:00');
         $schedule->call(new NursesNightShift)->timezone('Africa/Lagos')->dailyAt('19:30');
         $schedule->call(new Remind)->timezone('Africa/Lagos')->twiceDaily(9, 15);
+        $schedule->call(new CleanUpTables)->timezone('Africa/Lagos')->lastDayOfMonth('23:59');
     }
 
     /**

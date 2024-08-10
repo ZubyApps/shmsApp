@@ -891,8 +891,6 @@ const getShiftReportTable = (tableId, department, shiftBadgeSpan) => {
             {data: "date"},
             {data: "shift"},
             {data: "writtenBy"},
-            // {data: "viewedAt"},
-            // {data: "viewedBy"},
             {data: row => function () {
                 return `
                 <div class="d-flex flex-">

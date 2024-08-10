@@ -1,6 +1,5 @@
 <?php
 
-use App\Enum\PatientType;
 use App\Models\Sponsor;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;

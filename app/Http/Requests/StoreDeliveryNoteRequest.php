@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Consultation;
 use App\Models\Visit;
 use Illuminate\Foundation\Http\FormRequest;
 

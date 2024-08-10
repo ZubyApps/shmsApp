@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Consultation;
-use App\Models\Payment;
 use App\Models\Resource;
 use App\Models\User;
 use App\Models\Visit;

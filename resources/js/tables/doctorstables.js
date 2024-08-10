@@ -467,7 +467,6 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
     });
 
     function formatChild(data) {
-        // const chart = data.chart
                 if (data.result || data.removalReason) {
                     return `   
                                 <table class="table align-middle table-sm">

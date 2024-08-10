@@ -11,7 +11,6 @@ $.fn.dataTable.ext.errMode = 'throw';
 
 
 window.addEventListener('DOMContentLoaded', function () {
-    const waitingListCanvas             = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
     const billingModal                  = new Modal(document.getElementById('billingModal'))
     const dischargeBillModal            = new Modal(document.getElementById('dischargeBillModal'))
     const outstandingBillsModal         = new Modal(document.getElementById('outstandingBillsModal'))

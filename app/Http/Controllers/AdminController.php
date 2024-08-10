@@ -22,10 +22,4 @@ class AdminController extends Controller
     {
         return view('admin.settings');
     }
-
-    public function create(Request $request)
-    {
-
-    }
-
 }

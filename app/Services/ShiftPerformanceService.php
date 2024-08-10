@@ -101,23 +101,6 @@ Class ShiftPerformanceService
         return $totalPrescriptions ? $all : null;
     }
 
-    // public function chartRate($shiftPerformance)
-    // {
-    //     $shiftEnd = new Carbon($shiftPerformance->shift_end);
-    //     $shiftEndTimer = $shiftEnd->subMinutes(20);
-
-    //     $totalPrescriptions = $this->prescription
-    //                                 ->where('chartable', true)
-    //                                 ->where('discontinued', false)
-    //                                 ->where('held', null)
-    //                                 ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-    //                                 ->count();
-
-    //     $totalPrescriptionsCharted  = $this->prescription->prescriptionsChartedPerShift($shiftPerformance, 'medicationCharts');
-
-    //     return $totalPrescriptions ? $totalPrescriptionsCharted . '/' . $totalPrescriptions : null;
-    // }
-
     public function givenRate($shiftPerformance)
     {
         $shiftEnd = new Carbon($shiftPerformance->shift_end);
@@ -144,22 +127,6 @@ Class ShiftPerformanceService
     
             return $totalPrescriptions ? $all : null;
     }
-
-    // public function givenRate($shiftPerformance)
-    // {
-    //     $shiftEnd = new Carbon($shiftPerformance->shift_end);
-    //     $shiftEndTimer = $shiftEnd->subMinutes(20);
-
-    //     $totalPrescriptions         = $this->prescription
-    //                                         ->where('chartable', true)
-    //                                         ->where('discontinued', false)
-    //                                         ->where('held', null)
-    //                                         ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-    //                                         ->count();
-    //         $totalPrescriptionsStarted = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'medicationCharts');
-
-    //         return $totalPrescriptions ? $totalPrescriptionsStarted . '/' . $totalPrescriptions : null;
-    // }
 
     public function firstMedicationResolution($shiftPerformance)
     {
@@ -234,40 +201,6 @@ Class ShiftPerformanceService
 
         return $medicatonsDueInShift > 0 ? $averageMedicationTime : null;        
     }
-
-    // public function inpatientsVitalsignsCount($shiftPerformance)
-    // {
-    //     $shiftStart         = new CarbonImmutable($shiftPerformance->shift_start);
-    //     $shiftStartTimer    = $shiftStart->addHour();
-    //     $count              = 2;
-
-    //     if ($shiftPerformance->shift == 'Night Shift'){
-    //         $shiftStartTimer = $shiftStart->addHours(3);
-    //         $count = 3;
-    //     }
-
-    //     $visitsCount = $this->visit
-    //             ->where('created_at', '<', $shiftStartTimer)
-    //             ->where(function (EloquentBuilder $query) {
-    //                 $query->where('admission_status', '=', 'Inpatient')
-    //                 ->orWhere('admission_status', '=', 'Observation');
-    //             })
-    //             ->where('doctor_done_by', null)
-    //             ->count();
-
-    //     $visitsVCount = $this->visit
-    //             ->where('created_at', '<', $shiftStartTimer)
-    //             ->where(function (EloquentBuilder $query) {
-    //                 $query->where('admission_status', '=', 'Inpatient')
-    //                 ->orWhere('admission_status', '=', 'Observation');
-    //             })
-    //             ->where('doctor_done_by', '=', null)
-    //             ->whereHas('vitalSigns', function ($query) use ($shiftPerformance) {
-    //                         $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
-    //                 }, '>=', $count)->count();
-
-    //     return $visitsCount ? $visitsVCount . '/' . $visitsCount : null;
-    // }
     
     public function inpatientsVitalsignsCount($shiftPerformance)
     {
@@ -357,7 +290,6 @@ Class ShiftPerformanceService
 
         return $visitsCount ? $all : null;
 
-        // return $visitsCount ? $visitsVCount . '/' . $visitsCount : null;
     }
 
     public function secondsToPercent($seconds, $indicator)

@@ -41,7 +41,7 @@ class PrescriptionService
                 'prescription'      => $this->arrangePrescription($data),
                 'consultation_id'   => $data->conId,
                 'visit_id'          => $data->visitId,
-                'qty_billed'        => $this->determineBillQuantity($resource, $data), // $data->quantity ?? 0,
+                'qty_billed'        => $this->determineBillQuantity($resource, $data),
                 'qty_dispensed'     => $this->determineDispense($resource, $data),
                 'hms_bill'          => $bill,
                 'hms_bill_date'     => $bill ? new Carbon() : null,

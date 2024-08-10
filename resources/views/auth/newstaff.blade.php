@@ -34,35 +34,6 @@
         </div>
     </div>
 
-    {{-- <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="offcanvasInvestigations"
-        aria-labelledby="offcanvasInvestigationsLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-primary" id="offcanvasInvestigations">Investigations</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas2-body">
-            <div class="my-2 form-control">
-                <span class="fw-bold text-primary"> Outpatient's Investigations </span>
-                <div class="row overflow-auto m-1">
-                    <table id="outpatientInvestigationsTable" class="table table-hover table-sm">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Type</th>
-                                <th>Doctor</th>
-                                <th>Patient</th>
-                                <th>Diagnosis</th>
-                                <th>Investigation</th>
-                                <th>Result</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div> --}}
-
     <div class="text-start mb-4">
         <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="activeUsersBtn" data-bs-target="#activeListOffcanvas2" aria-controls="activeListOffcanvas2">
             <i class="bi bi-list-check"></i>
@@ -75,12 +46,6 @@
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                 <button class="nav-link active" id="nav-allStaff-tab" data-bs-toggle="tab" data-bs-target="#nav-allStaff" 
                     type="button" role="tab" aria-controls="nav-allStaff" aria-selected="true">All Staff</button>
-
-                {{-- <button class="nav-link" id="nav-staffAggregation-tab" data-bs-toggle="tab" data-bs-target="#nav-staffAggregation"
-                    type="button" role="tab" aria-controls="nav-staffAggregation" aria-selected="false">Staff Aggregation</button> --}}
-
-                {{-- <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients"
-                    type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button> --}}
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
@@ -112,47 +77,6 @@
                     </table>
                 </div>
             </div>
-            <!-- inpatients table -->
-            {{-- <div class="tab-pane fade" id="nav-staffAggregation" role="tabpanel" aria-labelledby="nav-staffAggregation-tab"
-                tabindex="0">
-                <div class="py-4 ">
-                    <table id="staffAggregation
-                    Table" class="table table-hover align-middle table-sm">
-                        <thead>
-                            <tr>
-                                <th>Designation</th>
-                                <th>Number of Staff</th>
-                                <th>Doctor</th>
-                                <th>Current Diagnosis</th>
-                                <th>Sponsor</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div> --}}
-            <!-- Anc table -->
-            {{-- <div class="tab-pane fade" id="nav-ancPatients" role="tabpanel" aria-labelledby="nav-ancPatients-tab"
-                tabindex="0">
-                <div class="py-4 ">
-                    <table id="ancPatientsVisitTable" class="table table-hover align-middle table-sm">
-                        <thead>
-                            <tr>
-                                <th>Seen</th>
-                                <th>Patient</th>
-                                <th>Doctor</th>
-                                <th>Current Diagnosis</th>
-                                <th>Sponsor</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div> --}}
         </div>
     </div>
 </div>
