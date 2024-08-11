@@ -25,7 +25,7 @@
                   <i class="text-primary bi bi-gear"></i>
                 </div>
                 <div>
-                  <h3 class="fs-2 text-body-emphasis">Admin Stettings</h3>
+                  <h3 class="fs-2 text-body-emphasis">Admin Settings</h3>
                   <p>Create and Manage Administrative settings. Like Sponsor settings, Billing Settings and other relvant settings</p>
                   <a href="admin/settings" class="btn btn-primary">
                     Settings
