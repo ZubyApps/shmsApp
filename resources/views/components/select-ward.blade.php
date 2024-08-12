@@ -10,7 +10,7 @@
     <option value="CW">Children's Ward</option>
     <option value="VIPR">VIP Room</option>
     <option value="OW1">Old Ward 1</option>
-    <option value="OW12">Old Ward 2</option>
+    <option value="OW2">Old Ward 2</option>
     <option value="RW">Recovery Ward</option>
     <option value="PR">Prep Room</option>
     <option value="ER">Emergency Room</option>
