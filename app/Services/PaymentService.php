@@ -71,7 +71,7 @@ Class PaymentService
                 $paid = $p->paid;
                 
                 if ($carry >= $bill){
-                    $p->update(['paid' => $bill == 0 ? $paid : $bill]);
+                    $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
                 }
 
                 if ($carry < $bill && $carry > 0){
@@ -110,7 +110,7 @@ Class PaymentService
                 $paid = $p->paid;
                 
                 if ($carry >= $bill){
-                    $p->update(['paid' => $bill == 0 ? $paid : $bill]);
+                    $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
                 }
 
                 if ($carry < $bill && $carry > 0){
