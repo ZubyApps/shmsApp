@@ -768,7 +768,8 @@ window.addEventListener('DOMContentLoaded', function () {
             const hmoBillInput      = hmoBillSpan.parentElement.querySelector('.hmoBillInput')
             hmoBillSpan.classList.add('d-none')
             hmoBillInput.classList.remove('d-none')
-            hmoBillInput.focus()
+            // hmoBillInput.focus()
+            resetFocusEndofLine(hmoBillInput)
             
             hmoBillInput.addEventListener('blur', function () {
                 makeBillFieldset.setAttribute('disabled', 'disabled')
@@ -804,7 +805,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 const payInput          = payBtnSpan.parentElement.querySelector('.payInput')
                 payBtnSpan.classList.add('d-none')
                 payInput.classList.remove('d-none')
-                resetFocusEndofLine(payInput)
+                // resetFocusEndofLine(payInput)
+                payInput.focus()
                 
                 payInput.addEventListener('blur', function () {
                     reconciliationFieldset.setAttribute('disabled', 'disabled')

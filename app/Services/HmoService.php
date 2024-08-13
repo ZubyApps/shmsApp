@@ -1081,8 +1081,9 @@ class HmoService
 
     public function determineValueOfTotalPaid(Visit $visit)
     {
-        return $visit->sponsor->category_name == 'NHIS' ? $visit->totalPaidPrescriptions() : 
-        $visit->totalPaidPrescriptions() +  $visit->totalPayments();
+        return $visit->totalPaidPrescriptions();
+        // return $visit->sponsor->category_name == 'NHIS' ? $visit->totalPaidPrescriptions() : 
+        // $visit->totalPaidPrescriptions() +  $visit->totalPayments();
     }
 
     public function getNhisSponsorsByDate(DataTableQueryParams $params, $data)
