@@ -40,14 +40,14 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const [outPatientsTab, inPatientsTab, ancPatientsTab, expirationStockTab, bulkRequestsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-expirationStock-tab'), document.querySelector('#nav-bulkRequests-tab')]
 
-    let inPatientsVisitTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable
+    let  outPatientsTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable
 
-    const outPatientsTable  = getPatientsVisitByFilterTable('outPatientsTable', 'Outpatient')
+    const inPatientsVisitTable  = getPatientsVisitByFilterTable('inPatientsTable', 'Inpatient')
     const emergencyTable    = getEmergencyTable('emergencyTable', 'pharmacy')
     const pharmacyShiftReportTable = getShiftReportTable('pharmacyShiftReportTable', 'pharmacy', shiftBadgeSpan)
 
     emergencyListBtn.addEventListener('click', function () {emergencyTable.draw()})
-    outPatientsTab.addEventListener('click', function() {outPatientsTable.draw()})
+    inPatientsTab.addEventListener('click', function() {inPatientsVisitTable.draw()})
     shiftReportBtn.addEventListener('click', function () {pharmacyShiftReportTable.draw()})
 
     newPharmacyReportBtn.addEventListener('click', function () {
@@ -63,11 +63,11 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    inPatientsTab.addEventListener('click', function () {
-        if ($.fn.DataTable.isDataTable( '#inPatientsTable' )){
-            $('#inPatientsTable').dataTable().fnDraw()
+    outPatientsTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#outPatientsTable' )){
+            $('#outPatientsTable').dataTable().fnDraw()
         } else {
-            inPatientsVisitTable = getPatientsVisitByFilterTable('inPatientsTable', 'Inpatient')
+            outPatientsTable = getPatientsVisitByFilterTable('outPatientsTable', 'Outpatient')
         }
     })
 
@@ -421,8 +421,8 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     billingDispenseModal._element.addEventListener('hide.bs.modal', function () {
-        outPatientsTable.draw(false)
-        inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
+        inPatientsVisitTable.draw(false)
+        outPatientsTable ? outPatientsTable.draw(false) : ''
         ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
         emergencyTable.draw(false)
     })
@@ -519,8 +519,8 @@ window.addEventListener('DOMContentLoaded', function () {
         modal.addEventListener('hide.bs.modal', function(event) {
             regularTreatmentDiv.innerHTML = ''
             ancTreatmentDiv.innerHTML = ''
-            outPatientsTable.draw()
-            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+            inPatientsVisitTable.draw()
+            outPatientsTable ? outPatientsTable.draw() : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             emergencyTable.draw()
             pharmacyShiftReportTable.draw()
