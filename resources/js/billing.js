@@ -360,6 +360,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const paymentDetailsDiv         = document.querySelector('.paymentDetailsDiv')
             const discountBtn               = event.target.closest('.discountBtn')
             const outstandingsBtn           = event.target.closest('.outstandingsBtn')
+            const sponsorOutstandingsBtn    = event.target.closest('.sponsorOutstandingsBtn')
             const thirdPartyServiceBtn      = event.target.closest('.thirdPartyServiceBtn')
             const registerBillReminderBtn   = event.target.closest('.registerBillReminderBtn')
             
@@ -424,6 +425,13 @@ window.addEventListener('DOMContentLoaded', function () {
             if (outstandingsBtn){
                 const patientId = outstandingsBtn.dataset.patientid
                 getPatientsVisitsByFilterTable('outstandingBillsTable', '', 'outstandings', patientId)
+                outstandingBillsModal.show()
+                billingModal.hide()
+            }
+
+            if (sponsorOutstandingsBtn){
+                const sponsorId = sponsorOutstandingsBtn.dataset.sponsorid
+                getPatientsVisitsByFilterTable('outstandingBillsTable', '', 'outstandings', '', sponsorId)
                 outstandingBillsModal.show()
                 billingModal.hide()
             }

@@ -198,6 +198,7 @@ class BillingService
                 'patientId'             => $visit->patient->id,
                 'patient'               => $visit->patient->patientId(),
                 'sponsor'               => $visit->sponsor->name,
+                'sponsorId'             => $visit->sponsor->id,
                 'sponsorCategory'       => $visit->sponsor->sponsorCategory->name,
                 'sponsorCategoryClass'  => $visit->sponsor->sponsorCategory->pay_class,
                 'doctor'                => $visit->doctor?->username,
@@ -214,7 +215,8 @@ class BillingService
                 'totalPaid'             => $visit->totalPayments() ?? 0,
                 'balance'               => $visit->totalHmsBills() - $visit->discount - $visit->totalPayments() ?? 0,
                 'nhisBalance'           => $visit->sponsor->sponsorCategory->name == 'NHIS' ? (($visit->totalNhisBills() - $visit->discount)) - $visit->totalPayments() ?? 0 : 'N/A',
-                'outstandingBalance'    => $visit->patient->allHmsBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
+                'outstandingPatientBalance'    => $visit->patient->allHmsBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
+                'outstandingSponsorBalance'    => $this->familyRetainership($visit->sponsor) ? $visit->sponsor->allHmsBills() - $visit->sponsor->allDiscounts() - $visit->sponsor->allPayments() : null,
                 'outstandingNhisBalance'=> $visit->patient->allNhisBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
                 'payMethods'            => $this->payMethodService->list(),
                 'notBilled'             => $visit->prescriptions->where('qty_billed', null)->count(),
@@ -242,6 +244,11 @@ class BillingService
                 
             ];
          };
+    }
+
+    public function familyRetainership($sponsor)
+    {
+        return $sponsor->category_name == 'Family' || $sponsor->category_name == 'Retainership';
     }
 
     public function getPatientPaymentTable(DataTableQueryParams $params, $data)
@@ -304,12 +311,25 @@ class BillingService
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
 
-        if (! empty($params->searchTerm)) {
+        if ($data->sponsorId){
+
+            if (! empty($params->searchTerm)) {
             return $this->visit
-                        ->where('id', $data->patientId)
-                        ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->where('sponsor_id', $data->sponsorId)
+                        ->where(function (Builder $query) use ($params){
+                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+            return $this->visit
+                    ->where('sponsor_id', $data->sponsorId)
+                    ->whereColumn('total_hms_bill', '!=', 'total_paid')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return $this->visit

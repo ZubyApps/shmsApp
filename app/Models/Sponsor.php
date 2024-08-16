@@ -40,4 +40,54 @@ class Sponsor extends Model
     {
         return $this->hasMany(Reminder::class);
     }
+
+    public function allHmsBills()
+    {
+        $allHmsBills = 0;
+        foreach($this->visits as $visit){
+            $allHmsBills += $visit->totalHmsBills();
+        }
+
+        return $allHmsBills;
+    }
+
+    public function allHmoBills()
+    {
+        $allHmoBills = 0;
+        foreach($this->visits as $visit){
+            $allHmoBills += $visit->totalHmoBills();
+        }
+
+        return $allHmoBills;
+    }
+
+    public function allNhisBills()
+    {
+        $allNhisBills = 0;
+        foreach($this->visits as $visit){
+            $allNhisBills += $visit->totalNhisBills();
+        }
+
+        return $allNhisBills;
+    }
+
+    public function allPayments()
+    {
+        $allPayments = 0;
+        foreach($this->visits as $visit){
+            $allPayments += $visit->totalPayments();
+        }
+
+        return $allPayments;
+    }
+
+    public function allDiscounts()
+    {
+        $allDiscounts = 0;
+        foreach($this->visits as $visit){
+            $allDiscounts += $visit->discount;
+        }
+
+        return $allDiscounts;
+    }
 }

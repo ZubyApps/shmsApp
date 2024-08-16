@@ -69,7 +69,7 @@ const getWaitingTable = (tableId) => {
     });
 }
 
-const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) => {
+const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, sponsorId) => {
     const preparedColumns = [
         {data: "came"},
         {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}  tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.patient}</span>`},
@@ -108,7 +108,8 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId) =
         serverSide: true,
         ajax:  {url: `/billing/load/${urlSuffix}`, data: {
             'filterBy': filter,
-            'patientId': patientId
+            'patientId': patientId,
+            'sponsorId': sponsorId
         }},
         orderMulti: true,
         lengthMenu:[25, 50, 100, 150, 200],
@@ -162,8 +163,18 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
             {
                 sortable: false,
                 data: row => () => {
-                    const outstanding = row.sponsorCategory === 'NHIS' ? row.outstandingNhisBalance : row.outstandingBalance
-                    return `<span class="btn fw-bold text-${outstanding > 0 ? 'danger' : outstanding === 0 ? 'primary' : 'success'} outstandingsBtn" data-patientid="${row.patientId}">Outstanding: ${outstanding}</span>`
+                    const outstanding = row.sponsorCategory === 'NHIS' ? row.outstandingNhisBalance : row.outstandingPatientBalance
+                    return `<span class="btn fw-bold text-${outstanding > 0 ? 'danger' : outstanding === 0 ? 'primary' : 'success'} outstandingsBtn" data-patientid="${row.patientId}">Patient's Outstanding: ${outstanding}</span>`
+                }
+            },
+            {
+                sortable: false,
+                data: row => () => {
+                    const outstanding = row.outstandingSponsorBalance
+                    if (row.sponsorCategory === 'Family' || row.sponsorCategory === 'Retainership'){
+                        return `<span class="btn fw-bold text-${outstanding > 0 ? 'danger' : outstanding === 0 ? 'primary' : 'success'} sponsorOutstandingsBtn" data-sponsorid="${row.sponsorId}">${row.sponsor + ' ' + row.sponsorCategory}'s Outstanding: ${outstanding}</span>`
+                    }
+                    return outstanding
                 }
             },
         ]
