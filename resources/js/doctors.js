@@ -125,7 +125,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #medicalReportTable, #emergencyTable, #patientsFilesTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
 
-    outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw()})
+    outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw(false)})
 
     ancPatientsTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#ancPatientsVisitTable' )){
@@ -331,10 +331,10 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.patch(`/visits/${string}/${visitId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
-                            outPatientsVisitTable.draw()
-                            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-                            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
-                            waitingTable.draw()
+                            outPatientsVisitTable.draw(false)
+                            ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+                            inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
+                            waitingTable.draw(false)
                         }
                     })
                     .catch((error) => {
@@ -687,10 +687,10 @@ window.addEventListener('DOMContentLoaded', function () {
     emergencyListBtn.addEventListener('click', function () {emergencyTable.draw()})
 
     waitingListOffcanvas._element.addEventListener('hide.bs.offcanvas', () => {
-        outPatientsVisitTable.draw()
-        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
-        emergencyTable.draw()
+        outPatientsVisitTable.draw(false)
+        ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+        inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
+        emergencyTable.draw(false)
     })
 
     document.querySelectorAll('#dischargeModal, #wardAndBedModal, #vitalsignsModal, #ancVitalsignsModal, #investigationAndManagementModal').forEach(modal => {
@@ -1258,9 +1258,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 modal.querySelector('#edd').value = ''
                 modal.querySelector('#ega').value = ''
             }
-            outPatientsVisitTable.draw()
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
+            outPatientsVisitTable.draw(false)
+            ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+            inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
             emergencyTable.draw()
         })
     })
