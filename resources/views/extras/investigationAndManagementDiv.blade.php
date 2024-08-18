@@ -68,6 +68,7 @@
                     <th>Prescription</th>
                     <th>Route</th>
                     <th>Qty</th>
+                    <th>Bill</th>
                     <th>Note</th>
                     <th>Chartable</th>
                     <th>By</th>
@@ -75,6 +76,20 @@
                 </tr>
             </thead>
             <tbody></tbody>
+            <tfoot>
+                <tr class="">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="fw-semibold"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>

@@ -363,6 +363,7 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
 }
 
 const getPrescriptionTableByConsultation = (tableId, conId, visitId, modal) => {
+    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
     const prescriptionTable = new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/prescription/load/initial', data: {
@@ -375,12 +376,30 @@ const getPrescriptionTableByConsultation = (tableId, conId, visitId, modal) => {
         language: {
             emptyTable: 'No resource has been added'
         },
+        drawCallback: function (settings) {
+            var api = this.api()
+            $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
+        },
         columns: [
             {data: "prescribed"},
             {data: "resource"},
             {data: "prescription"},
             {data: "route"},
-            {data: "quantity"},
+            {
+                data: row =>  () => {
+                    const catgories = ['Medications', 'Consumables']
+                    if (!catgories.includes(row.category)){
+                        return `
+                        <div class="d-flex">
+                            <span class="changeBillSpan tooltip-test" title="${row.quantity ? 'Change Bill' : 'Bill'}" data-id="${row.id}" data-stock="${row.stock}">${row.quantity ? row.quantity : 'Bill'}</span>
+                            <input class="ms-1 form-control billInput d-none" id="billInput" value="${row.quantity ?? ''}">
+                        </div>
+                        `    
+                    }
+                    return row.quantity
+                }
+            },
+            {data: row => account.format(row.hmsBill)},
             {data: "note"},
             {data: "chartable"},
             {data: "by"},

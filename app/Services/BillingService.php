@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Consultation;
+use App\Models\Patient;
 use App\Models\Payment;
 use App\Models\Prescription;
 use App\Models\Resource;
@@ -28,7 +29,8 @@ class BillingService
         private readonly Resource $resource,
         private readonly PayMethodService $payMethodService,
         private readonly ExpenseService $expenseService,
-        private readonly PrescriptionService $prescriptionService
+        private readonly PrescriptionService $prescriptionService,
+        private readonly Patient $patient
         )
     {
         
@@ -197,6 +199,7 @@ class BillingService
                 'id'                    => $visit->id,
                 'patientId'             => $visit->patient->id,
                 'patient'               => $visit->patient->patientId(),
+                'cardNo'                => str_split($visit->patient->card_no, 9)[0],
                 'sponsor'               => $visit->sponsor->name,
                 'sponsorId'             => $visit->sponsor->id,
                 'sponsorCategory'       => $visit->sponsor->sponsorCategory->name,
@@ -214,10 +217,11 @@ class BillingService
                 'netTotal'              => $visit->totalHmsBills() - $visit->discount,
                 'totalPaid'             => $visit->totalPayments() ?? 0,
                 'balance'               => $visit->totalHmsBills() - $visit->discount - $visit->totalPayments() ?? 0,
-                'nhisBalance'           => $visit->sponsor->sponsorCategory->name == 'NHIS' ? (($visit->totalNhisBills() - $visit->discount)) - $visit->totalPayments() ?? 0 : 'N/A',
-                'outstandingPatientBalance'    => $visit->patient->allHmsBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
-                'outstandingSponsorBalance'    => $this->familyRetainership($visit->sponsor) ? $visit->sponsor->allHmsBills() - $visit->sponsor->allDiscounts() - $visit->sponsor->allPayments() : null,
-                'outstandingNhisBalance'=> $visit->patient->allNhisBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
+                'nhisBalance'           => $this->sponsorsAllowed($visit->sponsor, ['NHIS']) ? (($visit->totalNhisBills() - $visit->discount)) - $visit->totalPayments() ?? 0 : 'N/A',
+                'outstandingPatientBalance'  => $visit->patient->allHmsBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
+                'outstandingSponsorBalance'  => $this->sponsorsAllowed($visit->sponsor, ['Family', 'Retainership']) ? $visit->sponsor->allHmsBills() - $visit->sponsor->allDiscounts() - $visit->sponsor->allPayments() : null,
+                'outstandingCardNoBalance'   => $this->sponsorsAllowed($visit->sponsor, ['Family', 'Retainership', 'NHIS', 'Individual']) ? $this->sameCardNoOustandings($visit) : null,
+                'outstandingNhisBalance'=> $this->sponsorsAllowed($visit->sponsor, ['NHIS']) ? $visit->patient->allNhisBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments() : null,
                 'payMethods'            => $this->payMethodService->list(),
                 'notBilled'             => $visit->prescriptions->where('qty_billed', null)->count(),
                 'user'                  => auth()->user()->designation->access_level > 4,
@@ -246,9 +250,31 @@ class BillingService
          };
     }
 
-    public function familyRetainership($sponsor)
+    public function sponsorsAllowed($sponsor, array $sponsors)
     {
-        return $sponsor->category_name == 'Family' || $sponsor->category_name == 'Retainership';
+        return in_array($sponsor->category_name, $sponsors);
+    }
+
+    public function sameCardNoOustandings(Visit $visit)
+    {
+        $cardNo = str_split($visit->patient->card_no, 9)[0];
+        $nhis = $visit->sponsor->category_name == 'NHIS';
+        if (str_contains($cardNo, 'ANC')){
+            return null;
+        };
+        $patients = $this->patient->where('card_no', 'LIKE', '%' . addcslashes($cardNo, '%_') . '%' )->get();
+
+        $allBills = 0;
+        $allDiscounts = 0;
+        $allPayments = 0;
+
+        foreach($patients as $patient){
+           $allBills        += $nhis ? $patient->allNhisBills() : $patient->allHmsBills();
+           $allDiscounts    += $patient->allDiscounts();
+           $allPayments     += $patient->allPayments();
+        }
+
+        return $allBills - $allDiscounts - $allPayments;
     }
 
     public function getPatientPaymentTable(DataTableQueryParams $params, $data)
@@ -327,6 +353,27 @@ class BillingService
 
             return $this->visit
                     ->where('sponsor_id', $data->sponsorId)
+                    ->whereColumn('total_hms_bill', '!=', 'total_paid')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+        
+        if ($data->cardNo){
+
+            if (! empty($params->searchTerm)) {
+            return $this->visit
+                        ->whereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($data->cardNo, '%_') . '%' )
+                        ->where(function (Builder $query) use ($params){
+                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+            return $this->visit
+                    ->whereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($data->cardNo, '%_') . '%' )
                     ->whereColumn('total_hms_bill', '!=', 'total_paid')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));

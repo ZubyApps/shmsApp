@@ -1,7 +1,7 @@
 import { Modal, Toast, Offcanvas } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal, populateAncReviewDiv} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal, populateAncReviewDiv, resetFocusEndofLine} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
 import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable, getOtherPrescriptionsByFilter, getMedicalReportTable, getPatientsFileTable} from "./tables/doctorstables"
@@ -786,8 +786,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('#prescriptionTableNew, #prescriptionTableSpecialist, #prescriptionTableAnc, #prescriptionTableAncReview, #prescriptionTableConReview, #emergencyTable, #prescriptionTableAncReviewDiv').forEach(table => {
         table.addEventListener('click', function (event) {
-            const deleteBtn  = event.target.closest('.deleteBtn')
-            const confirmBtn  = event.target.closest('.confirmBtn')
+            const deleteBtn         = event.target.closest('.deleteBtn')
+            const confirmBtn        = event.target.closest('.confirmBtn')
+            const changeBillSpan    = event.target.closest('.changeBillSpan')
             if (deleteBtn){
                 deleteBtn.setAttribute('disabled', 'disabled')
                 if (confirm('Are you sure you want to delete this prescription?')) {
@@ -835,6 +836,51 @@ window.addEventListener('DOMContentLoaded', function () {
                         confirmBtn.removeAttribute('disabled')
                     })
                 }
+            }
+
+            if (changeBillSpan){
+                const prescriptionId    = changeBillSpan.getAttribute('data-id')
+                const stock             = +changeBillSpan.getAttribute('data-stock')
+                const div               = changeBillSpan.parentElement
+                const billQtyInput      = div.querySelector('.billInput')
+
+                if (!stock){
+                    alert('Resource is out of stock, please add to stock before billing')
+                } else {
+                    changeBillSpan.classList.add('d-none')
+                    billQtyInput.classList.remove('d-none')
+    
+                    resetFocusEndofLine(billQtyInput)
+                
+                    billQtyInput.addEventListener('blur', function () {
+                        if(stock - billQtyInput.value < 0) {
+                            alert('This quantity is more than the available stock, please add to stock or reduce the quantity before billing')
+                            resetFocusEndofLine(billQtyInput)
+                            return
+                        }
+                        // billingDispenseFieldset.setAttribute('disabled', 'disabled')
+                        http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value}, {'html' : div})
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                if ($.fn.DataTable.isDataTable('#'+table.id)){
+                                $('#'+table.id).dataTable().fnDraw(false)
+                                }
+                                if ($.fn.DataTable.isDataTable('#investigationTable'+conId)){
+                                $('#investigationTable'+conId).dataTable().fnDraw(false)
+                                }
+                                if ($.fn.DataTable.isDataTable('#treatmentTable'+conId)){
+                                $('#treatmentTable'+conId).dataTable().fnDraw(false)
+                                }
+                            }
+                        })
+                        .catch((error) => {
+                                if ($.fn.DataTable.isDataTable('#'+table.id)){
+                                    $('#'+table.id).dataTable().fnDraw(false)
+                                }
+                                console.log(error)
+                        })
+                    })
+                }                
             }
         })
     })
@@ -916,7 +962,7 @@ window.addEventListener('DOMContentLoaded', function () {
         addBtn.addEventListener('click', () => {
             const div = addBtn.parentElement.parentElement.parentElement
             addBtn.setAttribute('disabled', 'disabled')
-            const resourcevalues = getSelectedResourceValues(div, div.querySelector('.resource'), div.querySelector(`#resourceList${div.dataset.div}`)) // div.querySelector('.resource').getAttribute('data-resourcevalues').split(',')
+            const resourcevalues = getSelectedResourceValues(div, div.querySelector('.resource'), div.querySelector(`#resourceList${div.dataset.div}`))
             if (!resourcevalues){const message = {"resource": ["Please pick an from the list"]}; handleValidationErrors(message, div); addBtn.removeAttribute('disabled'); return}
             const [conId, visitId, divPrescriptionTableId, chartable] = [addBtn.dataset.conid, addBtn.dataset.visitid, '#'+div.querySelector('.prescriptionTable').id, div.querySelector('#chartable').checked]
             let data = {...getDivData(div), ...resourcevalues, conId, visitId, chartable}
@@ -968,9 +1014,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         openDoctorModals(modal, modal._element.querySelector('#saveConsultationBtn'), response.data)
-                        // const lmp = response.data
-                        // console.log(lmp)
-                        // isAnc ? lmpCurrentCalculator(lmp, modal._element.querySelector('.lmpDetailsDiv')) : ''
                         getVitalsigns(tableId, id, modal)}
                     btn.removeAttribute('disabled')
                     })

@@ -69,7 +69,7 @@ const getWaitingTable = (tableId) => {
     });
 }
 
-const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, sponsorId) => {
+const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, sponsorId, cardNo) => {
     const preparedColumns = [
         {data: "came"},
         {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}  tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.patient}</span>`},
@@ -109,7 +109,8 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, s
         ajax:  {url: `/billing/load/${urlSuffix}`, data: {
             'filterBy': filter,
             'patientId': patientId,
-            'sponsorId': sponsorId
+            'sponsorId': sponsorId,
+            'cardNo': cardNo,
         }},
         orderMulti: true,
         lengthMenu:[25, 50, 100, 150, 200],
@@ -123,6 +124,8 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, s
 }
 
 const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
+    const buttonColour = (value) => {return value > 0 ? 'danger' : value === 0 ? 'primary' : 'success'}
+    
     const billingTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/billing/bill', data: {
@@ -164,17 +167,22 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                 sortable: false,
                 data: row => () => {
                     const outstanding = row.sponsorCategory === 'NHIS' ? row.outstandingNhisBalance : row.outstandingPatientBalance
-                    return `<span class="btn fw-bold text-${outstanding > 0 ? 'danger' : outstanding === 0 ? 'primary' : 'success'} outstandingsBtn" data-patientid="${row.patientId}">Patient's Outstanding: ${outstanding}</span>`
+                    return `<span class="btn fw-bold text-${buttonColour(outstanding)} outstandingsBtn" data-patientid="${row.patientId}">Patient's Outstanding: ${outstanding}</span>`
                 }
             },
             {
                 sortable: false,
                 data: row => () => {
-                    const outstanding = row.outstandingSponsorBalance
-                    if (row.sponsorCategory === 'Family' || row.sponsorCategory === 'Retainership'){
-                        return `<span class="btn fw-bold text-${outstanding > 0 ? 'danger' : outstanding === 0 ? 'primary' : 'success'} sponsorOutstandingsBtn" data-sponsorid="${row.sponsorId}">${row.sponsor + ' ' + row.sponsorCategory}'s Outstanding: ${outstanding}</span>`
+                    const outstandingSponsor = row.outstandingSponsorBalance
+                    const outstandingCardNo = row.outstandingCardNoBalance
+                    const allSponsorCategories = ['Family', 'Retainership', 'NHIS', 'Individual']
+                    const sponsorsCategories = ['NHIS', 'Individual']
+                    if (allSponsorCategories.includes(row.sponsorCategory)){
+                        return `<span class="btn fw-bold text-${buttonColour(outstandingSponsor)} sponsorOutstandingsBtn ${sponsorsCategories.includes(row.sponsorCategory) ? 'd-none' : ''}" data-sponsorid="${row.sponsorId}">${row.sponsor + ' ' + row.sponsorCategory}'s Outstanding: ${outstandingSponsor}</span>
+                                <span class="btn fw-bold text-${buttonColour(outstandingCardNo)} cardNoOutstandingsBtn ${row.cardNo.includes('ANC') ? 'd-none' : ''}" data-cardno="${row.cardNo}">${row.cardNo}...'s Outstanding: ${outstandingCardNo}</span>
+                        `
                     }
-                    return outstanding
+                    return ''
                 }
             },
         ]
