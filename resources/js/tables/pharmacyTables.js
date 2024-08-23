@@ -105,7 +105,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
                                                         <span class="${p.qtyDispensed || closed ? '': 'billQtySpan'} btn btn-${p.qtyBilled ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}" data-stock="${p.stock}">${p.qtyBilled ? p.qtyBilled+' '+p.unit : 'Bill'}</span>
-                                                        <input class="ms-1 form-control billQtyInput d-none text-secondary" type="number" style="width:6rem;" id="billQtyInput" value="${p.qtyBilled ?? ''}" name="quantity" id="quantity">
+                                                        <input class="ms-1 form-control billQtyInput d-none text-secondary" type="number" style="width:6rem;" id="billQtyInput" value="${p.qtyBilled == 0 ? '' : p.qtyBilled}" name="quantity" id="quantity">
                                                         <span class="${closed ? '' : 'holdSpan'} btn btn-${p.reason ? 'danger' : 'outline-primary'} ms-1 ${p.qtyBilled ? 'd-none' : ''}" data-id="${p.id}">${p.reason ? p.reason : 'Hold'}</span>
                                                 
                                                         <select class ="form-select form-select-md holdSpanSelect d-none ms-1">
@@ -130,7 +130,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
                                                         <span class="${closed ? '' : p.qtyBilled ? 'dispenseQtySpan' : ''} btn btn-${p.qtyDispensed ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}" data-qtybilled="${p.qtyBilled}" data-stock="${p.stock}">${p.qtyDispensed ? 'Dispensed: '+p.qtyDispensed : 'Dispense'}</span>
-                                                        <input class="ms-1 form-control dispenseQtyInput d-none text-secondary" type="number" style="width:6rem;" value="${p.qtyDispensed ?? ''}" name="quantity" id="quantity">
+                                                        <input class="ms-1 form-control dispenseQtyInput d-none text-secondary" type="number" style="width:6rem;" value="${p.qtyDispensed == 0 ? '' : p.qtyDispensed}" name="quantity" id="quantity">
                                                     </div>
                                                 </td>
                                                 <td class="text-secondary">By: ${p.dispensedBy}</td>

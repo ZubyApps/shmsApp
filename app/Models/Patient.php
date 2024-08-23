@@ -104,6 +104,16 @@ class Patient extends Model
         return $allPayments;
     }
 
+    public function allPaidPrescriptions()
+    {
+        $allPayments = 0;
+        foreach($this->visits as $visit){
+            $allPayments += $visit->totalPaidPrescriptions();
+        }
+
+        return $allPayments;
+    }
+
     public function allPaid()
     {
         $allPaid = 0;

@@ -307,7 +307,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     const hmoDoneBy = patientBillBtn.getAttribute('data-hmodoneby')
                     makeBillModal._element.querySelector('#patient').value = patientBillBtn.getAttribute('data-patient')
                     makeBillModal._element.querySelector('#sponsor').value = patientBillBtn.getAttribute('data-sponsor') + ' - ' + patientBillBtn.getAttribute('data-sponsorcat')
-                    makeBillModal._element.querySelector('#staffId').value = patientBillBtn.getAttribute('data-staffId')
+                    makeBillModal._element.querySelector('#staffId').value = patientBillBtn.getAttribute('data-staffId') ?? ''
                     makeBillModal._element.querySelector('#age').value     = patientBillBtn.getAttribute('data-age')
                     makeBillModal._element.querySelector('#sex').value     = patientBillBtn.getAttribute('data-sex')
                     makeBillModal._element.querySelector('#phone').value   = patientBillBtn.getAttribute('data-phone')
@@ -753,7 +753,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 saveReminderBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            // hmoReportsTable ? hmoReportsTable.draw(false) : ''
             saveReminderBtn.removeAttribute('disabled')
             console.log(error.response.data.message)
         })
@@ -768,8 +767,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const hmoBillInput      = hmoBillSpan.parentElement.querySelector('.hmoBillInput')
             hmoBillSpan.classList.add('d-none')
             hmoBillInput.classList.remove('d-none')
-            // hmoBillInput.focus()
-            resetFocusEndofLine(hmoBillInput)
+            hmoBillInput.focus()
             
             hmoBillInput.addEventListener('blur', function () {
                 makeBillFieldset.setAttribute('disabled', 'disabled')
@@ -799,13 +797,13 @@ window.addEventListener('DOMContentLoaded', function () {
             const reconciliationFieldset    = document.querySelector('#reconciliationFieldset')
             const enterCapitationPaymentBtn = event.target.closest('.enterCapitationPaymentBtn')
             const addSpanBtn                = event.target.closest('.addSpanBtn')
+            const payBulkSpan               = event.target.closest('.payBulkSpan')
     
             if (payBtnSpan){
                 const prescriptionId    = payBtnSpan.getAttribute('data-id')
                 const payInput          = payBtnSpan.parentElement.querySelector('.payInput')
                 payBtnSpan.classList.add('d-none')
                 payInput.classList.remove('d-none')
-                // resetFocusEndofLine(payInput)
                 payInput.focus()
                 
                 payInput.addEventListener('blur', function () {
@@ -860,6 +858,40 @@ window.addEventListener('DOMContentLoaded', function () {
                 capitationPaymentModal._element.querySelector('#monthYear').value = enterCapitationPaymentBtn.getAttribute('data-monthYear')
                 saveCapitationPaymentBtn.setAttribute('data-id', enterCapitationPaymentBtn.getAttribute('data-id'))
                 capitationPaymentModal.show()
+            }
+
+            if (payBulkSpan){
+                const visitId           = payBulkSpan.getAttribute('data-id')
+                const totalHmoBill      = payBulkSpan.getAttribute('data-totalhmobill')
+                const payBulkInput      = payBulkSpan.parentElement.querySelector('.payBulkInput')
+                payBulkSpan.classList.add('d-none')
+                payBulkInput.classList.remove('d-none')
+                payBulkInput.focus()
+                
+                payBulkInput.addEventListener('blur', function () {
+                    if (!payBulkInput.value || payBulkInput.value < 1){
+                        reconciliationTable ?  reconciliationTable.draw(false) : ''
+                        return
+                    }
+                    if (+totalHmoBill > payBulkInput.value){
+                        alert('Cannot use "Pay Bulk" if the payment is less than the HMO bill. Pls enter it manually')
+                        resetFocusEndofLine(payBulkInput)
+                        return
+                    }
+                    reconciliationFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/hmo/paybulk/${visitId}`, {bulkPayment: payBulkInput.value})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            reconciliationTable ?  reconciliationTable.draw(false) : ''
+                            reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
+                        }
+                    })
+                    .catch((error) => {
+                        reconciliationTable ?  reconciliationTable.draw(false) : ''
+                        reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
+                        console.log(error)
+                    })                
+                })
             }
         })    
     })

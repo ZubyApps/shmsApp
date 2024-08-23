@@ -9,7 +9,6 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 Class PaymentService
 {
@@ -63,15 +62,24 @@ Class PaymentService
     //     }, $totalPayments);
     // }
 
-    public function prescriptionsPaymentSeive(mixed $totalPayments, mixed $prescriptions): void
+    public function prescriptionsPaymentSeive(mixed $totalPayments, mixed $prescriptions, bool $hmoFlag = false): void
     {
-        array_reduce([$prescriptions], function($carry, $prescription) {
-            foreach($prescription as $p){
-                $bill = $p->approved ? 0 : $p->hms_bill;
+        array_reduce([$prescriptions], function($carry, $prescription) use($prescriptions, $totalPayments, $hmoFlag) {
+
+            $totalBill  = $prescriptions->sum('hms_bill');
+            $pCount     = $prescriptions->count();
+            $billToUse  = $hmoFlag ? 'hmo_bill' : 'hms_bill';
+
+            foreach($prescription as $key => $p){
+                $bill = $p->approved && !$hmoFlag ? 0 : $p->$billToUse;
                 $paid = $p->paid;
                 
                 if ($carry >= $bill){
-                    $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
+                    if ($totalPayments > $totalBill && $key === $pCount - 1){
+                        $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $carry ]);
+                    } else {
+                        $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
+                    }
                 }
 
                 if ($carry < $bill && $carry > 0){
@@ -104,13 +112,21 @@ Class PaymentService
     
     public function prescriptionsPaymentSeiveNhis(mixed $totalPayments, mixed $prescriptions): void
     {
-        array_reduce([$prescriptions], function($carry, $prescription) {
-            foreach($prescription as $p){
+        array_reduce([$prescriptions], function($carry, $prescription) use($prescriptions, $totalPayments) {
+
+            $totalBill = $prescriptions->sum('hms_bill')/10;
+            $pCount = $prescriptions->count();
+
+            foreach($prescription as $key => $p){
                 $bill = $p->approved ? $p->nhis_bill : $p->hms_bill;
                 $paid = $p->paid;
                 
                 if ($carry >= $bill){
-                    $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
+                    if ($totalPayments > $totalBill && $key === $pCount - 1){
+                        $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $carry ]);
+                    } else {
+                        $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
+                    }
                 }
 
                 if ($carry < $bill && $carry > 0){
@@ -136,15 +152,15 @@ Class PaymentService
             $totalPayments  = $payment->visit->totalPayments();
             $visit          = $payment->visit;
 
-            $payment->visit->update([
+            $visit->update([
                 'total_paid'        => $visit->sponsor->category_name == 'HMO' ? $visit->totalPaidPrescriptions() : $totalPayments,
                 'total_hms_bill'    => $visit->totalHmsBills(),
                 'total_nhis_bill'   => $visit->sponsor->category_name == 'NHIS' ? $visit->totalNhisBills() : 0,
             ]);
 
-            $prescriptions = $payment->visit->prescriptions;
+            $prescriptions = $visit->prescriptions;
 
-            if ($payment->visit->sponsor->category_name == 'NHIS'){
+            if ($visit->sponsor->category_name == 'NHIS'){
                 $this->prescriptionsPaymentSeiveNhis($totalPayments, $prescriptions);
             } else {
                 $this->prescriptionsPaymentSeive($totalPayments, $prescriptions);

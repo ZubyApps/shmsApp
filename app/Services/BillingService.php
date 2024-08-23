@@ -215,13 +215,13 @@ class BillingService
                 'nhisSubTotal'          => ($visit->totalNhisBills()) ?? 0,
                 'nhisNetTotal'          => ($visit->totalNhisBills() - $visit->discount)  ?? 0,
                 'netTotal'              => $visit->totalHmsBills() - $visit->discount,
-                'totalPaid'             => $visit->totalPayments() ?? 0,
-                'balance'               => $visit->totalHmsBills() - $visit->discount - $visit->totalPayments() ?? 0,
-                'nhisBalance'           => $this->sponsorsAllowed($visit->sponsor, ['NHIS']) ? (($visit->totalNhisBills() - $visit->discount)) - $visit->totalPayments() ?? 0 : 'N/A',
-                'outstandingPatientBalance'  => $visit->patient->allHmsBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments(),
-                'outstandingSponsorBalance'  => $this->sponsorsAllowed($visit->sponsor, ['Family', 'Retainership']) ? $visit->sponsor->allHmsBills() - $visit->sponsor->allDiscounts() - $visit->sponsor->allPayments() : null,
+                'totalPaid'             => $this->determinePayV($visit) ?? 0,
+                'balance'               => $visit->totalHmsBills() - $visit->discount - $this->determinePayV($visit) ?? 0,
+                'nhisBalance'           => $this->sponsorsAllowed($visit->sponsor, ['NHIS']) ? (($visit->totalNhisBills() - $visit->discount)) - $this->determinePayV($visit) ?? 0 : 'N/A',
+                'outstandingPatientBalance'  => $visit->patient->allHmsBills() - $visit->patient->allDiscounts() - $this->determinePayP($visit->patient),
+                'outstandingSponsorBalance'  => $this->sponsorsAllowed($visit->sponsor, ['Family', 'Retainership']) ? $visit->sponsor->allHmsBills() - $visit->sponsor->allDiscounts() - $this->determinePayS($visit->sponsor) : null,
                 'outstandingCardNoBalance'   => $this->sponsorsAllowed($visit->sponsor, ['Family', 'Retainership', 'NHIS', 'Individual']) ? $this->sameCardNoOustandings($visit) : null,
-                'outstandingNhisBalance'=> $this->sponsorsAllowed($visit->sponsor, ['NHIS']) ? $visit->patient->allNhisBills() - $visit->patient->allDiscounts() - $visit->patient->allPayments() : null,
+                'outstandingNhisBalance'=> $this->sponsorsAllowed($visit->sponsor, ['NHIS']) ? $visit->patient->allNhisBills() - $visit->patient->allDiscounts() - $this->determinePayP($visit->patient) : null,
                 'payMethods'            => $this->payMethodService->list(),
                 'notBilled'             => $visit->prescriptions->where('qty_billed', null)->count(),
                 'user'                  => auth()->user()->designation->access_level > 4,
@@ -241,6 +241,7 @@ class BillingService
                     'hmoNote'           => $prescription->hmo_note ?? '',
                     'statusBy'          => $prescription->approvedBy?->username ?? $prescription->rejectedBy?->username ?? '',
                     'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
+                    'paid1'              => $prescription->paid,
                     'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
                     'isInvestigation'   => $prescription->resource->category == 'Investigations',
                     'thirdParty'        => ThirdParty::whereRelation('thirdPartyServies','prescription_id', $prescription->id)->first()?->short_name ?? ''
@@ -271,10 +272,25 @@ class BillingService
         foreach($patients as $patient){
            $allBills        += $nhis ? $patient->allNhisBills() : $patient->allHmsBills();
            $allDiscounts    += $patient->allDiscounts();
-           $allPayments     += $patient->allPayments();
+           $allPayments     += $patient->allPaidPrescriptions() > $patient->allPayments() ? $patient->allPaidPrescriptions() : $patient->allPayments() ;
         }
 
         return $allBills - $allDiscounts - $allPayments;
+    }
+
+    public function determinePayV($visit)
+    {
+        return $visit->totalPaidPrescriptions() > $visit->totalPayments() ? $visit->totalPaidPrescriptions() : $visit->totalPayments();
+    }
+
+    public function determinePayS($sponsor)
+    {
+        return $sponsor->allPaidPrescriptions() > $sponsor->allPayments() ? $sponsor->allPaidPrescriptions() : $sponsor->allPayments();
+    }
+
+    public function determinePayP($patient)
+    {
+        return $patient->allPaidPrescriptions() > $patient->allPayments() ? $patient->allPaidPrescriptions() : $patient->allPayments();
     }
 
     public function getPatientPaymentTable(DataTableQueryParams $params, $data)

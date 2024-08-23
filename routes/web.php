@@ -279,6 +279,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/summary', [HmoController::class, 'loadReportSummary']);
             Route::get('/reconciliation', [HmoController::class, 'loadReconciliationTable']);
             Route::patch('/pay/{prescription}', [HmoController::class, 'reconciliationPayments']);
+            Route::patch('/paybulk/{visit}', [HmoController::class, 'reconciliationBulkPayments']);
             Route::get('/capitation', [HmoController::class, 'loadCapitationReconciliation']);
     
         });

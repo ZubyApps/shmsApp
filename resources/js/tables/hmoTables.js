@@ -289,7 +289,7 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
                     <span class="${row.hmoDoneBy ? 'unmarkSent' : 'hmoBillSpan'} btn btn-white" data-id="${row.id}" data-hmodone"${row.hmoDoneBy}">${row.rejected && !data ? 'Not approved' : data ?? 'Bill'}</span>
-                    <input class="ms-1 form-control hmoBillInput d-none" id="hmoBillInput" value="${data ?? ''}">
+                    <input class="ms-1 form-control hmoBillInput d-none" id="hmoBillInput" value="${data == 0 ? '' : data}">
                 </div>
                 `}
             },
@@ -372,14 +372,19 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
         orderMulti: false,
         lengthMenu:[25, 50, 100, 150, 200],
         searchDelay: 1000,
-        dom: 'lfrtip<"my-5 text-center "B>',
+        dom: 'l<"my-1 text-center "B>frtip',
         buttons: [
-            {extend: 'copy', className: 'btn-primary'},
-            {extend: 'csv', className: 'btn-primary'},
-            {extend: 'excel', className: 'btn-primary'},
-            {extend: 'pdfHtml5', className: 'btn-primary'},
-            {extend: 'print', className: 'btn-primary'},
-             ],
+            {
+                extend:'colvis',
+                text:'Show/Hide',
+                className:'btn btn-primary'       
+            },
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+        ],
         language: {
             emptyTable: 'No report'
         },
@@ -397,8 +402,14 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
         columns: [
             {data: row => `<span class="btn text-decoration-underline showVisitsBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}" ${row.yearMonth ? `data-yearmonth="${row.year + '-' + row.month}"` : ''}>${row.sponsor + '-' + row.category}</span>`},
             {data: row => row.monthName + ' ' + row.year},
-            {data: "visitsCount"},
-            {data: "billsSent"},
+            {
+                visible: false,
+                data: "visitsCount"
+            },
+            {
+                visible: false,
+                data: "billsSent"
+            },
             {data: row => account.format(row.totalHmoBill)},
             {data: row => account.format(row.totalHmsBill)},
             {data: row => account.format(row.totalHmoBill - row.totalHmsBill)},
@@ -461,6 +472,12 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to, date) =>
             {data: row => account.format(row.totalNhisBill)},
             {data: row => account.format(row.totalCapitation)},
             {data: row => account.format(row.totalPaid)},
+            {data : row => 
+                `<div class="d-flex text-secondary">
+                    <span class="btn payBulkSpan ${row.sponsorCategory == 'NHIS' ? 'd-none' : ''}" data-id="${row.id}" data-totalhmobill="${row.totalHmoBill}">Pay Bulk</span>
+                    <input class="ms-1 form-control payBulkInput d-none text-secondary" type="number" style="width:6rem;" value="${row.totalPaid == 0 ? '' : row.totalPaid}" name="bulkPayment" id="bulkPayment">
+                </div>`
+            }
         ]
     });
 
@@ -506,7 +523,7 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to, date) =>
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
                                                         <span class="btn payBtnSpan" data-id="${p.id}">${p.paid ? p.paid : 'Pay'}</span>
-                                                        <input class="ms-1 form-control payInput d-none text-secondary" type="number" style="width:6rem;" value="${p.paid ?? ''}" name="amountPaid" id="amountPaid">
+                                                        <input class="ms-1 form-control payInput d-none text-secondary" type="number" style="width:6rem;" value="${p.paid == 0 ? '' : p.paid}" name="amountPaid" id="amountPaid">
                                                         <span class="ms-1 ${p.paid > 0 ? '' : 'd-none'} btn addSpanBtn text-primary" data-id="${p.id}">Add </span> <input class="ms-1 form-control addAmount d-none" type="number" style="width:6rem;" name="addAmount" id="addAmount">
                                                     </div>
                                                 </td>

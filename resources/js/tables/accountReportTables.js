@@ -268,6 +268,19 @@ const getVisitSummaryTable1 = (tableId, startDate, endDate, date) => {
         search:true,
         searchDelay: 1000,
         "sAjaxDataProp": "data.data",
+        dom: 'l<"my-1 text-center "B>frtip',
+        buttons: [
+            {
+                extend:'colvis',
+                text:'Show/Hide',
+                className:'btn btn-primary'       
+            },
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+        ],
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
@@ -280,12 +293,22 @@ const getVisitSummaryTable1 = (tableId, startDate, endDate, date) => {
             $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
             $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
             $( api.column(10).footer() ).html(account.format(api.column( 10, {page:'current'} ).data().sum()));
+            $( api.column(12).footer() ).html(account.format(api.column( 12, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: "category"},
-            {data: row => account.format(row.sponsorCount)},
-            {data: row => account.format(row.patientsCount)},
-            {data: row => account.format(row.visitCount)},
+            {
+                visible: false,
+                data: row => account.format(row.sponsorCount)
+            },
+            {
+                visible: false,
+                data: row => account.format(row.patientsCount)
+            },
+            {
+                visible: false,
+                data: row => account.format(row.visitCount)
+            },
             {data: row => account.format(row.visitConsulted)},
             {data: row => account.format(row.totalHmsBill)},
             {data: row => account.format(row.totalHmoBill)},
@@ -293,6 +316,18 @@ const getVisitSummaryTable1 = (tableId, startDate, endDate, date) => {
             {data: row => account.format(row.totalPaid)},
             {data: row => account.format(row.totalCapitation)},
             {data: row => account.format((+row.totalPaid + +row.totalCapitation) - +row.totalHmsBill)},
+            {data: row => () => {
+                let debt = ((((+row.totalPaid + +row.totalCapitation) - +row.totalHmsBill)/row.totalHmsBill) * 100).toFixed(1) 
+                return `<span class="text-${debt <= -9.6 ? 'danger': debt >= -9.5 && debt <= -7.5 ? 'primary' : 'success' } fw-bold">${debt + '%'}</span>`
+            },
+            },
+            {data: row => account.format((+row.totalPaid + +row.totalCapitation) - +row.totalHmoBill)},
+            {data: row => () => {
+                const sponsors = ['NHIS', 'HMO']
+                let debt = ((((+row.totalPaid + +row.totalCapitation) - +row.totalHmoBill)/row.totalHmoBill) * 100).toFixed(1) 
+                return `<span class="text-${debt <= -9.6 ? 'danger': debt >= -9.5 && debt <= -7.5 ? 'primary' : 'success' } fw-bold ${!sponsors.includes(row.category) ? 'd-none' : ''}">${debt + '%'}</span>`
+            },
+            },
         ]
     })
 

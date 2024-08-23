@@ -47,11 +47,13 @@
                                                 <th>Total Nhis Bill</th>
                                                 <th>Total Capitation</th>
                                                 <th>Total Paid</th>
+                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>
                                         <tfoot>
                                             <tr>
+                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>

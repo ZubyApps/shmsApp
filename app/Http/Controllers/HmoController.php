@@ -152,6 +152,11 @@ class HmoController extends Controller
         return $this->hmoService->savePayment($request, $prescription, $request->user());
     }
 
+    public function reconciliationBulkPayments(Request $request, Visit $visit)
+    {
+        return $this->hmoService->saveBulkPayment($request, $visit);
+    }
+
     public function loadCapitationReconciliation(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);

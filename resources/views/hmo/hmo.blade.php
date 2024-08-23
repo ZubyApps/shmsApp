@@ -334,11 +334,11 @@
                                     <th>Bills Sent</th>
                                     <th>HMO Bill</th>
                                     <th>HMS Bill</th>
-                                    <th>Bill Difference</th>
+                                    <th>Bill Diff</th>
                                     <th>Total Paid</th>
-                                    <th>Paid - HMO Bill</th>
-                                    <th>Paid - HMS Bill</th>
-                                    <th>Sent Status</th>
+                                    <th>Paid - HMO</th>
+                                    <th>Paid - HMS</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>

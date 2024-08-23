@@ -17,8 +17,6 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-use function Laravel\Prompts\search;
-
 class HmoService
 {
     public function __construct(
@@ -196,7 +194,7 @@ class HmoService
                 'patient'           => $visit->patient->patientId(),
                 'age'               => $visit->patient->age(),
                 'sex'               => $visit->patient->sex,
-                'staffId'           => $visit->patient?->staff_id,
+                'staffId'           => $visit->patient?->staff_id ?? '',
                 'phone'             => $visit->patient?->phone,
                 'doctor'            => $visit->doctor?->username,
                 'ancRegId'          => $visit->antenatalRegisteration?->id,
@@ -302,7 +300,7 @@ class HmoService
                 'note'              => $prescription->note,
                 'hmsBill'           => $prescription->hms_bill ?? '',
                 'hmsBillDate'       => $prescription->hms_bill_date ? (new Carbon($prescription->hms_bill_date))->format('d/m/y g:ia') : '',
-                'hmoBill'           => $prescription->hmo_bill,
+                'hmoBill'           => $prescription->hmo_bill ?? '',
                 'hmoBillBy'         => $prescription->hmoBillBy?->username,
                 'paidHms'           => $prescription->visit->totalPayments() ?? '',
                 'approved'          => $prescription->approved,
@@ -672,11 +670,6 @@ class HmoService
                             ->where('visits.consulted', '!=', null)
                             ->where('visits.hmo_done_by', '!=', null)
                             ->WhereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                            // ->where(function (QueryBuilder $query) {
-                            //     $query->where('sponsors.category_name', 'HMO')
-                            //     ->orWhere('sponsors.category_name', 'NHIS' )
-                            //     ->orWhere('sponsors.category_name', 'Retainership' );
-                            // })
                             ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
                             ->orderBy('sponsor')
                             ->orderBy('visitsCount')
@@ -695,11 +688,6 @@ class HmoService
                 ->where('visits.hmo_done_by', '!=', null)
                 ->whereMonth('visits.created_at', $date->month)
                 ->whereYear('visits.created_at', $date->year)
-                // ->where(function (QueryBuilder $query) {
-                //     $query->where('sponsors.category_name', 'HMO')
-                //     ->orWhere('sponsors.category_name', 'NHIS' )
-                //     ->orWhere('sponsors.category_name', 'Retainership' );
-                // })
                 ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
                 ->orderBy('sponsor')
                 ->orderBy('visitsCount')
@@ -715,11 +703,6 @@ class HmoService
                             ->where('sponsors.category_name', $data->category)
                             ->whereMonth('visits.created_at', $current->month)
                             ->whereYear('visits.created_at', $current->year)
-                            // ->where(function (QueryBuilder $query) {
-                            //     $query->where('sponsors.category_name', 'HMO')
-                            //     ->orWhere('sponsors.category_name', 'NHIS' )
-                            //     ->orWhere('sponsors.category_name', 'Retainership' );
-                            // })
                             ->groupBy('sponsor', 'id', 'category', 'monthName', 'year')
                             ->orderBy('sponsor')
                             ->orderBy('visitsCount')
@@ -1068,25 +1051,39 @@ class HmoService
 
     public function savePayment(Request $data, Prescription $prescription, User $user)
     {
-        
         return DB::transaction(function () use($data, $prescription, $user) {
-            
+
             $prescription->update([
                 'paid'      => $data->amountPaid,
                 'paid_by'   => $user->id
             ]);
-            $prescription->visit->total_paid = $this->determineValueOfTotalPaid($prescription->visit);
-            $prescription->visit->save();
+
+            $visit = $prescription->visit;
+
+            $visit->total_paid = $visit->totalPaidPrescriptions();
+            $visit->save();
 
             return $prescription;
+        });
+    }
+
+    public function saveBulkPayment(Request $data, Visit $visit)
+    {
+        return DB::transaction(function () use($data, $visit) {
+            $prescriptions  = $visit->prescriptions;
+
+            $this->paymentService->prescriptionsPaymentSeive((float)$data->bulkPayment, $prescriptions, true);
+
+            $visit->total_paid = $visit->totalPaidPrescriptions();
+            $visit->save();
+
+            return $visit;
         });
     }
 
     public function determineValueOfTotalPaid(Visit $visit)
     {
         return $visit->totalPaidPrescriptions();
-        // return $visit->sponsor->category_name == 'NHIS' ? $visit->totalPaidPrescriptions() : 
-        // $visit->totalPaidPrescriptions() +  $visit->totalPayments();
     }
 
     public function getNhisSponsorsByDate(DataTableQueryParams $params, $data)

@@ -181,7 +181,7 @@ class PharmacyService
 
             $isNhis = $visit->sponsor->category_name == 'NHIS';
 
-            $isNhis && $bill ? $prescription->update(['nhis_bill' => $nhisBill($bill)]) : '';
+            $isNhis ? $prescription->update(['nhis_bill' => $nhisBill($bill)]) : '';
 
             $prescription->visit->update([
                 'total_hms_bill'    => $visit->totalHmsBills(),

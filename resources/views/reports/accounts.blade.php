@@ -260,14 +260,20 @@
                                 <th>HMO Bill</th>
                                 <th>NHIS Bill</th>
                                 <th>Paid</th>
-                                <th>Capitation</th>
-                                <th>(Paid+Captation) - HMS</th>
+                                <th>Cap</th>
+                                <th>(Paid+Cap) - HMS</th>
+                                <th>HMS Debt%</th>
+                                <th>(Paid+Cap) - HMO</th>
+                                <th>HMO Debt%</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                         <tfoot class="fw-bolder text-primary">
                             <tr>
                                 <td class="text-center">Total</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
