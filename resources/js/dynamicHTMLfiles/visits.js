@@ -136,6 +136,7 @@ const visitDetails = (visitIteration, numberConverter, visit, viewer, isAnc) => 
                                                     <th></th>
                                                     <th></th>
                                                     <th></th>
+                                                    <th></th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>

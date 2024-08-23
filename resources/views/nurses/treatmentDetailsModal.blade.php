@@ -154,7 +154,7 @@
                     </div>
                 </div>
                 <div class="modal-footer px-5">
-                    <button type="button" class="btn btn-primary historyBtn">
+                    <button type="button" class="btn btn-primary historyBtn {{ $isHmo ? 'd-none' : '' }}">
                         <i class=" bi bi-arrow-up-left-circle-fill"></i>
                         Consultation History
                     </button>

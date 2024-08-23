@@ -336,8 +336,11 @@
                                     <th>HMS Bill</th>
                                     <th>Bill Diff</th>
                                     <th>Total Paid</th>
-                                    <th>Paid - HMO</th>
+                                    <th>Total Cap</th>
                                     <th>Paid - HMS</th>
+                                    <th>Paid - HMO</th>
+                                    <th>HMS Debt%</th>
+                                    <th>HMO Debt%</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -345,6 +348,9 @@
                             </tbody>
                             <tfoot>
                                 <tr class="">
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
+                                    <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>

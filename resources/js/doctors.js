@@ -858,7 +858,6 @@ window.addEventListener('DOMContentLoaded', function () {
                             resetFocusEndofLine(billQtyInput)
                             return
                         }
-                        // billingDispenseFieldset.setAttribute('disabled', 'disabled')
                         http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value}, {'html' : div})
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {

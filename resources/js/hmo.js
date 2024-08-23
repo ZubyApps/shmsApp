@@ -451,16 +451,17 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.patch(`/hmo/approve/${prescriptionId}`, {note: noteInput.value})
                     .then((response) => {
                         if (response.status == 200) {
-                            table.draw()
+                            table.draw(false)
                             table.on('draw', removeDisabled(approvalFieldset))                        
                         }
                         if (response.status == 222){
-                            table.draw()
                             alert(response.data)
+                            table.draw(false)
                             table.on('draw', removeDisabled(approvalFieldset))   
                         }
                     })
                         .catch((error) => {
+                            table.draw(false)
                             console.log(error.response.data)
                             table.on('draw', removeDisabled(approvalFieldset))
                             
@@ -481,18 +482,18 @@ window.addEventListener('DOMContentLoaded', function () {
                             http.patch(`/hmo/reject/${prescriptionId}`, {note: noteInput.value})
                             .then((response) => {
                                 if (response.status >= 200 || response.status <= 300) {
-                                    table.draw()
+                                    table.draw(false)
                                     table.on('draw', removeDisabled(approvalFieldset))
                                 }
                             })
                             .catch((error) => {
                                 console.log(error)
                                 rejectBtn.removeAttribute('disabled')
-                                table.draw()
+                                table.draw(false)
                                 table.on('draw', removeDisabled(approvalFieldset))
                             })
                         } else{
-                            table.draw()
+                            table.draw(false)
                             table.on('draw', removeDisabled(approvalFieldset))
                         }
                     })
@@ -504,14 +505,14 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.patch(`/hmo/reset/${prescriptionId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
-                            table.draw()
+                            table.draw(false)
                             table.on('draw', removeDisabled(approvalFieldset))
                         }
                     })
                     .catch((error) => {
                         console.log(error)
                         resetBtn.removeAttribute('disabled')
-                        table.draw()
+                        table.draw(false)
                         table.on('draw', removeDisabled(approvalFieldset))
                     })
                 }
@@ -767,7 +768,8 @@ window.addEventListener('DOMContentLoaded', function () {
             const hmoBillInput      = hmoBillSpan.parentElement.querySelector('.hmoBillInput')
             hmoBillSpan.classList.add('d-none')
             hmoBillInput.classList.remove('d-none')
-            hmoBillInput.focus()
+            // hmoBillInput.focus()
+            resetFocusEndofLine(hmoBillInput)
             
             hmoBillInput.addEventListener('blur', function () {
                 makeBillFieldset.setAttribute('disabled', 'disabled')
@@ -804,7 +806,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 const payInput          = payBtnSpan.parentElement.querySelector('.payInput')
                 payBtnSpan.classList.add('d-none')
                 payInput.classList.remove('d-none')
-                payInput.focus()
+                // payInput.focus()
+                resetFocusEndofLine(payInput)
                 
                 payInput.addEventListener('blur', function () {
                     reconciliationFieldset.setAttribute('disabled', 'disabled')
@@ -863,6 +866,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (payBulkSpan){
                 const visitId           = payBulkSpan.getAttribute('data-id')
                 const totalHmoBill      = payBulkSpan.getAttribute('data-totalhmobill')
+                const totalPaid         = payBulkSpan.getAttribute('data-totalpaid')
                 const payBulkInput      = payBulkSpan.parentElement.querySelector('.payBulkInput')
                 payBulkSpan.classList.add('d-none')
                 payBulkInput.classList.remove('d-none')
@@ -877,6 +881,13 @@ window.addEventListener('DOMContentLoaded', function () {
                         alert('Cannot use "Pay Bulk" if the payment is less than the HMO bill. Pls enter it manually')
                         resetFocusEndofLine(payBulkInput)
                         return
+                    }
+                    if (+totalPaid > 0){
+                        alert('Payment(s) already exist! Please enter any additions manually')
+                            payBulkSpan.classList.remove('d-none')
+                            payBulkInput.classList.add('d-none')
+                            // resetFocusEndofLine(payBulkInput)
+                            return
                     }
                     reconciliationFieldset.setAttribute('disabled', 'disabled')
                     http.patch(`/hmo/paybulk/${visitId}`, {bulkPayment: payBulkInput.value})

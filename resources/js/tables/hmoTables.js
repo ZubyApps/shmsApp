@@ -361,6 +361,7 @@ const getSentBillsTable = (tableId, startDate, endDate, date, filterByOpen) => {
 }
 
 const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
+    const sponsors = ['NHIS', 'HMO']
     const reportSummayTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/summary', data: {
@@ -414,8 +415,28 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
             {data: row => account.format(row.totalHmsBill)},
             {data: row => account.format(row.totalHmoBill - row.totalHmsBill)},
             {data: row => account.format(row.totalPaid)},
-            {data: row => account.format(row.totalPaid - row.totalHmoBill)},
-            {data: row => account.format(row.totalPaid - row.totalHmsBill)},
+            {data: row => account.format(+row.totalCapitation)},
+            {data: row => account.format((+row.totalPaid + +row.totalCapitation + +row.discount) - +row.totalHmsBill)},
+            {data: row => account.format((+row.totalPaid + +row.totalCapitation + +row.discount) - +row.totalHmoBill)},
+            {data: row => () => {
+                if (row.totalHmsBill == 0){
+                    return 'No bill'
+                }
+                let debt = (((+row.totalHmsBill - (+row.totalPaid + +row.totalCapitation + +row.discount))/row.totalHmsBill) * 100).toFixed(1)
+                return  `<span class="text-${debt >= 10 ? 'danger': debt <= 10 && debt >= 7 ? 'primary' : 'success' } fw-bold">${debt + '%'}</span>`
+                }
+            },
+            {data: row => () => {
+                if (!sponsors.includes(row.category)){
+                    return 'N/A'
+                }
+                if (row.totalHmoBill == 0){
+                    return 'No bill'
+                }
+                let debt = (((+row.totalHmoBill - (+row.totalPaid + +row.totalCapitation + +row.discount))/row.totalHmoBill) * 100).toFixed(1)
+                return  `<span class="text-${debt >= 10 ? 'danger': debt <= 10 && debt >= 7 ? 'primary' : 'success' } fw-bold">${debt + '%'}</span>`
+                }
+            },
             {data: "reminderSet",
                 render: (data, type, row) => {
                     if (data){
@@ -474,7 +495,7 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to, date) =>
             {data: row => account.format(row.totalPaid)},
             {data : row => 
                 `<div class="d-flex text-secondary">
-                    <span class="btn payBulkSpan ${row.sponsorCategory == 'NHIS' ? 'd-none' : ''}" data-id="${row.id}" data-totalhmobill="${row.totalHmoBill}">Pay Bulk</span>
+                    <span class="btn payBulkSpan ${row.sponsorCategory == 'NHIS' ? 'd-none' : ''}" data-id="${row.id}" data-totalhmobill="${row.totalHmoBill}" data-totalpaid="${row.totalPaid}">Pay Bulk</span>
                     <input class="ms-1 form-control payBulkInput d-none text-secondary" type="number" style="width:6rem;" value="${row.totalPaid == 0 ? '' : row.totalPaid}" name="bulkPayment" id="bulkPayment">
                 </div>`
             }

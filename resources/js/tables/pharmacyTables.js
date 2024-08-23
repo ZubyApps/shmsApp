@@ -60,6 +60,10 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
         language: {
             emptyTable: 'No Consultations'
         },
+        rowCallback: (row, data) => {
+                row.classList.add('table-light')
+            return row
+        },
         columns: [
             {data: "consultBy"},
             {data: row =>  `<span class="text-primary fw-semibold">${row.diagnosis}</span>`},

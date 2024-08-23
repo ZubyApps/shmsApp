@@ -11,6 +11,7 @@ $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 
 const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
+const sponsors = ['NHIS', 'HMO']
 
 const getPayMethodsSummmaryTable = (tableId, startDate, endDate, date) => {
     const summaryTable = new DataTable(`#${tableId}`, {
@@ -293,7 +294,7 @@ const getVisitSummaryTable1 = (tableId, startDate, endDate, date) => {
             $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
             $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
             $( api.column(10).footer() ).html(account.format(api.column( 10, {page:'current'} ).data().sum()));
-            $( api.column(12).footer() ).html(account.format(api.column( 12, {page:'current'} ).data().sum()));
+            $( api.column(11).footer() ).html(account.format(api.column( 11, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: "category"},
@@ -316,17 +317,25 @@ const getVisitSummaryTable1 = (tableId, startDate, endDate, date) => {
             {data: row => account.format(row.totalPaid)},
             {data: row => account.format(row.totalCapitation)},
             {data: row => account.format((+row.totalPaid + +row.totalCapitation) - +row.totalHmsBill)},
+            {data: row => sponsors.includes(row.category) ? account.format((+row.totalPaid + +row.totalCapitation) - +row.totalHmoBill) : 'N/A'},
             {data: row => () => {
-                let debt = ((((+row.totalPaid + +row.totalCapitation) - +row.totalHmsBill)/row.totalHmsBill) * 100).toFixed(1) 
-                return `<span class="text-${debt <= -9.6 ? 'danger': debt >= -9.5 && debt <= -7.5 ? 'primary' : 'success' } fw-bold">${debt + '%'}</span>`
+                if (row.totalHmsBill == 0){
+                    return 'No bill'
+                }
+                let debt = (((+row.totalHmsBill - (+row.totalPaid + +row.totalCapitation))/row.totalHmsBill) * 100).toFixed(1) 
+                return `<span class="text-${debt >= 10 ? 'danger': debt <= 10 && debt >= 7 ? 'primary' : 'success' } fw-bold">${debt + '%'}</span>`
+                },
             },
-            },
-            {data: row => account.format((+row.totalPaid + +row.totalCapitation) - +row.totalHmoBill)},
             {data: row => () => {
-                const sponsors = ['NHIS', 'HMO']
-                let debt = ((((+row.totalPaid + +row.totalCapitation) - +row.totalHmoBill)/row.totalHmoBill) * 100).toFixed(1) 
-                return `<span class="text-${debt <= -9.6 ? 'danger': debt >= -9.5 && debt <= -7.5 ? 'primary' : 'success' } fw-bold ${!sponsors.includes(row.category) ? 'd-none' : ''}">${debt + '%'}</span>`
-            },
+                if (!sponsors.includes(row.category)){
+                    return 'N/A'
+                }
+                if (row.totalHmoBill == 0){
+                    return 'No bill'
+                }
+                let debt = (((+row.totalHmoBill - (+row.totalPaid + +row.totalCapitation))/row.totalHmoBill) * 100).toFixed(1) 
+                return `<span class="text-${debt >= 10 ? 'danger': debt <= 10 && debt >= 7 ? 'primary' : 'success' } fw-bold ">${debt + '%'}</span>`
+                },
             },
         ]
     })
@@ -345,14 +354,19 @@ const getVisitSummaryTable2 = (tableId, startDate, endDate, date) => {
         searchDelay: 1000,
         fixedHeader: true,
         lengthMenu:[50, 100, 150, 200, 500],
-        dom: 'lfrtip<"my-5 text-center "B>',
+        dom: 'l<"my-1 text-center "B>frtip',
         buttons: [
+            {
+                extend:'colvis',
+                text:'Show/Hide',
+                className:'btn btn-primary'       
+            },
             {extend: 'copy', className: 'btn-primary', footer: true},
             {extend: 'csv', className: 'btn-primary', footer: true},
             {extend: 'excel', className: 'btn-primary', footer: true},
             {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
             {extend: 'print', className: 'btn-primary', footer: true},
-             ],
+        ],
         search:true,
         "sAjaxDataProp": "data.data",
         drawCallback: function (settings) {
@@ -366,12 +380,19 @@ const getVisitSummaryTable2 = (tableId, startDate, endDate, date) => {
             $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
             $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
             $( api.column(10).footer() ).html(account.format(api.column( 10, {page:'current'} ).data().sum()));
+            $( api.column(11).footer() ).html(account.format(api.column( 11, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: row => `<span class="btn text-decoration-underline showVisitsBtn tooltip-test" title="show visits" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}" >${row.sponsor}${row.resolved == 0 ? '  <i class="bi bi-check-circle-fill text-primary"></i>' : ''}</span>`},
             {data: "category"},
-            {data: row => account.format(row.patientsCount)},
-            {data: row => account.format(row.visitCount)},
+            {
+                visible: false,
+                data: row => account.format(row.patientsCount)
+            },
+            {
+                visible: false,
+                data: row => account.format(row.visitCount)
+            },
             {data: row => account.format(row.totalHmsBill)},
             {data: row => account.format(row.totalHmoBill)},
             {data: row => account.format(row.totalNhisBill)},
@@ -379,6 +400,26 @@ const getVisitSummaryTable2 = (tableId, startDate, endDate, date) => {
             {data: row => account.format(row.discount)},
             {data: row => account.format(row.totalCapitation)},
             {data: row => account.format((+row.totalPaid + +row.totalCapitation + +row.discount) - +row.totalHmsBill)},
+            {data: row => sponsors.includes(row.category) ? account.format((+row.totalPaid + +row.totalCapitation + +row.discount) - +row.totalHmoBill) : 'N/A'},
+            {data: row => () => {
+                if (row.totalHmsBill == 0){
+                    return 'No bill'
+                }
+                let debt = (((+row.totalHmsBill - (+row.totalPaid + +row.totalCapitation + +row.discount))/row.totalHmsBill) * 100).toFixed(1)
+                return  `<span class="text-${debt >= 10 ? 'danger': debt <= 10 && debt >= 7 ? 'primary' : 'success' } fw-bold">${debt + '%'}</span>`
+                }
+            },
+            {data: row => () => {
+                if (!sponsors.includes(row.category)){
+                    return 'N/A'
+                }
+                if (row.totalHmoBill == 0){
+                    return 'No bill'
+                }
+                let debt = (((+row.totalHmoBill - (+row.totalPaid + +row.totalCapitation + +row.discount))/row.totalHmoBill) * 100).toFixed(1)
+                return  `<span class="text-${debt >= 10 ? 'danger': debt <= 10 && debt >= 7 ? 'primary' : 'success' } fw-bold">${debt + '%'}</span>`
+                }
+            },
         ]
     })
 

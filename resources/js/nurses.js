@@ -981,7 +981,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (collapseVisitBtn) {
                 const visitId               = collapseVisitBtn.getAttribute('data-id')
                 const ancRegId              = collapseVisitBtn.getAttribute('data-ancregid')
-                const [getVitalsigns, id]   = collapseVisitBtn.getAttribute('data-isanc') ? [getAncVitalSignsTable, ancRegId] : [getVitalSignsTableByVisit, visitId]
+                const [getVitalsigns, id]   = collapseVisitBtn.getAttribute('data-isanc') == 'true' ? [getAncVitalSignsTable, ancRegId] : [getVitalSignsTableByVisit, visitId]
 
                 if ($.fn.DataTable.isDataTable('#vitalSignsHistory'+visitId)){$('#vitalSignsHistory'+visitId).dataTable().fnDestroy()}
                 if ($.fn.DataTable.isDataTable('#deliveryNoteTableHistory'+visitId)){$('#deliveryNoteTableHistory'+visitId).dataTable().fnDestroy()}
@@ -998,7 +998,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     getPatientsFileTable('patientsFileTableHistory'+visitId, visitId, consultationHistoryModal._element)
                     getbillingTableByVisit('billingTableHistory'+visitId, visitId, consultationHistoryModal._element)
                 }
-                setTimeout(goto, 500)
+                setTimeout(goto, 300)
             }
     
             if (chartMedicationBtn) {
