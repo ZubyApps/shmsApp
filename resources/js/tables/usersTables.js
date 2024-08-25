@@ -24,7 +24,10 @@ const getAllStaffTable = (tableId) => {
         search:true,
         searchDelay: 1000,
         columns: [
-            {data: "name"},
+            {data: row => () => {
+                return `<span>${row.name}<span> ${row.dateOfExit ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-danger" title="Date of Exit ${row.dateOfExit}"></i>` : ''}`
+                }
+            },
             {data: "employed"},
             {data: row =>  `<span class="btn p-0 border-0 deleteDesignationBtn" data-id="${row.id}" data-designationid="${row.designationId}" >${row.designation ?? ''}</span>` },
             {data: "lastLogin"},

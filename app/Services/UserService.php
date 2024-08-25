@@ -130,6 +130,7 @@ class UserService
                 'lastLogout'        => $user->logout ? (new Carbon($user->logout))->format('d/m/Y g:ia') : '',
                 'qualification'     => $user->highest_qualification,
                 'username'          => $user->username,
+                'dateOfExit'        => $user->date_of_exit,
                 'phone'             => $user->phone_number,
                 'createdAt'         => (new Carbon($user->created_at))->format('d/m/Y'), 
                 'hasDesignation'    => $user->designation != null, 
