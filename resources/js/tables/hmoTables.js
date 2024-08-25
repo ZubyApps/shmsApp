@@ -195,6 +195,7 @@ const getApprovalListTable = (tableId, sponsor) => {
                     `<i class="ms-1 text-danger bi bi-x-circle-fill"></i>` : ''}`
             }},
             {data: "prescription"},
+            {data: "note"},
             {data: "quantity"},
             {data: "hmsBill"},
             {data: "hmsBillDate"},

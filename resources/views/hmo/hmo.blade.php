@@ -82,6 +82,7 @@
                                     <th>Diagnosis</th>
                                     <th>Treatment</th>
                                     <th>Prescription</th>
+                                    <th>Note</th>
                                     <th>Qty</th>
                                     <th>Bill</th>
                                     <th>Billed</th>
@@ -114,6 +115,7 @@
                                     <th>Diagnosis</th>
                                     <th>Treatment</th>
                                     <th>Prescription</th>
+                                    <th>Note</th>
                                     <th>Qty</th>
                                     <th>Bill</th>
                                     <th>Billed</th>
