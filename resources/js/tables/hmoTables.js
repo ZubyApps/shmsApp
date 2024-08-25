@@ -387,7 +387,7 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
             {extend: 'print', className: 'btn-primary', footer: true},
         ],
         language: {
-            emptyTable: 'No report'
+            emptyTable: category ? '<span class="colour-change2">This is comparism mode, search for sponsor to see records</span>' : 'No report'
         },
         drawCallback: function (settings) {
             var api = this.api()
@@ -399,6 +399,7 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
                 $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
                 $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
                 $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
+                $( api.column(10).footer() ).html(account.format(api.column( 10, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: row => `<span class="btn text-decoration-underline showVisitsBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}" ${row.yearMonth ? `data-yearmonth="${row.year + '-' + row.month}"` : ''}>${row.sponsor + '-' + row.category}</span>`},
@@ -443,7 +444,7 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
                         return data                       
                     }
                     return `
-                            <button class="px-2 btn btn-${data ? 'outline-' :''}primary registerBillSent tooltip-test" title="" data-id="${ row.id }" data-sponsor="${row.sponsor}" data-monthYear="${row.monthYear}">
+                            <button class="px-2 btn btn-${data ? 'outline-' :''}primary registerBillSent tooltip-test ${category == 'Compare' ? 'd-none': ''}" title="" data-id="${ row.id }" data-sponsor="${row.sponsor}" data-monthYear="${row.monthYear}">
                                 ${data ? 'Bill Sent' :'Not Sent'}
                             </button>
                             

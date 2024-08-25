@@ -313,6 +313,7 @@
                             <option value="HMO">HMO</option>
                             <option value="NHIS">NHIS</option>
                             <option value="Retainership">Retainership</option>
+                            <option value="Compare">Compare</option>
                         </select>
                         <x-input-span class="">Start</x-input-span>
                         <x-form-input type="date" name="startDate" id="startDate" />

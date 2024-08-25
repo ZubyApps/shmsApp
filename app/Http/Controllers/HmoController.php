@@ -121,19 +121,22 @@ class HmoController extends Controller
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        // $billSummary = $this->hmoService->getReportSummaryTable($params, $request);
+        if ($request->category === 'Compare'){
+            $billSummary = $this->hmoService->getReportSummaryTable($params, $request);
+
+            return response()->json([
+                'data' => $billSummary,
+                'draw' => $params->draw,
+                'recordsTotal' => count($billSummary),
+                'recordsFiltered' => count($billSummary)
+            ]);
+        }
         $visits = $this->hmoService->getReportSummaryTable1($params, $request);
 
         $loadTransformer = $this->hmoService->getReportsSummaryTransformer($request);
 
         return $this->datatablesService->datatableResponse($loadTransformer, $visits, $params);
 
-            // return response()->json([
-            //     'data' => $billSummary,
-            //     'draw' => $params->draw,
-            //     'recordsTotal' => count($billSummary),
-            //     'recordsFiltered' => count($billSummary)
-            // ]);
     }
 
     public function loadReconciliationTable(Request $request)
