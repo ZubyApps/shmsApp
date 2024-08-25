@@ -66,9 +66,9 @@ Class PaymentService
     {
         array_reduce([$prescriptions], function($carry, $prescription) use($prescriptions, $totalPayments, $hmoFlag) {
 
-            $totalBill  = $prescriptions->sum('hms_bill');
-            $pCount     = $prescriptions->count();
             $billToUse  = $hmoFlag ? 'hmo_bill' : 'hms_bill';
+            $totalBill  = $prescriptions->sum($billToUse);
+            $pCount     = $prescriptions->count();
 
             foreach($prescription as $key => $p){
                 $bill = $p->approved && !$hmoFlag ? 0 : $p->$billToUse;
