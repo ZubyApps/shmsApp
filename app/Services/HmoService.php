@@ -654,8 +654,7 @@ class HmoService
                             ->orWhere('sponsors.category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                         })
                         ->groupBy('yearMonth', 'sponsor', 'id', 'category', 'monthName', 'year', 'month')
-                        ->orderBy('sponsor')
-                        ->orderBy('visitsCount')
+                        ->orderBy('month')
                         ->get()
                         ->toArray();
         }

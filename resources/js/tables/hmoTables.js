@@ -387,7 +387,7 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
             {extend: 'print', className: 'btn-primary', footer: true},
         ],
         language: {
-            emptyTable: category ? '<span class="colour-change2">This is comparism mode, search for sponsor to see records</span>' : 'No report'
+            emptyTable: category ? '<span class="colour-change2">This is comparism mode, search for a sponsor to see records</span>' : 'No report'
         },
         drawCallback: function (settings) {
             var api = this.api()
