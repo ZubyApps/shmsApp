@@ -272,25 +272,29 @@ class BillingService
         foreach($patients as $patient){
            $allBills        += $nhis ? $patient->allNhisBills() : $patient->allHmsBills();
            $allDiscounts    += $patient->allDiscounts();
-           $allPayments     += $patient->allPaidPrescriptions() > $patient->allPayments() ? $patient->allPaidPrescriptions() : $patient->allPayments() ;
+        //    $allPayments     += $patient->allPaidPrescriptions() > $patient->allPayments() ? $patient->allPaidPrescriptions() : $patient->allPayments() ;
+           $allPayments     +=  $patient->allPayments();
         }
 
         return $allBills - $allDiscounts - $allPayments;
     }
 
-    public function determinePayV($visit)
+    public function determinePayV(Visit $visit)
     {
-        return $visit->totalPaidPrescriptions() > $visit->totalPayments() ? $visit->totalPaidPrescriptions() : $visit->totalPayments();
+        // return $visit->totalPaidPrescriptions() > $visit->totalPayments() ? $visit->totalPaidPrescriptions() : $visit->totalPayments();
+        return $visit->totalPayments();
     }
 
     public function determinePayS($sponsor)
     {
-        return $sponsor->allPaidPrescriptions() > $sponsor->allPayments() ? $sponsor->allPaidPrescriptions() : $sponsor->allPayments();
+        // return $sponsor->allPaidPrescriptions() > $sponsor->allPayments() ? $sponsor->allPaidPrescriptions() : $sponsor->allPayments();
+        return $sponsor->allPayments();
     }
 
     public function determinePayP($patient)
     {
-        return $patient->allPaidPrescriptions() > $patient->allPayments() ? $patient->allPaidPrescriptions() : $patient->allPayments();
+        // return $patient->allPaidPrescriptions() > $patient->allPayments() ? $patient->allPaidPrescriptions() : $patient->allPayments();
+        return $patient->allPayments();
     }
 
     public function getPatientPaymentTable(DataTableQueryParams $params, $data)
