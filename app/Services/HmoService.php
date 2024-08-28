@@ -297,6 +297,7 @@ class HmoService
                 'resource'          => $prescription->resource->name,
                 'prescription'      => $prescription->prescription,
                 'quantity'          => $prescription->qty_billed,
+                'totalQuantity'     => $prescription->resource->prescriptions()->where('visit_id', $prescription->visit->id)->sum('qty_billed'),
                 'note'              => $prescription->note,
                 'hmsBill'           => $prescription->hms_bill ?? '',
                 'hmsBillDate'       => $prescription->hms_bill_date ? (new Carbon($prescription->hms_bill_date))->format('d/m/y g:ia') : '',

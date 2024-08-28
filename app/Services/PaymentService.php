@@ -117,7 +117,7 @@ Class PaymentService
 
             // $totalBill = $prescriptions->sum('hms_bill')/10;
             // $pCount = $prescriptions->count();
-
+            
             foreach($prescription as $key => $p){
                 $bill = $p->approved ? $p->nhis_bill : $p->hms_bill;
                 $paid = $p->paid;
@@ -126,7 +126,7 @@ Class PaymentService
                     // if ($totalPayments > $totalBill && $key === $pCount - 1){
                     //     $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $carry ]);
                     // } else {
-                        // $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
+                    //     $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
                     // }
                     $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
                 }

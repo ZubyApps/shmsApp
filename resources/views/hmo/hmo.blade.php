@@ -84,6 +84,7 @@
                                     <th>Prescription</th>
                                     <th>Note</th>
                                     <th>Qty</th>
+                                    <th>TQty</th>
                                     <th>Bill</th>
                                     <th>Billed</th>
                                     <th>Action</th>
@@ -117,6 +118,7 @@
                                     <th>Prescription</th>
                                     <th>Note</th>
                                     <th>Qty</th>
+                                    <th>TQty</th>
                                     <th>Bill</th>
                                     <th>Billed</th>
                                     <th>Action</th>

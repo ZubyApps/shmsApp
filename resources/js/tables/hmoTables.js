@@ -197,6 +197,7 @@ const getApprovalListTable = (tableId, sponsor) => {
             {data: "prescription"},
             {data: "note"},
             {data: "quantity"},
+            {data: "totalQuantity"},
             {data: "hmsBill"},
             {data: "hmsBillDate"},
             {
