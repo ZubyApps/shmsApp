@@ -868,27 +868,28 @@ window.addEventListener('DOMContentLoaded', function () {
                 const totalHmoBill      = payBulkSpan.getAttribute('data-totalhmobill')
                 const totalPaid         = payBulkSpan.getAttribute('data-totalpaid')
                 const payBulkInput      = payBulkSpan.parentElement.querySelector('.payBulkInput')
+
+                if (+totalPaid > 0){
+                    alert('Payment(s) already exist! Please enter any additions manually')                        
+                    return
+                }
+
                 payBulkSpan.classList.add('d-none')
                 payBulkInput.classList.remove('d-none')
                 payBulkInput.focus()
-                
+
                 payBulkInput.addEventListener('blur', function () {
-                    if (!payBulkInput.value || payBulkInput.value < 1){
+                    if (!payBulkInput.value || payBulkInput.value == 0){
                         reconciliationTable ?  reconciliationTable.draw(false) : ''
                         return
                     }
                     if (+totalHmoBill > payBulkInput.value){
                         alert('Cannot use "Pay Bulk" if the payment is less than the HMO bill. Pls enter it manually')
-                        resetFocusEndofLine(payBulkInput)
+                        payBulkSpan.classList.remove('d-none')
+                        payBulkInput.classList.add('d-none')
                         return
                     }
-                    if (+totalPaid > 0){
-                        alert('Payment(s) already exist! Please enter any additions manually')
-                            payBulkSpan.classList.remove('d-none')
-                            payBulkInput.classList.add('d-none')
-                            // resetFocusEndofLine(payBulkInput)
-                            return
-                    }
+
                     reconciliationFieldset.setAttribute('disabled', 'disabled')
                     http.patch(`/hmo/paybulk/${visitId}`, {bulkPayment: payBulkInput.value})
                     .then((response) => {

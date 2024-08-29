@@ -62,25 +62,52 @@ Class PaymentService
     //     }, $totalPayments);
     // }
 
-    public function prescriptionsPaymentSeive(mixed $totalPayments, mixed $prescriptions, bool $hmoFlag = false): void
-    {
-        array_reduce([$prescriptions], function($carry, $prescription) use($prescriptions, $totalPayments, $hmoFlag) {
+    // public function prescriptionsPaymentSeive(mixed $totalPayments, mixed $prescriptions, bool $hmoFlag = false): void
+    // {
+    //     array_reduce([$prescriptions], function($carry, $prescription) use($prescriptions, $totalPayments, $hmoFlag) {
 
-            $billToUse  = $hmoFlag ? 'hmo_bill' : 'hms_bill';
-            // $totalBill  = $prescriptions->sum($billToUse);
-            // $pCount     = $prescriptions->count();
+    //         $billToUse  = $hmoFlag ? 'hmo_bill' : 'hms_bill';
+    //         // $totalBill  = $prescriptions->sum($billToUse);
+    //         // $pCount     = $prescriptions->count();
+
+    //         foreach($prescription as $key => $p){
+    //             $bill = $p->approved && !$hmoFlag ? 0 : $p->$billToUse;
+    //             $paid = $p->paid;
+                
+    //             if ($carry >= $bill){
+    //                 // if ($totalPayments > $totalBill && $key === $pCount - 1){
+    //                 //     $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $carry ]);
+    //                 // } else {
+    //                 //     $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
+    //                 // }
+    //                 $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
+    //             }
+
+    //             if ($carry < $bill && $carry > 0){
+    //                 $p->update(['paid' => $carry ]);
+    //             }
+
+    //             if ($carry <= 0 && $bill > 0){
+    //                 $p->update(['paid' => 0 ]);
+    //             }
+
+    //             $carry = $carry - $bill;
+    //         }
+    //         return $carry;
+
+    //     }, $totalPayments);
+    // }
+    public function prescriptionsPaymentSeive(mixed $totalPayments, mixed $prescriptions): void
+    {
+        array_reduce([$prescriptions], function($carry, $prescription) use($prescriptions) {
+
+            $pCount = $prescriptions->count();
 
             foreach($prescription as $key => $p){
-                $bill = $p->approved && !$hmoFlag ? 0 : $p->$billToUse;
-                $paid = $p->paid;
+                $bill = $p->approved ? 0 : $p->hms_bill;
                 
                 if ($carry >= $bill){
-                    // if ($totalPayments > $totalBill && $key === $pCount - 1){
-                    //     $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $carry ]);
-                    // } else {
-                    //     $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
-                    // }
-                    $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
+                    $p->update(['paid' => $key === ($pCount - 1) ? $carry : $bill]);
                 }
 
                 if ($carry < $bill && $carry > 0){
@@ -115,24 +142,45 @@ Class PaymentService
     {
         array_reduce([$prescriptions], function($carry, $prescription) use($prescriptions, $totalPayments) {
 
-            // $totalBill = $prescriptions->sum('hms_bill')/10;
-            // $pCount = $prescriptions->count();
-            
+            $pCount = $prescriptions->count();
+
             foreach($prescription as $key => $p){
                 $bill = $p->approved ? $p->nhis_bill : $p->hms_bill;
-                $paid = $p->paid;
                 
                 if ($carry >= $bill){
-                    // if ($totalPayments > $totalBill && $key === $pCount - 1){
-                    //     $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $carry ]);
-                    // } else {
-                    //     $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
-                    // }
-                    $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
+                    $p->update(['paid' => $key === ($pCount - 1) ? $carry : $bill]);
                 }
 
                 if ($carry < $bill && $carry > 0){
-                    $p->update(['paid' => $carry + $paid]);
+                    $p->update(['paid' => $carry ]);
+                }
+
+                if ($carry <= 0 && $bill > 0){
+                    $p->update(['paid' => 0 ]);
+                }
+
+                $carry = $carry - $bill;
+            }
+            return $carry;
+
+        }, $totalPayments);
+    }
+
+    public function prescriptionsPaymentSeiveHmo(mixed $totalPayments, mixed $prescriptions): void
+    {
+        array_reduce([$prescriptions], function($carry, $prescription) use($prescriptions) {
+
+            $pCount = $prescriptions->count();
+
+            foreach($prescription as $key => $p){
+                $bill = $p->hmo_bill;
+                
+                if ($carry >= $bill){
+                    $p->update(['paid' => $key === ($pCount - 1) ? $carry : $bill]);
+                }
+
+                if ($carry < $bill && $carry > 0){
+                    $p->update(['paid' => $carry ]);
                 }
 
                 if ($carry <= 0 && $bill > 0){

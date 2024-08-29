@@ -1074,7 +1074,7 @@ class HmoService
         return DB::transaction(function () use($data, $visit) {
             $prescriptions  = $visit->prescriptions;
 
-            $this->paymentService->prescriptionsPaymentSeive((float)$data->bulkPayment, $prescriptions, true);
+            $this->paymentService->prescriptionsPaymentSeiveHmo((float)$data->bulkPayment, $prescriptions);
 
             $visit->total_paid = $visit->totalPaidPrescriptions();
             $visit->save();
