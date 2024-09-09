@@ -27,6 +27,7 @@ class MedicationsForSms
 
         $medications = MedicationChart::whereRelation('visit', 'admission_status', '=', 'Outpatient')
                         ->whereRelation('visit.patient', 'sms', '=', true)
+                        ->whereRelation('prescription', 'discontinued', '=', false)
                         ->whereBetween('scheduled_time', [$time2, $time1])->get();
 
         if ($medications->isEmpty()){
