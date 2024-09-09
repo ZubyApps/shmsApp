@@ -37,7 +37,7 @@ class MedicationNotifier extends Notification
     public function toSms(object $notifiable)
     {
         return $this->churchPlusSmsService
-        ->sendSms('Dear ' .$notifiable->visit->patient->first_name. ', pls be reminded of your medication by '. (new Carbon($notifiable->scheduled_time))->format('g:iA') . ' today courtesy of our Hospital Management System', $notifiable->visit->patient->phone, 'SandraHosp');
+        ->sendSms('Dear ' .$notifiable->visit->patient->first_name. ', pls be reminded of your medication by '. (new Carbon($notifiable->scheduled_time))->format('g:iA') . ' today, courtesy of our Hospital Management System', $notifiable->visit->patient->phone, 'SandraHosp');
     }
 
     /**

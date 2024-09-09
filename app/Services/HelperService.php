@@ -34,7 +34,7 @@ class HelperService
     {
         $start = new CarbonImmutable('08:00:00');
         $end = $start->addHours(12);
-        Log::info('', [$start, $end]);
+        // Log::info('', [$start, $end]);
         return Carbon::now()->between($start, $end);
     }
 }
