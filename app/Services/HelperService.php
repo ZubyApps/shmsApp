@@ -6,6 +6,7 @@ namespace App\Services;
 
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Log;
 
 class HelperService
 {
@@ -33,7 +34,7 @@ class HelperService
     {
         $start = new CarbonImmutable('08:00:00');
         $end = $start->addHours(12);
-
+        Log::info('', [$start, $end]);
         return Carbon::now()->between($start, $end);
     }
 }
