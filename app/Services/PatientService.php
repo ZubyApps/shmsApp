@@ -7,21 +7,27 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Patient;
 use App\Models\User;
+use App\Notifications\PatientCardNumber;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PatientService
 {
-    public function __construct(private readonly Patient $patient, private readonly HelperService $helperService)
+    public function __construct(
+        private readonly Patient $patient, 
+        private readonly HelperService $helperService, 
+        private readonly PatientCardNumber $patientCardNumber
+        )
     {
     }
 
     public function create(Request $data, User $user): Patient
     {
-        return $user->patients()->create([
+        $patient = $user->patients()->create([
                 "patient_type"          => $data->patientType,
                 "address"               => $data->address,
                 "blood_group"           => $data->bloodGroup,
@@ -44,6 +50,7 @@ class PatientService
                 "registration_bill"     => $data->registrationBill,
                 "religion"              => $data->religion,
                 "sex"                   => $data->sex,
+                "sms"                   => $data->sms,
                 "sponsor_id"            => $data->sponsor,
                 "staff_Id"              => $data->staffId,
                 "flag"                  => $data->flagPatient,
@@ -51,6 +58,12 @@ class PatientService
                 "state_of_origin"       => $data->stateOrigin,
                 "state_of_residence"    => $data->stateResidence,
         ]);
+
+        if ($this->helperService->nccTextTime() && $patient->sms){
+            $this->patientCardNumber->toSms($patient);
+        }
+
+        return $patient;
     }
 
     public function update(Request $data, Patient $patient, User $user): Patient
@@ -79,6 +92,7 @@ class PatientService
                 "registration_bill"     => $data->registrationBill,
                 "religion"              => $data->religion,
                 "sex"                   => $data->sex,
+                "sms"                   => $data->sms,
                 "sponsor_id"            => $data->sponsor,
                 "staff_id"              => $data->staffId,
                 "flag"                  => $data->flagPatient,

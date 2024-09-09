@@ -521,7 +521,7 @@ class AccountsReportService
 
             if ($data->startDate && $data->endDate){
                 return DB::table('visits')
-                ->selectRaw('sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved')
+                ->selectRaw('sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
                 ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                 ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                 ->where(function (QueryBuilder $query) use($params) {
@@ -530,7 +530,7 @@ class AccountsReportService
                 })
                 ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                 ->groupBy('sponsor', 'id', 'category')
-                ->orderBy('patientsCount', 'desc')
+                ->orderBy('sponsor', 'desc')
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
     
@@ -538,7 +538,7 @@ class AccountsReportService
                 $date = new Carbon($data->date);
     
                 return DB::table('visits')
-                ->selectRaw('sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved')
+                ->selectRaw('sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
                 ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                 ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                 ->where(function (QueryBuilder $query) use($params) {
@@ -548,12 +548,12 @@ class AccountsReportService
                 ->whereMonth('visits.created_at', $date->month)
                 ->whereYear('visits.created_at', $date->year)
                 ->groupBy('sponsor', 'id', 'category')
-                ->orderBy('patientsCount', 'desc')
+                ->orderBy('sponsor', 'desc')
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
     
             return DB::table('visits')
-                ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved')
+                ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
                 ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                 ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
                 ->where(function (QueryBuilder $query) use($params) {
@@ -563,18 +563,18 @@ class AccountsReportService
                 ->whereMonth('visits.created_at', $current->month)
                 ->whereYear('visits.created_at', $current->year)
                 ->groupBy('sponsor', 'id', 'category')
-                ->orderBy('patientsCount', 'desc')
+                ->orderBy('sponsor', 'desc')
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         if ($data->startDate && $data->endDate){
             return DB::table('visits')
-            ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved')
+            ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
             ->groupBy('sponsor', 'id', 'category')
-            ->orderBy('patientsCount', 'desc')
+            ->orderBy('sponsor', 'desc')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
@@ -582,24 +582,24 @@ class AccountsReportService
             $date = new Carbon($data->date);
 
             return DB::table('visits')
-            ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved')
+            ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->whereMonth('visits.created_at', $date->month)
             ->whereYear('visits.created_at', $date->year)
             ->groupBy('sponsor', 'id', 'category')
-            ->orderBy('patientsCount', 'desc')
+            ->orderBy('sponsor', 'desc')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return DB::table('visits')
-            ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved')
+            ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->whereMonth('visits.created_at', $current->month)
             ->whereYear('visits.created_at', $current->year)
             ->groupBy('sponsor', 'id', 'category')
-            ->orderBy('patientsCount', 'desc')
+            ->orderBy('sponsor', 'desc')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
@@ -736,6 +736,8 @@ class AccountsReportService
                     'discount'          => $visit->discount ?? 0,
                     'reviewed'          => $visit->reviewed,
                     'resolved'          => $visit->resolved,
+                    'flagPatient'       => $visit->patient->flag,
+                    'flagReason'        => $visit->patient?->flag_reason,
                 ];
             };
     }

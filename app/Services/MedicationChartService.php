@@ -200,7 +200,9 @@ class MedicationChartService
                 'rawDateTime'       => $medicationChart->scheduled_time,
                 'timeGiven'         => $medicationChart->time_given ? (new Carbon($medicationChart->time_given))->format('jS/M/y g:iA') : '',
                 'notGiven'          => $medicationChart->not_given ?? '',
-                'givenBy'           => $medicationChart->givenBy?->username ?? ''
+                'givenBy'           => $medicationChart->givenBy?->username ?? '',
+                'flagPatient'       => $medicationChart->visit->patient->flag,
+                'flagReason'        => $medicationChart->visit->patient?->flag_reason,
             ];
          };
     }

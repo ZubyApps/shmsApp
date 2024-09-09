@@ -2,7 +2,7 @@
 
 
 @section('content')
-@vite(['resources/js/accountReports.js'])
+@vite(['resources/css/colourblink.scss', 'resources/js/accountReports.js'])
 
 @include('reports.modals.byPayMethodModal', ['title' => 'Payments By Pay Method', 'id' => 'byPayMethodModal'])
 @include('reports.modals.visitsBySponsorModal', ['title' => 'Visits By Sponsor', 'id' => 'visitsBySponsorModal'])

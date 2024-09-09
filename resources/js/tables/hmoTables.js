@@ -1,7 +1,7 @@
 import jQuery from "jquery";
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, admissionStatusX, deferredCondition, detailsBtn, displayPaystatus, getOrdinal, selectReminderOptions, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, admissionStatusX, deferredCondition, detailsBtn, displayPaystatus, getOrdinal, selectReminderOptions, sponsorAndPayPercent, flagSponsorReason, flagPatientReason, flagIndicator } from "../helpers";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -23,10 +23,10 @@ const getWaitingTable = (tableId) => {
             emptyTable: 'No patient is waiting'
         },
         columns: [
-            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}">${row.patient}</span>`},
+            {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
             {data: "sex"},
             {data: "age"},
-            {data: row => `<span class="${row.flagSponsor ? 'fw-bold colour-change3' : ''}">${row.sponsor}</span>`},
+            {data: row => `<span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor}</span>`},
             {data: row => `<span class="tooltip-test" title="initiated by ${row.initiatedBy}">${row.came}</span>`},
             {data: "waitingFor"},
             {data: "doctor"},
@@ -78,12 +78,12 @@ const getVerificationTable = (tableId) => {
         },
         columns: [
             {data: "came"},
-            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''} tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.patient}</span>`},
+            {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}">${row.patient}</span>`},
             {data: "sex"},
             {data: "age"},
             {data: row => 
                         `
-                    <button class="btn changeSponsorBtn ${row.flagSponsor ? 'fw-bold colour-change3' : ''}" data-id="${ row.id }" data-patient="${ row.patient }" data-phone="${ row.phone }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-staffid="${ row.staffId }">${row.sponsor}</button>`
+                    <button class="btn changeSponsorBtn ${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}" data-id="${ row.id }" data-patient="${ row.patient }" data-phone="${ row.phone }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-staffid="${ row.staffId }">${row.sponsor}</button>`
             },
             {data: "30dayCount"},
             {data: "doctor"},
@@ -116,7 +116,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
         },
         columns: [
             {data: "came"},
-            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''} tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.patient}</span>`},
+            {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
             {data: "doctor"},
             {data: "diagnosis"},
             {data: row => sponsorAndPayPercent(row)},
@@ -184,8 +184,8 @@ const getApprovalListTable = (tableId, sponsor) => {
             var api = this.api() 
         },
         columns: [
-            {data: "patient"},
-            {data: "sponsor"},
+            {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
+            {data: row => `<span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor}</span>`},
             {data: "doctor"},
             {data: "prescribed"},
             {data: "diagnosis"},
@@ -230,7 +230,7 @@ const getApprovalListTable = (tableId, sponsor) => {
                         <input class="ms-1 form-control noteInput d-none" id="noteInput">
                     </div>
                     `    
-                }  
+                }
             },
         ]
     });
@@ -338,7 +338,7 @@ const getSentBillsTable = (tableId, startDate, endDate, date, filterByOpen) => {
         },
         columns: [
             {data: "came"},
-            {data: "patient"},
+            {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
             {data: row => sponsorAndPayPercent(row)},
             {data: "doctor"},
             {data: "diagnosis"},
@@ -404,7 +404,7 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
                 $( api.column(10).footer() ).html(account.format(api.column( 10, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: row => `<span class="btn text-decoration-underline showVisitsBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}" ${row.yearMonth ? `data-yearmonth="${row.year + '-' + row.month}"` : ''}>${row.sponsor + '-' + row.category}</span>`},
+            {data: row => `<span class="btn text-decoration-underline showVisitsBtn ${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}" ${row.yearMonth ? `data-yearmonth="${row.year + '-' + row.month}"` : ''}>${row.sponsor + '-' + row.category}</span>`},
             {data: row => row.monthName + ' ' + row.year},
             {
                 visible: false,
@@ -488,7 +488,7 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to, date) =>
         },
         columns: [
             {data: "came"},
-            {data: "patient"},
+            {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
             {data: "consultBy"},
             {data: row =>  `<span class="text-primary fw-semibold">${row.diagnosis}</span>`},
             {data: row => account.format(row.totalHmoBill)},

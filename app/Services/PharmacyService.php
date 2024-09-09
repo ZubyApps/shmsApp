@@ -155,7 +155,10 @@ class PharmacyService
                 'doctorDoneAt'      => $visit->doctor_done_at ? (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') : '',
                 'reason'            => $visit->discharge_reason,
                 'closed'            => $visit->closed,
-                'closedBy'          => $visit->closedOpenedBy?->username
+                'closedBy'          => $visit->closedOpenedBy?->username,
+                'flagSponsor'       => $visit->sponsor->flag,
+                'flagPatient'       => $visit->patient->flag,
+                'flagReason'        => $visit->patient?->flag_reason,
             ];
          };
     }

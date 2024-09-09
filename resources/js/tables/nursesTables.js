@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, getMinsDiff, getOrdinal, histroyBtn, prescriptionStatusContorller, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, prescriptionStatusContorller, sponsorAndPayPercent } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     return new DataTable('#'+tableId, {
@@ -13,10 +13,10 @@ const getWaitingTable = (tableId) => {
             emptyTable: 'No patient is waiting'
         },
         columns: [
-            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''} tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.patient}</span>`},
+            {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
             {data: "sex"},
             {data: "age"},
-            {data: row => `<span class="${row.flagSponsor ? 'fw-bold colour-change3' : ''}">${row.sponsor}</span>`},
+            {data: row => `<span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor}</span>`},
             {data: row => `<span class="tooltip-test" title="initiated by ${row.initiatedBy}">${row.came}</span>`},
             {data: "waitingFor"},
             {data: "doctor"},
@@ -574,7 +574,7 @@ const getUpcomingMedicationsTable = (tableId, button, span) => {
             }
         },
         columns: [
-            {data: "patient"},
+            {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
             {data: row => () => {
                 return row.status == 'Inpatient' || row.status == 'Observation' ? 
                 `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
@@ -641,7 +641,7 @@ const getUpcomingNursingChartsTable = (tableId, button, span) => {
             }
         },
         columns: [
-            {data: "patient"},
+            {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
             {data: row => () => {
                 return row.status == 'Inpatient' ? 
                 `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :

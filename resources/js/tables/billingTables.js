@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import {admissionStatusX, deferredCondition, displayPaystatus, selectReminderOptions, sponsorAndPayPercent } from "../helpers";
+import {admissionStatusX, deferredCondition, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, selectReminderOptions, sponsorAndPayPercent } from "../helpers";
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -22,10 +22,10 @@ const getWaitingTable = (tableId) => {
             emptyTable: 'No patient is waiting'
         },
         columns: [
-            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''} tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.patient}</span>`},
+            {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
             {data: "sex"},
             {data: "age"},
-            {data: row => `<span class="${row.flagSponsor ? 'fw-bold colour-change3' : ''}">${row.sponsor}</span>`},
+            {data: row => `<span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor}</span>`},
             {data: row => `<span class="tooltip-test" title="initiated by ${row.initiatedBy}">${row.came}</span>`},
             {data: "waitingFor"},
             {data: "doctor"},
@@ -72,7 +72,7 @@ const getWaitingTable = (tableId) => {
 const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, sponsorId, cardNo) => {
     const preparedColumns = [
         {data: "came"},
-        {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''}  tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.patient}</span>`},
+        {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
         {data: "doctor"},
         {data: "diagnosis"},
         {data: row => sponsorAndPayPercent(row)},
@@ -149,11 +149,11 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
             },
             {
                 sortable: false,
-                data: "patient"
+                data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`
             },
             {
                 sortable: false,
-                data: row => row.sponsor +' '+ row.sponsorCategory
+                data: row => `<span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor +' '+ row.sponsorCategory}</span>`
             },
             {
                 sortable: false,

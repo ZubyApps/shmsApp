@@ -1,6 +1,6 @@
 import $, { data } from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatusX, displayPaystatus, sponsorAndPayPercent } from '../helpers';
+import { admissionStatusX, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, sponsorAndPayPercent } from '../helpers';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -383,7 +383,7 @@ const getVisitSummaryTable2 = (tableId, startDate, endDate, date) => {
             $( api.column(11).footer() ).html(account.format(api.column( 11, {page:'current'} ).data().sum()));
         },
         columns: [
-            {data: row => `<span class="btn text-decoration-underline showVisitsBtn tooltip-test" title="show visits" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}" >${row.sponsor}${row.resolved == 0 ? '  <i class="bi bi-check-circle-fill text-primary"></i>' : ''}</span>`},
+            {data: row => `<span class="btn text-decoration-underline showVisitsBtn tooltip-test ${flagIndicator(row.flagSponsor)}" title="${flagSponsorReason(row.flagSponsor)}" data-id="${row.id}" data-sponsor="${row.sponsor}" data-category="${row.category}" >${row.sponsor}${row.resolved == 0 ? '  <i class="bi bi-check-circle-fill text-primary"></i>' : ''}</span>`},
             {data: "category"},
             {
                 visible: false,
@@ -452,7 +452,7 @@ const getVisitsBySponsorTable = (tableId, sponsorId, modal, startDate, endDate, 
         },
         columns: [
             {data: "date"},
-            {data: "patient"},
+            {data:  row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
             {data: "doctor"},
             {data: "diagnosis"},
             {data: "totalHmsBill"},

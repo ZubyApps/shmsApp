@@ -133,8 +133,14 @@
                             <!-- Third row -->
                             <div class="row">
                                 <x-form-div>
-                                    <x-input-span>Phone Number<x-required-span /></x-input-span>
-                                    <x-form-input type="number" name="phone" id="phone"/>
+                                    <x-input-span>Phone<x-required-span /></x-input-span>
+                                    <x-form-input type="number" name="phone" id="phone" style="width:7rem;"/>
+                                    <x-input-span id="smsLabel">SMS<x-required-span /></x-input-span>
+                                    <select class="form-select form-select-md" aria-label="sms"
+                                        name="sms" id="sms">
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
                                 </x-form-div>
 
                                 <x-form-div>

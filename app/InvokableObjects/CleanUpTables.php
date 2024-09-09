@@ -19,14 +19,15 @@ class CleanUpTables
 
         $shiftReports = ShiftReport::where('created_at', '<', $date.' 00:00:00')->get();
         
-        if (!$shiftReports){
+        if ($shiftReports->isEmpty()){
             return;
         }
 
         foreach($shiftReports as $report) {
             $report->destroy($report->id);
         }
+        
+        Log::info('Shift report table cleaned');
       }, 2);
-      Log::info('Shift report table cleaned');
    }
 }

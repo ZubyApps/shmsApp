@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatusX, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, sponsorAndPayPercent } from "../helpers";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -12,7 +12,7 @@ $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 const getPatientsVisitByFilterTable = (tableId, filter) => {
     const preparedColumns = [
         {data: "came"},
-        {data: "patient"},
+        {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
         {data: "doctor"},
         {data: "diagnosis"},
         {data: row => sponsorAndPayPercent(row)},

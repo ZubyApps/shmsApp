@@ -14,7 +14,7 @@ class ShiftReportNotifier
       DB::transaction(function () {   
          $nursesShiftReport = ShiftReport::where('department', 'nurses')->whereNull('viewed_at_2')->get();
          
-         if (!$nursesShiftReport){
+         if ($nursesShiftReport->isEmpty()){
             return;
          }
    

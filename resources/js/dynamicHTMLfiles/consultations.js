@@ -43,7 +43,7 @@ const AncPatientReviewDetails = (iteration, numberConverter, count, length, line
                     <span class="mx-2">${iteration > 1 ? count + numberConverter(count) + ' Review' : 'Initial Consultation'} ${ `(${line.date})`}</span>
                     <i class="bi bi-chevron-double-down text-primary"> </i>
                 </div>
-                <div class="collapse mb-2 reviewDiv" id="collapseExample${usableIteration}" style="">
+                <div class="collapse ${isHistory ? '' : 'show'} mb-2 reviewDiv" id="collapseExample${usableIteration}" style="">
                     <div class="card card-body">
                         <div class="mb-2 form-control" id="goto${usableIteration}">
                             ${AncConsultation(line, iteration, count)}

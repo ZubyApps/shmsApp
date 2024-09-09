@@ -46,6 +46,7 @@ class PatientResource extends JsonResource
                  'flagReason'       => $this->flag_reason,
                  'stateOrigin'      => $this->state_of_origin,
                  'stateResidence'   => $this->state_of_residence,  
+                 'sms'              => $this->sms,
         ];
     }
 }

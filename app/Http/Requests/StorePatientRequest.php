@@ -48,6 +48,7 @@ class StorePatientRequest extends FormRequest
             "registrationBill"  => ['nullable'],
             "religion"          => ['nullable'],
             "sex"               => ['required'],
+            "sms"               => ['required'],
             "sponsor"           => ['required', 'numeric', 'exists:'.Sponsor::class.',id'],
             "staffId"           => ['nullable'],
             "stateOrigin"       => ['nullable'],

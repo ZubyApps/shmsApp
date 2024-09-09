@@ -309,7 +309,10 @@ class HmoService
                 'rejected'          => $prescription->rejected,
                 'rejectedBy'        => $prescription->rejectedBy?->username,
                 'dispensed'         => $prescription->dispensed,
-                'hmoDoneBy'         => $prescription->visit->hmoDoneBy?->username
+                'hmoDoneBy'         => $prescription->visit->hmoDoneBy?->username,
+                'flagSponsor'       => $prescription->visit->sponsor->flag,
+                'flagPatient'       => $prescription->visit->patient->flag,
+                'flagReason'        => $prescription->visit->patient?->flag_reason,
             ];
          };
     }
@@ -317,7 +320,7 @@ class HmoService
     public function approve($data, Prescription $prescription, User $user)
     {
         if ($prescription->approved == true || $prescription->rejected == true){
-            return response('Already treated by ' . $prescription->approvedBy->username ?? $prescription->rejectedBy->username, 222);
+            return response('Already treated by ' . $prescription->approvedBy?->username ?? $prescription->rejectedBy?->username, 222);
         }
 
         return DB::transaction(function () use($data, $prescription, $user) {
@@ -630,7 +633,10 @@ class HmoService
                 'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
-                'closed'            => $visit->closed
+                'closed'            => $visit->closed,
+                'flagSponsor'       => $visit->sponsor->flag,
+                'flagPatient'       => $visit->patient->flag,
+                'flagReason'        => $visit->patient?->flag_reason,
             ];
         };
     }
@@ -912,6 +918,7 @@ class HmoService
                 'monthYear'         => $monthYear,
                 'monthName'         => $monthName,
                 'year'              => $year,
+                'flagSponsor'       => $sponsor->flag,
             ];
         };
     }
@@ -1047,6 +1054,8 @@ class HmoService
                     'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
                     'paid'              => $prescription->paid ?? '',
                 ]),
+                'flagPatient'       => $visit->patient->flag,
+                'flagReason'        => $visit->patient?->flag_reason,
             ];
          };
     }

@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-@vite(['resources/js/investigations.js'])
+@vite(['resources/css/colourblink.scss','resources/js/investigations.js'])
 
 @include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isAnc' => false, 'isLab' => true, 'isHmo' => false, 'id' => 'treatmentDetailsModal'])
 @include('nurses.treatmentDetailsModal', ['title' => 'ANC Treatment Details', 'isAnc' => true, 'isLab' => false, 'isHmo' => true, 'id' => 'ancTreatmentDetailsModal'])

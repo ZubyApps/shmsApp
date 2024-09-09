@@ -133,7 +133,10 @@ class InvestigationService
                 'discharged'        => $visit->discharge_reason,
                 'reason'            => $visit->discharge_reason,
                 'closed'            => $visit->closed,
-                'closedBy'          => $visit->closedOpenedBy?->username
+                'closedBy'          => $visit->closedOpenedBy?->username,
+                'flagSponsor'       => $visit->sponsor->flag,
+                'flagPatient'       => $visit->patient->flag,
+                'flagReason'        => $visit->patient?->flag_reason,
             ];
          };
     }

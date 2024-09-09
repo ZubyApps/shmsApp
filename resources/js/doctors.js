@@ -208,6 +208,14 @@ window.addEventListener('DOMContentLoaded', function () {
                             iteration++
                             iteration > 1 ? count++ : ''
                             displayConsultations(div, displayFunction, iteration, getOrdinal, count, consultations.length, line, viewer, isDoctorDone, closed)
+                            if(isAnc){
+                                const goto = () => {                                    
+                                    getLabTableByConsultation('investigationTable'+line.id, consultationReviewModal._element, 'lab', line.id, '')
+                                    getMedicationsByFilter('treatmentTable'+line.id, line.id, consultationReviewModal._element)
+                                    getOtherPrescriptionsByFilter('otherPrescriptionsTable'+line.id, line.id, consultationReviewModal._element)
+                                }
+                                setTimeout(goto, 300)
+                            }
                         })
 
                         vitalSignsTable(`#vitalSignsConsultation${suffixId}`, id, modal)

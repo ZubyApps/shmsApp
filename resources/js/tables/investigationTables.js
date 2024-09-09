@@ -1,10 +1,10 @@
 import DataTable from 'datatables.net-bs5';
-import { admissionStatusX, detailsBtn, displayPaystatus, sponsorAndPayPercent } from "../helpers";
+import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, sponsorAndPayPercent } from "../helpers";
 
 const getPatientsVisitsByFilterTable = (tableId, filter) => {
     const preparedColumns = [
         {data: "came"},
-        {data: "patient"},
+        {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
         {data: "doctor"},
         {data: "diagnosis"},
         {data: row => sponsorAndPayPercent(row)},

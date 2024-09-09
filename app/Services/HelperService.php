@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 
 class HelperService
 {
@@ -26,5 +27,13 @@ class HelperService
     public function flagExpired($date)
     {
         return new Carbon() > new Carbon($date);
+    }
+
+    public function nccTextTime()
+    {
+        $start = new CarbonImmutable('08:00:00');
+        $end = $start->addHours(12);
+
+        return Carbon::now()->between($start, $end);
     }
 }

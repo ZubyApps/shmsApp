@@ -23,7 +23,7 @@ class StoreBulkRequestRequest extends FormRequest
     {
         return [
             'item'          => ['required'],
-            // 'quantity'      => ['required'],
+            'quantity'      => ['required'],
             'department'    => ['required']
         ];
     }

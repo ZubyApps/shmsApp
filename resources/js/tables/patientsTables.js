@@ -3,6 +3,7 @@ import DataTable from 'datatables.net-bs5';
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
+import { flagIndicator, flagPatientReason, flagSponsorReason } from '../helpers';
 DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
 pdfMake.vfs = pdfFonts;
@@ -87,11 +88,11 @@ const getAllPatientsTable = (tableId) => {
              ],
         columns: [
             {data: "card"},
-            {data: row => `<span class="${row.flagPatient ? 'fw-bold colour-change3' : ''} tooltip-test" title="${row.flagPatient ? row.flagReason : ''}">${row.name}</span>`},
+            {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
             {data: "phone"},
             {data: "sex"},
             {data: "age"},
-            {data: row => `<span class="${row.flagSponsor ? 'fw-bold colour-change3' : ''}">${row.sponsor}</span>`},
+            {data: row => `<span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor}</span>`},
             {data: "category"},
             {data: "createdAt"},
             {data: "createdBy"},

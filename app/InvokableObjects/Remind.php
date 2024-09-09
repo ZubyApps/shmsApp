@@ -18,7 +18,7 @@ class Remind
          $date = CarbonImmutable::now();
          $reminders = Reminder::whereNull('confirmed_paid')->whereNull('final_reminder')->get();
          
-         if (!$reminders){
+         if ($reminders->isEmpty()){
             return;
          }
    

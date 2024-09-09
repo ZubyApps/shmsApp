@@ -185,7 +185,9 @@ class NursingChartService
                 'rawDateTime'       => $nursingChart->scheduled_time,
                 'timeDone'          => $nursingChart->time_done ? (new Carbon($nursingChart->time_done))->format('jS/M/y g:iA') : '',
                 'notDone'           => $nursingChart->not_done,
-                'doneBy'            => $nursingChart->doneBy?->username ?? ''
+                'doneBy'            => $nursingChart->doneBy?->username ?? '',
+                'flagPatient'       => $nursingChart->visit->patient->flag,
+                'flagReason'        => $nursingChart->visit->patient?->flag_reason,
             ];
          };
     }

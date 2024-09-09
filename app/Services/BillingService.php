@@ -246,6 +246,9 @@ class BillingService
                     'isInvestigation'   => $prescription->resource->category == 'Investigations',
                     'thirdParty'        => ThirdParty::whereRelation('thirdPartyServies','prescription_id', $prescription->id)->first()?->short_name ?? ''
                 ]),
+                'flagSponsor'       => $visit->sponsor->flag,
+                'flagPatient'       => $visit->patient->flag,
+                'flagReason'        => $visit->patient?->flag_reason,
                 
             ];
          };

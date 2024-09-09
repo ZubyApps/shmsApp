@@ -65,6 +65,10 @@ return [
         'null' => [
             'driver' => 'null',
         ],
+        'church_plus' => [
+            'base_url'  => env('CHURCH_PLUS_BASEURL'),
+            'tenant_id' => env('CHURCH_PLUS_TENANTID')
+        ]
 
     ],
 
