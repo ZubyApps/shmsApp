@@ -12,6 +12,7 @@ use App\Notifications\MedicationNotifier;
 use App\Services\ChurchPlusSmsService;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -26,6 +27,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(new Remind)->timezone('Africa/Lagos')->twiceDaily(9, 15);
         $schedule->call(new CleanUpTables)->timezone('Africa/Lagos')->lastDayOfMonth('23:59');
         $schedule->call(new MedicationsForSms(new MedicationNotifier(new ChurchPlusSmsService())))->timezone('Africa/Lagos')->between('08:00', '20:00');
+        Log::info('Ran');
     }
 
     /**
