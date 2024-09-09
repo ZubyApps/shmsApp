@@ -214,12 +214,16 @@ window.addEventListener('DOMContentLoaded', function () {
                         http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value}, {'html' : div})
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
-                                visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
-                                visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                                if (visitPrescriptionsTable){
+                                    visitPrescriptionsTable.draw();
+                                    visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                                }
                                 billingTable ? billingTable.draw() : ''
+                                emergencyTable.draw(false)
                             }
                         })
                         .catch((error) => {
+                            console.log(error)
                             if (error.response.status == 422){
                                 removeDisabled(billingDispenseFieldset)
                                 console.log(error)

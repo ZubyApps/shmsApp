@@ -393,6 +393,7 @@ class PrescriptionService
                 'visitId'           => $prescription->visit->id,
                 'patient'           => $prescription->visit->patient->patientId(),
                 'sponsor'           => $prescription->visit->sponsor->name,
+                'closed'            => $prescription->visit->closed,
                 'sponsorCategory'   => $prescription->visit->sponsor->sponsorCategory->name,
                 'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                 'item'              => $prescription->resource->name,
@@ -411,6 +412,7 @@ class PrescriptionService
                 'qtyBilled'             => $prescription->qty_billed,
                 'qtyDispensed'          => $prescription->qty_dispensed,
                 'stock'                 => $prescription->resource->stock_level,
+                'unit'                  => $prescription->resource->unit_description,
             ];
          };
     }
