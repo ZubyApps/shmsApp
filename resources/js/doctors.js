@@ -210,9 +210,9 @@ window.addEventListener('DOMContentLoaded', function () {
                             displayConsultations(div, displayFunction, iteration, getOrdinal, count, consultations.length, line, viewer, isDoctorDone, closed)
                             if(isAnc){
                                 const goto = () => {                                    
-                                    getLabTableByConsultation('investigationTable'+line.id, consultationReviewModal._element, 'lab', line.id, '')
-                                    getMedicationsByFilter('treatmentTable'+line.id, line.id, consultationReviewModal._element)
-                                    getOtherPrescriptionsByFilter('otherPrescriptionsTable'+line.id, line.id, consultationReviewModal._element)
+                                    getLabTableByConsultation('investigationTable'+line.id, modal._element, 'lab', line.id, '')
+                                    getMedicationsByFilter('treatmentTable'+line.id, line.id, modal._element)
+                                    getOtherPrescriptionsByFilter('otherPrescriptionsTable'+line.id, line.id, modal._element)
                                 }
                                 setTimeout(goto, 300)
                             }

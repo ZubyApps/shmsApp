@@ -7,7 +7,7 @@ import $ from 'jquery';
 import { getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getbillingTableByVisit } from "./tables/billingTables";
-import { getEmergencyTable } from "./tables/nursesTables";
+import { getAncVitalSignsTable, getEmergencyTable } from "./tables/nursesTables";
 $.fn.dataTable.ext.errMode = 'throw';
 
 
@@ -128,6 +128,15 @@ window.addEventListener('DOMContentLoaded', function () {
                                 iteration > 1 ? count++ : ''
     
                                 div.innerHTML += displayFunction(iteration, getOrdinal, count, consultations.length, line, viewer)
+
+                                if(isAnc){
+                                    const goto = () => {                                    
+                                        getLabTableByConsultation('investigationTable'+line.id, modal._element, 'lab', line.id, '')
+                                        getMedicationsByFilter('treatmentTable'+line.id, line.id, modal._element)
+                                        getOtherPrescriptionsByFilter('otherPrescriptionsTable'+line.id, line.id, modal._element)
+                                    }
+                                    setTimeout(goto, 300)
+                                }
                             })
     
                             vitalSignsTable(`#vitalSignsTableNurses${suffixId}`, id, modal)

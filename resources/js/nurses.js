@@ -277,10 +277,16 @@ window.addEventListener('DOMContentLoaded', function () {
 
                             consultations.forEach(line => {
                                 iteration++
-    
                                 iteration > 1 ? count++ : ''
-    
                                 div.innerHTML += displayFunction(iteration, getOrdinal, count, consultations.length, line, viewer, false, closed)
+                                if(isAnc){
+                                    const goto = () => {                                    
+                                        getLabTableByConsultation('investigationTable'+line.id, modal._element, 'lab', line.id, '')
+                                        getNurseMedicationsByFilter('nurseTreatmentTable'+line.id, line.id, modal._element)
+                                        getOtherPrescriptionsByFilterNurses('otherPrescriptionsNursesTable'+line.id, line.id, modal._element)
+                                    }
+                                    setTimeout(goto, 300)
+                                }
                             })
                             vitalSignsTable(`#vitalSignsTableNurses${suffixId}`, id, modal)
                             deliveryNoteTable   = getDeliveryNoteTable('deliveryNoteTable', visitId, true, modal._element)

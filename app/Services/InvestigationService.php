@@ -9,16 +9,21 @@ use App\Models\Consultation;
 use App\Models\Prescription;
 use App\Models\User;
 use App\Models\Visit;
+use App\Notifications\InvestigationNotifier;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class InvestigationService
 {
     public function __construct(
         private readonly Visit $visit, 
         private readonly Prescription $prescription,
-        private readonly PayPercentageService $payPercentageService
+        private readonly PayPercentageService $payPercentageService,
+        private readonly HelperService $helperService,
+        private readonly InvestigationNotifier $investigationNotifier
         )
     {
         
@@ -251,22 +256,30 @@ class InvestigationService
 
     public function createLabResultRecord(Request $data, Prescription $prescription, User $user): Prescription
     {
-        $resource = $prescription->resource;
-
-        $prescription->update([
-            'test_sample'    => $data->sample,
-            'result'         => $data->result,
-            'result_date'    => Carbon::now(),
-            'result_by'      => $user->id,
-            'discontinued'      => false,
-            'dispense_comment'  => null,
+        return DB::transaction(function () use($data, $prescription, $user) {
+            $resource = $prescription->resource;
+    
+            $prescription->update([
+                'test_sample'    => $data->sample,
+                'result'         => $data->result,
+                'result_date'    => Carbon::now(),
+                'result_by'      => $user->id,
+                'discontinued'      => false,
+                'dispense_comment'  => null,
+                ]);
+            
+            $resource->update([
+                'stock_level' => $resource->stock_level - 1
             ]);
-        
-        $resource->update([
-            'stock_level' => $resource->stock_level - 1
-        ]);
+    
+            if ($this->helperService->nccTextTime() && $prescription->visit->patient->sms){
+                $this->investigationNotifier->toSms($prescription);
+                Log::info('message sent', ['to' => $prescription->visit->patient->first_name]);
+            }
+    
+            return $prescription;
 
-        return $prescription;
+        }, 2);
     }
 
     public function updateLabResultRecord(Request $data, Prescription $prescription, User $user): Prescription

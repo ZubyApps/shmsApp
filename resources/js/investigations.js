@@ -155,6 +155,13 @@ window.addEventListener('DOMContentLoaded', function () {
                                 iteration > 1 ? count++ : ''
 
                                 div.innerHTML += displayFunction(iteration, getOrdinal, count, consultations.length, line, viewer)
+
+                                if(isAnc){
+                                    const goto = () => {                                    
+                                        getLabTableByConsultation('investigationTable'+line.id, modal._element, 'lab', line.id, '')
+                                    }
+                                    setTimeout(goto, 300)
+                                }
                             })
     
                             modal.show()

@@ -285,6 +285,15 @@ window.addEventListener('DOMContentLoaded', function () {
                                     iteration > 1 ? count++ : ''
     
                                     div.innerHTML += displayFunction(iteration, getOrdinal, count, consultations.length, line, viewer)
+
+                                    if(isAnc){
+                                        const goto = () => {                                    
+                                            getLabTableByConsultation('investigationTable'+line.id, modal._element, 'lab', line.id, '')
+                                            getMedicationsByFilter('treatmentTable'+line.id, line.id, modal._element)
+                                            getOtherPrescriptionsByFilter('otherPrescriptionsTable'+line.id, line.id, modal._element)
+                                        }
+                                        setTimeout(goto, 300)
+                                    }
                                 })
         
                                 vitalSignsTable(`#vitalSignsTableNurses${suffixId}`, id, modal)
