@@ -148,7 +148,7 @@ class BulkRequestService
                     $resource->save();
                 }
                 
-                $resource->stock_level = $resource->stock_level - $data->qty;
+                $resource->stock_level = $resource->stock_level - (int)$data->qty;
                 $resource->save();
 
             } elseif (!$data->qty) {
