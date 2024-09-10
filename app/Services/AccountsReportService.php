@@ -529,7 +529,7 @@ class AccountsReportService
                     ->orWhere('sponsor_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                 })
                 ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                ->groupBy('sponsor', 'id', 'category')
+                ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
                 ->orderBy('sponsor', 'desc')
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
@@ -547,7 +547,7 @@ class AccountsReportService
                 })
                 ->whereMonth('visits.created_at', $date->month)
                 ->whereYear('visits.created_at', $date->year)
-                ->groupBy('sponsor', 'id', 'category')
+                ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
                 ->orderBy('sponsor', 'desc')
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
@@ -562,7 +562,7 @@ class AccountsReportService
                 })
                 ->whereMonth('visits.created_at', $current->month)
                 ->whereYear('visits.created_at', $current->year)
-                ->groupBy('sponsor', 'id', 'category')
+                ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
                 ->orderBy('sponsor', 'desc')
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -573,7 +573,7 @@ class AccountsReportService
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-            ->groupBy('sponsor', 'id', 'category')
+            ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
             ->orderBy('sponsor', 'desc')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -587,7 +587,7 @@ class AccountsReportService
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->whereMonth('visits.created_at', $date->month)
             ->whereYear('visits.created_at', $date->year)
-            ->groupBy('sponsor', 'id', 'category')
+            ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
             ->orderBy('sponsor', 'desc')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -598,7 +598,7 @@ class AccountsReportService
             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
             ->whereMonth('visits.created_at', $current->month)
             ->whereYear('visits.created_at', $current->year)
-            ->groupBy('sponsor', 'id', 'category')
+            ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
             ->orderBy('sponsor', 'desc')
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
