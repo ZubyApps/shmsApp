@@ -17,6 +17,7 @@
 @include('extras.medicalReportListModal', ['title' => 'Medical Report List', 'isDoctor' => false, 'id' => 'medicalReportListModal' ])
 @include('extras.viewMedicalReportModal', ['title' => '', 'isUpdate' => true, 'id' => 'viewMedicalReportModal' ])
 @include('billing.registerBillReminderModal', ['title' => "Set Bill Reminder", 'id' => 'registerBillReminderModal'])
+@include('extras.smsTemplateModal', ['title' => 'Send SMS',  'dept' => 'billing', 'id' => 'smsTemplateModal'])
 
     <div class="container mt-5 bg-white">
 

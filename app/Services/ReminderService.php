@@ -237,30 +237,30 @@ class ReminderService
     public function firstReminder(Request $data, Reminder $reminder, User $user)
     {
         return $reminder->update([
-            'first_reminder'        => $data->firstReminder ? $data->firstReminder : null,
-            'first_reminder_date'   => $data->firstReminder && $data->firstReminder !== 'Deferred' ? new Carbon() : null,
-            'first_reminder_by'     => $data->firstReminder ? $user->id : null,
-            'remind'                => $data->firstReminder ? false : $reminder->remind
+            'first_reminder'        => $data->reminder ? $data->reminder : null,
+            'first_reminder_date'   => $data->reminder && $data->reminder !== 'Deferred' ? new Carbon() : null,
+            'first_reminder_by'     => $data->reminder ? $user->id : null,
+            'remind'                => $data->reminder ? false : $reminder->remind
         ]);
     }
 
     public function secondReminder(Request $data, Reminder $reminder, User $user)
     {
         return $reminder->update([
-            'second_reminder'       => $data->secondReminder ? $data->secondReminder : null,
-            'second_reminder_date'  => $data->secondReminder && $data->secondReminder !== 'Deferred' ? new Carbon() : null,
-            'second_reminder_by'    => $data->secondReminder ? $user->id : null,
-            'remind'                => $data->secondReminder ? false : $reminder->remind
+            'second_reminder'       => $data->reminder ? $data->reminder : null,
+            'second_reminder_date'  => $data->reminder && $data->reminder !== 'Deferred' ? new Carbon() : null,
+            'second_reminder_by'    => $data->reminder ? $user->id : null,
+            'remind'                => $data->reminder ? false : $reminder->remind
         ]);
     }
 
     public function finalReminder(Request $data, Reminder $reminder, User $user)
     {
         return $reminder->update([
-            'final_reminder'        => $data->finalReminder ? $data->finalReminder : null,
-            'final_reminder_date'   => $data->finalReminder && $data->finalReminder !== 'Deferred' ? new Carbon() : null,
-            'final_reminder_by'     => $data->finalReminder ? $user->id : null,
-            'remind'                => $data->finalReminder ? false : $reminder->remind
+            'final_reminder'        => $data->reminder ? $data->reminder : null,
+            'final_reminder_date'   => $data->reminder && $data->reminder !== 'Deferred' ? new Carbon() : null,
+            'final_reminder_by'     => $data->reminder ? $user->id : null,
+            'remind'                => $data->reminder ? false : $reminder->remind
         ]);
     }
 

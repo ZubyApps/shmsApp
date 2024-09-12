@@ -24,6 +24,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const medicalReportListModal        = new Modal(document.getElementById('medicalReportListModal'))
     const viewMedicalReportModal        = new Modal(document.getElementById('viewMedicalReportModal'))
     const registerBillReminderModal     = new Modal(document.getElementById('registerBillReminderModal'))
+    const smsTemplateModal             = new Modal(document.getElementById('smsTemplateModal'))
 
     const balancingDateDiv              = document.querySelector('.balancingDateDiv')
     const billRemindersDatesDiv         = document.querySelector('.billRemindersDatesDiv')
@@ -47,6 +48,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const dueCashRemindersListCount      = document.querySelector('#dueRemindersListCount')
     const searchBillRemindersWithDatesBtn   = document.querySelector('.searchBillRemindersWithDatesBtn')
     const searchBillRemindersMonthBtn       = document.querySelector('.searchBillRemindersMonthBtn')
+    const sendSmsBtn                        = smsTemplateModal._element.querySelector('#sendSms')
     
 
     const outPatientsTab                = document.querySelector('#nav-outPatients-tab')
@@ -648,6 +650,10 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
+    smsTemplateModal._element.addEventListener('hide.bs.modal', function () {
+            dueCashRemindersTable.draw()
+        })
+
     outstandingBillsModal._element.addEventListener('hide.bs.modal', function () {
         if ($.fn.DataTable.isDataTable('#outstandingBillsTable')){
             $('#outstandingBillsTable').dataTable().fnDestroy()
@@ -870,65 +876,109 @@ window.addEventListener('DOMContentLoaded', function () {
         const secondReminderSelect  = event.target.closest('.secondReminderSelect')
         const finalReminderSelect   = event.target.closest('.finalReminderSelect')
         const confirmedPaidInput    = event.target.closest('.confirmedPaidInput')
+        const smsOption             = event.target.closest('.smsOption')
         const dueRemindersFieldset  = document.querySelector('#dueRemindersFieldset')
 
        if (firstReminderSelect){
-            const reminderId  = firstReminderSelect.getAttribute('data-id')
-                
-            firstReminderSelect.addEventListener('blur', function () {
-                dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/firstreminder/${reminderId}`, {firstReminder: firstReminderSelect.value})
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300) {
+            const reminderId = firstReminderSelect.getAttribute('data-id')
+
+            firstReminderSelect.addEventListener('change', function () {
+                if (smsMessenger(firstReminderSelect)){
+                    http.get(`/reminders/smsdetails/${reminderId}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                openModals(smsTemplateModal, sendSmsBtn, response.data.data)
+                                sendSmsBtn.setAttribute('data-select', 'firstReminderSelect')
+                                sendSmsBtn.setAttribute('data-reminder', firstReminderSelect.value)
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                        })
+                } else {
+                    dueRemindersFieldset.setAttribute('disabled', 'disabled')
+                        http.patch(`/reminders/firstreminder/${reminderId}`, {reminder: firstReminderSelect.value})
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                dueCashRemindersTable.draw()
+                                dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset)) 
+                            }
+                        })
+                        .catch((error) => {
                             dueCashRemindersTable.draw()
-                            dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset)) 
-                        }
-                    })
-                    .catch((error) => {
-                        dueCashRemindersTable.draw()
-                        dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
-                        console.log(error)
-                    })               
+                            dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                            console.log(error)
+                        })               
+                }
             })
         }
 
        if (secondReminderSelect){
             const reminderId  = secondReminderSelect.getAttribute('data-id')
                 
-            secondReminderSelect.addEventListener('blur', function () {
-                dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/secondreminder/${reminderId}`, {secondReminder: secondReminderSelect.value})
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300) {
-                                dueHmoRemindersTable.draw()
-                                dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset)) 
-                        }
-                    })
-                    .catch((error) => {
-                        dueCashRemindersTable.draw()
-                        dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
-                        console.log(error)
-                    })               
+            secondReminderSelect.addEventListener('change', function () {
+                if (smsMessenger(secondReminderSelect)){
+                    http.get(`/reminders/smsdetails/${reminderId}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                openModals(smsTemplateModal, sendSmsBtn, response.data.data)
+                                sendSmsBtn.setAttribute('data-select', 'secondReminderSelect')
+                                sendSmsBtn.setAttribute('data-reminder', secondReminderSelect.value)
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                        })
+
+                } else {
+                    dueRemindersFieldset.setAttribute('disabled', 'disabled')
+                        http.patch(`/reminders/secondreminder/${reminderId}`, {reminder: secondReminderSelect.value})
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                    dueCashRemindersTable.draw()
+                                    dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset)) 
+                            }
+                        })
+                        .catch((error) => {
+                            dueCashRemindersTable.draw()
+                            dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                            console.log(error)
+                        })               
+                }
             })
         }
 
        if (finalReminderSelect){
             const reminderId  = finalReminderSelect.getAttribute('data-id')
                 
-            finalReminderSelect.addEventListener('blur', function () {
-                dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/finalreminder/${reminderId}`, {finalReminder: finalReminderSelect.value})
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300) {
-                                dueCashRemindersTable.draw()
-                                dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
-                        }
-                    })
-                    .catch((error) => {
-                        dueCashRemindersTable.draw()
-                        dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
-                        console.log(error)
-                    })               
+            finalReminderSelect.addEventListener('change', function () {
+                if (smsMessenger(finalReminderSelect)){
+                    http.get(`/reminders/smsdetails/${reminderId}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                openModals(smsTemplateModal, sendSmsBtn, response.data.data)
+                                sendSmsBtn.setAttribute('data-select', 'finalReminderSelect')
+                                sendSmsBtn.setAttribute('data-reminder', finalReminderSelect.value)
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                        })
+                } else {
+                    dueRemindersFieldset.setAttribute('disabled', 'disabled')
+                        http.patch(`/reminders/finalreminder/${reminderId}`, {reminder: finalReminderSelect.value})
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                    dueCashRemindersTable.draw()
+                                    dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                            }
+                        })
+                        .catch((error) => {
+                            dueCashRemindersTable.draw()
+                            dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                            console.log(error)
+                        })               
+                }
             })
         }
 
@@ -953,4 +1003,30 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    sendSmsBtn.addEventListener('click', function () {
+        const reminderId  = sendSmsBtn.getAttribute('data-id')
+        const selectEl  = sendSmsBtn.getAttribute('data-select')
+        const reminder  = sendSmsBtn.getAttribute('data-reminder')
+
+        let data = {...getDivData(smsTemplateModal._element), selectEl, reminder}
+        
+        sendSmsBtn.setAttribute('disabled', 'disabled')
+        http.post(`/reminders/sendsms/${reminderId}`, {...data}, {"html": smsTemplateModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                smsTemplateModal.hide()
+                    clearDivValues(smsTemplateModal._element)
+                    clearValidationErrors(smsTemplateModal._element)
+                }
+                sendSmsBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            sendSmsBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
+        })
+    })
 })
+
+const smsMessenger = (selectElement) => {
+        return selectElement.value == 'Texted'
+}

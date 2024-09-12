@@ -828,9 +828,9 @@ window.addEventListener('DOMContentLoaded', function () {
                         }
                     })
                     .catch((error) => {
-                        console.log(error)
                         reconciliationTable ?  reconciliationTable.draw(false) : ''
                         reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
+                        console.log(error)
                     })                
                 })
             }
@@ -857,9 +857,9 @@ window.addEventListener('DOMContentLoaded', function () {
                         }
                     })
                     .catch((error) => {
-                        console.log(error)
                         reconciliationTable ?  reconciliationTable.draw(false) : ''
                         reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
+                        console.log(error)
                     })                
                 })
 

@@ -469,7 +469,7 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to, date) =>
         }},
         paging: true,
         orderMulti: false,
-        // lengthMenu:[10, 100, 200, 300],
+        lengthMenu:[10, 20, 50, 100],
         // searchDelay: 1000,
         language: {
             emptyTable: 'No Visits'

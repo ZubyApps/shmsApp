@@ -179,7 +179,7 @@ function openModals(modal, button, {id, ...data}) {
     for (let name in data) {
 
         const nameInput = modal._element.querySelector(`[name="${ name }"]`)
-        
+
         nameInput.value = data[name]
     }
     
@@ -776,7 +776,7 @@ const selectReminderOptions = (row, selectType) => `<div class="d-flex text-seco
                         <select class="form-select form-select-md ${selectType} ms-1" data-id="${row.id}">
                             <option value="">Select</option>
                             <option value="Emailed">Email</option>
-                            <option value="Texted">Text</option>
+                            <option value="Texted" class="smsOption" data-id="${row.id}">Text</option>
                             <option value="WhatsApped">WhatsApp</option>
                             <option value="Called">Call</option>
                             <option value="Deferred">Defer</option>

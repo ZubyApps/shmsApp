@@ -627,7 +627,6 @@ const getBillReminderTable = (tableId, startDate, endDate, date) => {
         lengthMenu:[20, 40, 80, 120, 200],
         columns: [
             {data: "patient"},
-            // {data: "monthSentFor"},
             {
                 visible: false,
                 data: "setFrom"

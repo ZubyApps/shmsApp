@@ -5,10 +5,9 @@ declare(strict_types = 1);
 namespace App\InvokableObjects;
 
 use App\Models\MedicationChart;
-use App\Models\ShiftReport;
 use App\Notifications\MedicationNotifier;
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -25,7 +24,13 @@ class MedicationsForSms
         $time1 = (new CarbonImmutable())->addHour();
         $time2 = $time1->subSeconds(59);
 
-        $medications = MedicationChart::whereRelation('visit', 'admission_status', '=', 'Outpatient')
+        $medications = MedicationChart::where(function(Builder $query) {
+                            $query->whereRelation('visit', 'admission_status', '=', 'Outpatient')
+                            ->orWhere(function(Builder $query) {
+                                $query->whereRelation('visit', 'admission_status', '=', 'Inpatient')
+                                ->whereRelation('visit', 'discharge_reason', '!=', null);
+                            });
+                        })
                         ->whereRelation('visit.patient', 'sms', '=', true)
                         ->whereRelation('prescription', 'discontinued', '=', false)
                         ->whereBetween('scheduled_time', [$time2, $time1])

@@ -537,6 +537,7 @@ Route::middleware('auth')->group(function () {
         Route::get('load/hmo/due', [ReminderController::class, 'loadDueHmoRemindersTable']);
         Route::get('load/cash', [ReminderController::class, 'loadCashRemindersTable']);
         Route::get('load/cash/due', [ReminderController::class, 'loadDueCashRemindersTable']);
+        Route::get('/smsdetails/{reminder}', [ReminderController::class, 'prepareSmsDetails']);
         Route::patch('/firstreminder/{reminder}', [ReminderController::class, 'updateFirstReminder']);
         Route::patch('/secondreminder/{reminder}', [ReminderController::class, 'updateSecondReminder']);
         Route::patch('/finalreminder/{reminder}', [ReminderController::class, 'updateFinalReminder']);
@@ -545,6 +546,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/deletesecond/{reminder}', [ReminderController::class, 'deleteSecondReminder']);
         Route::patch('/deletefinal/{reminder}', [ReminderController::class, 'deleteFinalReminder']);
         Route::patch('/deletepaid/{reminder}', [ReminderController::class, 'deletePaid']);
+        Route::post('/sendsms/{reminder}', [ReminderController::class, 'sendSms']);
         Route::delete('/{reminder}', [ReminderController::class, 'destroy']);
     });
 });
