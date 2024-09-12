@@ -26,8 +26,8 @@ class MedicationChartService
         $tz = 'Africa/Lagos';
         $interval = CarbonInterval::hours($data->frequency);
         // $start = $data->date ? (new CarbonImmutable($data->date, $tz)) : (new CarbonImmutable($data->date, $tz))->addMinutes(15);
-        $start = $data->date ? (new CarbonImmutable($data->date, $tz)) : (new CarbonImmutable($data->date, $tz));
-        $end    = $start->addDays($data->days);
+        $start = new CarbonImmutable($data->date, $tz);
+        $end   = $start->addDays($data->days);
         $dates = new CarbonPeriod($start, $interval, $end, CarbonPeriod::EXCLUDE_END_DATE);
 
         return DB::transaction(function () use($data, $user, $dates, $tz) {
@@ -64,20 +64,20 @@ class MedicationChartService
 
         if($data->notGiven == 'Snooze 30 mins'){
             return $medicationChart->update([
-                'time_given' => Carbon::now(),
-                'not_given'  => $data->notGiven,
-                'given_by'   => $user->id,
-                'note'       => $data->note,
+                'time_given'        => Carbon::now(),
+                'not_given'         => $data->notGiven,
+                'given_by'          => $user->id,
+                'note'              => $data->note,
                 'scheduled_time'    => $scheduledTime->addMinutes(30),    
              ]);
         };
 
         if($data->notGiven == 'Snooze 60 mins'){
             return $medicationChart->update([
-                'time_given'    => Carbon::now(),
-                'not_given'     => $data->notGiven,
-                'given_by'      => $user->id,
-                'note'          => $data->note,
+                'time_given'        => Carbon::now(),
+                'not_given'         => $data->notGiven,
+                'given_by'          => $user->id,
+                'note'              => $data->note,
                 'scheduled_time'    =>  $scheduledTime->addMinutes(60),    
              ]);
         };

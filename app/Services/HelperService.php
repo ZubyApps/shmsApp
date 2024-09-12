@@ -6,7 +6,6 @@ namespace App\Services;
 
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Facades\Log;
 
 class HelperService
 {

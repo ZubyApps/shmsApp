@@ -7,6 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 class InvestigationNotifier extends Notification
 {
@@ -35,8 +36,12 @@ class InvestigationNotifier extends Notification
      */
     public function toSms(object $notifiable)
     {
+        $firstName = $notifiable->visit->patient->first_name;
+
+        Log::info('investigation', ['sent to' => $firstName]);
+
         return $this->churchPlusSmsService
-        ->sendSms('Dear ' .$notifiable->visit->patient->first_name. ', your test result is ready. This notification is courtesy of our Hospital Management System. To opt out, visit reception', $notifiable->visit->patient->phone, 'SandraHosp');
+        ->sendSms('Dear ' .$firstName. ', your test result is ready. This notification is courtesy of our Hospital Management System. To opt out, visit reception', $notifiable->visit->patient->phone, 'SandraHosp');
     }
 
     /**

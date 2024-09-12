@@ -24,8 +24,8 @@
                             <x-form-input type="datetime-local" name="dateSet"/>
                         </x-form-div>
                         <x-form-div class="col-xl-12">
-                            <x-input-span class="">Max Days</x-input-span>
-                            <x-form-input type="number" id="maxDays" name="maxDays"/>
+                            <x-input-span class="">Pay Date</x-input-span>
+                            <x-form-input type="date" id="payDate" name="payDate"/>
                         </x-form-div>
                         <x-form-div class="col-xl-12">
                             <x-input-span>Comment</x-input-span>

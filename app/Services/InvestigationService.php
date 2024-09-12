@@ -274,7 +274,6 @@ class InvestigationService
     
             if ($this->helperService->nccTextTime() && $prescription->visit->patient->sms){
                 $this->investigationNotifier->toSms($prescription);
-                Log::info('message sent', ['to' => $prescription->visit->patient->first_name]);
             }
     
             return $prescription;

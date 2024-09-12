@@ -8,6 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 class MedicationNotifier extends Notification
 {
@@ -36,8 +37,12 @@ class MedicationNotifier extends Notification
      */
     public function toSms(object $notifiable)
     {
+        $firstName = $notifiable->visit->patient->first_name;
+        
+        Log::info('medications', ['sent to' => $firstName]);
+
         return $this->churchPlusSmsService
-        ->sendSms('Dear ' .$notifiable->visit->patient->first_name. ', pls be reminded of your medication by '. (new Carbon($notifiable->scheduled_time))->format('g:iA') . ' today, courtesy of our Hospital Management System', $notifiable->visit->patient->phone, 'SandraHosp');
+        ->sendSms('Dear ' .$firstName. ', pls be reminded of your medication by '. (new Carbon($notifiable->scheduled_time))->format('g:iA') . ' today, courtesy of our Hospital Management System', $notifiable->visit->patient->phone, 'SandraHosp');
     }
 
     /**

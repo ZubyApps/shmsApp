@@ -7,6 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 class PatientCardNumber extends Notification
 {
@@ -35,8 +36,12 @@ class PatientCardNumber extends Notification
      */
     public function toSms(object $notifiable)
     {
+        $firstName = $notifiable->first_name;
+
+        Log::info('card number', ['sent to' => $firstName]);
+
         return $this->churchPlusSmsService
-                    ->sendSms('Dear ' .$notifiable->first_name. ', welcome to Sandra Hospital, this is your Hospital Card Number '.'('.$notifiable->card_no.') courtesy of our Hospital Management System', $notifiable->phone, 'SandraHosp');
+                    ->sendSms('Dear ' .$firstName. ', welcome to Sandra Hospital, this is your Hospital Card Number '.'('.$notifiable->card_no.') courtesy of our Hospital Management System', $notifiable->phone, 'SandraHosp');
     }
 
     /**

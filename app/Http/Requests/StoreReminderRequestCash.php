@@ -25,7 +25,7 @@ class StoreReminderRequestCash extends FormRequest
         return [
             "dateSet"       => ['required', 'date'],
             "comment"       => ['required', 'max:255'],
-            "maxDays"       => ['required', 'integer'],
+            "payDate"       => ['required', 'date'],
             "visitId"       => ['required', 'numeric', 'exists:'.Visit::class.',id'],
 
         ];

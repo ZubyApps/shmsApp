@@ -25,11 +25,12 @@ class ReminderService
         return DB::transaction(function () use($data, $user){
             $sponsor = $data->sponsorId ? Sponsor::find($data->sponsorId) : null;
             $visit   = $data->visitId ? Visit::find($data->visitId) : null;
+            $patientsMaxDays = $data->payDate ? (new Carbon($data->dateSet))->diffInDays($data->payDate) : null;
 
             $reminder = $user->reminders()->create([
                 'month_sent_for'    => $data->monthSentFor ? new Carbon($data->monthSentFor) : null,
                 'set_from'          => $data->dateSent ?? $data->dateSet,
-                'max_days'          => $sponsor ? $sponsor->max_pay_days ?? 45 : $data->maxDays,
+                'max_days'          => $sponsor ? $sponsor->max_pay_days ?? 45 : $patientsMaxDays,
                 'comment'           => $data->comment,
                 'sponsor_category'  => $sponsor ? $sponsor->category_name : ($visit ? $visit->sponsor->category_name : null),
                 'sponsor_id'        => $data->sponsorId ?? null,
