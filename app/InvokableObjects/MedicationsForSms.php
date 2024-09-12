@@ -42,7 +42,6 @@ class MedicationsForSms
 
         foreach($medications as $medication) {
             $this->medicationNotifier->toSms($medication);
-            Log::info('Text sent to '.$medication?->visit->patient->first_name);
         }
       }, 2);
    }
