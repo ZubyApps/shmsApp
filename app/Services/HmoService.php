@@ -1065,7 +1065,7 @@ class HmoService
         return DB::transaction(function () use($data, $prescription, $user) {
 
             $prescription->update([
-                'paid'      => $data->amountPaid,
+                'paid'      => $data->amountPaid ?? 0,
                 'paid_by'   => $user->id
             ]);
 
