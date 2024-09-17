@@ -34,6 +34,7 @@ export default defineConfig({
                 'resources/js/accountReports.js',
                 'resources/js/usersReports.js',
                 'resources/js/thirdPartyServices.js',
+                'resources/js/patientForm.js',
             ],
             refresh: true,
         }),

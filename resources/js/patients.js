@@ -2,7 +2,7 @@ import { Modal } from "bootstrap"
 import { getDivData, clearDivValues, clearValidationErrors, displayList, openModals, getPatientSponsorDatalistOptionId, getOrdinal } from "./helpers"
 import http from "./http"
 import $ from 'jquery';
-import { getAgeAggregateTable, getAllPatientsTable, getNewRegisteredPatientsTable, getPatientsBySponsorTable, getSexAggregateTable, getSponsorsTable, getVisitsSummaryTable, getVisitsTable } from "./tables/patientsTables";
+import { getAgeAggregateTable, getAllPatientsTable, getNewRegisteredPatientsTable, getPatientsBySponsorTable, getPrePatientsTable, getSexAggregateTable, getSponsorsTable, getVisitsSummaryTable, getVisitsTable } from "./tables/patientsTables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getAncVitalSignsTable } from "./tables/nursesTables";
 import { getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
@@ -33,7 +33,8 @@ window.addEventListener('DOMContentLoaded', function(){
     const confirmVisitBtn                   = document.querySelector('#confirmVisitBtn')
     const searchNewRegPatientsByMonthBtn    = document.querySelector('.searchNewRegPatientsByMonthBtn')
     const searchVisitsByMonthBtn            = document.querySelector('.searchVisitsByMonthBtn')
-
+    const sendLinkBtn                       = document.querySelector('#sendLinkBtn')
+    
     const newPatientSponsorInputEl          = document.querySelector('#newPatientSponsor')
     const updatePatientSponsorInputEl       = document.querySelector('#updatePatientSponsor')
 
@@ -46,8 +47,9 @@ window.addEventListener('DOMContentLoaded', function(){
     const sponsorsTab                       = document.querySelector('#nav-sponsors-tab')
     const visitsTab                         = document.querySelector('#nav-visits-tab')
     const summariesTab                      = document.querySelector('#nav-summaries-tab')
+    const prePatientsTab                    = document.querySelector('#nav-prePatients-tab')
 
-    let sponsorsTable, visitsTable, newRegPatientsTable, sexAggregateTable, patientsBySponsorTable, visitsSummaryTable
+    let sponsorsTable, visitsTable, newRegPatientsTable, sexAggregateTable, patientsBySponsorTable, visitsSummaryTable, prePatientsTable
 
     const allPatientsTable = getAllPatientsTable('allPatientsTable')
     $('#allPatientsTable, #sponsorsTable, #visitsTable, #newRegPatientsTable, #sexAggregateTable, #patientsBySponsorTable, #visitsSummaryTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
@@ -118,6 +120,14 @@ window.addEventListener('DOMContentLoaded', function(){
             $('#visitsSummaryTable').dataTable().fnDestroy()
         }
         visitsSummaryTable = getVisitsSummaryTable('visitsSummaryTable', visistSummaryDiv.querySelector('#visitSummaryMonth').value)
+    })
+
+    prePatientsTab.addEventListener('click', function() {
+        if ($.fn.DataTable.isDataTable( '#prePatientsTable' )){
+            $('#prePatientsTable').dataTable().fnDraw()
+        } else {
+            prePatientsTable = getPrePatientsTable('prePatientsTable')
+        }
     })
 
     document.querySelector('#sponsorsTable').addEventListener('click', function (event) {
@@ -244,6 +254,82 @@ window.addEventListener('DOMContentLoaded', function(){
         }
     })
 
+    document.querySelector('#prePatientsTable').addEventListener('click', function (event) {
+        const confirmBtn    = event.target.closest('.confirmBtn')
+        const deleteBtn     = event.target.closest('.deleteBtn')
+        // const initiateVisitBtn  = event.target.closest('.initiateVisitBtn')
+
+        if (confirmBtn) {
+            confirmBtn.setAttribute('disabled', 'disabled')
+            const prePatientId = confirmBtn.getAttribute('data-id')
+            http.get(`/patients/prepatients/${ prePatientId }`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openPatientModal(updatePatientModal, savePatientBtn, response.data.data)
+                        savePatientBtn.innerHTML = 'Confirm'
+                        savePatientBtn.setAttribute('data-prepatient', response.data.data.id)
+                        savePatientBtn.removeAttribute('data-id')
+                    }
+                    confirmBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    confirmBtn.removeAttribute('disabled')
+                })
+        }
+
+        // if (initiateVisitBtn) {
+        //     initiateVisitBtn.setAttribute('disabled', 'disabled')
+        //     initiatePatientModal._element.querySelector('#patientId').value = initiateVisitBtn.getAttribute('data-patient')
+        //     initiatePatientModal._element.querySelector('#confirmVisitBtn').setAttribute('data-id', initiateVisitBtn.getAttribute('data-id'))
+        //     initiatePatientModal.show()
+        //     initiateVisitBtn.removeAttribute('disabled')
+        //     setTimeout(function(){confirmVisitBtn.focus()}, 1000)
+            
+        // }
+
+        if (deleteBtn){
+            deleteBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Pre-Patient?')) {
+                const id = deleteBtn.getAttribute('data-id')
+                http.delete(`/patients/prepatient/${id}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            prePatientsTable.draw()
+                        }
+                        deleteBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                        deleteBtn.removeAttribute('disabled')
+                    })
+            }
+            
+        }
+    })
+
+    sendLinkBtn.addEventListener('click', function () {
+        const sponsor = getPatientSponsorDatalistOptionId(newPatientModal, newPatientSponsorInputEl, newPatientSponsorDatalistEl)
+        sendLinkBtn.setAttribute('disabled', 'disabled')
+        let data = {...getDivData(newPatientModal._element), sponsor }
+
+        http.post('/patients/generatelink', {...data}, {"html": newPatientModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                // newPatientModal.hide()
+                // clearDivValues(newPatientModal._element)
+                // newPatientModal._element.querySelector('.allPatientInputsDiv').classList.add('d-none')
+                // newPatientModal._element.querySelector('.familyRegistrationBillOption')
+                // allPatientsTable.draw()
+                alert('Link sent')
+            }
+            // sendLinkBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            sendLinkBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
+        })
+    })
+
     registerPatientBtn.addEventListener('click', function () {
         const sponsor = getPatientSponsorDatalistOptionId(newPatientModal, newPatientSponsorInputEl, newPatientSponsorDatalistEl)
         registerPatientBtn.setAttribute('disabled', 'disabled')
@@ -267,17 +353,19 @@ window.addEventListener('DOMContentLoaded', function(){
     })
 
     savePatientBtn.addEventListener('click', function (event) {
-        const patient = event.currentTarget.getAttribute('data-id')
+        const patient    = event.currentTarget.getAttribute('data-id')
+        const prePatient = event.currentTarget.getAttribute('data-prepatient')
         savePatientBtn.setAttribute('disabled', 'disabled')
 
         let sponsor = getPatientSponsorDatalistOptionId(updatePatientModal, updatePatientSponsorInputEl, updatePatientSponsorDatalistEl)
-        let data = {...getDivData(updatePatientModal._element), sponsor }
+        let data = {...getDivData(updatePatientModal._element), sponsor, prePatient }
 
-        http.post(`/patients/${patient}`, {...data}, {"html": updatePatientModal._element})
+        http.post(`/patients${patient ? '/'+patient : ''}`, {...data}, {"html": updatePatientModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 updatePatientModal.hide()
                 allPatientsTable.draw(false)
+                prePatientsTable ? prePatientsTable.draw() : ''
             }
             savePatientBtn.removeAttribute('disabled')
         })
@@ -423,6 +511,8 @@ window.addEventListener('DOMContentLoaded', function(){
 
     newPatientModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(newPatientModal._element)
+        sendLinkBtn.hasAttribute('disabled') ? clearDivValues(newPatientModal._element) : ''
+        sendLinkBtn.removeAttribute('disabled')
         registerPatientBtn.removeAttribute('disabled')
     })
 
@@ -438,7 +528,6 @@ window.addEventListener('DOMContentLoaded', function(){
 })
 
 function openPatientModal(modal, button, {id, sponsorId, sponsorCategoryId, ...data}) {
- 
     for (let name in data) {
         const nameInput = modal._element.querySelector(`[name="${ name }"]`)
 

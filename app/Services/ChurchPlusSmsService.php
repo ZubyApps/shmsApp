@@ -9,13 +9,16 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\UrlHelper;
 
 class ChurchPlusSmsService
 {
     private $baseUrl;
+    // private $endPoint;
     private $tenantId;
 
     public function __construct()
@@ -31,10 +34,10 @@ class ChurchPlusSmsService
         }
 
         $client = new Client();
+        
+        $completeUrl    = $this->baseUrl.'recipients='.$recipients.'&message='.$message.'&subject='.$subject.'&cid='.$this->tenantId;
 
-        $completeUrl = $this->baseUrl.'recipients='.$recipients.'&message='.$message.'&subject='.$subject.'&cid='.$this->tenantId;
-
-        // Log::info("", ["the url" => $completeUrl]);
+        // Log::info("", ["url1" => $completeUrl]);
 
         $response = $client->request('POST', $completeUrl, []);
 

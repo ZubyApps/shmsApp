@@ -4,8 +4,9 @@
 @section('content')
 @vite(['resources/css/colourblink.scss', 'resources/js/patients.js'])
 
-@include('patients.patientModal', ['title' => 'New Patient', 'isUpdate' => false, 'id' => 'newPatientModal'])
-@include('patients.patientModal', ['title' => 'Update Patient', 'isUpdate' => true, 'id' => 'updatePatientModal'])
+@include('patients.patientModal', ['title' => 'New Patient', 'isUpdate' => false, 'isConfirm' => false, 'id' => 'newPatientModal'])
+@include('patients.patientModal', ['title' => 'Update Patient', 'isUpdate' => true, 'isConfirm' => false, 'id' => 'updatePatientModal'])
+@include('patients.patientModal', ['title' => 'Confirm Patient', 'isUpdate' => true, 'isConfirm' => true, 'id' => 'confirmPatientModal'])
 
 @include('sponsors.sponsorModal', ['title' => 'New Sponsor', 'isUpdate' => false, 'id' => 'newSponsorModal'])
 @include('sponsors.sponsorModal', ['title' => 'Update Sponsor', 'isUpdate' => true, 'id' => 'updateSponsorModal'])
@@ -31,6 +32,9 @@
                 <button class="nav-link"   id="nav-summaries-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-summaries" type="button" role="tab" aria-controls="nav-summaries"
                     aria-selected="false">Summaries</button>
+                <button class="nav-link"   id="nav-prePatients-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-prePatients" type="button" role="tab" aria-controls="nav-prePatients"
+                    aria-selected="false">Pre Patients</button>
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
@@ -264,6 +268,34 @@
                           </div>
                         </div>
                       </div>
+                </div>
+            </div>
+            <!-- patients form table -->
+            <div class="tab-pane fade" id="nav-prePatients" role="tabpanel" aria-labelledby="nav-prePatients-tab" tabindex="0">
+                {{-- <div class="text-start py-3">
+                    <button type="button" id="newPatient" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Patient
+                    </button>
+                </div> --}}
+                <div class="py-2">
+                    <table id="prePatientsTable" class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th>Card</th>
+                                <th>Patient Name</th>
+                                <th><i class="bi bi-telephone-outbound-fill text-primary"></th>
+                                <th>Sex</th>
+                                <th>Age</th>
+                                <th>Sponsor</th>
+                                <th>Category</th>
+                                <th>Created</th>
+                                {{-- <th>CreatedBy</th> --}}
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </div>

@@ -67,6 +67,7 @@ return [
         ],
         'church_plus' => [
             'base_url'  => env('CHURCH_PLUS_BASEURL'),
+            'end_point'  => env('CHURCH_PLUS_ENDPOINT'),
             'tenant_id' => env('CHURCH_PLUS_TENANTID')
         ]
 

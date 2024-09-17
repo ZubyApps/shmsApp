@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Sponsor extends Model
 {
@@ -39,6 +40,11 @@ class Sponsor extends Model
     public function reminders()
     {
         return $this->hasMany(Reminder::class);
+    }
+
+    public function patientPreForm(): HasMany
+    {
+        return $this->hasMany(PatientPreForm::class);
     }
 
     public function allHmsBills()

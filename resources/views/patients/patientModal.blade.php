@@ -20,7 +20,6 @@
                                 <option class="ancOption" value="ANC">ANC</option>
                             </select>
                         </x-form-div>
-
                     </div>
                     <div class="{{ !$isUpdate ? 'd-none' : '' }} allPatientInputsDiv form-control">
                         <div class="mb-2">
@@ -80,6 +79,12 @@
                                     <x-input-span>Flag Reason</x-input-span>
                                     <x-form-input name="flagReason" class="FlagReason" value=""/>
                                 </x-form-div>
+                                <div class="text-end py-1 {{ $isUpdate ? 'd-none' : '' }}">
+                                    <button type="button" id="sendLinkBtn" class="btn btn-primary">
+                                        <i class="bi bi-plus-circle me-1"></i>
+                                        Send Link
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="mb-2">
@@ -225,9 +230,9 @@
                         <i class="bi bi-x-circle me-1"></i>
                         Close
                     </button>
-                    <button type="button" id="{{ $isUpdate ? 'savePatientBtn' : 'registerPatientBtn' }}" class="btn btn-primary">
+                    <button type="button" id="{{ $isUpdate ? 'savePatientBtn' : ($isConfirm ? 'confirmPatientBtn' : 'registerPatientBtn') }}" class="btn btn-primary">
                         <i class="bi bi-check-circle me-1"></i>
-                        {{ $isUpdate ? 'Update' : 'Register' }}
+                        {{ $isUpdate ? 'Update' : ($isConfirm ? 'Save' : 'Register') }}
                     </button>
                 </div>
             </div>

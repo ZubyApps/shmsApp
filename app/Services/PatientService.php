@@ -5,8 +5,11 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
+use App\DataObjects\FormLinkParams;
 use App\Models\Patient;
+use App\Models\PatientPreForm;
 use App\Models\User;
+use App\Notifications\FormLinkNotifier;
 use App\Notifications\PatientCardNumber;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
@@ -14,13 +17,16 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 
 class PatientService
 {
     public function __construct(
         private readonly Patient $patient, 
         private readonly HelperService $helperService, 
-        private readonly PatientCardNumber $patientCardNumber
+        private readonly PatientCardNumber $patientCardNumber,
+        private readonly FormLinkNotifier $formLinkNotifier,
+        private readonly PatientPreForm $patientPreForm
         )
     {
     }
@@ -61,6 +67,10 @@ class PatientService
 
         if ($this->helperService->nccTextTime() && $patient->sms){
             $this->patientCardNumber->toSms($patient);
+        }
+
+        if ($data->prePatient){
+            $this->deletePrePatient((int)$data->prePatient);
         }
 
         return $patient;
@@ -115,6 +125,51 @@ class PatientService
         return $patient;
     }
 
+    public function sendFormLink($data, User $user)
+    {
+        $notifiable  = new FormLinkParams(
+            config('app.url').'/patientform?', 
+            (int)$data->sponsorCategory, 
+            (int)$data->sponsor, 
+            $data->cardNumber, 
+            $data->patientType, 
+            $data->phone, 
+            $user->id
+        );
+        
+        // $link2 = route('patientForm',
+        //         [
+        //             'sponsorCategory'   => $notifiable->sponsorCat,
+        //             'sponsor'           => $notifiable->sponsor,
+        //             'cardNumber'        => $notifiable->cardNumber,
+        //             'patientType'       => $notifiable->patientType,
+        //             'phone'             => $notifiable->phone,
+        //             'user'              => $notifiable->userId
+        //         ]
+        //     );
+
+        $patientForm = $this->patientPreForm->create(
+            [
+                'sponsor_category'  => $notifiable->sponsorCat,
+                'sponsor_id'        => $notifiable->sponsor,
+                'card_no'           => $notifiable->cardNumber,
+                'patient_type'      => $notifiable->patientType,
+                'phone'             => $notifiable->phone,
+                'user_id'           => $notifiable->userId
+            ]
+            );
+
+        $signedLink = URL::temporarySignedRoute('patientForm', now()->addMinutes(5), ['patientPreForm' => $patientForm->id]);
+
+        // $patientForm->update(['short_link' => $signedLink]);
+
+        // $link = $notifiable->linkBaseUrl.'sponsorCategory='. $notifiable->sponsorCat.'&sponsor='. $notifiable->sponsor.'&cardNumber='. $notifiable->cardNumber . '&patientType='. $notifiable->patientType. '&phone='. $notifiable->phone. '&user='. $notifiable->userId;
+
+        if ($this->helperService->nccTextTime()){
+            $this->formLinkNotifier->toSms($notifiable, $signedLink, $notifiable->phone);
+        }
+    }
+
     public function getPaginatedPatients(DataTableQueryParams $params)
     {
         $orderBy    = 'created_at';
@@ -164,6 +219,11 @@ class PatientService
                 'patient'           => $patient->patientId()
             ];
          };
+    }
+
+    public function deletePrePatient(int $id)
+    {
+        return $this->patientPreForm->destroy($id);
     }
 
     public function getSummaryBySex(DataTableQueryParams $params, $data)

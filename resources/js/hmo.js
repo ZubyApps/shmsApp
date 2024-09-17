@@ -1121,7 +1121,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 
             firstReminderSelect.addEventListener('blur', function () {
                 dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/firstreminder/${reminderId}`, {firstReminder: firstReminderSelect.value})
+                    http.patch(`/reminders/firstreminder/${reminderId}`, {reminder: firstReminderSelect.value})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                             dueHmoRemindersTable.draw()
@@ -1141,7 +1141,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 
             secondReminderSelect.addEventListener('blur', function () {
                 dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/secondreminder/${reminderId}`, {secondReminder: secondReminderSelect.value})
+                    http.patch(`/reminders/secondreminder/${reminderId}`, {reminder: secondReminderSelect.value})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                                 dueHmoRemindersTable.draw()
@@ -1161,7 +1161,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 
             finalReminderSelect.addEventListener('blur', function () {
                 dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/finalreminder/${reminderId}`, {finalReminder: finalReminderSelect.value})
+                    http.patch(`/reminders/finalreminder/${reminderId}`, {reminder: finalReminderSelect.value})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                                 dueHmoRemindersTable.draw()

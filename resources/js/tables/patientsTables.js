@@ -351,4 +351,51 @@ const getVisitsTable = (tableId, startDate, endDate, filterListBy) => {
     return visitsTable
 }
 
-export {getSponsorsTable, getAllPatientsTable, getNewRegisteredPatientsTable, getSexAggregateTable, getAgeAggregateTable, getVisitsSummaryTable, getPatientsBySponsorTable, getVisitsTable}
+const getPrePatientsTable = (tableId) => {
+    const prePatientsTable = new DataTable(`#${tableId}`, {
+        serverSide: true,
+        ajax:  '/patients/prepatients/load',
+        orderMulti: true,
+        lengthMenu:[50, 100, 150, 200, 300],
+        search:true,
+        searchDelay: 1000,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
+        columns: [
+            {data: "card"},
+            {data: "patient"},
+            {data: "phone"},
+            {data: "sex"},
+            {data: "age"},
+            {data: row => `<span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor}</span>`},
+            {data: "category"},
+            {data: "createdAt"},
+            // {data: "createdBy"},
+            {
+                sortable: false,
+                data: row => function () {
+                    
+                        return `
+                        <div class="d-flex flex-">
+                            <button class="ms-1 btn btn-outline-primary confirmBtn tooltip-test" title="confirm" data-id="${ row.id }">
+                                <i class="bi bi-check-square-fill"></i>
+                            </button>
+                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
+                        </div>
+                    `
+                }}
+        ]
+    })
+
+    return prePatientsTable
+}
+
+export {getSponsorsTable, getAllPatientsTable, getNewRegisteredPatientsTable, getSexAggregateTable, getAgeAggregateTable, getVisitsSummaryTable, getPatientsBySponsorTable, getVisitsTable, getPrePatientsTable}

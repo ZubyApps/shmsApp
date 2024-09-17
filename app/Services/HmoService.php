@@ -647,23 +647,23 @@ class HmoService
 
         if (! empty($params->searchTerm)) {
             return DB::table('visits')
-                        ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, sponsors.name as sponsor, sponsors.id as id, sponsors.category_name as category, COUNT(DISTINCT visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, SUM(CASE WHEN visits.hmo_done_by IS NOT NULL THEN 1 ELSE 0 END) AS billsSent, DATE_FORMAT(visits.created_at, "%m") as month, YEAR(visits.created_at) as year, EXTRACT(YEAR_MONTH FROM visits.created_at) as yearMonth')
-                        ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-                        ->where('visits.consulted', '!=', null)
-                        ->where('visits.hmo_done_by', '!=', null)
-                        ->where(function (QueryBuilder $query) {
-                            $query->where('sponsors.category_name', 'HMO')
-                            ->orWhere('sponsors.category_name', 'NHIS' )
-                            ->orWhere('sponsors.category_name', 'Retainership' );
-                        })
-                        ->where(function (QueryBuilder $query) use ($params){
-                            $query->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('sponsors.category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                        })
-                        ->groupBy('yearMonth', 'sponsor', 'id', 'category', 'monthName', 'year', 'month')
-                        ->orderBy('month')
-                        ->get()
-                        ->toArray();
+                    ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, sponsors.name as sponsor, sponsors.id as id, sponsors.category_name as category, COUNT(DISTINCT visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, SUM(CASE WHEN visits.hmo_done_by IS NOT NULL THEN 1 ELSE 0 END) AS billsSent, DATE_FORMAT(visits.created_at, "%m") as month, YEAR(visits.created_at) as year, EXTRACT(YEAR_MONTH FROM visits.created_at) as yearMonth')
+                    ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                    ->where('consulted', '!=', null)
+                    ->where('hmo_done_by', '!=', null)
+                    ->where(function (QueryBuilder $query) {
+                        $query->where('sponsors.category_name', 'HMO')
+                        ->orWhere('sponsors.category_name', 'NHIS' )
+                        ->orWhere('sponsors.category_name', 'Retainership' );
+                    })
+                    ->where(function (QueryBuilder $query) use ($params){
+                        $query->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('sponsors.category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    })
+                    ->groupBy('yearMonth', 'sponsor', 'category', 'monthName', 'year', 'month', 'id')
+                    ->orderBy('month')
+                    ->get()
+                    ->toArray();
         }
 
         if ($data->category){

@@ -320,7 +320,9 @@ Route::middleware('auth')->group(function () {
         Route::prefix('patients')->group(function () {
             Route::get('', [PatientController::class, 'index'])->name('Patients');
             Route::post('', [PatientController::class, 'store']);
+            Route::post('generatelink', [PatientController::class, 'generateLink']);
             Route::get('/load', [PatientController::class, 'load']);
+            Route::get('/prepatients/load', [PatientController::class, 'loadPrePatients']);
             Route::get('/load/summary/sponsor', [PatientController::class, 'loadRegSummaryBySponsor']);
             Route::get('/load/summary/sex', [PatientController::class, 'loadSummaryBySex']);
             Route::get('/load/summary/age', [PatientController::class, 'loadSummaryByAge']);
@@ -328,7 +330,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/load/bysponsor', [PatientController::class, 'loadPatientsBySponsor']);
             Route::get('/load/visits', [PatientController::class, 'loadVisit']);
             Route::get('/{patient}', [PatientController::class, 'edit']);
+            Route::get('/prepatients/{patientPreForm}', [PatientController::class, 'review']);
             Route::delete('/{patient}', [PatientController::class, 'destroy']);
+            Route::delete('/prepatient/{patientPreForm}', [PatientController::class, 'destroyPrePatient']);
             Route::post('/{patient}', [PatientController::class, 'update']);
             Route::post('/initiate/{patient}', [PatientController::class, 'confirmVisit']);
             Route::patch('/knownclinicalinfo/{patient}', [PatientController::class, 'updateKnownClinicalInfo'])->withoutMiddleware('patients');

@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GenerateFormRequest;
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Requests\UpdatePatientRequest;
+use App\Http\Resources\PatientPreFormResource;
 use App\Http\Resources\PatientResource;
 use App\Models\Patient;
+use App\Models\PatientPreForm;
 use App\Services\DatatablesService;
 use App\Services\PatientService;
+use App\Services\PrePatientService;
 use App\Services\UserService;
 use App\Services\VisitService;
 use Illuminate\Http\Request;
@@ -19,7 +23,8 @@ class PatientController extends Controller
         private readonly DatatablesService $datatablesService, 
         private readonly PatientService $patientService,
         private readonly VisitService $visitService,
-        private readonly UserService $userService
+        private readonly UserService $userService,
+        private readonly PrePatientService $prePatientService
         )
     {
         
@@ -38,20 +43,41 @@ class PatientController extends Controller
         return $this->patientService->create($request, $request->user());        
     }
 
+    public function generateLink(GenerateFormRequest $request)
+    {
+        return $this->patientService->sendFormLink($request, $request->user());
+    }
+
     public function load(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $sponsorCategories = $this->patientService->getPaginatedPatients($params);
+        $patients = $this->patientService->getPaginatedPatients($params);
        
         $loadTransformer = $this->patientService->getLoadTransformer();
 
-        return $this->datatablesService->datatableResponse($loadTransformer, $sponsorCategories, $params);  
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);  
+    }
+
+    public function loadPrePatients(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $prePatients = $this->prePatientService->getPaginatedPrePatients($params);
+       
+        $loadTransformer = $this->prePatientService->getLoadTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $prePatients, $params);  
     }
 
     public function edit(Patient $patient)
     {
         return new PatientResource($patient);
+    }
+
+    public function review(PatientPreForm $patientPreForm)
+    {
+        return new PatientPreFormResource($patientPreForm);
     }
 
     public function update(UpdatePatientRequest $request, Patient $patient)
@@ -153,5 +179,10 @@ class PatientController extends Controller
     public function destroy(Patient $patient)
     {
         return $patient->destroy($patient->id);
+    }
+
+    public function destroyPrepatient(PatientPreForm $patientPreForm)
+    {
+        return $this->patientService->deletePrePatient($patientPreForm->id);
     }
 }
