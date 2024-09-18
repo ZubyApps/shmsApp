@@ -273,7 +273,8 @@ class InvestigationService
             ]);
     
             if ($this->helperService->nccTextTime() && $prescription->visit->patient->sms){
-                $this->investigationNotifier->toSms($prescription);
+                $info = $this->investigationNotifier->toSms($prescription);
+                var_dump($info);
             }
     
             return $prescription;
