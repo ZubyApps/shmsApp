@@ -18,7 +18,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
-use AshAllenDesign\ShortURL\Classes\Builder as ShortBuilder;
 
 class PatientService
 {
@@ -129,7 +128,7 @@ class PatientService
     public function sendFormLink($data, User $user)
     {
         $notifiable  = new FormLinkParams(
-            config('app.url').'/patientform?', 
+            config('app.url').'/form', 
             (int)$data->sponsorCategory, 
             (int)$data->sponsor, 
             $data->cardNumber, 
@@ -137,17 +136,6 @@ class PatientService
             $data->phone, 
             $user->id
         );
-        
-        // $link2 = route('patientForm',
-        //         [
-        //             'sponsorCategory'   => $notifiable->sponsorCat,
-        //             'sponsor'           => $notifiable->sponsor,
-        //             'cardNumber'        => $notifiable->cardNumber,
-        //             'patientType'       => $notifiable->patientType,
-        //             'phone'             => $notifiable->phone,
-        //             'user'              => $notifiable->userId
-        //         ]
-        //     );
 
         $patientForm = $this->patientPreForm->create(
             [
@@ -156,21 +144,24 @@ class PatientService
                 'card_no'           => $notifiable->cardNumber,
                 'patient_type'      => $notifiable->patientType,
                 'phone'             => $notifiable->phone,
-                'user_id'           => $notifiable->userId
+                'user_id'           => $notifiable->userId,
+                'short_link'        => rand(00000, 99999)
             ]
             );
-            $signedLink = URL::temporarySignedRoute('patientForm', now()->addMinutes(5), ['patientPreForm' => $patientForm->id]);
 
-            $shortURLObject = app(ShortBuilder::class)->destinationUrl($signedLink)->make();
-            $shortURL = $shortURLObject->default_short_url;
+            $link2 = route('patientForm', array('patientPreForm' => $patientForm->id, 'key' => $patientForm->short_link));
+            // $signedLink = URL::temporarySignedRoute('patientForm', now()->addMinutes(5), ['patientPreForm' => $patientForm->id]);
+
+            // $shortURLObject = app(ShortBuilder::class)->destinationUrl($link2)->make();
+            // $shortURL = $shortURLObject->default_short_url;
 
 
         // $patientForm->update(['short_link' => $signedLink]);
 
-        // $link = $notifiable->linkBaseUrl.'sponsorCategory='. $notifiable->sponsorCat.'&sponsor='. $notifiable->sponsor.'&cardNumber='. $notifiable->cardNumber . '&patientType='. $notifiable->patientType. '&phone='. $notifiable->phone. '&user='. $notifiable->userId;
+        // $link = $notifiable->linkBaseUrl.'/'.$patientForm->id.'?'.'key='.$patientForm->short_url;
 
         if ($this->helperService->nccTextTime()){
-            return $this->formLinkNotifier->toSms($notifiable, $shortURL, $notifiable->phone);
+            return $this->formLinkNotifier->toSms($notifiable, $link2, $notifiable->phone);
         }
     }
 

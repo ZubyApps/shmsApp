@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -34,7 +35,11 @@ class AuthenticatedSessionController extends Controller
 
     public function createPatients(Request $request, PatientPreForm $patientPreForm): View
     {
-        if (! $request->hasValidSignature()) {
+        $start  = new Carbon($patientPreForm->created_at);
+        $now    = Carbon::now();
+        $key    = $request->key;
+
+        if ($start->addMinutes(5) < $now || $key !== $patientPreForm->short_link) {
             abort(401);
         }
 
