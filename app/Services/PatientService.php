@@ -149,7 +149,7 @@ class PatientService
             ]
             );
 
-            $link2 = route('patientForm', array('patientPreForm' => $patientForm->id, 'key' => $patientForm->short_link));
+            // $link2 = route('patientForm', array('patientPreForm' => $patientForm->id, 'key' => $patientForm->short_link));
             // $signedLink = URL::temporarySignedRoute('patientForm', now()->addMinutes(5), ['patientPreForm' => $patientForm->id]);
 
             // $shortURLObject = app(ShortBuilder::class)->destinationUrl($link2)->make();
@@ -158,10 +158,10 @@ class PatientService
 
         // $patientForm->update(['short_link' => $signedLink]);
 
-        // $link = $notifiable->linkBaseUrl.'/'.$patientForm->id.'?'.'key='.$patientForm->short_url;
+        $link = $notifiable->linkBaseUrl.'/'.$patientForm->id.'%?%'.'key='.$patientForm->short_url;
 
         if ($this->helperService->nccTextTime()){
-            return $this->formLinkNotifier->toSms($notifiable, $link2, $notifiable->phone);
+            return $this->formLinkNotifier->toSms($notifiable, $link, $notifiable->phone);
         }
     }
 
