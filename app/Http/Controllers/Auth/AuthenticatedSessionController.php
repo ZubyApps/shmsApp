@@ -37,9 +37,9 @@ class AuthenticatedSessionController extends Controller
     {
         $start  = new Carbon($patientPreForm->created_at);
         $now    = Carbon::now();
-        $key    = $request->key;
-
-        if ($start->addMinutes(5) < $now || $key !== $patientPreForm->short_link) {
+        // $key    = $request->key;
+        
+        if ($start->addMinutes(5) < $now) {
             abort(401);
         }
 

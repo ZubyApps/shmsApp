@@ -20,7 +20,7 @@ Route::middleware('guest')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
                 ->name('login');
 
-    Route::get('form/{patientPreForm}', [AuthenticatedSessionController::class, 'createPatients'])
+    Route::get('form/{patientPreForm}/{key}', [AuthenticatedSessionController::class, 'createPatients'])
                 ->name('patientForm');
 
     Route::post('submitpatient/{patientPreForm}', [AuthenticatedSessionController::class, 'submitPatient'])
