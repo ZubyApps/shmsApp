@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
+use AshAllenDesign\ShortURL\Classes\Builder as ShortBuilder;
 
 class PatientService
 {
@@ -158,15 +159,18 @@ class PatientService
                 'user_id'           => $notifiable->userId
             ]
             );
+            $signedLink = URL::temporarySignedRoute('patientForm', now()->addMinutes(5), ['patientPreForm' => $patientForm->id]);
 
-        $signedLink = URL::temporarySignedRoute('patientForm', now()->addMinutes(5), ['patientPreForm' => $patientForm->id]);
+            $shortURLObject = app(ShortBuilder::class)->destinationUrl($signedLink)->make();
+            $shortURL = $shortURLObject->default_short_url;
+
 
         // $patientForm->update(['short_link' => $signedLink]);
 
         // $link = $notifiable->linkBaseUrl.'sponsorCategory='. $notifiable->sponsorCat.'&sponsor='. $notifiable->sponsor.'&cardNumber='. $notifiable->cardNumber . '&patientType='. $notifiable->patientType. '&phone='. $notifiable->phone. '&user='. $notifiable->userId;
 
         if ($this->helperService->nccTextTime()){
-            return $this->formLinkNotifier->toSms($notifiable, $signedLink, $notifiable->phone);
+            return $this->formLinkNotifier->toSms($notifiable, $shortURL, $notifiable->phone);
         }
     }
 
