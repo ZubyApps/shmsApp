@@ -36,7 +36,7 @@ class FormLinkNotifier extends Notification
      */
     public function toSms(object $notifiable, $link, $recipient)
     {
-        $message = 'Form link '.'. Expires in 5mins';
+        $message = 'Form link '.$link.'. Expires in 5mins';
         Log::info('Link', ['sent to' => $recipient, 'msg' => $message]);
         return $this->churchPlusSmsService->sendSms($message, $recipient, 'SandraHosp');
     }

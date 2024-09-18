@@ -166,7 +166,7 @@ class PatientService
         // $link = $notifiable->linkBaseUrl.'sponsorCategory='. $notifiable->sponsorCat.'&sponsor='. $notifiable->sponsor.'&cardNumber='. $notifiable->cardNumber . '&patientType='. $notifiable->patientType. '&phone='. $notifiable->phone. '&user='. $notifiable->userId;
 
         if ($this->helperService->nccTextTime()){
-            $this->formLinkNotifier->toSms($notifiable, $signedLink, $notifiable->phone);
+            return $this->formLinkNotifier->toSms($notifiable, $signedLink, $notifiable->phone);
         }
     }
 
