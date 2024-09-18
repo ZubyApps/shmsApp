@@ -41,7 +41,7 @@ class ChurchPlusSmsService
 
         $response = $client->request('POST', $completeUrl, []);
 
-        return $response->getBody()->getContents();
+        return $response;
 
     }
 

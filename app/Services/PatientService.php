@@ -66,7 +66,7 @@ class PatientService
         ]);
 
         if ($this->helperService->nccTextTime() && $patient->sms){
-            $this->patientCardNumber->toSms($patient);
+            return $this->patientCardNumber->toSms($patient);
         }
 
         if ($data->prePatient){
