@@ -49,6 +49,16 @@ class Patient extends Model
         return $this->hasMany(NursesReport::class);
     }
 
+    public function appointments() 
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+    public function latestVisit(): HasOne
+    {
+        return $this->hasOne(Visit::class)->latestOfMany();
+    }
+
     public function patientId()
     {
         return $this->card_no.' '.$this->first_name.' '.$this->middle_name.' '.$this->last_name;

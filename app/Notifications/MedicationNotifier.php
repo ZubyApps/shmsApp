@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Services\ChurchPlusSmsService;
+use App\Services\HelperService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -37,12 +38,14 @@ class MedicationNotifier extends Notification
      */
     public function toSms(object $notifiable)
     {
+        $gateway = (new helperService())->nccTextTime() ? 1 : 2;
+
         $firstName = $notifiable->visit->patient->first_name;
         
         Log::info('medications', ['sent to' => $firstName]);
 
         return $this->churchPlusSmsService
-        ->sendSms('Dear ' .$firstName. ', pls be reminded of your medication by '. (new Carbon($notifiable->scheduled_time))->format('g:iA') . ' today, courtesy of our Hospital Management System', $notifiable->visit->patient->phone, 'SandraHosp');
+        ->sendSms('Dear ' .$firstName. ', pls be reminded of your medication by '. (new Carbon($notifiable->scheduled_time))->format('g:iA') . ' today. Courtesy: Sandra Hospital Management System', $notifiable->visit->patient->phone, 'SandraHosp', $gateway);
     }
 
     /**

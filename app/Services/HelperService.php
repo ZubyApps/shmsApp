@@ -32,8 +32,7 @@ class HelperService
     public function nccTextTime()
     {
         $start = new CarbonImmutable('08:00:00');
-        $end = $start->addHours(12);
-        // Log::info('', [$start, $end]);
+        $end = $start->addHours(11);
         return Carbon::now()->between($start, $end);
     }
 }

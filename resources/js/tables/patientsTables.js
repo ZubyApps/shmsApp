@@ -102,26 +102,54 @@ const getAllPatientsTable = (tableId) => {
                     if (row.count < 1) {
                         return `
                         <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary initiateVisitBtn tooltip-test ${row.active > 0 ? 'd-none' : ''}" title="initiate visit" data-id="${ row.id }" data-patient="${ row.patient }">
-                            <i class="bi bi-arrow-up-right-square-fill"></i>
-                            </button>
-                            <button class="ms-1 btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                            <i class="bi bi-pencil-fill"></i>
-                            </button>
-                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
-                            <i class="bi bi-trash3-fill"></i>
-                            </button>
+                            <div>
+                                <button class=" btn btn-outline-primary initiateVisitBtn tooltip-test ${row.active > 0 ? 'd-none' : ''}" title="initiate visit" data-id="${ row.id }" data-patient="${ row.patient }">
+                                    <i class="bi bi-arrow-up-right-square-fill"></i>
+                                </button>
+                            </div>
+                            <div class="dropdown ms-1">
+                                <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="options" data-bs-toggle="dropdown" href="" >
+                                    <i class="bi bi-gear" role="button"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="btn dropdown-item appointmentBtn tooltip-test" title="appointment" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${row.sponsor + ' - ' + row.category}">
+                                            <i class="bi bi-cursor-fill text-primary"></i> Set Appointment
+                                        </a>
+                                        <a class="btn dropdown-item updateBtn tooltip-test" title="update"  data-id="${ row.id }">
+                                            <i class="bi bi-pencil-fill text-primary"></i> Update
+                                        </a>
+                                        <a class="btn dropdown-item deleteBtn tooltip-test" title="delete"  data-id="${ row.id }">
+                                            <i class="bi bi-x-circle-fill text-primary"></i> Delete
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     `
                     } else {
                         return `
                         <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary initiateVisitBtn tooltip-test ${row.active > 0 ? 'd-none' : ''}" title="initiate visit" data-id="${ row.id }" data-patient="${ row.patient }">
-                                <i class="bi bi-arrow-up-right-square-fill"></i>
-                            </button>
-                            <button class="ms-1 btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                                <i class="bi bi-pencil-fill"></i>
-                            </button>
+                            <div>
+                                <button class=" btn btn-outline-primary initiateVisitBtn tooltip-test ${row.active > 0 ? 'd-none' : ''}" title="initiate visit" data-id="${ row.id }" data-patient="${ row.patient }">
+                                    <i class="bi bi-arrow-up-right-square-fill"></i>
+                                </button>
+                            </div>
+                            <div class="dropdown ms-1">
+                                <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="options" data-bs-toggle="dropdown" href="" >
+                                    <i class="bi bi-gear" role="button"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="btn dropdown-item appointmentBtn tooltip-test" title="appointment" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${row.sponsor + ' - ' + row.category}">
+                                            <i class="bi bi-cursor-fill text-primary"></i> Set Appointment
+                                        </a>
+                                        <a class="btn dropdown-item updateBtn tooltip-test" title="update"  data-id="${ row.id }">
+                                            <i class="bi bi-pencil-fill text-primary"></i> Update
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     `
                     } 
@@ -376,7 +404,7 @@ const getPrePatientsTable = (tableId) => {
             {data: row => `<span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor}</span>`},
             {data: "category"},
             {data: "createdAt"},
-            // {data: "createdBy"},
+            {data: "createdBy"},
             {
                 sortable: false,
                 data: row => function () {

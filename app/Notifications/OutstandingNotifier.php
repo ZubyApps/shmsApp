@@ -38,7 +38,7 @@ class OutstandingNotifier extends Notification
     {
         Log::info('outstanding bill', [' sent to' => $notifiable->visit->patient->first_name]);
         
-        return $this->churchPlusSmsService->sendSms($message, $recipient, 'SandraHosp');
+        return $this->churchPlusSmsService->sendSms($message, $recipient, 'SandraHosp', 2);
     }
 
     /**

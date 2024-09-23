@@ -26,7 +26,7 @@
                                 <x-form-input type="number" name="difference" id="difference" readonly/>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="reOrderLabel">Quantity<x-required-span /></x-input-span>
+                                <x-input-span id="reOrderLabel">New Quantity<x-required-span /></x-input-span>
                                 <x-form-input type="number" name="quantity" id="quantity" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">

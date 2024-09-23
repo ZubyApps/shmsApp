@@ -15,6 +15,7 @@
 @include('patients.patientsBySponsorModal', ['title' => 'Patients', 'id' => 'patientsBySponsorModal'])
 @include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isAnc' => false, 'isLab' => false, 'isHmo' => true, 'id' => 'treatmentDetailsModal'])
 @include('nurses.treatmentDetailsModal', ['title' => 'ANC Treatment Details', 'isAnc' => true, 'isLab' => false, 'isHmo' => true, 'id' => 'ancTreatmentDetailsModal'])
+@include('doctors.appointmentModal', ['title' => 'Set Appointment', 'isDoctor' => false, 'id' => 'appointmentModal'])
 
 <div class="container mt-5">
     <div>
@@ -35,6 +36,9 @@
                 <button class="nav-link"   id="nav-prePatients-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-prePatients" type="button" role="tab" aria-controls="nav-prePatients"
                     aria-selected="false">Pre Patients</button>
+                <button class="nav-link"   id="nav-appointments-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-appointments" type="button" role="tab" aria-controls="nav-appointments"
+                    aria-selected="false">Appointments</button>
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
@@ -47,7 +51,7 @@
                     </button>
                 </div>
                 <div class="py-2">
-                    <table id="allPatientsTable" class="table table-striped table-sm">
+                    <table id="allPatientsTable" class="table table-hover table-sm">
                         <thead>
                             <tr>
                                 <th>Card</th>
@@ -290,7 +294,35 @@
                                 <th>Sponsor</th>
                                 <th>Category</th>
                                 <th>Created</th>
-                                {{-- <th>CreatedBy</th> --}}
+                                <th>CreatedBy</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- appointments table -->
+            <div class="tab-pane fade" id="nav-appointments" role="tabpanel" aria-labelledby="nav-appointments-tab" tabindex="0">
+                {{-- <div class="text-start py-3">
+                    <button type="button" id="newPatient" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Patient
+                    </button>
+                </div> --}}
+                <div class="py-2">
+                    <table id="appointmentsTable" class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>Created</th>
+                                <th>Patient</th>
+                                <th><i class="bi bi-telephone-outbound-fill text-primary"></th>
+                                <th>Sponsor</th>
+                                <th>Last Visit</th>
+                                <th>Last Diagnosis</th>
+                                <th>Doctor</th>
+                                <th>Date</th>
+                                <th>CreatedBy</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>

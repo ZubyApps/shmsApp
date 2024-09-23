@@ -7,7 +7,6 @@ use App\Models\Reminder;
 use App\Http\Requests\StoreReminderRequestCash;
 use App\Http\Requests\StoreReminderRequestHmo;
 use App\Http\Resources\SmsDetailsResource;
-use App\Http\Resources\TextDetailsResource;
 use App\Notifications\OutstandingNotifier;
 use App\Services\DatatablesService;
 use App\Services\HelperService;
@@ -127,21 +126,16 @@ class ReminderController extends Controller
 
     public function sendSms(SendSmsRequest $request, Reminder $reminder)
     {
-        if ($this->helperService->nccTextTime()){
-            if ($request->selectEl == 'firstReminderSelect'){
-                var_dump($request->selectEl);
-                $this->reminderService->firstReminder($request, $reminder, $request->user());
-            }
-            if ($request->selectEl == 'secondReminderSelect'){
-                $this->reminderService->secondReminder($request, $reminder, $request->user());
-            }
-            if ($request->selectEl == 'finalReminderSelect'){
-                $this->reminderService->finalReminder($request, $reminder, $request->user());
-            }
-            return $this->outstandingNotifier->toSms($reminder, $request->smsDetails, $request->phone);
+        if ($request->selectEl == 'firstReminderSelect'){
+            $this->reminderService->firstReminder($request, $reminder, $request->user());
         }
-
-        return;
+        if ($request->selectEl == 'secondReminderSelect'){
+            $this->reminderService->secondReminder($request, $reminder, $request->user());
+        }
+        if ($request->selectEl == 'finalReminderSelect'){
+            $this->reminderService->finalReminder($request, $reminder, $request->user());
+        }
+        return $this->outstandingNotifier->toSms($reminder, $request->smsDetails, $request->phone);
     }
 
     public function destroy(Reminder $reminder)

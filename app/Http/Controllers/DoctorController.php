@@ -6,6 +6,7 @@ use App\Models\Visit;
 use App\Services\DatatablesService;
 use App\Services\DoctorService;
 use App\Services\ResourceService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 
 class DoctorController extends Controller
@@ -14,7 +15,8 @@ class DoctorController extends Controller
         private readonly DatatablesService $datatablesService, 
         private readonly DoctorService $doctorService,
         private readonly ResourceService $resourceService,
-        private readonly ThirdPartyController $thirdPartyController
+        private readonly ThirdPartyController $thirdPartyController,
+        private readonly UserService $userService
         )
     {
         
@@ -23,7 +25,7 @@ class DoctorController extends Controller
     public function index()
     {
         return view('doctors.doctors', [
-            'doctors' => [],
+            'doctors' => $this->userService->listStaff(designation: 'Doctor'),
             'thirdParties'  => $this->thirdPartyController->showAll('id', 'short_name')
         ]);
     }

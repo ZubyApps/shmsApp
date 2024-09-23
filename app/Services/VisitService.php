@@ -240,7 +240,9 @@ class VisitService
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
                 'emergency'         => $visit->prescriptions()->where('consultation_id', null)->whereRelation('resource', 'sub_category', '!=', 'Hospital Card')->count(),
                 'closed'            => $visit->closed,
-                'initiatedBy'       => $visit->user->username
+                'initiatedBy'       => $visit->user->username,
+                'payments'          => $visit->payments->count(),
+                'prescriptions'     => $visit->prescriptions->count()
             ];
          };
     }

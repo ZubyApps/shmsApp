@@ -3,13 +3,14 @@
 namespace App\Notifications;
 
 use App\Services\ChurchPlusSmsService;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\Log;
 
-class PatientCardNumber extends Notification
+class AppointmentNotifier extends Notification
 {
     use Queueable;
 
@@ -36,12 +37,16 @@ class PatientCardNumber extends Notification
      */
     public function toSms(object $notifiable)
     {
-        $firstName = $notifiable->first_name;
+        $firstName = $notifiable->patient->first_name;
+        $doctor    = $notifiable->doctor->username;
+        
+        Log::info('appointments', ['patient' => $firstName, 'doctor' => $doctor]);
 
-        Log::info('card number', ['sent to' => $firstName]);
+        $this->churchPlusSmsService
+        ->sendSms('Dear ' .$doctor. ', your appointment with ' . $firstName . ' is today by '. (new Carbon($notifiable->date))->format('g:iA') . '. Courtesy- Sandra Hospital Management System', $notifiable->doctor->phone_number, 'SandraH', 2);
 
         return $this->churchPlusSmsService
-                    ->sendSms('Dear ' .$firstName. ', welcome to Sandra Hospital, this is your Hospital Card Number '.'('.$notifiable->card_no.') courtesy of our Hospital Management System', $notifiable->phone, 'SandraHosp', 2);
+        ->sendSms('Dear ' .$firstName. ', your appointment with ' .$doctor. ' is today by '. (new Carbon($notifiable->date))->format('g:iA') . '. Courtesy- Sandra Hospital Management System', $notifiable->patient->phone, 'SandraH', 2);
     }
 
     /**

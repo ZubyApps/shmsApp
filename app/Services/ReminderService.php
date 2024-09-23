@@ -44,7 +44,7 @@ class ReminderService
     public function getAllReminders(DataTableQueryParams $params, $data, $dept)
     {
         $orderBy    = 'created_at';
-        $orderDir   =  'asc';
+        $orderDir   =  'desc';
         $nullClause = $dept == 'HMO' ? 'whereNull' : 'whereNotNull';
         $dateColumn = $dept == 'HMO' ? 'month_sent_for' : 'set_from';
 

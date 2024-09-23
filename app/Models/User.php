@@ -209,8 +209,13 @@ class User extends Authenticatable
         return $this->firstname.' '.$this->middlename.' '.$this->lastname;
     }
 
-    public function patientPreForm(): HasMany
+    public function patientsPreForm(): HasMany
     {
         return $this->hasMany(PatientPreForm::class);
+    }
+
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
     }
 }

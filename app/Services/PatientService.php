@@ -16,8 +16,6 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\URL;
 
 class PatientService
 {
@@ -65,12 +63,12 @@ class PatientService
                 "state_of_residence"    => $data->stateResidence,
         ]);
 
-        if ($this->helperService->nccTextTime() && $patient->sms){
-            $this->patientCardNumber->toSms($patient);
-        }
-
         if ($data->prePatient){
             $this->deletePrePatient((int)$data->prePatient);
+        }
+
+        if ($patient->sms){
+            $this->patientCardNumber->toSms($patient);
         }
 
         return $patient;
@@ -138,31 +136,20 @@ class PatientService
         );
 
         $patientForm = $this->patientPreForm->create(
-            [
-                'sponsor_category'  => $notifiable->sponsorCat,
-                'sponsor_id'        => $notifiable->sponsor,
-                'card_no'           => $notifiable->cardNumber,
-                'patient_type'      => $notifiable->patientType,
-                'phone'             => $notifiable->phone,
-                'user_id'           => $notifiable->userId,
-                'id'                => rand(0000, 9999)
-            ]
+                [
+                    'sponsor_category'  => $notifiable->sponsorCat,
+                    'sponsor_id'        => $notifiable->sponsor,
+                    'card_no'           => $notifiable->cardNumber,
+                    'patient_type'      => $notifiable->patientType,
+                    'phone'             => $notifiable->phone,
+                    'user_id'           => $notifiable->userId,
+                    'id'                => rand(0000, 9999)
+                ]
             );
 
-            $link2 = route('patientForm', array('patientPreForm' => $patientForm->id));
-            // $signedLink = URL::temporarySignedRoute('patientForm', now()->addMinutes(5), ['patientPreForm' => $patientForm->id]);
+        $link = route('patientForm', ['patientPreForm' => $patientForm->id]);
 
-            // $shortURLObject = app(ShortBuilder::class)->destinationUrl($link2)->make();
-            // $shortURL = $shortURLObject->default_short_url;
-
-
-        // $patientForm->update(['short_link' => $signedLink]);
-
-        // $link = $notifiable->linkBaseUrl.'/'.$patientForm->id.'?'.'key='.$patientForm->short_url;
-
-        if ($this->helperService->nccTextTime()){
-            return $this->formLinkNotifier->toSms($notifiable, $link2, $notifiable->phone);
-        }
+        return $this->formLinkNotifier->toSms($notifiable, $link, $notifiable->phone);
     }
 
     public function getPaginatedPatients(DataTableQueryParams $params)

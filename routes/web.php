@@ -4,6 +4,7 @@ use App\Http\Controllers\AddResourceStockController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AncVitalSignsController;
 use App\Http\Controllers\AntenatalRegisterationController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\BulkRequestController;
@@ -552,6 +553,14 @@ Route::middleware('auth')->group(function () {
         Route::patch('/deletepaid/{reminder}', [ReminderController::class, 'deletePaid']);
         Route::post('/sendsms/{reminder}', [ReminderController::class, 'sendSms']);
         Route::delete('/{reminder}', [ReminderController::class, 'destroy']);
+    });
+
+    Route::prefix('appointments')->group(function () {
+        Route::post('/{patient}', [AppointmentController::class, 'store']);
+        Route::get('/load', [AppointmentController::class, 'load']);
+        Route::get('/{appointment}', [AppointmentController::class, 'edit']);
+        Route::delete('/{appointment}', [AppointmentController::class, 'destroy']);
+        Route::post('/{appointment}', [AppointmentController::class, 'update']);
     });
 });
 

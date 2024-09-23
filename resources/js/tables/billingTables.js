@@ -38,8 +38,9 @@ const getWaitingTable = (tableId) => {
                     </div>
                         `   
             },
-            {data: row => 
-                        `
+            {data: row => () => {
+                const show = row.vitalSigns > 0 || row.ancVitalSigns > 0 || row.prescriptions > 0 || row.payments > 0 ? false : true
+                return  `
                     <div class="dropdown ms-1">
                         <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="remove" data-bs-toggle="dropdown" href="" >
                             <i class="bi bi-file-minus-fill"></i>
@@ -56,13 +57,15 @@ const getWaitingTable = (tableId) => {
                                 </a>
                             </li>
                             <li>
-                                <a role="button" class="dropdown-item deleteVisitBtn tooltip-test" title="delete visit" id="deleteVisitBtn" data-id="${ row.id }">
+                                <a role="button" class="dropdown-item deleteVisitBtn tooltip-test ${show ? '' : 'd-none'}" title="delete visit" id="deleteVisitBtn" data-id="${ row.id }">
                                     <i class="bi bi-x-circle-fill text-primary"></i> Delete Visit
                                 </a>
                             </li>
                         </ul>
                     </div>
                         `
+
+            }
                 
             },
         ]

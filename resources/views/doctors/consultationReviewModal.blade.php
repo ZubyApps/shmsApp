@@ -201,9 +201,13 @@
                             Specialist Consultation
                         </button>
                     @endif
-                    <button type="button" id="dischargeBtn" class="btn btn-primary reviewConBtns">
+                    <button type="button" id="dischargeBtn" class="btn btn-primary">
                         <i class="ms-1 bi bi-arrow-up-right-circle-fill"></i>
                         Discharge
+                    </button>    
+                    <button type="button" id="appointmentBtn" class="btn btn-primary reviewConBtns">
+                        <i class="ms-1 bi bi-arrow-up-right-circle-fill"></i>
+                        Appointment
                     </button>    
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle me-1"></i>

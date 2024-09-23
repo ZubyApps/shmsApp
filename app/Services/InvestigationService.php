@@ -272,9 +272,8 @@ class InvestigationService
                 'stock_level' => $resource->stock_level - 1
             ]);
     
-            if ($this->helperService->nccTextTime() && $prescription->visit->patient->sms){
+            if ($prescription->visit->patient->sms){
                 $info = $this->investigationNotifier->toSms($prescription);
-                var_dump($info);
             }
     
             return $prescription;

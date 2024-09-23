@@ -498,7 +498,7 @@ const gyneaLmpCalculator = (lmpDate) => {
     const eddMonth  = lmpMonth < 3 ? determineMonth((lmpDay + 7), (lmpMonth + 9), eddYear)  : determineMonth((lmpDay + 7), lmpMonth - 3, eddYear)
     // console.log('lmp month = ' + lmpMonth, 'prepared eddMonth = ' + eddMonth)
     const eddDay    = determineDay(daysInMonth(addMonth(lmpMonth), eddYear),(lmpDay + 7))
-    console.log(eddMonth)
+    // console.log(eddMonth)
     return (eddMonth > 11 ? eddYear + 1 : eddYear) + '-' +  (eddMonth > 11 ? 1 : eddMonth + 1).toString().padStart(2, "0") + '-' + eddDay.toString().padStart(2, "0")
 }
 
@@ -532,10 +532,10 @@ function leapyear(year) {
 }
 
 const filterPatients = (elements) => {
-    console.log(elements)
+    // console.log(elements)
     elements.forEach(filterInput => {
         filterInput.addEventListener('change', function () {
-            console.log(filterInput.value)
+            // console.log(filterInput.value)
             if (filterInput.id == 'filterListOutPatients'){
                 $.fn.DataTable.isDataTable( '#outPatientsVisitTable' ) ? $('#outPatientsVisitTable').dataTable().fnDestroy() : ''
                 return getOutpatientsVisitTable('#outPatientsVisitTable', filterInput.value)
@@ -610,6 +610,13 @@ const populateDischargeModal = (modal, btn) => {
     modal._element.querySelector('#remark').value = btn.getAttribute('data-remark')
     modal._element.querySelector('#doctor').innerHTML = btn.getAttribute('data-doctordone')
     modal._element.querySelector('#saveDischargeBtn').setAttribute('data-id', btn.getAttribute('data-id'))
+}
+
+const populateAppointmentModal = (modal, btn) => {
+    populatePatientSponsor(modal, btn)
+    modal._element.querySelector('#currentDiagnosis').value = btn.getAttribute('data-diagnosis')
+    modal._element.querySelector('#admissionStatus').value = btn.getAttribute('data-admissionstatus')
+    modal._element.querySelector('#saveAppointmentBtn').setAttribute('data-patientid', btn.getAttribute('data-patientid'))
 }
 
 const populateWardAndBedModal = (modal, btn) => {
@@ -800,4 +807,4 @@ const flagPatientReason = (row) => {return row.flagPatient ? row.flagReason : ''
 
 const flagSponsorReason = (flagSponsor) => {return flagSponsor ? 'Defaulted payment' : ''}
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason}
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal}

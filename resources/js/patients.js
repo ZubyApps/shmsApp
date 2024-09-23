@@ -6,6 +6,7 @@ import { getAgeAggregateTable, getAllPatientsTable, getNewRegisteredPatientsTabl
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getAncVitalSignsTable } from "./tables/nursesTables";
 import { getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
+import { getAppointmentsTable } from "./tables/appointmentsTables";
 $.fn.dataTable.ext.errMode = 'throw';
 
 window.addEventListener('DOMContentLoaded', function(){
@@ -17,12 +18,14 @@ window.addEventListener('DOMContentLoaded', function(){
     const patientsBySponsorModal            = new Modal(document.getElementById('patientsBySponsorModal'))
     const treatmentDetailsModal             = new Modal(document.getElementById('treatmentDetailsModal'))
     const ancTreatmentDetailsModal          = new Modal(document.getElementById('ancTreatmentDetailsModal'))
+    const appointmentModal                  = new Modal(document.getElementById('appointmentModal'))
 
     const regularTreatmentDiv               = treatmentDetailsModal._element.querySelector('#treatmentDiv')
     const ancTreatmentDiv                   = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
     const datesDiv                          = document.querySelector('.datesDiv')
     const newRegisterationsDiv              = document.querySelector('.newRegisterationsDiv')
     const visistSummaryDiv                  = document.querySelector('.visistSummaryDiv')
+    const appointmentDetailsDiv             = appointmentModal._element.querySelector('#appointmentDetails')
 
     const newSponsorBtn                     = document.getElementById('newSponsor')
     const createSponsorBtn                  = document.querySelector('#createSponsorBtn')
@@ -34,6 +37,7 @@ window.addEventListener('DOMContentLoaded', function(){
     const searchNewRegPatientsByMonthBtn    = document.querySelector('.searchNewRegPatientsByMonthBtn')
     const searchVisitsByMonthBtn            = document.querySelector('.searchVisitsByMonthBtn')
     const sendLinkBtn                       = document.querySelector('#sendLinkBtn')
+    const saveAppointmentBtn                = document.querySelector('#saveAppointmentBtn')
     
     const newPatientSponsorInputEl          = document.querySelector('#newPatientSponsor')
     const updatePatientSponsorInputEl       = document.querySelector('#updatePatientSponsor')
@@ -48,8 +52,9 @@ window.addEventListener('DOMContentLoaded', function(){
     const visitsTab                         = document.querySelector('#nav-visits-tab')
     const summariesTab                      = document.querySelector('#nav-summaries-tab')
     const prePatientsTab                    = document.querySelector('#nav-prePatients-tab')
+    const appointmentsTab                   = document.querySelector('#nav-appointments-tab')
 
-    let sponsorsTable, visitsTable, newRegPatientsTable, sexAggregateTable, patientsBySponsorTable, visitsSummaryTable, prePatientsTable
+    let sponsorsTable, visitsTable, newRegPatientsTable, sexAggregateTable, patientsBySponsorTable, visitsSummaryTable, prePatientsTable, appointmentsTable
 
     const allPatientsTable = getAllPatientsTable('allPatientsTable')
     $('#allPatientsTable, #sponsorsTable, #visitsTable, #newRegPatientsTable, #sexAggregateTable, #patientsBySponsorTable, #visitsSummaryTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
@@ -80,6 +85,14 @@ window.addEventListener('DOMContentLoaded', function(){
             $('#visitsTable').dataTable().fnDraw()
         } else {
             visitsTable = getVisitsTable('visitsTable')
+        }
+    })
+
+    appointmentsTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#appointmentsTable' )){
+            $('#appointmentsTable').dataTable().fnDraw()
+        } else {
+            appointmentsTable = getAppointmentsTable('appointmentsTable')
         }
     })
 
@@ -208,6 +221,7 @@ window.addEventListener('DOMContentLoaded', function(){
         const updateBtn    = event.target.closest('.updateBtn')
         const deleteBtn  = event.target.closest('.deleteBtn')
         const initiateVisitBtn  = event.target.closest('.initiateVisitBtn')
+        const appointmentBtn  = event.target.closest('.appointmentBtn')
 
         if (updateBtn) {
             updateBtn.setAttribute('disabled', 'disabled')
@@ -250,61 +264,98 @@ window.addEventListener('DOMContentLoaded', function(){
                         deleteBtn.removeAttribute('disabled')
                     })
             }
-            
+        }
+
+        if (appointmentBtn){
+            appointmentBtn.setAttribute('disabled', 'disabled')
+            appointmentModal._element.querySelector('#patient').value = appointmentBtn.getAttribute('data-patient')
+            appointmentModal._element.querySelector('#sponsorName').value = appointmentBtn.getAttribute('data-sponsor')
+            appointmentModal._element.querySelector('#saveAppointmentBtn').setAttribute('data-id', appointmentBtn.getAttribute('data-id'))
+            appointmentModal.show()
+            appointmentBtn.removeAttribute('disabled')
         }
     })
 
-    document.querySelector('#prePatientsTable').addEventListener('click', function (event) {
-        const confirmBtn    = event.target.closest('.confirmBtn')
-        const deleteBtn     = event.target.closest('.deleteBtn')
-        // const initiateVisitBtn  = event.target.closest('.initiateVisitBtn')
+    saveAppointmentBtn.addEventListener('click', function () {
+        const id = this.getAttribute('data-id')
+        saveAppointmentBtn.setAttribute('disabled', 'disabled')
 
-        if (confirmBtn) {
-            confirmBtn.setAttribute('disabled', 'disabled')
-            const prePatientId = confirmBtn.getAttribute('data-id')
-            http.get(`/patients/prepatients/${ prePatientId }`)
-                .then((response) => {
-                    if (response.status >= 200 || response.status <= 300) {
-                        openPatientModal(updatePatientModal, savePatientBtn, response.data.data)
-                        savePatientBtn.innerHTML = 'Confirm'
-                        savePatientBtn.setAttribute('data-prepatient', response.data.data.id)
-                        savePatientBtn.removeAttribute('data-id')
-                    }
-                    confirmBtn.removeAttribute('disabled')
-                })
-                .catch((error) => {
-                    confirmBtn.removeAttribute('disabled')
-                })
-        }
+        http.post(`/appointments/${id}`, getDivData(appointmentDetailsDiv), {html:appointmentDetailsDiv})
+        .then((response) => {
+            if (response) {
+                clearDivValues(appointmentDetailsDiv)
+                clearValidationErrors(appointmentDetailsDiv)
+                appointmentModal.hide()
+            }
+            saveAppointmentBtn.removeAttribute('disabled')
+        })
+        .catch((response) => {
+            console.log(response)
+            saveAppointmentBtn.removeAttribute('disabled')
+        })
+    })
 
-        // if (initiateVisitBtn) {
-        //     initiateVisitBtn.setAttribute('disabled', 'disabled')
-        //     initiatePatientModal._element.querySelector('#patientId').value = initiateVisitBtn.getAttribute('data-patient')
-        //     initiatePatientModal._element.querySelector('#confirmVisitBtn').setAttribute('data-id', initiateVisitBtn.getAttribute('data-id'))
-        //     initiatePatientModal.show()
-        //     initiateVisitBtn.removeAttribute('disabled')
-        //     setTimeout(function(){confirmVisitBtn.focus()}, 1000)
-            
-        // }
+    document.querySelectorAll('#prePatientsTable, #appointmentsTable').forEach(table => {
 
-        if (deleteBtn){
-            deleteBtn.setAttribute('disabled', 'disabled')
-            if (confirm('Are you sure you want to delete this Pre-Patient?')) {
-                const id = deleteBtn.getAttribute('data-id')
-                http.delete(`/patients/prepatient/${id}`)
+        table.addEventListener('click', function (event) {
+            const confirmBtn    = event.target.closest('.confirmBtn')
+            const deleteBtn     = event.target.closest('.deleteBtn')
+            const deleteApBtn   = event.target.closest('.deleteApBtn')
+    
+            if (confirmBtn) {
+                confirmBtn.setAttribute('disabled', 'disabled')
+                const prePatientId = confirmBtn.getAttribute('data-id')
+                http.get(`/patients/prepatients/${ prePatientId }`)
                     .then((response) => {
-                        if (response.status >= 200 || response.status <= 300){
-                            prePatientsTable.draw()
+                        if (response.status >= 200 || response.status <= 300) {
+                            openPatientModal(updatePatientModal, savePatientBtn, response.data.data)
+                            savePatientBtn.innerHTML = 'Confirm'
+                            savePatientBtn.setAttribute('data-prepatient', response.data.data.id)
+                            savePatientBtn.removeAttribute('data-id')
                         }
-                        deleteBtn.removeAttribute('disabled')
+                        confirmBtn.removeAttribute('disabled')
                     })
                     .catch((error) => {
-                        alert(error)
-                        deleteBtn.removeAttribute('disabled')
+                        confirmBtn.removeAttribute('disabled')
                     })
             }
-            
-        }
+    
+            if (deleteBtn){
+                deleteBtn.setAttribute('disabled', 'disabled')
+                if (confirm('Are you sure you want to delete this Pre-Patient?')) {
+                    const id = deleteBtn.getAttribute('data-id')
+                    http.delete(`/patients/prepatient/${id}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300){
+                                prePatientsTable.draw()
+                            }
+                            deleteBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {
+                            alert(error)
+                            deleteBtn.removeAttribute('disabled')
+                        })
+                }
+                
+            }
+    
+            if (deleteApBtn){
+                deleteApBtn.setAttribute('disabled', 'disabled')
+                if (confirm('Are you sure you want to delete this Appointment?')) {
+                    const id = deleteApBtn.getAttribute('data-id')
+                    http.delete(`/appointments/${id}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                           appointmentsTable ? appointmentsTable.draw() : ''
+                        }
+                        deleteApBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => { console.log(error)
+                        deleteApBtn.removeAttribute('disabled')
+                    })
+                }  
+            }
+        })
     })
 
     sendLinkBtn.addEventListener('click', function () {
@@ -315,14 +366,9 @@ window.addEventListener('DOMContentLoaded', function(){
         http.post('/patients/generatelink', {...data}, {"html": newPatientModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
-                // newPatientModal.hide()
-                // clearDivValues(newPatientModal._element)
-                // newPatientModal._element.querySelector('.allPatientInputsDiv').classList.add('d-none')
-                // newPatientModal._element.querySelector('.familyRegistrationBillOption')
-                // allPatientsTable.draw()
                 alert('Link sent')
+                newPatientModal.hide()
             }
-            // sendLinkBtn.removeAttribute('disabled')
         })
         .catch((error) => {
             sendLinkBtn.removeAttribute('disabled')
@@ -490,6 +536,8 @@ window.addEventListener('DOMContentLoaded', function(){
             }
         })
     })
+
+    
 
     document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function(event) {

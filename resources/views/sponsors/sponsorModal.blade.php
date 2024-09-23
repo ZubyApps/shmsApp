@@ -34,7 +34,7 @@
                                 <x-form-input name="name" />
                             </x-form-div>
                             <x-form-div class="col-xl-6">
-                                <x-input-span>Phone No.</x-input-span>
+                                <x-input-span>Phone No.<x-required-span /></x-input-span>
                                 <x-form-input name="phone" />
                             </x-form-div>
                             <x-form-div class="col-xl-6">
@@ -47,8 +47,7 @@
                                     <option class="familyRegistrationBillOption" value="3500">3500</option>
                                     <option value="1500">1500 (Upgrade)</option>
                                     <option value="old">Old</option>
-                                    <option class="{{ !$isUpdate ? 'd-none' : ''  }}" value="">N/A</option>
-                                    
+                                    <option class="{{ !$isUpdate ? 'd-none' : ''  }}" value="">N/A</option>  
                                 </select>
                             </x-form-div>
                             <x-form-div class="col-xl-6">

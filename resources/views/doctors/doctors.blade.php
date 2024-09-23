@@ -30,6 +30,7 @@
 @include('extras.medicalReportTemplateModal', ['title' => 'Edit Medical Report', 'isUpdate' => true, 'id' => 'editMedicalReportTemplateModal' ])
 @include('extras.viewMedicalReportModal', ['title' => '', 'isUpdate' => true, 'id' => 'viewMedicalReportModal' ])
 @include('nurses.wardAndBedModal', ['title' => 'Update Admission Details', 'isNurses' => false, 'id' => 'wardAndBedModal'])
+@include('doctors.appointmentModal', ['title' => 'Set Appointment', 'isDoctor' => true, 'id' => 'appointmentModal'])
 
     <div class="container mt-5">
         <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas1"
@@ -102,6 +103,41 @@
                 </div>
             </div>
         </div>
+        <div class="offcanvas offcanvas-end overflow-auto" data-bs-scroll="true" tabindex="-1" id="appointmentsOffcanvas"
+            aria-labelledby="appointmentsOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-primary" id="appointmentsOffcanvasLabel">List of Appointments</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <x-form-div class="col-md-6 pt-2">
+                    <x-input-span id="filterAppointmentsLabel">Filter Appointments<x-required-span /></x-input-span>
+                    <select class="form-select form-select-md" name="filterAppointments" id="filterAppointments">
+                        <option value="My Appointments">My Appointments </option>
+                        <option value="">All Appointments</option>
+                    </select>
+                </x-form-div>
+                <div class="py-4 ">
+                    <table id="appointmentsTable" class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Created</th>
+                                <th>Patient</th>
+                                <th><i class="bi bi-telephone-outbound-fill text-primary"></th>
+                                <th>Sponsor</th>
+                                <th>Last Visit</th>
+                                <th>Last Diagnosis</th>
+                                <th>Doctor</th>
+                                <th>Ap Date</th>
+                                <th>CreatedBy</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
         <div class="text-start mb-4">
             <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" id="waitingBtn"
@@ -113,6 +149,11 @@
                 data-bs-target="#emergencyListOffcanvas" aria-controls="emergencyListOffcanvas">
                 <i class="bi bi-list-check"></i>
                 Emergency Rx <span class="badge text-bg-danger" id="emergencyListCount"></span>
+            </button>
+            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" id="appointmentsListBtn"
+                data-bs-target="#appointmentsOffcanvas" aria-controls="appointmentsOffcanvas">
+                <i class="bi bi-list-check"></i>
+                Appointments <span class="badge text-bg-danger" id="appointmentsBadgeSpan"></span>
             </button>
         </div>
 
@@ -128,6 +169,9 @@
 
                     <button class="nav-link" id="nav-ancPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-ancPatients"
                     type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button>
+
+                    {{-- <button class="nav-link" id="nav-appointments-tab"  data-bs-toggle="tab"  data-bs-target="#nav-appointments"
+                    type="button" role="tab" aria-controls="nav-appointments" aria-selected="false">Appointments</button> --}}
                     
                 </div>
             </nav>
@@ -148,7 +192,7 @@
                                     <th>Seen</th>
                                     <th>Patient</th>
                                     <th>Doctor</th>
-                                    <th>Current Diagnosis</th>
+                                    <th>Last Diagnosis</th>
                                     <th>Sponsor</th>
                                     <th>Last 30days</th>
                                     <th>Rx Count</th>

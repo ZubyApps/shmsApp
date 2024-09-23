@@ -235,6 +235,7 @@ const getWaitingTable = (tableId) => {
                         `
             },
             {data: row => function () {
+                const show = row.vitalSigns > 0 || row.ancVitalSigns > 0 || row.prescriptions > 0 || row.payments > 0 ? false : true
                 if (row.doctor === ''){
                     return `
                         <div class="d-flex flex-">
@@ -253,7 +254,7 @@ const getWaitingTable = (tableId) => {
                                             </a>
                                         </li>
                                         <li>
-                                            <a role="button" class="dropdown-item deleteVisitBtn tooltip-test" title="delete visit" id="deleteVisitBtn" data-id="${ row.id }">
+                                            <a role="button" class="dropdown-item deleteVisitBtn tooltip-test ${show ? '' : 'd-none'}" title="delete visit" id="deleteVisitBtn" data-id="${ row.id }">
                                                 <i class="bi bi-x-circle-fill text-primary"></i> Delete Visit
                                             </a>
                                         </li>
@@ -277,7 +278,7 @@ const getWaitingTable = (tableId) => {
                                             <a class="dropdown-item closeVisitBtn btn tooltip-test" title="close" id="closeVisitBtn"  data-id="${ row.id }">
                                                 <i class="bi bi-lock-fill text-primary"></i> Close Visit
                                             </a>
-                                            <a class="dropdown-item deleteVisitBtn btn tooltip-test" title="delete" id="deleteVisitBtn"  data-id="${ row.id }">
+                                            <a class="dropdown-item deleteVisitBtn btn tooltip-test ${show ? '' : 'd-none'}" title="delete" id="deleteVisitBtn"  data-id="${ row.id }">
                                                 <i class="bi bi-x-circle-fill text-primary"></i> Delete Visit
                                             </a>
                                         </li>
@@ -382,7 +383,7 @@ const getPrescriptionTableByConsultation = (tableId, conId, visitId, modal) => {
         },
         columns: [
             {data: "prescribed"},
-            {data: "resource"},
+            {data: row => `<span>${row.resource + ' ' + (row.thirdParty  ? `<small>(${row.thirdParty})</small>` : '')}</span>`},
             {data: "prescription"},
             {data: "route"},
             {
@@ -406,7 +407,7 @@ const getPrescriptionTableByConsultation = (tableId, conId, visitId, modal) => {
             {
                 sortable: false,
                 data: row =>  `
-                <div class="d-flex flex- ${visitId && !conId ? 'd-none': ''}">
+                <div class="d-flex flex- ${visitId && !conId || row.thirdParty ? 'd-none': ''}">
                     <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}" data-conid="${conId}">
                         <i class="bi bi-trash3-fill"></i>
                     </button>

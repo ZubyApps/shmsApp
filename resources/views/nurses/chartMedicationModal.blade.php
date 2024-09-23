@@ -54,19 +54,19 @@
                             <div class="row" id="chartMedicationDiv" data-div="chart">
                                 <x-form-span class="mb-2 fw-semibold">Save the doses and time intervals according to prescription</x-form-span>
                                 <x-form-div class="col-xl-4">
-                                    <x-input-span>Dose</x-input-span>
+                                    <x-input-span>Dose<x-required-span /></x-input-span>
                                     <x-form-input name="dose" type="number" id="dose" placeholder="eg. 200"/>
-                                    <x-input-span>Unit</x-input-span>
+                                    <x-input-span>Unit<x-required-span /></x-input-span>
                                     <x-select-unit aria-label="unit" name="unit" id="unit"></x-select-unit>
                                 </x-form-div>
                                 <x-form-div class="col-xl-4">
-                                    <x-input-span>Frequency</x-input-span>
+                                    <x-input-span>Frequency<x-required-span /></x-input-span>
                                     <x-select-frequency aria-label="frequency" name="frequency" id="frequency"></x-select-frequency>
-                                    <x-input-span>Day(s)</x-input-span>
+                                    <x-input-span>Day(s)<x-required-span /></x-input-span>
                                     <x-form-input type="number" name="days" id="days" value="1" />
                                 </x-form-div>
                                 <x-form-div class="col-xl-4">
-                                    <x-input-span>Start from <small> (optional)</small></x-input-span>
+                                    <x-input-span>Set Time <small> (optional)</small></x-input-span>
                                     <x-form-input type="datetime-local" name="date" id="date" value="" />
                                 </x-form-div>
                                 <div class="d-flex justify-content-center mt-2">

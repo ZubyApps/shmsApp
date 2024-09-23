@@ -18,7 +18,7 @@
                                 <x-select-flags name="flag" id="{{ $isUpdate ? 'flagUpdate' : 'flag' }}"></x-select-flags>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="nameLabel">Marked For<x-required-span /></x-input-span>
+                                <x-input-span id="nameLabel">Marked For</x-input-span>
                                 <x-form-input type="text" class="markedFor" name="markedFor" id="markedFor" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
@@ -36,7 +36,7 @@
                                 <datalist name="resourceSubCategory" type="text" class="decoration-none bg-white subCategoryList" id="{{ $isUpdate ? 'updateSubCategoryList' : 'newSubCategoryList' }}"></datalist>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="subCategoryLabel">Medication Category<x-required-span /></x-input-span>
+                                <x-input-span id="subCategoryLabel">Medication Category</x-input-span>
                                 <x-form-input type="search" name="medicationCategory" class="" id="{{ $isUpdate ? 'updateMedicationCategory' : 'newMedicationCategory' }}" placeholder="Search..." list="{{ $isUpdate ? 'updateMedicationCategoryList' : 'newMedicationCategoryList' }}"/>
                                 <datalist name="medicationCategory" type="text" class="decoration-none bg-white medicationCategoryList" id="{{ $isUpdate ? 'updateMedicationCategoryList' : 'newMedicationCategoryList' }}"></datalist>
                             </x-form-div>

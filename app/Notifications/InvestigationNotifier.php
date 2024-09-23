@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Services\ChurchPlusSmsService;
+use App\Services\HelperService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -16,7 +17,7 @@ class InvestigationNotifier extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(private readonly ChurchPlusSmsService $churchPlusSmsService)
+    public function __construct(private readonly ChurchPlusSmsService $churchPlusSmsService, private readonly HelperService $helperService)
     {
         //
     }
@@ -36,12 +37,13 @@ class InvestigationNotifier extends Notification
      */
     public function toSms(object $notifiable)
     {
+        $gateway = $this->helperService->nccTextTime() ? 1 : 2;
         $firstName = $notifiable->visit->patient->first_name;
 
         Log::info('investigation', ['sent to' => $firstName]);
 
         return $this->churchPlusSmsService
-        ->sendSms('Dear ' .$firstName. ', your test result is ready. This notification is courtesy of our Hospital Management System. To opt out, visit reception', $notifiable->visit->patient->phone, 'SandraHosp');
+        ->sendSms('Dear ' .$firstName. ', your test result is ready. This notification is courtesy of our Hospital Management System. To opt out, visit reception', $notifiable->visit->patient->phone, 'SandraHosp', $gateway);
     }
 
     /**

@@ -9,7 +9,6 @@ use App\Notifications\MedicationNotifier;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MedicationsForSms
 {

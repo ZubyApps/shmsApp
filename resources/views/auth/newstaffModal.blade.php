@@ -40,7 +40,7 @@
                             </x-form-div>
 
                             <x-form-div>
-                                <x-input-span>Email</x-input-span>
+                                <x-input-span>Email<x-required-span /></x-input-span>
                                 <x-form-input name="email{{ $isUpdate ? 1 : '' }}" autocomplete="username" id="email{{ $isUpdate ? 1 : '' }}"/>
                             </x-form-div>
                         {{-- </div>
@@ -52,7 +52,7 @@
                             </x-form-div>
 
                             <x-form-div>
-                                <x-input-span>Highest Qaulification<x-required-span /></x-input-span>
+                                <x-input-span>Highest Qualification<x-required-span /></x-input-span>
                                 <x-form-input name="highestQualification{{ $isUpdate ? 1 : '' }}" id="highestQualification{{ $isUpdate ? 1 : '' }}"/>
                             </x-form-div>
 

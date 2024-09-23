@@ -5,18 +5,13 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
-use App\DataObjects\FormLinkParams;
 use App\Models\Patient;
 use App\Models\PatientPreForm;
-use App\Models\User;
 use App\Notifications\FormLinkNotifier;
 use App\Notifications\PatientCardNumber;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\URL;
 
 class PrePatientService
 {
@@ -67,52 +62,6 @@ class PrePatientService
         });
     }
 
-    public function sendFormLink($data, User $user)
-    {
-        $notifiable  = new FormLinkParams(
-            config('app.url').'/form?', 
-            (int)$data->sponsorCategory, 
-            (int)$data->sponsor, 
-            $data->cardNumber, 
-            $data->patientType, 
-            $data->phone, 
-            $user->id
-        );
-        
-        // $link2 = route('patientForm',
-        //         [
-        //             'sponsorCategory'   => $notifiable->sponsorCat,
-        //             'sponsor'           => $notifiable->sponsor,
-        //             'cardNumber'        => $notifiable->cardNumber,
-        //             'patientType'       => $notifiable->patientType,
-        //             'phone'             => $notifiable->phone,
-        //             'user'              => $notifiable->userId
-        //         ]
-        //     );
-
-        $patientForm = $this->patientPreForm->create(
-            [
-                'sponsor_category'  => $notifiable->sponsorCat,
-                'sponsor'           => $notifiable->sponsor,
-                'card_no'           => $notifiable->cardNumber,
-                'patient_type'      => $notifiable->patientType,
-                'phone'             => $notifiable->phone,
-                'user_id'           => $notifiable->userId
-            ]
-            );
-
-        $signedLink = URL::temporarySignedRoute('patientForm', now()->addMinutes(5), ['patientPreForm' => $patientForm->id]);
-
-        // $patientForm->update(['short_link' => $signedLink]);
-
-        // $link = $notifiable->linkBaseUrl.'sponsorCategory='. $notifiable->sponsorCat.'&sponsor='. $notifiable->sponsor.'&cardNumber='. $notifiable->cardNumber . '&patientType='. $notifiable->patientType. '&phone='. $notifiable->phone. '&user='. $notifiable->userId;
-
-        Log::info('form link', ['signed' => $signedLink]);
-        $this->formLinkNotifier->toSms($notifiable, $signedLink, $notifiable->phone);
-        if ($this->helperService->nccTextTime()){
-        }
-    }
-
     public function getPaginatedPrePatients(DataTableQueryParams $params)
     {
         $orderBy    = 'created_at';
@@ -156,10 +105,8 @@ class PrePatientService
                 'flagPatient'       => $patientPreForm->flag,
                 'flagReason'        => $patientPreForm->flag_reason,
                 'createdAt'         => (new Carbon($patientPreForm->created_at))->format('d/m/Y'),
-                // 'createdBy'         => $patientPreForm->user->username,
+                'createdBy'         => $patientPreForm->user->username,
                 'active'            => $patientPreForm->is_active,
-                // 'count'             => $patientPreForm->visits()->count(),
-                // 'patient'           => $patientPreForm->patientId()
             ];
          };
     }
