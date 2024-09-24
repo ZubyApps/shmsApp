@@ -105,6 +105,7 @@ class UserService
                         ->where('firstname', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('middlename', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('lastname', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhere('phone_number', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->whereRelation('designation', 'access_level', '<', 5)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
