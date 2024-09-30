@@ -288,4 +288,155 @@ const getMedicationCategoryTable = (table) => {
     return medicationCategoryTable
 }
 
-export {getSponsorCategoryTable, getResourceStockDateTable, getResourceCategoryTable, getPayMethodTable, getExpenseCategoryTable, getMedicationCategoryTable}
+const getUnitDescriptionTable = (table) => {
+    const unitDescriptionTable = new DataTable('#'+table, {
+        serverSide: true,
+        ajax:  '/unitdescription/load',
+        orderMulti: true,
+        search:true,
+        // searchDelay: 1000,
+        columns: [
+            {data:row => () => {
+                return `<span class="text-primary"> ${row.longName}</span>`
+            }},
+            {data:row => () => {
+                return `<span class="text-primary"> ${row.shortName}</span>`
+            }},
+            {data: "description"},
+            {data: "createdBy"},
+            {data: "createdAt"},
+            {
+                sortable: false,
+                data: row => () => {
+                    if (row.count < 1) {
+                         return `
+                            <div class="d-flex flex-">
+                                <button class=" btn btn-outline-primary updateAll tooltip-test" title="update" data-id="${ row.id }">
+                                    <i class="bi bi-arrow-clockwise text-primary"></i>
+                                </button>
+                                <button class="ms-1 btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </button>
+                                <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </div>
+                        `
+                    } else {
+                        return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary updateAll tooltip-test" title="update" data-id="${ row.id }">
+                                <i class="bi bi-arrow-clockwise text-primary"></i>
+                            </button>
+                            <button class="ms-1 btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
+                        </div>
+                    `
+                    }
+                           
+                } 
+                    }
+        ]
+    });
+    return unitDescriptionTable
+}
+
+const getMarkedForTable = (table) => {
+    const markedForTable = new DataTable('#'+table, {
+        serverSide: true,
+        ajax:  '/markedfor/load',
+        orderMulti: true,
+        search:true,
+        searchDelay: 1000,
+        columns: [
+            {data:row => () => {
+                return `<span class="text-primary"> ${row.name}</span>`
+            }},
+            {data: "description"},
+            {data: "createdBy"},
+            {data: "createdAt"},
+            {
+                sortable: false,
+                data: row => () => {
+                    if (row.count < 1) {
+                         return `
+                            <div class="d-flex flex-">
+                                <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </button>
+                                <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </div>
+                        `
+                    } else {
+                        return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
+                        </div>
+                    `
+                    }
+                           
+                } 
+                    }
+        ]
+    });
+    return markedForTable
+}
+
+const getWardTable = (table) => {
+    const wardTable = new DataTable('#'+table, {
+        serverSide: true,
+        ajax:  '/ward/load',
+        orderMulti: true,
+        search:true,
+        // searchDelay: 1000,
+        columns: [
+            {data:row => () => {
+                return `<span class="text-primary"> ${row.longName}</span>`
+            }},
+            {data:row => () => {
+                return `<span class="text-primary"> ${row.shortName}</span>`
+            }},
+            {data: "bedNumber"},
+            {data: "description"},
+            {data: row => row.flag ? '<span class="fw-bold text-danger">Yes</span>' : 'No' },
+            {data: "flagReason"},
+            {data: "bill"},
+            {data: "createdBy"},
+            {data: "createdAt"},
+            {data: "occupied"},
+            {
+                sortable: false,
+                data: row => () => {
+                         return `
+                            <div class="dropdown ms-1">
+                                <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="options" data-bs-toggle="dropdown" href="" >
+                                    <i class="bi bi-gear" role="button"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="btn dropdown-item clearWardBtn" data-id="${ row.id }">
+                                            <i class="bi bi-arrow-clockwise text-primary"></i> Clear Ward
+                                        </a>
+                                        <a class="btn dropdown-item updateBtn tooltip-test" title="update"  data-id="${ row.id }">
+                                            <i class="bi bi-pencil-fill text-primary"></i> Update
+                                        </a>
+                                        <a class="btn dropdown-item deleteBtn tooltip-test ${row.count < 1 ? '' : 'd-none'}" title="delete"  data-id="${ row.id }">
+                                            <i class="bi bi-x-circle-fill text-primary"></i> Delete
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        `                           
+                } 
+                    }
+        ]
+    });
+    return wardTable
+}
+
+export {getSponsorCategoryTable, getResourceStockDateTable, getResourceCategoryTable, getPayMethodTable, getExpenseCategoryTable, getMedicationCategoryTable, getUnitDescriptionTable, getMarkedForTable, getWardTable}

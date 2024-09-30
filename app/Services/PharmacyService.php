@@ -10,6 +10,7 @@ use App\Models\Prescription;
 use App\Models\Resource;
 use App\Models\User;
 use App\Models\Visit;
+use App\Models\Ward;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -24,7 +25,8 @@ class PharmacyService
         private readonly Consultation $consultation,
         private readonly PaymentService $paymentService,
         private readonly PayPercentageService $payPercentageService,
-        private readonly HelperService $helperService
+        private readonly HelperService $helperService,
+        private readonly Ward $ward,
         )
     {
         
@@ -112,7 +114,8 @@ class PharmacyService
 
     public function getPharmacyVisitsTransformer(): callable
     {
-       return  function (Visit $visit) {
+        return  function (Visit $visit) {
+           $ward = $this->ward->where('id', $visit->ward)->first();
             return [
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
@@ -124,8 +127,9 @@ class PharmacyService
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
                 'sponsor'           => $visit->sponsor->name,
                 'admissionStatus'   => $visit->admission_status,
-                'ward'              => $visit->ward ?? '',
-                'bedNo'             => $visit->bed_no ?? '',
+                'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
+                'wardId'            => $visit->ward ?? '',
+                'wardPresent'       => $ward?->visit_id == $visit->id,
                 'patientType'       => $visit->patient->patient_type,
                 'countPrescribed'   => Prescription::where('visit_id', $visit->id)
                                         ->where(function (Builder $query) {
@@ -311,7 +315,7 @@ class PharmacyService
                     'category'          => $prescription->resource->category,
                     'prescription'      => $prescription->prescription ?? '',
                     'qtyBilled'         => $prescription->qty_billed,
-                    'unit'              => $prescription->resource->unit_description,
+                    'unit'              => $prescription->resource->unitDescription?->short_name,
                     'hmsBill'           => $prescription->hms_bill ?? '',
                     'nhisBill'          => $prescription->nhis_bill ?? '',
                     'hmsBillBy'         => $prescription->hmsBillBy->username ?? '',

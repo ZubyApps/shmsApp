@@ -9,12 +9,12 @@ use App\Models\Consultation;
 use App\Models\Prescription;
 use App\Models\User;
 use App\Models\Visit;
+use App\Models\Ward;
 use App\Notifications\InvestigationNotifier;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class InvestigationService
 {
@@ -23,7 +23,8 @@ class InvestigationService
         private readonly Prescription $prescription,
         private readonly PayPercentageService $payPercentageService,
         private readonly HelperService $helperService,
-        private readonly InvestigationNotifier $investigationNotifier
+        private readonly InvestigationNotifier $investigationNotifier,
+        private readonly Ward $ward,
         )
     {
         
@@ -108,6 +109,7 @@ class InvestigationService
     public function getConsultedVisitsLabTransformer(): callable
     {
        return  function (Visit $visit) {
+        $ward = $this->ward->where('id', $visit->ward)->first();
             return [
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
@@ -117,9 +119,12 @@ class InvestigationService
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
                                        Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
                 'sponsor'           => $visit->sponsor->name,
-                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
-                'ward'              => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->ward ?? '',
-                'bedNo'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->bed_no ?? '',
+                // 'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
+                // 'ward'              => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->ward ?? '',
+                // 'bedNo'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->bed_no ?? '',
+                'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
+                'wardId'            => $visit->ward ?? '',
+                'wardPresent'       => $ward?->visit_id == $visit->id,
                 'patientType'       => $visit->patient->patient_type,
                 'labPrescribed'     => Prescription::where('visit_id', $visit->id)
                                         ->whereRelation('resource', 'category', '=', 'Investigations')

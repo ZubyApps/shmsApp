@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, prescriptionStatusContorller, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, prescriptionStatusContorller, sponsorAndPayPercent, wardState } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     return new DataTable('#'+tableId, {
@@ -153,7 +153,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                 data: row => tableId === 'inPatientsVisitTable' ? detailsBtn1(row) : detailsBtn2(row)}
     ]
 
-    filter === 'Inpatient' ? preparedColumns.splice(9, 0, {data: row => `<small>${row.ward + '-' + row.bedNo}</small>`},) : ''
+    filter === 'Inpatient' ? preparedColumns.splice(9, 0, {data: row => wardState(row)},) : ''
 
     const allPatientsTable = new DataTable('#'+tableId, {
         serverSide: true,

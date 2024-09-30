@@ -16,6 +16,7 @@ use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\HmoController;
 use App\Http\Controllers\InvestigationController;
+use App\Http\Controllers\MarkedForController;
 use App\Http\Controllers\MedicalReportController;
 use App\Http\Controllers\MedicationCategoryController;
 use App\Http\Controllers\MedicationChartController;
@@ -41,8 +42,10 @@ use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\SurgeryNoteController;
 use App\Http\Controllers\ThirdPartyController;
 use App\Http\Controllers\ThirdPartyServiceController;
+use App\Http\Controllers\UnitDescriptionController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VitalSignsController;
+use App\Http\Controllers\WardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -108,6 +111,34 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{resourceSubCategory}', [ResourceSubCategoryController::class, 'destroy']);
             Route::post('/{resourceSubCategory}', [ResourceSubCategoryController::class, 'update']);
         })->name('Resource SubCategory');
+
+        Route::prefix('markedfor')->group(function (){
+            Route::post('', [MarkedForController::class, 'store']);
+            Route::get('/load', [MarkedForController::class, 'load']);
+            Route::get('/{markedFor}', [MarkedForController::class, 'edit']);
+            Route::delete('/{markedFor}', [MarkedForController::class, 'destroy']);
+            Route::post('/{markedFor}', [MarkedForController::class, 'update']);
+        })->name('Marked For');
+
+        Route::prefix('unitdescription')->group(function (){
+            Route::post('', [UnitDescriptionController::class, 'store']);
+            Route::get('/load', [UnitDescriptionController::class, 'load']);
+            Route::get('/{unitDescription}', [UnitDescriptionController::class, 'edit']);
+            Route::patch('/updateall/{unitDescription}', [UnitDescriptionController::class, 'updateAll']);
+            Route::delete('/{unitDescription}', [UnitDescriptionController::class, 'destroy']);
+            Route::post('/{unitDescription}', [UnitDescriptionController::class, 'update']);
+        })->name('Unit Description');
+
+        Route::prefix('ward')->group(function (){
+            Route::post('', [WardController::class, 'store']);
+            Route::get('/load', [WardController::class, 'load']);
+            Route::get('/list', [WardController::class, 'list']);
+            Route::get('/{ward}', [WardController::class, 'edit']);
+            Route::patch('/clear/{ward}', [WardController::class, 'clear']);
+            Route::patch('/updateall/{ward}', [WardController::class, 'updateAll']);
+            Route::delete('/{ward}', [WardController::class, 'destroy']);
+            Route::post('/{ward}', [WardController::class, 'update']);
+        })->name('Ward');
 
         Route::prefix('resources')->group(function (){
             Route::get('', [ResourceController::class, 'index'])->name('Resources');
@@ -462,6 +493,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/list/bulk', [BulkRequestController::class, 'listBulk']);
         Route::post('/{resource}', [BulkRequestController::class, 'store']);
         Route::get('/load/nurses', [BulkRequestController::class, 'nursesBulkRequests']);
+        Route::get('/load/theatre', [BulkRequestController::class, 'theatreBulkRequests']);
         Route::get('/load/lab', [BulkRequestController::class, 'labBulkRequests']);
         Route::get('/load/pharmacy', [BulkRequestController::class, 'pharmacyBulkRequests']);
         Route::patch('/approve/{bulkRequest}', [BulkRequestController::class, 'toggleApproveBulkRequest']);

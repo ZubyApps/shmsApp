@@ -112,22 +112,16 @@ const review = (count, line) => {
                     </div>
                 </div>
                 <div class="row mt-2">
-                    <div class="themed-grid-col col-xl-4 mt-4">
+                    <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Patient Status </label>
                             <div>${line.status} </div>
                         </div>
                     </div>
-                    <div class="themed-grid-col col-xl-4 mt-4">
+                    <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Ward </label>
                             <div>${line.ward}</div>
-                        </div>
-                    </div>
-                    <div class="themed-grid-col col-xl-4 mt-4">
-                        <div class="form-outline mb-2">
-                            <label class="form-label fw-bold text-secondary"> Bed </label>
-                            <div>${line.bedNumber}</div>
                         </div>
                     </div>
                     <div class="d-flex justify-content-end my-2">
@@ -205,22 +199,16 @@ const consultation = (line) => {
                     </div>
                 </div>                                           
                 <div class="row mt-2 admissionStatus">
-                    <div class="themed-grid-col col-xl-4">
+                    <div class="themed-grid-col col-xl-6">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Patient Status </label>
                             <div>${line.status}</div>
                         </div>
                     </div>
-                    <div class="themed-grid-col col-xl-4">
+                    <div class="themed-grid-col col-xl-6">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Ward </label>
                             <div>${line.ward}</div>
-                        </div>
-                    </div>
-                    <div class="themed-grid-col col-xl-4">
-                        <div class="form-outline mb-2">
-                            <label class="form-label fw-bold text-secondary"> Bed </label>
-                            <div>${line.bedNumber}</div>
                         </div>
                     </div>
                     <div class="d-flex justify-content-end my-2">
@@ -322,22 +310,16 @@ const AncConsultation = (line, iteration, count) => {
                     </div>
                 </div>
                 <div class="row mt-2">
-                    <div class="themed-grid-col col-xl-4 mt-4">
+                    <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Patient Status </label>
                             <div>${line.status}</div>
                         </div>
                     </div>
-                    <div class="themed-grid-col col-xl-4 mt-4">
+                    <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Ward </label>
                             <div>${line.ward}</div>
-                        </div>
-                    </div>
-                    <div class="themed-grid-col col-xl-4 mt-4">
-                        <div class="form-outline mb-2">
-                            <label class="form-label fw-bold text-secondary"> Bed </label>
-                            <div>${line.bedNumber}</div>
                         </div>
                     </div>
                     <div class="d-flex justify-content-end my-2">

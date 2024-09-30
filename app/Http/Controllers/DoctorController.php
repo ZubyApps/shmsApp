@@ -16,7 +16,8 @@ class DoctorController extends Controller
         private readonly DoctorService $doctorService,
         private readonly ResourceService $resourceService,
         private readonly ThirdPartyController $thirdPartyController,
-        private readonly UserService $userService
+        private readonly UserService $userService,
+        private readonly WardController $wardController
         )
     {
         
@@ -25,8 +26,9 @@ class DoctorController extends Controller
     public function index()
     {
         return view('doctors.doctors', [
-            'doctors' => $this->userService->listStaff(designation: 'Doctor'),
-            'thirdParties'  => $this->thirdPartyController->showAll('id', 'short_name')
+            'doctors'       => $this->userService->listStaff(designation: 'Doctor'),
+            'thirdParties'  => $this->thirdPartyController->showAll('id', 'short_name'),
+            'wards'         => $this->wardController->showAll('id', 'short_name', 'long_name', 'bed_number', 'visit_id')
         ]);
     }
 

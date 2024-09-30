@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Services;
 
+use App\Models\Ward;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 
@@ -34,5 +35,10 @@ class HelperService
         $start = new CarbonImmutable('08:00:00');
         $end = $start->addHours(11);
         return Carbon::now()->between($start, $end);
+    }
+
+    public function displayWard(Ward $ward)
+    {
+        return $ward->short_name . '-Bed' . $ward->bed_number;
     }
 }

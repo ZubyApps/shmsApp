@@ -132,7 +132,7 @@ class MedicationChartService
             return [
                 'id'                => $medicationChart->id,
                 'dose'              => $medicationChart->dose_prescribed,
-                'scheduledTime'     => (new Carbon($medicationChart->scheduled_time))->format('g:iA D dS'),
+                'scheduledTime'     => (new Carbon($medicationChart->scheduled_time))->format('g:iA D dS M Y'),
                 'chartedBy'         => $medicationChart->user->username,
                 'chartedAt'         => (new Carbon($medicationChart->created_at))->format('d/m/y g:ia'),
                 'given'             => $medicationChart->status

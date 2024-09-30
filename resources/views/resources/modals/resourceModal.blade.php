@@ -18,8 +18,14 @@
                                 <x-select-flags name="flag" id="{{ $isUpdate ? 'flagUpdate' : 'flag' }}"></x-select-flags>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
-                                <x-input-span id="nameLabel">Marked For</x-input-span>
-                                <x-form-input type="text" class="markedFor" name="markedFor" id="markedFor" />
+                                <x-input-span id="markedForLabel">Marked For</x-input-span>
+                                <select class="form-select form-select-md" name="markedFor" id="markedFor">
+                                    <option value="">Select</option>
+                                    @foreach ($markedFors as $markedFor )
+                                        <option value="{{ $markedFor->id}}" name="{{ $markedFor->name }}">{{ $markedFor->name}}</option>
+                                    @endforeach
+                                </select>
+                                {{-- <x-form-input type="text" class="markedFor" name="markedFor" id="markedFor" /> --}}
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span>Category<x-required-span /></x-input-span>
@@ -54,7 +60,13 @@
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="unitLabel">Unit Description<x-required-span /></x-input-span>
-                                <x-select-unit-description name="unitDescription" id="unitDescription"></x-select-unit-description>
+                                <select class="form-select form-select-md" name="unitDescription" id="unitDescription">
+                                    <option value="">Select</option>   
+                                    @foreach ($unitDescriptions as $unitDescription )
+                                        <option value="{{ $unitDescription->id}}" name="{{ $unitDescription->short_name }}">{{ $unitDescription->long_name .' ('.$unitDescription->short_name.')'}}</option>
+                                    @endforeach
+                                </select>
+                                {{-- <x-select-unit-description name="unitDescription" id="unitDescription"></x-select-unit-description> --}}
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="expiryDateLabel">Expiry Date</x-input-span>

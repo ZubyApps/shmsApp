@@ -123,7 +123,8 @@
                                             <x-form-textarea type="text" name="plan" id="plan" cols="10" rows="2"></x-form-textarea>
                                         </x-form-div>
                                     </div>
-                                    <div class="row my-2">
+                                    @include('extras.wardAndBedDiv')
+                                    {{-- <div class="row my-2">
                                         <x-form-div class="col-xl-4">
                                             <x-input-span id="admitLabel">Admit?<x-required-span /></x-input-span>
                                             <x-select-admit name="admit" id="admit" :disabled="false"></x-select-admit>
@@ -136,7 +137,7 @@
                                             <x-input-span id="bedNumberLabel">Bed Number</x-input-span>
                                             <x-select-bed name="bedNumber"></x-select-bed>
                                         </x-form-div>
-                                    </div>
+                                    </div> --}}
                                     @if ($isSpecialist)
                                     <div class="row d-none">
                                         <x-form-div class="col-xl-12">

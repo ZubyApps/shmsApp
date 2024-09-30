@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getOrdinal, histroyBtn, prescriptionOnLatestConsultation, prescriptionStatusContorller, reviewBtn, sponsorAndPayPercent } from "../helpers";
+import { admissionStatus, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getOrdinal, histroyBtn, prescriptionOnLatestConsultation, prescriptionStatusContorller, reviewBtn, sponsorAndPayPercent, wardState } from "../helpers";
 
 const getOutpatientsVisitTable = (tableId, filter) => {
     return new DataTable(tableId, {
@@ -104,7 +104,7 @@ const getInpatientsVisitTable = (tableId, filter) => {
                 }
             },
             {data: row => admissionStatus(row)},
-            {data: row => `<small>${row.ward + '-' + row.bedNo}</small>`},
+            {data: row => wardState(row)},
             {
                 sortable: false,
                 data: row => reviewBtn(row)
@@ -465,12 +465,12 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
                                     </a>
                                 </li>
                                 <li  class="${!row.sent ? 'd-none' : ''}">
-                                    <a class="btn btn-outline-primary dropdown-item printThisBtn" id="printThisBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-result="${ row.result }" data-sent="${ row.sent }" data-table="${tableId}" title="print this" data-id="${ row.id}" data-stafffullname="${ row.staffFullName}">
+                                    <a class="btn btn-outline-primary dropdown-item printThisBtn" id="printThisBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sent="${ row.sent }" data-table="${tableId}" title="print this" data-id="${ row.id}" data-stafffullname="${ row.staffFullName}">
                                         <i class="bi bi-download"></i> Print This
                                     </a>
                                 </li>
                                 <li  class="${!row.sent ? 'd-none' : ''}">
-                                    <a class="btn btn-outline-primary dropdown-item printAllBtn" id="printAllBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-result="${ row.result }" data-sent="${ row.sent }" data-table="${tableId}" title="print all" data-id="${ row.id}" data-stafffullname="${ row.staffFullName}">
+                                    <a class="btn btn-outline-primary dropdown-item printAllBtn" id="printAllBtn" data-investigation="${row.resource}" data-patient="${ row.patient }" data-sent="${ row.sent }" data-table="${tableId}" title="print all" data-id="${ row.id}" data-stafffullname="${ row.staffFullName}">
                                         <i class="bi bi-download"></i> Print All
                                     </a>
                                 </li>

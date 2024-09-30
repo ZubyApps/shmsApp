@@ -11,4 +11,6 @@
         <option value="12">BD</option>
         <option value="8">TDS</option>
         <option value="6">QDS</option>
+        <option value="168">Weekly</option>  
+        <option value="672">Monthly</option>  
 </select>

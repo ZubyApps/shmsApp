@@ -10,9 +10,9 @@ use App\Models\Patient;
 use App\Models\Payment;
 use App\Models\Prescription;
 use App\Models\Resource;
-use App\Models\ThirdParty;
 use App\Models\User;
 use App\Models\Visit;
+use App\Models\Ward;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -30,7 +30,9 @@ class BillingService
         private readonly PayMethodService $payMethodService,
         private readonly ExpenseService $expenseService,
         private readonly PrescriptionService $prescriptionService,
-        private readonly Patient $patient
+        private readonly Patient $patient,
+        private readonly Ward $ward,
+        private readonly HelperService $helperService
         )
     {
         
@@ -140,6 +142,7 @@ class BillingService
        return  function (Visit $visit) {
 
         $latestConsultation = $visit->consultations->sortDesc()->first();
+        $ward = $this->ward->where('id', $visit->ward)->first();
             return [
                 'id'                => $visit->id,
                 'conId'             => $latestConsultation?->id,
@@ -155,8 +158,9 @@ class BillingService
                 'flagPatient'       => $visit->patient->flag,
                 'flagReason'        => $visit->patient?->flag_reason,
                 'admissionStatus'   => $visit->admission_status,
-                'ward'              => $visit->ward ?? '',
-                'bedNo'             => $visit->bed_no ?? '',
+                'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
+                'wardId'            => $visit->ward ?? '',
+                'wardPresent'       => $ward?->visit_id == $visit->id,
                 'patientType'       => $visit->patient->patient_type,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
@@ -230,7 +234,7 @@ class BillingService
                     'prescriptionId'    => $prescription->id,
                     'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                     'prescribedBy'      => $prescription->user->username,
-                    'description'       => $prescription->resource->unit_description,
+                    'description'       => $prescription->resource->unitDescription?->short_name,
                     'item'              => $prescription->resource->name,
                     'unitPrice'         => $prescription->resource->selling_price,
                     'quantity'          => $prescription->qty_billed ?? '',
@@ -430,7 +434,7 @@ class BillingService
     {
         return DB::transaction(function () use($request, $user) {
 
-            $resources = Resource::all()->where('marked_for', 'discharge');
+            $resources = $this->resource->whereRelation('markedFor', 'id', $request->mark)->get();
             $filteredResources = $resources->reject(function (Object $value) use($request) {
                 return $value->sub_category == "Accommodation" && explode(" ", $value->name)[0] !== $request->wardType;
             });

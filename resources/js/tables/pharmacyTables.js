@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, sponsorAndPayPercent } from "../helpers";
+import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, sponsorAndPayPercent, wardState } from "../helpers";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -30,7 +30,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
         },
     ]
     
-    filter === 'Inpatient' ? preparedColumns.splice(7, 0, {data: row => `<small>${row.ward + '-' + row.bedNo}</small>`},) : ''
+    filter === 'Inpatient' ? preparedColumns.splice(7, 0, {data: row => wardState(row)},) : ''
 
     return new DataTable('#'+tableId, {
         serverSide: true,

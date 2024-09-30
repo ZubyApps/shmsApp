@@ -9,6 +9,7 @@ use App\Http\Resources\PatientBioResource;
 use App\Models\Prescription;
 use App\Models\User;
 use App\Models\Visit;
+use App\Models\Ward;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -17,7 +18,9 @@ class DoctorService
 {
     public function __construct(
         private readonly Visit $visit,
-        private readonly PayPercentageService $payPercentageService
+        private readonly PayPercentageService $payPercentageService,
+        private readonly Ward $ward,
+        private readonly HelperService $helperService
         )
     {
         
@@ -166,7 +169,9 @@ class DoctorService
     {
        return  function (Visit $visit) {
         $latestConsultation = $visit->consultations->sortDesc()->first();
-            return [
+        $ward               = $this->ward->where('id', $visit->ward)->first();
+
+        return [
                 'id'                => $visit->id,
                 'patientId'         => $visit->patient->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
@@ -187,8 +192,9 @@ class DoctorService
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
                 'admissionStatus'   => $visit->admission_status,
-                'ward'              => $visit->ward ?? '',
-                'bedNo'             => $visit->bed_no ?? '',
+                'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
+                'wardId'            => $visit->ward ?? '',
+                'wardPresent'       => $ward?->visit_id == $visit->id,
                 'updatedBy'         => $latestConsultation?->updatedBy?->username ?? 'Nurse...',
                 'patientType'       => $visit->patient->patient_type,
                 'labPrescribed'     => Prescription::where('visit_id', $visit->id)

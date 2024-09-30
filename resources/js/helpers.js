@@ -403,13 +403,13 @@ const admissionStatus = (row) => {
     return row.admissionStatus == 'Inpatient' || row.admissionStatus == 'Observation' ? 
     `<div class="d-flex flex-">
         <div class="dropdown">
-            <a class="d-flex flex- btn tooltip-test text-decoration-none text-primary ${row.ward && row.bedNo ? '' : 'colour-change'} tooltip-test" title="Inpatient" data-bs-toggle="dropdown" href="" >
+            <a class="d-flex flex- btn tooltip-test text-decoration-none text-primary ${row.ward ? '' : 'colour-change'} tooltip-test" title="Inpatient" data-bs-toggle="dropdown" href="" >
             <i class="bi bi-hospital-fill"></i>
                 ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged ${row.doctorDoneAt}"></i>` : ''}
             </a>
                 <ul class="dropdown-menu">
                 <li>
-                    <a role="button" class="dropdown-item wardBedBtn" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-updatedby="${row.updatedBy}" data-doctor="${row.doctor}" data-ward="${row.ward}" data-bedno="${row.bedNo}">
+                    <a role="button" class="dropdown-item wardBedBtn ${row.discharged ? 'd-none' : '' }" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-updatedby="${row.updatedBy}" data-doctor="${row.doctor}" data-ward="${row.ward}" data-wardid="${row.wardId}">
                         Update Ward & Bed
                     </a>
                 </li>
@@ -498,7 +498,7 @@ const gyneaLmpCalculator = (lmpDate) => {
     const eddMonth  = lmpMonth < 3 ? determineMonth((lmpDay + 7), (lmpMonth + 9), eddYear)  : determineMonth((lmpDay + 7), lmpMonth - 3, eddYear)
     // console.log('lmp month = ' + lmpMonth, 'prepared eddMonth = ' + eddMonth)
     const eddDay    = determineDay(daysInMonth(addMonth(lmpMonth), eddYear),(lmpDay + 7))
-    // console.log(eddMonth)
+    console.log('edd month '+ eddMonth)
     return (eddMonth > 11 ? eddYear + 1 : eddYear) + '-' +  (eddMonth > 11 ? 1 : eddMonth + 1).toString().padStart(2, "0") + '-' + eddDay.toString().padStart(2, "0")
 }
 
@@ -514,14 +514,14 @@ const determineDay = (daysInMonthValue, days) => {
 const determineMonth = (days, month, year) => {
     // console.log('determine month value : days = ' + days, ' determine month value : month = ' + month)
     let monthsDays = daysInMonth(month, year)
-    // console.log('days in month = ' + monthsDays, 'days = ' + days )
+    console.log('days in month = ' + monthsDays, 'days = ' + days )
     return days > monthsDays ? month + 1 : month
 }
 
 const daysInMonth = (month, year) => {
-    // console.log('month value = ' + month)
+    console.log('determine feb days = ' + determineFebruaryDays(year))
     const monthArray = [0, 2, 4, 6, 7, 9, 11]
-    return monthArray.includes(month) ? 31 : month === 2 ? determineFebruaryDays(year) : 30
+    return monthArray.includes(month) ? 31 : month === 1 ? determineFebruaryDays(year) : 30
 }
 
 function determineFebruaryDays(year) {
@@ -625,8 +625,8 @@ const populateWardAndBedModal = (modal, btn) => {
     modal._element.querySelector('#admissionStatus').value = btn.getAttribute('data-admissionstatus')
     modal._element.querySelector('#admit').value = btn.getAttribute('data-admissionstatus')
     modal._element.querySelector('#admit').setAttribute('data-admissionstatus', btn.getAttribute('data-admissionstatus'))
-    modal._element.querySelector('#ward').value = btn.getAttribute('data-ward')
-    modal._element.querySelector('#bedNumber').value = btn.getAttribute('data-bedno')
+    modal._element.querySelector('#ward').value = btn.getAttribute('data-wardid')
+    // modal._element.querySelector('#bedNumber').value = btn.getAttribute('data-bedno')
     modal._element.querySelector('#doctor').innerHTML = btn.getAttribute('data-doctor')
     modal._element.querySelector('#updatedBy').innerHTML = btn.getAttribute('data-updatedby')
     modal._element.querySelector('#saveWardAndBedBtn').setAttribute('data-conid', btn.getAttribute('data-conid'))
@@ -807,4 +807,29 @@ const flagPatientReason = (row) => {return row.flagPatient ? row.flagReason : ''
 
 const flagSponsorReason = (flagSponsor) => {return flagSponsor ? 'Defaulted payment' : ''}
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal}
+const displayWardList = (selectEl, data) => {
+    data.forEach(line => {
+        const option = document.createElement("OPTION")
+        option.setAttribute('id', 'listOption')
+        option.setAttribute('value', line.id)
+        option.setAttribute('name', line.display)
+        option.innerHTML = line.display + (line.occupant ? ` (Occupied by ${line.occupant})` : line.flag ? ` (${line.flagReason})` : '')
+        line.occupant || line.flag ? option.setAttribute('disabled', 'disabled') : ''
+        
+        !selectEl.options.namedItem(line.display) ? selectEl.appendChild(option) : ''
+    })
+}
+
+const clearSelectList = (modal) => {
+    console.log(modal.id)
+    modal.querySelectorAll('#listOption').forEach(clientList => {
+        clientList.remove()
+    })
+}
+
+const wardState = (row) => {
+    const condition = !row.wardPresent && !row.discharged
+    return `<small class="${condition ? 'colour-change2' : ''} tooltip-test" title="${condition ? 'update ward' : ''}">${row.ward}</small>`
+}
+
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState}

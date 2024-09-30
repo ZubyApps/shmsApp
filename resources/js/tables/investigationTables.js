@@ -1,5 +1,5 @@
 import DataTable from 'datatables.net-bs5';
-import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, sponsorAndPayPercent } from "../helpers";
+import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, sponsorAndPayPercent, wardState } from "../helpers";
 
 const getPatientsVisitsByFilterTable = (tableId, filter) => {
     const preparedColumns = [
@@ -21,7 +21,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
             data: row => detailsBtn(row) 
         },
     ]
-    filter === 'Inpatient' ? preparedColumns.splice(7, 0, {data: row => `<small>${row.ward + '-' + row.bedNo}</small>`},) : ''
+    filter === 'Inpatient' ? preparedColumns.splice(7, 0, {data: row => wardState(row)},) : ''
 
     return new DataTable('#'+tableId, {
         serverSide: true,

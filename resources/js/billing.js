@@ -485,7 +485,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     dischargeBillBtn.addEventListener('click', function () {
-        dischargeBillModal._element.querySelector('#note').value = 'Discharge Bill'
+        // dischargeBillModal._element.querySelector('#note').value = 'Discharge Bill'
         dischargeBillModal.show()
     })
 

@@ -218,4 +218,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Appointment::class);
     }
+
+    public function wards(): HasMany
+    {
+        return $this->hasMany(Ward::class);
+    }
+
+    public function markedFors(): HasMany
+    {
+        return $this->hasMany(MarkedFor::class);
+    }
+
+    public function unitDescriptions(): HasMany
+    {
+        return $this->hasMany(UnitDescription::class);
+    }
 }

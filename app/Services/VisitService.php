@@ -11,6 +11,7 @@ use App\Models\Resource;
 use App\Models\ResourceSubCategory;
 use App\Models\User;
 use App\Models\Visit;
+use App\Models\Ward;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterval;
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\DB;
 
 class VisitService
 {
-    public function __construct(private readonly Visit $visit, private readonly PaymentService $paymentService,)
+    public function __construct(private readonly Visit $visit, private readonly PaymentService $paymentService, private readonly Ward $ward)
     {
     }
 
@@ -278,6 +279,11 @@ class VisitService
             "doctor_done_by"    => $data->reason ? $user->id : null,
             "doctor_done_at"    => $data->reason ? new Carbon() : null,
         ]);
+
+        if ($data->reason){
+            $ward = $this->ward->find($visit->ward);
+            $ward->visit_id == $visit->id ? $ward->update(['visit_id' => null]) : '';
+        }
 
         return $visit;
     }

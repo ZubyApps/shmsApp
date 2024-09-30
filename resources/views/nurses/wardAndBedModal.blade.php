@@ -31,7 +31,8 @@
                     </div>
                     <div class="mt-4 form-control" id="wardAndBedDiv" data-div="updateModal">
                         <x-form-span>Update Patient's Admission Status</x-form-span>
-                        <div class="row">
+                        @include('extras.wardAndBedDiv')
+                        {{-- <div class="row">
                             <x-form-div class="col-xl-4">
                                 <x-input-span id="admitLabel">Admit?<x-required-span /></x-input-span>
                                 <x-select-admit name="admit" id="admit" :disabled="$isNurses"></x-select-admit>
@@ -44,7 +45,7 @@
                                 <x-input-span id="bedNumberLabel">Bed Number</x-input-span>
                                 <x-select-bed name="bedNumber" id="bedNumber"></x-select-bed>
                             </x-form-div>
-                        </div>
+                        </div> --}}
                         <div class="d-flex justify-content-between my-2">
                             <span class="input-group-text" id="updatedBy"></span>
                             <span class="input-group-text" id="doctor"></span>

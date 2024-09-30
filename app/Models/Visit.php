@@ -172,6 +172,11 @@ class Visit extends Model
         return $this->hasMany(Appointment::class);
     }
 
+    public function ward(): HasOne
+    {
+        return $this->hasOne(Ward::class);
+    }
+
     public function totalHmsBills()
     {
         $totalBill = 0;

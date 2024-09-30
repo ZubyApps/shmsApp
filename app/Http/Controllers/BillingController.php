@@ -24,7 +24,8 @@ class BillingController extends Controller
         private readonly ExpenseService $expenseService,
         private readonly ExpenseCategoryController $expenseCategoryController,
         private readonly UserService $userService,
-        private readonly ThirdPartyController $thirdPartyController
+        private readonly ThirdPartyController $thirdPartyController,
+        private readonly MarkedForController $markedForController,
         )
     {
         
@@ -36,6 +37,7 @@ class BillingController extends Controller
             'users'         => $this->userService->listStaff(special_note:'Management'),
             'categories'    => $this->expenseCategoryController->showAll('id', 'name'),
             'thirdParties'  => $this->thirdPartyController->showAll('id', 'short_name'),
+            'markedFors'    => $this->markedForController->showAll('id', 'name'),
         ]);
     }
 

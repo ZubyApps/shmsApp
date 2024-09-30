@@ -39,7 +39,13 @@
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="reOrderLabel">Unit of Purchase<x-required-span /></x-input-span>
-                                <x-select-unit-description name="unitPurchase" id="unitPurchase"></x-select-unit-description>                                
+                                <select class="form-select form-select-md" name="unitPurchase" id="unitPurchase">
+                                    <option value="">Select</option>   
+                                    @foreach ($unitDescriptions as $unitDescription )
+                                        <option value="{{ $unitDescription->id}}" name="{{ $unitDescription->short_name }}">{{ $unitDescription->long_name .' ('.$unitDescription->short_name.')'}}</option>
+                                    @endforeach
+                                </select>
+                                {{-- <x-select-unit-description name="unitPurchase" id="unitPurchase"></x-select-unit-description>                                 --}}
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="purchasePriceLabel">Purchase Unit Price<x-required-span /></x-input-span>

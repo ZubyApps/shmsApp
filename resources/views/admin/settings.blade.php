@@ -15,6 +15,12 @@
 @include('admin.modals.medicationCategoryModal', ['title' => 'Edit Medication Category', 'isUpdate' => true, 'id' => 'updateMedicationCategoryModal'])
 @include('admin.modals.payMethodModal', ['title' => 'New Pay Method', 'isUpdate' => false, 'id' => 'newPayMethodModal'])
 @include('admin.modals.payMethodModal', ['title' => 'Edit Pay Method', 'isUpdate' => true, 'id' => 'editPayMethodModal'])
+@include('admin.modals.unitDescriptionModal', ['title' => 'New Unit Description', 'isUpdate' => false, 'id' => 'newUnitDescriptionModal'])
+@include('admin.modals.unitDescriptionModal', ['title' => 'Edit Unit Description', 'isUpdate' => true, 'id' => 'editUnitDescriptionModal'])
+@include('admin.modals.markedForModal', ['title' => 'New Mark For Resources', 'isUpdate' => false, 'id' => 'newMarkedForModal'])
+@include('admin.modals.markedForModal', ['title' => 'Edit Mark For Resources', 'isUpdate' => true, 'id' => 'editMarkedForModal'])
+@include('admin.modals.wardModal', ['title' => 'New Ward and Bed', 'isUpdate' => false, 'id' => 'newWardModal'])
+@include('admin.modals.wardModal', ['title' => 'Edit Ward and Bed', 'isUpdate' => true, 'id' => 'editWardModal'])
 
     <div class="container mt-5 bg-white">
         <div>
@@ -38,7 +44,16 @@
 
                     <button class="nav-link" id="nav-medicationCategory-tab" data-bs-toggle="tab" data-bs-target="#nav-medicationCategory"
                         type="button" role="tab" aria-controls="nav-medicationCategory" aria-selected="false">Medication Category</button>
-                    </div>
+
+                    <button class="nav-link" id="nav-unitDescription-tab" data-bs-toggle="tab" data-bs-target="#nav-unitDescription"
+                        type="button" role="tab" aria-controls="nav-unitDescription" aria-selected="false">Unit Description</button>
+
+                    <button class="nav-link" id="nav-markedFor-tab" data-bs-toggle="tab" data-bs-target="#nav-markedFor"
+                        type="button" role="tab" aria-controls="nav-markedFor" aria-selected="false">Marked For</button>
+
+                    <button class="nav-link" id="nav-ward-tab" data-bs-toggle="tab" data-bs-target="#nav-ward"
+                        type="button" role="tab" aria-controls="nav-ward" aria-selected="false">Wards</button>
+                </div>
             </nav>
             <div class="tab-content px-2" id="nav-tabContent">
                 <!-- patients table -->
@@ -193,6 +208,90 @@
                                     <th>Description</th>
                                     <th>Created By</th>
                                     <th>Created At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                   
+                </div>
+                <!-- unitDescription table -->
+                <div class="tab-pane fade" id="nav-unitDescription" role="tabpanel" aria-labelledby="nav-unitDescription-tab"
+                    tabindex="0">
+
+                    <div class="text-start my-4">
+                        <button class="btn btn-primary" type="button" id="addUnitDescriptionBtn">
+                            <i class="bi bi-plus-circle"></i>
+                            Unit Description
+                        </button>
+                    </div>
+                    <div class="container">
+                        <table id="unitDescriptionTable" class="table table-hover align-middle table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Long Name</th>
+                                    <th>Short Name</th>
+                                    <th>Description</th>
+                                    <th>Created By</th>
+                                    <th>Created At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                   
+                </div>
+                <!-- markedFor table -->
+                <div class="tab-pane fade" id="nav-markedFor" role="tabpanel" aria-labelledby="nav-markedFor-tab"
+                    tabindex="0">
+
+                    <div class="text-start my-4">
+                        <button class="btn btn-primary" type="button" id="addMarkedForBtn">
+                            <i class="bi bi-plus-circle"></i>
+                            Mark For
+                        </button>
+                    </div>
+                    <div class="container">
+                        <table id="markedForTable" class="table table-hover align-middle table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Created By</th>
+                                    <th>Created At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- ward table -->
+                <div class="tab-pane fade" id="nav-ward" role="tabpanel" aria-labelledby="nav-ward-tab"
+                    tabindex="0">
+
+                    <div class="text-start my-4">
+                        <button class="btn btn-primary" type="button" id="addWardBtn">
+                            <i class="bi bi-plus-circle"></i>
+                            Ward
+                        </button>
+                    </div>
+                    <div class="container">
+                        <table id="wardTable" class="table table-hover align-middle table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Long Name</th>
+                                    <th>Short Name</th>
+                                    <th>Bed Number</th>
+                                    <th>Description</th>
+                                    <th>Flag</th>
+                                    <th>Flag Reason</th>
+                                    <th>Bill</th>
+                                    <th>Created By</th>
+                                    <th>Created At</th>
+                                    <th>Occupied</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>

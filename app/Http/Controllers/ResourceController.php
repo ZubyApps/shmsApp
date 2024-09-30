@@ -15,7 +15,9 @@ class ResourceController extends Controller
     public function __construct(
         private readonly DatatablesService $datatablesService, 
         private readonly ResourceService $resourceService,
-        private readonly ResourceCategoryController $resourceCategoryController
+        private readonly ResourceCategoryController $resourceCategoryController,
+        private readonly UnitDescriptionController $unitDescriptionController,
+        private readonly MarkedForController $markedForController,
         )
     {
         
@@ -23,7 +25,11 @@ class ResourceController extends Controller
 
     public function index()
     {
-        return view('resources.resources',  ['categories' => $this->resourceCategoryController->showAll('id', 'name')]);
+        return view('resources.resources',  [
+            'categories'        => $this->resourceCategoryController->showAll('id', 'name'),
+            'markedFors'        => $this->markedForController->showAll('id', 'name'),
+            'unitDescriptions'  => $this->unitDescriptionController->showAll('id', 'long_name', 'short_name')
+        ]);
     }
 
     public function list(Request $request)

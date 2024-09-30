@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Ward;
+use App\Services\HelperService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -15,6 +17,7 @@ class ConsultationReviewResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $ward = Ward::find($this->ward);
         return [
             "id"                            => $this->id,
             "visitId"                       => $this->visit_id,
@@ -32,8 +35,7 @@ class ConsultationReviewResource extends JsonResource
             "selectedDiagnosis"             => $this->icd11_diagnosis ?? '',
             "provisionalDiagnosis"          => $this->provisional_diagnosis ?? '',
             "status"                        => $this->admission_status ?? '',
-            "ward"                          => $this->ward ?? '',
-            "bedNumber"                     => $this->bed_no ?? '',
+            "ward"                          => $ward ? (new HelperService())->displayWard($ward) : '',
             "lmp"                           => $this->lmp ? Carbon::parse($this->lmp)->format('d/M/Y') : '',
             "edd"                           => $this->edd ? Carbon::parse($this->edd)->format('d/M/Y') : '',
             "ega"                           => $this->ega ?? '',

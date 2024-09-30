@@ -76,7 +76,7 @@
                                         </x-form-div>
                                         <x-form-div class="col-xl-4">
                                             <x-input-span>EDD</x-input-span>
-                                            <x-form-input type="date" name="edd" id="edd" readonly/>
+                                            <x-form-input type="date" name="edd" id="edd"/>
                                         </x-form-div>
                                         <x-form-div class="col-xl-4">
                                             <x-input-span>EGA</x-input-span>
@@ -136,7 +136,8 @@
                                                 cols="10" rows="3"></x-form-textarea>
                                         </x-form-div>
                                     </div>
-                                    <div class="row my-2">
+                                    @include('extras.wardAndBedDiv')
+                                    {{-- <div class="row my-2">
                                         <x-form-div class="col-xl-4">
                                             <x-input-span id="admitLabel">Admit?<x-required-span /></x-input-span>
                                             <x-select-admit name="admit" id="admit" :disabled="true"></x-select-admit>
@@ -149,7 +150,7 @@
                                             <x-input-span id="bedNumberLabel">Bed Number</x-input-span>
                                             <x-select-bed name="bedNumber"></x-select-bed>
                                         </x-form-div>
-                                    </div>
+                                    </div> --}}
                                     <div class="d-flex justify-content-center">
                                         <button type="button" id="saveConsultationBtn" {!! $isReview ? 'data-btn="ancReview"' : 'data-btn="anc"' !!}
                                             class="btn btn-primary">

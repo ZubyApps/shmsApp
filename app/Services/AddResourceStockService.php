@@ -27,6 +27,7 @@ class AddResourceStockService
             'final_quantity'        => $data->finalQuantity,
             'comment'               => $data->comment,
             'unit_purchase'         => $data->unitPurchase,
+            'unit_description_id'   => $data->unitPurchase,
             'purchase_price'        => $data->purchasePrice,
             'selling_price'         => $data->sellingPrice,
             'expiry_date'           => $data->expiryDate ? (new Carbon($data->expiryDate))->lastOfMonth() : null,
@@ -35,18 +36,20 @@ class AddResourceStockService
 
         if ($data->expiryDate){
             $addedStock->resource()->update([
-                    'stock_level'       => $addedStock->resource->stock_level + $data->finalQuantity,
-                    'unit_description'  => $data->unitPurchase, 
-                    'purchase_price'    => $data->purchasePrice, 
-                    'selling_price'     => $data->sellingPrice, 
-                    'expiry_date'       => new Carbon($data->expiryDate), 
+                    'stock_level'           => $addedStock->resource->stock_level + $data->finalQuantity,
+                    // 'unit_description'   => $data->unitPurchase, 
+                    'unit_description_id'   => $data->unitPurchase, 
+                    'purchase_price'        => $data->purchasePrice, 
+                    'selling_price'         => $data->sellingPrice, 
+                    'expiry_date'           => new Carbon($data->expiryDate), 
                 ]);
                 return $addedStock;
             }
         
         $addedStock->resource()->update([
             'stock_level'       => $addedStock->resource->stock_level + $data->finalQuantity,
-            'unit_description'  => $data->unitPurchase, 
+            // 'unit_description'  => $data->unitPurchase, 
+            'unit_description_id'  => $data->unitPurchase, 
             'purchase_price'    => $data->purchasePrice, 
             'selling_price'     => $data->sellingPrice, 
         ]);

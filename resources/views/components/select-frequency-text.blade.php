@@ -14,4 +14,6 @@
         <option {{ $hidden  ? 'hidden disabled' : '' }} value="TDS">TDS</option>
         <option {{ $hidden  ? 'hidden disabled' : '' }} value="QDS">QDS</option>
         <option {{ $hidden  ? 'hidden disabled' : '' }} value="PRN">PRN</option>
+        <option {{ $hidden  ? 'hidden disabled' : '' }} value="Weekly">Weekly</option>
+        <option {{ $hidden  ? 'hidden disabled' : '' }} value="Monthly">Monthly</option>
 </select>

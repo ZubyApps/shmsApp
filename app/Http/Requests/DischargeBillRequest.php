@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\MarkedFor;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DischargeBillRequest extends FormRequest
@@ -22,8 +23,9 @@ class DischargeBillRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'quantity' => ['required', 'integer'],
-            'wardType' => ['required']
+            'quantity'  => ['required', 'integer'],
+            'wardType'  => ['required'],
+            'mark'      => ['required']
         ];
     }
 

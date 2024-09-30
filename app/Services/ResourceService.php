@@ -23,7 +23,7 @@ class ResourceService
         return $user->resources()->create([
             'name'                      => $data->name,
             'flag'                      => $data->flag,
-            'marked_for'                => $data->markedFor ? strtolower($data->markedFor) : null,
+            'marked_for_id'             => $data->markedFor ? strtolower($data->markedFor) : null,
             'category'                  => ResourceSubCategory::findOrFail($data->resourceSubCategory)->resourceCategory->name,
             'sub_category'              => ResourceSubCategory::findOrFail($data->resourceSubCategory)->name,
             'resource_sub_category_id'  => $data->resourceSubCategory,
@@ -31,7 +31,7 @@ class ResourceService
             'purchase_price'            => $data->purchasePrice,
             'selling_price'             => $data->sellingPrice,
             'reorder_level'             => $data->reOrder,
-            'unit_description'          => $data->unitDescription,
+            'unit_description_id'       => $data->unitDescription,
             'expiry_date'               => $data->expiryDate ? (new Carbon($data->expiryDate))->lastOfMonth() : null,
         ]);
     }
@@ -41,7 +41,7 @@ class ResourceService
        $resource->update([
             'name'                      => $data->name,
             'flag'                      => $data->flag,
-            'marked_for'                => $data->markedFor ? strtolower($data->markedFor) : null,
+            'marked_for_id'             => $data->markedFor ? strtolower($data->markedFor) : null,
             'category'                  => ResourceSubCategory::findOrFail($data->resourceSubCategory)->resourceCategory->name,
             'sub_category'              => ResourceSubCategory::findOrFail($data->resourceSubCategory)->name,
             'resource_sub_category_id'  => $data->resourceSubCategory,
@@ -49,7 +49,7 @@ class ResourceService
             'purchase_price'            => $data->purchasePrice,
             'selling_price'             => $data->sellingPrice,
             'reorder_level'             => $data->reOrder,
-            'unit_description'          => $data->unitDescription,
+            'unit_description_id'       => $data->unitDescription,
             'expiry_date'               => $data->expiryDate ? (new Carbon($data->expiryDate))->lastOfMonth() : null,
         ]);
 
@@ -85,11 +85,13 @@ class ResourceService
                 'id'                => $resource->id,
                 'name'              => $resource->name,
                 'flag'              => $resource->flag,
-                'markedFor'         => $resource->marked_for,
+                // 'markedFor'         => $resource->marked_for,
+                'markedFor'         => $resource->markedFor?->name,
                 'category'          => $resource->resourceSubCategory->resourceCategory->name,
                 'subCategory'       => $resource->resourceSubCategory->name,
                 'medicationCategory'=> $resource->medicationCategory?->name,
-                'unit'              => $resource->unit_description,
+                // 'unit1'             => $resource->unit_description,
+                'unit'              => $resource->unitDescription?->short_name,
                 'purchasePrice'     => $resource->purchase_price,
                 'sellingPrice'      => $resource->selling_price,
                 'reOrder'           => $resource->reorder_level,

@@ -24,8 +24,13 @@
                         </select>
                     </x-form-div>
                     <x-form-div class="col-xl-12">
-                        <x-input-span>Note</x-input-span>
-                        <x-form-input  name="note" id="note" value="Discharge Bill"/>
+                        <x-input-span>Mark</x-input-span>
+                        <select class="form-select form-select-md" name="mark" id="mark">
+                            {{-- <option value="">Select</option> --}}
+                            @foreach ($markedFors as $markedFor )
+                                <option value="{{ $markedFor->id }}" name="{{ $markedFor->name }}" {{str_contains($markedFor->name, 'discharg') ? '' : 'disabled'}}>{{ $markedFor->name }}</option>
+                            @endforeach
+                        </select>
                     </x-form-div>
                 </div>
             </div>

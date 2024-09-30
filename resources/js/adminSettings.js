@@ -10,7 +10,7 @@ import 'datatables.net-fixedcolumns-bs5';
 import 'datatables.net-fixedheader-bs5';
 import 'datatables.net-select-bs5';
 import 'datatables.net-staterestore-bs5';
-import { getExpenseCategoryTable, getMedicationCategoryTable, getPayMethodTable, getResourceCategoryTable, getResourceStockDateTable, getSponsorCategoryTable } from "./tables/settingsTables";
+import { getExpenseCategoryTable, getMarkedForTable, getMedicationCategoryTable, getPayMethodTable, getResourceCategoryTable, getResourceStockDateTable, getSponsorCategoryTable, getUnitDescriptionTable, getWardTable } from "./tables/settingsTables";
 
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -29,15 +29,27 @@ window.addEventListener('DOMContentLoaded', function () {
     const newMedicationCategoryModal       = new Modal(document.getElementById('newMedicationCategoryModal'))
     const updateMedicationCategoryModal    = new Modal(document.getElementById('updateMedicationCategoryModal'))
 
-    const newPayMethodModal                 = new Modal(document.getElementById('newPayMethodModal'))
-    const editPayMethodModal                = new Modal(document.getElementById('editPayMethodModal'))
+    const newPayMethodModal                = new Modal(document.getElementById('newPayMethodModal'))
+    const editPayMethodModal               = new Modal(document.getElementById('editPayMethodModal'))
+
+    const newUnitDescriptionModal          = new Modal(document.getElementById('newUnitDescriptionModal'))
+    const editUnitDescriptionModal         = new Modal(document.getElementById('editUnitDescriptionModal'))
+
+    const newMarkedForModal                = new Modal(document.getElementById('newMarkedForModal'))
+    const editMarkedForModal               = new Modal(document.getElementById('editMarkedForModal'))
+
+    const newWardModal                     = new Modal(document.getElementById('newWardModal'))
+    const editWardModal                    = new Modal(document.getElementById('editWardModal'))
 
     // const addSponsorCategoryBtn             = document.querySelector('#addSponsnorCategoryBtn')
     const addResourceStockDateBtn           = document.querySelector('#addResourceStockDateBtn')
     // const addResourceCategoryBtn            = document.querySelector('#addResourceCategoryBtn')
     const addPayMethodBtn                   = document.querySelector('#addPayMethodBtn')
     const addExpenseCategoryBtn             = document.querySelector('#addExpenseCategoryBtn')
-    const addMedicationCategoryBtn           = document.querySelector('#addMedicationCategoryBtn')
+    const addMedicationCategoryBtn          = document.querySelector('#addMedicationCategoryBtn')
+    const addUnitDescriptionBtn             = document.querySelector('#addUnitDescriptionBtn')
+    const addMarkedForBtn                   = document.querySelector('#addMarkedForBtn')
+    const addWardBtn                        = document.querySelector('#addWardBtn')
 
     const createSponsorCategoryBtn          = document.querySelector('#createSponsorCategoryBtn')
     const saveSponsorCategoryBtn            = document.querySelector('#saveSponsorCategoryBtn')
@@ -56,6 +68,15 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const createMedicationCategoryBtn       = document.querySelector('#createMedicationCategoryBtn')
     const saveMedicationCategoryBtn         = document.querySelector('#saveMedicationCategoryBtn')
+
+    const createUnitDescriptionBtn          = document.querySelector('#createUnitDescriptionBtn')
+    const saveUnitDescriptionBtn            = document.querySelector('#saveUnitDescriptionBtn')
+
+    const createMarkedForBtn                = document.querySelector('#createMarkedForBtn')
+    const saveMarkedForBtn                  = document.querySelector('#saveMarkedForBtn')
+
+    const createWardBtn                     = document.querySelector('#createWardBtn')
+    const saveWardBtn                       = document.querySelector('#saveWardBtn')
     
     const sponsorCategoryTab                = document.querySelector('#nav-sponsorCategory-tab')
     const resourceStockDateTab              = document.querySelector('#nav-resourceStockDate-tab')
@@ -63,8 +84,11 @@ window.addEventListener('DOMContentLoaded', function () {
     const payMethodTab                      = document.querySelector('#nav-payMethod-tab') 
     const expenseCategoryTab                = document.querySelector('#nav-expenseCategory-tab')
     const medicationCategoryTab             = document.querySelector('#nav-medicationCategory-tab')
+    const unitDescriptionTab                = document.querySelector('#nav-unitDescription-tab')
+    const markedForTab                      = document.querySelector('#nav-markedFor-tab')
+    const wardTab                           = document.querySelector('#nav-ward-tab')
 
-    let resourceStockDateTable, resourceCategoryTable, payMethodTable, expenseCategoryTable, medicationCategoryTable
+    let resourceStockDateTable, resourceCategoryTable, payMethodTable, expenseCategoryTable, medicationCategoryTable, unitDescriptionTable, markedForTable, wardTable
 
     const sponsorCategoryTable = getSponsorCategoryTable('sponsorCategoryTable')
 
@@ -109,6 +133,30 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#medicationCategoryTable').dataTable().fnDraw()
         } else {
             medicationCategoryTable = getMedicationCategoryTable('medicationCategoryTable')
+        }
+    })
+
+    unitDescriptionTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#unitDescriptionTable' )){
+            $('#unitDescriptionTable').dataTable().fnDraw()
+        } else {
+            unitDescriptionTable = getUnitDescriptionTable('unitDescriptionTable')
+        }
+    })
+
+    markedForTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#markedForTable' )){
+            $('#markedForTable').dataTable().fnDraw()
+        } else {
+            markedForTable = getMarkedForTable('markedForTable')
+        }
+    })
+
+    wardTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#wardTable' )){
+            $('#wardTable').dataTable().fnDraw()
+        } else {
+            wardTable = getWardTable('wardTable')
         }
     })
 
@@ -584,6 +632,272 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
+    addUnitDescriptionBtn.addEventListener('click', function () {
+        newUnitDescriptionModal.show()
+    })
+
+    document.querySelector('#unitDescriptionTable').addEventListener('click', function (event) {
+        const editBtn    = event.target.closest('.updateBtn')
+        const deleteBtn  = event.target.closest('.deleteBtn')
+        const updateAllBtn  = event.target.closest('.updateAll')
+
+        if (editBtn) {
+            editBtn.setAttribute('disabled', 'disabled')
+            const unitdescriptionId = editBtn.getAttribute('data-id')
+            http.get(`/unitdescription/${ unitdescriptionId }`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openModals(editUnitDescriptionModal, saveUnitDescriptionBtn, response.data.data)
+                    }
+                    editBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
+
+        if (deleteBtn){
+            deleteBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Unit Description?')) {
+                const unitdescriptionId = deleteBtn.getAttribute('data-id')
+                http.delete(`/unitdescription/${unitdescriptionId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            unitDescriptionTable ? unitDescriptionTable.draw() : ''
+                        }
+                        deleteBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deleteBtn.removeAttribute('disabled')
+                        console.log(error)
+                    })
+            }
+        }
+
+        if (updateAllBtn){
+            updateAllBtn.setAttribute('disabled', 'disabled')
+            const unitdescriptionId = updateAllBtn.getAttribute('data-id')
+            http.patch(`/unitdescription/updateall/${ unitdescriptionId }`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        unitDescriptionTable ? unitDescriptionTable.draw() : ''
+                    }
+                    updateAllBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    updateAllBtn.removeAttribute('disabled')
+                    console.log(error)
+                })
+        }
+    })
+
+    createUnitDescriptionBtn.addEventListener('click', function () {
+        createUnitDescriptionBtn.setAttribute('disabled', 'disabled')
+        http.post('/unitdescription', getDivData(newUnitDescriptionModal._element), {"html": newUnitDescriptionModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                newUnitDescriptionModal.hide()
+                    clearDivValues(newUnitDescriptionModal._element)
+                    unitDescriptionTable ? unitDescriptionTable.draw() : ''
+                }
+                createUnitDescriptionBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            createUnitDescriptionBtn.removeAttribute('disabled')
+            console.log(error)
+        })
+
+    })
+
+    saveUnitDescriptionBtn.addEventListener('click', function (event) {
+        const unitdescriptionId = event.currentTarget.getAttribute('data-id')
+        saveUnitDescriptionBtn.setAttribute('disabled', 'disabled')
+        http.post(`/unitdescription/${unitdescriptionId}`, getDivData(editUnitDescriptionModal._element), {"html": editUnitDescriptionModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                editUnitDescriptionModal.hide()
+                unitDescriptionTable ? unitDescriptionTable.draw() : ''
+            }
+            saveUnitDescriptionBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            saveUnitDescriptionBtn.removeAttribute('disabled')
+            console.log(error)
+        })
+    })
+
+    addMarkedForBtn.addEventListener('click', function () {
+        newMarkedForModal.show()
+    })
+
+    document.querySelector('#markedForTable').addEventListener('click', function (event) {
+        const editBtn    = event.target.closest('.updateBtn')
+        const deleteBtn  = event.target.closest('.deleteBtn')
+
+        if (editBtn) {
+            editBtn.setAttribute('disabled', 'disabled')
+            const markedForId = editBtn.getAttribute('data-id')
+            http.get(`/markedfor/${ markedForId }`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openModals(editMarkedForModal, saveMarkedForBtn, response.data.data)
+                    }
+                    editBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
+
+        if (deleteBtn){
+            deleteBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Mark?')) {
+                const markedForId = deleteBtn.getAttribute('data-id')
+                http.delete(`/markedfor/${markedForId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            markedForTable ? markedForTable.draw() : ''
+                        }
+                        deleteBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deleteBtn.removeAttribute('disabled')
+                        console.log(error)
+                    })
+            }
+        }
+    })
+
+    createMarkedForBtn.addEventListener('click', function () {
+        createMarkedForBtn.setAttribute('disabled', 'disabled')
+        http.post('/markedfor', getDivData(newMarkedForModal._element), {"html": newMarkedForModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                newMarkedForModal.hide()
+                    clearDivValues(newMarkedForModal._element)
+                    markedForTable ? markedForTable.draw() : ''
+                }
+                createMarkedForBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            createMarkedForBtn.removeAttribute('disabled')
+            console.log(error)
+        })
+
+    })
+
+    saveMarkedForBtn.addEventListener('click', function (event) {
+        const markedForId = event.currentTarget.getAttribute('data-id')
+        saveMarkedForBtn.setAttribute('disabled', 'disabled')
+        http.post(`/markedfor/${markedForId}`, getDivData(editMarkedForModal._element), {"html": editMarkedForModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                editMarkedForModal.hide()
+                markedForTable ? markedForTable.draw() : ''
+            }
+            saveMarkedForBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            saveMarkedForBtn.removeAttribute('disabled')
+            console.log(error)
+        })
+    })
+
+    addWardBtn.addEventListener('click', function () {
+        newWardModal.show()
+    })
+
+    document.querySelector('#wardTable').addEventListener('click', function (event) {
+        const editBtn       = event.target.closest('.updateBtn')
+        const deleteBtn     = event.target.closest('.deleteBtn')
+        const clearWardBtn  = event.target.closest('.clearWardBtn')
+
+        if (editBtn) {
+            editBtn.setAttribute('disabled', 'disabled')
+            const wardId = editBtn.getAttribute('data-id')
+            http.get(`/ward/${ wardId }`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        openModals(editWardModal, saveWardBtn, response.data.data)
+                    }
+                    editBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    editBtn.removeAttribute('disabled')
+                    console.log(error)
+                })
+        }
+
+        if (deleteBtn){
+            deleteBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Ward?')) {
+                const wardId = deleteBtn.getAttribute('data-id')
+                http.delete(`/ward/${wardId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            wardTable ? wardTable.draw() : ''
+                        }
+                        deleteBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deleteBtn.removeAttribute('disabled')
+                        console.log(error)
+                    })
+            }
+        }
+
+        if (clearWardBtn){
+            clearWardBtn.setAttribute('disabled', 'disabled')
+            const wardId = clearWardBtn.getAttribute('data-id')
+            http.patch(`/ward/updateall/${ wardId }`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        wardTable ? wardTable.draw() : ''
+                    }
+                    clearWardBtn.removeAttribute('disabled')
+                })
+                .catch((error) => {
+                    clearWardBtn.removeAttribute('disabled')
+                    console.log(error)
+                })
+        }
+    })
+
+    createWardBtn.addEventListener('click', function () {
+        createWardBtn.setAttribute('disabled', 'disabled')
+        http.post('/ward', getDivData(newWardModal._element), {"html": newWardModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                newWardModal.hide()
+                    clearDivValues(newWardModal._element)
+                    wardTable ? wardTable.draw() : ''
+                }
+                createWardBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            createWardBtn.removeAttribute('disabled')
+            console.log(error)
+        })
+
+    })
+
+    saveWardBtn.addEventListener('click', function (event) {
+        const wardId = event.currentTarget.getAttribute('data-id')
+        saveWardBtn.setAttribute('disabled', 'disabled')
+        http.post(`/ward/${wardId}`, getDivData(editWardModal._element), {"html": editWardModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                editWardModal.hide()
+                wardTable ? wardTable.draw() : ''
+            }
+            saveWardBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            saveWardBtn.removeAttribute('disabled')
+            console.log(error)
+        })
+    })
+
     newSponsorCategoryModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(newSponsorCategoryModal._element)
         sponsorCategoryTable.draw()
@@ -602,5 +916,20 @@ window.addEventListener('DOMContentLoaded', function () {
     newMedicationCategoryModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(newMedicationCategoryModal._element)
         medicationCategoryTable ? medicationCategoryTable.draw() : ''
+    })
+
+    newUnitDescriptionModal._element.addEventListener('hidden.bs.modal', function () {
+        clearValidationErrors(newUnitDescriptionModal._element)
+        unitDescriptionTable ? unitDescriptionTable.draw() : ''
+    })
+
+    newMarkedForModal._element.addEventListener('hidden.bs.modal', function () {
+        clearValidationErrors(newMarkedForModal._element)
+        markedForTable ? markedForTable.draw() : ''
+    })
+
+    newWardModal._element.addEventListener('hidden.bs.modal', function () {
+        clearValidationErrors(newWardModal._element)
+        wardTable ? wardTable.draw() : ''
     })
 })

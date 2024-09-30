@@ -19,8 +19,8 @@ class UpdateAdmissionStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'ward'              => ['required_if:admit,Inpatient,admit,Observation,'],
-            'bedNumber'         => ['required_if:admit,=,Inpatient,admit,=,Observation'],
+            'ward'              => ['required_if:admit,Inpatient,admit,Observation,', 'prohibited_if:admit,Outpatient'],
+            // 'bedNumber'         => ['required_if:admit,=,Inpatient,admit,=,Observation'],
         ];
     }
 }

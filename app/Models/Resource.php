@@ -47,6 +47,16 @@ class Resource extends Model
         return $this->belongsTo(MedicationCategory::class);
     }
 
+    public function markedFor()
+    {
+        return $this->belongsTo(MarkedFor::class);
+    }
+
+    public function unitDescription()
+    {
+        return $this->belongsTo(UnitDescription::class);
+    }
+
     public function nameWithIndicators()
     {
         return $this->name.$this->expiryDateChecker($this->expiry_date).$this->stockLevelChecker($this);
@@ -66,13 +76,13 @@ class Resource extends Model
     public function stockLevelChecker($resource)
     {
         if ($resource->stock_level < $resource->reorder_level){
-            return ' - '.$resource->stock_level.' '.$resource->unit_description.' left'.' - reorder';
+            return ' - '.$resource->stock_level.' '.$resource->unitDescription?->short_name.' left'.' - reorder';
         }
 
         if ($resource->stock_level < 1){
             return '- Not in stock';
         }
 
-        return ' - '.$resource->stock_level.' '.$resource->unit_description.' left';
+        return ' - '.$resource->stock_level.' '.$resource->unitDescription?->short_name.' left';
     }
 }

@@ -288,9 +288,15 @@ window.addEventListener('DOMContentLoaded', function () {
             }
 
             if (printThisBtn) {
+                const prescriptionId = printThisBtn.getAttribute('data-id')
                 labResultModal._element.querySelector('#test').innerHTML = printThisBtn.getAttribute('data-investigation')
                 labResultModal._element.querySelector('#patientsId').innerHTML = printThisBtn.getAttribute('data-patient')
-                labResultModal._element.querySelector('#result').innerHTML = printThisBtn.getAttribute('data-result')
+                http.get(`/investigations/${prescriptionId}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        labResultModal._element.querySelector('#result').innerHTML = response.data.data?.result ?? ''
+                    }
+                })
                 labResultModal._element.querySelector('#resultDate').innerHTML = printThisBtn.getAttribute('data-sent')
                 labResultModal._element.querySelector('#StaffFullName').innerHTML = printThisBtn.getAttribute('data-stafffullname')
                 labResultModal.show()

@@ -1,5 +1,5 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
-import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, populateWardAndBedModal, clearItemsList, getSelectedResourceValues, getDatalistOptionStock, getShiftPerformance } from "./helpers"
+import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, populateWardAndBedModal, clearItemsList, getSelectedResourceValues, getDatalistOptionStock, getShiftPerformance, displayWardList, clearSelectList } from "./helpers"
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
@@ -377,7 +377,13 @@ window.addEventListener('DOMContentLoaded', function () {
                 dischargeModal.show()
             }
 
-            if (wardBedBtn){ populateWardAndBedModal(wardAndBedModal, wardBedBtn); wardAndBedModal.show()}
+            if (wardBedBtn){ 
+                http.get(`/ward/list`).then((response) => {
+                    displayWardList(wardAndBedModal._element.querySelector("#ward"), response.data)
+                    populateWardAndBedModal(wardAndBedModal, wardBedBtn);
+                    wardAndBedModal.show()
+                })
+            }
 
             if (historyBtn){
                 historyBtn.setAttribute('disabled', 'disabled')
@@ -751,6 +757,7 @@ window.addEventListener('DOMContentLoaded', function () {
             upcomingMedicationsTable.draw(false)
             upcomingNursingChartsTable.draw(false)
             shiftPerformance()
+            modal.id == 'wardAndBedModal' ? clearSelectList(modal) : ''
         })
     })
 

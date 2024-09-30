@@ -8,13 +8,18 @@ use App\Models\User;
 use App\Models\Consultation;
 use App\Models\Patient;
 use App\Models\Visit;
+use App\Models\Ward;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ConsultationService
 {
-    public function __construct(private readonly Consultation $consultation, private readonly Visit $visit)
+    public function __construct(
+        private readonly Consultation $consultation, 
+        private readonly Visit $visit, 
+        private readonly Ward $ward
+        )
     {
     }
 
@@ -35,7 +40,6 @@ class ConsultationService
                 "provisional_diagnosis"     => $data->provisionalDiagnosis,
                 "admission_status"          => $data->admit,
                 "ward"                      => $data->ward,
-                "bed_no"                    => $data->bedNumber,
                 "lmp"                       => $data->lmp,
                 "edd"                       => $data->edd,
                 "ega"                       => $data->ega,
@@ -53,21 +57,38 @@ class ConsultationService
             ]);  
 
             $visit = $consultation->visit;
+            // $wardModel = fn($wardId)=>$this->ward::find($wardId);//$this->ward->find($data->ward ?? $visit->ward);
+
+            // if ($data->admit == 'Outpatient'){
+                // Log::info('Outpatient', ['wardModel' => $wardModel($visit->ward)]);
+                // if ($ward = $wardModel($visit->ward)){
+                //     $ward->update(['visit_id' => null]);
+                //     Log::info('remove id', ['visit' => $ward->visit_id]);
+                // }
+            // }
+
+            // if ($ward = $wardModel($data->ward)){
+            //     Log::info('Other', ['wardModel' => $wardModel($visit->ward)]);
+            //     $done = $ward->update(['visit_id' => $visit->id]);
+            //     Log::info('inpatient', ['success' => $done, 'visit' => $ward->visit_id]);
+            // }
+
+            $this->determineWard($visit, $data);
 
             if ($visit->consulted){
                 $visit->update([
                     'admission_status'  => $data->admit,
-                    'ward'              => $data->ward ? $data->ward : $visit->ward,
-                    'bed_no'            => $data->bedNumber ? $data->bedNumber : $visit->bed_no,
+                    'ward'              => $data->ward ?? $visit->ward,
                 ]);
             } else {
-                $consultation->visit->update([
+                $visit->update([
                     'consulted'         => new Carbon(),
                     'admission_status'  => $data->admit,
                     'ward'              => $data->ward,
-                    'bed_no'            => $data->bedNumber,
                 ]);
             }
+
+            
             
         return $consultation;
         });
@@ -76,6 +97,15 @@ class ConsultationService
     public function update(Request $data, Consultation $consultation, User $user)
     {
         return DB::transaction(function () use ($data, $consultation, $user) {
+            
+            // $ward       = null;
+            // $wardAndBed = '';
+
+            // if ($data->ward){
+            //     $ward = $this->ward->where('id', $data->ward)->get();
+            //     $wardAndBed = $ward->short_name . '-Bed' . $ward->bed_number;
+            // }
+            
             $consultation->update([
                 "p_complain"                => $data->presentingComplain,
                 "hop_complain"              => $data->historyOfPresentingComplain,
@@ -88,7 +118,6 @@ class ConsultationService
                 "provisional_diagnosis"     => $data->provisionalDiagnosis,
                 "admission_status"          => $data->admit,
                 "ward"                      => $data->ward,
-                "bed_no"                    => $data->bedNumber,
                 "lmp"                       => $data->lmp,
                 "edd"                       => $data->edd,
                 "ega"                       => $data->ega,
@@ -107,19 +136,19 @@ class ConsultationService
             ]);
 
             $visit = $consultation->visit;
-            // dd($visit->id);
+
+            $this->determineWard($visit, $data);
+
             if ($visit->consulted){
                 $visit->update([
                     'admission_status'  => $data->admit,
-                    'ward'              => $data->ward ? $data->ward : $visit->ward,
-                    'bed_no'            => $data->bedNumber ? $data->bedNumber : $visit->bed_no,
+                    'ward'              => $data->ward ?? $visit->ward,
                 ]);
             } else {
                 $visit()->update([
                     'consulted'         => new Carbon(),
                     'admission_status'  => $data->admit,
                     'ward'              => $data->ward,
-                    'bed_no'            => $data->bedNumber,
                 ]);
             }
 
@@ -130,26 +159,37 @@ class ConsultationService
     public function updateAdmissionStatus(Consultation $consultation, Request $data, User $user)
     {
         return DB::transaction(function () use ($data, $consultation, $user) {
-            
-            if ($data->admit){
+
+            $visit      = $consultation->visit;
+
+            if ($data->admit == 'Outpatient'){
+                $consultation->update([
+                    "admission_status"          => $data->admit,
+                    "updated_by"                => $user->id
+                ]);
+
+                $this->determineWard($visit, $data);
+
+                return $visit->update([
+                    'admission_status'  => $data->admit,
+                ]);
+
+            } else {
+
+                $this->determineWard($visit, $data);
+
                 $consultation->update([
                     "admission_status"          => $data->admit,
                     "ward"                      => $data->ward,
-                    "bed_no"                    => $data->bedNumber,
                     "updated_by"                => $user->id
                 ]);
+
+                return $visit->update([
+                    'admission_status'  => $data->admit,
+                    'ward'              => $data->ward,
+                ]);
             }
-            $consultation->update([
-                "ward"                      => $data->ward,
-                "bed_no"                    => $data->bedNumber,
-                "updated_by"                => $user->id
-            ]);
-    
-            return $consultation->visit()->update([
-                'admission_status'  => $data->admit,
-                'ward'              => $data->ward,
-                'bed_no'            => $data->bedNumber,
-            ]);
+
         });
     }
 
@@ -170,5 +210,18 @@ class ConsultationService
                     ->where('patient_id', $patient->id)
                     ->orderBy('created_at', 'asc')
                     ->get();
+    }
+
+    public function determineWard($visit, $data)
+    {
+        $wardModel = fn($wardId)=>$this->ward::find($wardId);
+
+        if ($ward = $wardModel($visit->ward)){
+            $ward->visit_id == $visit->id ? $ward->update(['visit_id' => null]) : '';
+        }
+
+        if ($ward = $wardModel($data->ward)){
+            $ward->update(['visit_id' => $visit->id]);
+        }
     }
 }

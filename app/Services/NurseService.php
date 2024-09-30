@@ -9,6 +9,7 @@ use App\Models\Consultation;
 use App\Models\Prescription;
 use App\Models\User;
 use App\Models\Visit;
+use App\Models\Ward;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -16,7 +17,9 @@ class NurseService
 {
     public function __construct(
         private readonly Visit $visit,
-        private readonly PayPercentageService $payPercentageService
+        private readonly PayPercentageService $payPercentageService,
+        private readonly Ward $ward,
+        private readonly HelperService $helperService
         )
     {
         
@@ -97,6 +100,8 @@ class NurseService
     public function getConsultedVisitsNursesTransformer(): callable
     {
        return  function (Visit $visit) {
+        $ward = $this->ward->where('id', $visit->ward)->first();
+
             return [
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
@@ -114,8 +119,9 @@ class NurseService
                 'flagPatient'       => $visit->patient->flag,
                 'flagReason'        => $visit->patient?->flag_reason,
                 'admissionStatus'   => $visit->admission_status,
-                'ward'              => $visit->ward ?? '',
-                'bedNo'             => $visit->bed_no ?? '',
+                'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
+                'wardId'            => $visit->ward ?? '',
+                'wardPresent'       => $ward?->visit_id == $visit->id,
                 'updatedBy'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->updatedBy?->username ?? 'Nurse...',
                 'conId'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->id,
                 'patientType'       => $visit->patient->patient_type,

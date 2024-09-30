@@ -16,7 +16,8 @@ class NurseController extends Controller
         private readonly NurseService $nurseService,
         private readonly UserService $userService,
         private readonly ResourceService $resourceService,
-        private readonly ThirdPartyController $thirdPartyController
+        private readonly ThirdPartyController $thirdPartyController,
+        private readonly WardController $wardController
         )
     {
         
@@ -26,7 +27,8 @@ class NurseController extends Controller
     {
         return view('nurses.nurses', [
             'doctors' => $this->userService->listStaff(designation: 'Doctor'),
-            'thirdParties'  => $this->thirdPartyController->showAll('id', 'short_name')
+            'thirdParties'  => $this->thirdPartyController->showAll('id', 'short_name'),
+            'wards'         => $this->wardController->showAll('id', 'short_name', 'long_name', 'bed_number', 'visit_id')
         ]);
     }
 
