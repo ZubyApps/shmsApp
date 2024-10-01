@@ -671,14 +671,14 @@ window.addEventListener('DOMContentLoaded', function () {
         if (consultBtn) {
             consultBtn.setAttribute('disabled', 'disabled')
             const [visitId, patientType, ancRegId, patientId] = [consultBtn.getAttribute('data-id'),consultBtn.getAttribute('data-patientType'),consultBtn.getAttribute('data-ancregid'),consultBtn.getAttribute('data-patientid')]
-            const [modal, saveConsultationBtn, vitalSigsTableFunc, vitalSignsTableId] = patientType === 'ANC' ? [ancConsultationModal, ancConsultationModal._element.querySelector('#saveConsultationBtn'), getAncVitalSignsTable, '#vitalSignsTableAnc'] : [newConsultationModal, newConsultationModal._element.querySelector('#saveConsultationBtn'), getVitalSignsTableByVisit, '#vitalSignsTableNew']
+            const [modal, saveConsultationBtn, id, vitalSigsTableFunc, vitalSignsTableId] = patientType === 'ANC' ? [ancConsultationModal, ancConsultationModal._element.querySelector('#saveConsultationBtn'), ancRegId, getAncVitalSignsTable, '#vitalSignsTableAnc'] : [newConsultationModal, newConsultationModal._element.querySelector('#saveConsultationBtn'), visitId, getVitalSignsTableByVisit, '#vitalSignsTableNew']
             resourceInput.forEach(input => {input.setAttribute('data-sponsorcat', consultBtn.getAttribute('data-sponsorcat'))})
             http.post(`/doctors/consult/${ visitId }`, {patientType})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         modal._element.querySelector('.historyBtn').setAttribute('data-patientid', patientId); modal._element.querySelector('.historyBtn').setAttribute('data-patienttype', patientType);
                             openDoctorModals(modal, saveConsultationBtn, response.data)
-                            vitalSigsTableFunc(vitalSignsTableId, ancRegId, ancConsultationModal)
+                            vitalSigsTableFunc(vitalSignsTableId, id, modal)
                         waitingListOffcanvas.hide()
                     }
                     consultBtn.removeAttribute('disabled')
