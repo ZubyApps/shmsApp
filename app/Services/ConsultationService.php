@@ -87,9 +87,7 @@ class ConsultationService
                     'ward'              => $data->ward,
                 ]);
             }
-
-            
-            
+     
         return $consultation;
         });
     }
@@ -217,7 +215,7 @@ class ConsultationService
         $wardModel = fn($wardId)=>$this->ward::find($wardId);
 
         if ($ward = $wardModel($visit->ward)){
-            $ward->visit_id == $visit->id ? $ward->update(['visit_id' => null]) : '';
+            $ward->visit_id == $visit->id  && $data->ward ? $ward->update(['visit_id' => null]) : '';
         }
 
         if ($ward = $wardModel($data->ward)){
