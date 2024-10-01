@@ -132,7 +132,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('ward')->group(function (){
             Route::post('', [WardController::class, 'store']);
             Route::get('/load', [WardController::class, 'load']);
-            Route::get('/list', [WardController::class, 'list']);
+            Route::get('/list', [WardController::class, 'list'])->withoutMiddleware('strict');
             Route::get('/{ward}', [WardController::class, 'edit']);
             Route::patch('/clear/{ward}', [WardController::class, 'clear']);
             Route::patch('/updateall/{ward}', [WardController::class, 'updateAll']);
