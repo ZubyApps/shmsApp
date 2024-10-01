@@ -639,7 +639,7 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#unitDescriptionTable').addEventListener('click', function (event) {
         const editBtn    = event.target.closest('.updateBtn')
         const deleteBtn  = event.target.closest('.deleteBtn')
-        const updateAllBtn  = event.target.closest('.updateAll')
+        // const updateAllBtn  = event.target.closest('.updateAll')
 
         if (editBtn) {
             editBtn.setAttribute('disabled', 'disabled')
@@ -674,21 +674,21 @@ window.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        if (updateAllBtn){
-            updateAllBtn.setAttribute('disabled', 'disabled')
-            const unitdescriptionId = updateAllBtn.getAttribute('data-id')
-            http.patch(`/unitdescription/updateall/${ unitdescriptionId }`)
-                .then((response) => {
-                    if (response.status >= 200 || response.status <= 300) {
-                        unitDescriptionTable ? unitDescriptionTable.draw() : ''
-                    }
-                    updateAllBtn.removeAttribute('disabled')
-                })
-                .catch((error) => {
-                    updateAllBtn.removeAttribute('disabled')
-                    console.log(error)
-                })
-        }
+        // if (updateAllBtn){
+        //     updateAllBtn.setAttribute('disabled', 'disabled')
+        //     const unitdescriptionId = updateAllBtn.getAttribute('data-id')
+        //     http.patch(`/unitdescription/updateall/${ unitdescriptionId }`)
+        //         .then((response) => {
+        //             if (response.status >= 200 || response.status <= 300) {
+        //                 unitDescriptionTable ? unitDescriptionTable.draw() : ''
+        //             }
+        //             updateAllBtn.removeAttribute('disabled')
+        //         })
+        //         .catch((error) => {
+        //             updateAllBtn.removeAttribute('disabled')
+        //             console.log(error)
+        //         })
+        // }
     })
 
     createUnitDescriptionBtn.addEventListener('click', function () {
@@ -849,7 +849,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if (clearWardBtn){
             clearWardBtn.setAttribute('disabled', 'disabled')
             const wardId = clearWardBtn.getAttribute('data-id')
-            http.patch(`/ward/updateall/${ wardId }`)
+            http.patch(`/ward/clear/${ wardId }`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
                         wardTable ? wardTable.draw() : ''

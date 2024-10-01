@@ -311,9 +311,6 @@ const getUnitDescriptionTable = (table) => {
                     if (row.count < 1) {
                          return `
                             <div class="d-flex flex-">
-                                <button class=" btn btn-outline-primary updateAll tooltip-test" title="update" data-id="${ row.id }">
-                                    <i class="bi bi-arrow-clockwise text-primary"></i>
-                                </button>
                                 <button class="ms-1 btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
                                     <i class="bi bi-pencil-fill"></i>
                                 </button>
@@ -325,9 +322,6 @@ const getUnitDescriptionTable = (table) => {
                     } else {
                         return `
                         <div class="d-flex flex-">
-                            <button class=" btn btn-outline-primary updateAll tooltip-test" title="update" data-id="${ row.id }">
-                                <i class="bi bi-arrow-clockwise text-primary"></i>
-                            </button>
                             <button class="ms-1 btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
                                 <i class="bi bi-pencil-fill"></i>
                             </button>
