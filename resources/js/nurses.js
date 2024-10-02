@@ -33,6 +33,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const dischargeModal                = new Modal(document.getElementById('dischargeModal'))
     const wardAndBedModal               = new Modal(document.getElementById('wardAndBedModal'))
     const bulkRequestModal              = new Modal(document.getElementById('bulkRequestModal'))
+    const theartreRequestModal          = new Modal(document.getElementById('theartreRequestModal'))
     const investigationAndManagementModal   = new Modal(document.getElementById('investigationAndManagementModal'))
     const nursesReportModal             = new Modal(document.getElementById('nursesReportModal'))
     const newNursesReportTemplateModal  = new Modal(document.getElementById('newNursesReportTemplateModal'))
@@ -68,7 +69,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveAncBtn                = updateAncRegisterationModal._element.querySelector('#saveAncBtn') 
     const deleteAncBtn              = viewAncRegisterationModal._element.querySelector('#deleteAncBtn')
     const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
+    const theartreRequestBtn        = document.querySelector('#newTheartreRequestBtn')
     const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
+    const requestTheartreBtn        = theartreRequestModal._element.querySelector('#requestBulkBtn')
     const moreHistoryBtn            = consultationHistoryModal._element.querySelector('#moreHistoryBtn')
     const resourceInput             = document.querySelector('#resource')
     const addInvestigationAndManagmentBtn   = investigationAndManagementModal._element.querySelector('#addInvestigationAndManagementBtn')
@@ -89,12 +92,13 @@ window.addEventListener('DOMContentLoaded', function () {
     const shiftBadgeSpan            = document.querySelector('#shiftBadgeSpan')
 
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
-    const [outPatientsTab, inPatientsTab, ancPatientsTab, bulkRequestsTab, emergencyTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-emergency-tab')]
+    const theartreItemInput         = theartreRequestModal._element.querySelector('#item')
+    const [outPatientsTab, inPatientsTab, ancPatientsTab, bulkRequestsTab, theartreRequestTab, emergencyTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-theartreRequests-tab'), document.querySelector('#nav-emergency-tab')]
     
     bmiCalculator(document.querySelectorAll('#height, .weight'))
     lmpCalculator(document.querySelectorAll('#lmp'), document.querySelectorAll('#registerationDiv'))
 
-    let outPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable, emergencyTable, nursesReportTable, surgeryNoteTable, deliveryNoteTable, medicationsTable, patientsFilesTable
+    let outPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable, theartreRequestsTable, emergencyTable, nursesReportTable, surgeryNoteTable, deliveryNoteTable, medicationsTable, patientsFilesTable
 
     const inPatientsVisitTable          = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient')
     const waitingTable                  = getWaitingTable('waitingTable')
@@ -152,6 +156,18 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#bulkRequestsTable').dataTable().fnDraw()
         } else {
             bulkRequestsTable = getBulkRequestTable('bulkRequestsTable', 'nurses')
+        }
+        upcomingMedicationsTable.draw()
+        upcomingNursingChartsTable.draw()
+        shiftPerformance()
+        nursesShiftReportTable.draw()
+    })
+
+    theartreRequestTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#theartreRequestsTable' )){
+            $('#theartreRequestsTable').dataTable().fnDraw()
+        } else {
+            theartreRequestsTable = getBulkRequestTable('theartreRequestsTable', 'theartre')
         }
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
@@ -900,21 +916,23 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     itemInput.addEventListener('input', function () {
-        const datalistEl = bulkRequestModal._element.querySelector(`#itemList`)
+        const dept          = itemInput.dataset.dept
+        const datalistEl    = bulkRequestModal._element.querySelector(`#itemList${dept}`)
             if (itemInput.value < 2) {
             datalistEl.innerHTML = ''
             }
             if (itemInput.value.length > 2) {
-                http.get(`/bulkrequests/list/bulk`, {params: {resource: itemInput.value, dept: itemInput.dataset.dept}}).then((response) => {
+                http.get(`/bulkrequests/list/bulk`, {params: {resource: itemInput.value, dept: dept}}).then((response) => {
                     displayItemsList(datalistEl, response.data, 'itemOption')
                 })
             }
     })
 
     requestBulkBtn.addEventListener('click', function () {
+        const dept      = itemInput.dataset.dept
         requestBulkBtn.setAttribute('disabled', 'disabled')
-        const itemId    =  getDatalistOptionId(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList`))
-        const itemStock =  getDatalistOptionStock(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList`))
+        const itemId    =  getDatalistOptionId(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList${dept}`))
+        const itemStock =  getDatalistOptionStock(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList${dept}`))
         const quantity  = bulkRequestModal._element.querySelector('#quantity').value
         if (!itemId) {
             clearValidationErrors(bulkRequestModal._element)
@@ -941,6 +959,58 @@ window.addEventListener('DOMContentLoaded', function () {
         .catch((error) => {
             console.log(error)
             requestBulkBtn.removeAttribute('disabled')
+        })
+    })
+
+    theartreRequestBtn.addEventListener('click', function () {
+        theartreRequestModal.show()
+    })
+
+    theartreItemInput.addEventListener('input', function () {
+        const dept          = theartreItemInput.dataset.dept
+        const datalistEl    = theartreRequestModal._element.querySelector(`#itemList${dept}`)
+            if (theartreItemInput.value < 2) {
+            datalistEl.innerHTML = ''
+            }
+            if (theartreItemInput.value.length > 2) {
+                http.get(`/bulkrequests/list/bulk`, {params: {resource: theartreItemInput.value, dept: dept}}).then((response) => {
+                    displayItemsList(datalistEl, response.data, 'itemOption')
+                })
+            }
+    })
+
+    requestTheartreBtn.addEventListener('click', function () {
+        const dept      = theartreItemInput.dataset.dept
+        requestTheartreBtn.setAttribute('disabled', 'disabled')
+        const itemId    =  getDatalistOptionId(theartreRequestModal._element, theartreItemInput, theartreRequestModal._element.querySelector(`#itemList${dept}`))
+        const itemStock =  getDatalistOptionStock(theartreRequestModal._element, theartreItemInput, theartreRequestModal._element.querySelector(`#itemList${dept}`))
+        const quantity  = theartreRequestModal._element.querySelector('#quantity').value
+        if (!itemId) {
+            clearValidationErrors(theartreRequestModal._element)
+            const message = {"item": ["Please pick an item from the list"]}               
+            handleValidationErrors(message, theartreRequestModal._element)
+            requestTheartreBtn.removeAttribute('disabled')
+            return
+        // } else if (itemStock - quantity < 0){
+        //     clearValidationErrors(theartreRequestModal._element)
+        //     const message = {"quantity": ["This quantity is more than the available stock, please reduce the quantity"]}               
+        //     handleValidationErrors(message, theartreRequestModal._element)
+        //     requestTheartreBtn.removeAttribute('disabled')
+        //     return
+        } else {clearValidationErrors(theartreRequestModal._element)}
+        http.post(`/bulkrequests/${itemId}`, getDivData(theartreRequestModal._element), {"html": theartreRequestModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) {
+                clearDivValues(theartreRequestModal._element.querySelector('.valuesDiv'))
+                clearValidationErrors(theartreRequestModal._element)
+                theartreRequestsTable ? theartreRequestsTable.draw() : ''
+            }
+            requestTheartreBtn.removeAttribute('disabled')
+            theartreRequestModal.hide()
+        })
+        .catch((error) => {
+            console.log(error)
+            requestTheartreBtn.removeAttribute('disabled')
         })
     })
 

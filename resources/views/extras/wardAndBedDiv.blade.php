@@ -7,9 +7,6 @@
         <x-input-span id="wardLabel">Ward</x-input-span>
         <select class="form-select form-select-md" name="ward" id="ward">
             <option value="">Select Ward</option>
-            {{-- @foreach ($wards as $ward )
-                <option value="{{ $ward->id }}" name="{{ $ward->long_name }}" {{$ward->visit_id ? 'disabled' : ''}}>{{ $ward->long_name.' ('.$ward->short_name.')' . ' - Bed ' . $ward->bed_number . 'visit id ' . $ward->visit_id }}</option>
-            @endforeach --}}
         </select>
         {{-- <x-select-ward name="ward"></x-select-ward> --}}
     </x-form-div>

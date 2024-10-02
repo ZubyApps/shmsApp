@@ -97,11 +97,35 @@ class BulkRequestService
                             $query->whereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                         })
+                        ->whereNot('department', 'Theartre')
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return $this->bulkRequest
+                    ->whereNot('department', 'Theartre')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length)); 
+    }
+
+    public function getTheartreBulkRequests(DataTableQueryParams $params, $data)
+    {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+
+        if (! empty($params->searchTerm)) {
+            return $this->bulkRequest
+                        ->where('department', 'Theartre')
+                        ->where(function (Builder $query) use($params) {
+                            $query->whereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        return $this->bulkRequest
+                    ->where('department', 'Theartre')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length)); 
     }
@@ -113,6 +137,7 @@ class BulkRequestService
                 'id'                => $bulkRequest->id,
                 'date'              => (new Carbon($bulkRequest->created_at))->format('d/m/y g:ia'),
                 'item'              => $bulkRequest->resource->name,
+                'marked'            => $bulkRequest->resource->markedFor?->name == 'theartre',
                 'quantity'          => $bulkRequest->quantity,
                 'dept'              => $bulkRequest->department,
                 'requestedBy'       => $bulkRequest->user->username,
@@ -166,14 +191,74 @@ class BulkRequestService
         });
     }
 
+    public function resolveTheartreStock(Request $data, BulkRequest $bulkRequest, Resource $resource, User $user)
+    {
+        $bulkResource       = $bulkRequest->resource;
+        $resourceToDeduct   = $resource;
+        $qtyToTransfer      = (int)$data->qty;
+        $qtyDispensed       = $bulkRequest->qty_dispensed;
+
+        if ($qtyToTransfer){
+            if ($qtyDispensed){
+                $resourceToDeduct->stock_level      = $resourceToDeduct->stock_level + $qtyDispensed;
+                $bulkResource->stock_level          = $bulkResource->stock_level - $qtyDispensed;
+                $resourceToDeduct->save();
+                $bulkResource->save();
+            }
+            if ($qtyToTransfer > ($resourceToDeduct->stock_level/4) ){
+                return response()->json(['message' => 'Please reduce this quantity. It is more than 25% of the remaining stock'], 403);
+            }
+            $resourceToDeduct->stock_level  = $resourceToDeduct->stock_level - $qtyToTransfer;
+            $bulkResource->stock_level      = $bulkResource->stock_level + $qtyToTransfer;
+            $resourceToDeduct->save();
+            $bulkResource->save();
+
+        } elseif (!$qtyToTransfer){
+
+            if ($qtyDispensed){
+                $resourceToDeduct->stock_level      = $resourceToDeduct->stock_level + $qtyDispensed;
+                $bulkResource->stock_level          = $bulkResource->stock_level - $qtyDispensed;
+                $resourceToDeduct->save();
+                $bulkResource->save();
+            }
+        }
+
+        return $bulkRequest->update([
+            'qty_dispensed'     => $data->qty ?? 0,
+            'dispensed'         => $data->qty ? new Carbon() : null,
+            'dispensed_by'      => $data->qty ? $user->id : null,
+            'deducted_from'     => $data->qty ? $resourceToDeduct->id : null,
+        ]);
+    }
+
     public function processDeletion(BulkRequest $bulkRequest)
     {
         return DB::transaction(function () use( $bulkRequest) {
+
             if ($bulkRequest->qty_dispensed){
                 $resource = $bulkRequest->resource;
                 $resource->stock_level = $resource->stock_level + $bulkRequest->qty_dispensed;
     
                 $resource->save();
+            }
+    
+            return $bulkRequest->destroy($bulkRequest->id);
+        });
+    }
+
+    public function processTheartreDeletion(BulkRequest $bulkRequest)
+    {
+        return DB::transaction(function () use( $bulkRequest) {
+
+            if ($bulkRequest->qty_dispensed){
+                $resource = $bulkRequest->resource;
+                $resourceDeducted = $bulkRequest->deductedFrom;
+
+                $resource->stock_level = $resource->stock_level - $bulkRequest->qty_dispensed;
+                $resourceDeducted->stock_level = $resourceDeducted->stock_level + $bulkRequest->qty_dispensed;
+    
+                $resource->save();
+                $resourceDeducted->save();
             }
     
             return $bulkRequest->destroy($bulkRequest->id);

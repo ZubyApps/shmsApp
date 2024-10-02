@@ -1,6 +1,6 @@
 
 import {Modal } from "bootstrap";
-import {getOrdinal, loadingSpinners, removeDisabled, resetFocusEndofLine, getDatalistOptionId, clearValidationErrors, handleValidationErrors, clearDivValues, getDivData, displayItemsList, openModals, getDatalistOptionStock} from "./helpers"
+import {getOrdinal, loadingSpinners, removeDisabled, resetFocusEndofLine, getDatalistOptionId, clearValidationErrors, handleValidationErrors, clearDivValues, getDivData, displayItemsList, openModals, getDatalistOptionStock, clearSelectList} from "./helpers"
 import { getBulkRequestTable, getExpirationStockTable , getPatientsVisitByFilterTable, getPrescriptionsByConsultation, getShiftReportTable } from "./tables/pharmacyTables";
 import http from "./http";
 import $ from 'jquery';
@@ -16,12 +16,17 @@ window.addEventListener('DOMContentLoaded', function () {
     const ancTreatmentDetailsModal      = new Modal(document.getElementById('ancTreatmentDetailsModal'))
     const billingDispenseModal          = new Modal(document.getElementById('billingDispenseModal'))
     const bulkRequestModal              = new Modal(document.getElementById('bulkRequestModal'))
+    const theartreStockModal            = new Modal(document.getElementById('theartreStockModal'))
+    const theartreRequestModal          = new Modal(document.getElementById('theartreRequestModal'))
     const newShiftReportTemplateModal   = new Modal(document.getElementById('newShiftReportTemplateModal'))
     const editShiftReportTemplateModal  = new Modal(document.getElementById('editShiftReportTemplateModal'))
     const viewShiftReportTemplateModal  = new Modal(document.getElementById('viewShiftReportTemplateModal'))
 
     const bulkRequestBtn        = document.querySelector('#newBulkRequestBtn')
     const requestBulkBtn        = bulkRequestModal._element.querySelector('#requestBulkBtn')
+    const requestTheartreBtn    = theartreRequestModal._element.querySelector('#requestBulkBtn')
+    const theartreRequestBtn    = document.querySelector('#newTheartreRequestBtn')
+    const resolveTheartreBtn    = theartreStockModal._element.querySelector('#resolveTheartreBtn')
     const markDoneBtn           = billingDispenseModal._element.querySelector('#markDoneBtn')
     const emergencyListBtn      = document.querySelector('#emergencyListBtn')
     const shiftReportBtn        = document.querySelector('#shiftReportBtn')
@@ -35,12 +40,13 @@ window.addEventListener('DOMContentLoaded', function () {
     const filterListOption          = document.querySelector('#filterList')
 
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
+    const theartreItemInput         = theartreRequestModal._element.querySelector('#item')
     const emergencyListCount        = document.querySelector('#emergencyListCount')
     const shiftBadgeSpan            = document.querySelector('#shiftBadgeSpan')
 
-    const [outPatientsTab, inPatientsTab, ancPatientsTab, expirationStockTab, bulkRequestsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-expirationStock-tab'), document.querySelector('#nav-bulkRequests-tab')]
+    const [outPatientsTab, inPatientsTab, ancPatientsTab, expirationStockTab, bulkRequestsTab, theartreRequestTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-expirationStock-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-theartreRequests-tab')]
 
-    let  outPatientsTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable
+    let  outPatientsTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable, theartreRequestsTable
 
     const inPatientsVisitTable  = getPatientsVisitByFilterTable('inPatientsTable', 'Inpatient')
     const emergencyTable    = getEmergencyTable('emergencyTable', 'pharmacy')
@@ -92,6 +98,14 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#bulkRequestsTable').dataTable().fnDraw()
         } else {
             bulkRequestsTable = getBulkRequestTable('bulkRequestsTable', 'pharmacy')
+        }
+    })
+
+    theartreRequestTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#theartreRequestsTable' )){
+            $('#theartreRequestsTable').dataTable().fnDraw()
+        } else {
+            theartreRequestsTable = getBulkRequestTable('theartreRequestsTable', 'theartre')
         }
     })
 
@@ -357,6 +371,7 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#bulkRequestsTable').addEventListener('click', function (event) {
         const approveRequestBtn    = event.target.closest('.approveRequestBtn')
         const dispenseQtyBtn       = event.target.closest('.dispenseQtyBtn')
+        const theatreQtyBtn        = event.target.closest('.theatreQtyBtn')
         const deleteRequestBtn     = event.target.closest('.deleteRequestBtn')
 
         if (approveRequestBtn){
@@ -430,6 +445,10 @@ window.addEventListener('DOMContentLoaded', function () {
                     bulkRequestsTable ?  bulkRequestsTable.draw(false) : ''
                 })
             }
+        }
+
+        if (theatreQtyBtn){
+
         }
     })
 
@@ -527,6 +546,171 @@ window.addEventListener('DOMContentLoaded', function () {
         bulkRequestsTable ? bulkRequestsTable.draw() : ''
     })
 
+    theartreRequestBtn.addEventListener('click', function () {
+        theartreRequestModal.show()
+    })
+
+    
+    theartreItemInput.addEventListener('input', function () {
+        const dept          = theartreItemInput.dataset.dept
+        const datalistEl    = theartreRequestModal._element.querySelector(`#itemList${dept}`)
+            if (theartreItemInput.value < 2) {
+            datalistEl.innerHTML = ''
+            }
+            if (theartreItemInput.value.length > 2) {
+                http.get(`/bulkrequests/list/bulk`, {params: {resource: theartreItemInput.value, dept: dept}}).then((response) => {
+                    displayItemsList(datalistEl, response.data, 'itemOption')
+                })
+            }
+    })
+
+    requestTheartreBtn.addEventListener('click', function () {
+        const dept      = theartreItemInput.dataset.dept
+        requestTheartreBtn.setAttribute('disabled', 'disabled')
+        const itemId    =  getDatalistOptionId(theartreRequestModal._element, theartreItemInput, theartreRequestModal._element.querySelector(`#itemList${dept}`))
+        const itemStock =  getDatalistOptionStock(theartreRequestModal._element, theartreItemInput, theartreRequestModal._element.querySelector(`#itemList${dept}`))
+        const quantity  = theartreRequestModal._element.querySelector('#quantity').value
+        if (!itemId) {
+            clearValidationErrors(theartreRequestModal._element)
+            const message = {"item": ["Please pick an item from the list"]}               
+            handleValidationErrors(message, theartreRequestModal._element)
+            requestTheartreBtn.removeAttribute('disabled')
+            return
+        // } else if (itemStock - quantity < 0){
+        //     clearValidationErrors(theartreRequestModal._element)
+        //     const message = {"quantity": ["This quantity is more than the available stock, please reduce the quantity"]}               
+        //     handleValidationErrors(message, theartreRequestModal._element)
+        //     requestTheartreBtn.removeAttribute('disabled')
+        //     return
+        } else {clearValidationErrors(theartreRequestModal._element)}
+        http.post(`/bulkrequests/${itemId}`, getDivData(theartreRequestModal._element), {"html": theartreRequestModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) {
+                clearDivValues(theartreRequestModal._element.querySelector('.valuesDiv'))
+                clearValidationErrors(theartreRequestModal._element)
+                theartreRequestsTable ? theartreRequestsTable.draw() : ''
+            }
+            requestTheartreBtn.removeAttribute('disabled')
+            theartreRequestModal.hide()
+        })
+        .catch((error) => {
+            console.log(error)
+            requestTheartreBtn.removeAttribute('disabled')
+        })
+    })
+
+    document.querySelector('#theartreRequestsTable').addEventListener('click', function (event) {
+        const approveRequestBtn    = event.target.closest('.approveRequestBtn')
+        const dispenseQtyBtn       = event.target.closest('.dispenseQtyBtn')
+        const theartreQtyBtn       = event.target.closest('.theartreQtyBtn')
+        const deleteRequestBtn     = event.target.closest('.deleteRequestBtn')
+
+        if (approveRequestBtn){
+            const bulkRequestId     = approveRequestBtn.getAttribute('data-id')
+            const div               = approveRequestBtn.parentElement
+            const qtyApprovedInput  = div.querySelector('.qtyApprovedInput')
+            approveRequestBtn.classList.add('d-none')
+            qtyApprovedInput.classList.remove('d-none')
+            resetFocusEndofLine(qtyApprovedInput)
+            
+            qtyApprovedInput.addEventListener('blur', function () {
+                http.patch(`/bulkrequests/approve/${bulkRequestId}`, {qty: qtyApprovedInput.value}, {'html' : div})
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        theartreRequestsTable ?  theartreRequestsTable.draw(false) : ''
+                    }
+                })
+                .catch((error) => {
+                    if (error.response.status === 403){
+                        alert(error.response.data.message); 
+                    }
+                    theartreRequestsTable ?  theartreRequestsTable.draw(false) : ''
+                    console.log(error)
+                })                
+            })
+        }
+
+        if (dispenseQtyBtn){
+            const bulkRequestId     = dispenseQtyBtn.getAttribute('data-id')
+            const div               = dispenseQtyBtn.parentElement
+            const qtyDispensedInput = div.querySelector('.qtyDispensedInput')
+            const stock             = dispenseQtyBtn.getAttribute('data-stock')
+            dispenseQtyBtn.classList.add('d-none')
+            qtyDispensedInput.classList.remove('d-none')
+            resetFocusEndofLine(qtyDispensedInput)
+            
+            qtyDispensedInput.addEventListener('blur', function () {
+                if (stock - qtyDispensedInput.value < 0){
+                    alert('This quantity is more than the available stock, please add to stock or reduce the quantity before dispensing')
+                    resetFocusEndofLine(qtyDispensedInput)
+                    return
+                }
+                http.patch(`/bulkrequests/dispense/${bulkRequestId}`, {qty: qtyDispensedInput.value}, {'html' : div})
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        theartreRequestsTable ?  theartreRequestsTable.draw(false) : ''
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    theartreRequestsTable ?  theartreRequestsTable.draw(false) : ''
+                })                
+            })
+        }
+
+        if (deleteRequestBtn){
+            const bulkRequestId = deleteRequestBtn.getAttribute('data-id')
+            deleteRequestBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this request?')){
+                http.delete(`/bulkrequests/theartre/${bulkRequestId}`)
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        theartreRequestsTable ?  theartreRequestsTable.draw(false) : ''
+                    }
+                })
+                .catch((error) => {
+                    if (error.response.status === 403){
+                        alert(error.response.data.message); 
+                    }
+                    console.log(error)
+                    theartreRequestsTable ?  theartreRequestsTable.draw(false) : ''
+                })
+            }
+        }
+
+        if (theartreQtyBtn){
+            const item = theartreQtyBtn.getAttribute('data-item').toLowerCase()
+            http.get(`/resources/theartrematch`, {params: {resource : item.split(' theartre')[0]}}).then((response) => {
+                displayTheartreMatch(theartreStockModal._element.querySelector("#resource"), response.data)
+                theartreStockModal._element.querySelector("#quantity").value = theartreQtyBtn.getAttribute('data-qty')
+                resolveTheartreBtn.setAttribute('data-requestedResource', theartreQtyBtn.getAttribute('data-id'))
+                theartreStockModal.show()
+            })
+        }
+    })
+
+    resolveTheartreBtn.addEventListener('click', function () {
+        resolveTheartreBtn.setAttribute('disabled', 'disabled')
+        const bulkRequestId = resolveTheartreBtn.getAttribute('data-requestedResource')
+        const resourceId    = theartreStockModal._element.querySelector('#resource').value
+        const qty           = theartreStockModal._element.querySelector('#quantity').value
+        http.patch(`/bulkrequests/resolvetheartre/${bulkRequestId}/${resourceId}`, {qty: qty}, {'html' : theartreStockModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300) {
+                theartreRequestsTable ? theartreRequestsTable.draw(false) : ''
+                theartreStockModal.hide()
+            }
+            resolveTheartreBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            if (error.response.status === 403){
+                alert(error.response.data.message); 
+            }
+            resolveTheartreBtn.removeAttribute('disabled')
+            theartreRequestsTable ?  theartreRequestsTable.draw(false) : ''
+            console.log(error)
+        })                
+    })
 
     document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal, #viewShiftReportTemplateModal ,#newShiftReportTemplateModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function(event) {
@@ -639,7 +823,10 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
+    theartreStockModal._element.addEventListener('hide.bs.modal', function(event) {
+        clearSelectList(theartreStockModal._element)
 
+    })
 })
 
 function openPharmacyModals(modal, button, { id, visitId, ancRegId, patientType, ...data }) {
@@ -651,4 +838,15 @@ function openPharmacyModals(modal, button, { id, visitId, ancRegId, patientType,
     }
 
     modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
+}
+
+function displayTheartreMatch(selectEl, data){
+    data.forEach(line => {
+        const option = document.createElement("OPTION")
+        option.setAttribute('id', 'listOption')
+        option.setAttribute('value', line.id)
+        option.setAttribute('name', line.name)
+        option.innerHTML = line.name + ` - (${line.stock} left)`
+        !selectEl.options.namedItem(line.name) ? selectEl.appendChild(option) : ''
+    })
 }

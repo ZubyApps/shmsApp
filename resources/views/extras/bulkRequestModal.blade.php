@@ -40,8 +40,8 @@
                                 <div class="valuesDiv">
                                     <x-form-div class="col-xl-12">
                                         <x-input-span id="itemLabel">Item<x-required-span /></x-input-span>
-                                        <input class="form-control item" type="search" name="item" id="item" placeholder="search" list="itemList" data-dept="{{ strtolower($dept) }}"/>
-                                        <datalist name="item" type="text" class="decoration-none itemList" id="itemList"></datalist>
+                                        <input class="form-control item" type="search" name="item" id="item" placeholder="search" list="itemList{{ strtolower($dept) }}" data-dept="{{ strtolower($dept) }}"/>
+                                        <datalist name="item" type="text" class="decoration-none itemList" id="itemList{{ strtolower($dept) }}"></datalist>
                                     </x-form-div>        
                                     <x-form-div class="col-xl-12 qty" id="qty">
                                         <x-input-span id="quantityLabel">Quantity<x-required-span /></x-input-span>

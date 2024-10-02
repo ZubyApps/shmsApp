@@ -57,21 +57,6 @@ class ConsultationService
             ]);  
 
             $visit = $consultation->visit;
-            // $wardModel = fn($wardId)=>$this->ward::find($wardId);//$this->ward->find($data->ward ?? $visit->ward);
-
-            // if ($data->admit == 'Outpatient'){
-                // Log::info('Outpatient', ['wardModel' => $wardModel($visit->ward)]);
-                // if ($ward = $wardModel($visit->ward)){
-                //     $ward->update(['visit_id' => null]);
-                //     Log::info('remove id', ['visit' => $ward->visit_id]);
-                // }
-            // }
-
-            // if ($ward = $wardModel($data->ward)){
-            //     Log::info('Other', ['wardModel' => $wardModel($visit->ward)]);
-            //     $done = $ward->update(['visit_id' => $visit->id]);
-            //     Log::info('inpatient', ['success' => $done, 'visit' => $ward->visit_id]);
-            // }
 
             $this->determineWard($visit, $data);
 
@@ -95,14 +80,6 @@ class ConsultationService
     public function update(Request $data, Consultation $consultation, User $user)
     {
         return DB::transaction(function () use ($data, $consultation, $user) {
-            
-            // $ward       = null;
-            // $wardAndBed = '';
-
-            // if ($data->ward){
-            //     $ward = $this->ward->where('id', $data->ward)->get();
-            //     $wardAndBed = $ward->short_name . '-Bed' . $ward->bed_number;
-            // }
             
             $consultation->update([
                 "p_complain"                => $data->presentingComplain,
@@ -215,7 +192,7 @@ class ConsultationService
         $wardModel = fn($wardId)=>$this->ward::find($wardId);
 
         if ($ward = $wardModel($visit->ward)){
-            $ward->visit_id == $visit->id  && $data->ward ? $ward->update(['visit_id' => null]) : '';
+            $ward->visit_id == $visit->id && $data->ward ? $ward->update(['visit_id' => null]) : '';
         }
 
         if ($ward = $wardModel($data->ward)){

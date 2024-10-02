@@ -821,7 +821,6 @@ const displayWardList = (selectEl, data) => {
 }
 
 const clearSelectList = (modal) => {
-    console.log(modal.id)
     modal.querySelectorAll('#listOption').forEach(clientList => {
         clientList.remove()
     })

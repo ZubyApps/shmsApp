@@ -16,6 +16,11 @@ class BulkRequest extends Model
         return $this->belongsTo(Resource::class);
     }
 
+    public function deductedFrom()
+    {
+        return $this->belongsTo(Resource::class, 'deducted_from');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -119,9 +119,9 @@ class ResourceService
                     return 'Soon';
                     }
 
-               if ($days <= 0){
-                return 'Yes';
-                    }
+                if ($days <= 0){
+                    return 'Yes';
+                        }
         
     }
 
@@ -134,21 +134,35 @@ class ResourceService
                         ->whereNot('flag','LIKE', '%' . addcslashes($data->sponsorCat, '%_') . '%' )
                         ->orderBy('name', 'asc')
                         ->get();
-        }
-           
+        }      
     }
 
     public function getBulkList($data)
     {
         if (! empty($data->resource)){
-
             return $this->resource
                             ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
-                            ->where('category', 'Consumables')
+                            ->where(function (Builder $query) use($data) {
+                                $query->where('category', 'Consumables')
+                                ->orWhereRelation('markedFor', 'name', 'LIKE', $data->dept);
+                            })
                             ->where('is_active', true)
                             ->orderBy('name', 'asc')
                             ->get();
         }    
+    }
+
+    public function getTheartreMarch($data)
+    {
+        return $this->resource
+                        ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
+                        ->where(function (Builder $query) use($data) {
+                            $query->whereDoesntHave('markedFor')
+                                ->orWhereRelation('markedFor', 'name', '!=', 'theartre');
+                        })
+                        ->where('is_active', true)
+                        ->orderBy('name', 'asc')
+                        ->get();  
     }
 
     public function getEmergencyList($data)

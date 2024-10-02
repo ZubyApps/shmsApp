@@ -283,12 +283,74 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
             {
                 data: 'qtyDispensed',
                 render: (data, type, row) => {
+                    return ` 
+                    <div class="d-flex justify-content-center">
+                        <span class="btn ${ row.qtyApproved ? '' : row.marked ? 'theartreQtyBtn' : 'dispenseQtyBtn'}  ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}" data-stock="${row.stock}" data-qty="${row.quantity}" data-item="${row.item}">${data ?? (urlSuffix !== 'pharmacy' ? 'Pending' : 'Dispense')}</span>
+                        <input class="ms-1 form-control qtyDispensedInput d-none" id="qtyDispensedInput" value="${data ?? ''}">
+                    </div>
+                `}
+            },
+            {data: "dispensed"},
+            {data: "dispensedBy"},
+            {
+                data: 'qtyApproved',
+                render: (data, type, row) => {
+                    return ` <div class="d-flex justify-content-center">
+                    <span class="${ row.qtyDispensed ? 'approveRequestBtn' : ''} btn ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${ data ?? (urlSuffix !== 'pharmacy' ? 'Pending' : 'Confirm')}</span>
+                    <input class="ms-1 form-control qtyApprovedInput d-none" id="qtyApprovedInput" value="${data ?? row.qtyDispensed ?? ''}">
+                </div>
+                `}
+            },
+            {data: "approvedBy"},
+            {
+                sortable: false,
+                data: row =>  `
+                <div class="d-flex flex-">
+                    <button type="submit" class="ms-1 btn btn-outline-primary ${!row.access || row.dispensed ? 'd-none' : 'deleteRequestBtn'} tooltip-test" title="delete" data-id="${ row.id}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+                `      
+            },
+        ]
+    });
+}
+
+const getTheartreRequestTable = (tableId, urlSuffix) => {
+    return new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax: `/bulkrequests/load/${urlSuffix}`,
+        orderMulti: true,
+        search:true,
+        searchDelay: 1000,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
+        language: {
+            emptyTable: 'No theartre requests'
+        },
+        columns: [
+            {data: "date"},
+            {data: "item"},
+            {data: "quantity"},
+            {data: "dept"},
+            {data: "requestedBy"},
+            {data: "note"},
+            {
+                data: 'qtyDispensed',
+                render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
                     <span class="btn ${ row.qtyApproved ? '' : 'dispenseQtyBtn'}  ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}" data-stock="${row.stock}">${data ?? (urlSuffix !== 'pharmacy' ? 'Pending' : 'Dispense')}</span>
                     <input class="ms-1 form-control qtyDispensedInput d-none" id="qtyDispensedInput" value="${data ?? ''}">
                 </div>
                 `}
             },
+            // {data: }
             {data: "dispensed"},
             {data: "dispensedBy"},
             {
@@ -368,4 +430,4 @@ const getShiftReportTable = (tableId, department, shiftBadgeSpan) => {
     return shiftReportTable
 }
 
-export {getPatientsVisitByFilterTable, getPrescriptionsByConsultation, getExpirationStockTable, getBulkRequestTable, getShiftReportTable}
+export {getPatientsVisitByFilterTable, getPrescriptionsByConsultation, getExpirationStockTable, getBulkRequestTable, getTheartreRequestTable, getShiftReportTable}

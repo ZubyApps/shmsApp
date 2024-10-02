@@ -72,6 +72,16 @@ class ResourceController extends Controller
         return new ResourceResource($resource);
     }
 
+    public function theartreMatch(Request $request)
+    {
+        $resources = $this->resourceService->getTheartreMarch($request);
+
+        $listTransformer = $this->resourceService->listTransformer1();
+
+        return array_map($listTransformer, (array)$resources->getIterator());
+
+    }
+
     public function resetStock()
     {
         $resetStock = Resource::all();
