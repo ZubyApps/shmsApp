@@ -271,7 +271,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
             {extend: 'print', className: 'btn-primary'},
              ],
         language: {
-            emptyTable: 'No bulk requests'
+            emptyTable: `No ${urlSuffix == 'theartre' ? 'theartre' : 'bulk'} requests`
         },
         columns: [
             {data: "date"},
