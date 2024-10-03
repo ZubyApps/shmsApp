@@ -145,7 +145,7 @@ Route::middleware('auth')->group(function () {
             Route::post('', [ResourceController::class, 'store']);
             Route::get('/load', [ResourceController::class, 'load']);
             Route::get('/list', [ResourceController::class, 'list']);
-            Route::get('/theartrematch', [ResourceController::class, 'theartreMatch']);
+            Route::get('/theartrematch', [ResourceController::class, 'theartreMatch'])->withoutMiddleware('strict');
             Route::get('/list/bulk', [ResourceController::class, 'listBulk']);
             Route::get('/{resource}', [ResourceController::class, 'edit']);
             Route::get('/addstock/{resource}', [ResourceController::class, 'edit'])->name('Addstock');
