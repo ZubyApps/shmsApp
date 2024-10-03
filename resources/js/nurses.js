@@ -33,7 +33,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const dischargeModal                = new Modal(document.getElementById('dischargeModal'))
     const wardAndBedModal               = new Modal(document.getElementById('wardAndBedModal'))
     const bulkRequestModal              = new Modal(document.getElementById('bulkRequestModal'))
-    const theartreRequestModal          = new Modal(document.getElementById('theartreRequestModal'))
+    const theatreRequestModal          = new Modal(document.getElementById('theatreRequestModal'))
     const investigationAndManagementModal   = new Modal(document.getElementById('investigationAndManagementModal'))
     const nursesReportModal             = new Modal(document.getElementById('nursesReportModal'))
     const newNursesReportTemplateModal  = new Modal(document.getElementById('newNursesReportTemplateModal'))
@@ -69,9 +69,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveAncBtn                = updateAncRegisterationModal._element.querySelector('#saveAncBtn') 
     const deleteAncBtn              = viewAncRegisterationModal._element.querySelector('#deleteAncBtn')
     const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
-    const theartreRequestBtn        = document.querySelector('#newTheartreRequestBtn')
+    const theatreRequestBtn        = document.querySelector('#newTheatreRequestBtn')
     const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
-    const requestTheartreBtn        = theartreRequestModal._element.querySelector('#requestBulkBtn')
+    const requestTheatreBtn        = theatreRequestModal._element.querySelector('#requestBulkBtn')
     const moreHistoryBtn            = consultationHistoryModal._element.querySelector('#moreHistoryBtn')
     const resourceInput             = document.querySelector('#resource')
     const addInvestigationAndManagmentBtn   = investigationAndManagementModal._element.querySelector('#addInvestigationAndManagementBtn')
@@ -92,13 +92,13 @@ window.addEventListener('DOMContentLoaded', function () {
     const shiftBadgeSpan            = document.querySelector('#shiftBadgeSpan')
 
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
-    const theartreItemInput         = theartreRequestModal._element.querySelector('#item')
-    const [outPatientsTab, inPatientsTab, ancPatientsTab, bulkRequestsTab, theartreRequestTab, emergencyTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-theartreRequests-tab'), document.querySelector('#nav-emergency-tab')]
+    const theatreItemInput         = theatreRequestModal._element.querySelector('#item')
+    const [outPatientsTab, inPatientsTab, ancPatientsTab, bulkRequestsTab, theatreRequestTab, emergencyTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-theatreRequests-tab'), document.querySelector('#nav-emergency-tab')]
     
     bmiCalculator(document.querySelectorAll('#height, .weight'))
     lmpCalculator(document.querySelectorAll('#lmp'), document.querySelectorAll('#registerationDiv'))
 
-    let outPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable, theartreRequestsTable, emergencyTable, nursesReportTable, surgeryNoteTable, deliveryNoteTable, medicationsTable, patientsFilesTable
+    let outPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable, theatreRequestsTable, emergencyTable, nursesReportTable, surgeryNoteTable, deliveryNoteTable, medicationsTable, patientsFilesTable
 
     const inPatientsVisitTable          = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient')
     const waitingTable                  = getWaitingTable('waitingTable')
@@ -163,11 +163,11 @@ window.addEventListener('DOMContentLoaded', function () {
         nursesShiftReportTable.draw()
     })
 
-    theartreRequestTab.addEventListener('click', function () {
-        if ($.fn.DataTable.isDataTable( '#theartreRequestsTable' )){
-            $('#theartreRequestsTable').dataTable().fnDraw()
+    theatreRequestTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#theatreRequestsTable' )){
+            $('#theatreRequestsTable').dataTable().fnDraw()
         } else {
-            theartreRequestsTable = getBulkRequestTable('theartreRequestsTable', 'theartre')
+            theatreRequestsTable = getBulkRequestTable('theatreRequestsTable', 'theatre')
         }
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
@@ -962,55 +962,55 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    theartreRequestBtn.addEventListener('click', function () {
-        theartreRequestModal.show()
+    theatreRequestBtn.addEventListener('click', function () {
+        theatreRequestModal.show()
     })
 
-    theartreItemInput.addEventListener('input', function () {
-        const dept          = theartreItemInput.dataset.dept
-        const datalistEl    = theartreRequestModal._element.querySelector(`#itemList${dept}`)
-            if (theartreItemInput.value < 2) {
+    theatreItemInput.addEventListener('input', function () {
+        const dept          = theatreItemInput.dataset.dept
+        const datalistEl    = theatreRequestModal._element.querySelector(`#itemList${dept}`)
+            if (theatreItemInput.value < 2) {
             datalistEl.innerHTML = ''
             }
-            if (theartreItemInput.value.length > 2) {
-                http.get(`/bulkrequests/list/bulk`, {params: {resource: theartreItemInput.value, dept: dept}}).then((response) => {
+            if (theatreItemInput.value.length > 2) {
+                http.get(`/bulkrequests/list/bulk`, {params: {resource: theatreItemInput.value, dept: dept}}).then((response) => {
                     displayItemsList(datalistEl, response.data, 'itemOption')
                 })
             }
     })
 
-    requestTheartreBtn.addEventListener('click', function () {
-        const dept      = theartreItemInput.dataset.dept
-        requestTheartreBtn.setAttribute('disabled', 'disabled')
-        const itemId    =  getDatalistOptionId(theartreRequestModal._element, theartreItemInput, theartreRequestModal._element.querySelector(`#itemList${dept}`))
-        const itemStock =  getDatalistOptionStock(theartreRequestModal._element, theartreItemInput, theartreRequestModal._element.querySelector(`#itemList${dept}`))
-        const quantity  = theartreRequestModal._element.querySelector('#quantity').value
+    requestTheatreBtn.addEventListener('click', function () {
+        const dept      = theatreItemInput.dataset.dept
+        requestTheatreBtn.setAttribute('disabled', 'disabled')
+        const itemId    =  getDatalistOptionId(theatreRequestModal._element, theatreItemInput, theatreRequestModal._element.querySelector(`#itemList${dept}`))
+        const itemStock =  getDatalistOptionStock(theatreRequestModal._element, theatreItemInput, theatreRequestModal._element.querySelector(`#itemList${dept}`))
+        const quantity  = theatreRequestModal._element.querySelector('#quantity').value
         if (!itemId) {
-            clearValidationErrors(theartreRequestModal._element)
+            clearValidationErrors(theatreRequestModal._element)
             const message = {"item": ["Please pick an item from the list"]}               
-            handleValidationErrors(message, theartreRequestModal._element)
-            requestTheartreBtn.removeAttribute('disabled')
+            handleValidationErrors(message, theatreRequestModal._element)
+            requestTheatreBtn.removeAttribute('disabled')
             return
         // } else if (itemStock - quantity < 0){
-        //     clearValidationErrors(theartreRequestModal._element)
+        //     clearValidationErrors(theatreRequestModal._element)
         //     const message = {"quantity": ["This quantity is more than the available stock, please reduce the quantity"]}               
-        //     handleValidationErrors(message, theartreRequestModal._element)
-        //     requestTheartreBtn.removeAttribute('disabled')
+        //     handleValidationErrors(message, theatreRequestModal._element)
+        //     requestTheatreBtn.removeAttribute('disabled')
         //     return
-        } else {clearValidationErrors(theartreRequestModal._element)}
-        http.post(`/bulkrequests/${itemId}`, getDivData(theartreRequestModal._element), {"html": theartreRequestModal._element})
+        } else {clearValidationErrors(theatreRequestModal._element)}
+        http.post(`/bulkrequests/${itemId}`, getDivData(theatreRequestModal._element), {"html": theatreRequestModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300) {
-                clearDivValues(theartreRequestModal._element.querySelector('.valuesDiv'))
-                clearValidationErrors(theartreRequestModal._element)
-                theartreRequestsTable ? theartreRequestsTable.draw() : ''
+                clearDivValues(theatreRequestModal._element.querySelector('.valuesDiv'))
+                clearValidationErrors(theatreRequestModal._element)
+                theatreRequestsTable ? theatreRequestsTable.draw() : ''
             }
-            requestTheartreBtn.removeAttribute('disabled')
-            theartreRequestModal.hide()
+            requestTheatreBtn.removeAttribute('disabled')
+            theatreRequestModal.hide()
         })
         .catch((error) => {
             console.log(error)
-            requestTheartreBtn.removeAttribute('disabled')
+            requestTheatreBtn.removeAttribute('disabled')
         })
     })
 

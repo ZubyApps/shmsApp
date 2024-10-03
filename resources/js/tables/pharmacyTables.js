@@ -271,7 +271,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
             {extend: 'print', className: 'btn-primary'},
              ],
         language: {
-            emptyTable: `No ${urlSuffix == 'theartre' ? 'theartre' : 'bulk'} requests`
+            emptyTable: `No ${urlSuffix == 'theatre' ? 'theatre' : 'bulk'} requests`
         },
         columns: [
             {data: "date"},
@@ -285,7 +285,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
                 render: (data, type, row) => {
                     return ` 
                     <div class="d-flex justify-content-center">
-                        <span class="btn ${ row.qtyApproved ? '' : row.marked ? 'theartreQtyBtn' : 'dispenseQtyBtn'}  ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}" data-stock="${row.stock}" data-qty="${row.quantity}" data-item="${row.item}">${data ?? (urlSuffix !== 'pharmacy' ? 'Pending' : 'Dispense')}</span>
+                        <span class="btn ${ row.qtyApproved ? '' : row.marked ? 'theatreQtyBtn' : 'dispenseQtyBtn'}  ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}" data-stock="${row.stock}" data-qty="${row.quantity}" data-item="${row.item}">${data ?? (urlSuffix !== 'pharmacy' ? 'Pending' : 'Dispense')}</span>
                         <input class="ms-1 form-control qtyDispensedInput d-none" id="qtyDispensedInput" value="${data ?? ''}">
                     </div>
                 `}
@@ -316,7 +316,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
     });
 }
 
-const getTheartreRequestTable = (tableId, urlSuffix) => {
+const getTheatreRequestTable = (tableId, urlSuffix) => {
     return new DataTable('#'+tableId, {
         serverSide: true,
         ajax: `/bulkrequests/load/${urlSuffix}`,
@@ -332,7 +332,7 @@ const getTheartreRequestTable = (tableId, urlSuffix) => {
             {extend: 'print', className: 'btn-primary'},
              ],
         language: {
-            emptyTable: 'No theartre requests'
+            emptyTable: 'No theatre requests'
         },
         columns: [
             {data: "date"},
@@ -430,4 +430,4 @@ const getShiftReportTable = (tableId, department, shiftBadgeSpan) => {
     return shiftReportTable
 }
 
-export {getPatientsVisitByFilterTable, getPrescriptionsByConsultation, getExpirationStockTable, getBulkRequestTable, getTheartreRequestTable, getShiftReportTable}
+export {getPatientsVisitByFilterTable, getPrescriptionsByConsultation, getExpirationStockTable, getBulkRequestTable, getTheatreRequestTable, getShiftReportTable}

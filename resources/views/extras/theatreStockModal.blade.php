@@ -8,7 +8,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-2 form-control bulkRequestDiv">
-                        <x-form-span>Add to Theartre Stock</x-form-span>
+                        <x-form-span>Add to Theatre Stock</x-form-span>
                         <div class="row">
                             <div class="valuesDiv">
                                 <x-form-div class="col-xl-12">
@@ -37,7 +37,7 @@
                         <i class="bi bi-x-circle me-1"></i>
                         Close
                     </button>
-                    <button type="button" id="resolveTheartreBtn" class="btn btn-primary">
+                    <button type="button" id="resolveTheatreBtn" class="btn btn-primary">
                         <i class="bi bi-check-circle me-1"></i>
                         Resolve
                     </button>

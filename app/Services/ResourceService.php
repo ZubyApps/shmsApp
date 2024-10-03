@@ -152,13 +152,13 @@ class ResourceService
         }    
     }
 
-    public function getTheartreMarch($data)
+    public function getTheatreMarch($data)
     {
         return $this->resource
                         ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
                         ->where(function (Builder $query) use($data) {
                             $query->whereDoesntHave('markedFor')
-                                ->orWhereRelation('markedFor', 'name', '!=', 'theartre');
+                                ->orWhereRelation('markedFor', 'name', '!=', 'theatre');
                         })
                         ->where('is_active', true)
                         ->orderBy('name', 'asc')

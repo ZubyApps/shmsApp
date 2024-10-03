@@ -8,8 +8,8 @@
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
 @include('pharmacy.billingDispenseModal', ['title' => "Patient's Billing & Dispense", 'isEdit' => false, 'id' => 'billingDispenseModal'])
 @include('extras.bulkRequestModal', ['title' => 'Bulk Request', 'dept' => 'Pharmacy', 'isPharmacy' => true, 'id' => 'bulkRequestModal'])
-@include('extras.theartreStockModal', ['title' => 'Resolve Theatre Stock', 'id' => 'theartreStockModal'])
-@include('extras.bulkRequestModal', ['title' => 'Theartre Request', 'dept' => 'Theartre', 'isPharmacy' => false, 'id' => 'theartreRequestModal'])
+@include('extras.theatreStockModal', ['title' => 'Resolve Theatre Stock', 'id' => 'theatreStockModal'])
+@include('extras.bulkRequestModal', ['title' => 'Theatre Request', 'dept' => 'Theatre', 'isPharmacy' => false, 'id' => 'theatreRequestModal'])
 @include('extras.shiftReportTemplateModal', ['title' => 'New Report', 'isUpdate' => false, 'dept' => 'pharmacy', 'isView' => false, 'id' => 'newShiftReportTemplateModal'])
 @include('extras.shiftReportTemplateModal', ['title' => 'Edit Report', 'isUpdate' => true, 'dept' => 'pharmacy', 'isView' => false, 'id' => 'editShiftReportTemplateModal'])
 @include('extras.shiftReportTemplateModal', ['title' => 'View Report', 'isUpdate' => false, 'dept' => 'pharmacy', 'isView' => true, 'id' => 'viewShiftReportTemplateModal'])
@@ -104,8 +104,8 @@
                     <button class="nav-link" id="nav-bulkRequests-tab" data-bs-toggle="tab" data-bs-target="#nav-bulkRequests"
                     type="button" role="tab" aria-controls="nav-bulkRequests" aria-selected="false">Bulk Requests</button>
 
-                    <button class="nav-link" id="nav-theartreRequests-tab" data-bs-toggle="tab" data-bs-target="#nav-theartreRequests"
-                    type="button" role="tab" aria-controls="nav-theartreRequests" aria-selected="false">Theatre Requests</button>
+                    <button class="nav-link" id="nav-theatreRequests-tab" data-bs-toggle="tab" data-bs-target="#nav-theatreRequests"
+                    type="button" role="tab" aria-controls="nav-theatreRequests" aria-selected="false">Theatre Requests</button>
 
                 </div>
             </nav>
@@ -231,16 +231,16 @@
                         </table>
                     </div>
                 </div>
-                <!-- theartre request table -->
-                <div class="tab-pane fade" id="nav-theartreRequests" role="tabpanel" aria-labelledby="nav-theartreRequests-tab" tabindex="0">
+                <!-- theatre request table -->
+                <div class="tab-pane fade" id="nav-theatreRequests" role="tabpanel" aria-labelledby="nav-theatreRequests-tab" tabindex="0">
                     <div class="text-start py-4">
-                        <button type="button" id="newTheartreRequestBtn" class="btn btn-primary">
+                        <button type="button" id="newTheatreRequestBtn" class="btn btn-primary">
                             <i class="bi bi-plus-circle me-1"></i>
-                            Theartre Request
+                            Theatre Request
                         </button>
                     </div>
                     <div class="pt-2 ">
-                        <table id="theartreRequestsTable" class="table table-hover align-middle table-sm theartreRequestsTable">
+                        <table id="theatreRequestsTable" class="table table-hover align-middle table-sm theatreRequestsTable">
                             <thead>
                                 <tr>
                                     <th>Date</th>

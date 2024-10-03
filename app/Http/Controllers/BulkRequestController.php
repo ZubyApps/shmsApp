@@ -71,20 +71,20 @@ class BulkRequestController extends Controller
         return $this->datatablesService->datatableResponse($transformer, $expirationStock, $params);  
     }
 
-    public function theartreBulkRequests(Request $request)
+    public function theatreBulkRequests(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $expirationStock = $this->bulkRequestService->getTheartreBulkRequests($params, $request);
+        $expirationStock = $this->bulkRequestService->getTheatreBulkRequests($params, $request);
        
         $transformer = $this->bulkRequestService->getBulkRequestTransformer();
 
         return $this->datatablesService->datatableResponse($transformer, $expirationStock, $params);  
     }
 
-    public function resolveThearterStock(Request $request, BulkRequest $bulkRequest, Resource $resource)
+    public function resolveTheatreStock(Request $request, BulkRequest $bulkRequest, Resource $resource)
     {
-        return $this->bulkRequestService->resolveTheartreStock($request, $bulkRequest, $resource, $request->user());
+        return $this->bulkRequestService->resolveTheatreStock($request, $bulkRequest, $resource, $request->user());
     }
 
     public function toggleApproveBulkRequest(UpdateBulkRequestRequest $request, BulkRequest $bulkRequest)
@@ -108,11 +108,11 @@ class BulkRequestController extends Controller
         return $this->bulkRequestService->processDeletion($bulkRequest);
     }
 
-    public function destroyTheartre(Request $request, BulkRequest $bulkRequest)
+    public function destroyTheatre(Request $request, BulkRequest $bulkRequest)
     {
         if ($request->user()->designation?->access_level < 5) {
             return response()->json(['message' => 'You are not authorized'], 403);
         }
-        return $this->bulkRequestService->processTheartreDeletion($bulkRequest);
+        return $this->bulkRequestService->processTheatreDeletion($bulkRequest);
     }
 }

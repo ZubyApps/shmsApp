@@ -72,9 +72,9 @@ class ResourceController extends Controller
         return new ResourceResource($resource);
     }
 
-    public function theartreMatch(Request $request)
+    public function theatreMatch(Request $request)
     {
-        $resources = $this->resourceService->getTheartreMarch($request);
+        $resources = $this->resourceService->getTheatreMarch($request);
 
         $listTransformer = $this->resourceService->listTransformer1();
 

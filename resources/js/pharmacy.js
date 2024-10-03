@@ -16,17 +16,17 @@ window.addEventListener('DOMContentLoaded', function () {
     const ancTreatmentDetailsModal      = new Modal(document.getElementById('ancTreatmentDetailsModal'))
     const billingDispenseModal          = new Modal(document.getElementById('billingDispenseModal'))
     const bulkRequestModal              = new Modal(document.getElementById('bulkRequestModal'))
-    const theartreStockModal            = new Modal(document.getElementById('theartreStockModal'))
-    const theartreRequestModal          = new Modal(document.getElementById('theartreRequestModal'))
+    const theatreStockModal            = new Modal(document.getElementById('theatreStockModal'))
+    const theatreRequestModal          = new Modal(document.getElementById('theatreRequestModal'))
     const newShiftReportTemplateModal   = new Modal(document.getElementById('newShiftReportTemplateModal'))
     const editShiftReportTemplateModal  = new Modal(document.getElementById('editShiftReportTemplateModal'))
     const viewShiftReportTemplateModal  = new Modal(document.getElementById('viewShiftReportTemplateModal'))
 
     const bulkRequestBtn        = document.querySelector('#newBulkRequestBtn')
     const requestBulkBtn        = bulkRequestModal._element.querySelector('#requestBulkBtn')
-    const requestTheartreBtn    = theartreRequestModal._element.querySelector('#requestBulkBtn')
-    const theartreRequestBtn    = document.querySelector('#newTheartreRequestBtn')
-    const resolveTheartreBtn    = theartreStockModal._element.querySelector('#resolveTheartreBtn')
+    const requestTheatreBtn    = theatreRequestModal._element.querySelector('#requestBulkBtn')
+    const theatreRequestBtn    = document.querySelector('#newTheatreRequestBtn')
+    const resolveTheatreBtn    = theatreStockModal._element.querySelector('#resolveTheatreBtn')
     const markDoneBtn           = billingDispenseModal._element.querySelector('#markDoneBtn')
     const emergencyListBtn      = document.querySelector('#emergencyListBtn')
     const shiftReportBtn        = document.querySelector('#shiftReportBtn')
@@ -40,13 +40,13 @@ window.addEventListener('DOMContentLoaded', function () {
     const filterListOption          = document.querySelector('#filterList')
 
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
-    const theartreItemInput         = theartreRequestModal._element.querySelector('#item')
+    const theatreItemInput          = theatreRequestModal._element.querySelector('#item')
     const emergencyListCount        = document.querySelector('#emergencyListCount')
     const shiftBadgeSpan            = document.querySelector('#shiftBadgeSpan')
 
-    const [outPatientsTab, inPatientsTab, ancPatientsTab, expirationStockTab, bulkRequestsTab, theartreRequestTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-expirationStock-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-theartreRequests-tab')]
+    const [outPatientsTab, inPatientsTab, ancPatientsTab, expirationStockTab, bulkRequestsTab, theatreRequestTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-expirationStock-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-theatreRequests-tab')]
 
-    let  outPatientsTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable, theartreRequestsTable
+    let  outPatientsTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable, theatreRequestsTable
 
     const inPatientsVisitTable  = getPatientsVisitByFilterTable('inPatientsTable', 'Inpatient')
     const emergencyTable    = getEmergencyTable('emergencyTable', 'pharmacy')
@@ -101,11 +101,11 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    theartreRequestTab.addEventListener('click', function () {
-        if ($.fn.DataTable.isDataTable( '#theartreRequestsTable' )){
-            $('#theartreRequestsTable').dataTable().fnDraw()
+    theatreRequestTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#theatreRequestsTable' )){
+            $('#theatreRequestsTable').dataTable().fnDraw()
         } else {
-            theartreRequestsTable = getBulkRequestTable('theartreRequestsTable', 'theartre')
+            theatreRequestsTable = getBulkRequestTable('theatreRequestsTable', 'theatre')
         }
     })
 
@@ -546,63 +546,63 @@ window.addEventListener('DOMContentLoaded', function () {
         bulkRequestsTable ? bulkRequestsTable.draw() : ''
     })
 
-    theartreRequestBtn.addEventListener('click', function () {
-        theartreRequestModal.show()
+    theatreRequestBtn.addEventListener('click', function () {
+        theatreRequestModal.show()
     })
 
     
-    theartreItemInput.addEventListener('input', function () {
-        const dept          = theartreItemInput.dataset.dept
-        const datalistEl    = theartreRequestModal._element.querySelector(`#itemList${dept}`)
-            if (theartreItemInput.value < 2) {
+    theatreItemInput.addEventListener('input', function () {
+        const dept          = theatreItemInput.dataset.dept
+        const datalistEl    = theatreRequestModal._element.querySelector(`#itemList${dept}`)
+            if (theatreItemInput.value < 2) {
             datalistEl.innerHTML = ''
             }
-            if (theartreItemInput.value.length > 2) {
-                http.get(`/bulkrequests/list/bulk`, {params: {resource: theartreItemInput.value, dept: dept}}).then((response) => {
+            if (theatreItemInput.value.length > 2) {
+                http.get(`/bulkrequests/list/bulk`, {params: {resource: theatreItemInput.value, dept: dept}}).then((response) => {
                     displayItemsList(datalistEl, response.data, 'itemOption')
                 })
             }
     })
 
-    requestTheartreBtn.addEventListener('click', function () {
-        const dept      = theartreItemInput.dataset.dept
-        requestTheartreBtn.setAttribute('disabled', 'disabled')
-        const itemId    =  getDatalistOptionId(theartreRequestModal._element, theartreItemInput, theartreRequestModal._element.querySelector(`#itemList${dept}`))
-        const itemStock =  getDatalistOptionStock(theartreRequestModal._element, theartreItemInput, theartreRequestModal._element.querySelector(`#itemList${dept}`))
-        const quantity  = theartreRequestModal._element.querySelector('#quantity').value
+    requestTheatreBtn.addEventListener('click', function () {
+        const dept      = theatreItemInput.dataset.dept
+        requestTheatreBtn.setAttribute('disabled', 'disabled')
+        const itemId    =  getDatalistOptionId(theatreRequestModal._element, theatreItemInput, theatreRequestModal._element.querySelector(`#itemList${dept}`))
+        const itemStock =  getDatalistOptionStock(theatreRequestModal._element, theatreItemInput, theatreRequestModal._element.querySelector(`#itemList${dept}`))
+        const quantity  = theatreRequestModal._element.querySelector('#quantity').value
         if (!itemId) {
-            clearValidationErrors(theartreRequestModal._element)
+            clearValidationErrors(theatreRequestModal._element)
             const message = {"item": ["Please pick an item from the list"]}               
-            handleValidationErrors(message, theartreRequestModal._element)
-            requestTheartreBtn.removeAttribute('disabled')
+            handleValidationErrors(message, theatreRequestModal._element)
+            requestTheatreBtn.removeAttribute('disabled')
             return
         // } else if (itemStock - quantity < 0){
-        //     clearValidationErrors(theartreRequestModal._element)
+        //     clearValidationErrors(theatreRequestModal._element)
         //     const message = {"quantity": ["This quantity is more than the available stock, please reduce the quantity"]}               
-        //     handleValidationErrors(message, theartreRequestModal._element)
-        //     requestTheartreBtn.removeAttribute('disabled')
+        //     handleValidationErrors(message, theatreRequestModal._element)
+        //     requestTheatreBtn.removeAttribute('disabled')
         //     return
-        } else {clearValidationErrors(theartreRequestModal._element)}
-        http.post(`/bulkrequests/${itemId}`, getDivData(theartreRequestModal._element), {"html": theartreRequestModal._element})
+        } else {clearValidationErrors(theatreRequestModal._element)}
+        http.post(`/bulkrequests/${itemId}`, getDivData(theatreRequestModal._element), {"html": theatreRequestModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300) {
-                clearDivValues(theartreRequestModal._element.querySelector('.valuesDiv'))
-                clearValidationErrors(theartreRequestModal._element)
-                theartreRequestsTable ? theartreRequestsTable.draw() : ''
+                clearDivValues(theatreRequestModal._element.querySelector('.valuesDiv'))
+                clearValidationErrors(theatreRequestModal._element)
+                theatreRequestsTable ? theatreRequestsTable.draw() : ''
             }
-            requestTheartreBtn.removeAttribute('disabled')
-            theartreRequestModal.hide()
+            requestTheatreBtn.removeAttribute('disabled')
+            theatreRequestModal.hide()
         })
         .catch((error) => {
             console.log(error)
-            requestTheartreBtn.removeAttribute('disabled')
+            requestTheatreBtn.removeAttribute('disabled')
         })
     })
 
-    document.querySelector('#theartreRequestsTable').addEventListener('click', function (event) {
+    document.querySelector('#theatreRequestsTable').addEventListener('click', function (event) {
         const approveRequestBtn    = event.target.closest('.approveRequestBtn')
         const dispenseQtyBtn       = event.target.closest('.dispenseQtyBtn')
-        const theartreQtyBtn       = event.target.closest('.theartreQtyBtn')
+        const theatreQtyBtn       = event.target.closest('.theatreQtyBtn')
         const deleteRequestBtn     = event.target.closest('.deleteRequestBtn')
 
         if (approveRequestBtn){
@@ -617,14 +617,14 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.patch(`/bulkrequests/approve/${bulkRequestId}`, {qty: qtyApprovedInput.value}, {'html' : div})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
-                        theartreRequestsTable ?  theartreRequestsTable.draw(false) : ''
+                        theatreRequestsTable ?  theatreRequestsTable.draw(false) : ''
                     }
                 })
                 .catch((error) => {
                     if (error.response.status === 403){
                         alert(error.response.data.message); 
                     }
-                    theartreRequestsTable ?  theartreRequestsTable.draw(false) : ''
+                    theatreRequestsTable ?  theatreRequestsTable.draw(false) : ''
                     console.log(error)
                 })                
             })
@@ -648,12 +648,12 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.patch(`/bulkrequests/dispense/${bulkRequestId}`, {qty: qtyDispensedInput.value}, {'html' : div})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
-                        theartreRequestsTable ?  theartreRequestsTable.draw(false) : ''
+                        theatreRequestsTable ?  theatreRequestsTable.draw(false) : ''
                     }
                 })
                 .catch((error) => {
                     console.log(error)
-                    theartreRequestsTable ?  theartreRequestsTable.draw(false) : ''
+                    theatreRequestsTable ?  theatreRequestsTable.draw(false) : ''
                 })                
             })
         }
@@ -662,10 +662,10 @@ window.addEventListener('DOMContentLoaded', function () {
             const bulkRequestId = deleteRequestBtn.getAttribute('data-id')
             deleteRequestBtn.setAttribute('disabled', 'disabled')
             if (confirm('Are you sure you want to delete this request?')){
-                http.delete(`/bulkrequests/theartre/${bulkRequestId}`)
+                http.delete(`/bulkrequests/theatre/${bulkRequestId}`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
-                        theartreRequestsTable ?  theartreRequestsTable.draw(false) : ''
+                        theatreRequestsTable ?  theatreRequestsTable.draw(false) : ''
                     }
                 })
                 .catch((error) => {
@@ -673,41 +673,41 @@ window.addEventListener('DOMContentLoaded', function () {
                         alert(error.response.data.message); 
                     }
                     console.log(error)
-                    theartreRequestsTable ?  theartreRequestsTable.draw(false) : ''
+                    theatreRequestsTable ?  theatreRequestsTable.draw(false) : ''
                 })
             }
         }
 
-        if (theartreQtyBtn){
-            const item = theartreQtyBtn.getAttribute('data-item').toLowerCase()
-            http.get(`/resources/theartrematch`, {params: {resource : item.split(' theartre')[0]}}).then((response) => {
-                displayTheartreMatch(theartreStockModal._element.querySelector("#resource"), response.data)
-                theartreStockModal._element.querySelector("#quantity").value = theartreQtyBtn.getAttribute('data-qty')
-                resolveTheartreBtn.setAttribute('data-requestedResource', theartreQtyBtn.getAttribute('data-id'))
-                theartreStockModal.show()
+        if (theatreQtyBtn){
+            const item = theatreQtyBtn.getAttribute('data-item').toLowerCase()
+            http.get(`/resources/theatrematch`, {params: {resource : item.split(' theatre')[0]}}).then((response) => {
+                displayTheatreMatch(theatreStockModal._element.querySelector("#resource"), response.data)
+                theatreStockModal._element.querySelector("#quantity").value = theatreQtyBtn.getAttribute('data-qty')
+                resolveTheatreBtn.setAttribute('data-requestedResource', theatreQtyBtn.getAttribute('data-id'))
+                theatreStockModal.show()
             })
         }
     })
 
-    resolveTheartreBtn.addEventListener('click', function () {
-        resolveTheartreBtn.setAttribute('disabled', 'disabled')
-        const bulkRequestId = resolveTheartreBtn.getAttribute('data-requestedResource')
-        const resourceId    = theartreStockModal._element.querySelector('#resource').value
-        const qty           = theartreStockModal._element.querySelector('#quantity').value
-        http.patch(`/bulkrequests/resolvetheartre/${bulkRequestId}/${resourceId}`, {qty: qty}, {'html' : theartreStockModal._element})
+    resolveTheatreBtn.addEventListener('click', function () {
+        resolveTheatreBtn.setAttribute('disabled', 'disabled')
+        const bulkRequestId = resolveTheatreBtn.getAttribute('data-requestedResource')
+        const resourceId    = theatreStockModal._element.querySelector('#resource').value
+        const qty           = theatreStockModal._element.querySelector('#quantity').value
+        http.patch(`/bulkrequests/resolvetheatre/${bulkRequestId}/${resourceId}`, {qty: qty}, {'html' : theatreStockModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300) {
-                theartreRequestsTable ? theartreRequestsTable.draw(false) : ''
-                theartreStockModal.hide()
+                theatreRequestsTable ? theatreRequestsTable.draw(false) : ''
+                theatreStockModal.hide()
             }
-            resolveTheartreBtn.removeAttribute('disabled')
+            resolveTheatreBtn.removeAttribute('disabled')
         })
         .catch((error) => {
             if (error.response.status === 403){
                 alert(error.response.data.message); 
             }
-            resolveTheartreBtn.removeAttribute('disabled')
-            theartreRequestsTable ?  theartreRequestsTable.draw(false) : ''
+            resolveTheatreBtn.removeAttribute('disabled')
+            theatreRequestsTable ?  theatreRequestsTable.draw(false) : ''
             console.log(error)
         })                
     })
@@ -823,8 +823,8 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    theartreStockModal._element.addEventListener('hide.bs.modal', function(event) {
-        clearSelectList(theartreStockModal._element)
+    theatreStockModal._element.addEventListener('hide.bs.modal', function(event) {
+        clearSelectList(theatreStockModal._element)
 
     })
 })
@@ -840,7 +840,7 @@ function openPharmacyModals(modal, button, { id, visitId, ancRegId, patientType,
     modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
 }
 
-function displayTheartreMatch(selectEl, data){
+function displayTheatreMatch(selectEl, data){
     data.forEach(line => {
         const option = document.createElement("OPTION")
         option.setAttribute('id', 'listOption')

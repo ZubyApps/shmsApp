@@ -97,25 +97,25 @@ class BulkRequestService
                             $query->whereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                         })
-                        ->whereNot('department', 'Theartre')
+                        ->whereNot('department', 'Theatre')
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return $this->bulkRequest
-                    ->whereNot('department', 'Theartre')
+                    ->whereNot('department', 'Theatre')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length)); 
     }
 
-    public function getTheartreBulkRequests(DataTableQueryParams $params, $data)
+    public function getTheatreBulkRequests(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
 
         if (! empty($params->searchTerm)) {
             return $this->bulkRequest
-                        ->where('department', 'Theartre')
+                        ->where('department', 'Theatre')
                         ->where(function (Builder $query) use($params) {
                             $query->whereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
@@ -125,7 +125,7 @@ class BulkRequestService
         }
 
         return $this->bulkRequest
-                    ->where('department', 'Theartre')
+                    ->where('department', 'Theatre')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length)); 
     }
@@ -137,7 +137,7 @@ class BulkRequestService
                 'id'                => $bulkRequest->id,
                 'date'              => (new Carbon($bulkRequest->created_at))->format('d/m/y g:ia'),
                 'item'              => $bulkRequest->resource->name,
-                'marked'            => $bulkRequest->resource->markedFor?->name == 'theartre',
+                'marked'            => $bulkRequest->resource->markedFor?->name == 'theatre',
                 'quantity'          => $bulkRequest->quantity,
                 'dept'              => $bulkRequest->department,
                 'requestedBy'       => $bulkRequest->user->username,
@@ -191,12 +191,16 @@ class BulkRequestService
         });
     }
 
-    public function resolveTheartreStock(Request $data, BulkRequest $bulkRequest, Resource $resource, User $user)
+    public function resolveTheatreStock(Request $data, BulkRequest $bulkRequest, Resource $resource, User $user)
     {
         $bulkResource       = $bulkRequest->resource;
         $resourceToDeduct   = $resource;
         $qtyToTransfer      = (int)$data->qty;
         $qtyDispensed       = $bulkRequest->qty_dispensed;
+
+        if ($qtyToTransfer > ($resourceToDeduct->stock_level/4) ){
+            return response()->json(['message' => 'Please reduce this quantity. It is more than 25% of the remaining stock'], 403);
+        }
 
         if ($qtyToTransfer){
             if ($qtyDispensed){
@@ -205,9 +209,7 @@ class BulkRequestService
                 $resourceToDeduct->save();
                 $bulkResource->save();
             }
-            if ($qtyToTransfer > ($resourceToDeduct->stock_level/4) ){
-                return response()->json(['message' => 'Please reduce this quantity. It is more than 25% of the remaining stock'], 403);
-            }
+            
             $resourceToDeduct->stock_level  = $resourceToDeduct->stock_level - $qtyToTransfer;
             $bulkResource->stock_level      = $bulkResource->stock_level + $qtyToTransfer;
             $resourceToDeduct->save();
@@ -246,7 +248,7 @@ class BulkRequestService
         });
     }
 
-    public function processTheartreDeletion(BulkRequest $bulkRequest)
+    public function processTheatreDeletion(BulkRequest $bulkRequest)
     {
         return DB::transaction(function () use( $bulkRequest) {
 

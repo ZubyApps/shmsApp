@@ -145,7 +145,7 @@ Route::middleware('auth')->group(function () {
             Route::post('', [ResourceController::class, 'store']);
             Route::get('/load', [ResourceController::class, 'load']);
             Route::get('/list', [ResourceController::class, 'list']);
-            Route::get('/theartrematch', [ResourceController::class, 'theartreMatch'])->withoutMiddleware('strict');
+            Route::get('/theatrematch', [ResourceController::class, 'theatreMatch'])->withoutMiddleware('strict');
             Route::get('/list/bulk', [ResourceController::class, 'listBulk']);
             Route::get('/{resource}', [ResourceController::class, 'edit']);
             Route::get('/addstock/{resource}', [ResourceController::class, 'edit'])->name('Addstock');
@@ -494,14 +494,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/list/bulk', [BulkRequestController::class, 'listBulk']);
         Route::post('/{resource}', [BulkRequestController::class, 'store']);
         Route::get('/load/nurses', [BulkRequestController::class, 'nursesBulkRequests']);
-        Route::get('/load/theartre', [BulkRequestController::class, 'theartreBulkRequests']);
+        Route::get('/load/theatre', [BulkRequestController::class, 'theatreBulkRequests']);
         Route::get('/load/lab', [BulkRequestController::class, 'labBulkRequests']);
         Route::get('/load/pharmacy', [BulkRequestController::class, 'pharmacyBulkRequests']);
-        Route::patch('/resolvetheartre/{bulkRequest}/{resource}', [BulkRequestController::class, 'resolveThearterStock']);
+        Route::patch('/resolvetheatre/{bulkRequest}/{resource}', [BulkRequestController::class, 'resolveTheatreStock']);
         Route::patch('/approve/{bulkRequest}', [BulkRequestController::class, 'toggleApproveBulkRequest']);
         Route::patch('/dispense/{bulkRequest}', [BulkRequestController::class, 'dispenseBulkRequest']);
         Route::delete('/{bulkRequest}', [BulkRequestController::class, 'destroy']);
-        Route::delete('/theartre/{bulkRequest}', [BulkRequestController::class, 'destroyTheartre']);
+        Route::delete('/theatre/{bulkRequest}', [BulkRequestController::class, 'destroyTheatre']);
     });
 
     Route::prefix('medicalreports')->group(function () {
