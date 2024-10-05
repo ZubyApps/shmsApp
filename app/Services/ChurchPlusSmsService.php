@@ -28,7 +28,7 @@ class ChurchPlusSmsService
         
         $completeUrl = $this->baseUrl.'recipients='.$recipients.'&message='.$message.'&subject='.$subject.'&cid='.$this->tenantId.'&gateway='.$gateway;
 
-        Log::info("", ["url1" => $completeUrl]);
+        // Log::info("", ["url1" => $completeUrl]);
 
         $response = $client->request('POST', $completeUrl, []);
 

@@ -569,7 +569,7 @@ window.addEventListener('DOMContentLoaded', function () {
         requestTheatreBtn.setAttribute('disabled', 'disabled')
         const itemId    =  getDatalistOptionId(theatreRequestModal._element, theatreItemInput, theatreRequestModal._element.querySelector(`#itemList${dept}`))
         const itemStock =  getDatalistOptionStock(theatreRequestModal._element, theatreItemInput, theatreRequestModal._element.querySelector(`#itemList${dept}`))
-        const quantity  = theatreRequestModal._element.querySelector('#quantity').value
+        // const quantity  = theatreRequestModal._element.querySelector('#quantity').value
         if (!itemId) {
             clearValidationErrors(theatreRequestModal._element)
             const message = {"item": ["Please pick an item from the list"]}               
@@ -680,10 +680,14 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (theatreQtyBtn){
             const item = theatreQtyBtn.getAttribute('data-item').toLowerCase()
-            http.get(`/resources/theatrematch`, {params: {resource : item.split(' theatre')[0]}}).then((response) => {
+            clearValidationErrors(theatreStockModal._element)
+            http.get(`/resources/theatrematch`, {params: {resource : item.split(' theatre')[0]}, 'html' : theatreStockModal._element}).then((response) => {
                 displayTheatreMatch(theatreStockModal._element.querySelector("#resource"), response.data)
                 theatreStockModal._element.querySelector("#quantity").value = theatreQtyBtn.getAttribute('data-qty')
                 resolveTheatreBtn.setAttribute('data-requestedResource', theatreQtyBtn.getAttribute('data-id'))
+                theatreStockModal.show()
+            })
+            .catch((error) => {
                 theatreStockModal.show()
             })
         }

@@ -199,7 +199,7 @@ class BulkRequestService
         $qtyDispensed       = $bulkRequest->qty_dispensed;
 
         if ($qtyToTransfer > ($resourceToDeduct->stock_level/4) ){
-            return response()->json(['message' => 'Please reduce this quantity. It is more than 25% of the remaining stock'], 403);
+            return response()->json(['errors' => ['quantity' => ['Please reduce this quantity. It is more than 25% of the remaining stock']]], 422);
         }
 
         if ($qtyToTransfer){

@@ -76,6 +76,10 @@ class ResourceController extends Controller
     {
         $resources = $this->resourceService->getTheatreMarch($request);
 
+        if ($resources->isEmpty()){
+            return response()->json(['errors' => ['resource' => ['Pls ensure the names match. "Theatre" should be the only difference btwn the names of the items in resources eg "Inj Diclofenac & Inj Diclofenac Theatre". Edit items in Resources.']]], 422);
+        }
+
         $listTransformer = $this->resourceService->listTransformer1();
 
         return array_map($listTransformer, (array)$resources->getIterator());
@@ -87,7 +91,7 @@ class ResourceController extends Controller
         $resetStock = Resource::all();
 
         foreach ($resetStock as $stock) {
-            $stock->stock_level = null;
+            $stock->stock_level = 0;
             $stock->save();
         }
 
