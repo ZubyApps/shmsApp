@@ -77,7 +77,8 @@ class ResourceController extends Controller
         $resources = $this->resourceService->getTheatreMarch($request);
 
         if ($resources->isEmpty()){
-            return response()->json(['errors' => ['resource' => ['Pls ensure the names match. "Theatre" should be the only difference btwn the names of the items in resources eg "Inj Diclofenac & Inj Diclofenac Theatre". Edit items in Resources.']]], 422);
+            $resource = ucwords($request->resource);
+            return response()->json(['errors' => ['resource' => ['Pls ensure the names match. "Theatre" should be the only difference btwn the names of the items in resources. In this case, "'. $resource .' & '.$resource.' Theatre". Edit these items in Resources.']]], 422);
         }
 
         $listTransformer = $this->resourceService->listTransformer1();
