@@ -2,10 +2,14 @@
 
 namespace App\Notifications;
 
+use App\Models\Prescription;
+use App\Models\Visit;
 use App\Services\ChurchPlusSmsService;
 use App\Services\HelperService;
+use Carbon\CarbonImmutable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
@@ -37,6 +41,10 @@ class InvestigationNotifier extends Notification
      */
     public function toSms(object $notifiable)
     {
+        if ($this->recentlySent($notifiable) > 1){
+            return;
+        }
+        
         $gateway = $this->helperService->nccTextTime() ? 1 : 2;
         $firstName = $notifiable->visit->patient->first_name;
 
@@ -56,5 +64,14 @@ class InvestigationNotifier extends Notification
         return [
             //
         ];
+    }
+
+    public function recentlySent(Prescription $prescription)
+    {
+        $end = new CarbonImmutable();
+        $start = $end->subMinutes(30);
+        $visit = $prescription->visit;
+        
+        return $visit->prescriptions->where('result', '!=', null)->whereBetween('result_date', [$start, $end])->count();
     }
 }

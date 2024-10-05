@@ -278,7 +278,7 @@ class InvestigationService
             ]);
     
             if ($prescription->visit->patient->sms){
-                $info = $this->investigationNotifier->toSms($prescription);
+                $this->investigationNotifier->toSms($prescription);
             }
     
             return $prescription;
