@@ -458,12 +458,13 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     itemInput.addEventListener('input', function () {
-        const datalistEl = bulkRequestModal._element.querySelector(`#itemList`)
+        const dept       = itemInput.dataset.dept
+        const datalistEl = bulkRequestModal._element.querySelector(`#itemList${dept}`)
             if (itemInput.value <= 2) {
             datalistEl.innerHTML = ''
             }
             if (itemInput.value.length > 2) {
-                http.get(`/bulkrequests/list/bulk`, {params: {resource: itemInput.value, dept: itemInput.dataset.dept}}).then((response) => {
+                http.get(`/bulkrequests/list/bulk`, {params: {resource: itemInput.value, dept: dept}}).then((response) => {
                     displayItemsList(datalistEl, response.data, 'itemOption')
                 })
             }
