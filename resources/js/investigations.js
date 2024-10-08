@@ -471,6 +471,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     requestBulkBtn.addEventListener('click', function () {
+        const dept      = itemInput.dataset.dept
         requestBulkBtn.setAttribute('disabled', 'disabled')
         const itemId    =  getDatalistOptionId(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList${dept}`))
         const itemStock =  getDatalistOptionStock(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList${dept}`))
