@@ -88,7 +88,7 @@ const getAllPatientsTable = (tableId) => {
              ],
         columns: [
             {data: "card"},
-            {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
+            {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.name}</span>`},
             {data: "phone"},
             {data: "sex"},
             {data: "age"},
