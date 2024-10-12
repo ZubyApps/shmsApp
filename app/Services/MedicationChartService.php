@@ -7,6 +7,7 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\MedicationChart;
 use App\Models\User;
+use App\Models\Ward;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterval;
@@ -17,7 +18,12 @@ use Illuminate\Support\Facades\DB;
 
 class MedicationChartService
 {
-    public function __construct(private readonly MedicationChart $medicationChart, private readonly PrescriptionService $prescriptionService)
+    public function __construct(
+        private readonly MedicationChart $medicationChart, 
+        private readonly PrescriptionService $prescriptionService,
+        private readonly Ward $ward,
+        private readonly HelperService $helperService
+        )
     {
     }
 
@@ -182,12 +188,16 @@ class MedicationChartService
     public function upcomingMedicationsTransformer(): callable
     {
        return  function (MedicationChart $medicationChart) {
+        $ward = $this->ward->where('id', $medicationChart->visit->ward)->first();
             return [
                 'id'                => $medicationChart->id,
-                'patient'           => $medicationChart->visit->patient->card_no .' '. $medicationChart->visit->patient->first_name .' '. $medicationChart->visit->patient->middle_name .' '. $medicationChart->visit->patient->last_name,
+                'patient'           => $medicationChart->visit->patient->patientId(),//->card_no .' '. $medicationChart->visit->patient->first_name .' '. $medicationChart->visit->patient->middle_name .' '. $medicationChart->visit->patient->last_name,
                 'status'            => $medicationChart->visit->admission_status,
-                'ward'              => $medicationChart->visit->ward ?? '',
-                'bedNo'             => $medicationChart->visit->bed_no ?? '',
+                // 'ward'              => $medicationChart->visit->ward ?? '',
+                // 'bedNo'             => $medicationChart->visit->bed_no ?? '',
+                'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
+                'wardId'            => $visit->ward ?? '',
+                'wardPresent'       => $ward?->visit_id == $medicationChart->visit->id,
                 'treatment'         => $medicationChart->prescription->resource->name ?? '',
                 'prescription'      => $medicationChart->prescription->prescription ?? '',
                 'dose'              => $medicationChart->dose_prescribed ?? '',

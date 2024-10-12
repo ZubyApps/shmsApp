@@ -580,7 +580,7 @@ const getUpcomingMedicationsTable = (tableId, button, span) => {
                 `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
                 `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
             } },
-            {data: row => row.ward + '-' + row.bedNo},
+            {data: row => wardState(row)},
             {data: row => `<span class="position-relative p-2"> ${row.treatment} ${row.notGiven == 'Snooze 60 mins' ||  row.notGiven == 'Snooze 30 mins' ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">${row.notGiven + ' by ' + row.givenBy + ' at ' + row.timeGiven}</span>` : ''} </span>`},
             {data: "prescription"},
             {data: "dose"},
@@ -647,7 +647,7 @@ const getUpcomingNursingChartsTable = (tableId, button, span) => {
                 `<span class="fw-bold text-primary tooltip-test" title="Inpatient"><i class="bi bi-hospital-fill"></i></span>` :
                 `<span class="fw-bold tooltip-test" title="Outpatient"><i class="bi bi-hospital"></i></span>`
             } },
-            {data: row => row.ward + '-' + row.bedNo},
+            {data: row => wardState(row)},
             {data: row => `<span class="position-relative p-2"> ${row.care} ${row.notDone == 'Snooze 60 mins' ||  row.notDone == 'Snooze 30 mins' ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">${row.notDone +  ' by ' + row.doneBy + ' at ' + row.timeDone}</span>` : ''} </span>`},
             {data: "instruction"},
             {data: "chartedBy"},
