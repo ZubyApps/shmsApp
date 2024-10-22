@@ -170,7 +170,7 @@ class PrescriptionService
        return  function (Prescription $prescription) {
             return [
                 'id'                => $prescription->id,
-                'patient'           => $prescription->visit->patient->patientId(),
+                'patient'           => $prescription->visit->patient->patientFullInfo(),
                 'sponsor'           => $prescription->visit->sponsor->name,
                 'type'              => $prescription->resource->resourceSubCategory->name,
                 'requested'         => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),

@@ -74,6 +74,11 @@ class Patient extends Model
         return str_replace(['a', 'g', 'o'], '', (new Carbon($this->date_of_birth))->diffForHumans(['other' => null, 'parts' => 2, 'short' => true]), );
     }
 
+    public function patientFullInfo()
+    {
+        return $this->fullName().', '.$this->age().', '.$this->sex;
+    }
+
     public function allHmsBills()
     {
         $allHmsBills = 0;
