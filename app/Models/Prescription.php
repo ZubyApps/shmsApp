@@ -157,7 +157,7 @@ class Prescription extends Model
                     ->where('discontinued', false)
                     ->where(function(Builder $query) use($chartTable, $comparism) {
                         $query->whereDoesntHave($chartTable)
-                            ->orWhereDoesntHave('nursingCharts')
+                            ->whereDoesntHave('nursingCharts')
                             ->whereRelation('resource', 'category', $comparism ,'Medications');
                         })
                     ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
