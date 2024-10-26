@@ -12,7 +12,7 @@ class ContinuousSmsing
 {
     public function __invoke()
    {
-        (new MedicationsForSms(new MedicationNotifier(new ChurchPlusSmsService())))();
-        (new AppointmentsForSms(new AppointmentNotifier(new ChurchPlusSmsService())))();
+     //    (new MedicationsForSms(new MedicationNotifier(new ChurchPlusSmsService())))();
+     //    (new AppointmentsForSms(new AppointmentNotifier(new ChurchPlusSmsService())))();
    }
 }
