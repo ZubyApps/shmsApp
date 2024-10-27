@@ -57,6 +57,11 @@ class NurseService
             // ->where(function(Builder $query) {
             //     $query->whereRelation('prescriptions.resource', 'sub_category', '=', 'Injectable');
             // })
+            ->where(function(Builder $query) {
+                $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
+                    ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services')
+                    ->orWhereRelation('prescriptions', 'chartable', '=', '1');
+            })
             ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
