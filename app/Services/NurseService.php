@@ -63,7 +63,7 @@ class NurseService
                     ->orWhereRelation('prescriptions', 'chartable', '=', '1');
             })
             ->where('admission_status', '=', 'Outpatient')
-            ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+            // ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
