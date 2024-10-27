@@ -54,9 +54,9 @@ class NurseService
             ->where('consulted', '!=', null)
             ->where('nurse_done_by', null)
             ->where('closed', false)
-            ->where(function(Builder $query) {
-                $query->whereRelation('prescriptions.resource', 'sub_category', '=', 'Injectable');
-            })
+            // ->where(function(Builder $query) {
+            //     $query->whereRelation('prescriptions.resource', 'sub_category', '=', 'Injectable');
+            // })
             ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
