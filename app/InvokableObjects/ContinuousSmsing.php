@@ -7,7 +7,6 @@ namespace App\InvokableObjects;
 use App\Notifications\AppointmentNotifier;
 use App\Notifications\MedicationNotifier;
 use App\Services\ChurchPlusSmsService;
-use Illuminate\Support\Facades\Log;
 
 class ContinuousSmsing
 {

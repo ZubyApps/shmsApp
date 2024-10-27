@@ -2,17 +2,12 @@
 
 namespace App\Console;
 
-use App\InvokableObjects\AppointmentsForSms;
 use App\InvokableObjects\CleanUpTables;
 use App\InvokableObjects\ContinuousSmsing;
-use App\InvokableObjects\MedicationsForSms;
 use App\InvokableObjects\NursesAfternoonShift;
 use App\InvokableObjects\NursesMorningShift;
 use App\InvokableObjects\NursesNightShift;
 use App\InvokableObjects\Remind;
-use App\Notifications\AppointmentNotifier;
-use App\Notifications\MedicationNotifier;
-use App\Services\ChurchPlusSmsService;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 

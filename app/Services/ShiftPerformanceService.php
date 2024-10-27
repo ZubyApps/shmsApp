@@ -246,7 +246,8 @@ Class ShiftPerformanceService
                     }, '<', $count)->get();
 
         foreach($visitsNoVitals as $visitNoVitals){
-            array_push($noVitals, $visitNoVitals->patient->card_no . ' ' . $visitNoVitals->patient->first_name . ' ' . $visitNoVitals->ward . '-' . $visitNoVitals->bed_no);
+            // array_push($noVitals, $visitNoVitals->patient->card_no . ' ' . $visitNoVitals->patient->first_name . ' ' . $visitNoVitals->ward . '-' . $visitNoVitals->bed_no);
+            array_push($noVitals, $visitNoVitals->patient->card_no . ' ' . $visitNoVitals->patient->first_name);
         }
 
         $all = new Collection(['visitsCount' => $visitsCount, 'visitsVCount' => $visitsVCount, 'visitsNoVitals' => $noVitals]);
