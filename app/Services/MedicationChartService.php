@@ -27,7 +27,7 @@ class MedicationChartService
     {
     }
 
-    public function create(Request $data, User $user): MedicationChart
+    public function create(Request $data, User $user)
     {
         $tz = 'Africa/Lagos';
         $interval = CarbonInterval::hours($data->frequency);
@@ -36,6 +36,14 @@ class MedicationChartService
         $end   = $start->addDays($data->days);
         $dates = new CarbonPeriod($start, $interval, $end, CarbonPeriod::EXCLUDE_END_DATE);
 
+        if (count($dates) > 120) {
+            return response()->json(
+                ['errors' => [
+                    'frequency' => ['This frequency may too frequent'],
+                    'days' => ['or the days are too many']
+            ]], 422);
+        }
+        
         return DB::transaction(function () use($data, $user, $dates, $tz) {
             $iteration = 0;
 

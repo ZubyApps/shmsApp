@@ -66,7 +66,7 @@
                                     <x-form-input type="number" name="days" id="days" value="1" />
                                 </x-form-div>
                                 <x-form-div class="col-xl-4">
-                                    <x-input-span>Set Time <small> (optional)</small></x-input-span>
+                                    <x-input-span>Set Time</x-input-span>
                                     <x-form-input type="datetime-local" name="date" id="date" value="" />
                                 </x-form-div>
                                 <div class="d-flex justify-content-center mt-2">
