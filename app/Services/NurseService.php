@@ -12,7 +12,6 @@ use App\Models\Visit;
 use App\Models\Ward;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Log;
 
 class NurseService
 {
@@ -51,8 +50,7 @@ class NurseService
         }
 
         if ($data->filterBy == 'Outpatient'){
-            Log::info('see', [$data->filterBy]);
-            $result = $this->visit
+            return $this->visit
             ->where('consulted', '!=', null)
             ->where('nurse_done_by', null)
             ->where('closed', false)
@@ -63,8 +61,6 @@ class NurseService
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            Log::info('result', [$result]);
-            return $result;
         }
 
         if ($data->filterBy == 'Inpatient'){
@@ -124,7 +120,7 @@ class NurseService
                 'flagReason'        => $visit->patient?->flag_reason,
                 'admissionStatus'   => $visit->admission_status,
                 'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
-                'wardId'            => $visit?->ward ?? '',
+                'wardId'            => $visit->ward ?? '',
                 'wardPresent'       => $ward?->visit_id == $visit->id,
                 'updatedBy'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->updatedBy?->username ?? 'Nurse...',
                 'conId'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->id,

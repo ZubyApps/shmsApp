@@ -108,7 +108,7 @@ window.addEventListener('DOMContentLoaded', function () {
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #bulkRequestsTable, #emergencyTable, #nursesReportTable, #upcomingMedicationsTable, #upcomingNursingChartsTable, #waitingTable, #medicationsTable, #otherPrescriptionsTable, #ancVitalSignsTable, #vitalSignsTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
 
     const shiftPerformance = () => {
-        // getShiftPerformance('Nurse', shiftPerformanceDiv)
+        getShiftPerformance('Nurse', shiftPerformanceDiv)
     }
 
     shiftReportBtn.addEventListener('click', function () {nursesShiftReportTable.draw()})
