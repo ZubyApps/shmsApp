@@ -7,11 +7,13 @@ namespace App\InvokableObjects;
 use App\Notifications\AppointmentNotifier;
 use App\Notifications\MedicationNotifier;
 use App\Services\ChurchPlusSmsService;
+use Illuminate\Support\Facades\Log;
 
 class ContinuousSmsing
 {
     public function __invoke()
    {
+    Log::info('in runs');
         (new MedicationsForSms(new MedicationNotifier(new ChurchPlusSmsService())))();
         (new AppointmentsForSms(new AppointmentNotifier(new ChurchPlusSmsService())))();
    }
