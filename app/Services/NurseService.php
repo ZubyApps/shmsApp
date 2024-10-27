@@ -63,6 +63,7 @@ class NurseService
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            Log::info('result', [$result]);
             return $result;
         }
 
