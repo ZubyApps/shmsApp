@@ -63,7 +63,7 @@ class NurseService
                     ->orWhereRelation('prescriptions', 'chartable', '=', '1');
             })
             ->where('admission_status', '=', 'Outpatient')
-            // ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+            ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -132,11 +132,11 @@ class NurseService
                 'patientType'       => $visit->patient->patient_type,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
-                'chartableMedications'  => (new Prescription())->prescriptionsCharted($visit->id, 'medicationCharts'),
+                'chartableMedications'  => '',//(new Prescription())->prescriptionsCharted($visit->id, 'medicationCharts'),
                 'otherChartables'       => (new Prescription())->prescriptionsCharted($visit->id, 'nursingCharts', '!='),
                 'otherPrescriptions'    => (new Prescription())->otherPrescriptions($visit->id),
-                'doseCount'         => $visit->medicationCharts->count(),
-                'givenCount'        => $visit->medicationCharts->where('dose_given', '!=', null)->count(),
+                'doseCount'         => '',//$visit->medicationCharts->count(),
+                'givenCount'        => '',$visit->medicationCharts->where('dose_given', '!=', null)->count(),
                 'scheduleCount'     => $visit->nursingCharts->count(),
                 'doneCount'         => $visit->nursingCharts->where('time_done', '!=', null)->count(),
                 'viewed'            => !!$visit->viewed_at,
