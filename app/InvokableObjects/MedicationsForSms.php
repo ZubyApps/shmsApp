@@ -19,7 +19,6 @@ class MedicationsForSms
 
     public function __invoke()
    {
-    Log::info('in runs');
        DB::transaction(function () {   
         
         $time1 = (new CarbonImmutable())->addHour();

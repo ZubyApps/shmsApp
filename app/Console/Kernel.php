@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->call(new NursesMorningShift)->timezone('Africa/Lagos')->dailyAt('08:00');
-        $schedule->call(new NursesAfternoonShift)->timezone('Africa/Lagos')->dailyAt('14:00');
+        $schedule->call(new NursesAfternoonShift)->timezone('Africa/Lagos')->dailyAt('14:10');
         $schedule->call(new NursesNightShift)->timezone('Africa/Lagos')->dailyAt('19:30');
         $schedule->call(new Remind)->timezone('Africa/Lagos')->twiceDaily(9, 15);
         $schedule->call(new CleanUpTables)->timezone('Africa/Lagos')->dailyAt('23:59');
