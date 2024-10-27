@@ -13,7 +13,6 @@ class ContinuousSmsing
 {
     public function __invoke()
    {
-    Log::info('in runs');
         (new MedicationsForSms(new MedicationNotifier(new ChurchPlusSmsService())))();
         (new AppointmentsForSms(new AppointmentNotifier(new ChurchPlusSmsService())))();
    }

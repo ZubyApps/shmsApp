@@ -9,6 +9,7 @@ use App\Notifications\MedicationNotifier;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MedicationsForSms
 {
@@ -18,6 +19,7 @@ class MedicationsForSms
 
     public function __invoke()
    {
+    Log::info('in runs');
        DB::transaction(function () {   
         
         $time1 = (new CarbonImmutable())->addHour();
