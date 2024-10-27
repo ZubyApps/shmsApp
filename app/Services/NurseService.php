@@ -135,7 +135,7 @@ class NurseService
                 'otherChartables'       => (new Prescription())->prescriptionsCharted($visit->id, 'nursingCharts', '!='),
                 'otherPrescriptions'    => (new Prescription())->otherPrescriptions($visit->id),
                 'doseCount'         => $visit->medicationCharts->count(),
-                'givenCount'        => '',//$visit->medicationCharts->where('dose_given', '!=', null)->count(),
+                'givenCount'        => $visit->medicationCharts->where('dose_given', '!=', null)->count(),
                 'scheduleCount'     => $visit->nursingCharts->count(),
                 'doneCount'         => $visit->nursingCharts->where('time_done', '!=', null)->count(),
                 'viewed'            => !!$visit->viewed_at,
