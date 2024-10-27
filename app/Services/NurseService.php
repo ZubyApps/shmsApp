@@ -12,6 +12,7 @@ use App\Models\Visit;
 use App\Models\Ward;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 
 class NurseService
 {
@@ -50,22 +51,19 @@ class NurseService
         }
 
         if ($data->filterBy == 'Outpatient'){
-            return $this->visit
+            Log::info('see', [$data->filterBy]);
+            $result = $this->visit
             ->where('consulted', '!=', null)
             ->where('nurse_done_by', null)
             ->where('closed', false)
-            // ->where(function(Builder $query) {
-            //     $query->whereRelation('prescriptions.resource', 'sub_category', '=', 'Injectable');
-            // })
             ->where(function(Builder $query) {
-                $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
-                    ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services')
-                    ->orWhereRelation('prescriptions', 'chartable', '=', '1');
+                $query->whereRelation('prescriptions.resource', 'sub_category', '=', 'Injectable');
             })
             ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            return $result;
         }
 
         if ($data->filterBy == 'Inpatient'){
@@ -132,11 +130,11 @@ class NurseService
                 'patientType'       => $visit->patient->patient_type,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
-                'chartableMedications'  => '',//(new Prescription())->prescriptionsCharted($visit->id, 'medicationCharts'),
+                'chartableMedications'  => (new Prescription())->prescriptionsCharted($visit->id, 'medicationCharts'),
                 'otherChartables'       => (new Prescription())->prescriptionsCharted($visit->id, 'nursingCharts', '!='),
                 'otherPrescriptions'    => (new Prescription())->otherPrescriptions($visit->id),
-                'doseCount'         => '',//$visit->medicationCharts->count(),
-                'givenCount'        => '',$visit->medicationCharts->where('dose_given', '!=', null)->count(),
+                'doseCount'         => $visit->medicationCharts->count(),
+                'givenCount'        => $visit->medicationCharts->where('dose_given', '!=', null)->count(),
                 'scheduleCount'     => $visit->nursingCharts->count(),
                 'doneCount'         => $visit->nursingCharts->where('time_done', '!=', null)->count(),
                 'viewed'            => !!$visit->viewed_at,
