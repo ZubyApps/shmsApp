@@ -282,7 +282,7 @@ class VisitService
 
         if ($data->reason){
             $ward = $this->ward->find($visit->ward);
-            $ward->visit_id == $visit->id ? $ward->update(['visit_id' => null]) : '';
+            $ward?->visit_id == $visit->id ? $ward->update(['visit_id' => null]) : '';
         }
 
         return $visit;
