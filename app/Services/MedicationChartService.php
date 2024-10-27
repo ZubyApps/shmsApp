@@ -39,11 +39,11 @@ class MedicationChartService
         if (count($dates) > 120) {
             return response()->json(
                 ['errors' => [
-                    'frequency' => ['This frequency may too frequent'],
+                    'frequency' => ['This frequency may be too frequent'],
                     'days' => ['or the days are too many']
             ]], 422);
         }
-        
+
         return DB::transaction(function () use($data, $user, $dates, $tz) {
             $iteration = 0;
 
