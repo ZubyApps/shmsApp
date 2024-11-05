@@ -503,6 +503,7 @@ const getYearlyIncomeAndExpenseTable = (tableId, year) => {
         searching: false,
         lengthChange: false,
         info: false,
+        // "sAjaxDataProp": "data.data",
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary', footer: true},

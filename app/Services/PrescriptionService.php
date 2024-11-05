@@ -61,7 +61,7 @@ class PrescriptionService
             $totalPayments = $visit->totalPayments();
 
             $prescription->visit->update([
-                'viewed_at'         => null,
+                // 'viewed_at'         => null,
                 'total_hms_bill'    => $visit->totalHmsBills(),
                 'total_nhis_bill'   => $isNhis ? $visit->totalNhisBills() : 0,
                 'total_capitation'  => $isNhis ? $visit->totalPrescriptionCapitations() : 0,

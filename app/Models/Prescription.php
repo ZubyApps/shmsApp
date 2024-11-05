@@ -147,6 +147,23 @@ class Prescription extends Model
                     ->count();
     }
 
+    // public function prescriptionsChartedPerShift($shift, $chartTable, $comparism = '=')
+    // {
+    //     $shiftEnd = new Carbon($shift->shift_end);
+    //     $shiftEndTimer = $shiftEnd->subMinutes(20);
+
+    //     return $this->where('chartable', true)
+    //                 ->where('held', null)
+    //                 ->where('discontinued', false)
+    //                 ->where(function(Builder $query) use($chartTable, $comparism) {
+    //                     $query->whereHas($chartTable)
+    //                         ->orWhereHas('nursingCharts');
+    //                         // ->whereRelation('resource', 'category', $comparism ,'Medications');
+    //                     })
+    //                 ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
+    //                 ->count();
+    // }
+
     public function prescriptionsNotChartedPerShift($shift, $chartTable, $comparism = '=')
     {
         $shiftEnd = new Carbon($shift->shift_end);

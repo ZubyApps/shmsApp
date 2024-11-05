@@ -379,6 +379,11 @@
                         </tfoot>
                     </table>
                 </div>
+                <div class="overflow-auto">
+                    <div class="chart-container" style="position: relative; height:60vh; width:80vw">
+                        <canvas id="yearlySummaryChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

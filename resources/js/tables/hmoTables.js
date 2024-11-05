@@ -112,8 +112,8 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1000,
-        lengthMenu:[25, 50, 100, 150, 200],
+        // searchDelay: 1000,
+        lengthMenu:[100, 150, 200, 250, 300, 500],
         language: {
             emptyTable: "No patient"
         },

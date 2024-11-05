@@ -83,4 +83,40 @@ function getAncVitalsignsChart(chart, vitals, modal){
         })
 }
 
+function getYearlySummaryChart(chart, data){
+    const yearlySummaryChart = new Chart(chart, {
+        type: 'bar',
+        data: {
+            labels: data.map((row, index, data) => {return index + 1}),
+            datasets: [
+                {
+            label: `Yearly Summary Chart`,
+            data: data.map(row => row.bill),
+            borderWidth: 4,
+            backgroundColor: ["#0d6efd"],
+            tension: 0.5,
+            // pointRadius: 5,
+            // pointBackgroundColor: (context) => {
+            //     return context.dataset.data[context.dataIndex] > 139 ? "#dc3545" : "#0d6efd";
+            // }
+            },
+        ]
+        },
+        options: {
+            scales: {
+            y: {
+                beginAtZero: true,
+                // suggestedMin: 50,
+                // suggestedMax: 250,
+                // ticks: {
+                //     stepSize: 10
+                // }
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+        });
+}
+
 export {getVitalsignsChartByVisit, getAncVitalsignsChart}
