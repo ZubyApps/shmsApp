@@ -442,7 +442,7 @@ class ReportController extends Controller
 
     public function loadYearlyIncomeAndExpense(Request $request)
     {
-        $params = $this->datatablesService->getDataTableQueryParameters($request);
+        // $params = $this->datatablesService->getDataTableQueryParameters($request);
         
         $totalIncomes   = $this->prescriptionService->totalYearlyIncomeFromPrescription($request);
         $totalExpenses  = $this->expenseService->totalYearlyExpense($request);
@@ -479,7 +479,7 @@ class ReportController extends Controller
 
         return response()->json([
             'data' => $months,
-            'draw' => $params->draw,
+            'draw' => 1,//$params->draw,
             'recordsTotal' => $total,
             'recordsFiltered' => $total
         ]);

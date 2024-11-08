@@ -4,6 +4,7 @@ import $ from 'jquery';
 import { getPayMethodsSummmaryTable, getCapitationPaymentsTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getByPayMethodsTable, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable, getTPSSummaryTable, getTPSByThirdPartyTable } from "./tables/accountReportTables";
 import { getExpensesTable } from "./tables/billingTables";
 import { clearDivValues, getDivData, openModals, resetFocusEndofLine } from "./helpers";
+import { getYearlySummaryChart } from "./charts/vitalsignsCharts";
 
 window.addEventListener('DOMContentLoaded', function () {
     const byPayMethodModal           = new Modal(document.getElementById('byPayMethodModal'))
@@ -20,6 +21,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const visistSummaryDiv1          = document.querySelector('.visistSummaryDiv1')
     const visistSummaryDiv2          = document.querySelector('.visistSummaryDiv2')
     const yearlyIncomeAndExpenseDiv  = document.querySelector('.yearlyIncomeAndExpenseDiv')
+    const yearlySummaryChart         = document.querySelector('#yearlySummaryChart')
 
     const payMethodSummaryTab       = document.querySelector('#nav-payMethodSummary-tab')
     const capitationPaymentsTab     = document.querySelector('#nav-capitationPayments-tab')
@@ -123,7 +125,13 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             yearlyIncomeAndExpenseTable = getYearlyIncomeAndExpenseTable('yearlyIncomeAndExpenseTable')
         }
+
+        http.get(`/reports/accounts/yearlysummary`, {params:  {order: null }}).then((response) => {
+            // displayWardList(modal._element.querySelector("#ward"), response.data)
+            getYearlySummaryChart(yearlySummaryChart, response.data)
+        })
     })
+
 
     searchPayMethodByDatesBtn.addEventListener('click', function () {
         payMethodDiv.querySelector('#payMethodMonth').value = ''
@@ -225,7 +233,13 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#yearlyIncomeAndExpenseTable' )){
             $('#yearlyIncomeAndExpenseTable').dataTable().fnDestroy()
         }
-        yearlyIncomeAndExpenseTable = getYearlyIncomeAndExpenseTable('yearlyIncomeAndExpenseTable', yearlyIncomeAndExpenseDiv.querySelector('#incomeAndExpenseyear').value)
+        const year = yearlyIncomeAndExpenseDiv.querySelector('#incomeAndExpenseyear').value
+        yearlyIncomeAndExpenseTable = getYearlyIncomeAndExpenseTable('yearlyIncomeAndExpenseTable', year)
+
+        http.get(`/reports/accounts/yearlysummary`, {params:{year: year}}).then((response) => {
+            // displayWardList(modal._element.querySelector("#ward"), response.data)
+            getYearlySummaryChart(yearlySummaryChart, response.data)
+        })
     })
 
     
