@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 
 class Visit extends Model
 {
@@ -191,6 +192,7 @@ class Visit extends Model
     {
         $totalBill = 0;
          foreach($this->prescriptions as $prescription){
+            Log::info($this->sponsor->category_name);
             $totalBill += ($this->sponsor->category_name == 'NHIS' ?  $prescription->hms_bill/10 : $prescription->hms_bill);
          }
 
