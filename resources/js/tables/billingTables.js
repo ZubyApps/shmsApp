@@ -171,7 +171,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                 sortable: false,
                 data: row => () => {
                     const outstanding = row.sponsorCategory === 'NHIS' ? row.outstandingNhisBalance : row.outstandingPatientBalance
-                    return `<span class="btn fw-bold text-${buttonColour(outstanding)} outstandingsBtn" data-patientid="${row.patientId}">Patient's Outstanding: ${outstanding}</span>`
+                    return `<span class="btn fw-bold text-${buttonColour(outstanding)} outstandingsBtn" data-patientid="${row.patientId}" data-sponsorcat="${row.sponsorCategory}">Patient's Outstanding: ${outstanding}</span>`
                 }
             },
             {

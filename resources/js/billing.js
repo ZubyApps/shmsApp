@@ -427,7 +427,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
             if (outstandingsBtn){
                 const patientId = outstandingsBtn.dataset.patientid
-                getPatientsVisitsByFilterTable('outstandingBillsTable', '', 'outstandings', patientId)
+                const sponsorCat    = cardNoOutstandingsBtn.dataset.sponsorcat
+                getPatientsVisitsByFilterTable('outstandingBillsTable', '', 'outstandings', patientId, '', '', sponsorCat)
                 outstandingBillsModal.show()
                 billingModal.hide()
             }
