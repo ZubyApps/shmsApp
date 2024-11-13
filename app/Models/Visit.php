@@ -193,7 +193,7 @@ class Visit extends Model
         $totalBill = 0;
          foreach($this->prescriptions as $prescription){
             // Log::info($this->sponsor->category_name);
-            $totalBill += ($this->sponsor->category_name == 'NHIS' ?  $prescription->hms_bill/10 : $prescription->hms_bill);
+            $totalBill += ($this->sponsor->category_name == 'NHIS' ?  $prescription->nhis_bill : $prescription->hms_bill);
          }
 
          return $totalBill;
@@ -213,7 +213,7 @@ class Visit extends Model
     {
         $totalNhisBill = 0;
          foreach($this->prescriptions as $prescription){
-            $totalNhisBill += $prescription->approved ? $prescription->nhis_bill : $prescription->hms_bill;
+            $totalNhisBill += $prescription->approved ? $prescription->hms_bill/10 : $prescription->hms_bill;
          }
 
          return $totalNhisBill;
