@@ -222,7 +222,8 @@ class BillingService
                 'totalPaid'             => $this->determinePayV($visit) ?? 0,
                 'balance'               => $visit->totalHmsBills() - $visit->discount - $this->determinePayV($visit) ?? 0,
                 'nhisBalance'           => $this->sponsorsAllowed($visit->sponsor, ['NHIS']) ? (($visit->totalNhisBills() - $visit->discount)) - $this->determinePayV($visit) ?? 0 : 'N/A',
-                'outstandingPatientBalance'  => $visit->patient->allHmsBills() - $visit->patient->allDiscounts() - $this->determinePayP($visit->patient),
+                // 'outstandingPatientBalance'  => $visit->patient->allHmsBills() - $visit->patient->allDiscounts() - $this->determinePayP($visit->patient),
+                'outstandingPatientBalance'  => $visit->patient->allHmsOrNhisBills() - $visit->patient->allDiscounts() - $this->determinePayP($visit->patient),
                 'outstandingSponsorBalance'  => $this->sponsorsAllowed($visit->sponsor, ['Family', 'Retainership']) ? $visit->sponsor->allHmsBills() - $visit->sponsor->allDiscounts() - $this->determinePayS($visit->sponsor) : null,
                 'outstandingCardNoBalance'   => $this->sponsorsAllowed($visit->sponsor, ['Family', 'Retainership', 'NHIS', 'Individual']) ? $this->sameCardNoOustandings($visit) : null,
                 'outstandingNhisBalance'=> $this->sponsorsAllowed($visit->sponsor, ['NHIS']) ? $visit->patient->allNhisBills() - $visit->patient->allDiscounts() - $this->determinePayP($visit->patient) : null,
@@ -278,7 +279,8 @@ class BillingService
         $allPayments = 0;
 
         foreach($patients as $patient){
-           $allBills        += $nhis ? $patient->allNhisBills() : $patient->allHmsBills();
+        //    $allBills        += $nhis ? $patient->allNhisBills() : $patient->allHmsBills();
+           $allBills        += $patient->allHmsOrNhisBills() ;
            $allDiscounts    += $patient->allDiscounts();
            $allPayments     += $patient->allPaidPrescriptions() > $patient->allPayments() ? $patient->allPaidPrescriptions() : $patient->allPayments() ;
         //    $allPayments     +=  $patient->allPayments();
@@ -387,7 +389,8 @@ class BillingService
         }
         
         if ($data->cardNo){
-
+            $column = $data->sponsorCat == 'NHIS' ? 'total_nhis_bill' : 'total_hms_bill';
+            
             if (! empty($params->searchTerm)) {
             return $this->visit
                         ->whereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($data->cardNo, '%_') . '%' )
@@ -402,7 +405,7 @@ class BillingService
 
             return $this->visit
                     ->whereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($data->cardNo, '%_') . '%' )
-                    ->whereColumn('total_hms_bill', '!=', 'total_paid')
+                    ->whereColumn($column, '>', 'total_paid')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }

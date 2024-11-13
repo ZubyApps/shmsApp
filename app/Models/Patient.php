@@ -89,6 +89,16 @@ class Patient extends Model
         return $allHmsBills;
     }
 
+    public function allHmsOrNhisBills()
+    {
+        $allHmsBills = 0;
+        foreach($this->visits as $visit){
+            $allHmsBills += $visit->totalHmsOrNhisBills();
+        }
+
+        return $allHmsBills;
+    }
+
     public function allHmoBills()
     {
         $allHmoBills = 0;

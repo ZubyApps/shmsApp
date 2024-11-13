@@ -72,7 +72,7 @@ const getWaitingTable = (tableId) => {
     });
 }
 
-const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, sponsorId, cardNo) => {
+const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, sponsorId, cardNo, sponsorCat) => {
     const preparedColumns = [
         {data: "came"},
         {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
@@ -114,6 +114,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, s
             'patientId': patientId,
             'sponsorId': sponsorId,
             'cardNo': cardNo,
+            'sponsorCat': sponsorCat,
         }},
         orderMulti: true,
         lengthMenu:[25, 50, 100, 150, 200],
@@ -182,7 +183,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                     const sponsorsCategories = ['NHIS', 'Individual']
                     if (allSponsorCategories.includes(row.sponsorCategory)){
                         return `<span class="btn fw-bold text-${buttonColour(outstandingSponsor)} sponsorOutstandingsBtn ${sponsorsCategories.includes(row.sponsorCategory) ? 'd-none' : ''}" data-sponsorid="${row.sponsorId}">${row.sponsor + ' ' + row.sponsorCategory}'s Outstanding: ${outstandingSponsor}</span>
-                                <span class="btn fw-bold text-${buttonColour(outstandingCardNo)} cardNoOutstandingsBtn ${row.cardNo.includes('ANC') ? 'd-none' : ''}" data-cardno="${row.cardNo}">${row.cardNo}...'s Outstanding: ${outstandingCardNo}</span>
+                                <span class="btn fw-bold text-${buttonColour(outstandingCardNo)} cardNoOutstandingsBtn ${row.cardNo.includes('ANC') ? 'd-none' : ''}" data-cardno="${row.cardNo}" data-sponsorcat="${row.sponsorCategory}">${row.cardNo}...'s Outstanding: ${outstandingCardNo}</span>
                         `
                     }
                     return ''

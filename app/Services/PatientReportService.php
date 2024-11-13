@@ -120,7 +120,8 @@ class PatientReportService
                     'sex'               => $patient->sex,
                     'age'               => $this->helperService->twoPartDiffInTimePast($patient->date_of_birth),
                     'count'             => $patient->visits()->count(),
-                    'totalHms'          => $patient->allHmsBills(),
+                    // 'totalHms'          => $patient->allHmsBills(),
+                    'totalHms'          => $patient->allHmsOrNhisBills(),
                     'totalHmo'          => $patient->allHmoBills(),
                     'totalNhis'         => $patient->sponsor?->category_name === 'NHIS' ? $patient->allNhisBills() : 0,
                     'totalPaid'         => $patient->allPaid(),
@@ -138,10 +139,12 @@ class PatientReportService
             return $patient->allNhisBills() - $patient->allPaid();
         }
         if ($isHmo){
-            return $patient->allHmsBills() - $patient->allPaid();
+            // return $patient->allHmsBills() - $patient->allPaid();
+            return $patient->allHmsOrNhisBills() - $patient->allPaid();
         }
 
-        return $patient->allHmsBills() - $patient->allPaid();        
+        // return $patient->allHmsBills() - $patient->allPaid();        
+        return $patient->allHmsOrNhisBills() - $patient->allPaid();        
     }
 
     public function getPatientFrequency(DataTableQueryParams $params, $data)
@@ -184,7 +187,8 @@ class PatientReportService
                     'sponsor'           => $patient->sponsor->name,
                     'category'          => $patient->sponsor->category_name,
                     'visitCount'        => $patient->visits()->count(),
-                    'totalHmsBill'      => $patient->allHmsBills(),
+                    // 'totalHmsBill'      => $patient->allHmsBills(),
+                    'totalHmsBill'      => $patient->allHmsOrNhisBills(),
                     'totalHmoBill'      => $patient->allHmoBills(),
                     'totalNhisBill'     => $patient->sponsor?->category_name === 'NHIS' ? $patient->allNhisBills() : 0,
                     'totalPaid'         => $patient->allPaid(),

@@ -440,8 +440,9 @@ window.addEventListener('DOMContentLoaded', function () {
             }
 
             if (cardNoOutstandingsBtn){
-                const cardNo = cardNoOutstandingsBtn.dataset.cardno
-                getPatientsVisitsByFilterTable('outstandingBillsTable', '', 'outstandings', '', '', cardNo)
+                const cardNo        = cardNoOutstandingsBtn.dataset.cardno
+                const sponsorCat    = cardNoOutstandingsBtn.dataset.sponsorcat
+                getPatientsVisitsByFilterTable('outstandingBillsTable', '', 'outstandings', '', '', cardNo, sponsorCat)
                 outstandingBillsModal.show()
                 billingModal.hide()
             }

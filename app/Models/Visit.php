@@ -187,6 +187,16 @@ class Visit extends Model
          return $totalBill;
     }
 
+    public function totalHmsOrNhisBills()
+    {
+        $totalBill = 0;
+         foreach($this->prescriptions as $prescription){
+            $totalBill += ($this->sponsor->category_name == 'NHIS' ?  $prescription->hms_bill/10 : $prescription->hms_bill);
+         }
+
+         return $totalBill;
+    }
+
     public function totalHmoBills()
     {
         $totalHmoBill = 0;
