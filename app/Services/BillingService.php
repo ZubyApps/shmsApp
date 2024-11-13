@@ -4,19 +4,20 @@ declare(strict_types = 1);
 
 namespace App\Services;
 
-use App\DataObjects\DataTableQueryParams;
-use App\Models\Consultation;
+use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Ward;
+use App\Models\Visit;
 use App\Models\Patient;
 use App\Models\Payment;
-use App\Models\Prescription;
 use App\Models\Resource;
-use App\Models\User;
-use App\Models\Visit;
-use App\Models\Ward;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Consultation;
+use App\Models\Prescription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\DataObjects\DataTableQueryParams;
+use Illuminate\Database\Eloquent\Builder;
 
 class BillingService
 {
@@ -410,7 +411,7 @@ class BillingService
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
-
+        Log::info("message", [$column]);
         return $this->visit
                     ->where('patient_id', $data->patientId)
                     // ->whereColumn('total_hms_bill', '!=', 'total_paid')
