@@ -368,9 +368,9 @@ class BillingService
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
         $column = $data->sponsorCat == 'NHIS' ? 'total_nhis_bill' : 'total_hms_bill';
-
+        Log::info("Log", ['column' => $column, 'patient' => $data->patientId, 'sponsor' => $data->sponsorId, 'cardNo' => $data->cardNo]);
         if ($data->sponsorId){
-
+            Log::info("Log 1", ['column' => $column, 'patient' => $data->patientId, 'sponsor' => $data->sponsorId, 'cardNo' => $data->cardNo]);
             if (! empty($params->searchTerm)) {
             return $this->visit
                         ->where('sponsor_id', $data->sponsorId)
@@ -392,7 +392,7 @@ class BillingService
         
         if ($data->cardNo){
             // $column = $data->sponsorCat == 'NHIS' ? 'total_nhis_bill' : 'total_hms_bill';
-            
+            Log::info("Log 2", ['column' => $column, 'patient' => $data->patientId, 'sponsor' => $data->sponsorId, 'cardNo' => $data->cardNo]);
             if (! empty($params->searchTerm)) {
             return $this->visit
                         ->whereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($data->cardNo, '%_') . '%' )
@@ -411,7 +411,7 @@ class BillingService
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
-        Log::info("message", [$column]);
+        Log::info("Log 3", ['column' => $column, 'patient' => $data->patientId, 'sponsor' => $data->sponsorId, 'cardNo' => $data->cardNo]);
         return $this->visit
                     ->where('patient_id', $data->patientId)
                     // ->whereColumn('total_hms_bill', '!=', 'total_paid')
