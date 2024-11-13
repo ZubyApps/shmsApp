@@ -366,6 +366,7 @@ class BillingService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $column = $data->sponsorCat == 'NHIS' ? 'total_nhis_bill' : 'total_hms_bill';
 
         if ($data->sponsorId){
 
@@ -389,7 +390,7 @@ class BillingService
         }
         
         if ($data->cardNo){
-            $column = $data->sponsorCat == 'NHIS' ? 'total_nhis_bill' : 'total_hms_bill';
+            // $column = $data->sponsorCat == 'NHIS' ? 'total_nhis_bill' : 'total_hms_bill';
             
             if (! empty($params->searchTerm)) {
             return $this->visit
@@ -412,7 +413,8 @@ class BillingService
 
         return $this->visit
                     ->where('patient_id', $data->patientId)
-                    ->whereColumn('total_hms_bill', '!=', 'total_paid')
+                    // ->whereColumn('total_hms_bill', '!=', 'total_paid')
+                    ->whereColumn($column, '>', 'total_paid')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
