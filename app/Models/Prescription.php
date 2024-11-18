@@ -143,7 +143,8 @@ class Prescription extends Model
                             ->orWhereHas('nursingCharts')
                             ->whereRelation('resource', 'category', $comparism ,'Medications');
                         })
-                    ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
+                    // ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
+                    ->whereBetween('hms_bill_date', [$shift->shift_start, $shiftEndTimer])
                     ->count();
     }
 
@@ -177,7 +178,8 @@ class Prescription extends Model
                             ->whereDoesntHave('nursingCharts')
                             ->whereRelation('resource', 'category', $comparism ,'Medications');
                         })
-                    ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
+                    // ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
+                    ->whereBetween('hms_bill_date', [$shift->shift_start, $shiftEndTimer])
                     ->get();
     }
 
@@ -200,7 +202,8 @@ class Prescription extends Model
                             ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
                         });
                     })              
-                    ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
+                    // ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
+                    ->whereBetween('hms_bill_date', [$shift->shift_start, $shiftEndTimer])
                     ->count();
     }
 
@@ -223,7 +226,8 @@ class Prescription extends Model
                             ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
                         });
                     })              
-                    ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
+                    // ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
+                    ->whereBetween('hms_bill_date', [$shift->shift_start, $shiftEndTimer])
                     ->get();
     }
 }

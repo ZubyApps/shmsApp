@@ -316,7 +316,7 @@ const getNursesShiftPerformanceTable = (tableId, department, startDate, endDate,
                    `},
             {data: row => `<button type="button" id="newPatient" class="btn p-0 " data-bs-toggle="dropdown" aria-expanded="false">
             <div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
-            <div class="progress-bar text-dark fw-semibold fs-6 overflow-visible bg-${row.performance <= 45 ? 'danger' : row.performance > 45 && row.performance < 65 ? 'warning' : row.performance >= 65 && row.performance <= 85 ? 'primary' : 'success'}-subtle px-1" style="width: ${row.performance}%;"> Performance ${row.performance}% </div>
+            <div class="progress-bar text-dark fw-semibold fs-6 overflow-visible bg-${row.performance <= 45 ? 'danger' : row.performance > 45 && row.performance < 65 ? 'warning' : row.performance >= 65 && row.performance <= 91 ? 'primary' : 'success'}-subtle px-1" style="width: ${row.performance}%;"> Performance ${row.performance}% </div>
             </div>
         </button>`},
             {data: row => row.performance > 85 ? 'Yes' : 'No'},

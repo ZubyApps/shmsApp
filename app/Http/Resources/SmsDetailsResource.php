@@ -17,7 +17,7 @@ class SmsDetailsResource extends JsonResource
     {
         // $amountInWords  = new NumberFormatter();
         // $amountInWords->setTextAttribute(NumberFormatter::DEFAULT_RULESET, "%spellout-numbering-verbose");
-        $outstanding    = $this->visit->total_hms_bill - $this->visit->total_paid;
+        $outstanding    = $this->visit->total_hms_bill - $this->visit->discount - $this->visit->total_paid;
         return [
             'id'            => $this->id,
             'phone'         => $this->visit->patient->phone,

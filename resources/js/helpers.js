@@ -711,7 +711,7 @@ const getShiftPerformance = (dept, div) => {
                 div.innerHTML = `
                 <button type="button" id="newPatient" class="btn p-0 position-relative" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     <div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
-                    <div class="progress-bar text-dark fw-semibold fs-6 overflow-visible bg-${shiftPerformance.performance <= 45 ? 'danger' : shiftPerformance.performance > 45 && shiftPerformance.performance < 65 ? 'warning' : shiftPerformance.performance >= 65 && shiftPerformance.performance <= 85 ? 'primary' : 'success'}-subtle px-1" style="width: ${shiftPerformance.performance}%;"> ${shiftPerformance.shift} Performance ${shiftPerformance.performance}% <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="timeLeft">${getTimeToEndOfShift(shiftPerformance.shift_end)}</span></div>
+                    <div class="progress-bar text-dark fw-semibold fs-6 overflow-visible bg-${shiftPerformance.performance <= 45 ? 'danger' : shiftPerformance.performance > 45 && shiftPerformance.performance < 65 ? 'warning' : shiftPerformance.performance >= 65 && shiftPerformance.performance <= 91 ? 'primary' : 'success'}-subtle px-1" style="width: ${shiftPerformance.performance}%;"> ${shiftPerformance.shift} Performance ${shiftPerformance.performance}% <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="timeLeft">${getTimeToEndOfShift(shiftPerformance.shift_end)}</span></div>
                     </div>
                 </button>
                 <ul class="dropdown-menu">

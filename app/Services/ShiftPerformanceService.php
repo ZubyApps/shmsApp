@@ -84,7 +84,8 @@ Class ShiftPerformanceService
                                     ->where('chartable', true)
                                     ->where('discontinued', false)
                                     ->where('held', null)
-                                    ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+                                    // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+                                    ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
                                     ->count();
 
         $totalPrescriptionsCharted      = $this->prescription->prescriptionsChartedPerShift($shiftPerformance, 'medicationCharts');
@@ -111,7 +112,8 @@ Class ShiftPerformanceService
                                             ->where('chartable', true)
                                             ->where('discontinued', false)
                                             ->where('held', null)
-                                            ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+                                            // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+                                            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
                                             ->count();
 
             $totalPrescriptionsStarted      = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'medicationCharts');
@@ -137,14 +139,16 @@ Class ShiftPerformanceService
                                         ->where('chartable', true)
                                         ->where('discontinued', false)
                                         ->where('held', null)
-                                        ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+                                        // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+                                        ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
                                         ->whereDoesntHave('medicationCharts')->count();
 
         $prescriptionsWithMc    = $this->prescription
                                         ->where('chartable', true)
                                         ->where('discontinued', false)
                                         ->where('held', null)
-                                        ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+                                        // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+                                        ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
                                         ->whereHas('medicationCharts')->count();
 
         $averageFMRTime = DB::table('prescriptions')
@@ -153,7 +157,8 @@ Class ShiftPerformanceService
                             ->where('medication_charts.dose_count', 1)
                             ->where('prescriptions.held', null)
                             ->where('prescriptions.discontinued', false)
-                            ->whereBetween('prescriptions.created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+                            // ->whereBetween('prescriptions.created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+                            ->whereBetween('prescriptions.hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
                             ->get()->first()->averageFMRTime;
         
         return $prescriptionsWithoutMc > 0 || $prescriptionsWithMc > 0 ? $averageFMRTime : null;     
