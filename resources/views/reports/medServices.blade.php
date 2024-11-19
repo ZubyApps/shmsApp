@@ -153,6 +153,7 @@
                                 <th>Patient</th>
                                 <th>Item</th>
                                 <th>Prescription</th>
+                                <th>Chartable</th>
                                 <th>Charted</th>
                                 <th>Billed</th>
                                 <th>Dispensed</th>

@@ -236,6 +236,7 @@ const getAllPrescriptionsTable = (tableId, startDate, endDate, date) => {
             {data: "patient"},
             {data: "item"},
             {data: "prescription"},
+            {data: "chartable"},
             {data: "charted"},
             {data: "qtyBilled"},
             {data: "qtyDispensed"},

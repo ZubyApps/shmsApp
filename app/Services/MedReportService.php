@@ -588,6 +588,7 @@ class MedReportService
                     'item'              => $prescription->resource->name,
                     'patient'           => $pVisit->patient->patientId(),
                     'prescription'      => $prescription->prescription,
+                    'chartable'         => $prescription->chartable > 0,
                     'charted'           => $prescription->medicationCharts->count() > 0,
                     'qtyBilled'         => $prescription->qty_billed,
                     'qtyDispensed'      => $prescription->qty_dispensed,
