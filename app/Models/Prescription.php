@@ -216,16 +216,16 @@ class Prescription extends Model
         return $this->where('chartable', true)
                     ->where('held', null)
                     ->where('discontinued', false)
-                    ->whereRelation('resource', 'category', $comparism ,'Medications')
+                    ->whereRelation('resource', 'sub_category', $comparism ,'Injectable')
                     ->where(function(Builder $query) use($chartTable, $shift, $shiftEndTimer) {
                         $query->whereHas($chartTable, function(Builder $query) use($shift, $shiftEndTimer) {
                             $query->whereNull('time_given')
                             ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
-                        })                
-                            ->orWhereHas('nursingCharts', function(Builder $query) use($shift, $shiftEndTimer) {
-                            $query->whereNull('time_done')
-                            ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
-                        });
+                        });                
+                        //     ->orWhereHas('nursingCharts', function(Builder $query) use($shift, $shiftEndTimer) {
+                        //     $query->whereNull('time_done')
+                        //     ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
+                        // });
                     })              
                     // ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
                     ->whereBetween('hms_bill_date', [$shift->shift_start, $shiftEndTimer])
