@@ -187,6 +187,17 @@ class ReportController extends Controller
         ]);
     }
 
+    public function loadAllPrescriptions(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->medReportService->getAllPrescriptions($params, $request);
+
+        $loadTransformer = $this->medReportService->getAllPrescriptionsTransformer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
     /**Investigations Report */
     public function indexInvestigations()
     {

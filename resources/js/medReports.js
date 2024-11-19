@@ -1,6 +1,6 @@
 import {Modal } from "bootstrap";
 import $ from 'jquery';
-import { getByResourceTable, getDischargeReasonTable, getDischargeSummaryTable, getMedServiceSummaryTable, getNewBirthsTable } from "./tables/medReportTables";
+import { getAllPrescriptionsTable, getByResourceTable, getDischargeReasonTable, getDischargeSummaryTable, getMedServiceSummaryTable, getNewBirthsTable } from "./tables/medReportTables";
 
 window.addEventListener('DOMContentLoaded', function () {
     const byResourceModal            = new Modal(document.getElementById('byResourceModal'))
@@ -9,10 +9,12 @@ window.addEventListener('DOMContentLoaded', function () {
     const datesDiv                  = document.querySelector('.datesDiv')
     const newBirthsDatesDiv         = document.querySelector('.newBirthsDatesDiv')
     const dischargeSummaryDatesDiv  = document.querySelector('.dischargeSummaryDatesDiv')
+    const allPrescriptionsDatesDiv  = document.querySelector('.allPrescriptionsDatesDiv')
 
     const summaryTab                = document.querySelector('#nav-summary-tab')
     const newBirthsTab              = document.querySelector('#nav-newBirths-tab')
     const dischargeSummaryTab       = document.querySelector('#nav-dischargeSummary-tab')
+    const allPrescriptionsTab       = document.querySelector('#nav-allPrescriptions-tab')
 
     const searchWithDatesBtn           = document.querySelector('.searchWithDatesBtn')
     const searchMedServiceByMonthBtn   = document.querySelector('.searchMedServiceByMonthBtn')
@@ -22,8 +24,11 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const searchDischargeSummaryWithDatesBtn   = document.querySelector('.searchDischargeSummaryWithDatesBtn')
     const searchDischargeSummaryByMonthBtn     = document.querySelector('.searchDischargeSummaryByMonthBtn')
+    
+    const searchAllPrescriptionsWithDatesBtn   = document.querySelector('.searchAllPrescriptionsWithDatesBtn')
+    const searchAllPrescriptionsByMonthBtn     = document.querySelector('.searchAllPrescriptionsByMonthBtn')
 
-    let medServicesTable, newBirthsTable, referredTable, deceasedTable, dischargeSummaryTable, byResourceTable, dischargeReasonTable
+    let medServicesTable, newBirthsTable, referredTable, deceasedTable, dischargeSummaryTable, byResourceTable, dischargeReasonTable, allPrescriptionsTable
     medServicesTable = getMedServiceSummaryTable('summaryTable')
     datesDiv.querySelector('#medServiceMonth').value = new Date().toISOString().slice(0,7)
 
@@ -46,6 +51,15 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#dischargeSummaryTable').dataTable().fnDraw()
         } else {
             dischargeSummaryTable = getDischargeSummaryTable('dischargeSummaryTable')
+        }
+    })
+
+    allPrescriptionsTab.addEventListener('click', function() {
+        allPrescriptionsDatesDiv.querySelector('#allPrescriptionsMonth').value == '' ? allPrescriptionsDatesDiv.querySelector('#allPrescriptionsMonth').value = new Date().toISOString().slice(0,7) : ''
+        if ($.fn.DataTable.isDataTable( '#allPrescriptionsTable' )){
+            $('#allPrescriptionsTable').dataTable().fnDraw()
+        } else {
+            allPrescriptionsTable = getAllPrescriptionsTable('allPrescriptionsTable')
         }
     })
 
@@ -95,6 +109,22 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#dischargeSummaryTable').dataTable().fnDestroy()
         }
         dischargeSummaryTable = getDischargeSummaryTable('dischargeSummaryTable', null, null, dischargeSummaryDatesDiv.querySelector('#dischargeSummaryMonth').value)
+    })
+
+    searchAllPrescriptionsWithDatesBtn.addEventListener('click', function () {
+        allPrescriptionsDatesDiv.querySelector('#allPrescriptionsMonth').value = ''
+        if ($.fn.DataTable.isDataTable( '#allPrescriptionsTable' )){
+            $('#allPrescriptionsTable').dataTable().fnDestroy()
+        }
+        allPrescriptionsTable = getAllPrescriptionsTable('allPrescriptionsTable', allPrescriptionsDatesDiv.querySelector('#startDate').value, allPrescriptionsDatesDiv.querySelector('#endDate').value)
+    })
+
+    searchAllPrescriptionsByMonthBtn.addEventListener('click', function () {
+        allPrescriptionsDatesDiv.querySelector('#startDate').value = ''; allPrescriptionsDatesDiv.querySelector('#endDate').value = ''
+        if ($.fn.DataTable.isDataTable( '#allPrescriptionsTable' )){
+            $('#allPrescriptionsTable').dataTable().fnDestroy()
+        }
+        allPrescriptionsTable = getAllPrescriptionsTable('allPrescriptionsTable', null, null, allPrescriptionsDatesDiv.querySelector('#allPrescriptionsMonth').value)
     })
 
     document.querySelectorAll('#summaryTable, #dischargeSummaryTable').forEach(table => {

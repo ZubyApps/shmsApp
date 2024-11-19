@@ -204,6 +204,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/medservices/newbirths', [ReportController::class, 'loadNewBirths']);
             Route::get('/medservices/bydischarge', [ReportController::class, 'loadVisitsByDischarge']);
             Route::get('/medservices/dischargesummary', [ReportController::class, 'loadDischargeSummary']);
+            Route::get('/medservices/allprescriptions', [ReportController::class, 'loadAllPrescriptions']);
             Route::get('/investigations', [ReportController::class, 'indexInvestigations'])->name('Investigation Reports');
             Route::get('/investigations/summary', [ReportController::class, 'loadInvestigationsSummary']);
             Route::get('/investigations/byresource', [ReportController::class, 'loadByResource']);

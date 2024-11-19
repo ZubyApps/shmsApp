@@ -7,6 +7,7 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\NursingChart;
 use App\Models\User;
+use App\Models\Ward;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterval;
@@ -16,7 +17,11 @@ use Illuminate\Http\Request;
 
 class NursingChartService
 {
-    public function __construct(private readonly NursingChart $nursingChart)
+    public function __construct(
+        private readonly NursingChart $nursingChart, 
+        private readonly Ward $ward,
+        private readonly HelperService $helperService
+        )
     {
     }
 
@@ -168,12 +173,14 @@ class NursingChartService
     public function upcomingNursingChartsTransformer(): callable
     {
        return  function (NursingChart $nursingChart) {
+        $ward = $this->ward->where('id', $nursingChart->visit->ward)->first();
             return [
                 'id'                => $nursingChart->id,
                 'patient'           => $nursingChart->visit->patient->card_no .' '. $nursingChart->visit->patient->first_name .' '. $nursingChart->visit->patient->middle_name .' '. $nursingChart->visit->patient->last_name,
                 'status'            => $nursingChart->consultation->admission_status,
-                'ward'              => $nursingChart->consultation->ward ?? '',
-                'bedNo'             => $nursingChart->consultation->bed_no ?? '',
+                // 'ward'              => $nursingChart->consultation->ward ?? '',
+                // 'bedNo'             => $nursingChart->consultation->bed_no ?? '',
+                'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
                 'care'              => $nursingChart->prescription->resource->name ?? '',
                 'instruction'       => $nursingChart->prescription->note ?? '',
                 'chartedBy'         => $nursingChart->user->username,

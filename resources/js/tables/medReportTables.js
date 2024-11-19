@@ -211,4 +211,39 @@ const getDischargeSummaryTable = (tableId, startDate, endDate, date) => {
     return dischargeSummaryTable
 }
 
-export {getMedServiceSummaryTable, getByResourceTable, getNewBirthsTable, getDischargeReasonTable, getDischargeSummaryTable}
+const getAllPrescriptionsTable = (tableId, startDate, endDate, date) => {
+    const allPrescriptionsTable = new DataTable(`#${tableId}`, {
+        serverSide: true,
+        ajax:  {url: `/reports/medservices/allprescriptions`, data: {
+            'startDate' : startDate, 
+            'endDate'   : endDate,
+            'date'      : date
+        }},
+        orderMulti: true,
+        search:true,
+        searchDelay: 1000,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
+        lengthMenu:[50, 100, 200, 300, 500],
+        columns: [
+            {data: "date"},
+            {data: "patient"},
+            {data: "item"},
+            {data: "prescription"},
+            {data: "charted"},
+            {data: "qtyBilled"},
+            {data: "qtyDispensed"},
+            {data: "prescribedBy"},
+        ]
+    })
+
+    return allPrescriptionsTable
+}
+
+export {getMedServiceSummaryTable, getByResourceTable, getNewBirthsTable, getDischargeReasonTable, getDischargeSummaryTable, getAllPrescriptionsTable}

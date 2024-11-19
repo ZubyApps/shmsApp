@@ -21,6 +21,9 @@
                 <button class="nav-link"   id="nav-dischargeSummary-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-dischargeSummary" type="button" role="tab" aria-controls="nav-dischargeSummary"
                     aria-selected="false">Discharge Summary</button>
+                <button class="nav-link"   id="nav-allPrescriptions-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-allPrescriptions" type="button" role="tab" aria-controls="nav-allPrescriptions"
+                    aria-selected="false">All Prescriptions</button>
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
@@ -125,6 +128,38 @@
                                 <td></td>
                             </tr>
                         </tfoot>
+                    </table>
+                </div>
+            </div>
+            <!-- all prescriptions table -->
+            <div class="tab-pane fade" id="nav-allPrescriptions" role="tabpanel" aria-labelledby="nav-allPrescriptions-tab" tabindex="0">
+                <h5 class="card-title py-4">List of All Prescriptions</h5>
+                <x-form-div class="col-xl-10 py-3 allPrescriptionsDatesDiv">
+                    <x-input-span class="">Start</x-input-span>
+                    <x-form-input type="datetime-local" name="startDate" id="startDate" />
+                    <x-input-span class="">End</x-input-span>
+                    <x-form-input type="datetime-local" name="endDate" id="endDate" />
+                    <button class="input-group-text searchAllPrescriptionsWithDatesBtn">Search</button>
+                    <x-input-span class="">OR</x-input-span>
+                    <x-input-span class="">Month/Year</x-input-span>
+                    <x-form-input type="month" name="allPrescriptionsMonth" id="allPrescriptionsMonth" />
+                    <button class="input-group-text searchAllPrescriptionsByMonthBtn">Search</button>
+                </x-form-div>
+                <div class="py-2 ">
+                    <table  id="allPrescriptionsTable" class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Patient</th>
+                                <th>Item</th>
+                                <th>Prescription</th>
+                                <th>Charted</th>
+                                <th>Billed</th>
+                                <th>Dispensed</th>
+                                <th>By</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
