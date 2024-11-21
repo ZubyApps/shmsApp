@@ -318,11 +318,15 @@
                             <tr>
                                 <th>Shift</th>
                                 <th>Duration</th>
-                                <th>Chart Rate</th>
-                                <th>Given Rate</th>
+                                <th>iChart Rate</th>
+                                <th>iGiven Rate</th>
+                                <th>oChart Rate</th>
+                                <th>oGiven Rate</th>
                                 <th>1st Med Avg</th>
+                                <th>1st Serv Avg</th>
                                 <th>1st Vitals Avg</th>
                                 <th>Med Time</th>
+                                <th>Serv Time</th>
                                 <th>Intpatient Vitals Count</th>
                                 <th>Outpatient Vitals Count</th>
                                 <th>Nurses</th>

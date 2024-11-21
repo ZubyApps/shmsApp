@@ -501,7 +501,7 @@ Class ShiftPerformanceService
         $convertOutPsVC                 =   $shiftPerformance->outpatient_vitals_count === null ? null : 
                                             ($this->percentFromStringFraction($shiftPerformance->outpatient_vitals_count) / 100) * 20; 
                                             $shiftPerformance->outpatient_vitals_count === null ? '' : $totalPoints++;
-            // var_dump($convertOthersGivenRate);
+        
         $preformance = $totalPoints ? ($convertInjectablesChartRate + $convertOthersChartRate + $convertInjectablesGivenRate + $convertOthersGivenRate + $convertFirstMedRes + $convertFirstServRes + $convertFirstVitalsRes + $convertMedicationTime + $convertServiceTime + $convertInPsVC + $convertOutPsVC)/($totalPoints*20) * 100 : 0;
             
         return round($preformance, 1);
@@ -581,11 +581,15 @@ Class ShiftPerformanceService
                 'shift'                 => $shiftPerformance->shift,
                 'start'                 => (new Carbon($shiftPerformance->shift_start))->format('d/M/y g:ia'),
                 'end'                   => (new Carbon($shiftPerformance->shift_end))->format('d/M/y g:ia'),
-                'chartRate'             => $shiftPerformance->chart_rate,
-                'givenRate'             => $shiftPerformance->given_rate,
+                'injectablesChartRate'  => $shiftPerformance->injectables_chart_rate,
+                'othersChartRate'       => $shiftPerformance->others_chart_rate,
+                'injectablesGivenRate'  => $shiftPerformance->injectables_given_rate,
+                'othersGivenRate'       => $shiftPerformance->others_done_rate,
                 'firstMedRes'           => $shiftPerformance->first_med_res ? CarbonInterval::seconds($shiftPerformance->first_med_res)->cascade()->forHumans() : null,
+                'firstServRes'          => $shiftPerformance->first_serv_res ? CarbonInterval::seconds($shiftPerformance->first_serv_res)->cascade()->forHumans() : null,
                 'firstVitalsRes'        => $shiftPerformance->first_vitals_res ? CarbonInterval::seconds($shiftPerformance->first_vitals_res)->cascade()->forHumans() : null,
                 'medicationTime'        => $shiftPerformance->medication_time ? ($shiftPerformance->medication_time < 0 ? 'Many served on time': CarbonInterval::seconds($shiftPerformance->medication_time)->cascade()->forHumans()) : null,
+                'serviceTime'           => $shiftPerformance->service_time ? ($shiftPerformance->service_time < 0 ? 'Many done on time': CarbonInterval::seconds($shiftPerformance->service_time)->cascade()->forHumans()) : null,
                 'intpatientVitalsCount' => $shiftPerformance->inpatient_vitals_count,
                 'outpatientVitalsCount' => $shiftPerformance->outpatient_vitals_count,
                 'performance'           => $shiftPerformance->performance,

@@ -685,7 +685,7 @@ const getShiftPerformance = (dept, div) => {
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 const shiftPerformance          = response.data.shiftPerformance
-                const staff                     = shiftPerformance.staff
+                const staff                     = shiftPerformance?.staff
                 const details                   = response.data.details
                 let inpatients                  = ''
                 let outpatients                 = ''
@@ -710,7 +710,7 @@ const getShiftPerformance = (dept, div) => {
                     noChatPatientsOthers +=  `<li class="dropdown-item text-secondary">${patient}</li>`
                  }) : ''
                 
-                details.notStartedInjectables.length > 0 ? details.notStartedInjectables.forEach(patient => {
+                details.notStartedInjectables.length > 0 ? details?.notStartedInjectables?.forEach(patient => {
                     noStartPatientsInjectables +=  `<li class="dropdown-item text-secondary">${patient}</li>`
                  }) : ''
 

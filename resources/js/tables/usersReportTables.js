@@ -280,15 +280,27 @@ const getNursesShiftPerformanceTable = (tableId, department, startDate, endDate,
             {data: row => row.start + ' - ' + row.end},
             {
                 visible: false,
-                data: "chartRate"
+                data: "injectablesChartRate"
             },
             {
                 visible: false,
-                data: "givenRate"
+                data: "injectablesGivenRate"
+            },
+            {
+                visible: false,
+                data: "othersChartRate"
+            },
+            {
+                visible: false,
+                data: "othersGivenRate"
             },
             {
                 visible: false,
                 data: "firstMedRes"
+            },
+            {
+                visible: false,
+                data: "firstServRes"
             },
             {
                 visible: false,
@@ -297,6 +309,10 @@ const getNursesShiftPerformanceTable = (tableId, department, startDate, endDate,
             {
                 visible: false,
                 data: "medicationTime"
+            },
+            {
+                visible: false,
+                data: "serviceTime"
             },
             {
                 visible: false,
