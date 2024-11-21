@@ -203,7 +203,7 @@ class Prescription extends Model
                     ->whereRelation('resource', 'sub_category', $operator ,'Injectable')
                     ->where(function(Builder $query) use($chartTable, $shift, $shiftEndTimer, $column) {
                         $query->whereHas($chartTable, function(Builder $query) use($shift, $shiftEndTimer, $column) {
-                            $query->where($column, '=', null)
+                            $query->where($column, null)
                             ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
                         });                
                         //     ->orWhereHas('nursingCharts', function(Builder $query) use($shift, $shiftEndTimer) {
