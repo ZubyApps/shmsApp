@@ -190,17 +190,17 @@ class Prescription extends Model
                     ->count();
     }
 
-    public function prescriptionsNotGivenPerShift($shift, $chartTable, $comparism = '=')
+    public function prescriptionsNotGivenPerShift($shift, $chartTable, $operator = '=')
     {
         $shiftEnd = new Carbon($shift->shift_end);
         $shiftEndTimer = $shiftEnd->subMinutes(20);
-        $column         = $comparism == '=' ? 'time_given' : 'time_done';
+        $column         = $operator == '=' ? 'time_given' : 'time_done';
         return $this
         // ->where('chartable', true)
                     ->where('held', null)
                     ->where('discontinued', false)
                     // ->whereRelation('resource', 'category', $comparism ,'Medications')
-                    ->whereRelation('resource', 'sub_category', $comparism ,'Injectable')
+                    ->whereRelation('resource', 'sub_category', $operator ,'Injectable')
                     ->where(function(Builder $query) use($chartTable, $shift, $shiftEndTimer, $column) {
                         $query->whereHas($chartTable, function(Builder $query) use($shift, $shiftEndTimer, $column) {
                             $query->whereNull($column)
