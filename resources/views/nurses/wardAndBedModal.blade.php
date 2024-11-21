@@ -31,7 +31,7 @@
                     </div>
                     <div class="mt-4 form-control" id="wardAndBedDiv" data-div="updateModal">
                         <x-form-span>Update Patient's Admission Status</x-form-span>
-                        @include('extras.wardAndBedDiv')
+                        @include('extras.wardAndBedDiv',['condition' => false])
                         <div class="d-flex justify-content-between my-2">
                             <span class="input-group-text" id="updatedBy"></span>
                             <span class="input-group-text" id="doctor"></span>

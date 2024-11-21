@@ -4,5 +4,5 @@
     <option value="">Select Admission Status</option>
     <option value="Outpatient">No</option>
     <option value="Inpatient" {{ $disabled  ? 'disabled' : '' }}>Yes</option>
-    <option value="Observation">Observation</option>
+    <option value="Observation" {{ $disabled  ? 'disabled' : '' }}>Observation</option>
 </select>

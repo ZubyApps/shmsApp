@@ -110,21 +110,7 @@
                         cols="10" rows="3"></x-form-textarea>
                 </x-form-div>
             </div>
-            @include('extras.wardAndBedDiv')
-            {{-- <div class="row my-2">
-                <x-form-div class="col-xl-4">
-                    <x-input-span id="admitLabel">Admit?<x-required-span /></x-input-span>
-                    <x-select-admit name="admit" id="admit" :disabled="true"></x-select-admit>
-                </x-form-div>
-                <x-form-div class="col-xl-4">
-                    <x-input-span id="wardLabel">Ward</x-input-span>
-                    <x-select-ward name="ward"></x-select-ward>
-                </x-form-div>
-                <x-form-div class="col-xl-4">
-                    <x-input-span id="bedNumberLabel">Bed Number</x-input-span>
-                    <x-select-bed name="bedNumber"></x-select-bed>
-                </x-form-div>
-            </div> --}}
+            @include('extras.wardAndBedDiv', ['condition' => true])
             <div class="d-flex justify-content-center">
                 <button type="button" id="saveConsultationBtn" data-btn="ancReviewDiv"
                     class="btn btn-primary">
