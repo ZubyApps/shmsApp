@@ -200,7 +200,7 @@ class Prescription extends Model
                     ->where('discontinued', false)
                     ->whereRelation('resource', 'sub_category', $comparism ,'Injectable')
                     ->whereHas($chartTable, function(Builder $query) use($shift, $shiftEndTimer, $column) {
-                            $query->where($column, '!=', null)
+                            $query->whereNot($column)
                             ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
                         })            
                     // ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
