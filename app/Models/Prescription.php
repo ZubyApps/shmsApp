@@ -203,8 +203,8 @@ class Prescription extends Model
                             $query->whereNot($column)
                             ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
                         })            
-                    // ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
-                    ->whereBetween('hms_bill_date', [$shift->shift_start, $shiftEndTimer])
+                    ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
+                    // ->whereBetween('hms_bill_date', [$shift->shift_start, $shiftEndTimer])
                     ->count();
     }
 
