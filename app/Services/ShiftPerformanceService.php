@@ -411,11 +411,13 @@ Class ShiftPerformanceService
         $noVitals      = [];
 
         $visitsCount = $this->visit
+                ->where('closed', false)
                 ->whereRelation('patient', 'patient_type', '!=', 'ANC')
                 ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
                 ->count();
 
         $visitsVCount = $this->visit
+                ->where('closed', false)
                 ->whereRelation('patient', 'patient_type', '!=', 'ANC')
                 ->whereHas('vitalSigns', function ($query) use ($shiftPerformance, $shiftEndTimer) {
                         $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer]);
@@ -425,6 +427,7 @@ Class ShiftPerformanceService
                 ->count();
 
         $visitsNoVitals = $this->visit
+                ->where('closed', false)
                 ->whereRelation('patient', 'patient_type', '!=', 'ANC')
                 ->whereDoesntHave('vitalSigns', function ($query) use ($shiftPerformance, $shiftEndTimer) {
                         $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer]);
