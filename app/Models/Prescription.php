@@ -141,7 +141,6 @@ class Prescription extends Model
                     ->whereRelation('resource', 'sub_category', $comparism ,'Injectable')
                     ->where(function(Builder $query) use($chartTable) {
                         $query->whereHas($chartTable);
-                            // ->orWhereHas('nursingCharts')
                         })
                     // ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
                     ->whereBetween('hms_bill_date', [$shift->shift_start, $shiftEndTimer])
@@ -152,14 +151,12 @@ class Prescription extends Model
     {
         $shiftEnd = new Carbon($shift->shift_end);
         $shiftEndTimer = $shiftEnd->subMinutes(20);
-        return $this
-        // ->where('chartable', true)
+        return $this->where('chartable', true)
                     ->where('held', null)
                     ->where('discontinued', false)
                     ->whereRelation('resource', 'sub_category', $comparism ,'Injectable')
                     ->where(function(Builder $query) use($chartTable) {
                         $query->whereDoesntHave($chartTable);
-                            // ->whereDoesntHave('nursingCharts')
                         })
                     // ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
                     ->whereBetween('hms_bill_date', [$shift->shift_start, $shiftEndTimer])
