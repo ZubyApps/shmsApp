@@ -496,9 +496,8 @@ const gyneaLmpCalculator = (lmpDate) => {
 
     const eddYear   = lmpMonth < 3 ? lmpYear : (lmpYear + 1)
     const eddMonth  = lmpMonth < 3 ? determineMonth((lmpDay + 7), (lmpMonth + 9), eddYear)  : determineMonth((lmpDay + 7), lmpMonth - 3, eddYear)
-    // console.log('lmp month = ' + lmpMonth, 'prepared eddMonth = ' + eddMonth)
     const eddDay    = determineDay(daysInMonth(addMonth(lmpMonth), eddYear),(lmpDay + 7))
-    console.log('edd month '+ eddMonth)
+
     return (eddMonth > 11 ? eddYear + 1 : eddYear) + '-' +  (eddMonth > 11 ? 1 : eddMonth + 1).toString().padStart(2, "0") + '-' + eddDay.toString().padStart(2, "0")
 }
 
@@ -507,19 +506,15 @@ const addMonth = (lmpMonth) => {
 }
 
 const determineDay = (daysInMonthValue, days) => {
-    // console.log('days in month =' + daysInMonthValue, 'lmp + 7 days = ' + days)
     return days > daysInMonthValue ? (days - daysInMonthValue) : days
 }
 
 const determineMonth = (days, month, year) => {
-    // console.log('determine month value : days = ' + days, ' determine month value : month = ' + month)
     let monthsDays = daysInMonth(month, year)
-    console.log('days in month = ' + monthsDays, 'days = ' + days )
     return days > monthsDays ? month + 1 : month
 }
 
 const daysInMonth = (month, year) => {
-    console.log('determine feb days = ' + determineFebruaryDays(year))
     const monthArray = [0, 2, 4, 6, 7, 9, 11]
     return monthArray.includes(month) ? 31 : month === 1 ? determineFebruaryDays(year) : 30
 }
@@ -532,10 +527,8 @@ function leapyear(year) {
 }
 
 const filterPatients = (elements) => {
-    // console.log(elements)
     elements.forEach(filterInput => {
         filterInput.addEventListener('change', function () {
-            // console.log(filterInput.value)
             if (filterInput.id == 'filterListOutPatients'){
                 $.fn.DataTable.isDataTable( '#outPatientsVisitTable' ) ? $('#outPatientsVisitTable').dataTable().fnDestroy() : ''
                 return getOutpatientsVisitTable('#outPatientsVisitTable', filterInput.value)
