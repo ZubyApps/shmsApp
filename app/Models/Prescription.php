@@ -200,8 +200,8 @@ class Prescription extends Model
                     ->where('discontinued', false)
                     ->whereRelation('resource', 'sub_category', $comparism ,'Injectable')
                     ->whereHas($chartTable, function(Builder $query) use($shift, $shiftEndTimer, $column) {
-                            $query->whereNot($column)
-                            ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
+                            $query->whereNot($column);
+                            // ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
                         })            
                     // ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
                     ->whereBetween('hms_bill_date', [$shift->shift_start, $shiftEndTimer])
@@ -221,8 +221,8 @@ class Prescription extends Model
                     ->whereRelation('resource', 'sub_category', $operator ,'Injectable')
                     ->where(function(Builder $query) use($chartTable, $shift, $shiftEndTimer, $column) {
                         $query->whereHas($chartTable, function(Builder $query) use($shift, $shiftEndTimer, $column) {
-                            $query->where($column, null)
-                            ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
+                            $query->where($column, null);
+                            // ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
                         });                
                         //     ->orWhereHas('nursingCharts', function(Builder $query) use($shift, $shiftEndTimer) {
                         //     $query->whereNull('time_done')
