@@ -183,6 +183,7 @@ Class ShiftPerformanceService
                                             ->whereRelation('resource', 'sub_category', '!=' ,'Injectable')
                                             ->where('discontinued', false)
                                             ->where('held', null)
+                                            ->whereHas('nursingCharts')
                                             ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
                                             // ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
                                             ->count();

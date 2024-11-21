@@ -196,14 +196,14 @@ class Prescription extends Model
         $shiftEndTimer = $shiftEnd->subMinutes(20);
         $column         = $operator == '=' ? 'time_given' : 'time_done';
         return $this
-        // ->where('chartable', true)
+                    ->where('chartable', true)
                     ->where('held', null)
                     ->where('discontinued', false)
                     // ->whereRelation('resource', 'category', $comparism ,'Medications')
                     ->whereRelation('resource', 'sub_category', $operator ,'Injectable')
                     ->where(function(Builder $query) use($chartTable, $shift, $shiftEndTimer, $column) {
                         $query->whereHas($chartTable, function(Builder $query) use($shift, $shiftEndTimer, $column) {
-                            $query->whereNull($column)
+                            $query->where($column, '=', null)
                             ->whereBetween('scheduled_time', [$shift->shift_start, $shiftEndTimer]);
                         });                
                         //     ->orWhereHas('nursingCharts', function(Builder $query) use($shift, $shiftEndTimer) {
