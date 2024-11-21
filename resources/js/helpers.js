@@ -684,13 +684,15 @@ const getShiftPerformance = (dept, div) => {
     http.get(`/shiftperformance/${dept}`)
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
-                const shiftPerformance  = response.data.shiftPerformance
-                const staff             = shiftPerformance.staff
-                const details           = response.data.details
-                let inpatients          = ''
-                let outpatients         = ''
-                let noChatPatients      = ''
-                let noGivenPatients     = ''
+                const shiftPerformance          = response.data.shiftPerformance
+                const staff                     = shiftPerformance.staff
+                const details                   = response.data.details
+                let inpatients                  = ''
+                let outpatients                 = ''
+                let noChatPatientsInjectables   = ''
+                let noChatPatientsOthers        = ''
+                let noStartPatientsInjectables  = ''
+                let noStartPatientsOthers       = ''
 
                 details.inpatientsNoV.length > 0 ? details.inpatientsNoV.forEach(patient => {
                     inpatients +=  `<li class="dropdown-item text-secondary">${patient}</li>`
@@ -700,12 +702,20 @@ const getShiftPerformance = (dept, div) => {
                     outpatients +=  `<li class="dropdown-item text-secondary">${patient}</li>`
                  }) : ''
 
-                details.notCharted.length > 0 ? details.notCharted.forEach(patient => {
-                    noChatPatients +=  `<li class="dropdown-item text-secondary">${patient}</li>`
+                details.notChartedInjectables.length > 0 ? details.notChartedInjectables.forEach(patient => {
+                    noChatPatientsInjectables +=  `<li class="dropdown-item text-secondary">${patient}</li>`
+                 }) : ''
+
+                details.notChartedOthers.length > 0 ? details.notChartedOthers.forEach(patient => {
+                    noChatPatientsOthers +=  `<li class="dropdown-item text-secondary">${patient}</li>`
                  }) : ''
                 
-                details.notGiven.length > 0 ? details.notGiven.forEach(patient => {
-                    noGivenPatients +=  `<li class="dropdown-item text-secondary">${patient}</li>`
+                details.notStartedInjectables.length > 0 ? details.notStartedInjectables.forEach(patient => {
+                    noStartPatientsInjectables +=  `<li class="dropdown-item text-secondary">${patient}</li>`
+                 }) : ''
+
+                details.notStartedOthers.length > 0 ? details.notStartedOthers.forEach(patient => {
+                    noStartPatientsOthers +=  `<li class="dropdown-item text-secondary">${patient}</li>`
                  }) : ''
                 
                 div.innerHTML = `
@@ -717,23 +727,41 @@ const getShiftPerformance = (dept, div) => {
                 <ul class="dropdown-menu">
                     <li class=" text-secondary p-0">
                         <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
-                            <li class="dropdown-item text-secondary">Chart Rate ${shiftPerformance.chart_rate ? '- '+ shiftPerformance.chart_rate :'- no activity'}</li>
+                            <li class="dropdown-item text-secondary">Injectables Chart Rate ${shiftPerformance.injectables_chart_rate ? '- '+ shiftPerformance.injectables_chart_rate :'- no activity'}</li>
                         </button>
-                        <ul class="dropdown-menu ${details.notCharted.length > 0 ? '' : 'd-none'}">
-                            ${noChatPatients}
+                        <ul class="dropdown-menu ${details.notChartedInjectables.length > 0 ? '' : 'd-none'}">
+                            ${noChatPatientsInjectables}
                         </ul>
                     </li>
                     <li class=" text-secondary p-0">
                         <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
-                            <li class="dropdown-item text-secondary">Given Rate ${shiftPerformance.given_rate ? '- '+ shiftPerformance.given_rate :'- no activity'}</li>
+                            <li class="dropdown-item text-secondary">Injectables Given Rate ${shiftPerformance.injectables_given_rate ? '- '+ shiftPerformance.injectables_given_rate :'- no activity'}</li>
                         </button>
-                        <ul class="dropdown-menu ${details.notGiven.length > 0 ? '' : 'd-none'}">
-                            ${noGivenPatients }
+                        <ul class="dropdown-menu ${details.notStartedInjectables.length > 0 ? '' : 'd-none'}">
+                            ${noStartPatientsInjectables}
+                        </ul>
+                    </li>
+                    <li class=" text-secondary p-0">
+                        <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
+                            <li class="dropdown-item text-secondary">Others Chart Rate ${shiftPerformance.others_chart_rate ? '- '+ shiftPerformance.others_chart_rate :'- no activity'}</li>
+                        </button>
+                        <ul class="dropdown-menu ${details.notChartedOthers.length > 0 ? '' : 'd-none'}">
+                            ${noChatPatientsOthers}
+                        </ul>
+                    </li>
+                    <li class=" text-secondary p-0">
+                        <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
+                            <li class="dropdown-item text-secondary">Others Done Rate ${shiftPerformance.others_done_rate ? '- '+ shiftPerformance.others_done_rate :'- no activity'}</li>
+                        </button>
+                        <ul class="dropdown-menu ${details.notStartedOthers.length > 0 ? '' : 'd-none'}">
+                            ${noStartPatientsOthers}
                         </ul>
                     </li>
                     <li class="dropdown-item text-secondary">Avg First Medication Time ${shiftPerformance.first_med_res ? '- '+ shiftPerformance.first_med_res :'- no activity'}</li>
+                    <li class="dropdown-item text-secondary">Avg First Service Time ${shiftPerformance.first_serv_res ? '- '+ shiftPerformance.first_serv_res :'- no activity'}</li>
                     <li class="dropdown-item text-secondary">Avg First Vitalsigns Time ${shiftPerformance.first_vitals_res ?'- '+ shiftPerformance.first_vitals_res :'- no activity'}</li>
                     <li class="dropdown-item text-secondary">Avg Medication Giving Time ${shiftPerformance.medication_time ? '- '+ shiftPerformance.medication_time :'- no activity'}</li>
+                    <li class="dropdown-item text-secondary">Avg Service Giving Time ${shiftPerformance.service_time ? '- '+ shiftPerformance.service_time :'- no activity'}</li>
                     <li class=" text-secondary p-0">
                         <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
                             <li class="dropdown-item text-secondary">Inpatient Vitalsigns Rate ${shiftPerformance.inpatient_vitals_count ? '- '+ shiftPerformance.inpatient_vitals_count :'- no activity'}</li>
