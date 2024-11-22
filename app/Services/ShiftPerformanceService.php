@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 Class ShiftPerformanceService
 {
@@ -461,9 +462,9 @@ Class ShiftPerformanceService
     {
         $totalPoints = 0;
 
-        $convertInjectablesChartRate    =   $shiftPerformance->injectable_chart_rate === null ? null : 
-                                            ($this->percentFromStringFraction($shiftPerformance->injectable_chart_rate) / 100) * 20 ; 
-                                            $shiftPerformance->injectable_chart_rate === null ? '' : $totalPoints++;
+        $convertInjectablesChartRate    =   $shiftPerformance->injectables_chart_rate === null ? null : 
+                                            ($this->percentFromStringFraction($shiftPerformance->injectables_chart_rate) / 100) * 20 ; 
+                                            $shiftPerformance->injectables_chart_rate === null ? '' : $totalPoints++;
 
         $convertOthersChartRate         =   $shiftPerformance->others_chart_rate === null ? null : 
                                             ($this->percentFromStringFraction($shiftPerformance->others_chart_rate) / 100) * 20 ; 
@@ -504,7 +505,7 @@ Class ShiftPerformanceService
         $convertOutPsVC                 =   $shiftPerformance->outpatient_vitals_count === null ? null : 
                                             ($this->percentFromStringFraction($shiftPerformance->outpatient_vitals_count) / 100) * 20; 
                                             $shiftPerformance->outpatient_vitals_count === null ? '' : $totalPoints++;
-        
+        Log::info('ICR', ['icr' => $convertInjectablesChartRate]);
         $preformance = $totalPoints ? ($convertInjectablesChartRate + $convertOthersChartRate + $convertInjectablesGivenRate + $convertOthersGivenRate + $convertFirstMedRes + $convertFirstServRes + $convertFirstVitalsRes + $convertMedicationTime + $convertServiceTime + $convertInPsVC + $convertOutPsVC)/($totalPoints*20) * 100 : 0;
             
         return round($preformance, 1);
