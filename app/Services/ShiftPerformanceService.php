@@ -505,7 +505,7 @@ Class ShiftPerformanceService
         $convertOutPsVC                 =   $shiftPerformance->outpatient_vitals_count === null ? null : 
                                             ($this->percentFromStringFraction($shiftPerformance->outpatient_vitals_count) / 100) * 20; 
                                             $shiftPerformance->outpatient_vitals_count === null ? '' : $totalPoints++;
-        Log::info('ICR', ['icr' => $convertInjectablesChartRate]);
+
         $preformance = $totalPoints ? ($convertInjectablesChartRate + $convertOthersChartRate + $convertInjectablesGivenRate + $convertOthersGivenRate + $convertFirstMedRes + $convertFirstServRes + $convertFirstVitalsRes + $convertMedicationTime + $convertServiceTime + $convertInPsVC + $convertOutPsVC)/($totalPoints*20) * 100 : 0;
             
         return round($preformance, 1);

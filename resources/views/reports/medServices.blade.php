@@ -157,6 +157,8 @@
                                 <th>Charted</th>
                                 <th>Billed</th>
                                 <th>Dispensed</th>
+                                <th>HMS Bill</th>
+                                <th>Paid</th>
                                 <th>By</th>
                             </tr>
                         </thead>

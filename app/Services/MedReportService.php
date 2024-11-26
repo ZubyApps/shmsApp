@@ -507,11 +507,8 @@ class MedReportService
                 return $this->prescription
                             ->where(function (Builder $query) use($params) {
                                 $query->where('chartable', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                                // ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                // ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                // ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                // ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                             })
                             ->whereBetween('created_at', [str_replace('T', ' ', $data->startDate), str_replace('T', ' ', $data->endDate)])
                             ->orderBy($orderBy, $orderDir)
@@ -523,11 +520,8 @@ class MedReportService
                 return $this->prescription
                     ->where(function (Builder $query) use($params) {
                         $query->where('chartable', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                        // ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        // ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        // ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        // ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                     })
                     ->whereMonth('created_at', $date->month)
                     ->whereYear('created_at', $date->year)
@@ -538,11 +532,8 @@ class MedReportService
             return $this->prescription
                             ->where(function (Builder $query) use($params) {
                                 $query->where('chartable', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                                // ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                // ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                // ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                // ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                             })
                             ->whereMonth('created_at', $current->month)
                             ->whereYear('created_at', $current->year)
@@ -568,7 +559,6 @@ class MedReportService
 
         
         return $this->prescription
-                // ->whereRelation('resource', 'id', '=', $data->resourceId)
                 ->whereMonth('created_at', $current->month)
                 ->whereYear('created_at', $current->year)
                 ->orderBy($orderBy, $orderDir)
@@ -592,6 +582,8 @@ class MedReportService
                     'charted'           => $prescription->medicationCharts->count() > 0,
                     'qtyBilled'         => $prescription->qty_billed,
                     'qtyDispensed'      => $prescription->qty_dispensed,
+                    'hmsBill'           => $prescription->hms_bill,
+                    'paid'              => $prescription->paid,
                     'prescribedBy'      => $prescription->user->username,
                 ];
             };
