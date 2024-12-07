@@ -40,6 +40,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const differenceInput                       = newAddResourceStockModal._element.querySelector('#difference')
     const quantityInput                         = newAddResourceStockModal._element.querySelector('#quantity')
     const finalQuantityInput                    = newAddResourceStockModal._element.querySelector('#finalQuantity')
+    const finalStockInput                       = newAddResourceStockModal._element.querySelector('#finalStock')
 
     const newSupplierInput                      = document.querySelector('#newSupplierInput')
     const updateSupplierInput                   = document.querySelector('#updateSupplierInput')
@@ -278,7 +279,8 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     quantityInput.addEventListener('input', function() {
-        finalQuantityInput.value = quantityInput.value - differenceInput.value
+        finalQuantityInput.value    = quantityInput.value - differenceInput.value
+        finalStockInput.value       = +finalQuantityInput.value + +hmsStockInput.value
     })
 
     addResourceBtn.addEventListener('click', function () {

@@ -108,6 +108,7 @@
                                     <th>Diff</th>
                                     <th>Qty</th>
                                     <th>Final Qty</th>
+                                    <th>Final Stock</th>
                                     <th>Comment</th>
                                     <th>Purchase Price</th>
                                     <th>Selling Price</th>

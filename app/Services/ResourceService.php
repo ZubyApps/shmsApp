@@ -85,12 +85,10 @@ class ResourceService
                 'id'                => $resource->id,
                 'name'              => $resource->name,
                 'flag'              => $resource->flag,
-                // 'markedFor'         => $resource->marked_for,
                 'markedFor'         => $resource->markedFor?->name,
                 'category'          => $resource->resourceSubCategory->resourceCategory->name,
                 'subCategory'       => $resource->resourceSubCategory->name,
                 'medicationCategory'=> $resource->medicationCategory?->name,
-                // 'unit1'             => $resource->unit_description,
                 'unit'              => $resource->unitDescription?->short_name,
                 'purchasePrice'     => $resource->purchase_price,
                 'sellingPrice'      => $resource->selling_price,
@@ -101,7 +99,7 @@ class ResourceService
                 'expired'           => $resource->expiry_date ? $this->dataDifferenceInDays($resource->expiry_date) : 'N/A',
                 'createdBy'         => $resource->user->username,
                 'createdAt'         => $resource->created_at->format('d/m/y'),
-                'count'             => $resource->prescriptions()->count(),
+                'count'             => $resource->prescriptions()->count() + $resource->bulkRequests()->count() + $resource->addResources()->count(),
             ];
          };
     }

@@ -213,6 +213,7 @@ const getAddResourceStockTable = () => {
             {data: "diff"},
             {data: "qty"},
             {data: "finalQty"},
+            {data: "finalStock"},
             {data: "comment"},
             {data: "purchasePrice"},
             {data: "sellingPrice"},
