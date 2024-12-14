@@ -119,14 +119,14 @@ Class ShiftPerformanceService
         $shiftEnd = new Carbon($shiftPerformance->shift_end);
         $shiftEndTimer = $shiftEnd->subMinutes(20);
         $notCharted = [];
-
+        Log::info('testing', ['time' => $shiftPerformance->shift_start . ' - ' . $shiftEndTimer]);
         $totalOtherPrescriptions = $this->prescription
                                     ->where('chartable', true)
                                     ->whereRelation('resource', 'sub_category', '!=' ,'Injectable')
                                     ->where('discontinued', false)
                                     ->where('held', null)
-                                    ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                    // ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+                                    // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+                                    ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
                                     ->count();
 
         $totalOtherPrescriptionsCharted      = $this->prescription->prescriptionsChartedPerShift($shiftPerformance, 'nursingCharts', '!=');
@@ -185,8 +185,8 @@ Class ShiftPerformanceService
                                             ->where('discontinued', false)
                                             ->where('held', null)
                                             ->whereHas('nursingCharts')
-                                            ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                            // ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+                                            // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+                                            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
                                             ->count();
 
             $totalOtherPrescriptionsStarted      = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'nursingCharts', '!=');
