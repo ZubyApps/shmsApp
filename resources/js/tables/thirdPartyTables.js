@@ -47,7 +47,7 @@ const getlistOfServicesTable = (tableId) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary', footer: true},
@@ -73,7 +73,7 @@ const getThirdPartiesTable = (tableId, notLab) => {
         serverSide: true,
         ajax:  '/thirdparties/load/thirdparties',
         paging: true,
-        searchDelay: 1000,
+        searchDelay: 500,
         orderMulti: false,
         language: {
             emptyTable: 'No Third Party'

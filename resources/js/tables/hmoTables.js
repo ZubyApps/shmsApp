@@ -18,7 +18,7 @@ const getWaitingTable = (tableId) => {
         ajax:  '/visits/load/waiting',
         orderMulti: true,
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         language: {
             emptyTable: 'No patient is waiting'
         },
@@ -74,7 +74,7 @@ const getVerificationTable = (tableId) => {
         ajax:  '/hmo/verification/list',
         orderMulti: true,
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: 'No verification requested'
@@ -112,7 +112,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
         }},
         orderMulti: true,
         search:true,
-        // searchDelay: 1000,
+        // searchDelay: 500,
         lengthMenu:[100, 150, 200, 250, 300, 500],
         language: {
             emptyTable: "No patient"
@@ -178,7 +178,7 @@ const getApprovalListTable = (tableId, sponsor) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: 'No items for approval'
@@ -251,7 +251,7 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
         orderMulti: true,
         lengthMenu:[25, 50, 100, 150, 200],
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         language: {
             emptyTable: "No Bills"
         },
@@ -322,7 +322,7 @@ const getSentBillsTable = (tableId, startDate, endDate, date, filterByOpen) => {
         orderMulti: true,
         lengthMenu:[25, 50, 100, 150, 200, 500],
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary'},
@@ -377,7 +377,7 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
         }},
         orderMulti: false,
         lengthMenu:[25, 50, 100, 150, 200],
-        searchDelay: 1000,
+        searchDelay: 500,
         dom: 'l<"my-1 text-center "B>frtip',
         buttons: [
             {
@@ -473,7 +473,7 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to, date) =>
         paging: true,
         orderMulti: false,
         lengthMenu:[10, 20, 50, 100],
-        // searchDelay: 1000,
+        // searchDelay: 500,
         language: {
             emptyTable: 'No Visits'
         },
@@ -608,7 +608,7 @@ const getNhisReconTable = (tableId, date) => {
             'date': date,
         }},
         orderMulti: false,
-        searchDelay: 1000,
+        searchDelay: 500,
         lengthMenu:[25, 50, 100, 150, 200],
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
@@ -674,7 +674,7 @@ const getBillReminderTable = (tableId, startDate, endDate, date) => {
         },
         orderMulti: true,
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         dom: 'l<"my-1 text-center "B>frtip',
         buttons: [
             {
@@ -757,7 +757,7 @@ const getDueHmoRemindersTable = (tableId) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         lengthMenu:[50, 100, 150, 200],
         language: {
             emptyTable: 'No reminders due'

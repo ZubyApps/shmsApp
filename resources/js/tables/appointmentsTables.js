@@ -39,7 +39,7 @@ const getAppointmentsTable = (tableId, filter, span) => {
                 span ? span.innerHTML = '' : ''
             }
         },
-        // searchDelay: 1000,
+        // searchDelay: 500,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary'},

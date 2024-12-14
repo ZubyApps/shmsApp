@@ -22,7 +22,7 @@ const getAllStaffTable = (tableId) => {
             {extend: 'print', className: 'btn-primary'},
              ],
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         columns: [
             {data: row => () => {
                 return `<span>${row.name}<span> ${row.dateOfExit ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-danger" title="Date of Exit ${row.dateOfExit}"></i>` : ''}`
@@ -111,7 +111,7 @@ const getResourceStockDateTable = (tableId) => {
         ajax:  '/resourcestockdate/load',
         orderMulti: true,
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         columns: [
             {data: "date"},
             {data: "description"},
@@ -144,7 +144,7 @@ const getResourceCategoryTable = () => {
         serverSide: true,
         ajax:  '/resourcecategory/load',
         orderMulti: true,
-        searchDelay: 1000,
+        searchDelay: 500,
         search:true,
         columns: [
             {data:row => () => {

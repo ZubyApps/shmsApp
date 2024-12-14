@@ -14,7 +14,7 @@ const getPharmacySummaryTable = (tableId, startDate, endDate, date) => {
         },
         orderMulti: true,
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         lengthMenu:[50, 150, 200, 300, 500],
         drawCallback: function (settings) {
             var api = this.api()
@@ -51,13 +51,15 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate, date
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         lengthMenu:[50, 100, 150, 200, 300],
         drawCallback: function (settings) {
             var api = this.api()
             $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
             $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
             $( api.column(10).footer() ).html(account.format(api.column( 10, {page:'current'} ).data().sum()));
+            $( api.column(11).footer() ).html(account.format(api.column( 11, {page:'current'} ).data().sum()));
+            $( api.column(12).footer() ).html(account.format(api.column( 12, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: "date"},

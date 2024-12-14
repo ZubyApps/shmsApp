@@ -119,7 +119,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, s
         orderMulti: true,
         lengthMenu:[25, 50, 100, 150, 200],
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         language: {
             emptyTable: urlSuffix == 'openvisits' ? 'No open visits' : 'No patient record'
         },
@@ -529,7 +529,7 @@ const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate
         }},
         orderMulti: true,
         lengthMenu:[50, 100, 200, 300, 500],
-        searchDelay: 1000,
+        searchDelay: 500,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary', footer: true},
@@ -614,7 +614,7 @@ const getBillReminderTable = (tableId, startDate, endDate, date) => {
         },
         orderMulti: true,
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         dom: 'l<"my-1 text-center "B>frtip',
         buttons: [
             {
@@ -696,7 +696,7 @@ const getDueCashRemindersTable = (tableId) => {
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 1000,
+        searchDelay: 500,
         lengthMenu:[50, 100, 150, 200],
         language: {
             emptyTable: 'No reminders due'
