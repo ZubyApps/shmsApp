@@ -97,7 +97,7 @@ const getInpatientsVisitTable = (tableId, filter) => {
             {data: row => function () {
                    return `
                     <div class="d-flex flex-">
-                        <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }">
+                        <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                         <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
                         </button>
                     </div>`

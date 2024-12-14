@@ -19,20 +19,29 @@ class NursingChartService
 {
     public function __construct(
         private readonly NursingChart $nursingChart, 
+        private readonly PrescriptionService $prescriptionService,
         private readonly Ward $ward,
         private readonly HelperService $helperService
         )
     {
     }
 
-    public function create(Request $data, User $user): NursingChart
+    public function create(Request $data, User $user)
     {
         $tz = 'Africa/Lagos';
-        $interval = CarbonInterval::hours($data->frequency);
-        // $start = $data->date ? (new CarbonImmutable($data->date, $tz)) : (new CarbonImmutable($data->date, $tz))->addMinutes(15); //CarbonImmutable::now($tz)->addMinutes(30);
-        $start = $data->date ? (new CarbonImmutable($data->date, $tz)) : (new CarbonImmutable($data->date, $tz)); //CarbonImmutable::now($tz)->addMinutes(30);
-        $end    = $start->addDays($data->days);
-        $dates = new CarbonPeriod($start, $interval, $end, CarbonPeriod::EXCLUDE_END_DATE);
+        $hours    = strtolower($data->intervals) == 'hours';
+        $interval = $hours ? CarbonInterval::minutes($data->frequency) : CarbonInterval::hours($data->frequency);
+        $start    = (new CarbonImmutable($data->date, $tz));
+        $end      = $hours ? $start->addHours($data->value) : $start->addDays($data->value);
+        $dates    = new CarbonPeriod($start, $interval, $end, CarbonPeriod::EXCLUDE_END_DATE);
+
+        if (count($dates) > 120) {
+            return response()->json(
+                ['errors' => [
+                    'frequency' => ['This frequency may be too frequent'],
+                    'intervals' => ['or the hours/days are too many']
+            ]], 422);
+        }
 
         $charts = [];
         $iteration = 0;
@@ -48,6 +57,12 @@ class NursingChartService
             ]);
         }
         
+        if ($data->date){
+            $date = (new CarbonImmutable($data->date, $tz));
+            $date < Carbon::now($tz) ? $reason = 'Charted backward' : $reason = 'Charted Forward';
+            $data->merge(['reason' => $reason]);
+            $this->prescriptionService->hold($data, $charts->prescription, $user);
+        }
 
         return $charts;
     }
@@ -181,6 +196,8 @@ class NursingChartService
                 // 'ward'              => $nursingChart->consultation->ward ?? '',
                 // 'bedNo'             => $nursingChart->consultation->bed_no ?? '',
                 'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
+                'wardId'            => $visit->ward ?? '',
+                'wardPresent'       => $ward?->visit_id == $nursingChart->visit->id,
                 'care'              => $nursingChart->prescription->resource->name ?? '',
                 'instruction'       => $nursingChart->prescription->note ?? '',
                 'chartedBy'         => $nursingChart->user->username,

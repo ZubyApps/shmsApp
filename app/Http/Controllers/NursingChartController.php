@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateNursingChartRequest;
 use App\Services\DatatablesService;
 use App\Services\NursingChartService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class NursingChartController extends Controller
 {
@@ -20,6 +21,7 @@ class NursingChartController extends Controller
 
     public function store(StoreNursingChartRequest $request)
     {
+        // Log::info('info', ['data' => $request->all()]);
         $chart = $this->nursingChartService->create($request, $request->user());
 
         return $chart;

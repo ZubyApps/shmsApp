@@ -30,17 +30,17 @@ class MedicationChartService
     public function create(Request $data, User $user)
     {
         $tz = 'Africa/Lagos';
-        $interval = CarbonInterval::hours($data->frequency);
-        // $start = $data->date ? (new CarbonImmutable($data->date, $tz)) : (new CarbonImmutable($data->date, $tz))->addMinutes(15);
+        $hours    = strtolower($data->intervals) == 'hours';
+        $interval = $hours ? CarbonInterval::minutes($data->frequency) : CarbonInterval::hours($data->frequency);
         $start = new CarbonImmutable($data->date, $tz);
-        $end   = $start->addDays($data->days);
+        $end   = $hours ? $start->addHours($data->value) : $start->addDays($data->value);
         $dates = new CarbonPeriod($start, $interval, $end, CarbonPeriod::EXCLUDE_END_DATE);
 
         if (count($dates) > 120) {
             return response()->json(
                 ['errors' => [
                     'frequency' => ['This frequency may be too frequent'],
-                    'days' => ['or the days are too many']
+                    'intervals' => ['or the hours/days are too many']
             ]], 422);
         }
 
@@ -68,8 +68,6 @@ class MedicationChartService
 
             return $charts;
         });
-        
-
     }
 
     public function updateRecord(Request $data, MedicationChart $medicationChart, User $user)

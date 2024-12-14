@@ -893,6 +893,9 @@ window.addEventListener('DOMContentLoaded', function () {
                                 if ($.fn.DataTable.isDataTable('#treatmentTable'+conId)){
                                 $('#treatmentTable'+conId).dataTable().fnDraw(false)
                                 }
+                                if ($.fn.DataTable.isDataTable('#otherPrescriptionsTable'+conId)){
+                                $('#otherPrescriptionsTable'+conId).dataTable().fnDraw(false)
+                                }
                             }
                             deleteBtn.removeAttribute('disabled')
                         })

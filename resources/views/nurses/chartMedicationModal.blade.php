@@ -60,10 +60,10 @@
                                     <x-select-unit aria-label="unit" name="unit" id="unit"></x-select-unit>
                                 </x-form-div>
                                 <x-form-div class="col-xl-4">
-                                    <x-input-span>Frequency<x-required-span /></x-input-span>
+                                    <x-input-span>Freq<x-required-span /></x-input-span>
                                     <x-select-frequency aria-label="frequency" name="frequency" id="frequency"></x-select-frequency>
-                                    <x-input-span>Day(s)<x-required-span /></x-input-span>
-                                    <x-form-input type="number" name="days" id="days" value="1" />
+                                    <x-select-intervals aria-label="intervals" name="intervals" id="intervals"></x-select-intervals>
+                                    <x-form-input type="number" name="value" id="value" value="1" />
                                 </x-form-div>
                                 <x-form-div class="col-xl-4">
                                     <x-input-span>Set Time</x-input-span>

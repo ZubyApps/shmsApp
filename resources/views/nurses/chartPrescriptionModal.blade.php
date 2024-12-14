@@ -54,14 +54,14 @@
                             <div class="row" id="chartPrescriptionDiv" data-div="chart">
                                 <x-form-span class="mb-2 fw-semibold">Save the Doctor's instruction and time intervals according to prescription</x-form-span>
                                 <x-form-div class="col-xl-4">
-                                    <x-input-span>Instruction</x-input-span>
+                                    <x-input-span>Instruction<x-required-span /></x-input-span>
                                     <x-form-input name="service" id="service" />
                                 </x-form-div>
                                 <x-form-div class="col-xl-4">
-                                    <x-input-span>Frequency</x-input-span>
+                                    <x-input-span>Freq<x-required-span /></x-input-span>
                                     <x-select-frequency aria-label="frequency" name="frequency" id="frequency"></x-select-frequency>
-                                    <x-input-span>Day(s)</x-input-span>
-                                    <x-form-input type="number" name="days" id="days" value="1" />
+                                    <x-select-intervals aria-label="intervals" name="intervals" id="intervals"></x-select-intervals>
+                                    <x-form-input type="number" name="value" id="value" value="1" />
                                 </x-form-div>
                                 <x-form-div class="col-xl-4">
                                     <x-input-span>Start from <small> (optional)</small></x-input-span>

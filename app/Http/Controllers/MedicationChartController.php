@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateMedicationChartRequest;
 use App\Services\DatatablesService;
 use App\Services\MedicationChartService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class MedicationChartController extends Controller
 {
@@ -20,6 +21,7 @@ class MedicationChartController extends Controller
 
     public function store(StoreMedicationChartRequest $request)
     {
+        // Log::info('info', ['data' => $request]);
         $chart = $this->medicationChartService->create($request, $request->user());
 
         return $chart;

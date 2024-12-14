@@ -1212,6 +1212,43 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
+    medicationChartDiv.querySelector('#frequency').addEventListener('change', function(e){
+        const frequencyEl = e.target
+        const option  = frequencyEl.options[frequencyEl.selectedIndex]
+        clearValidationErrors(medicationChartDiv)
+        const intervalEl = medicationChartDiv.querySelector('#intervals')
+        if (frequencyEl.value){
+            if (option.parentElement.id == 'minutes' && intervalEl.value && intervalEl.value !== 'Hours'){
+                const message = 'You cannot pick frequency in minutes if intervals are NOT in Hours'
+                const errorMsg = {'frequency' : [message]}
+                handleValidationErrors(errorMsg, medicationChartDiv)
+            } else if (option.parentElement.id !== 'minutes' && intervalEl.value && intervalEl.value == 'Hours'){
+                const message = 'If frequency is NOT in minutes intervals should be in Days'
+                const errorMsg = {'frequency' : [message]}
+                handleValidationErrors(errorMsg, medicationChartDiv)
+            }
+            
+        }
+    })
+
+    medicationChartDiv.querySelector('#intervals').addEventListener('change', function(e){
+        const intervalEl = e.target
+        clearValidationErrors(medicationChartDiv)
+        if (intervalEl.value){
+            const frequencyEl = medicationChartDiv.querySelector('#frequency')
+            const option  = frequencyEl.options[frequencyEl.selectedIndex]
+            if (frequencyEl.value && option.parentElement.id !== 'minutes' && intervalEl.value == 'Hours'){
+                const message = 'You cannot pick "Hours" if your frequency IS NOT in minutes'
+                const errorMsg = {'intervals' : [message]}
+                handleValidationErrors(errorMsg, medicationChartDiv)
+            } else if (option.parentElement.id == 'minutes' && intervalEl.value !== 'Hours'){
+                const message = 'You cannot pick "Days" if your frequency IS in minutes'
+                const errorMsg = {'intervals' : [message]}
+                handleValidationErrors(errorMsg, medicationChartDiv)
+            }
+        }
+    })
+
     saveMedicationChartBtn.addEventListener('click', function () {
         const prescriptionId = saveMedicationChartBtn.getAttribute('data-id')
         const treatmentTableId = saveMedicationChartBtn.getAttribute('data-table')
@@ -1247,6 +1284,43 @@ window.addEventListener('DOMContentLoaded', function () {
             })
     })
 
+    prescriptionChartDiv.querySelector('#intervals').addEventListener('change', function(e){
+        const intervalEl = e.target
+        clearValidationErrors(prescriptionChartDiv)
+        if (intervalEl.value){
+            const frequencyEl = prescriptionChartDiv.querySelector('#frequency')
+            const option  = frequencyEl.options[frequencyEl.selectedIndex]
+            if (frequencyEl.value && option.parentElement.id !== 'minutes' && intervalEl.value == 'Hours'){
+                const message = 'You cannot pick "Hours" if your frequency IS NOT in minutes'
+                const errorMsg = {'intervals' : [message]}
+                handleValidationErrors(errorMsg, prescriptionChartDiv)
+            } else if (option.parentElement.id == 'minutes' && intervalEl.value !== 'Hours'){
+                const message = 'You cannot pick "Days" if your frequency IS in minutes'
+                const errorMsg = {'intervals' : [message]}
+                handleValidationErrors(errorMsg, prescriptionChartDiv)
+            }
+        }
+    })
+
+    prescriptionChartDiv.querySelector('#frequency').addEventListener('change', function(e){
+        const frequencyEl = e.target
+        const option  = frequencyEl.options[frequencyEl.selectedIndex]
+        clearValidationErrors(prescriptionChartDiv)
+        const intervalEl = prescriptionChartDiv.querySelector('#intervals')
+        if (frequencyEl.value){
+            if (option.parentElement.id == 'minutes' && intervalEl.value && intervalEl.value !== 'Hours'){
+                const message = 'You cannot pick frequency in minutes if intervals are not in Hours'
+                const errorMsg = {'frequency' : [message]}
+                handleValidationErrors(errorMsg, prescriptionChartDiv)
+            } else if (option.parentElement.id !== 'minutes' && intervalEl.value && intervalEl.value == 'Hours'){
+                const message = 'If frequency is NOT in minutes intervals should be in Days'
+                const errorMsg = {'frequency' : [message]}
+                handleValidationErrors(errorMsg, prescriptionChartDiv)
+            }
+            
+        }
+    })
+
     savePrescriptionChartBtn.addEventListener('click', function () {
         const prescriptionId = savePrescriptionChartBtn.getAttribute('data-id')
         const otherPrescriptionsTableId = savePrescriptionChartBtn.getAttribute('data-table')
@@ -1254,9 +1328,8 @@ window.addEventListener('DOMContentLoaded', function () {
         const visitId = savePrescriptionChartBtn.getAttribute('data-visit')
 
         savePrescriptionChartBtn.setAttribute('disabled', 'disabled')
-
+        
         let data = { ...getDivData(prescriptionChartDiv), prescriptionId, conId, visitId }
-
         http.post('/nursingchart', { ...data }, { "html": prescriptionChartDiv })
             .then((response) => {
                 if (response.status >= 200 || response.status <= 300) {

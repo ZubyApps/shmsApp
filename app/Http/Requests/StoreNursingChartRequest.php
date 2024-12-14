@@ -29,7 +29,9 @@ class StoreNursingChartRequest extends FormRequest
             'conId'             => ['required', 'integer', 'exists:'.Consultation::class.',id'],
             'visitId'           => ['required', 'integer', 'exists:'.Visit::class.',id'],
             'service'           => ['required'],
-            'frequency'         => ['required']
+            'frequency'         => ['required'],
+            'value'             => ['required'],
+            'intervals'         => ['required'],
         ];
     }
 }

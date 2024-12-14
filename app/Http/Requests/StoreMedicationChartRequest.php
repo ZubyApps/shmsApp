@@ -6,6 +6,7 @@ use App\Models\Consultation;
 use App\Models\Prescription;
 use App\Models\Visit;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class StoreMedicationChartRequest extends FormRequest
 {
@@ -24,12 +25,13 @@ class StoreMedicationChartRequest extends FormRequest
      */
     public function rules(): array
     {
+        // Log::info('info', ['data' => $this]);
         return [
             'prescriptionId'    => ['required', 'integer', 'exists:'.Prescription::class.',id'],
             'conId'             => ['sometimes', 'nullable','integer', 'exists:'.Consultation::class.',id'],
             'visitId'           => ['required', 'integer', 'exists:'.Visit::class.',id'],
             'dose'              => ['required'],
-            'days'              => ['required', 'integer', 'min:1', 'max:366'],
+            'value'             => ['required', 'integer', 'min:1', 'max:366'],
             'unit'              => ['required'],
             'frequency'         => ['required']
         ];
