@@ -191,7 +191,7 @@ class NursingChartService
         $ward = $this->ward->where('id', $nursingChart->visit->ward)->first();
             return [
                 'id'                => $nursingChart->id,
-                'patient'           => $nursingChart->visit->patient->card_no .' '. $nursingChart->visit->patient->first_name .' '. $nursingChart->visit->patient->middle_name .' '. $nursingChart->visit->patient->last_name,
+                'patient'           => $nursingChart->visit->patient->patientId(),
                 'status'            => $nursingChart->consultation->admission_status,
                 'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
                 'wardId'            => $visit->ward ?? '',
