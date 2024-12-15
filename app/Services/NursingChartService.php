@@ -38,7 +38,7 @@ class NursingChartService
         if (count($dates) > 120) {
             return response()->json(
                 ['errors' => [
-                    'frequency' => ['This frequency may be too frequent'],
+                    'frequency' => ['This frequency may be too high'],
                     'intervals' => ['or the hours/days are too many']
             ]], 422);
         }
@@ -193,8 +193,6 @@ class NursingChartService
                 'id'                => $nursingChart->id,
                 'patient'           => $nursingChart->visit->patient->card_no .' '. $nursingChart->visit->patient->first_name .' '. $nursingChart->visit->patient->middle_name .' '. $nursingChart->visit->patient->last_name,
                 'status'            => $nursingChart->consultation->admission_status,
-                // 'ward'              => $nursingChart->consultation->ward ?? '',
-                // 'bedNo'             => $nursingChart->consultation->bed_no ?? '',
                 'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
                 'wardId'            => $visit->ward ?? '',
                 'wardPresent'       => $ward?->visit_id == $nursingChart->visit->id,

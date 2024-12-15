@@ -21,7 +21,6 @@ class MedicationChartController extends Controller
 
     public function store(StoreMedicationChartRequest $request)
     {
-        // Log::info('info', ['data' => $request]);
         $chart = $this->medicationChartService->create($request, $request->user());
 
         return $chart;

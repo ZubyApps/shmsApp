@@ -21,7 +21,6 @@ class NursingChartController extends Controller
 
     public function store(StoreNursingChartRequest $request)
     {
-        // Log::info('info', ['data' => $request->all()]);
         $chart = $this->nursingChartService->create($request, $request->user());
 
         return $chart;

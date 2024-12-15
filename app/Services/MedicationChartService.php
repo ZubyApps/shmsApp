@@ -39,7 +39,7 @@ class MedicationChartService
         if (count($dates) > 120) {
             return response()->json(
                 ['errors' => [
-                    'frequency' => ['This frequency may be too frequent'],
+                    'frequency' => ['This frequency may be too high'],
                     'intervals' => ['or the hours/days are too many']
             ]], 422);
         }
@@ -161,7 +161,6 @@ class MedicationChartService
             return $this->medicationChart
                         ->where('status', false)
                         ->whereRelation('visit', 'discharge_reason', null)
-                        // ->whereRelation('visit', 'nurse_done_by', null)
                         ->where(function (Builder $query){
                             $query->whereRelation('visit', 'admission_status', '=', 'Inpatient')
                             ->orWhereRelation('visit', 'admission_status', '=','Observation');
@@ -182,7 +181,6 @@ class MedicationChartService
                     ->where('status', false)
                     ->whereRelation('prescription', 'discontinued', false)
                     ->whereRelation('visit', 'discharge_reason', null)
-                    // ->whereRelation('visit', 'nurse_done_by', null)
                     ->where(function (Builder $query){
                         $query->whereRelation('visit', 'admission_status', '=', 'Inpatient')
                         ->orWhereRelation('visit', 'admission_status', '=','Observation');
@@ -197,10 +195,8 @@ class MedicationChartService
         $ward = $this->ward->where('id', $medicationChart->visit->ward)->first();
             return [
                 'id'                => $medicationChart->id,
-                'patient'           => $medicationChart->visit->patient->patientId(),//->card_no .' '. $medicationChart->visit->patient->first_name .' '. $medicationChart->visit->patient->middle_name .' '. $medicationChart->visit->patient->last_name,
+                'patient'           => $medicationChart->visit->patient->patientId(),
                 'status'            => $medicationChart->visit->admission_status,
-                // 'ward'              => $medicationChart->visit->ward ?? '',
-                // 'bedNo'             => $medicationChart->visit->bed_no ?? '',
                 'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
                 'wardId'            => $visit->ward ?? '',
                 'wardPresent'       => $ward?->visit_id == $medicationChart->visit->id,

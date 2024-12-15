@@ -119,7 +119,7 @@ Class ShiftPerformanceService
         $shiftEnd = new Carbon($shiftPerformance->shift_end);
         $shiftEndTimer = $shiftEnd->subMinutes(20);
         $notCharted = [];
-        Log::info('testing', ['time' => $shiftPerformance->shift_start . ' - ' . $shiftEndTimer]);
+        
         $totalOtherPrescriptions = $this->prescription
                                     ->where('chartable', true)
                                     ->whereRelation('resource', 'sub_category', '!=' ,'Injectable')

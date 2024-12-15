@@ -25,7 +25,6 @@ class StoreMedicationChartRequest extends FormRequest
      */
     public function rules(): array
     {
-        // Log::info('info', ['data' => $this]);
         return [
             'prescriptionId'    => ['required', 'integer', 'exists:'.Prescription::class.',id'],
             'conId'             => ['sometimes', 'nullable','integer', 'exists:'.Consultation::class.',id'],
@@ -33,7 +32,8 @@ class StoreMedicationChartRequest extends FormRequest
             'dose'              => ['required'],
             'value'             => ['required', 'integer', 'min:1', 'max:366'],
             'unit'              => ['required'],
-            'frequency'         => ['required']
+            'frequency'         => ['required'],
+            'intervals'         => ['required']
         ];
     }
 }
