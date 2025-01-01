@@ -57,7 +57,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveExpenseBtn                = newExpenseModal._element.querySelector('#saveExpenseBtn')
     const updateExpenseBtn              = updateExpenseModal._element.querySelector('#updateExpenseBtn')
 
-    let payMethodsSummmaryTable, capitationPaymentsTable, TPSSummaryTable, TPSByThirdPartyTable, visitSummaryTable1, visitSummaryTable2, expensesTable, expenseSummaryTable, byPayMethodTable, byExpenseCategoryTable, visitsBySponsorTable, yearlyIncomeAndExpenseTable
+    let payMethodsSummmaryTable, capitationPaymentsTable, TPSSummaryTable, TPSByThirdPartyTable, visitSummaryTable1, visitSummaryTable2, expensesTable, expenseSummaryTable, byPayMethodTable, byExpenseCategoryTable, visitsBySponsorTable, yearlyIncomeAndExpenseTable, yearlyIncomeAndExpenseChart
 
     payMethodsSummmaryTable = getPayMethodsSummmaryTable('payMethodSummaryTable')
     payMethodDiv.querySelector('#payMethodMonth').value == '' ? payMethodDiv.querySelector('#payMethodMonth').value = new Date().toISOString().slice(0,7) : ''
@@ -93,7 +93,9 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     expenseSummaryTab.addEventListener('click', function () {
-        expenseSummaryDatesDiv.querySelector('#expenseMonth').value == '' ? expenseSummaryDatesDiv.querySelector('#expenseMonth').value = new Date().toISOString().slice(0,7) : ''
+        if (expenseSummaryDatesDiv.querySelector('#expenseMonth').value == '' && expenseSummaryDatesDiv.querySelector('#startDate').value == '') {
+            expenseSummaryDatesDiv.querySelector('#expenseMonth').value = new Date().toISOString().slice(0,7)
+        }
         if ($.fn.DataTable.isDataTable( '#expenseSummaryTable' )){
             $('#expenseSummaryTable').dataTable().fnDraw()
         } else {
@@ -127,8 +129,11 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
         http.get(`/reports/accounts/yearlysummary`, {params:  {order: null }}).then((response) => {
-            // displayWardList(modal._element.querySelector("#ward"), response.data)
-            getYearlySummaryChart(yearlySummaryChart, response.data)
+            if (yearlyIncomeAndExpenseChart){
+                yearlyIncomeAndExpenseChart.destroy()
+            } else {
+                yearlyIncomeAndExpenseChart = getYearlySummaryChart(yearlySummaryChart, response.data)
+            }
         })
     })
 

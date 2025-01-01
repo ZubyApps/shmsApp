@@ -113,6 +113,7 @@ function getYearlySummaryChart(chart, data){
             maintainAspectRatio: false
         }
         });
+    return yearlySummaryChart
 }
 
 export {getVitalsignsChartByVisit, getAncVitalsignsChart, getYearlySummaryChart}
