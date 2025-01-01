@@ -129,11 +129,12 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
         http.get(`/reports/accounts/yearlysummary`, {params:  {order: null }}).then((response) => {
-            if (yearlyIncomeAndExpenseChart){
-                yearlyIncomeAndExpenseChart.destroy()
-            } else {
+            // if (yearlyIncomeAndExpenseChart){
+            //     yearlyIncomeAndExpenseChart.destroy()
+            // } else {
+                yearlyIncomeAndExpenseChart?.destroy()
                 yearlyIncomeAndExpenseChart = getYearlySummaryChart(yearlySummaryChart, response.data)
-            }
+            // }
         })
     })
 
