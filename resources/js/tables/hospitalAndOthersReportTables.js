@@ -1,5 +1,12 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
+import jszip, { forEach } from 'jszip';
+import pdfmake from 'pdfmake';
+import pdfFonts from './vfs_fontes'
+DataTable.Buttons.jszip(jszip)
+DataTable.Buttons.pdfMake(pdfmake)
+pdfMake.vfs = pdfFonts;
+$.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
 const getHospitalAndOthersTable = (tableId, startDate, endDate, date) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
@@ -15,6 +22,14 @@ const getHospitalAndOthersTable = (tableId, startDate, endDate, date) => {
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -46,6 +61,14 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate, date
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
         lengthMenu:[50, 100, 150, 200, 300],
         drawCallback: function (settings) {
             var api = this.api()

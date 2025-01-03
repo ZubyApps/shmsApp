@@ -24,6 +24,14 @@ const getDoctorsActivityTable = (tableId, designation, startDate, endDate, date)
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -66,6 +74,14 @@ const getNursesActivityTable = (tableId, designation, startDate, endDate, date) 
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -110,6 +126,14 @@ const getLabTechActivityTable = (tableId, designation, startDate, endDate, date)
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -138,6 +162,14 @@ const getPharmacyTechActivityTable = (tableId, designation, startDate, endDate, 
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -168,6 +200,14 @@ const getHmoOfficersActivityTable = (tableId, designation, startDate, endDate, d
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -214,6 +254,14 @@ const getBillOfficersActivityTable = (tableId, designation, startDate, endDate, 
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary'},
+            {extend: 'csv', className: 'btn-primary'},
+            {extend: 'excel', className: 'btn-primary'},
+            {extend: 'pdfHtml5', className: 'btn-primary'},
+            {extend: 'print', className: 'btn-primary'},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -240,7 +288,7 @@ const getBillOfficersActivityTable = (tableId, designation, startDate, endDate, 
 }
 
 const getNursesShiftPerformanceTable = (tableId, department, startDate, endDate, date) => {
-    const billOfficersActivityTable = new DataTable(`#${tableId}`, {
+    const nursesShiftPerformanceTable = new DataTable(`#${tableId}`, {
         serverSide: true,
         ajax:  {url: '/shiftperformance/load', data: {
             'department' : department,
@@ -266,15 +314,6 @@ const getNursesShiftPerformanceTable = (tableId, department, startDate, endDate,
             {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
             {extend: 'print', className: 'btn-primary', footer: true},
         ],
-        // drawCallback: function (settings) {
-        //     var api = this.api()
-        //     $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
-        //     $( api.column(3).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
-        //     $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
-        //     $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
-        //     $( api.column(6).footer() ).html(account.format(api.column( 6, {page:'current'} ).data().sum()));
-        //     $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
-        // },
         columns: [
             {data: "shift"},
             {data: row => row.start + ' - ' + row.end},
@@ -339,7 +378,7 @@ const getNursesShiftPerformanceTable = (tableId, department, startDate, endDate,
         ]
     })
 
-    return billOfficersActivityTable
+    return nursesShiftPerformanceTable
 }
 
 export {getDoctorsActivityTable, getNursesActivityTable, getLabTechActivityTable, getPharmacyTechActivityTable, getHmoOfficersActivityTable, getBillOfficersActivityTable, getNursesShiftPerformanceTable}

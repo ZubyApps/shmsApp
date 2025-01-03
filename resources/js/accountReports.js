@@ -129,12 +129,9 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
         http.get(`/reports/accounts/yearlysummary`, {params:  {order: null }}).then((response) => {
-            // if (yearlyIncomeAndExpenseChart){
-            //     yearlyIncomeAndExpenseChart.destroy()
-            // } else {
+            
                 yearlyIncomeAndExpenseChart?.destroy()
                 yearlyIncomeAndExpenseChart = getYearlySummaryChart(yearlySummaryChart, response.data)
-            // }
         })
     })
 
@@ -243,7 +240,6 @@ window.addEventListener('DOMContentLoaded', function () {
         yearlyIncomeAndExpenseTable = getYearlyIncomeAndExpenseTable('yearlyIncomeAndExpenseTable', year)
 
         http.get(`/reports/accounts/yearlysummary`, {params:{year: year}}).then((response) => {
-            // displayWardList(modal._element.querySelector("#ward"), response.data)
             getYearlySummaryChart(yearlySummaryChart, response.data)
         })
     })
@@ -291,7 +287,6 @@ window.addEventListener('DOMContentLoaded', function () {
             showThirdPartyServicesBtn.setAttribute('disabled', true)
             const id = showThirdPartyServicesBtn.getAttribute('data-id')
             TPSByThirdPartyModal._element.querySelector('#thirdParty').value = showThirdPartyServicesBtn.getAttribute('data-thirdparty')
-            // TPSByThirdPartyModal._element.querySelector('#sponsorCategory').value = showThirdPartyServicesBtn.getAttribute('data-category')
 
             if (serviceDate){
                 TPSByThirdPartyModal._element.querySelector('#TPSByMonth').value = serviceDate
@@ -326,7 +321,6 @@ window.addEventListener('DOMContentLoaded', function () {
             byExpenseCategoryModal._element.querySelector('#expenseCategory').value = showExpensesBtn.getAttribute('data-expensecategory')
 
             if (expensesDate){
-                console.log(id)
                 byExpenseCategoryModal._element.querySelector('#expenseMonth').value = expensesDate
                 byExpenseCategoryTable = getExpensesTable('byExpenseCategoryTable', 'byExpenseCategory', id, byExpenseCategoryModal, null, null, expensesDate)
                 byExpenseCategoryModal.show()
@@ -334,7 +328,6 @@ window.addEventListener('DOMContentLoaded', function () {
             }
 
             if(expensesFrom && expensesTo){
-                console.log(id, showExpensesBtn)
                 byExpenseCategoryModal._element.querySelector('#from').value = expensesFrom
                 byExpenseCategoryModal._element.querySelector('#to').value = expensesTo
                 byExpenseCategoryModal._element.querySelector('#expenseMonth').value = ''
@@ -426,43 +419,46 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelector('#expensesTable').addEventListener('click', function (event) {
-        const editExpenseBtn    = event.target.closest('.editExpenseBtn')
-        const deleteExpenseBtn    = event.target.closest('.deleteExpenseBtn')
-
-        if (editExpenseBtn) {
-            editExpenseBtn.setAttribute('disabled', 'disabled')
-            const expense = editExpenseBtn.getAttribute('data-id')
-            http.get(`/expenses/${ expense }`)
-                .then((response) => {
-                    if (response.status >= 200 || response.status <= 300) {
-                        openModals(updateExpenseModal, updateExpenseBtn, response.data.data)
-                    }
-                    editExpenseBtn.removeAttribute('disabled')
-                })
-                .catch((error) => {
-                    editExpenseBtn.removeAttribute('disabled')
-                    alert(error.response.data.data.message)
-                })
-        }
-
-        if (deleteExpenseBtn){
-            deleteExpenseBtn.setAttribute('disabled', 'disabled')
-            if (confirm('Are you sure you want to delete this Expense?')) {
-                const expense = deleteExpenseBtn.getAttribute('data-id')
-                http.delete(`/expenses/${expense}`)
+    document.querySelectorAll('#expensesTable, #byExpenseCategoryTable').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const editExpenseBtn    = event.target.closest('.editExpenseBtn')
+            const deleteExpenseBtn    = event.target.closest('.deleteExpenseBtn')
+    
+            if (editExpenseBtn) {
+                console.log(table.id)
+                editExpenseBtn.setAttribute('disabled', 'disabled')
+                const expense = editExpenseBtn.getAttribute('data-id')
+                http.get(`/expenses/${ expense }`)
                     .then((response) => {
-                        if (response.status >= 200 || response.status <= 300){
-                            expensesTable ? expensesTable.draw() : ''
+                        if (response.status >= 200 || response.status <= 300) {
+                            openModals(updateExpenseModal, updateExpenseBtn, response.data.data)
                         }
-                        deleteExpenseBtn.removeAttribute('disabled')
+                        editExpenseBtn.removeAttribute('disabled')
                     })
                     .catch((error) => {
-                        console.log(error)
-                        deleteExpenseBtn.removeAttribute('disabled')
+                        editExpenseBtn.removeAttribute('disabled')
+                        alert(error.response.data.data.message)
                     })
             }
-        }
+    
+            if (deleteExpenseBtn){
+                deleteExpenseBtn.setAttribute('disabled', 'disabled')
+                if (confirm('Are you sure you want to delete this Expense?')) {
+                    const expense = deleteExpenseBtn.getAttribute('data-id')
+                    http.delete(`/expenses/${expense}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300){
+                                expensesTable ? expensesTable.draw() : ''
+                            }
+                            deleteExpenseBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                            deleteExpenseBtn.removeAttribute('disabled')
+                        })
+                }
+            }
+        })
     })
 
     updateExpenseBtn.addEventListener('click', function (event) {
@@ -473,6 +469,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                 updateExpenseModal.hide()
                 expensesTable ? expensesTable.draw() : ''
+                byExpenseCategoryTable ? byExpenseCategoryTable.draw() : ''
             }
             updateExpenseBtn.removeAttribute('disabled')
         })

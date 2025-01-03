@@ -61,6 +61,14 @@ const getByResourceTable = (tableId, resourceId, modal, startDate, endDate, date
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
         lengthMenu:[50, 100, 150, 200, 300],
         drawCallback: function (settings) {
             var api = this.api()
@@ -104,6 +112,14 @@ const getNewBirthsTable = (tableId, startDate, endDate, date) => {
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         columns: [
             {data: "date"},

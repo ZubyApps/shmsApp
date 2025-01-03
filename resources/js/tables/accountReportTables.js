@@ -25,6 +25,14 @@ const getPayMethodsSummmaryTable = (tableId, startDate, endDate, date) => {
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -53,6 +61,14 @@ const getByPayMethodsTable = (tableId, payMethodId, modal, startDate, endDate, d
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
         lengthMenu:[50, 100, 150, 200, 500],
         drawCallback: function (settings) {
             var api = this.api()
@@ -95,6 +111,14 @@ const getTPSByThirdPartyTable = (tableId, thirdPartyId, modal, startDate, endDat
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         drawCallback: function (settings) {
             var api = this.api()
@@ -103,7 +127,6 @@ const getTPSByThirdPartyTable = (tableId, thirdPartyId, modal, startDate, endDat
         columns: [
             {data: "date"},
             {data: "initiatedBy"},
-            // {data: "thirdParty"},
             {data: row => function () {
                 const credit = row.sponsorCategoryClass == 'Credit'
                 const NHIS = row.sponsorCategory == 'NHIS'
@@ -203,6 +226,14 @@ const getExpenseSummaryTable = (tableId, startDate, endDate, date) => {
         }},
         orderMulti: true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         language: {
             emptyTable: 'No expense'
@@ -234,6 +265,14 @@ const getTPSSummaryTable = (tableId, startDate, endDate, date) => {
         }},
         orderMulti: true,
         searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
         lengthMenu:[20, 40, 80, 120, 200],
         language: {
             emptyTable: 'No expense'
