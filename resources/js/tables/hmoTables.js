@@ -799,9 +799,8 @@ const getDueHmoRemindersTable = (tableId) => {
                     if (data != 'Pending'){
                         return data
                     }
-                    return  `
-                    <input class="ms-1 form-control confirmedPaidInput text-secondary" type="date" style="width:8rem;" data-id="${row.id}">  
-                    `
+                    return  `<button class="btn btn-primary confirmedPaidBtn" data-id="${row.id}" data-sponsor="${row.sponsor}" data-monthYear="${row.monthSentFor}">Pay</button>`
+                     //`<input class="ms-1 form-control confirmedPaidInput text-secondary" type="date" style="width:8rem;" data-id="${row.id}"> `
                 }
             },
             {data: "comment"},

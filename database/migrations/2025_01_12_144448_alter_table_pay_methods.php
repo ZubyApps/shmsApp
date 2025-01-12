@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('visits', function (Blueprint $table) {
-            $table->text('reviewed')->nullable()->change();
+        Schema::table('pay_methods', function (Blueprint $table) {
+            $table->after('description', function (Blueprint $table) {
+                $table->boolean('visible')->default(true)->nullable();
+            });
         });
     }
 
@@ -21,8 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('visits', function (Blueprint $table) {
-            $table->text('reviewed')->nullable(false)->change();
+        Schema::table('pay_methods', function (Blueprint $table) {
+            $table->dropColumn(['visible']);
         });
     }
 };

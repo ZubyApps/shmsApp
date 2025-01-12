@@ -333,20 +333,21 @@ class AccountsReportService
     {
         return  function (Payment $payment) {
 
-            $pVisit = $payment->visit;
+            $pVisit = $payment?->visit;
 
             return [
                     'id'                => $payment->id,
                     'date'              => (new Carbon($payment->created_at))->format('d/M/y g:ia'),
-                    'patient'           => $pVisit->patient->patientId(),
-                    'sponsor'           => $pVisit->sponsor->name,
-                    'category'          => $pVisit->sponsor->category_name,
-                    'diagnosis'         => $pVisit->consultations()->where('visit_id', $pVisit->id)->first()?->icd11_diagnosis ?? $pVisit->consultations()->where('visit_id', $pVisit->id)->first()?->provisional_diagnosis,
-                    'doctor'            => $pVisit->doctor?->username,
-                    'totalHmsBill'      => $pVisit->total_hms_bill,
-                    'totalHmoBill'      => $pVisit->total_hmo_bill,
-                    'totalNhisBill'     => $pVisit->total_nhis_bill,
+                    'patient'           => $pVisit?->patient->patientId(),
+                    'sponsor'           => $pVisit?->sponsor->name,
+                    'category'          => $pVisit?->sponsor->category_name,
+                    'diagnosis'         => $pVisit?->consultations()->where('visit_id', $pVisit->id)->first()?->icd11_diagnosis ?? $pVisit?->consultations()->where('visit_id', $pVisit?->id)->first()?->provisional_diagnosis,
+                    'doctor'            => $pVisit?->doctor?->username,
+                    'totalHmsBill'      => $pVisit?->total_hms_bill,
+                    'totalHmoBill'      => $pVisit?->total_hmo_bill,
+                    'totalNhisBill'     => $pVisit?->total_nhis_bill,
                     'amountPaid'        => $payment->amount_paid,
+                    'comment'           => $payment->comment,
                     'by'                => $payment->user->username,
                 ];
             };

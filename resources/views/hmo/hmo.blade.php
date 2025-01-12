@@ -16,6 +16,7 @@
 @include('extras.viewMedicalReportModal', ['title' => '', 'isUpdate' => true, 'id' => 'viewMedicalReportModal' ])
 @include('hmo.capitationPaymentModal', ['title' => '', 'id' => 'capitationPaymentModal' ])
 @include('hmo.registerBillSentModal', ['title' => 'Register Bill As Sent', 'id' => 'registerBillSentModal' ])
+@include('hmo.confirmPaymentModal', ['title' => 'Save Payment', 'id' => 'confirmPaymentModal', 'identity' => 'Sponsor' ])
 
 
 
@@ -150,7 +151,7 @@
                                     <th>1st Reminder</th>
                                     <th>2nd Reminder</th>
                                     <th>Final Reminder</th>
-                                    <th>Paid</th>
+                                    <th>Pay</th>
                                     <th>Comment</th>
                                     <th>Set By</th>
                                 </tr>

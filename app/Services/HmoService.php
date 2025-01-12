@@ -925,7 +925,19 @@ class HmoService
 
     public function updatableReminderDisplay($reminder)
     {
-        return $reminder ? ($reminder?->confirmed_paid ? (new Carbon($reminder->confirmed_paid))->format('d/m/y') . '<i class="ms-1 text-primary bi bi-p-circle-fill tooltip-test" title="paid"></i>' : null) ?? ($reminder?->final_reminder ? 'Final reminder - '.$reminder?->final_reminder : null ) ?? ($reminder?->second_reminder ? 'Second reminder - '.$reminder?->second_reminder : null) ?? ($reminder?->first_reminder ? 'First reminder - '.$reminder?->first_reminder : null) ?? 'Bill Sent': null;
+        return $reminder ? ($reminder?->confirmed_paid ? '<i class="ms-1 text-primary bi bi-p-circle-fill tooltip-test" title="paid"></i>' . (new Carbon($reminder->confirmed_paid))->format('d/m/y') . ' - ' . number_format((float)$reminder->amount_confirmed) : null) ?? ($reminder?->final_reminder ? $this->reportTableHtmlFormat('Final reminder', $reminder ,'final_reminder') : null ) ?? ($reminder?->second_reminder ? $this->reportTableHtmlFormat('Second reminder', $reminder ,'second_reminder') : null) ?? ($reminder?->first_reminder ? $this->reportTableHtmlFormat('First reminder', $reminder ,'first_reminder') : null) ?? $this->reportTableHtmlFormat('Bill Sent', $reminder, null) : null;
+    }
+
+    public function monthYearCoverter($date)
+    {
+        return (new Carbon($date))->format('F Y');
+    }
+
+    public function reportTableHtmlFormat($text, $reminder, $type){
+        if ($type){
+            return '<span class="confirmedPaidBtn" data-id="' . $reminder->id .'" data-sponsor="'. $reminder->sponsor->name .'" data-monthYear="'. $this->monthYearCoverter($reminder->month_sent_for) .'">'. $text .' - '. $reminder?->$type.'</span>';
+        }
+        return '<span class="confirmedPaidBtn" data-id="'. $reminder->id .'" data-sponsor="'. $reminder->sponsor->name . '" data-monthYear="' . $this->monthYearCoverter($reminder->month_sent_for) .'">'. $text .'</span>';
     }
 
     public function getVisitsForReconciliation(DataTableQueryParams $params, $data)
@@ -1169,5 +1181,28 @@ class HmoService
                 'monthYear'         => $monthYear,
             ];
         };
+    }
+
+    public function totalYearlyIncomeFromHmoPatients($data)
+    {
+        $currentDate = new Carbon();
+        if ($data->year){
+
+            return DB::table('reminders')
+                            ->selectRaw('SUM(amount_confirmed) as paidHmo, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
+                            ->whereNull('visit_id')
+                            ->whereYear('created_at', $data->year)
+                            ->groupBy('month_name', 'month')
+                            ->orderBy('month')
+                            ->get();
+        }
+
+        return DB::table('reminders')
+                        ->selectRaw('SUM(amount_confirmed) as paidHmo, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
+                        ->whereNull('visit_id')
+                        ->whereYear('created_at', $currentDate->year)
+                        ->groupBy('month_name', 'month')
+                        ->orderBy('month')
+                        ->get();
     }
 }

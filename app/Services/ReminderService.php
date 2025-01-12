@@ -166,7 +166,7 @@ class ReminderService
                     'finalReminder'     => $reminder->final_reminder ? $reminder->final_reminder . ' - ' . $reminder->finalReminderBy?->username : '',
                     'finalDate'         => $reminder->final_reminder_date ? (new Carbon($reminder->final_reminder_date))->format('d/m/Y g:ia') : '',
                     'remind'            => $reminder->remind ? 'Yes' : 'No',
-                    'paid'              => $reminder->confirmed_paid ? (new Carbon($reminder->confirmed_paid))->format('d/m/y') . ' - ' . $reminder->confirmedPaidBy?->username : 'Pending',
+                    'paid'              => $reminder->confirmed_paid ? (new Carbon($reminder->confirmed_paid))->format('d/m/y'). ' - '. number_format((float)$reminder->amount_confirmed) . ' - ' . $reminder->confirmedPaidBy?->username : 'Pending',
                     'comment'           => $reminder->comment,
                     'createdAt'         => (new Carbon($reminder->created_at))->format('d/m/Y g:ia'),
                     'setBy'             => $reminder->user->username,
@@ -227,7 +227,7 @@ class ReminderService
                 'firstReminder'     => $reminder->first_reminder ? $reminder->first_reminder . ' - ' . $reminder->firstReminderBy?->username : null,
                 'secondReminder'    => $reminder->second_reminder ? $reminder->second_reminder . ' - ' . $reminder->secondReminderBy?->username : null,
                 'finalReminder'     => $reminder->final_reminder ? $reminder->final_reminder . ' - ' . $reminder->finalReminderBy?->username : null,
-                'paid'              => $reminder->confirmed_paid ? (new Carbon($reminder->confirmed_paid))->format('d/m/y') . ' - ' . $reminder->confirmedPaidBy?->username : 'Pending',
+                'paid'              => $reminder->confirmed_paid ? (new Carbon($reminder->confirmed_paid))->format('d/m/y') . ' - '. number_format((float)$reminder->amount_confirmed) .' - ' . $reminder->confirmedPaidBy?->username : 'Pending',
                 'comment'           => $reminder->comment,
                 'createdAt'         => (new Carbon($reminder->created_at))->format('d/m/Y g:ia'),
                 'setBy'             => $reminder->user->username,
@@ -282,22 +282,28 @@ class ReminderService
 
     public function deletePaidR(Reminder $reminder)
     {
-        return $reminder->update(['confirmed_paid' => null]);
+        return $reminder->update(
+            [
+                'confirmed_paid' => null,
+                'amount_confirmed' => null
+                ]
+        );
     }
 
     public function notePayment(Request $data, Reminder $reminder, User $user)
     {
         return DB::transaction(function () use($data, $reminder, $user){
             if ($reminder->visit_id){
-                $data->confirmedPaidDate ? $reminder->visit->patient->update(['flag' => false]) : '';
+                $data->confirmedPayDate ? $reminder->visit->patient->update(['flag' => false]) : '';
             }else{
-                $data->confirmedPaidDate ? $reminder->sponsor->update(['flag' => false]) : '';
+                $data->confirmedPayDate ? $reminder->sponsor->update(['flag' => false]) : '';
             }
     
             return $reminder->update([
-                'confirmed_paid'        => $data->confirmedPaidDate ? new Carbon($data->confirmedPaidDate) : null,
-                'confirmed_paid_by'     => $data->confirmedPaidDate ? $user->id : null,
-                'remind'                => $data->confirmedPaidDate ? false : $reminder->remind
+                'confirmed_paid'        => $data->confirmedPayDate ? new Carbon($data->confirmedPaidDate) : null,
+                'amount_confirmed'      => $data->amountConfirmed ? $data->amountConfirmed : null,
+                'confirmed_paid_by'     => $data->confirmedPayDate ? $user->id : null,
+                'remind'                => $data->confirmedPayDate ? false : $reminder->remind
             ]);
         });
     }

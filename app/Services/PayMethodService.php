@@ -21,6 +21,7 @@ class PayMethodService
         return $user->payMethods()->create([
             'name'          => $data->name,
             'description'   => $data->description,
+            'visible'       => $data->visible,
         ]);
     }
 
@@ -29,6 +30,7 @@ class PayMethodService
        $payMethod->update([
             'name'          => $data->name,
             'description'   => $data->description,
+            'visible'       => $data->visible,
             'user_id'       => $user->id,
 
         ]);
@@ -62,6 +64,7 @@ class PayMethodService
                 'id'                => $payMethod->id,
                 'name'              => $payMethod->name,
                 'description'       => $payMethod->description,
+                'visible'           => $payMethod->visible,
                 'createdBy'         => $payMethod->user->username,
                 'createdAt'         => (new Carbon($payMethod->created_at))->format('d/m/y g:ia'),
                 'count'             => $payMethod->payments()->count(),
@@ -69,8 +72,13 @@ class PayMethodService
          };
     }
 
-    public function list()
+    public function list($all = false)
     {   
-        return $this->payMethod->orderBy('name')->get(['id', 'name'])->toArray();
+        // var_dump($all) ;
+        if ($all){
+            // var_dump('all ran');
+            return $this->payMethod->orderBy('name')->get(['id', 'name']);//->toArray();
+        }
+        return $this->payMethod->orderBy('name')->where('visible', true)->get(['id', 'name'])->toArray();
     }
 }

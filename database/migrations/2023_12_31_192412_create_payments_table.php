@@ -20,8 +20,8 @@ return new class extends Migration
             $table->integer('amount_paid');
             $table->string('comment')->nullable();
             $table->foreignIdFor(PayMethod::class)->constrained()->restrictOnDelete();
-            $table->foreignIdFor(Patient::class)->constrained()->restrictOnDelete();
-            $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();
+            $table->foreignIdFor(Patient::class)->constrained()->restrictOnDelete();// this has been made nullable
+            $table->foreignIdFor(Visit::class)->constrained()->restrictOnDelete();// this has been made nullable
             $table->foreignIdFor(User::class)->constrained()->restrictOnDelete();
             $table->timestamps();
         });

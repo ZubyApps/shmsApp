@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SendSmsRequest;
+use App\Http\Requests\StoreConfirmedPaymentRequest;
 use App\Models\Reminder;
 use App\Http\Requests\StoreReminderRequestCash;
 use App\Http\Requests\StoreReminderRequestHmo;
@@ -94,7 +95,7 @@ class ReminderController extends Controller
         return $this->reminderService->finalReminder($request, $reminder, $request->user());
     }
 
-    public function updateConfirmedPayment(Request $request, Reminder $reminder)
+    public function updateConfirmedPayment(StoreConfirmedPaymentRequest $request, Reminder $reminder)
     {
         return $this->reminderService->notePayment($request, $reminder, $request->user());
     }

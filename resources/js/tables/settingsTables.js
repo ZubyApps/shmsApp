@@ -165,6 +165,7 @@ const getPayMethodTable = () => {
                 return `<span class="text-primary"> ${row.name}</span>`
             }},
             {data: "description"},
+            {data: row => row.visible ? '<span class="fw-bold text-success">true</span>' : '<span class="fw-bold text-danger">false</span>'},
             {data: "createdBy"},
             {data: "createdAt"},
             {

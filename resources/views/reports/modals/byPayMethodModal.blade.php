@@ -43,13 +43,17 @@
                                             <th>HmoBill</th>
                                             <th>NhisBill</th>
                                             <th>Amount Paid</th>
+                                            <th>Comment</th>
                                             <th>By</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
                                     <tfoot class="fw-bold">
                                         <tr>
                                             <td class="text-center">Total</td>
+                                            <td></td>
+                                            <td></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>

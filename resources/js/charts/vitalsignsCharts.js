@@ -116,4 +116,66 @@ function getYearlySummaryChart(chart, data){
     return yearlySummaryChart
 }
 
-export {getVitalsignsChartByVisit, getAncVitalsignsChart, getYearlySummaryChart}
+function getYearlySummaryChart2(chart, data){
+    const yearlySummaryChart2 = new Chart(chart, {
+        type: 'bar',
+        data: {
+            labels: data.data.map((row, index, data) => {return row.month_name}),
+            datasets: [
+                {
+                    label: `Total From Cash and HMO`,
+                    data: data.data.map(row => +row.cashPaid + +row.paidHmo),
+                },
+                {
+                    label: `Total monthly Expenses`,
+                    data: data.data.map(row => row.expense),
+                }
+        ]
+        },
+        options: {
+            scales: {
+            y: {
+                beginAtZero: true,
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+        });
+    return yearlySummaryChart2
+}
+
+function getYearlySummaryChart3(chart, data){
+    const yearlySummaryChart3 = new Chart(chart, {
+        type: 'bar',
+        data: {
+            labels: data.data.map((row, index, data) => {return row.month_name}),
+            datasets: [
+                {
+                    label: `Total Bill`,
+                    data: data.data.map(row => +row.bill),
+                },
+                {
+                    label: `Total Received`,
+                    data: data.data.map(row => row.cashPaid),
+                },
+                {
+                    label: `Total Expenses`,
+                    data: data.data.map(row => row.expense),
+                }
+        ]
+        },
+        options: {
+            scales: {
+            y: {
+                beginAtZero: true,
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+        });
+    return yearlySummaryChart3
+}
+
+export {getVitalsignsChartByVisit, getAncVitalsignsChart, getYearlySummaryChart, getYearlySummaryChart2, getYearlySummaryChart3}

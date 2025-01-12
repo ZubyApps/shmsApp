@@ -9,7 +9,6 @@ DataTable.Buttons.pdfMake(pdfmake)
 pdfMake.vfs = pdfFonts;
 $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 
-
 const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 const sponsors = ['NHIS', 'HMO']
 
@@ -61,14 +60,27 @@ const getByPayMethodsTable = (tableId, payMethodId, modal, startDate, endDate, d
         orderMulti: true,
         search:true,
         searchDelay: 500,
-        dom: 'lfrtip<"my-5 text-center "B>',
+        // dom: 'lfrtip<"my-5 text-center "B>',
+        // buttons: [
+        //     {extend: 'copy', className: 'btn-primary', footer: true},
+        //     {extend: 'csv', className: 'btn-primary', footer: true},
+        //     {extend: 'excel', className: 'btn-primary', footer: true},
+        //     {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+        //     {extend: 'print', className: 'btn-primary', footer: true},
+        //      ],
+        dom: 'l<"my-1 text-center "B>frtip',
         buttons: [
+            {
+                extend:'colvis',
+                text:'Show/Hide',
+                className:'btn btn-primary'       
+            },
             {extend: 'copy', className: 'btn-primary', footer: true},
             {extend: 'csv', className: 'btn-primary', footer: true},
             {extend: 'excel', className: 'btn-primary', footer: true},
             {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
             {extend: 'print', className: 'btn-primary', footer: true},
-             ],
+        ],
         lengthMenu:[50, 100, 150, 200, 500],
         drawCallback: function (settings) {
             var api = this.api()
@@ -81,11 +93,24 @@ const getByPayMethodsTable = (tableId, payMethodId, modal, startDate, endDate, d
             {data: "category"},
             {data: "diagnosis"},
             {data: "doctor"},
-            {data: "totalHmsBill"},
-            {data: "totalHmoBill"},
-            {data: "totalNhisBill"},
-            {data: "amountPaid"},
+            {data: row => account.format(row.totalHmsBill)},
+            {data: row => account.format(row.totalHmoBill)},
+            {data: row => account.format(row.totalNhisBill)},
+            {data: row => account.format(row.amountPaid)},
+            {data: "comment"},
             {data: "by"},
+            {
+                data: row => () => {
+                if (!row.patient) {
+                     return `
+                        <div class="d-flex flex-">
+                            <i class="bi bi-trash3-fill deletePaymentBtn tooltip-test  text-primary" title="delete" data-id="${ row.id }"></i>
+                        </div>
+                    `
+                    }
+                    return ''
+                }
+            }
         ]
     })
 
@@ -532,16 +557,18 @@ const getVisitsBySponsorTable = (tableId, sponsorId, modal, startDate, endDate, 
     return visitsBySponsorTable
 }
 
-const getYearlyIncomeAndExpenseTable = (tableId, year) => {
+const getYearlyIncomeAndExpenseTable = (tableId, year, chart) => {
     const yearlyIncomeAndExpenseTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax: {url: '/reports/accounts/yearlysummary', data: {
             'year'    : year,
+            'chart'    : chart
         }},
-        orderMulti: true,
+        orderMulti: false,
         searching: false,
         lengthChange: false,
         info: false,
+        paging: false,
         // "sAjaxDataProp": "data.data",
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
@@ -575,4 +602,84 @@ const getYearlyIncomeAndExpenseTable = (tableId, year) => {
     return yearlyIncomeAndExpenseTable
 }
 
-export {getPayMethodsSummmaryTable, getCapitationPaymentsTable, getTPSSummaryTable, getByPayMethodsTable, getTPSByThirdPartyTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable}
+const getYearlyIncomeAndExpenseTable2 = (tableId, year, chart) => {
+    const yearlyIncomeAndExpenseTable2 =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax: {url: '/reports/accounts/yearlysummary2', data: {
+            'year'    : year,
+            'chart'   : chart
+        }},
+        orderMulti: true,
+        searching: false,
+        lengthChange: false,
+        info: false,
+        // "sAjaxDataProp": "data.data",
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
+        drawCallback: function () {
+            var api = this.api()
+            
+                $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
+                $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
+                $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
+                $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {data: "month_name"},
+            {data: row => account.format(+row.cashPaid)},
+            {data: row => account.format(+row.paidHmo)},
+            {data: row => account.format(+row.expense)},
+            {data: row => account.format((+row.cashPaid + +row.paidHmo)  - row.expense)},
+        ]
+    });
+    
+    return yearlyIncomeAndExpenseTable2
+}
+
+const getYearlyIncomeAndExpenseTable3 = (tableId, year, chart) => {
+    const yearlyIncomeAndExpenseTable2 =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax: {url: '/reports/accounts/yearlysummary3', data: {
+            'year'    : year,
+            'chart'   : chart
+        }},
+        orderMulti: true,
+        searching: false,
+        lengthChange: false,
+        info: false,
+        // "sAjaxDataProp": "data.data",
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
+        drawCallback: function () {
+            var api = this.api()
+            
+                $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
+                $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
+                $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
+                $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {data: "month_name"},
+            {data: row => account.format(+row.bill)},
+            {data: row => account.format(+row.cashPaid)},
+            {data: row => account.format(+row.expense)},
+            {data: row => account.format(+row.cashPaid  - +row.expense)},
+        ]
+    });
+    
+    return yearlyIncomeAndExpenseTable2
+}
+
+export {getPayMethodsSummmaryTable, getCapitationPaymentsTable, getTPSSummaryTable, getByPayMethodsTable, getTPSByThirdPartyTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable, getYearlyIncomeAndExpenseTable2, getYearlyIncomeAndExpenseTable3}

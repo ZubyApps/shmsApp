@@ -28,6 +28,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const viewMedicalReportModal    = new Modal(document.getElementById('viewMedicalReportModal'))
     const capitationPaymentModal    = new Modal(document.getElementById('capitationPaymentModal'))
     const registerBillSentModal     = new Modal(document.getElementById('registerBillSentModal'))
+    const confirmPaymentModal       = new Modal(document.getElementById('confirmPaymentModal'))
 
     const codeTextDiv               = verifyModal._element.querySelector('#codeTextDiv')
     const sponsorDetailsDiv         = changeSponsorModal._element.querySelector('#sponsorDetailsDiv')
@@ -64,6 +65,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const searchBillRemindersMonthBtn       = document.querySelector('.searchBillRemindersMonthBtn')
     const saveCapitationPaymentBtn          = capitationPaymentModal._element.querySelector('#saveCapitationPaymentBtn')
     const saveReminderBtn                   = registerBillSentModal._element.querySelector('#saveReminderBtn')
+    const savePaymentBtn                    = confirmPaymentModal._element.querySelector('#savePaymentBtn')
 
 
     const filterListOption                  = document.querySelector('#filterList')
@@ -1109,92 +1111,126 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    document.querySelector('#dueRemindersListTable').addEventListener('click', function (event) {
-        const firstReminderSelect   = event.target.closest('.firstReminderSelect')
-        const secondReminderSelect  = event.target.closest('.secondReminderSelect')
-        const finalReminderSelect   = event.target.closest('.finalReminderSelect')
-        const confirmedPaidInput    = event.target.closest('.confirmedPaidInput')
-        const dueRemindersFieldset  = document.querySelector('#dueRemindersFieldset')
-
-       if (firstReminderSelect){
-            const reminderId  = firstReminderSelect.getAttribute('data-id')
-                
-            firstReminderSelect.addEventListener('blur', function () {
-                dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/firstreminder/${reminderId}`, {reminder:  firstReminderSelect.value})
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300) {
-                            dueHmoRemindersTable.draw()
-                            dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset)) 
-                        }
-                    })
-                    .catch((error) => {
-                        dueHmoRemindersTable.draw()
-                        dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
-                        console.log(error)
-                    })               
-            })
-        }
-
-       if (secondReminderSelect){
-            const reminderId  = secondReminderSelect.getAttribute('data-id')
-                
-            secondReminderSelect.addEventListener('blur', function () {
-                dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/secondreminder/${reminderId}`, {reminder : secondReminderSelect.value})
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300) {
+    document.querySelectorAll('#dueRemindersListTable, #hmoReportsTable').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const firstReminderSelect   = event.target.closest('.firstReminderSelect')
+            const secondReminderSelect  = event.target.closest('.secondReminderSelect')
+            const finalReminderSelect   = event.target.closest('.finalReminderSelect')
+            // const confirmedPaidInput    = event.target.closest('.confirmedPaidInput')
+            const confirmedPaidBtn    = event.target.closest('.confirmedPaidBtn')
+            const dueRemindersFieldset  = document.querySelector('#dueRemindersFieldset')
+    
+           if (firstReminderSelect){
+                const reminderId  = firstReminderSelect.getAttribute('data-id')
+                    
+                firstReminderSelect.addEventListener('blur', function () {
+                    dueRemindersFieldset.setAttribute('disabled', 'disabled')
+                        http.patch(`/reminders/firstreminder/${reminderId}`, {reminder:  firstReminderSelect.value})
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
                                 dueHmoRemindersTable.draw()
                                 dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset)) 
-                        }
-                    })
-                    .catch((error) => {
-                        dueHmoRemindersTable.draw()
-                        dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
-                        console.log(error)
-                    })               
-            })
-        }
+                            }
+                        })
+                        .catch((error) => {
+                            dueHmoRemindersTable.draw()
+                            dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                            console.log(error)
+                        })               
+                })
+            }
+    
+           if (secondReminderSelect){
+                const reminderId  = secondReminderSelect.getAttribute('data-id')
+                    
+                secondReminderSelect.addEventListener('blur', function () {
+                    dueRemindersFieldset.setAttribute('disabled', 'disabled')
+                        http.patch(`/reminders/secondreminder/${reminderId}`, {reminder : secondReminderSelect.value})
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                    dueHmoRemindersTable.draw()
+                                    dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset)) 
+                            }
+                        })
+                        .catch((error) => {
+                            dueHmoRemindersTable.draw()
+                            dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                            console.log(error)
+                        })               
+                })
+            }
+    
+           if (finalReminderSelect){
+                const reminderId  = finalReminderSelect.getAttribute('data-id')
+                    
+                finalReminderSelect.addEventListener('blur', function () {
+                    dueRemindersFieldset.setAttribute('disabled', 'disabled')
+                        http.patch(`/reminders/finalreminder/${reminderId}`, {reminder : finalReminderSelect.value})
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                    dueHmoRemindersTable.draw()
+                                    dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                            }
+                        })
+                        .catch((error) => {
+                            dueHmoRemindersTable.draw()
+                            dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+                            console.log(error)
+                        })               
+                })
+            }
+    
+        //    if (confirmedPaidInput){
+        //         const reminderId  = confirmedPaidInput.getAttribute('data-id')
+                    
+        //         confirmedPaidInput.addEventListener('blur', function () {
+        //             dueRemindersFieldset.setAttribute('disabled', 'disabled')
+        //                 http.patch(`/reminders/confirmedpaid/${reminderId}`, {confirmedPaidDate: confirmedPaidInput.value})
+        //                 .then((response) => {
+        //                     if (response.status >= 200 || response.status <= 300) {
+        //                             dueHmoRemindersTable.draw()
+        //                             dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+        //                     }
+        //                 })
+        //                 .catch((error) => {
+        //                     dueHmoRemindersTable.draw()
+        //                     dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+        //                     console.log(error)
+        //                 })               
+        //         })
+        //     }
+    
+            if (confirmedPaidBtn){
+                savePaymentBtn.setAttribute('data-id', confirmedPaidBtn.getAttribute('data-id'))
+                confirmPaymentModal._element.querySelector('#sponsor').value = confirmedPaidBtn.getAttribute('data-sponsor')
+                confirmPaymentModal._element.querySelector('#monthYear').value = confirmedPaidBtn.getAttribute('data-monthYear')
+                confirmPaymentModal.show()
+            }
+        })
+    })
 
-       if (finalReminderSelect){
-            const reminderId  = finalReminderSelect.getAttribute('data-id')
-                
-            finalReminderSelect.addEventListener('blur', function () {
-                dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/finalreminder/${reminderId}`, {reminder : finalReminderSelect.value})
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300) {
-                                dueHmoRemindersTable.draw()
-                                dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
-                        }
-                    })
-                    .catch((error) => {
-                        dueHmoRemindersTable.draw()
-                        dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
-                        console.log(error)
-                    })               
-            })
-        }
+    savePaymentBtn.addEventListener('click', function () {
+        const reminderId = savePaymentBtn.getAttribute('data-id')
+        savePaymentBtn.setAttribute('disabled', 'disabled')
 
-       if (confirmedPaidInput){
-            const reminderId  = confirmedPaidInput.getAttribute('data-id')
-                
-            confirmedPaidInput.addEventListener('blur', function () {
-                dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/confirmedpaid/${reminderId}`, {confirmedPaidDate: confirmedPaidInput.value})
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300) {
-                                dueHmoRemindersTable.draw()
-                                dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
-                        }
-                    })
-                    .catch((error) => {
-                        dueHmoRemindersTable.draw()
-                        dueHmoRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
-                        console.log(error)
-                    })               
-            })
-        }
+        http.patch(`/reminders/confirmedpaid/${reminderId}`, getDivData(confirmPaymentModal._element), {"html": confirmPaymentModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                confirmPaymentModal.hide()
+                }
+                savePaymentBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            savePaymentBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
+        })
+    })
+
+    confirmPaymentModal._element.addEventListener('hide.bs.modal', function(event) {
+        clearValidationErrors(confirmPaymentModal._element)
+        clearDivValues(confirmPaymentModal._element)
+        dueHmoRemindersTable.draw()
+        hmoReportsTable ? hmoReportsTable.draw() : ''
     })
 
 })

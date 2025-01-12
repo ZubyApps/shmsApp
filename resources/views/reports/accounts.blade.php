@@ -10,6 +10,7 @@
 @include('reports.modals.TPSByThirdPartyModal', ['title' => 'Third Party Services By Third Party', 'id' => 'TPSByThirdPartyModal'])
 @include('billing.expenseModal', ['title' => "New Expense", 'isUpdate' => false, 'isManagement' => true, 'id' => 'newExpenseModal'])
 @include('billing.expenseModal', ['title' => "Update Expense", 'isUpdate' => true, 'isManagement' => true, 'id' => 'updateExpenseModal'])
+@include('reports.modals.payDirectModal', ['title' => "New Direct Payment", 'isUpdate' => false, 'isManagement' => true, 'id' => 'payDirectModal'])
 
 <div class="container mt-5">
     @include('reports.reportGrid')
@@ -39,12 +40,24 @@
                 <button class="nav-link" id="nav-yearlyIncomeAndExpense-tab" data-bs-toggle="tab" 
                     data-bs-target="#nav-yearlyIncomeAndExpense" type="button" role="tab" aria-controls="nav-yearlyIncomeAndExpense" 
                     aria-selected="false">Yearly Summary</button>
+                <button class="nav-link" id="nav-yearlyIncomeAndExpense2-tab" data-bs-toggle="tab" 
+                    data-bs-target="#nav-yearlyIncomeAndExpense2" type="button" role="tab" aria-controls="nav-yearlyIncomeAndExpense2" 
+                    aria-selected="false">Yearly Summary 2</button>
+                <button class="nav-link" id="nav-yearlyIncomeAndExpense3-tab" data-bs-toggle="tab" 
+                    data-bs-target="#nav-yearlyIncomeAndExpense3" type="button" role="tab" aria-controls="nav-yearlyIncomeAndExpense3" 
+                    aria-selected="false">Yearly Summary 3</button>
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
             <!-- Pay methods summary table -->
             <div class="tab-pane fade show active" id="nav-payMethodSummary" role="tabpanel" aria-labelledby="nav-payMethodSummary-tab" tabindex="0">
                 <div class="py-2">
+                    <div class="text-start py-2">
+                        <button type="button" id="payDirectBtn" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i>
+                            Pay Direct
+                        </button>
+                    </div>
                     <h5 class="card-title py-4">Pay Methods Summary</h5>
                     <x-form-div class="col-xl-8 py-3 payMethodDiv">
                         <x-input-span class="">Start</x-input-span>
@@ -382,6 +395,83 @@
                 <div class="overflow-auto">
                     <div class="chart-container" style="position: relative; height:60vh; width:80vw">
                         <canvas id="yearlySummaryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+             <!-- Yearly income and expenses 2 table -->
+            <div class="tab-pane fade" id="nav-yearlyIncomeAndExpense2" role="tabpanel" aria-labelledby="nav-yearlyIncomeAndExpense2-tab" tabindex="0">
+                <div class="py-4 ">
+                    <x-form-div class="col-lg-3 py-3 yearlyIncomeAndExpenseDiv2">
+                        <x-input-span class="">Year</x-input-span>
+                        <x-form-input type="number" name="incomeAndExpenseyear2" id="incomeAndExpenseyear2" min="1900" max="{{ date('Y') }}" value="{{ date('Y') }}" />
+                        <button class="input-group-text searchIncomeAndExpense2ByYearBtn">Get</button>
+                    </x-form-div>
+                    <table id="yearlyIncomeAndExpenseTable2" class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                {{-- <th>Total Bill</th> --}}
+                                <th>Total From Cash</th>
+                                <th>Total From HMOs</th>
+                                <th>Total Expense</th>
+                                <th>Balance</th>
+                                {{-- <th>Actual Net</th>
+                                <th>Net Difference</th> --}}
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr class="text-primary">
+                                <td class="fw-bold">Total</td>
+                                <td class="fw-bold "></td>
+                                <td class="fw-bold "></td>
+                                <td class="fw-bold "></td>
+                                <td class="fw-bold "></td>
+                                {{-- <td class="fw-bold "></td> --}}
+                                {{-- <td class="fw-bold "></td> --}}
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="overflow-auto">
+                    <div class="chart-container2" style="position: relative; height:60vh; width:80vw">
+                        <canvas id="yearlySummaryChart2"></canvas>
+                    </div>
+                </div>
+            </div>
+             <!-- Yearly income and expenses 3 table -->
+            <div class="tab-pane fade" id="nav-yearlyIncomeAndExpense3" role="tabpanel" aria-labelledby="nav-yearlyIncomeAndExpense3-tab" tabindex="0">
+                <div class="py-4 ">
+                    <x-form-div class="col-lg-3 py-3 yearlyIncomeAndExpenseDiv3">
+                        <x-input-span class="">Year</x-input-span>
+                        <x-form-input type="number" name="incomeAndExpenseyear3" id="incomeAndExpenseyear3" min="1900" max="{{ date('Y') }}" value="{{ date('Y') }}" />
+                        <button class="input-group-text searchIncomeAndExpense3ByYearBtn">Get</button>
+                    </x-form-div>
+                    <table id="yearlyIncomeAndExpenseTable3" class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Total Bill</th>
+                                <th>Total Paid</th>
+                                <th>Total Expense</th>
+                                <th>Actual Net</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr class="text-primary">
+                                <td class="fw-bold">Total</td>
+                                <td class="fw-bold "></td>
+                                <td class="fw-bold "></td>
+                                <td class="fw-bold "></td>
+                                <td class="fw-bold "></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="overflow-auto">
+                    <div class="chart-container3" style="position: relative; height:60vh; width:80vw">
+                        <canvas id="yearlySummaryChart3"></canvas>
                     </div>
                 </div>
             </div>

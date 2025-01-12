@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\Payment;
 use App\Models\User;
+use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,28 @@ Class PaymentService
     public function create(Request $data, User $user): Payment
     {
         return DB::transaction(function () use($data, $user) {
+            if (!$data->patientId || !$data->visitId ){
+
+                if ($data->backdate){
+                    $payment = $user->payments()->create([
+                        'amount_paid'   => $data->amount,
+                        'pay_method_id' => $data->payMethod,
+                        'comment'       => $data->comment,
+                        'created_at'    => $data->backdate,
+                    ]);
+    
+                    return $payment;
+                }
+
+                $payment = $user->payments()->create([
+                    'amount_paid'   => $data->amount,
+                    'pay_method_id' => $data->payMethod,
+                    'comment'       => $data->comment,
+                ]);
+
+                return $payment;
+            }
+
             $payment = $user->payments()->create([
                 'amount_paid'   => $data->amount,
                 'pay_method_id' => $data->payMethod,
@@ -197,6 +220,11 @@ Class PaymentService
     public function destroyPayment(Payment $payment)
     {
         return DB::transaction(function () use($payment) {
+
+            if (!$payment->patient_id || !$payment->visit_id ){
+                return $payment->destroy($payment->id);
+            }
+            
             $deleted = $payment->destroy($payment->id);
 
             $totalPayments  = $payment->visit->totalPayments();
@@ -242,5 +270,27 @@ Class PaymentService
                             ->groupBy('id')
                             ->whereDate('payments.created_at',  $currentDate->format('Y-m-d'))
                             ->first();
+    }
+
+    public function totalYearlyIncomeFromCashPatients($data)
+    {
+        $currentDate = new Carbon();
+
+        if ($data->year){
+
+            return DB::table('payments')
+                            ->selectRaw('SUM(amount_paid) as cashPaid, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
+                            ->whereYear('created_at', $data->year)
+                            ->groupBy('month_name', 'month')
+                            ->orderBy('month')
+                            ->get();
+        }
+
+        return DB::table('payments')
+                        ->selectRaw('SUM(amount_paid) as cashPaid, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
+                        ->whereYear('created_at', $currentDate->year)
+                        ->groupBy('month_name', 'month')
+                        ->orderBy('month')
+                        ->get();
     }
 }

@@ -24,7 +24,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const medicalReportListModal        = new Modal(document.getElementById('medicalReportListModal'))
     const viewMedicalReportModal        = new Modal(document.getElementById('viewMedicalReportModal'))
     const registerBillReminderModal     = new Modal(document.getElementById('registerBillReminderModal'))
-    const smsTemplateModal             = new Modal(document.getElementById('smsTemplateModal'))
+    const smsTemplateModal              = new Modal(document.getElementById('smsTemplateModal'))
+    const confirmPaymentModal           = new Modal(document.getElementById('confirmPaymentModal'))
 
     const balancingDateDiv              = document.querySelector('.balancingDateDiv')
     const billRemindersDatesDiv         = document.querySelector('.billRemindersDatesDiv')
@@ -49,6 +50,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const searchBillRemindersWithDatesBtn   = document.querySelector('.searchBillRemindersWithDatesBtn')
     const searchBillRemindersMonthBtn       = document.querySelector('.searchBillRemindersMonthBtn')
     const sendSmsBtn                        = smsTemplateModal._element.querySelector('#sendSms')
+    const savePaymentBtn                    = confirmPaymentModal._element.querySelector('#savePaymentBtn')
     
 
     const outPatientsTab                = document.querySelector('#nav-outPatients-tab')
@@ -877,7 +879,8 @@ window.addEventListener('DOMContentLoaded', function () {
         const firstReminderSelect   = event.target.closest('.firstReminderSelect')
         const secondReminderSelect  = event.target.closest('.secondReminderSelect')
         const finalReminderSelect   = event.target.closest('.finalReminderSelect')
-        const confirmedPaidInput    = event.target.closest('.confirmedPaidInput')
+        // const confirmedPaidInput    = event.target.closest('.confirmedPaidInput')
+        const confirmedPaidBtn    = event.target.closest('.confirmedPaidBtn')
         const smsOption             = event.target.closest('.smsOption')
         const dueRemindersFieldset  = document.querySelector('#dueRemindersFieldset')
 
@@ -984,25 +987,54 @@ window.addEventListener('DOMContentLoaded', function () {
             })
         }
 
-       if (confirmedPaidInput){
-            const reminderId  = confirmedPaidInput.getAttribute('data-id')
+    //    if (confirmedPaidInput){
+    //         const reminderId  = confirmedPaidInput.getAttribute('data-id')
                 
-            confirmedPaidInput.addEventListener('blur', function () {
-                dueRemindersFieldset.setAttribute('disabled', 'disabled')
-                    http.patch(`/reminders/confirmedpaid/${reminderId}`, {confirmedPaidDate: confirmedPaidInput.value})
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300) {
-                                dueCashRemindersTable.draw()
-                                dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
-                        }
-                    })
-                    .catch((error) => {
-                        dueCashRemindersTable.draw()
-                        dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
-                        console.log(error)
-                    })               
-            })
+    //         confirmedPaidInput.addEventListener('blur', function () {
+    //             dueRemindersFieldset.setAttribute('disabled', 'disabled')
+    //                 http.patch(`/reminders/confirmedpaid/${reminderId}`, {confirmedPayDate: confirmedPaidInput.value})
+    //                 .then((response) => {
+    //                     if (response.status >= 200 || response.status <= 300) {
+    //                             dueCashRemindersTable.draw()
+    //                             dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+    //                     }
+    //                 })
+    //                 .catch((error) => {
+    //                     dueCashRemindersTable.draw()
+    //                     dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
+    //                     console.log(error)
+    //                 })               
+    //         })
+    //     }
+
+        if (confirmedPaidBtn){
+            savePaymentBtn.setAttribute('data-id', confirmedPaidBtn.getAttribute('data-id'))
+            confirmPaymentModal._element.querySelector('#patient').value = confirmedPaidBtn.getAttribute('data-patient')
+            confirmPaymentModal.show()
         }
+    })
+
+    savePaymentBtn.addEventListener('click', function () {
+        const reminderId = savePaymentBtn.getAttribute('data-id')
+        savePaymentBtn.setAttribute('disabled', 'disabled')
+
+        http.patch(`/reminders/confirmedpaid/${reminderId}`, getDivData(confirmPaymentModal._element), {"html": confirmPaymentModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                confirmPaymentModal.hide()
+                }
+                savePaymentBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            savePaymentBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
+        })
+    })
+
+    confirmPaymentModal._element.addEventListener('hide.bs.modal', function(event) {
+        clearValidationErrors(confirmPaymentModal._element)
+        clearDivValues(confirmPaymentModal._element)
+        dueCashRemindersTable.draw()
     })
 
     sendSmsBtn.addEventListener('click', function () {

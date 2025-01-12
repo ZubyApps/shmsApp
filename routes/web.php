@@ -231,6 +231,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/accounts/bypaymethod', [ReportController::class, 'loadPaymentsByPayMethod']);
             Route::get('/accounts/byvisitbysponsor', [ReportController::class, 'loadVisitsBySponsor']);
             Route::get('/accounts/yearlysummary', [ReportController::class, 'loadYearlyIncomeAndExpense']);
+            Route::get('/accounts/yearlysummary2', [ReportController::class, 'loadYearlyIncomeAndExpense2']);
+            Route::get('/accounts/yearlysummary3', [ReportController::class, 'loadYearlyIncomeAndExpense3']);
             Route::get('/users', [ReportController::class, 'indexUsers'])->name('Users Reports');
             Route::get('/users/doctors', [ReportController::class, 'loadDoctorsActivity']);
             Route::get('/users/nurses', [ReportController::class, 'loadNursesActivity']);

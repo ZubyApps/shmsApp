@@ -1,10 +1,10 @@
 import {Modal } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { getPayMethodsSummmaryTable, getCapitationPaymentsTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getByPayMethodsTable, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable, getTPSSummaryTable, getTPSByThirdPartyTable } from "./tables/accountReportTables";
+import { getPayMethodsSummmaryTable, getCapitationPaymentsTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getByPayMethodsTable, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable, getTPSSummaryTable, getTPSByThirdPartyTable, getYearlyIncomeAndExpenseTable2, getYearlyIncomeAndExpenseTable3 } from "./tables/accountReportTables";
 import { getExpensesTable } from "./tables/billingTables";
 import { clearDivValues, getDivData, openModals, resetFocusEndofLine } from "./helpers";
-import { getYearlySummaryChart } from "./charts/vitalsignsCharts";
+import { getYearlySummaryChart, getYearlySummaryChart2, getYearlySummaryChart3 } from "./charts/vitalsignsCharts";
 
 window.addEventListener('DOMContentLoaded', function () {
     const byPayMethodModal           = new Modal(document.getElementById('byPayMethodModal'))
@@ -13,6 +13,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const byExpenseCategoryModal     = new Modal(document.getElementById('byExpenseCategoryModal'))
     const visitsBySponsorModal       = new Modal(document.getElementById('visitsBySponsorModal'))
     const TPSByThirdPartyModal       = new Modal(document.getElementById('TPSByThirdPartyModal'))
+    const payDirectModal             = new Modal(document.getElementById('payDirectModal'))
 
     const payMethodDiv               = document.querySelector('.payMethodDiv')
     const capitationDatesDiv         = document.querySelector('.capitationDatesDiv')
@@ -21,7 +22,11 @@ window.addEventListener('DOMContentLoaded', function () {
     const visistSummaryDiv1          = document.querySelector('.visistSummaryDiv1')
     const visistSummaryDiv2          = document.querySelector('.visistSummaryDiv2')
     const yearlyIncomeAndExpenseDiv  = document.querySelector('.yearlyIncomeAndExpenseDiv')
+    const yearlyIncomeAndExpenseDiv2 = document.querySelector('.yearlyIncomeAndExpenseDiv2')
+    const yearlyIncomeAndExpenseDiv3 = document.querySelector('.yearlyIncomeAndExpenseDiv3')
     const yearlySummaryChart         = document.querySelector('#yearlySummaryChart')
+    const yearlySummaryChart2        = document.querySelector('#yearlySummaryChart2')
+    const yearlySummaryChart3        = document.querySelector('#yearlySummaryChart3')
 
     const payMethodSummaryTab       = document.querySelector('#nav-payMethodSummary-tab')
     const capitationPaymentsTab     = document.querySelector('#nav-capitationPayments-tab')
@@ -31,6 +36,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const visitSummaryTab1          = document.querySelector('#nav-visitSummary1-tab')
     const visitSummaryTab2          = document.querySelector('#nav-visitSummary2-tab')
     const yearlyIncomeAndExpense    = document.querySelector('#nav-yearlyIncomeAndExpense-tab')
+    const yearlyIncomeAndExpense2    = document.querySelector('#nav-yearlyIncomeAndExpense2-tab')
+    const yearlyIncomeAndExpense3    = document.querySelector('#nav-yearlyIncomeAndExpense3-tab')
 
     const searchPayMethodByDatesBtn  = document.querySelector('.searchPayMethodByDatesBtn')
     const searchPayMethodByMonthBtn  = document.querySelector('.searchPayMethodByMonthBtn')
@@ -50,14 +57,21 @@ window.addEventListener('DOMContentLoaded', function () {
     const searchVisitsByDatesBtn2        = document.querySelector('.searchVisitsByDatesBtn2')
     const searchVisitsByMonthBtn2        = document.querySelector('.searchVisitsByMonthBtn2')
 
+    const searchVisitsByDatesBtn3        = document.querySelector('.searchVisitsByDatesBtn3')
+    const searchVisitsByMonthBtn3        = document.querySelector('.searchVisitsByMonthBtn3')
+
     const searchIncomeAndExpenseByYearBtn = document.querySelector('.searchIncomeAndExpenseByYearBtn')
+    const searchIncomeAndExpense2ByYearBtn = document.querySelector('.searchIncomeAndExpense2ByYearBtn')
+    const searchIncomeAndExpense3ByYearBtn = document.querySelector('.searchIncomeAndExpense3ByYearBtn')
 
 
     const newExpenseBtn                 = document.querySelector('#newExpenseBtn')
+    const payDirectBtn                 = document.querySelector('#payDirectBtn')
     const saveExpenseBtn                = newExpenseModal._element.querySelector('#saveExpenseBtn')
     const updateExpenseBtn              = updateExpenseModal._element.querySelector('#updateExpenseBtn')
+    const savePaymentBtn                = payDirectModal._element.querySelector('#savePaymentBtn')
 
-    let payMethodsSummmaryTable, capitationPaymentsTable, TPSSummaryTable, TPSByThirdPartyTable, visitSummaryTable1, visitSummaryTable2, expensesTable, expenseSummaryTable, byPayMethodTable, byExpenseCategoryTable, visitsBySponsorTable, yearlyIncomeAndExpenseTable, yearlyIncomeAndExpenseChart
+    let payMethodsSummmaryTable, capitationPaymentsTable, TPSSummaryTable, TPSByThirdPartyTable, visitSummaryTable1, visitSummaryTable2, expensesTable, expenseSummaryTable, byPayMethodTable, byExpenseCategoryTable, visitsBySponsorTable, yearlyIncomeAndExpenseTable, yearlyIncomeAndExpenseTable2, yearlyIncomeAndExpenseTable3, yearlyIncomeAndExpenseChart, yearlyIncomeAndExpenseChart2, yearlyIncomeAndExpenseChart3
 
     payMethodsSummmaryTable = getPayMethodsSummmaryTable('payMethodSummaryTable')
     payMethodDiv.querySelector('#payMethodMonth').value == '' ? payMethodDiv.querySelector('#payMethodMonth').value = new Date().toISOString().slice(0,7) : ''
@@ -128,10 +142,38 @@ window.addEventListener('DOMContentLoaded', function () {
             yearlyIncomeAndExpenseTable = getYearlyIncomeAndExpenseTable('yearlyIncomeAndExpenseTable')
         }
 
-        http.get(`/reports/accounts/yearlysummary`, {params:  {order: null }}).then((response) => {
+        http.get(`/reports/accounts/yearlysummary`, {params:  {chart: 'chart' }}).then((response) => {
             
                 yearlyIncomeAndExpenseChart?.destroy()
                 yearlyIncomeAndExpenseChart = getYearlySummaryChart(yearlySummaryChart, response.data)
+        })
+    })
+
+    yearlyIncomeAndExpense2.addEventListener('click', function () {
+        if (yearlyIncomeAndExpenseTable2){
+            yearlyIncomeAndExpenseTable2.draw()
+        } else {
+            yearlyIncomeAndExpenseTable2 = getYearlyIncomeAndExpenseTable2('yearlyIncomeAndExpenseTable2')
+        }
+
+        http.get(`/reports/accounts/yearlysummary2`, {params:  {chart: 'chart' }}).then((response) => {
+            
+                yearlyIncomeAndExpenseChart2?.destroy()
+                yearlyIncomeAndExpenseChart2 = getYearlySummaryChart2(yearlySummaryChart2, response.data)
+        })
+    })
+
+    yearlyIncomeAndExpense3.addEventListener('click', function () {
+        if (yearlyIncomeAndExpenseTable3){
+            yearlyIncomeAndExpenseTable3.draw()
+        } else {
+            yearlyIncomeAndExpenseTable3 = getYearlyIncomeAndExpenseTable3('yearlyIncomeAndExpenseTable3')
+        }
+
+        http.get(`/reports/accounts/yearlysummary3`, {params:  {chart: 'chart' }}).then((response) => {
+            
+                yearlyIncomeAndExpenseChart3?.destroy()
+                yearlyIncomeAndExpenseChart3 = getYearlySummaryChart3(yearlySummaryChart3, response.data)
         })
     })
 
@@ -233,18 +275,85 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     searchIncomeAndExpenseByYearBtn.addEventListener('click', function () {
-        if ($.fn.DataTable.isDataTable( '#yearlyIncomeAndExpenseTable' )){
-            $('#yearlyIncomeAndExpenseTable').dataTable().fnDestroy()
-        }
         const year = yearlyIncomeAndExpenseDiv.querySelector('#incomeAndExpenseyear').value
-        yearlyIncomeAndExpenseTable = getYearlyIncomeAndExpenseTable('yearlyIncomeAndExpenseTable', year)
+        if (yearlyIncomeAndExpenseTable){
+            yearlyIncomeAndExpenseTable.destroy()
+            yearlyIncomeAndExpenseTable = getYearlyIncomeAndExpenseTable('yearlyIncomeAndExpenseTable', year)
+        } else {
+            yearlyIncomeAndExpenseTable = getYearlyIncomeAndExpenseTable('yearlyIncomeAndExpenseTable', year)
+        }
 
-        http.get(`/reports/accounts/yearlysummary`, {params:{year: year}}).then((response) => {
-            getYearlySummaryChart(yearlySummaryChart, response.data)
+        http.get(`/reports/accounts/yearlysummary`, {params:{year: year, chart: 'chart'}}).then((response) => {
+            if (yearlyIncomeAndExpenseChart){
+                yearlyIncomeAndExpenseChart?.destroy()
+                yearlyIncomeAndExpenseChart = getYearlySummaryChart(yearlySummaryChart, response.data)
+            } else {
+                yearlyIncomeAndExpenseChart = getYearlySummaryChart(yearlySummaryChart, response.data)
+            }
         })
     })
 
+    searchIncomeAndExpense2ByYearBtn.addEventListener('click', function () {
+        const year = yearlyIncomeAndExpenseDiv2.querySelector('#incomeAndExpenseyear2').value
     
+        if (yearlyIncomeAndExpenseTable2){
+            yearlyIncomeAndExpenseTable2.destroy()
+            yearlyIncomeAndExpenseTable2 = getYearlyIncomeAndExpenseTable2('yearlyIncomeAndExpenseTable2', year)
+        } else {
+            yearlyIncomeAndExpenseTable2 = getYearlyIncomeAndExpenseTable2('yearlyIncomeAndExpenseTable2', year)
+        }
+
+        http.get(`/reports/accounts/yearlysummary2`, {params:{year: year, chart: 'chart'}}).then((response) => {
+            if (yearlyIncomeAndExpenseChart2){
+                yearlyIncomeAndExpenseChart2?.destroy()
+                yearlyIncomeAndExpenseChart2 = getYearlySummaryChart2(yearlySummaryChart2, response.data)
+            } else {
+                yearlyIncomeAndExpenseChart2 = getYearlySummaryChart2(yearlySummaryChart2, response.data)
+            }
+        })
+    })
+
+    searchIncomeAndExpense3ByYearBtn.addEventListener('click', function () {
+        const year = yearlyIncomeAndExpenseDiv3.querySelector('#incomeAndExpenseyear3').value
+    
+        if (yearlyIncomeAndExpenseTable3){
+            yearlyIncomeAndExpenseTable3.destroy()
+            yearlyIncomeAndExpenseTable3 = getYearlyIncomeAndExpenseTable3('yearlyIncomeAndExpenseTable3', year)
+        } else {
+            yearlyIncomeAndExpenseTable3 = getYearlyIncomeAndExpenseTable3('yearlyIncomeAndExpenseTable3', year)
+        }
+
+        http.get(`/reports/accounts/yearlysummary3`, {params:{year: year, chart: 'chart'}}).then((response) => {
+            if (yearlyIncomeAndExpenseChart3){
+                yearlyIncomeAndExpenseChart3?.destroy()
+                yearlyIncomeAndExpenseChart3 = getYearlySummaryChart3(yearlySummaryChart3, response.data)
+            } else {
+                yearlyIncomeAndExpenseChart3 = getYearlySummaryChart3(yearlySummaryChart3, response.data)
+            }
+        })
+    })
+
+    payDirectBtn.addEventListener('click', function () {
+        payDirectModal.show()
+    })
+
+    savePaymentBtn.addEventListener('click', function () {
+        savePaymentBtn.setAttribute('disabled', 'disabled')
+        http.post('/billing/pay', {...getDivData(payDirectModal._element)}, {"html": payDirectModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                payDirectModal.hide()
+                    clearDivValues(payDirectModal._element)
+                    payMethodsSummmaryTable ? payMethodsSummmaryTable.draw() : ''
+                }
+                savePaymentBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            savePaymentBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
+        })
+    })
+
     document.querySelector('#payMethodSummaryTable').addEventListener('click', function (event) {
         const showPaymentsBtn    = event.target.closest('.showPaymentsBtn')
         const payMethodfrom      = payMethodDiv.querySelector('#startDate').value
@@ -275,6 +384,34 @@ window.addEventListener('DOMContentLoaded', function () {
             byPayMethodTable = getByPayMethodsTable('byPayMethodTable', id, byPayMethodModal)
             byPayMethodModal.show()
         }
+    })
+
+    document.querySelector('#byPayMethodTable').addEventListener('click', function (event) {
+        const deletePaymentBtn   = event.target.closest('.deletePaymentBtn')
+
+        if (deletePaymentBtn){
+            const id = deletePaymentBtn.getAttribute('data-id')
+            
+            if (confirm('Are you sure you want to delete this payment?')) {
+                deletePaymentBtn.setAttribute('disabled', 'disabled')
+                http.delete(`/billing/payment/delete/${id}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            byPayMethodTable ? byPayMethodTable.draw() : ''
+                        }
+                        deletePaymentBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        if (error.response.status === 403){
+                            alert(error.response.data.message); 
+                        }
+                        console.log(error)
+                        deletePaymentBtn.removeAttribute('disabled')
+                    })
+            }
+            
+        }
+
     })
 
     document.querySelector('#TPSSummaryTable').addEventListener('click', function (event) {
@@ -425,7 +562,6 @@ window.addEventListener('DOMContentLoaded', function () {
             const deleteExpenseBtn    = event.target.closest('.deleteExpenseBtn')
     
             if (editExpenseBtn) {
-                console.log(table.id)
                 editExpenseBtn.setAttribute('disabled', 'disabled')
                 const expense = editExpenseBtn.getAttribute('data-id')
                 http.get(`/expenses/${ expense }`)
@@ -591,5 +727,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
     visitsBySponsorModal._element.addEventListener('hidden.bs.modal', function () {
         visitSummaryTable2 ? visitSummaryTable2.draw() : ''
+    })
+
+    byPayMethodModal._element.addEventListener('hidden.bs.modal', function () {
+        payMethodsSummmaryTable ? payMethodsSummmaryTable.draw() : ''
     })
 })

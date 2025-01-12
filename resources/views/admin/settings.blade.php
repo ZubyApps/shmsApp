@@ -155,6 +155,7 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Description</th>
+                                    <th>Visible</th>
                                     <th>Created By</th>
                                     <th>Created At</th>
                                     <th>Actions</th>

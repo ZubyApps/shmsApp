@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('visits', function (Blueprint $table) {
-            $table->text('reviewed')->nullable()->change();
+        Schema::table('reminders', function (Blueprint $table) {
+            $table->after('confirmed_paid', function (Blueprint $table) {
+                $table->decimal('amount_confirmed', 12)->nullable();
+            });
         });
     }
 
@@ -21,8 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('visits', function (Blueprint $table) {
-            $table->text('reviewed')->nullable(false)->change();
+        Schema::table('reminders', function (Blueprint $table) {
+            $table->dropColumn(['amount_confirmed']);
         });
     }
 };

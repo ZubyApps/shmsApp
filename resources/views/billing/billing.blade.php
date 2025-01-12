@@ -18,6 +18,7 @@
 @include('extras.viewMedicalReportModal', ['title' => '', 'isUpdate' => true, 'id' => 'viewMedicalReportModal' ])
 @include('billing.registerBillReminderModal', ['title' => "Set Bill Reminder", 'id' => 'registerBillReminderModal'])
 @include('extras.smsTemplateModal', ['title' => 'Send SMS',  'dept' => 'billing', 'id' => 'smsTemplateModal'])
+@include('hmo.confirmPaymentModal', ['title' => 'Save Payment', 'id' => 'confirmPaymentModal', 'identity' => 'Patient' ])
 
     <div class="container mt-5 bg-white">
 
@@ -142,7 +143,7 @@
                                     <th>1st Reminder</th>
                                     <th>2nd Reminder</th>
                                     <th>Final Reminder</th>
-                                    <th>Paid</th>
+                                    <th>Pay</th>
                                     <th>Comment</th>
                                     <th>Set By</th>
                                 </tr>
