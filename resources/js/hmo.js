@@ -349,7 +349,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             if (response.status >= 200 || response.status <= 300){
                                 waitingTable.draw()
                                 hmotreatmentsTable ? hmotreatmentsTable.draw() : ''
-                                sentBillsTable ? sentBillsTable.draw() : ''
+                                // sentBillsTable ? sentBillsTable.draw() : ''
                             }
                         })
                         .catch((error) => {
@@ -393,7 +393,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     if ($.fn.DataTable.isDataTable( '#sentBillsTable' )){
                         $('#sentBillsTable').dataTable().fnDestroy()
                     }
-                    getSentBillsTable('#sentBillsTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value, datesDiv.querySelector('#monthYear').value, 1)
+                    sentBillsTable = getSentBillsTable('#sentBillsTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value, datesDiv.querySelector('#monthYear').value, 1)
                 }
 
                 if (removeFilter){
@@ -401,7 +401,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     if ($.fn.DataTable.isDataTable( '#sentBillsTable' )){
                         $('#sentBillsTable').dataTable().fnDestroy()
                     }
-                    getSentBillsTable('#sentBillsTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value, datesDiv.querySelector('#monthYear').value)
+                    sentBillsTable = getSentBillsTable('#sentBillsTable', datesDiv.querySelector('#startDate').value, datesDiv.querySelector('#endDate').value, datesDiv.querySelector('#monthYear').value)
                 }
             })
     })
