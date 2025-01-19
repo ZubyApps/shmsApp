@@ -934,7 +934,7 @@ const getProceduresListTable = (tableId, pending, hmo, cash) => {
             {data: row => `<span class="fw-semibold text-primary">${row.procedure}</span>`},
             {data: row => function () {
                 if (row.bookedDate){
-                    return `<span class="bookDateBtn p-0" data-id="${ row.id}">${row.bookedDate}</span>`
+                    return `<span class="bookDateBtn p-0" data-procedure="${row.procedure}" data-id="${ row.id}">${row.bookedDate}</span>`
                 }
                 return `
                         <div class="d-flex flex-">
