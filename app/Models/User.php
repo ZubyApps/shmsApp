@@ -204,6 +204,11 @@ class User extends Authenticatable
         return $this->hasMany(Reminder::class);
     }
 
+    public function procedures()
+    {
+        return $this->hasMany(Procedure::class);
+    }
+
     public function nameInFull()
     {
         return $this->firstname.' '.$this->middlename.' '.$this->lastname;

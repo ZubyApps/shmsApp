@@ -98,6 +98,11 @@ class Prescription extends Model
         return $this->hasMany(ThirdPartyService::class);
     }
 
+    public function procedures() 
+    {
+        return $this->hasOne(Procedure::class);
+    }
+
     public function forPharmacy(int $conId)
     {
         return $this->where('consultation_id', $conId)

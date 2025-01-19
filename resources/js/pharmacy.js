@@ -315,29 +315,29 @@ window.addEventListener('DOMContentLoaded', function () {
                 holdSpanSelect.classList.remove('d-none')
                 
                 holdSpanSelect.addEventListener('blur', function () {
-                        billingDispenseFieldset.setAttribute('disabled', 'disabled')
-                        http.patch(`/pharmacy/hold/${prescriptionId}`, {reason: holdSpanSelect.value}, {'html' : div})
-                        .then((response) => {
-                            if (response.status >= 200 || response.status <= 300) {
-                                if (visitPrescriptionsTable){
-                                    visitPrescriptionsTable.draw()
-                                    visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                                } 
-                                emergencyTable.draw(false)
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error)
-                            if (error.response.status == 422){
-                                removeDisabled(billingDispenseFieldset)
-                                console.log(error)
-                            } else{
-                                console.log(error)
-                                visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
+                    billingDispenseFieldset.setAttribute('disabled', 'disabled')
+                    http.patch(`/pharmacy/hold/${prescriptionId}`, {reason: holdSpanSelect.value}, {'html' : div})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            if (visitPrescriptionsTable){
+                                visitPrescriptionsTable.draw()
                                 visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                                emergencyTable.draw(false)
-                            }
-                        })               
+                            } 
+                            emergencyTable.draw(false)
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        if (error.response.status == 422){
+                            removeDisabled(billingDispenseFieldset)
+                            console.log(error)
+                        } else{
+                            console.log(error)
+                            visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
+                            visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                            emergencyTable.draw(false)
+                        }
+                    })               
                 })
             }
     

@@ -31,6 +31,7 @@
 @include('extras.viewMedicalReportModal', ['title' => '', 'isUpdate' => true, 'id' => 'viewMedicalReportModal' ])
 @include('nurses.wardAndBedModal', ['title' => 'Update Admission Details', 'isNurses' => false, 'id' => 'wardAndBedModal'])
 @include('doctors.appointmentModal', ['title' => 'Set Appointment', 'isDoctor' => true, 'id' => 'appointmentModal'])
+@include('doctors.procedureBookingModal', ['title' => 'Set Operation/Procedure Date & Details', 'isDoctor' => true, 'id' => 'procedureBookingModal'])
 
     <div class="container mt-5">
         <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas1"
@@ -138,6 +139,36 @@
                 </div>
             </div>
         </div>
+        <div class="offcanvas offcanvas-end overflow-auto" data-bs-scroll="true" tabindex="-1" id="proceduresListOffcanvas"
+            aria-labelledby="proceduresListOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-primary" id="proceduresListOffcanvasLabel">Procedures List</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="py-4 ">
+                    <table id="proceduresListTable" class="table table-hover table-sm proceduresListTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Patient</th>
+                                <th>Phone</th>
+                                <th>By</th>
+                                <th>Sponsor</th>
+                                <th>Procedure</th>
+                                <th>Booked</th>
+                                <th>Booked By</th>
+                                <th>Comment</th>
+                                <th>Status</th>
+                                <th>Status By</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
         <div class="text-start mb-4">
             <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" id="waitingBtn"
@@ -154,6 +185,11 @@
                 data-bs-target="#appointmentsOffcanvas" aria-controls="appointmentsOffcanvas">
                 <i class="bi bi-list-check"></i>
                 Appointments <span class="badge text-bg-danger" id="appointmentsBadgeSpan"></span>
+            </button>
+            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" id="proceduresListBtn"
+                data-bs-target="#proceduresListOffcanvas" aria-controls="proceduresListOffcanvas">
+                <i class="bi bi-list-check"></i>
+                Procedures List <span class="badge text-bg-danger" id="proceduresListCount"></span>
             </button>
         </div>
 
@@ -172,6 +208,9 @@
 
                     {{-- <button class="nav-link" id="nav-appointments-tab"  data-bs-toggle="tab"  data-bs-target="#nav-appointments"
                     type="button" role="tab" aria-controls="nav-appointments" aria-selected="false">Appointments</button> --}}
+
+                    <button class="nav-link" id="nav-procedures-tab" data-bs-toggle="tab" data-bs-target="#nav-procedures"
+                    type="button" role="tab" aria-controls="nav-procedures" aria-selected="false">Procedures</button>
                     
                 </div>
             </nav>
@@ -263,6 +302,30 @@
                                     <th>Vitals</th>
                                     <th>Status</th>
                                     <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- procedures table -->
+                <div class="tab-pane fade" id="nav-procedures" role="tabpanel" aria-labelledby="nav-procedures-tab" tabindex="0">
+                    <div class="py-4 ">
+                        <table id="proceduresTable" class="table table-hover align-middle table-sm proceduresTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Patient</th>
+                                    <th>Phone</th>
+                                    <th>Prescribed by</th>
+                                    <th>Sponsor</th>
+                                    <th>Procedure</th>
+                                    <th>Booked</th>
+                                    <th>Comment</th>
+                                    <th>Booked By</th>
+                                    <th>Status</th>
+                                    <th>Status By</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>

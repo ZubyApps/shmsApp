@@ -22,7 +22,8 @@ class PrescriptionService
         private readonly Prescription $prescription, 
         private readonly Resource $resource,
         private readonly PaymentService $paymentService,
-        private readonly CapitationPaymentService $capitationPaymentService
+        private readonly CapitationPaymentService $capitationPaymentService,
+        private readonly ProcedureService $procedureService
         )
     {
     }
@@ -32,6 +33,7 @@ class PrescriptionService
         return DB::transaction(function () use($data, $resource, $user) {
             $bill = 0;
             $nhisBill = fn($value)=>$value/10;
+            $resourceSubCat = $resource->resourceSubCategory->name;
             if ($data->quantity){
                 $bill = $resource->selling_price * $data->quantity;
             }
@@ -52,6 +54,8 @@ class PrescriptionService
                 'doctor_on_call'    => $data->doc
             ]);
 
+            $procedure = $resourceSubCat == 'Procedure' || $resourceSubCat == 'Operation' ? $this->procedureService->create($prescription, $user) : '';
+            // var_dump($procedure?->id);
             $visit  = $prescription->visit;
 
             $isNhis = $visit->sponsor->category_name == 'NHIS';
@@ -61,7 +65,6 @@ class PrescriptionService
             $totalPayments = $visit->totalPayments();
 
             $prescription->visit->update([
-                // 'viewed_at'         => null,
                 'total_hms_bill'    => $visit->totalHmsBills(),
                 'total_nhis_bill'   => $isNhis ? $visit->totalNhisBills() : 0,
                 'total_capitation'  => $isNhis ? $visit->totalPrescriptionCapitations() : 0,
@@ -77,7 +80,8 @@ class PrescriptionService
             } else {
                 $this->paymentService->prescriptionsPaymentSeive($totalPayments, $visit->prescriptions);
             }
-            return $prescription;
+            
+            return $prescription->load('procedures');
 
         }, 2);
         

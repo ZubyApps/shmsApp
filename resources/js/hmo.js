@@ -4,7 +4,7 @@ import $ from 'jquery';
 import { clearDivValues, getOrdinal, getDivData, clearValidationErrors, loadingSpinners, removeDisabled, displayList, getPatientSponsorDatalistOptionId, resetFocusEndofLine, displayMedicalReportModal} from "./helpers"
 import { getAllHmoPatientsVisitTable, getApprovalListTable, getBillReminderTable, getDueHmoRemindersTable, getHmoReconciliationTable, getHmoReportsTable, getNhisReconTable, getSentBillsTable, getVerificationTable, getVisitPrescriptionsTable, getWaitingTable } from "./tables/hmoTables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
-import { getLabTableByConsultation, getMedicalReportTable, getMedicationsByFilter, getOtherPrescriptionsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
+import { getLabTableByConsultation, getMedicalReportTable, getMedicationsByFilter, getOtherPrescriptionsByFilter, getProceduresListTable, getVitalSignsTableByVisit } from "./tables/doctorstables";
 import { getbillingTableByVisit } from "./tables/billingTables";
 import { getAncVitalSignsTable } from "./tables/nursesTables";
 import html2pdf  from "html2pdf.js"
@@ -66,7 +66,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveCapitationPaymentBtn          = capitationPaymentModal._element.querySelector('#saveCapitationPaymentBtn')
     const saveReminderBtn                   = registerBillSentModal._element.querySelector('#saveReminderBtn')
     const savePaymentBtn                    = confirmPaymentModal._element.querySelector('#savePaymentBtn')
-
+    const proceduresListBtn                 = document.querySelector('#proceduresListBtn')
+    const proceduresListCount               = document.querySelector('#proceduresListCount')
 
     const filterListOption                  = document.querySelector('#filterList')
     const datesDiv                          = document.querySelector('.datesDiv')
@@ -79,11 +80,12 @@ window.addEventListener('DOMContentLoaded', function () {
     const patientsFullName                  = viewMedicalReportModal._element.querySelector('#patientsFullName')
     const patientsInfo                      = viewMedicalReportModal._element.querySelector('#patientsInfo')
 
-    const waitingTable = getWaitingTable('waitingTable')
-    const verificationTable = getVerificationTable('verificationTable')
-    const hmoApprovalListTable = getApprovalListTable('hmoApprovalListTable',null)
+    const waitingTable          = getWaitingTable('waitingTable')
+    const verificationTable     = getVerificationTable('verificationTable')
+    const hmoApprovalListTable  = getApprovalListTable('hmoApprovalListTable',null)
     const nhisApprovalListTable = getApprovalListTable('nhisApprovalListTable', 'NHIS')
-    const dueHmoRemindersTable = getDueHmoRemindersTable('dueRemindersListTable')
+    const dueHmoRemindersTable  = getDueHmoRemindersTable('dueRemindersListTable')
+    const proceduresListTable   = getProceduresListTable('proceduresListTable', 'pending', 'hmo')
     let hmotreatmentsTable, visitPrescriptionsTable, sentBillsTable, hmoReportsTable, reconciliationTable, medicalReportTable, nhisReconTable, billRemindersTable
 
     hmoApprovalListTable.on('draw.init', function() {
@@ -129,6 +131,15 @@ window.addEventListener('DOMContentLoaded', function () {
         waitingTable.draw()
     })
 
+    proceduresListTable.on('draw.init', function() {
+        const count = proceduresListTable.rows().count()
+        if (count > 0 ){
+            proceduresListCount.innerHTML = count
+        } else {
+            proceduresListCount.innerHTML = ''
+        }
+    })
+
     hmoApprovalListBtn.addEventListener('click', function () {
         hmoApprovalListTable.draw()
     })
@@ -146,50 +157,47 @@ window.addEventListener('DOMContentLoaded', function () {
         hmoApprovalListTable.draw()
         nhisApprovalListTable.draw()
         dueHmoRemindersTable.draw()
+        proceduresListTable.draw()
     })
+
+    proceduresListBtn.addEventListener('click', function () {proceduresListTable.draw(false)})
 
     treatmentsTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#hmoTreatmentsTable' )){
             $('#hmoTreatmentsTable').dataTable().fnDraw()
-            hmoApprovalListTable.draw()
-            nhisApprovalListTable.draw()
-            dueHmoRemindersTable.draw()
         } else {
             hmotreatmentsTable = getAllHmoPatientsVisitTable('#hmoTreatmentsTable')
-            hmoApprovalListTable.draw()
-            nhisApprovalListTable.draw()
-            dueHmoRemindersTable.draw()
         }
+        hmoApprovalListTable.draw()
+        nhisApprovalListTable.draw()
+        dueHmoRemindersTable.draw()
+        proceduresListTable.draw()
     })
 
     sentBillsTab.addEventListener('click', function () {
         datesDiv.querySelector('#monthYear').value == '' ? datesDiv.querySelector('#monthYear').value = new Date().toISOString().slice(0,7) : ''
         if ($.fn.DataTable.isDataTable( '#sentBillsTable' )){
             $('#sentBillsTable').dataTable().fnDraw()
-            hmoApprovalListTable.draw()
-            nhisApprovalListTable.draw()
-            dueHmoRemindersTable.draw()
         } else {
             sentBillsTable = getSentBillsTable('#sentBillsTable')
-            hmoApprovalListTable.draw()
-            nhisApprovalListTable.draw()
-            dueHmoRemindersTable.draw()
         }
+        hmoApprovalListTable.draw()
+        nhisApprovalListTable.draw()
+        dueHmoRemindersTable.draw()
+        proceduresListTable.draw()
     })
 
     hmoReportsTab.addEventListener('click', function () {
         reportDatesDiv.querySelector('#monthYear').value == '' ? reportDatesDiv.querySelector('#monthYear').value = new Date().toISOString().slice(0,7) : ''
         if ($.fn.DataTable.isDataTable( '#hmoReportsTable' )){
             $('#hmoReportsTable').dataTable().fnDraw()
-            hmoApprovalListTable.draw()
-            nhisApprovalListTable.draw()
-            dueHmoRemindersTable.draw()
         } else {
             hmoReportsTable = getHmoReportsTable('hmoReportsTable')
-            hmoApprovalListTable.draw()
-            nhisApprovalListTable.draw()
-            dueHmoRemindersTable.draw()
         }
+        hmoApprovalListTable.draw()
+        nhisApprovalListTable.draw()
+        dueHmoRemindersTable.draw()
+        proceduresListTable.draw()
     })
 
     nhisReconTab.addEventListener('click', function () {
@@ -198,15 +206,14 @@ window.addEventListener('DOMContentLoaded', function () {
         document.querySelector('#nhisDate').setAttribute('max', date.slice(0,7))
         if ($.fn.DataTable.isDataTable( '#nhisReconTable' )){
             $('#nhisReconTable').dataTable().fnDraw()
-            hmoApprovalListTable.draw()
-            nhisApprovalListTable.draw()
-            dueHmoRemindersTable.draw()
         } else {
             nhisReconTable = getNhisReconTable('nhisReconTable')
-            hmoApprovalListTable.draw()
-            nhisApprovalListTable.draw()
-            dueHmoRemindersTable.draw()
         }
+        hmoApprovalListTable.draw()
+        nhisApprovalListTable.draw()
+        dueHmoRemindersTable.draw()
+        proceduresListTable.draw()
+        
     })
 
     billRemindersTab.addEventListener('click', function () {
@@ -215,16 +222,13 @@ window.addEventListener('DOMContentLoaded', function () {
         document.querySelector('#monthYear').setAttribute('max', date.slice(0,7))
         if ($.fn.DataTable.isDataTable( '#billRemindersTable' )){
             $('#billRemindersTable').dataTable().fnDraw()
-            hmoApprovalListTable.draw()
-            nhisApprovalListTable.draw()
-            dueHmoRemindersTable.draw()
         } else {
             billRemindersTable = getBillReminderTable('billRemindersTable')
-            hmoApprovalListTable.draw()
-            nhisApprovalListTable.draw()
-            dueHmoRemindersTable.draw()
-
         }
+        hmoApprovalListTable.draw()
+        nhisApprovalListTable.draw()
+        dueHmoRemindersTable.draw()
+        proceduresListTable.draw()
     })
 
     filterListOption.addEventListener('change', function () {
@@ -236,17 +240,18 @@ window.addEventListener('DOMContentLoaded', function () {
         nhisApprovalListTable.draw()
     })
 
-    document.querySelectorAll('#hmoApprovalListOffcanvas, #nhisApprovalListOffcanvas, #waitingListOffcanvas2, #dueRemindersListOffcanvas').forEach(table => {
+    document.querySelectorAll('#hmoApprovalListOffcanvas, #nhisApprovalListOffcanvas, #waitingListOffcanvas2, #dueRemindersListOffcanvas, #proceduresListOffcanvas').forEach(table => {
         table.addEventListener('hide.bs.offcanvas', function() {
             verificationTable.draw()
             hmotreatmentsTable ? hmotreatmentsTable.draw() : ''
-            sentBillsTable ? sentBillsTable.draw() : ''
-            hmoReportsTable ? hmoReportsTable.draw() : ''
-            nhisReconTable ? nhisReconTable.draw() : ''
+            // sentBillsTable ? sentBillsTable.draw() : ''
+            // hmoReportsTable ? hmoReportsTable.draw() : ''
+            // nhisReconTable ? nhisReconTable.draw() : ''
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
             dueHmoRemindersTable.draw()
-            billRemindersTable ? billRemindersTable.draw() : ''
+            // billRemindersTable ? billRemindersTable.draw() : ''
+            proceduresListTable.draw()
         })
     })
     
@@ -949,10 +954,10 @@ window.addEventListener('DOMContentLoaded', function () {
         modal.addEventListener('hide.bs.modal', function(event) {
             regularTreatmentDiv.innerHTML = ''
             ancTreatmentDiv.innerHTML = ''
-            hmotreatmentsTable ?  hmotreatmentsTable.draw() : ''
-            sentBillsTable ?  sentBillsTable.draw() : ''
-            hmoReportsTable ?  hmoReportsTable.draw() : ''
-            nhisReconTable ?  nhisReconTable.draw() : ''
+            hmotreatmentsTable ?  hmotreatmentsTable.draw(false) : ''
+            sentBillsTable ?  sentBillsTable.draw(false) : ''
+            hmoReportsTable ?  hmoReportsTable.draw(false) : ''
+            nhisReconTable ?  nhisReconTable.draw(false) : ''
             hmoApprovalListTable.draw()
             nhisApprovalListTable.draw()
             dueHmoRemindersTable.draw()
@@ -964,6 +969,7 @@ window.addEventListener('DOMContentLoaded', function () {
         hmoApprovalListTable.draw()
         nhisApprovalListTable.draw()
         dueHmoRemindersTable.draw()
+        proceduresListTable.draw()
     })
 
     waitingListCanvas._element.addEventListener('hide.bs.offcanvas', function () {
@@ -972,6 +978,7 @@ window.addEventListener('DOMContentLoaded', function () {
         hmoApprovalListTable.draw()
         nhisApprovalListTable.draw()
         dueHmoRemindersTable.draw()
+        proceduresListTable.draw()
     })
 
     document.querySelectorAll('#treatmentDiv, #investigationModalDiv').forEach(table => {

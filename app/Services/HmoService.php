@@ -146,13 +146,13 @@ class HmoService
                     ->where('hmo_done_by', null)
                     ->where('closed', false)
                     ->where(function (Builder $query) {
+                        $query->where('admission_status', '=', 'Inpatient')
+                        ->orWhere('admission_status', '=', 'Observation');
+                    })
+                    ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
                         ->orWhereRelation('sponsor', 'category_name', 'NHIS')
                         ->orWhereRelation('sponsor', 'category_name', 'Retainership');
-                    })
-                    ->where(function (Builder $query) {
-                        $query->where('admission_status', '=', 'Inpatient')
-                        ->orWhere('admission_status', '=', 'Observation');
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));

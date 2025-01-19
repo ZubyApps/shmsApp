@@ -4,7 +4,7 @@ import "@whoicd/icd11ect/style.css"
 import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal, populateAncReviewDiv, resetFocusEndofLine, populateAppointmentModal, displayWardList, clearSelectList} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
-import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable, getOtherPrescriptionsByFilter, getMedicalReportTable, getPatientsFileTable} from "./tables/doctorstables"
+import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable, getOtherPrescriptionsByFilter, getMedicalReportTable, getPatientsFileTable, getProceduresListTable} from "./tables/doctorstables"
 import { getAncVitalsignsChart, getVitalsignsChartByVisit } from "./charts/vitalsignsCharts"
 import $ from 'jquery';
 import { getbillingTableByVisit } from "./tables/billingTables"
@@ -42,6 +42,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const editMedicalReportTemplateModal    = new Modal(document.getElementById('editMedicalReportTemplateModal'))
     const viewMedicalReportModal            = new Modal(document.getElementById('viewMedicalReportModal'))
     const appointmentModal                  = new Modal(document.getElementById('appointmentModal'))
+    const procedureBookingModal             = new Modal(document.getElementById('procedureBookingModal'))
     
     const regularConsultationReviewDiv      = consultationReviewModal._element.querySelector('#consultationReviewDiv')
     const ancReviewDiv                      = ancConsultationReviewModal._element.querySelector('.ancReviewDiv')
@@ -69,6 +70,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveConsultationBtn               = document.querySelectorAll('#saveConsultationBtn')
     const waitingBtn                        = document.querySelector('#waitingBtn')
     const emergencyListBtn                  = document.querySelector('#emergencyListBtn')
+    const proceduresListBtn                 = document.querySelector('#proceduresListBtn')
     const clearDiagnosisBtns                = document.querySelectorAll('.clearDiagnosis')
     const createSurgeryNoteBtn              = newSurgeryModal._element.querySelector('#createSurgeryNoteBtn')
     const saveSurgeryNoteBtn                = updateSurgeryModal._element.querySelector('#saveSurgeryNoteBtn')
@@ -80,17 +82,19 @@ window.addEventListener('DOMContentLoaded', function () {
     const italicsBtn                        = newMedicalReportTemplateModal._element.querySelector('.italicsBtn')
     const underlineBtn                      = newMedicalReportTemplateModal._element.querySelector('.underlineBtn')
     const downloadReportBtn                 = viewMedicalReportModal._element.querySelector('#downloadReportBtn')
-    const fileBtns                           = document.querySelectorAll('#fileBtn')
+    const fileBtns                          = document.querySelectorAll('#fileBtn')
     const uploadFileBtn                     = fileModal._element.querySelector('#uploadFileBtn')
     const newSurgeryBtn                     = consultationReviewModal._element.querySelector('#newSurgeryBtn')
+    const saveBookedProcedureBtn            = procedureBookingModal._element.querySelector('#saveBookedProcedureBtn')
     const reportModalBody                   = viewMedicalReportModal._element.querySelector('.reportModalBody')
     const patientsFullName                  = viewMedicalReportModal._element.querySelector('#patientsFullName')
     const patientsInfo                      = viewMedicalReportModal._element.querySelector('#patientsInfo')
-    const [outPatientsTab, ancPatientsTab, inPatientsTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-inPatients-tab')]
+    const [outPatientsTab, ancPatientsTab, inPatientsTab, proceduresTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-procedures-tab')]
     const [resourceInput]         = [document.querySelectorAll('#resource')]
     const emergencyListCount      = document.querySelector('#emergencyListCount')
     const appointmentsListBtn     = document.querySelector('#appointmentsListBtn')
     const appointmentsBadgeSpan   = document.querySelector('#appointmentsBadgeSpan')
+    const proceduresListCount     = document.querySelector('#proceduresListCount')
 
     bmiCalculator(document.querySelectorAll('#height, .weight'))
     lmpCalculator(document.querySelectorAll('#lmp'), consultationDiv)
@@ -113,13 +117,14 @@ window.addEventListener('DOMContentLoaded', function () {
     // ICD11 handler
     ECT.Handler.configure(mySettings, myCallbacks)
     //visit Tables and consultations that are active
-    let inPatientsVisitTable, ancPatientsVisitTable, prescriptionTable, medicalReportTable, patientsFilesTable, surgeryNoteTable, deliveryNoteTable, appointmentsTable
+    let inPatientsVisitTable, ancPatientsVisitTable, prescriptionTable, medicalReportTable, patientsFilesTable, surgeryNoteTable, deliveryNoteTable, appointmentsTable, proceduresTable
 
     
     let outPatientsVisitTable = getOutpatientsVisitTable('#outPatientsVisitTable', 'My Patients')
     const waitingTable = getWaitingTable('#waitingTable')
     const emergencyTable = getEmergencyTable('emergencyTable', 'doctor')
     appointmentsTable = getAppointmentsTable('appointmentsTable', 'My Appointments', appointmentsBadgeSpan)
+    const proceduresListTable = getProceduresListTable('proceduresListTable', 'pending')
 
     emergencyTable.on('draw.init', function() {
         const count = emergencyTable.rows().count()
@@ -127,6 +132,15 @@ window.addEventListener('DOMContentLoaded', function () {
             emergencyListCount.innerHTML = count
         } else {
             emergencyListCount.innerHTML = ''
+        }
+    })
+
+    proceduresListTable.on('draw.init', function() {
+        const count = proceduresListTable.rows().count()
+        if (count > 0 ){
+            proceduresListCount.innerHTML = count
+        } else {
+            proceduresListCount.innerHTML = ''
         }
     })
 
@@ -150,13 +164,13 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    // appointmentsTab.addEventListener('click', function () {
-    //     if ($.fn.DataTable.isDataTable( '#appointmentsTable' )){
-    //         $('#appointmentsTable').dataTable().fnDraw()
-    //     } else {
-    //         appointmentsTable = getAppointmentsTable('appointmentsTable', 'My Appointments')
-    //     }
-    // })
+    proceduresTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#proceduresTable' )){
+            $('#proceduresTable').dataTable().fnDraw()
+        } else {
+            proceduresTable = getProceduresListTable('proceduresTable')
+        }
+    })
     
     document.querySelectorAll('#filterListOutPatients, #filterListInPatients, #filterListAncPatients, #filterAppointments').forEach(filterInput => {
             filterInput.addEventListener('change', function () {
@@ -746,10 +760,11 @@ window.addEventListener('DOMContentLoaded', function () {
         .catch((error) => {
             console.log(error)
         })
-        waitingTable.draw(); emergencyTable.draw()}
+        waitingTable.draw()}
     )
     emergencyListBtn.addEventListener('click', function () {emergencyTable.draw()})
     appointmentsListBtn.addEventListener('click', function () {appointmentsTable.draw(false)})
+    proceduresListBtn.addEventListener('click', function () {proceduresListTable.draw(false)})
 
     waitingListOffcanvas._element.addEventListener('hide.bs.offcanvas', () => {
         outPatientsVisitTable.draw(false)
@@ -766,6 +781,7 @@ window.addEventListener('DOMContentLoaded', function () {
             inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
             emergencyTable.draw()
             appointmentsTable.draw()
+            proceduresListTable.draw()
             clearValidationErrors(modal)
             modal.id == 'wardAndBedModal' ? clearSelectList(modal) : ''
         })
@@ -1020,7 +1036,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const div = input.parentElement.parentElement.parentElement.parentElement.parentElement
             const datalistEl = div.querySelector(`#resourceList${div.dataset.div}`)
             if (input.value < 2) {
-            datalistEl.innerHTML = ''
+                datalistEl.innerHTML = ''
             }
             if (input.value.length > 2) {
                 http.get(`/doctors/list`, {params: {resource: input.value, sponsorCat: input.dataset.sponsorcat}}).then((response) => {
@@ -1054,6 +1070,7 @@ window.addEventListener('DOMContentLoaded', function () {
             addBtn.setAttribute('disabled', 'disabled')
             const resourcevalues = getSelectedResourceValues(div, div.querySelector('.resource'), div.querySelector(`#resourceList${div.dataset.div}`))
             if (!resourcevalues){const message = {"resource": ["Please pick an from the list"]}; handleValidationErrors(message, div); addBtn.removeAttribute('disabled'); return}
+            const oppPro = resourcevalues.resourceSubCategory == 'Operation' || resourcevalues.resourceSubCategory == 'Procedure'
             const [conId, visitId, divPrescriptionTableId, chartable] = [addBtn.dataset.conid, addBtn.dataset.visitid, '#'+div.querySelector('.prescriptionTable').id, div.querySelector('#chartable').checked]
             let data = {...getDivData(div), ...resourcevalues, conId, visitId, chartable}
             
@@ -1061,6 +1078,7 @@ window.addEventListener('DOMContentLoaded', function () {
             .then((response) => {
                 if (response.status >= 200 || response.status <= 300) {
                     new Toast(div.querySelector('#saveInvestigationAndManagementToast'), {delay:2000}).show()
+                    if (oppPro){procedureBookingModal._element.querySelector('#procedure').value = div.querySelector('#resource').value ; saveBookedProcedureBtn.setAttribute('data-id', response.data?.procedures.id); procedureBookingModal.show()}
                     clearDivValues(div)
                     clearValidationErrors(div)
                     clearItemsList(div.querySelector(`#resourceList${div.dataset.div}`))
@@ -1080,6 +1098,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 if ($.fn.DataTable.isDataTable( '#billingTableConReview' )){
                     $('#billingTableConReview').dataTable().fnDraw()
                 }
+                proceduresListTable.draw(false)
                 div.querySelector('#quantity').value = 1
                 addBtn.removeAttribute('disabled')
             })
@@ -1126,6 +1145,7 @@ window.addEventListener('DOMContentLoaded', function () {
             inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
             emergencyTable.draw()
             appointmentsTable.draw()
+            proceduresListTable.draw()
             clearSelectList(modal)
          })
     })
@@ -1402,6 +1422,8 @@ window.addEventListener('DOMContentLoaded', function () {
             ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
             inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
             emergencyTable.draw()
+            appointmentsTable.draw()
+            proceduresListTable.draw()
         })
     })
 
@@ -1421,6 +1443,76 @@ window.addEventListener('DOMContentLoaded', function () {
         };
         html2pdf().set(opt).from(reportModalBody).save()
     })
+
+    document.querySelectorAll('#proceduresListTable, #proceduresTable').forEach(table => {
+        table.addEventListener('click', function (event) {
+            const bookDateBtn           = event.target.closest('.bookDateBtn')
+            const changetStatusBtn      = event.target.closest('.changetStatusBtn')
+            const deleteProcedureBtn    = event.target.closest('.deleteProcedureBtn')
+            if (bookDateBtn){
+                saveBookedProcedureBtn.setAttribute('data-id', bookDateBtn.dataset.id)
+                procedureBookingModal._element.querySelector('#procedure').value = bookDateBtn.dataset.procedure
+                procedureBookingModal.show()
+            }
+            if (changetStatusBtn){
+                const procedureId = changetStatusBtn.dataset.id
+                const div = changetStatusBtn.parentElement
+                const statusOptionsSelect = div.querySelector('.statusOptionSelect')
+                changetStatusBtn.classList.add('d-none')
+                statusOptionsSelect.classList.remove('d-none')
+    
+                statusOptionsSelect.addEventListener('blur', function () {
+                    http.patch(`/procedures/status/${procedureId}`, {status: statusOptionsSelect.value}, {"html": div})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            proceduresListTable.draw()
+                            proceduresTable ? proceduresTable.draw() : ''
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+                })
+            }
+    
+            if (deleteProcedureBtn){
+                deleteProcedureBtn.setAttribute('disabled', 'disabled')
+                if (confirm('Are you sure you want to delete this procedure?')) {
+                    const id = deleteProcedureBtn.getAttribute('data-id')
+                    http.delete(`/procedures/${id}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            proceduresListTable.draw()
+                             proceduresTable ? proceduresTable.draw() : ''
+                        }
+                        deleteProcedureBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => { console.log(error)
+                        deleteProcedureBtn.removeAttribute('disabled')
+                    })
+                }  
+            }
+        })
+    })
+
+    saveBookedProcedureBtn.addEventListener('click', function () {
+        saveBookedProcedureBtn.setAttribute('disabled', 'disabled')
+        const procedureId = saveBookedProcedureBtn.dataset.id
+
+        http.patch(`/procedures/${procedureId}`, getDivData(procedureBookingModal._element), {"html": procedureBookingModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                clearValidationErrors(updateSurgeryModal._element)
+                procedureBookingModal.hide()
+                proceduresListTable.draw()
+            }
+            saveBookedProcedureBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            saveBookedProcedureBtn.removeAttribute('disabled')
+            console.log(error)
+        })
+    })
 })
 
 function displayResourceList(datalistEl, data) {
@@ -1431,6 +1523,7 @@ function displayResourceList(datalistEl, data) {
         option.setAttribute('data-id', line.id)
         option.setAttribute('name', line.nameWithIndicators)
         option.setAttribute('data-cat', line.category)
+        option.setAttribute('data-subcat', line.subCategory)
         option.setAttribute('data-plainname', line.name)
 
         !datalistEl.options.namedItem(line.nameWithIndicators) ? datalistEl.appendChild(option) : ''
@@ -1463,7 +1556,8 @@ function getSelectedResourceValues(modal, inputEl, datalistEl) {
         if (selectedOption) {
             return {
                 resource : selectedOption.getAttribute('data-id'),
-                resourceCategory : selectedOption.getAttribute('data-cat'),              
+                resourceCategory : selectedOption.getAttribute('data-cat'),             
+                resourceSubCategory : selectedOption.getAttribute('data-subcat'),             
             }
         } else {
             return ""

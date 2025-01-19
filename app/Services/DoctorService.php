@@ -160,8 +160,8 @@ class DoctorService
         return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('doctor_done_by', null)
-                    ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->where('closed', false)
+                    ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }

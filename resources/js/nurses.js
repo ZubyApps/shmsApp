@@ -4,7 +4,7 @@ import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import { getWaitingTable, getPatientsVisitsByFilterTable, getNurseMedicationsByFilter, getMedicationChartByPrescription, getUpcomingMedicationsTable, getDeliveryNoteTable, getAncVitalSignsTable, getUpcomingNursingChartsTable, getOtherPrescriptionsByFilterNurses, getPrescriptionChartByPrescription, getEmergencyTable, getNursesReportTable, getShiftReportTable } from "./tables/nursesTables";
-import { getVitalSignsTableByVisit, getLabTableByConsultation, getSurgeryNoteTable, getPrescriptionTableByConsultation, getPatientsFileTable } from "./tables/doctorstables";
+import { getVitalSignsTableByVisit, getLabTableByConsultation, getSurgeryNoteTable, getPrescriptionTableByConsultation, getPatientsFileTable, getProceduresListTable } from "./tables/doctorstables";
 import { getbillingTableByVisit } from "./tables/billingTables";
 import { getBulkRequestTable } from "./tables/pharmacyTables";
 import { visitDetails } from "./dynamicHTMLfiles/visits";
@@ -90,6 +90,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const createShiftReportBtn      = newShiftReportTemplateModal._element.querySelector('#createShiftReportBtn')
     const saveShiftReportBtn        = editShiftReportTemplateModal._element.querySelector('#saveShiftReportBtn')
     const shiftBadgeSpan            = document.querySelector('#shiftBadgeSpan')
+    const proceduresListBtn         = document.querySelector('#proceduresListBtn')
+    const proceduresListCount       = document.querySelector('#proceduresListCount')
 
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
     const theatreItemInput         = theatreRequestModal._element.querySelector('#item')
@@ -105,6 +107,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const upcomingMedicationsTable      = getUpcomingMedicationsTable('upcomingMedicationsTable', inpatientsMedChartBtn, inpatientMedicationBadgeSpan)
     const upcomingNursingChartsTable    = getUpcomingNursingChartsTable('upcomingNursingChartsTable', nursingChartBtn, inpatientNursingBadgeSpan)
     const nursesShiftReportTable        = getShiftReportTable('nursesShiftReportTable', 'nurses', shiftBadgeSpan)
+    const proceduresListTable           = getProceduresListTable('proceduresListTable', 'pending')
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #bulkRequestsTable, #emergencyTable, #nursesReportTable, #upcomingMedicationsTable, #upcomingNursingChartsTable, #waitingTable, #medicationsTable, #otherPrescriptionsTable, #ancVitalSignsTable, #vitalSignsTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
 
     const shiftPerformance = () => {
@@ -119,12 +122,24 @@ window.addEventListener('DOMContentLoaded', function () {
         newShiftReportTemplateModal.show()
     })
 
+    proceduresListBtn.addEventListener('click', function () {proceduresListTable.draw()})
+
+    proceduresListTable.on('draw.init', function() {
+        const count = proceduresListTable.rows().count()
+        if (count > 0 ){
+            proceduresListCount.innerHTML = count
+        } else {
+            proceduresListCount.innerHTML = ''
+        }
+    })
+
     inPatientsTab.addEventListener('click', function() {
         inPatientsVisitTable.draw();
         upcomingMedicationsTable.draw();
         upcomingNursingChartsTable.draw();
         shiftPerformance();
-        nursesShiftReportTable.draw()
+        // nursesShiftReportTable.draw()
+        proceduresListTable.draw()
     });
 
     outPatientsTab.addEventListener('click', function () {
@@ -136,7 +151,8 @@ window.addEventListener('DOMContentLoaded', function () {
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
         shiftPerformance()
-        nursesShiftReportTable.draw()
+        // nursesShiftReportTable.draw()
+        proceduresListTable.draw()
     })
 
     ancPatientsTab.addEventListener('click', function () {
@@ -148,7 +164,8 @@ window.addEventListener('DOMContentLoaded', function () {
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
         shiftPerformance()
-        nursesShiftReportTable.draw()
+        // nursesShiftReportTable.draw()
+        // proceduresListTable.draw()
     })
 
     bulkRequestsTab.addEventListener('click', function () {
@@ -160,7 +177,7 @@ window.addEventListener('DOMContentLoaded', function () {
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
         shiftPerformance()
-        nursesShiftReportTable.draw()
+        // nursesShiftReportTable.draw()
     })
 
     theatreRequestTab.addEventListener('click', function () {
@@ -172,7 +189,7 @@ window.addEventListener('DOMContentLoaded', function () {
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
         shiftPerformance()
-        nursesShiftReportTable.draw()
+        // nursesShiftReportTable.draw()
     })
 
     emergencyTab.addEventListener('click', function () {
@@ -184,7 +201,7 @@ window.addEventListener('DOMContentLoaded', function () {
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
         shiftPerformance()
-        nursesShiftReportTable.draw()
+        // nursesShiftReportTable.draw()
     })
 
     waitingBtn.addEventListener('click', function () {
@@ -228,6 +245,7 @@ window.addEventListener('DOMContentLoaded', function () {
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
         shiftPerformance()
+        // proceduresListTable.draw()
     })
 
     document.querySelectorAll('#upcomingMedicationsoffcanvas, #upcomingNursingChartsoffcanvas').forEach(canvas => {
@@ -250,7 +268,8 @@ window.addEventListener('DOMContentLoaded', function () {
             upcomingMedicationsTable.draw()
             upcomingNursingChartsTable.draw()
             shiftPerformance()
-            nursesShiftReportTable.draw();
+            // nursesShiftReportTable.draw();
+            // proceduresListTable.draw()
         })
     })
 
@@ -761,13 +780,13 @@ window.addEventListener('DOMContentLoaded', function () {
             })
     
 
-    document.querySelectorAll('#medicationPrescriptionsModal, #otherPrescriptionsModal, #investigationAndManagementModal, #bulkRequestModal, #vitalsignsModal, #ancVitalsignsModal, #chartMedicationModal, #wardAndBedModal').forEach(modal => {
+    document.querySelectorAll('#medicationPrescriptionsModal, #otherPrescriptionsModal, #investigationAndManagementModal, #vitalsignsModal, #ancVitalsignsModal, #chartMedicationModal, #wardAndBedModal').forEach(modal => {
             modal.addEventListener('hide.bs.modal', function(event) {
             inPatientsVisitTable.draw()
-            waitingTable.draw()
+            // waitingTable.draw()
             outPatientsVisitTable ? outPatientsVisitTable.draw(false) : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
-            bulkRequestsTable ? bulkRequestsTable.draw(false) : ''
+            // bulkRequestsTable ? bulkRequestsTable.draw(false) : ''
             emergencyTable ? emergencyTable.draw(false) : ''
             medicationsTable ? medicationsTable.draw(false) : ''
             upcomingMedicationsTable.draw(false)
@@ -782,11 +801,11 @@ window.addEventListener('DOMContentLoaded', function () {
             regularTreatmentDiv.innerHTML = ''
             ancTreatmentDiv.innerHTML = ''
             visitHistoryDiv.innerHTML = ''
-            inPatientsVisitTable.draw()
+            inPatientsVisitTable.draw(false)
             outPatientsVisitTable ? outPatientsVisitTable.draw(false) : ''
             ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
-            bulkRequestsTable ? bulkRequestsTable.draw(false) : ''
-            emergencyTable ? emergencyTable.draw(false) : ''
+            // bulkRequestsTable ? bulkRequestsTable.draw(false) : ''
+            // emergencyTable ? emergencyTable.draw(false) : ''
             upcomingMedicationsTable.draw()
             upcomingNursingChartsTable.draw()
             shiftPerformance()
@@ -952,6 +971,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300) {
                 clearDivValues(bulkRequestModal._element.querySelector('.valuesDiv'))
                 clearValidationErrors(bulkRequestModal._element)
+                bulkRequestsTable ? bulkRequestsTable.draw() : ''
             }
             requestBulkBtn.removeAttribute('disabled')
             bulkRequestModal.hide()

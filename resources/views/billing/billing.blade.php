@@ -155,6 +155,37 @@
             </div>
         </div>
 
+        <div class="offcanvas offcanvas-end overflow-auto" data-bs-scroll="true" tabindex="-1" id="proceduresListOffcanvas"
+            aria-labelledby="proceduresListOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-primary" id="proceduresListOffcanvasLabel">Procedures List</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="py-4 ">
+                    <table id="proceduresListTable" class="table table-hover table-sm proceduresListTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Patient</th>
+                                <th>Phone</th>
+                                <th>By</th>
+                                <th>Sponsor</th>
+                                <th>Procedure</th>
+                                <th>Booked</th>
+                                <th>Booked By</th>
+                                <th>Comment</th>
+                                <th>Status</th>
+                                <th>Status By</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <div class="text-start mb-4">
             <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn" data-bs-target="#waitingListOffcanvas2" aria-controls="waitingListOffcanvas2">
                 <i class="bi bi-list-check"></i>
@@ -172,6 +203,10 @@
                 data-bs-target="#dueRemindersListOffcanvas" aria-controls="dueRemindersListOffcanvas">
                 <i class="bi bi-list-check"></i>
                 Due Reminders <span class="badge text-bg-danger" id="dueRemindersListCount"></span>
+            </button>
+            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" id="proceduresListBtn" data-bs-target="#proceduresListOffcanvas" aria-controls="proceduresListOffcanvas">
+                <i class="bi bi-list-check"></i>
+                Procedures List <span class="badge text-bg-danger" id="proceduresListCount"></span>
             </button>
         </div>
 

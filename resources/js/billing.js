@@ -6,7 +6,7 @@ import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit
 import { getOutpatientsInvestigationTable } from "./tables/investigationTables";
 import html2pdf  from "html2pdf.js"
 import { getShiftReportTable } from "./tables/pharmacyTables";
-import { getMedicalReportTable } from "./tables/doctorstables";
+import { getMedicalReportTable, getProceduresListTable } from "./tables/doctorstables";
 $.fn.dataTable.ext.errMode = 'throw';
 
 
@@ -50,8 +50,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const searchBillRemindersWithDatesBtn   = document.querySelector('.searchBillRemindersWithDatesBtn')
     const searchBillRemindersMonthBtn       = document.querySelector('.searchBillRemindersMonthBtn')
     const sendSmsBtn                        = smsTemplateModal._element.querySelector('#sendSms')
-    const savePaymentBtn                    = confirmPaymentModal._element.querySelector('#savePaymentBtn')
-    
+    const savePaymentBtn                    = confirmPaymentModal._element.querySelector('#savePaymentBtn') 
+    const proceduresListBtn                 = document.querySelector('#proceduresListBtn')
+    const proceduresListCount               = document.querySelector('#proceduresListCount')
 
     const outPatientsTab                = document.querySelector('#nav-outPatients-tab')
     const inPatientsTab                 = document.querySelector('#nav-inPatients-tab')
@@ -78,10 +79,11 @@ window.addEventListener('DOMContentLoaded', function () {
     const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable', true)
     const billingShiftReportTable = getShiftReportTable('billingShiftReportTable', 'billing', shiftBadgeSpan)
     const dueCashRemindersTable = getDueCashRemindersTable('dueRemindersListTable')
+    const proceduresListTable   = getProceduresListTable('proceduresListTable', 'pending', null, 'cash')
 
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #outpatientInvestigationsTable, #waitingTable, #billingTable, #openVisitsTable, #expensesTable, #balancingTable, #billingShiftReportTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})    
 
-    outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw(); dueCashRemindersTable.draw()})
+    outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw(); dueCashRemindersTable.draw(); proceduresListTable.draw()})
     outpatientsInvestigationBtn.addEventListener('click', function () {outpatientInvestigationTable.draw()})
     shiftReportBtn.addEventListener('click', function () {billingShiftReportTable.draw()})
 
@@ -98,6 +100,15 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    proceduresListTable.on('draw.init', function() {
+        const count = proceduresListTable.rows().count()
+        if (count > 0 ){
+            proceduresListCount.innerHTML = count
+        } else {
+            proceduresListCount.innerHTML = ''
+        }
+    })
+
     inPatientsTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#inPatientsVisitTable' )){
             $('#inPatientsVisitTable').dataTable().fnDraw()
@@ -106,6 +117,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
         billingShiftReportTable.draw()
         dueCashRemindersTable.draw()
+        proceduresListTable.draw()
     })
 
     ancPatientsTab.addEventListener('click', function () {
@@ -208,7 +220,9 @@ window.addEventListener('DOMContentLoaded', function () {
         dueCashRemindersTable.draw()
     })
 
-    document.querySelectorAll('#waitingListOffcanvas2, #offcanvasInvestigations, #viewShiftReportTemplateModal, #newShiftReportTemplateModal, #dueRemindersListOffcanvas').forEach(canvas => {
+    proceduresListBtn.addEventListener('click', function () {proceduresListTable.draw()})
+
+    document.querySelectorAll('#waitingListOffcanvas2, #offcanvasInvestigations, #viewShiftReportTemplateModal, #newShiftReportTemplateModal, #dueRemindersListOffcanvas, #proceduresListOffcanvas').forEach(canvas => {
         canvas.addEventListener('hide.bs.offcanvas', function () {
             outPatientsVisitTable.draw()
             inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
@@ -216,6 +230,7 @@ window.addEventListener('DOMContentLoaded', function () {
             billingShiftReportTable.draw()
             dueCashRemindersTable.draw()
             billRemindersTable ? billRemindersTable.draw() : ''
+            proceduresListTable.draw()
         })
 
     })
@@ -645,6 +660,7 @@ window.addEventListener('DOMContentLoaded', function () {
             ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
             openVisitsTable ? openVisitsTable.draw() : ''
             billingShiftReportTable.draw()
+            proceduresListTable.draw()
         })
     })
 

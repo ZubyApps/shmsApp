@@ -21,48 +21,47 @@
 
 
     <div class="container p-1 mt-5 bg-white">
-        <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2"
-        aria-labelledby="waitingListOffcanvasLabel" aria-expanded="false">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <div class="form-control mb-2">
-                <h5>Average Waiting Time</h5>
-                <x-form-div class="col-xl-12">
-                    <x-input-span class="">Last Month</x-input-span>
-                    <x-form-input name="lastMonth" id="lastMonth" readonly/>
-                    <x-input-span class="">This Month</x-input-span>
-                    <x-form-input name="thisMonth" id="thisMonth" readonly/>
-                </x-form-div>
-                <x-form-div class="col-xl-12">
-                    <x-input-span class="">Last Week</x-input-span>
-                    <x-form-input name="lastWeek" id="lastWeek" readonly/>
-                    <x-input-span class="">This Week</x-input-span>
-                    <x-form-input name="thisWeek" id="thisWeek" readonly/>
-                </x-form-div>
+        <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2" aria-labelledby="waitingListOffcanvasLabel" aria-expanded="false">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
-            <div class="py-3 form-control">
-                <table id="waitingTable" class="table table-hover align-middle table-sm bg-primary">
-                    <thead>
-                        <tr>
-                            <th>Patient</th>
-                            <th>Sex</th>
-                            <th>Age</th>
-                            <th>Sponsor</th>
-                            <th>Came</th>
-                            <th>For</th>
-                            <th>Seeing</th>
-                            <th>Vitals</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+            <div class="offcanvas-body">
+                <div class="form-control mb-2">
+                    <h5>Average Waiting Time</h5>
+                    <x-form-div class="col-xl-12">
+                        <x-input-span class="">Last Month</x-input-span>
+                        <x-form-input name="lastMonth" id="lastMonth" readonly/>
+                        <x-input-span class="">This Month</x-input-span>
+                        <x-form-input name="thisMonth" id="thisMonth" readonly/>
+                    </x-form-div>
+                    <x-form-div class="col-xl-12">
+                        <x-input-span class="">Last Week</x-input-span>
+                        <x-form-input name="lastWeek" id="lastWeek" readonly/>
+                        <x-input-span class="">This Week</x-input-span>
+                        <x-form-input name="thisWeek" id="thisWeek" readonly/>
+                    </x-form-div>
+                </div>
+                <div class="py-3 form-control">
+                    <table id="waitingTable" class="table table-hover align-middle table-sm bg-primary">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Sex</th>
+                                <th>Age</th>
+                                <th>Sponsor</th>
+                                <th>Came</th>
+                                <th>For</th>
+                                <th>Seeing</th>
+                                <th>Vitals</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
 
         <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="hmoApprovalListOffcanvas"
             aria-labelledby="hmoApprovalListOffcanvasLabel">
@@ -163,6 +162,37 @@
             </div>
         </div>
 
+        <div class="offcanvas offcanvas-end overflow-auto" data-bs-scroll="true" tabindex="-1" id="proceduresListOffcanvas"
+            aria-labelledby="proceduresListOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-primary" id="proceduresListOffcanvasLabel">Procedures List</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="py-4 ">
+                    <table id="proceduresListTable" class="table table-hover table-sm proceduresListTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Patient</th>
+                                <th>Phone</th>
+                                <th>By</th>
+                                <th>Sponsor</th>
+                                <th>Procedure</th>
+                                <th>Booked</th>
+                                <th>Booked By</th>
+                                <th>Comment</th>
+                                <th>Status</th>
+                                <th>Status By</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <div class="text-start mb-4">
             <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn" data-bs-target="#waitingListOffcanvas2" aria-controls="waitingListOffcanvas2">
                 <i class="bi bi-list-check"></i>
@@ -182,6 +212,10 @@
                 data-bs-target="#dueRemindersListOffcanvas" aria-controls="dueRemindersListOffcanvas">
                 <i class="bi bi-list-check"></i>
                 Due Reminders <span class="badge text-bg-danger" id="dueRemindersListCount"></span>
+            </button>
+            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" id="proceduresListBtn" data-bs-target="#proceduresListOffcanvas" aria-controls="proceduresListOffcanvas">
+                <i class="bi bi-list-check"></i>
+                Procedures List <span class="badge text-bg-danger" id="proceduresListCount"></span>
             </button>
         </div>
 

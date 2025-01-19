@@ -33,11 +33,11 @@ class ThirdPartyController extends Controller
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $sponsorCategories = $this->thirdPartyServices->getPaginatedThirdParty($params);
+        $thirdPartyServices = $this->thirdPartyServices->getPaginatedThirdParty($params);
        
         $loadTransformer = $this->thirdPartyServices->getLoadTransformer();
 
-        return $this->datatablesService->datatableResponse($loadTransformer, $sponsorCategories, $params);  
+        return $this->datatablesService->datatableResponse($loadTransformer, $thirdPartyServices, $params);  
     }
 
     public function toggleDelisted(ThirdParty $thirdParty)

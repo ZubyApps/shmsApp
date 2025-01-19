@@ -67,6 +67,9 @@ class BillingService
             return $this->visit
             ->where('consulted', '!=', null)
             ->where('closed', false)
+            ->where('admission_status', '=', 'Outpatient')
+            ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
+            ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->where(function (Builder $query){
                 $query->where(function (Builder $query){
                     $query->where('total_nhis_bill', '>', 0)
@@ -78,9 +81,6 @@ class BillingService
                             ->whereColumn('total_hms_bill', '>', 'total_paid');
                             });
             })
-            ->where('admission_status', '=', 'Outpatient')
-            ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
-            ->whereRelation('patient', 'patient_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -89,6 +89,11 @@ class BillingService
             return $this->visit
                     ->where('consulted', '!=', null)
                     ->where('closed', false)
+                    ->where(function (Builder $query) {
+                        $query->where('admission_status', '=', 'Inpatient')
+                        ->orWhere('admission_status', '=', 'Observation');
+                    })
+                    ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
                     ->where(function (Builder $query){
                         $query->where(function (Builder $query){
                             $query->where('total_nhis_bill', '>', 0)
@@ -100,12 +105,7 @@ class BillingService
                                     ->whereColumn('total_hms_bill', '>', 'total_paid');
                                     });
                     })
-                    ->where(function (Builder $query) {
-                        $query->where('admission_status', '=', 'Inpatient')
-                        ->orWhere('admission_status', '=', 'Observation');
-                    })
-                    ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
-                    ->whereColumn('total_hms_bill', '>', 'total_paid')
+                    // ->whereColumn('total_hms_bill', '>', 'total_paid')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }

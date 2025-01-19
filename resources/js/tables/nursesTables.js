@@ -209,7 +209,7 @@ const getNurseMedicationsByFilter = (tableId, conId, modal, visitId, isHistory) 
                 `
                 <div class="d-flex flex- ${row.closed || !row.chartable || isHistory ? 'd-none' : ''}">
                     ${row.doseComplete ? 'Complete' : row.discontinued ? 'Discontinued' : `
-                        <button type="button" id="chartMedicationBtn" class="btn btn${row.medicationCharts.length ? '' : '-outline'}-primary chatMedicationBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}", data-resource="${row.resource}" data-prescription="${row.prescription}" data-prescribedBy="${row.prescribedBy}" data-patient="${row.patient}" data-sponsor="${row.sponsor}" data-prescribed="${row.prescribedFormatted}" data-consultation="${row.conId}" data-visit="${row.visitId}">
+                        <button type="button" id="chartMedicationBtn" class="btn btn${row.medicationCharts.length ? '' : '-outline'}-primary chatMedicationBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}" data-resource="${row.resource}" data-prescription="${row.prescription}" data-prescribedBy="${row.prescribedBy}" data-patient="${row.patient}" data-sponsor="${row.sponsor}" data-prescribed="${row.prescribedFormatted}" data-consultation="${row.conId}" data-visit="${row.visitId}">
                             ${row.medicationCharts.length ? row.doseComplete ? 'Complete' : 'Charted' : 'Create'}
                         </button>`
                     }

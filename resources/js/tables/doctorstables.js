@@ -1,5 +1,12 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
+import jszip, { forEach } from 'jszip';
+import pdfmake from 'pdfmake';
+import pdfFonts from './vfs_fontes'
+DataTable.Buttons.jszip(jszip)
+DataTable.Buttons.pdfMake(pdfmake)
+pdfMake.vfs = pdfFonts;
+$.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 import { admissionStatus, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getOrdinal, histroyBtn, prescriptionOnLatestConsultation, prescriptionStatusContorller, reviewBtn, sponsorAndPayPercent, wardState } from "../helpers";
 
 const getOutpatientsVisitTable = (tableId, filter) => {
@@ -888,4 +895,89 @@ const getPatientsFileTable = (tableId, visitId, modal) => {
     return patientsFileTable
 }
 
-export {getOutpatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getSurgeryNoteTable, getMedicalReportTable, getPatientsFileTable}
+const getProceduresListTable = (tableId, pending, hmo, cash) => {
+    return new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax: {url: `/procedures/load`, data: {
+            'pending'   : pending,
+            'hmo'       : hmo,
+            'cash'      : cash
+        }},
+        orderMulti: true,
+        lengthMenu:[25, 50, 100, 150, 200],
+        dom: 'l<"my-1 text-center "B>frtip',
+        buttons: [
+            {
+                extend:'colvis',
+                text:'Show/Hide',
+                className:'btn btn-primary'       
+            },
+            // {extend: 'copy', className: 'btn-primary', footer: true},
+            // {extend: 'csv', className: 'btn-primary', footer: true},
+            // {extend: 'excel', className: 'btn-primary', footer: true},
+            // {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            // {extend: 'print', className: 'btn-primary', footer: true},
+        ],
+        search:true,
+        searchDelay: 500,
+        language: {
+            emptyTable: 'No pending procedures'
+        },
+        columns: [
+            {data: "createdAt"},
+            {data: "patient"},
+            {
+                visible: false,
+                data: "phone"},
+            {data: "prescribedBy"},
+            {data: row => row.sponsor + ' - ' + row.sponsorCat},
+            {data: row => `<span class="fw-semibold text-primary">${row.procedure}</span>`},
+            {data: row => function () {
+                if (row.bookedDate){
+                    return `<span class="bookDateBtn p-0" data-id="${ row.id}">${row.bookedDate}</span>`
+                }
+                return `
+                        <div class="d-flex flex-">
+                            <button type="button" class="ms-1 btn btn-outline-primary bookDateBtn tooltip-test" data-procedure="${row.procedure}" title="status" data-id="${ row.id}">
+                            Book
+                            </button>
+                        </div>
+                    `
+                }
+            },
+            {
+                visible: false,
+                data: "dateBookedBy"},
+            {data: "comment"},
+            {data: row=> `
+                    <div class="d-flex flex- statusDiv">
+                        <button type="button" class="ms-1 btn btn-${!row.status ? 'outline-' : ''}primary changetStatusBtn tooltip-test" data-table="${tableId}" title="status" data-id="${ row.id}">
+                            ${!row.status ? 'Pending' : row.status}
+                        </button>
+                        <select class ="form-select form-select-md statusOptionSelect d-none ms-1">
+                            <option value="">Select none</option>
+                            <option value="Done">Done</option>
+                            <option value="Undone">Undone</option>
+                        </select>
+                    </div>
+                `
+            },
+            {
+                visible: false,
+                data: "statusUpdatedBy"},
+            {
+                visible: false,
+                sortable: false,
+                data: row =>  `
+                <div class="d-flex flex- ${row.bookedDate || row.status ? 'd-none': ''}">
+                    <button type="submit" class="ms-1 btn btn-outline-primary deleteProcedureBtn tooltip-test" title="delete" data-id="${ row.id}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+                `      
+            },
+        ]
+    });
+}
+
+export {getOutpatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getSurgeryNoteTable, getMedicalReportTable, getPatientsFileTable, getProceduresListTable}

@@ -28,6 +28,7 @@ use App\Http\Controllers\PatientsFileController;
 use App\Http\Controllers\PayMethodController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\ProcedureController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResourceCategoryController;
@@ -599,6 +600,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/{appointment}', [AppointmentController::class, 'edit']);
         Route::delete('/{appointment}', [AppointmentController::class, 'destroy']);
         Route::post('/{appointment}', [AppointmentController::class, 'update']);
+    });
+
+    Route::prefix('procedures')->group(function () {
+        Route::get('/load', [ProcedureController::class, 'load']);
+        Route::get('/{procedure}', [ProcedureController::class, 'edit']);
+        Route::delete('/{procedure}', [ProcedureController::class, 'destroy']);
+        Route::patch('/{procedure}', [ProcedureController::class, 'update']);
+        Route::patch('/status/{procedure}', [ProcedureController::class, 'updateStatus']);
     });
 });
 
