@@ -69,7 +69,8 @@ class ProcedureService
                 return $this->procedure
                     ->where(function(Builder $query) {
                         $query->whereRelation('prescription.visit.sponsor', 'category_name', '=', 'Individual')
-                        ->orWhereRelation('prescription.visit.sponsor', 'category_name', '=', 'Family');
+                        ->orWhereRelation('prescription.visit.sponsor', 'category_name', '=', 'Family')
+                        ->orWhereRelation('prescription.visit.sponsor', 'category_name', '=', 'NHIS');
                     })
                     ->whereNull('status')
                     ->orderBy($orderBy, $orderDir)
@@ -99,12 +100,12 @@ class ProcedureService
                 'sponsor'           => $procedure->prescription->visit->sponsor->name,
                 'sponsorCat'        => $procedure->prescription->visit->sponsor->sponsorCategory->name,
                 'procedure'         => $procedure->prescription->resource->name,
-                'bookedDate'        => $procedure->booked_date ? (new Carbon($procedure->booked_date))->format('D d/m/y') : '',
+                'bookedDate'        => $procedure->booked_date ? (new Carbon($procedure->booked_date))->format('D d/m/y g:ia') : '',
                 'dateBookedBy'      => $procedure?->dateBookedBy?->username,
                 'comment'           => $procedure->comment,
                 'status'            => $procedure->status,
                 'statusUpdatedBy'   => $procedure?->statusUpdatedBy?->username,
-                'createdAt'         => (new Carbon($procedure->created_at))->format('d/m/y'),
+                'createdAt'         => (new Carbon($procedure->created_at))->format('d/m/y g:ia'),
             ];
          };
     }

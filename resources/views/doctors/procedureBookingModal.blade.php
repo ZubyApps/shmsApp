@@ -15,7 +15,7 @@
                         </x-form-div>
                         <x-form-div class="col-xl-12">
                             <x-input-span class="">Book Date</x-input-span>
-                            <x-form-input type="date" id="bookedDate" name="bookedDate"/>
+                            <x-form-input type="datetime-local" id="bookedDate" name="bookedDate"/>
                         </x-form-div>
                         <x-form-div class="col-xl-12">
                             <x-input-span>Comment</x-input-span>
