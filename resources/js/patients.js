@@ -56,7 +56,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
     let sponsorsTable, visitsTable, newRegPatientsTable, sexAggregateTable, patientsBySponsorTable, visitsSummaryTable, prePatientsTable, appointmentsTable
 
-    const allPatientsTable = getAllPatientsTable('allPatientsTable')
+    const allPatientsTable = getAllPatientsTable('#allPatientsTable')
     $('#allPatientsTable, #sponsorsTable, #visitsTable, #newRegPatientsTable, #sexAggregateTable, #patientsBySponsorTable, #visitsSummaryTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
     newSponsorBtn.addEventListener('click', function() {
         newSponsorModal.show()

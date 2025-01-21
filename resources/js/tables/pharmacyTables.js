@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, sponsorAndPayPercent, wardState } from "../helpers";
+import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -32,7 +32,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
     
     filter === 'Inpatient' ? preparedColumns.splice(7, 0, {data: row => wardState(row)},) : ''
 
-    return new DataTable('#'+tableId, {
+    const allPatientsTable = new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/pharmacy/load/consulted',  data: {
             'filterBy': filter 
@@ -42,10 +42,15 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
         search:true,
         searchDelay: 500,
         language: {
-            emptyTable: 'No patient record'
+            emptyTable: 'No patient record',
+            searchPlaceholder: searchPlaceholderText
         },
         columns: preparedColumns
     });
+
+    allPatientsTable.on('draw.init', searchMin(allPatientsTable, tableId, 2))
+
+    return allPatientsTable
 }
 
 const getPrescriptionsByConsultation = (tableId, visitId, modal) => {

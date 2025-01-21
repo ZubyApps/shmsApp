@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import {admissionStatusX, deferredCondition, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, selectReminderOptions, sponsorAndPayPercent, wardState } from "../helpers";
+import {admissionStatusX, deferredCondition, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, searchMin, searchPlaceholderText, selectReminderOptions, sponsorAndPayPercent, wardState } from "../helpers";
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -107,7 +107,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, s
     ]
     filter === 'Inpatient' ? preparedColumns.splice(6, 0, {data: row => wardState(row)},) : ''
 
-    return new DataTable('#'+tableId, {
+    const patientsVisitisByFilterTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: `/billing/load/${urlSuffix}`, data: {
             'filterBy': filter,
@@ -121,10 +121,15 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, s
         search:true,
         searchDelay: 500,
         language: {
-            emptyTable: urlSuffix == 'openvisits' ? 'No open visits' : 'No patient record'
+            emptyTable: urlSuffix == 'openvisits' ? 'No open visits' : 'No patient record',
+            searchPlaceholder: searchPlaceholderText
         },
         columns: preparedColumns
     });
+
+    patientsVisitisByFilterTable.on('draw.init', searchMin(patientsVisitisByFilterTable, tableId, 2))
+
+    return patientsVisitisByFilterTable
 }
 
 const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
@@ -518,7 +523,7 @@ const getPatientsBill = (tableId, visitId, modal, type) => {
 }
 
 const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate, endDate, date) => {
-    const expenseTable =  new DataTable('#'+tableId, {
+    const expenseTable =  new DataTable(tableId, {
         serverSide: true,
         ajax: {url: '/billing/load/expenses', data: {
             'accessor': accessor,
@@ -539,7 +544,8 @@ const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate
             {extend: 'print', className: 'btn-primary', footer: true},
              ],
         language: {
-            emptyTable: 'No expense'
+            emptyTable: 'No expense',
+            searchPlaceholder: searchPlaceholderText
         },
         drawCallback: function () {
             var api = this.api()
@@ -578,7 +584,8 @@ const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate
             expenseTable.destroy()
         })
     }
-    
+    expenseTable.on('draw.init', searchMin(expenseTable, tableId, 2))
+
     return expenseTable
 }
 

@@ -3,7 +3,7 @@ import DataTable from 'datatables.net-bs5';
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
-import { flagIndicator, flagPatientReason, flagSponsorReason } from '../helpers';
+import { flagIndicator, flagPatientReason, flagSponsorReason, searchMin, searchPlaceholderText } from '../helpers';
 DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
 pdfMake.vfs = pdfFonts;
@@ -71,13 +71,16 @@ const getSponsorsTable = (tableId) => {
 }
 
 const getAllPatientsTable = (tableId) => {
-    const allPatientsTable = new DataTable(`#${tableId}`, {
+    const allPatientsTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  '/patients/load',
         orderMulti: true,
         lengthMenu:[50, 100, 150, 200, 300],
         search:true,
-        searchDelay: 500,
+        language: {
+            searchPlaceholder: searchPlaceholderText
+        },
+        // searchDelay: 500,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary'},
@@ -156,6 +159,7 @@ const getAllPatientsTable = (tableId) => {
                 }}
         ]
     })
+    allPatientsTable.on('draw.init', searchMin(allPatientsTable, tableId, 2))
 
     return allPatientsTable
 }

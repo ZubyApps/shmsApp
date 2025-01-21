@@ -7,20 +7,21 @@ DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
 pdfMake.vfs = pdfFonts;
 $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
-import { admissionStatus, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getOrdinal, histroyBtn, prescriptionOnLatestConsultation, prescriptionStatusContorller, reviewBtn, sponsorAndPayPercent, wardState } from "../helpers";
+import { admissionStatus, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getOrdinal, histroyBtn, prescriptionOnLatestConsultation, prescriptionStatusContorller, reviewBtn, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
 
 const getOutpatientsVisitTable = (tableId, filter) => {
-    return new DataTable(tableId, {
+    const outPatientsTable =  new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/doctors/load/consulted/outpatient', data: {
             'filterBy' : filter
         }},
         orderMulti: true,
         search:true,
-        searchDelay: 500,
+        // searchDelay: 500,
         lengthMenu:[25, 50, 100, 150, 200],
         language: {
-            emptyTable: "No patient"
+            emptyTable: "No patient",
+            searchPlaceholder: searchPlaceholderText
         },
         columns: [
             {data: "came"},
@@ -62,10 +63,13 @@ const getOutpatientsVisitTable = (tableId, filter) => {
             },
         ]
     });
+    outPatientsTable.on('draw.init', searchMin(outPatientsTable, tableId, 2))
+
+    return outPatientsTable
 }
 
 const getInpatientsVisitTable = (tableId, filter) => {
-    return new DataTable(tableId, {
+    const inpatientsTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/doctors/load/consulted/inpatient', data: {
             'filterBy' : filter
@@ -75,7 +79,8 @@ const getInpatientsVisitTable = (tableId, filter) => {
         searchDelay: 500,
         lengthMenu:[25, 50, 100, 150, 200],
         language: {
-            emptyTable: "No patient"
+            emptyTable: "No patient",
+            searchPlaceholder: searchPlaceholderText
         },
         columns: [
             {data: "came"},
@@ -118,10 +123,14 @@ const getInpatientsVisitTable = (tableId, filter) => {
             },
         ]
     });
+
+    inpatientsTable.on('draw.init', searchMin(inpatientsTable, tableId, 2))
+
+    return inpatientsTable
 }
 
 const getAncPatientsVisitTable = (tableId, filter) => {
-    return new DataTable(tableId, {
+    const ancPatientsTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/doctors/load/consulted/anc', data: {
             'filterBy' : filter
@@ -131,7 +140,8 @@ const getAncPatientsVisitTable = (tableId, filter) => {
         searchDelay: 500,
         lengthMenu:[25, 50, 100, 150, 200],
         language: {
-            emptyTable: "No patient"
+            emptyTable: "No patient",
+            searchPlaceholder: searchPlaceholderText
         },
         columns: [
             {data: "came"},
@@ -200,10 +210,14 @@ const getAncPatientsVisitTable = (tableId, filter) => {
             },
         ]
     });
+
+    ancPatientsTable.on('draw.init', searchMin(ancPatientsTable, tableId, 2))
+
+    return ancPatientsTable
 }
 
 const getWaitingTable = (tableId) => {
-    return new DataTable(tableId, {
+    const waitingTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  '/visits/load/waiting',
         orderMulti: true,
@@ -298,6 +312,10 @@ const getWaitingTable = (tableId) => {
             },
         ]
     });
+
+    waitingTable.on('draw.init', searchMin(waitingTable, tableId, 2))
+
+    return waitingTable
 }
 
 const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {

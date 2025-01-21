@@ -102,8 +102,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
     let outPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable, theatreRequestsTable, emergencyTable, nursesReportTable, surgeryNoteTable, deliveryNoteTable, medicationsTable, patientsFilesTable
 
-    const inPatientsVisitTable          = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient')
-    const waitingTable                  = getWaitingTable('waitingTable')
+    const inPatientsVisitTable          = getPatientsVisitsByFilterTable('#inPatientsVisitTable', 'Inpatient')
+    const waitingTable                  = getWaitingTable('#waitingTable')
     const upcomingMedicationsTable      = getUpcomingMedicationsTable('upcomingMedicationsTable', inpatientsMedChartBtn, inpatientMedicationBadgeSpan)
     const upcomingNursingChartsTable    = getUpcomingNursingChartsTable('upcomingNursingChartsTable', nursingChartBtn, inpatientNursingBadgeSpan)
     const nursesShiftReportTable        = getShiftReportTable('nursesShiftReportTable', 'nurses', shiftBadgeSpan)
@@ -146,7 +146,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#outPatientsVisitTable' )){
             $('#outPatientsVisitTable').dataTable().fnDraw()
         } else {
-            outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient')
+            outPatientsVisitTable = getPatientsVisitsByFilterTable('#outPatientsVisitTable', 'Outpatient')
         }
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
@@ -159,7 +159,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#ancPatientsVisitTable' )){
             $('#ancPatientsVisitTable').dataTable().fnDraw()
         } else {
-            ancPatientsVisitTable = getPatientsVisitsByFilterTable('ancPatientsVisitTable', 'ANC')
+            ancPatientsVisitTable = getPatientsVisitsByFilterTable('#ancPatientsVisitTable', 'ANC')
         }
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()

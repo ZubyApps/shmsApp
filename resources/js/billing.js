@@ -74,7 +74,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     let inPatientsVisitTable, ancPatientsVisitTable, billingTable, paymentTable, openVisitsTable, expensesTable, balancingTable, medicalReportTable, billRemindersTable
 
-    const outPatientsVisitTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient', 'consulted')
+    const outPatientsVisitTable = getPatientsVisitsByFilterTable('#outPatientsVisitTable', 'Outpatient', 'consulted')
     const waitingTable = getWaitingTable('waitingTable')
     const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable', true)
     const billingShiftReportTable = getShiftReportTable('billingShiftReportTable', 'billing', shiftBadgeSpan)
@@ -113,7 +113,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#inPatientsVisitTable' )){
             $('#inPatientsVisitTable').dataTable().fnDraw()
         } else {
-            inPatientsVisitTable = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient', 'consulted')
+            inPatientsVisitTable = getPatientsVisitsByFilterTable('#inPatientsVisitTable', 'Inpatient', 'consulted')
         }
         billingShiftReportTable.draw()
         dueCashRemindersTable.draw()
@@ -124,7 +124,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#ancPatientsVisitTable' )){
             $('#ancPatientsVisitTable').dataTable().fnDraw()
         } else {
-            ancPatientsVisitTable = getPatientsVisitsByFilterTable('ancPatientsVisitTable', 'ANC', 'consulted')
+            ancPatientsVisitTable = getPatientsVisitsByFilterTable('#ancPatientsVisitTable', 'ANC', 'consulted')
         }
         billingShiftReportTable.draw()
         dueCashRemindersTable.draw()
@@ -134,7 +134,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#openVisitsTable' )){
             $('#openVisitsTable').dataTable().fnDraw()
         } else {
-            openVisitsTable = getPatientsVisitsByFilterTable('openVisitsTable', '', 'openvisits')
+            openVisitsTable = getPatientsVisitsByFilterTable('#openVisitsTable', '', 'openvisits')
         }
         billingShiftReportTable.draw()
         dueCashRemindersTable.draw()
@@ -144,7 +144,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#expensesTable' )){
             $('#expensesTable').dataTable().fnDraw()
         } else {
-            expensesTable = getExpensesTable('expensesTable', 'billing')
+            expensesTable = getExpensesTable('#expensesTable', 'billing')
         }
         billingShiftReportTable.draw()
         dueCashRemindersTable.draw()

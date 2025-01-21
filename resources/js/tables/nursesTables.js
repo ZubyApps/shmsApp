@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, prescriptionStatusContorller, sponsorAndPayPercent, wardState } from "../helpers";
+import { admissionStatus, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, prescriptionStatusContorller, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     return new DataTable('#'+tableId, {
@@ -155,7 +155,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
 
     filter === 'Inpatient' ? preparedColumns.splice(9, 0, {data: row => wardState(row)},) : ''
 
-    const allPatientsTable = new DataTable('#'+tableId, {
+    const allPatientsTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/nurses/load/consulted/nurses', data: {
             'filterBy': filter
@@ -165,12 +165,13 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
         search:true,
         searchDelay: 500,
         language: {
-            emptyTable: 'No patient record'
+            emptyTable: 'No patient record',
+            searchPlaceholder: searchPlaceholderText
         },
         columns: preparedColumns
     });
 
-    allPatientsTable
+    allPatientsTable.on('draw.init', searchMin(allPatientsTable, tableId, 2))
 
     return allPatientsTable
 }

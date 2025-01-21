@@ -81,9 +81,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const patientsInfo                      = viewMedicalReportModal._element.querySelector('#patientsInfo')
 
     const waitingTable          = getWaitingTable('waitingTable')
-    const verificationTable     = getVerificationTable('verificationTable')
-    const hmoApprovalListTable  = getApprovalListTable('hmoApprovalListTable',null)
-    const nhisApprovalListTable = getApprovalListTable('nhisApprovalListTable', 'NHIS')
+    const verificationTable     = getVerificationTable('#verificationTable')
+    const hmoApprovalListTable  = getApprovalListTable('#hmoApprovalListTable',null)
+    const nhisApprovalListTable = getApprovalListTable('#nhisApprovalListTable', 'NHIS')
     const dueHmoRemindersTable  = getDueHmoRemindersTable('dueRemindersListTable')
     const proceduresListTable   = getProceduresListTable('proceduresListTable', 'pending', 'hmo')
     let hmotreatmentsTable, visitPrescriptionsTable, sentBillsTable, hmoReportsTable, reconciliationTable, medicalReportTable, nhisReconTable, billRemindersTable
@@ -192,7 +192,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#hmoReportsTable' )){
             $('#hmoReportsTable').dataTable().fnDraw()
         } else {
-            hmoReportsTable = getHmoReportsTable('hmoReportsTable')
+            hmoReportsTable = getHmoReportsTable('#hmoReportsTable')
         }
         hmoApprovalListTable.draw()
         nhisApprovalListTable.draw()
@@ -207,7 +207,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#nhisReconTable' )){
             $('#nhisReconTable').dataTable().fnDraw()
         } else {
-            nhisReconTable = getNhisReconTable('nhisReconTable')
+            nhisReconTable = getNhisReconTable('#nhisReconTable')
         }
         hmoApprovalListTable.draw()
         nhisApprovalListTable.draw()
@@ -559,7 +559,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#hmoReportsTable' )){
             $('#hmoReportsTable').dataTable().fnDestroy()
         }
-        hmoReportsTable = getHmoReportsTable('hmoReportsTable', reportDatesDiv.querySelector('#category').value, reportDatesDiv.querySelector('#startDate').value, reportDatesDiv.querySelector('#endDate').value)
+        hmoReportsTable = getHmoReportsTable('#hmoReportsTable', reportDatesDiv.querySelector('#category').value, reportDatesDiv.querySelector('#startDate').value, reportDatesDiv.querySelector('#endDate').value)
     })
 
     searchReportsMonthBtn.addEventListener('click', function () {
@@ -568,14 +568,14 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#hmoReportsTable' )){
             $('#hmoReportsTable').dataTable().fnDestroy()
         }
-        hmoReportsTable = getHmoReportsTable('hmoReportsTable', reportDatesDiv.querySelector('#category').value, null, null, reportDatesDiv.querySelector('#monthYear').value)
+        hmoReportsTable = getHmoReportsTable('#hmoReportsTable', reportDatesDiv.querySelector('#category').value, null, null, reportDatesDiv.querySelector('#monthYear').value)
     })
 
     searchNhisConBtn.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#nhisReconTable' )){
             $('#nhisReconTable').dataTable().fnDestroy()
         }
-        nhisReconTable = getNhisReconTable('nhisReconTable', nhisMonthYearDiv.querySelector('#nhisDate').value)
+        nhisReconTable = getNhisReconTable('#nhisReconTable', nhisMonthYearDiv.querySelector('#nhisDate').value)
     })
 
     searchBillRemindersWithDatesBtn.addEventListener('click', function () {

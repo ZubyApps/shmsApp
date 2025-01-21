@@ -56,7 +56,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const inpatientsInvestigationsTable = getInpatientsInvestigationsTable('inpatientInvestigationsTable')
     const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable')
 
-    const outPatientsVisitsTable = getPatientsVisitsByFilterTable('outPatientsVisitTable', 'Outpatient')
+    const outPatientsVisitsTable = getPatientsVisitsByFilterTable('#outPatientsVisitTable', 'Outpatient')
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #inpatientInvestigationsTable, #outpatientInvestigationsTable, #investigationsTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
 
     inpatientsInvestigationsTable.on('draw.init', function() {

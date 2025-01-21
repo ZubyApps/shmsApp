@@ -1,7 +1,7 @@
 import jQuery from "jquery";
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, admissionStatusX, deferredCondition, detailsBtn, displayPaystatus, getOrdinal, selectReminderOptions, sponsorAndPayPercent, flagSponsorReason, flagPatientReason, flagIndicator } from "../helpers";
+import { admissionStatus, admissionStatusX, deferredCondition, detailsBtn, displayPaystatus, getOrdinal, selectReminderOptions, sponsorAndPayPercent, flagSponsorReason, flagPatientReason, flagIndicator, searchPlaceholderText, searchMin } from "../helpers";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -69,15 +69,16 @@ const getWaitingTable = (tableId) => {
 }
 
 const getVerificationTable = (tableId) => {
-    return new DataTable('#'+tableId, {
+    const verificationTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  '/hmo/verification/list',
         orderMulti: true,
         search:true,
-        searchDelay: 500,
+        // searchDelay: 500,
         lengthMenu:[25, 50, 100, 150, 200],
         language: {
-            emptyTable: 'No verification requested'
+            emptyTable: 'No verification requested',
+            searchPlaceholder: searchPlaceholderText
         },
         columns: [
             {data: "came"},
@@ -102,10 +103,14 @@ const getVerificationTable = (tableId) => {
             },
         ]
     });
+
+    verificationTable.on('draw.init', searchMin(verificationTable, tableId, 2))
+
+    return verificationTable
 }
 
 const getAllHmoPatientsVisitTable = (tableId, filter) => {
-    return new DataTable(tableId, {
+    const allHmoPatientsVisitTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/consulted', data: {
             'filterBy': filter 
@@ -115,7 +120,8 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
         // searchDelay: 500,
         lengthMenu:[100, 150, 200, 250, 300, 500],
         language: {
-            emptyTable: "No patient"
+            emptyTable: "No patient",
+            searchPlaceholder: searchPlaceholderText
         },
         columns: [
             {data: "came"},
@@ -168,10 +174,14 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
             },
         ]
     });
+
+    allHmoPatientsVisitTable.on('draw.init', searchMin(allHmoPatientsVisitTable, tableId, 2))
+
+    return allHmoPatientsVisitTable
 }
 
 const getApprovalListTable = (tableId, sponsor) => {
-    const prescriptionTable =  new DataTable('#'+tableId, {
+    const approvalListTable =  new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/approval/list', data: {
             'sponsor': sponsor 
@@ -181,7 +191,8 @@ const getApprovalListTable = (tableId, sponsor) => {
         searchDelay: 500,
         lengthMenu:[25, 50, 100, 150, 200],
         language: {
-            emptyTable: 'No items for approval'
+            emptyTable: 'No items for approval',
+            searchPlaceholder: searchPlaceholderText
         },
         drawCallback: function (settings) {
             var api = this.api() 
@@ -238,7 +249,9 @@ const getApprovalListTable = (tableId, sponsor) => {
         ]
     });
 
-    return prescriptionTable
+    approvalListTable.on('draw.init', searchMin(approvalListTable, tableId, 2))
+
+    return approvalListTable
 }
 
 const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
@@ -253,7 +266,8 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
         search:true,
         searchDelay: 500,
         language: {
-            emptyTable: "No Bills"
+            emptyTable: "No Bills",
+            searchPlaceholder: searchPlaceholderText
         },
         drawCallback: function (settings) {
             var api = this.api()                
@@ -306,12 +320,14 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
         visitPrescriptionsTable.destroy()
     })
 
+    visitPrescriptionsTable.on('draw.init', searchMin(visitPrescriptionsTable, tableId, 2))
+
     return visitPrescriptionsTable
 }
 
 const getSentBillsTable = (tableId, startDate, endDate, date, filterByOpen) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
-    return new DataTable(tableId, {
+    const sentBillsTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/sentbills', data: {
             'startDate'      : startDate, 
@@ -363,11 +379,15 @@ const getSentBillsTable = (tableId, startDate, endDate, date, filterByOpen) => {
             },
         ]
     });
+
+    sentBillsTable.on('draw.init', searchMin(sentBillsTable, tableId, 2))
+
+    return sentBillsTable
 }
 
 const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
     const sponsors = ['NHIS', 'HMO']
-    const reportSummayTable =  new DataTable('#'+tableId, {
+    const reportSummayTable =  new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/summary', data: {
             'category': category,
@@ -392,7 +412,8 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
             {extend: 'print', className: 'btn-primary', footer: true},
         ],
         language: {
-            emptyTable: category ? '<span class="colour-change2">This is comparism mode, search for a sponsor to see records</span>' : 'No report'
+            emptyTable: category ? '<span class="colour-change2">This is comparism mode, search for a sponsor to see records</span>' : 'No report',
+            searchPlaceholder: searchPlaceholderText
         },
         drawCallback: function (settings) {
             var api = this.api()
@@ -457,7 +478,8 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
             },
         ]
     });
-    
+    reportSummayTable.on('draw.init', searchMin(reportSummayTable, tableId, 2))
+
     return reportSummayTable
 }
 
@@ -475,7 +497,8 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to, date) =>
         lengthMenu:[10, 20, 50, 100],
         // searchDelay: 500,
         language: {
-            emptyTable: 'No Visits'
+            emptyTable: 'No Visits',
+            searchPlaceholder: searchPlaceholderText
         },
         drawCallback: function (settings) {
             var api = this.api()
@@ -579,6 +602,7 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to, date) =>
     })
 
     reconciliationTable.on('draw', function() {
+        searchMin(reconciliationTable, tableId, 2)
         reconciliationTable.rows().every(function () {
             let tr = $(this.node())
             let row = this.row(tr);

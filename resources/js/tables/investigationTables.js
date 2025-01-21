@@ -1,5 +1,5 @@
 import DataTable from 'datatables.net-bs5';
-import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, sponsorAndPayPercent, wardState } from "../helpers";
+import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
 
 const getPatientsVisitsByFilterTable = (tableId, filter) => {
     const preparedColumns = [
@@ -23,7 +23,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
     ]
     filter === 'Inpatient' ? preparedColumns.splice(7, 0, {data: row => wardState(row)},) : ''
 
-    return new DataTable('#'+tableId, {
+    const allPatientsTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/investigations/load/consulted', data: {
             'filterBy': filter
@@ -32,10 +32,15 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
         search:true,
         searchDelay: 500,
         language: {
-            emptyTable: 'No patient record'
+            emptyTable: 'No patient record',
+            searchPlaceholder: searchPlaceholderText
         },
         columns: preparedColumns
     });
+
+    allPatientsTable.on('draw.init', searchMin(allPatientsTable, tableId, 2))
+
+    return allPatientsTable
 }
 
 const getInpatientsInvestigationsTable = (tableId, notLab) => {
