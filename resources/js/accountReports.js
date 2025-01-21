@@ -459,7 +459,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
             if (expensesDate){
                 byExpenseCategoryModal._element.querySelector('#expenseMonth').value = expensesDate
-                byExpenseCategoryTable = getExpensesTable('byExpenseCategoryTable', 'byExpenseCategory', id, byExpenseCategoryModal, null, null, expensesDate)
+                byExpenseCategoryTable = getExpensesTable('#byExpenseCategoryTable', 'byExpenseCategory', id, byExpenseCategoryModal, null, null, expensesDate)
                 byExpenseCategoryModal.show()
                 return
             }
@@ -468,13 +468,13 @@ window.addEventListener('DOMContentLoaded', function () {
                 byExpenseCategoryModal._element.querySelector('#from').value = expensesFrom
                 byExpenseCategoryModal._element.querySelector('#to').value = expensesTo
                 byExpenseCategoryModal._element.querySelector('#expenseMonth').value = ''
-                byExpenseCategoryTable = getExpensesTable('byExpenseCategoryTable', 'byExpenseCategory', id, byExpenseCategoryModal, expensesFrom, expensesTo)
+                byExpenseCategoryTable = getExpensesTable('#byExpenseCategoryTable', 'byExpenseCategory', id, byExpenseCategoryModal, expensesFrom, expensesTo)
                 byExpenseCategoryModal.show()
                 return
             }
 
             byExpenseCategoryModal._element.querySelector('#expenseMonth').value = new Date().toISOString().slice(0,7)
-            byExpenseCategoryTable = getExpensesTable('byExpenseCategoryTable', 'byExpenseCategory', id, byExpenseCategoryModal)
+            byExpenseCategoryTable = getExpensesTable('#byExpenseCategoryTable', 'byExpenseCategory', id, byExpenseCategoryModal)
             byExpenseCategoryModal.show()
         }
     })
