@@ -853,9 +853,6 @@ const wardState = (row) => {
 }
 
 const searchMin = (table, tableId, value) => {
-    console.log(table)
-    console.log(tableId)
-    console.log(value)
     const searchInput = $(tableId+'_filter input');
     searchInput.off();
     searchInput.on('keyup', function(e) {

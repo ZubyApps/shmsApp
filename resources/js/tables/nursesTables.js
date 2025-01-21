@@ -3,7 +3,7 @@ import DataTable from 'datatables.net-bs5';
 import { admissionStatus, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, prescriptionStatusContorller, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
 
 const getWaitingTable = (tableId) => {
-    return new DataTable('#'+tableId, {
+    return new DataTable(tableId, {
         serverSide: true,
         ajax:  '/visits/load/waiting',
         orderMulti: true,
