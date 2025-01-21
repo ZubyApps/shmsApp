@@ -445,14 +445,14 @@ window.addEventListener('DOMContentLoaded', function () {
             if (outstandingsBtn){
                 const patientId = outstandingsBtn.dataset.patientid
                 const sponsorCat    = outstandingsBtn.dataset.sponsorcat
-                getPatientsVisitsByFilterTable('outstandingBillsTable', '', 'outstandings', patientId, '', '', sponsorCat)
+                getPatientsVisitsByFilterTable('#outstandingBillsTable', '', 'outstandings', patientId, '', '', sponsorCat)
                 outstandingBillsModal.show()
                 billingModal.hide()
             }
 
             if (sponsorOutstandingsBtn){
                 const sponsorId = sponsorOutstandingsBtn.dataset.sponsorid
-                getPatientsVisitsByFilterTable('outstandingBillsTable', '', 'outstandings', '', sponsorId)
+                getPatientsVisitsByFilterTable('#outstandingBillsTable', '', 'outstandings', '', sponsorId)
                 outstandingBillsModal.show()
                 billingModal.hide()
             }
@@ -460,7 +460,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (cardNoOutstandingsBtn){
                 const cardNo        = cardNoOutstandingsBtn.dataset.cardno
                 const sponsorCat    = cardNoOutstandingsBtn.dataset.sponsorcat
-                getPatientsVisitsByFilterTable('outstandingBillsTable', '', 'outstandings', '', '', cardNo, sponsorCat)
+                getPatientsVisitsByFilterTable('#outstandingBillsTable', '', 'outstandings', '', '', cardNo, sponsorCat)
                 outstandingBillsModal.show()
                 billingModal.hide()
             }
