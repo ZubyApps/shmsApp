@@ -11,7 +11,7 @@
                         <div class="mb-2 form-control">
                             <div class="row">
                                 <x-form-div class="col-xl-6">
-                                    <x-input-span>PayMethod</x-input-span>
+                                    <x-input-span>Category</x-input-span>
                                     <x-form-input name="expenseCategory" value="" id="expenseCategory" readonly/>
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
@@ -34,8 +34,8 @@
                                     <thead>
                                         <tr>
                                             <th>Date</th>
-                                            <th>Category</th>
                                             <th>Desription</th>
+                                            <th>Category</th>
                                             <th>Amount</th>
                                             <th>Given to</th>
                                             <th>Given By</th>
