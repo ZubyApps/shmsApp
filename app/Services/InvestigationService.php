@@ -275,9 +275,9 @@ class InvestigationService
                 'stock_level' => $resource->stock_level - 1
             ]);
     
-            if ($prescription->visit->patient->sms){
-                $this->investigationNotifier->toSms($prescription);
-            }
+            // if ($prescription->visit->patient->sms){
+            //     $this->investigationNotifier->toSms($prescription);
+            // }
     
             return $prescription;
 

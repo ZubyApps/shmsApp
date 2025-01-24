@@ -67,9 +67,9 @@ class PatientService
             $this->deletePrePatient((int)$data->prePatient);
         }
 
-        if ($patient->sms){
-            $this->patientCardNumber->toSms($patient);
-        }
+        // if ($patient->sms){
+        //     $this->patientCardNumber->toSms($patient);
+        // }
 
         return $patient;
     }
