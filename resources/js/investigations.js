@@ -83,7 +83,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#inPatientsVisitTable' )){
             $('#inPatientsVisitTable').dataTable().fnDraw()
         } else {
-            inPatientsVisitTable = getPatientsVisitsByFilterTable('inPatientsVisitTable', 'Inpatient')
+            inPatientsVisitTable = getPatientsVisitsByFilterTable('#inPatientsVisitTable', 'Inpatient')
         }
     })
 
@@ -358,8 +358,8 @@ window.addEventListener('DOMContentLoaded', function () {
         multipleTestsListDiv.innerHTML = ''
     })
 
-    const editor = document.querySelector('#result')
-    editor.addEventListener('paste', handlePaste)
+    // const editor = document.querySelector('#result')
+    // editor.addEventListener('paste', handlePaste)
 
     function handlePaste(e) {
         e.preventDefault()
