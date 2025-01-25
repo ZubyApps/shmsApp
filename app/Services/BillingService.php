@@ -390,7 +390,7 @@ class BillingService
         
         if ($data->cardNo){
             // $column = $data->sponsorCat == 'NHIS' ? 'total_nhis_bill' : 'total_hms_bill';
-            Log::info("Log 2", ['column' => $column, 'patient' => $data->patientId, 'sponsor' => $data->sponsorId, 'cardNo' => $data->cardNo]);
+            // Log::info("Log 2", ['column' => $column, 'patient' => $data->patientId, 'sponsor' => $data->sponsorId, 'cardNo' => $data->cardNo]);
             if (! empty($params->searchTerm)) {
             return $this->visit
                         ->whereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($data->cardNo, '%_') . '%' )
@@ -409,7 +409,7 @@ class BillingService
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
-        Log::info("Log 3", ['column' => $column, 'patient' => $data->patientId, 'sponsor' => $data->sponsorId, 'cardNo' => $data->cardNo]);
+        // Log::info("Log 3", ['column' => $column, 'patient' => $data->patientId, 'sponsor' => $data->sponsorId, 'cardNo' => $data->cardNo]);
         return $this->visit
                     ->where('patient_id', $data->patientId)
                     // ->whereColumn('total_hms_bill', '!=', 'total_paid')

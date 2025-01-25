@@ -152,7 +152,8 @@ class PrescriptionService
                 'chartable'         => $prescription->chartable ? 'Yes' : 'No',
                 'note'              => $prescription->note,
                 'route'             => $prescription->route,
-                'thirdParty'        => $prescription->thirdPartyServices->sortDesc()->first()?->thirdParty->short_name ?? ''
+                'thirdParty'        => $prescription->thirdPartyServices->sortDesc()->first()?->thirdParty->short_name ?? '',
+                'procedure'         => $prescription->procedure,
             ];
          };
     }

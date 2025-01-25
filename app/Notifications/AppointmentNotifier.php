@@ -40,7 +40,7 @@ class AppointmentNotifier extends Notification
         $firstName = $notifiable->patient->first_name;
         $doctor    = $notifiable->doctor->username;
         
-        Log::info('appointments', ['patient' => $firstName, 'doctor' => $doctor]);
+        // Log::info('appointments', ['patient' => $firstName, 'doctor' => $doctor]);
 
         $this->churchPlusSmsService
         ->sendSms('Dear ' .$doctor. ', your appointment with ' . $firstName . ' is today by '. (new Carbon($notifiable->date))->format('g:iA') . '. Courtesy- Sandra Hospital Management System', $notifiable->doctor->phone_number, 'SandraH', 2);

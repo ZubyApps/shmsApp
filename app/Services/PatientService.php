@@ -16,6 +16,8 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class PatientService
 {
@@ -75,12 +77,13 @@ class PatientService
     }
 
     public function update(Request $data, Patient $patient, User $user): Patient
-    {
-       $cardNumber = $user->designation->access_level > 4 && $patient->card_no != $data->cardNumber ? $data->cardNumber : $patient->card_no;
-       $patient->update([
+    {    
+        $data->validate(['cardNumber' =>  Rule::unique('patients', 'card_no')->ignore($patient->id)], ['cardNumber.unique' => "This isn't this patients original number and it belongs to another patient"]);
+   
+        $cardNumber = $user->designation->access_level > 4 && $patient->card_no != $data->cardNumber;
+        $patient->update([
                 "patient_type"          => $data->patientType,
                 "address"               => $data->address,
-                "card_no"               => $cardNumber,
                 "blood_group"           => $data->bloodGroup,
                 "date_of_birth"         => $data->dateOfBirth,
                 "email"                 => $data->email,
@@ -109,6 +112,8 @@ class PatientService
                 "state_of_residence"    => $data->stateResidence,
 
         ]);
+
+        if ($cardNumber){$patient->update(["card_no" => $data->cardNumber]);}
 
         return $patient;
     }

@@ -350,7 +350,7 @@ class HmoService
     public function reject($data, Prescription $prescription, User $user)
     {
         if ($prescription->approved == true || $prescription->rejected == true){
-            return response('Already treated by ' . $prescription->rejectedBy->username ??  $prescription->approvedBy->username, 222);
+            return response('Already treated by ' . $prescription->rejectedBy?->username ??  $prescription->approvedBy?->username, 222);
         }
 
         return DB::transaction(function () use($data, $prescription, $user) {
@@ -422,8 +422,8 @@ class HmoService
                                 $query->whereRelation('consultation', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('resource.rescurceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('resource.rescurceSubCategory.resourceCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                                ->orWhereRelation('resource.resourceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                                ->orWhereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
                             })
                             ->orderBy($orderBy, $orderDir)
                             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));

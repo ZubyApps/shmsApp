@@ -51,6 +51,15 @@ class UpdatePatientRequest extends FormRequest
                 "stateOrigin"       => ['nullable'],
                 "stateResidence"    => ['required'],
                 "flagReason"        => ['required_if_accepted:flagPatient'],
+                // "cardNumber"        => ['required', 'unique:'.Patient::class.',card_no', 'min:9'],
             ];
     }
+
+    // public function messages()
+    // {
+    //     return[
+    //         // 'cardNumber.unique' => 'This number belongs to another patient'
+    //         'cardNumber.App\\Rules\\OverAge'  => 'This number belongs to another patient',
+    //     ];
+    // }
 }

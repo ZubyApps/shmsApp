@@ -98,7 +98,7 @@ class Prescription extends Model
         return $this->hasMany(ThirdPartyService::class);
     }
 
-    public function procedures() 
+    public function procedure() 
     {
         return $this->hasOne(Procedure::class);
     }

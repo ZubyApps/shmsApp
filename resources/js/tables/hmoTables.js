@@ -308,7 +308,7 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
                     <span class="${row.hmoDoneBy ? 'unmarkSent' : 'hmoBillSpan'} btn btn-white" data-id="${row.id}" data-hmodone"${row.hmoDoneBy}">${row.rejected && !data ? 'Not approved' : data ?? 'Bill'}</span>
-                    <input class="ms-1 form-control hmoBillInput d-none" id="hmoBillInput" value="${data == 0 ? '' : data}">
+                    <input class="ms-1 form-control hmoBillInput d-none" id="hmoBillInput" type="number" value="${data == 0 ? '' : data}">
                 </div>
                 `}
             },
