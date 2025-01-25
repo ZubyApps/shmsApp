@@ -81,7 +81,7 @@ class PrescriptionService
                 $this->paymentService->prescriptionsPaymentSeive($totalPayments, $visit->prescriptions);
             }
             
-            return $prescription->load('procedures');
+            return $prescription->load('procedure');
 
         }, 2);
         
