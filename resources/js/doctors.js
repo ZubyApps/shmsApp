@@ -1078,7 +1078,7 @@ window.addEventListener('DOMContentLoaded', function () {
             .then((response) => {
                 if (response.status >= 200 || response.status <= 300) {
                     new Toast(div.querySelector('#saveInvestigationAndManagementToast'), {delay:2000}).show()
-                    if (oppPro){procedureBookingModal._element.querySelector('#procedure').value = div.querySelector('#resource').value ; saveBookedProcedureBtn.setAttribute('data-id', response.data?.procedures.id); procedureBookingModal.show()}
+                    if (oppPro){procedureBookingModal._element.querySelector('#procedure').value = div.querySelector('#resource').value ; saveBookedProcedureBtn.setAttribute('data-id', response.data?.procedure.id); procedureBookingModal.show()}
                     clearDivValues(div)
                     clearValidationErrors(div)
                     clearItemsList(div.querySelector(`#resourceList${div.dataset.div}`))
