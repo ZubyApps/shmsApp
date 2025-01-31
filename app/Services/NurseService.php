@@ -5,8 +5,6 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
-use App\Models\Consultation;
-use App\Models\Prescription;
 use App\Models\User;
 use App\Models\Visit;
 use App\Models\Ward;
@@ -29,20 +27,57 @@ class NurseService
     {
         $orderBy    = "consulted";
         $orderDir   =  'desc';
+        $query = $this->visit::with([
+            'sponsor', 
+            'consultations.updatedBy', 
+            'patient', 
+            'vitalSigns', 
+            'prescriptions', 
+            'medicationCharts', 
+            'antenatalRegisteration', 
+            'doctor', 
+            'closedOpenedBy',
+            'nursingCharts',
+            'payments',
+            'doctorDoneBy',
+        ])
+        ->withCount([
+            'prescriptions as prescriptionsCharted' => function (Builder $query) {
+            $query->where('chartable', true)
+                ->where('discontinued', false)
+                ->whereDoesntHave('medicationCharts')
+                ->whereRelation('resource', 'sub_category', '=', 'Injectable');
+            },
+            'prescriptions as otherChartables' => function (Builder $query) {
+            $query->where('chartable', true)
+                ->where('discontinued', false)
+                ->whereDoesntHave('nursingCharts')
+                ->whereRelation('resource', 'sub_category', '!=', 'Injectable');
+            },
+            'prescriptions as otherPrescriptions' => function (Builder $query) {
+            $query->where('chartable', false)
+            ->where('chartable', false)
+            ->where(function(Builder $query) {
+                $query->whereRelation('resource', 'category', 'Medications')
+                      ->orWhereRelation('resource', 'category', 'Consumables');
+            });
+            },
+        ])
+        ->whereNotNull('consulted');
+
 
         if (! empty($params->searchTerm)) {
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where(function (Builder $query) use($params) {
-                        $query->where('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where(function (Builder $query) use($searchTerm) {
+                        $query->where('created_at', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
+                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
                     })
                     
                     ->orderBy($orderBy, $orderDir)
@@ -50,9 +85,7 @@ class NurseService
         }
 
         if ($data->filterBy == 'Outpatient'){
-            return $this->visit
-            ->where('consulted', '!=', null)
-            ->where('nurse_done_by', null)
+            return $query->where('nurse_done_by', null)
             ->where('closed', false)
             ->where(function(Builder $query) {
                 $query->whereRelation('prescriptions.resource', 'sub_category', '=', 'Injectable');
@@ -64,9 +97,7 @@ class NurseService
         }
 
         if ($data->filterBy == 'Inpatient'){
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('nurse_done_by', null)
+            return $query->where('nurse_done_by', null)
                     ->where('closed', false)
                     ->where(function(Builder $query) {
                         $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
@@ -81,17 +112,14 @@ class NurseService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
         if ($data->filterBy == 'ANC'){
-            return $this->visit
-                    ->where('nurse_done_by', null)
+            return $query->where('nurse_done_by', null)
                     ->where('closed', false)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->orderBy('created_at', $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('nurse_done_by', null)
+        return $query->where('nurse_done_by', null)
                     ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -100,6 +128,7 @@ class NurseService
     public function getConsultedVisitsNursesTransformer(): callable
     {
        return  function (Visit $visit) {
+        $latestConsultation = $visit->consultations->sortDesc()->first();
         $ward = $this->ward->where('id', $visit->ward)->first();
 
             return [
@@ -110,11 +139,11 @@ class NurseService
                 'age'               => $visit->patient->age(),
                 'doctor'            => $visit->doctor?->username,
                 'ancRegId'          => $visit->antenatalRegisteration?->id,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
+                'diagnosis'         => $latestConsultation?->icd11_diagnosis ?? 
+                                       $latestConsultation?->provisional_diagnosis ?? 
+                                       $latestConsultation?->assessment,
                 'sponsor'           => $visit->sponsor->name,
-                'sponsorCategory'   => $visit->sponsor->sponsorCategory?->name,
+                'sponsorCategory'   => $visit->sponsor->category_name,
                 'flagSponsor'       => $visit->sponsor->flag,
                 'flagPatient'       => $visit->patient->flag,
                 'flagReason'        => $visit->patient?->flag_reason,
@@ -122,14 +151,14 @@ class NurseService
                 'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
                 'wardId'            => $visit->ward ?? '',
                 'wardPresent'       => $ward?->visit_id == $visit->id,
-                'updatedBy'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->updatedBy?->username ?? 'Nurse...',
-                'conId'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->id,
+                'updatedBy'         => $latestConsultation?->updatedBy?->username ?? 'Nurse...',
+                'conId'             => $latestConsultation?->id,
                 'patientType'       => $visit->patient->patient_type,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
-                'chartableMedications'  => (new Prescription())->prescriptionsCharted($visit->id, 'medicationCharts'),
-                'otherChartables'       => (new Prescription())->prescriptionsCharted($visit->id, 'nursingCharts', '!='),
-                'otherPrescriptions'    => (new Prescription())->otherPrescriptions($visit->id),
+                'chartableMedications'  => $visit->prescriptionsCharted,//(new Prescription())->prescriptionsCharted($visit->id, 'medicationCharts'),
+                'otherChartables'       => $visit->otherChartables,//(new Prescription())->prescriptionsCharted($visit->id, 'nursingCharts', '!='),
+                'otherPrescriptions'    => $visit->otherPrescriptions,//(new Prescription())->otherPrescriptions($visit->id),
                 'doseCount'         => $visit->medicationCharts->count(),
                 'givenCount'        => $visit->medicationCharts->where('dose_given', '!=', null)->count(),
                 'scheduleCount'     => $visit->nursingCharts->count(),

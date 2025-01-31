@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
-use App\Models\Consultation;
 use App\Models\Prescription;
 use App\Models\Sponsor;
 use App\Models\User;
@@ -34,27 +33,33 @@ class HmoService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query = $this->visit::with([
+            'sponsor', 
+            'patient.visits',  
+            'doctor', 
+            'closedOpenedBy'
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->visit
-                        ->where(function (Builder $query) use($params) {
-                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                            ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm);
                         })
                         
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->visit
+        return $query
                     ->where('verified_at', null)
                     ->where(function (Builder $query) use($params) {
-                        $query->whereRelation('sponsor.sponsorCategory', 'name', '=', 'HMO')
-                        ->orWhereRelation('sponsor.sponsorCategory', 'name', '=', 'NHIS')
-                        ->orWhereRelation('sponsor.sponsorCategory', 'name', '=', 'Retainership');
+                        $query->whereRelation('sponsor', 'category_name', '=', 'HMO')
+                        ->orWhereRelation('sponsor', 'category_name', '=', 'NHIS')
+                        ->orWhereRelation('sponsor', 'category_name', '=', 'Retainership');
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -104,20 +109,39 @@ class HmoService
     {
         $orderBy    = 'consulted';
         $orderDir   =  'desc';
+        $query = $this->visit::with([
+            'sponsor', 
+            'consultations',
+            'vitalSigns', 
+            'patient', 
+            'prescriptions',
+            'antenatalRegisteration', 
+            'doctor', 
+            'closedOpenedBy',
+        ])
+        ->withCount([
+            'prescriptions as labPrescribed' => function (Builder $query) {
+            $query->whereRelation('resource', 'category', '=', 'Investigations');
+            }, 
+            'prescriptions as labDone' => function (Builder $query) {
+            $query->whereRelation('resource', 'category', '=', 'Investigations')
+                ->where('result_date', '!=', null);
+            },
+        ])
+        ->whereNotNull('consulted');
 
         if (! empty($params->searchTerm)) {
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where(function (Builder $query) use($params) {
-                        $query->where('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where(function (Builder $query) use($searchTerm) {
+                        $query->where('created_at', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
+                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
                     })
                     
                     ->orderBy($orderBy, $orderDir)
@@ -125,9 +149,7 @@ class HmoService
         }
 
         if ($data->filterBy == 'Outpatient'){
-            return $this->visit
-            ->where('consulted', '!=', null)
-            ->where('closed', false)
+            return $query->where('closed', false)
             ->where('hmo_done_by', null)
             ->where('admission_status', '=', 'Outpatient')
             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
@@ -141,9 +163,7 @@ class HmoService
         }
 
         if ($data->filterBy == 'Inpatient'){
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('hmo_done_by', null)
+            return $query->where('hmo_done_by', null)
                     ->where('closed', false)
                     ->where(function (Builder $query) {
                         $query->where('admission_status', '=', 'Inpatient')
@@ -158,9 +178,7 @@ class HmoService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
         if ($data->filterBy == 'ANC'){
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('hmo_done_by', null)
+            return $query->where('hmo_done_by', null)
                     ->where('closed', false)
                     ->whereRelation('patient', 'patient_type', '=', 'ANC')
                     ->where(function (Builder $query) {
@@ -172,9 +190,7 @@ class HmoService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('hmo_done_by', null)
+        return $query->where('hmo_done_by', null)
                     ->where('closed', false)
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
@@ -188,6 +204,7 @@ class HmoService
     public function getAllHmoConsultedVisitsTransformer(): callable
     {
        return  function (Visit $visit) {
+        $latestConsultation = $visit->consultations->sortDesc()->first();
             return [
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
@@ -198,24 +215,17 @@ class HmoService
                 'phone'             => $visit->patient?->phone,
                 'doctor'            => $visit->doctor?->username,
                 'ancRegId'          => $visit->antenatalRegisteration?->id,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
+                'diagnosis'         => $latestConsultation?->icd11_diagnosis ?? $latestConsultation?->provisional_diagnosis ?? $latestConsultation?->assessment,
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->category_name,
                 'flagSponsor'       => $visit->sponsor->flag,
                 'flagPatient'       => $visit->patient->flag,
                 'flagReason'        => $visit->patient?->flag_reason,
                 'vitalSigns'        => $visit->vitalSigns->count(),
-                'admissionStatus'   => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->admission_status,
+                'admissionStatus'   => $latestConsultation?->admission_status,
                 'patientType'       => $visit->patient->patient_type,
-                'labPrescribed'     => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
-                                        ->count(),
-                'labDone'           => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'name', '=', 'Investigations')
-                                        ->where('result_date','!=', null)
-                                        ->count(),
+                'labPrescribed'     => $visit->labPrescribed,
+                'labDone'           => $visit->labDone,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
@@ -237,45 +247,54 @@ class HmoService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
+        $query      = $this->prescription::with([
+            'visit' => function ($query) {
+                $query->with(['sponsor', 'patient', 'payments']);
+            },
+            'resource.prescriptions',
+            'consultation',
+            'hmoBillBy',
+            'approvedBy',
+            'rejectedBy',
+            'user',
+        ]);
 
             if (! empty($params->searchTerm)) {
-                return $this->prescription
-                    ->where(function (Builder $query) use($data) {
-                        $query->whereRelation('visit.sponsor.sponsorCategory', 'name', ($data->sponsor == 'NHIS' ? '' : 'HMO'))
-                        ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', ($data->sponsor == 'NHIS' ? 'NHIS' : ''))
-                        ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', ($data->sponsor == 'NHIS' ? '' : 'Retainership'));
+                $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+                return $query->where(function (Builder $query) use($data) {
+                        $query->whereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? '' : 'HMO'))
+                        ->orWhereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? 'NHIS' : ''))
+                        ->orWhereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? '' : 'Retainership'));
                     })
-                    ->where(function (Builder $query) use($params) {
-                        $query->whereRelation('visit.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('resource.resourceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('approvedBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
-                        ->orWhereRelation('rejectedBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%');
+                    ->where(function (Builder $query) use($searchTerm) {
+                        $query->whereRelation('visit.sponsor', 'name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm)
+                        ->orWhereRelation('resource', 'name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('resource.resourceSubCategory', 'name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('approvedBy', 'username', 'LIKE', $searchTerm)
+                        ->orWhereRelation('rejectedBy', 'username', 'LIKE', $searchTerm);
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
             if ($data->sponsor == 'NHIS'){
-                return $this->prescription
-                    ->where('approved', false)
+                return $query->where('approved', false)
                     ->where('rejected', false)
-                    ->whereRelation('visit.sponsor.sponsorCategory', 'name', 'NHIS')
+                    ->whereRelation('visit.sponsor', 'category_name', 'NHIS')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
-            return $this->prescription
-                    ->where('approved', false)
+            return $query->where('approved', false)
                     ->where('rejected', false)
                     ->where(function (Builder $query) {
-                        $query->whereRelation('visit.sponsor.sponsorCategory', 'name', 'HMO')
-                        ->orWhereRelation('visit.sponsor.sponsorCategory', 'name', 'Retainership');
+                        $query->whereRelation('visit.sponsor', 'category_name', 'HMO')
+                        ->orWhereRelation('visit.sponsor', 'category_name', 'Retainership');
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -297,7 +316,7 @@ class HmoService
                 'resource'          => $prescription->resource->name,
                 'prescription'      => $prescription->prescription,
                 'quantity'          => $prescription->qty_billed,
-                'totalQuantity'     => $prescription->resource->prescriptions()->where('visit_id', $prescription->visit->id)->sum('qty_billed'),
+                'totalQuantity'     => $prescription->resource->prescriptions->where('visit_id', $prescription->visit->id)->sum('qty_billed'),
                 'note'              => $prescription->note,
                 'hmsBill'           => $prescription->hms_bill ?? '',
                 'hmsBillDate'       => $prescription->hms_bill_date ? (new Carbon($prescription->hms_bill_date))->format('d/m/y g:ia') : '',
@@ -414,23 +433,33 @@ class HmoService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query      = $this->prescription::with([
+            'visit' => function ($query) {
+                $query->with(['sponsor', 'patient', 'payments']);
+            },
+            'resource.prescriptions',
+            'consultation',
+            'hmoBillBy',
+            'approvedBy',
+            'rejectedBy',
+            'user',
+        ]);        
 
             if (! empty($params->searchTerm)) {
-                return $this->prescription
-                            ->where('visit_id', $data->visitId)
-                            ->where(function (Builder $query) use($params) {
-                                $query->whereRelation('consultation', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('resource.resourceSubCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+                return $query->where('visit_id', $data->visitId)
+                            ->where(function (Builder $query) use($searchTerm) {
+                                $query->whereRelation('consultation', 'icd11_diagnosis', 'LIKE', '%' . $searchTerm)
+                                ->orWhereRelation('user', 'username', 'LIKE', '%' . $searchTerm)
+                                ->orWhereRelation('resource', 'name', 'LIKE', '%' . $searchTerm)
+                                ->orWhereRelation('resource.resourceSubCategory', 'name', 'LIKE', '%' . $searchTerm)
+                                ->orWhereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'LIKE', '%' . $searchTerm);
                             })
                             ->orderBy($orderBy, $orderDir)
                             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
-        return $this->prescription
-                ->where('visit_id', $data->visitId)
+        return $query->where('visit_id', $data->visitId)
                 ->orderBy($orderBy, $orderDir)
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -468,19 +497,30 @@ class HmoService
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
         $current    = Carbon::now();
+        $query = $this->visit::with([
+            'sponsor', 
+            'consultations',
+            'patient', 
+            'prescriptions',
+            'doctor', 
+            'closedOpenedBy',
+            'hmoDoneBy',
+            'payments'
+        ])
+        ->whereNotNull('consulted');
 
         if (! empty($params->searchTerm)) {
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
             if ($data->startDate && $data->endDate){
-                return $this->visit
-                        ->Where('hmo_done_by', '!=', null)
-                        ->where(function (Builder $query) use($params) {
-                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                return $query->WhereNotNull('hmo_done_by')
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                            ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', $searchTerm);
                         })
                         ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                         ->orderBy($orderBy, $orderDir)
@@ -490,34 +530,31 @@ class HmoService
             if ($data->date){
                 $date = new Carbon($data->date);
 
-                return $this->visit
-                        ->Where('hmo_done_by', '!=', null)
-                        ->where(function (Builder $query) use($params) {
-                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                return $query->WhereNotNull('hmo_done_by')
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                            ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', $searchTerm);
                         })
                         ->whereMonth('created_at', $date->month)
                         ->whereYear('created_at', $date->year)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
-            return $this->visit
-                        ->Where('hmo_done_by', '!=', null)
-                        ->where(function (Builder $query) use($params) {
-                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            return $query->WhereNotNull('hmo_done_by')
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                            ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', $searchTerm);
                         })
-                        
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -525,9 +562,7 @@ class HmoService
         if ($data->startDate && $data->endDate){
 
             if ($data->filterByOpen){
-                return $this->visit
-                        ->where('consulted', '!=', null)
-                        ->where('hmo_done_by', '!=', null)
+                return $query->where('hmo_done_by', '!=', null)
                         ->where('closed', false)
                         ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                         ->where(function (Builder $query) {
@@ -539,9 +574,7 @@ class HmoService
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('hmo_done_by', '!=', null)
+            return $query->where('hmo_done_by', '!=', null)
                     ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
@@ -556,9 +589,7 @@ class HmoService
             $date = new Carbon($data->date);
 
             if ($data->filterByOpen){
-                return $this->visit
-                        ->where('consulted', '!=', null)
-                        ->where('hmo_done_by', '!=', null)
+                return $query->where('hmo_done_by', '!=', null)
                         ->where('closed', false)
                         ->whereMonth('created_at', $date->month)
                         ->whereYear('created_at', $date->year)
@@ -571,9 +602,7 @@ class HmoService
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('hmo_done_by', '!=', null)
+            return $query->where('hmo_done_by', '!=', null)
                     ->whereMonth('created_at', $date->month)
                     ->whereYear('created_at', $date->year)
                     ->where(function (Builder $query) {
@@ -586,9 +615,7 @@ class HmoService
         }
 
         if ($data->filterByOpen){
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('hmo_done_by', '!=', null)
+            return $query->where('hmo_done_by', '!=', null)
                     ->where('closed', false)
                     ->whereMonth('created_at', $current->month)
                     ->whereYear('created_at', $current->year)
@@ -601,9 +628,7 @@ class HmoService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('hmo_done_by', '!=', null)
+        return $query->where('hmo_done_by', '!=', null)
                     ->whereMonth('created_at', $current->month)
                     ->whereYear('created_at', $current->year)
                     ->where(function (Builder $query) {
@@ -618,19 +643,18 @@ class HmoService
     public function getSentBillsTransformer(): callable
     {
         return  function (Visit $visit) {
+            $latestConsultation = $visit->consultations->sortDesc()->first();
             return [
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
                 'sponsor'           => $visit->sponsor->name,
                 'doctor'            => $visit->doctor->username,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
+                'diagnosis'         => $latestConsultation?->icd11_diagnosis ?? $latestConsultation?->provisional_diagnosis ?? $latestConsultation?->assessment,
                 'sentBy'            => $visit->hmoDoneBy?->username,
                 'totalHmsBill'      => $visit->total_hms_bill,
                 'totalHmoBill'      => $visit->total_hmo_bill,
-                'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
+                'sponsorCategory'   => $visit->sponsor->category_name,
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
                 'closed'            => $visit->closed,
@@ -780,20 +804,53 @@ class HmoService
     {
         $orderBy    = 'name';
         $orderDir   =  'asc';
+        $month      = (new Carbon($data->date))->month;
         $current    = CarbonImmutable::now();
+        $query      = $this->sponsor::with([
+                        'reminders' => function($query) use($current){
+                            $query->whereMonth('created_at', $current->month)
+                                ->whereYear('created_at', $current->year);
+                        },
+                    ])
+                    ->withCount([
+                        'visits as visitsCount' => function (Builder $query) use ($month) {
+                            $query->whereMonth('created_at', $month);
+                            },
+                        'visits as billsSent' => function (Builder $query) use ($month) {
+                            $query->whereMonth('created_at', $month)->whereNotNull('hmo_done_by');
+                            },
+                    ])
+                    ->withSum(['visits as totalHmsBill' => function (Builder $query) use ($month){
+                        $query->whereMonth('created_at', $month);
+                    }], 'total_hms_bill')
+                    ->withSum(['visits as totalHmoBill' => function (Builder $query) use ($month){
+                        $query->whereMonth('created_at', $month);
+                    }], 'total_hmo_bill')
+                    ->withSum(['visits as nhisBill' => function (Builder $query) use ($month){
+                        $query->whereMonth('created_at', $month);
+                    }], 'total_nhis_bill')
+                    ->withSum(['visits as totalPaid' => function (Builder $query) use ($month){
+                        $query->whereMonth('created_at', $month);
+                    }], 'total_paid')
+                    ->withSum(['visits as totalCapitation' => function (Builder $query) use ($month){
+                        $query->whereMonth('created_at', $month);
+                    }], 'total_capitation')
+                    ->withSum(['visits as discount' => function (Builder $query) use ($month){
+                        $query->whereMonth('created_at', $month);
+                    }], 'discount');
         
         if (! empty($params->searchTerm)) {
-            return $this->sponsor
-                ->where(function (Builder $query) use ($params){
-                    $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                    ->orWhere('category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where(function (Builder $query) use ($searchTerm){
+                    $query->where('name', 'LIKE', $searchTerm)
+                    ->orWhere('category_name', 'LIKE', $searchTerm);
                 })
                 ->where(function (Builder $query) {
                     $query->where('category_name', 'HMO')
                     ->orWhere('category_name', 'NHIS' )
                     ->orWhere('category_name', 'Retainership' );
                 })
-                ->whereHas('visits', function(Builder $query) use($current){
+                ->whereHas('visits', function(Builder $query){
                     $query->where('consulted', '!=', null)
                         ->where('hmo_done_by', '!=', null);
                 })
@@ -803,8 +860,7 @@ class HmoService
 
         if ($data->category){
             if ($data->startDate && $data->endDate){
-                return $this->sponsor
-                        ->where('category_name', $data->category)
+                return $query->where('category_name', $data->category)
                         ->whereHas('visits', function(Builder $query) use($data){
                             $query->WhereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                                   ->where('consulted', '!=', null)
@@ -817,8 +873,7 @@ class HmoService
             if ($data->date){
                 $date = new Carbon($data->date);
     
-                return $this->sponsor
-                        ->where('category_name', $data->category)
+                return $query->where('category_name', $data->category)
                         ->whereHas('visits', function(Builder $query) use($date){
                             $query->whereMonth('created_at', $date->month)
                                   ->whereYear('created_at', $date->year)
@@ -828,8 +883,7 @@ class HmoService
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
-            return $this->sponsor
-                        ->where('category_name', $data->category)
+            return $query->where('category_name', $data->category)
                         ->whereHas('visits', function(Builder $query) use($current){
                             $query->whereMonth('created_at', $current->month)
                                   ->whereYear('created_at', $current->year)
@@ -841,8 +895,7 @@ class HmoService
         }
 
         if ($data->startDate && $data->endDate){
-            return $this->sponsor
-                    ->where(function (Builder $query) {
+            return $query->where(function (Builder $query) {
                         $query->where('category_name', 'HMO')
                         ->orWhere('category_name', 'NHIS' )
                         ->orWhere('category_name', 'Retainership' );
@@ -859,8 +912,7 @@ class HmoService
         if ($data->date){
             $date = new Carbon($data->date);
 
-            return $this->sponsor
-                    ->where(function (Builder $query) {
+            return $query->where(function (Builder $query) {
                         $query->where('category_name', 'HMO')
                         ->orWhere('category_name', 'NHIS' )
                         ->orWhere('category_name', 'Retainership' );
@@ -874,8 +926,7 @@ class HmoService
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
-        return $this->sponsor
-                    ->where(function (Builder $query) {
+        return $query->where(function (Builder $query) {
                         $query->where('category_name', 'HMO')
                         ->orWhere('category_name', 'NHIS' )
                         ->orWhere('category_name', 'Retainership' );
@@ -893,28 +944,22 @@ class HmoService
     public function getReportsSummaryTransformer($data)
     {
         return function (Sponsor $sponsor) use ($data){
-            $month      = (new Carbon($data->date))->month;
             $monthName  = (new Carbon($data->date))->monthName;
             $year       = (new Carbon($data->date))->year;
             $monthYear  = (new Carbon($data->date))->format('F Y');
-            $reminder  = $sponsor->reminders()->whereMonth('month_sent_for', $month)->whereYear('month_sent_for', $year)->first();
             return [
                 'id'                => $sponsor->id,
                 'sponsor'           => $sponsor->name,
                 'category'          => $sponsor->category_name,
-                'patientsR'         => $sponsor->patients->count(),
-                'patientsC'         => $sponsor->patients()->whereHas('visits', fn(Builder $query)=>$query->whereMonth('created_at', $month))->count(),
-                'visitsCount'       => $sponsor->visits()->whereMonth('created_at', $month)->count(),
-                'billsSent'         => $sponsor->visits()->whereMonth('created_at', $month)->whereNotNull('hmo_done_by')->count(),
-                'visitsP'           => $sponsor->visits()->whereHas('prescriptions', fn(Builder $query)=>$query->whereMonth('created_at', $month))->count(),
-                'prescriptions'     => $sponsor->through('visits')->has('prescriptions')->whereMonth('prescriptions.created_at', $month)->count(),
-                'totalHmsBill'      => $sponsor->visits()->whereMonth('created_at', $month)->sum('total_hms_bill'),
-                'totalHmoBill'      => $sponsor->visits()->whereMonth('created_at', $month)->sum('total_hmo_bill'),
-                'nhisBill'          => $sponsor->visits()->whereMonth('created_at', $month)->sum('total_nhis_bill'),
-                'totalPaid'         => $sponsor->visits()->whereMonth('created_at', $month)->sum('total_paid'),
-                'totalCapitation'   => $sponsor->visits()->whereMonth('created_at', $month)->sum('total_capitation'),
-                'discount'          => $sponsor->visits()->whereMonth('created_at', $month)->sum('discount'),
-                'reminderSet'       => $this->updatableReminderDisplay($reminder),
+                'visitsCount'       => $sponsor->visitsCount,
+                'billsSent'         => $sponsor->billsSent,
+                'totalHmsBill'      => $sponsor->totalHmsBill,
+                'totalHmoBill'      => $sponsor->totalHmoBill,
+                'nhisBill'          => $sponsor->nhisBill,
+                'totalPaid'         => $sponsor->totalPaid,
+                'totalCapitation'   => $sponsor->totalCapitation,
+                'discount'          => $sponsor->discount,
+                'reminderSet'       => $this->updatableReminderDisplay($sponsor->reminders->first()),
                 'monthYear'         => $monthYear,
                 'monthName'         => $monthName,
                 'year'              => $year,
@@ -944,20 +989,34 @@ class HmoService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
+        $query = $this->visit::with([
+            'sponsor.sponsorCategory', 
+            'consultations',
+            'patient', 
+            'prescriptions' => function ($query) {
+                $query->with([
+                    'resource.unitDescription',
+                    'approvedBy',
+                    'rejectedBy',
+                    'visit.sponsor'
+
+                ]);
+            },
+            'doctor', 
+        ])
+        ->where('sponsor_id', $data->sponsorId)
+        ->whereNotNull('consulted');
 
             if (! empty($params->searchTerm)) {
-
+                $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
                 if ($data->from && $data->to){
-                    return $this->visit
-                            ->where('sponsor_id', $data->sponsorId)
-                            ->where('consulted', '!=', null)
-                            ->where(function (Builder $query) use($params) {
-                                $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('prescriptions.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    return $query->where(function (Builder $query) use($searchTerm) {
+                                $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                                ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm )
+                                ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                                ->orWhereRelation('user', 'username', 'LIKE', $searchTerm)
+                                ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', $searchTerm)
+                                ->orWhereRelation('prescriptions.resource', 'name', 'LIKE', $searchTerm);
                             })
                             ->WhereBetween('created_at', [$data->from.' 00:00:00', $data->to.' 23:59:59'])
                             ->orderBy($orderBy, $orderDir)
@@ -966,16 +1025,13 @@ class HmoService
 
                 if ($data->date){
                     $date = new Carbon($data->date);
-                    return $this->visit
-                    ->where('sponsor_id', $data->sponsorId)
-                    ->where('consulted', '!=', null)
-                    ->where(function (Builder $query) use($params) {
-                        $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('prescriptions.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    return $query->where(function (Builder $query) use($searchTerm) {
+                        $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('user', 'username', 'LIKE', $searchTerm)
+                        ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', $searchTerm)
+                        ->orWhereRelation('prescriptions.resource', 'name', 'LIKE', $searchTerm);
                     })
                     ->whereMonth('created_at', $date->month)
                     ->whereYear('created_at', $date->year)
@@ -983,25 +1039,20 @@ class HmoService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
                 }
 
-                return $this->visit
-                            ->where('sponsor_id', $data->sponsorId)
-                            ->where('consulted', '!=', null)
-                            ->where(function (Builder $query) use($params) {
-                                $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('prescriptions.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                return $query->where(function (Builder $query) use($searchTerm) {
+                                $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                                ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                                ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                                ->orWhereRelation('user', 'username', 'LIKE', $searchTerm)
+                                ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', $searchTerm)
+                                ->orWhereRelation('prescriptions.resource', 'name', 'LIKE', $searchTerm);
                             })
                             ->orderBy($orderBy, $orderDir)
                             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
             if ($data->from && $data->to){
-                return $this->visit
-                        ->where('sponsor_id', $data->sponsorId)
-                        ->where('consulted', '!=', null)
+                return $query->where('consulted', '!=', null)
                         ->WhereBetween('created_at', [$data->from.' 00:00:00', $data->to.' 23:59:59'])
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -1010,18 +1061,14 @@ class HmoService
             if ($data->date){
                 $date = new Carbon($data->date);
 
-                return $this->visit
-                        ->where('sponsor_id', $data->sponsorId)
-                        ->where('consulted', '!=', null)
+                return $query->where('consulted', '!=', null)
                         ->whereMonth('created_at', $date->month)
                         ->whereYear('created_at', $date->year)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
-        return $this->visit
-                ->where('sponsor_id', $data->sponsorId)
-                ->where('consulted', '!=', null)
+        return $query->where('consulted', '!=', null)
                 ->orderBy($orderBy, $orderDir)
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -1029,15 +1076,14 @@ class HmoService
     public function getVisitsForReconciliationTransformer(): callable
     {
        return  function (Visit $visit) {
+            $latestConsultation = $visit->consultations->sortDesc()->first();
             $visit->update(['total_capitation' => $visit->totalPrescriptionCapitations()]);
             return [
                 'id'                    => $visit->id,
                 'came'                  => (new Carbon($visit->created_at))->format('D d/m/y g:ia'),                
                 'patient'               => $visit->patient->patientId(),
                 'consultBy'             => $visit->doctor->username,
-                'diagnosis'             => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
-                                           Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
-                                           Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment, 
+                'diagnosis'             => $latestConsultation?->icd11_diagnosis ?? $latestConsultation?->provisional_diagnosis ?? $latestConsultation?->assessment, 
                 'sponsorCategory'       => $visit->sponsor->category_name,
                 'sponsorCategoryClass'  => $visit->sponsor->sponsorCategory->pay_class,
                 'closed'                => $visit->closed,
@@ -1052,7 +1098,7 @@ class HmoService
                     'item'              => $prescription->resource->name,
                     'prescription'      => $prescription->prescription ?? '',
                     'qtyBilled'         => $prescription->qty_billed,
-                    'unit'              => $prescription->resource->unit_description,
+                    'unit'              => $prescription->resource->unitDescription?->short_name,
                     'hmoBill'           => $prescription->hmo_bill ?? '',
                     'hmsBill'           => $prescription->hms_bill ?? '',
                     'nhisBill'          => $prescription->nhis_bill ?? '',
@@ -1063,7 +1109,7 @@ class HmoService
                     'statusBy'          => $prescription->approvedBy?->username ?? $prescription->rejectedBy?->username ?? '',
                     'note'              => $prescription->note ?? '',
                     'status'            => $prescription->status ?? '',
-                    'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
+                    'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->category_name == 'NHIS',
                     'paid'              => $prescription->paid ?? '',
                 ]),
                 'flagPatient'       => $visit->patient->flag,
@@ -1119,7 +1165,7 @@ class HmoService
         if (! empty($params->searchTerm)) {
             if ($searchDate){
                 return $this->sponsor
-                        ->whereRelation('sponsorCategory', 'name', '=', 'NHIS')
+                        ->where('category_name', 'NHIS')
                         ->whereHas('visits', function(Builder $query) use($searchDate){
                             $query->whereMonth('created_at', $searchDate->month)
                                     ->whereYear('created_at', $searchDate->year);
@@ -1129,7 +1175,7 @@ class HmoService
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
             return $this->sponsor
-                        ->whereRelation('sponsorCategory', 'name', '=', 'NHIS')
+                        ->where('category_name', 'NHIS')
                         ->whereHas('visits', function(Builder $query) use($current){
                             $query->whereMonth('created_at', $current->month)
                                   ->whereYear('created_at', $current->year);
@@ -1141,7 +1187,7 @@ class HmoService
 
         if ($searchDate){
             return $this->sponsor
-                    ->whereRelation('sponsorCategory', 'name', '=', 'NHIS')
+                    ->where('category_name', 'NHIS')
                     ->whereHas('visits', function(Builder $query) use($searchDate){
                         $query->whereMonth('created_at', $searchDate->month)
                                 ->whereYear('created_at', $searchDate->year);
@@ -1150,7 +1196,7 @@ class HmoService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
         return $this->sponsor
-                    ->whereRelation('sponsorCategory', 'name', '=', 'NHIS')
+                    ->where('category_name', 'NHIS')
                     ->whereHas('visits', function(Builder $query) use($current){
                         $query->whereMonth('created_at', $current->month)
                               ->whereYear('created_at', $current->year);

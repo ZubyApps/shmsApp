@@ -99,20 +99,20 @@ class UserService
     {
         $orderBy    = 'firstname';
         $orderDir   =  'desc';
+        $query = $this->user::with(['designation']);
 
         if (! empty($params->searchTerm)) {
-            return $this->user
-                        ->where('firstname', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('middlename', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('lastname', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('phone_number', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where('firstname', 'LIKE', $searchTerm )
+                        ->orWhere('middlename', 'LIKE', $searchTerm )
+                        ->orWhere('lastname', 'LIKE', $searchTerm )
+                        ->orWhere('phone_number', 'LIKE', $searchTerm )
                         ->whereRelation('designation', 'access_level', '<', 5)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->user
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        

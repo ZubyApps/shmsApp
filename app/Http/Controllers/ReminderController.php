@@ -8,6 +8,7 @@ use App\Models\Reminder;
 use App\Http\Requests\StoreReminderRequestCash;
 use App\Http\Requests\StoreReminderRequestHmo;
 use App\Http\Resources\SmsDetailsResource;
+use App\Jobs\SendOutstandingSms;
 use App\Notifications\OutstandingNotifier;
 use App\Services\DatatablesService;
 use App\Services\HelperService;
@@ -136,7 +137,9 @@ class ReminderController extends Controller
         if ($request->selectEl == 'finalReminderSelect'){
             $this->reminderService->finalReminder($request, $reminder, $request->user());
         }
-        return $this->outstandingNotifier->toSms($reminder, $request->smsDetails, $request->phone);
+        
+        SendOutstandingSms::dispatch($reminder, $request->smsDetails, $request->phone);
+        return response()->json(['message' => 'SMS queued successfully'], 200);
     }
 
     public function destroy(Reminder $reminder)

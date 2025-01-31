@@ -263,4 +263,13 @@ class Visit extends Model
     {
         return $this->hasOne(vitalSigns::class)->oldestOfMany();
     }
+
+    public function prescriptionsCharted($chartTable, $comparism = '=')
+    {
+        return $this->prescriptions()->where('chartable', true)
+                    ->where('discontinued', false)
+                    ->whereDoesntHave($chartTable)
+                    ->whereRelation('resource', 'sub_category', $comparism ,'Injectable')
+                    ->count();
+    }
 }

@@ -6,6 +6,8 @@ namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
 use App\DataObjects\FormLinkParams;
+use App\Jobs\SendCardNumber;
+use App\Jobs\SendFormLink;
 use App\Models\Patient;
 use App\Models\PatientPreForm;
 use App\Models\User;
@@ -26,54 +28,57 @@ class PatientService
         private readonly HelperService $helperService, 
         private readonly PatientCardNumber $patientCardNumber,
         private readonly FormLinkNotifier $formLinkNotifier,
-        private readonly PatientPreForm $patientPreForm
+        private readonly PatientPreForm $patientPreForm,
+        private readonly ChurchPlusSmsService $churchPlusSmsService
         )
     {
     }
 
     public function create(Request $data, User $user): Patient
     {
-        $patient = $user->patients()->create([
-                "patient_type"          => $data->patientType,
-                "address"               => $data->address,
-                "blood_group"           => $data->bloodGroup,
-                "card_no"               => $data->cardNumber,
-                "date_of_birth"         => $data->dateOfBirth,
-                "email"                 => $data->email,
-                "ethnic_group"          => $data->ethnicGroup,
-                "first_name"            => $data->firstName,
-                "genotype"              => $data->genotype,
-                "known_conditions"      => $data->knownConditions,
-                "last_name"             => $data->lastName,
-                "marital_status"        => $data->maritalStatus,
-                "middle_name"           => $data->middleName,
-                "nationality"           => $data->nationality,
-                "next_of_kin"           => $data->nextOfKin,
-                "next_of_kin_phone"     => $data->nextOfKinPhone,
-                "next_of_kin_rship"     => $data->nextOfKinRship,
-                "occupation"            => $data->occupation,
-                "phone"                 => $data->phone,
-                "registration_bill"     => $data->registrationBill,
-                "religion"              => $data->religion,
-                "sex"                   => $data->sex,
-                "sms"                   => $data->sms,
-                "sponsor_id"            => $data->sponsor,
-                "staff_Id"              => $data->staffId,
-                "flag"                  => $data->flagPatient,
-                "flag_reason"           => $data->flagReason,
-                "state_of_origin"       => $data->stateOrigin,
-                "state_of_residence"    => $data->stateResidence,
-        ]);
+        return DB::transaction(function () use($data, $user){
+            $patient = $user->patients()->create([
+                    "patient_type"          => $data->patientType,
+                    "address"               => $data->address,
+                    "blood_group"           => $data->bloodGroup,
+                    "card_no"               => $data->cardNumber,
+                    "date_of_birth"         => $data->dateOfBirth,
+                    "email"                 => $data->email,
+                    "ethnic_group"          => $data->ethnicGroup,
+                    "first_name"            => $data->firstName,
+                    "genotype"              => $data->genotype,
+                    "known_conditions"      => $data->knownConditions,
+                    "last_name"             => $data->lastName,
+                    "marital_status"        => $data->maritalStatus,
+                    "middle_name"           => $data->middleName,
+                    "nationality"           => $data->nationality,
+                    "next_of_kin"           => $data->nextOfKin,
+                    "next_of_kin_phone"     => $data->nextOfKinPhone,
+                    "next_of_kin_rship"     => $data->nextOfKinRship,
+                    "occupation"            => $data->occupation,
+                    "phone"                 => $data->phone,
+                    "registration_bill"     => $data->registrationBill,
+                    "religion"              => $data->religion,
+                    "sex"                   => $data->sex,
+                    "sms"                   => $data->sms,
+                    "sponsor_id"            => $data->sponsor,
+                    "staff_Id"              => $data->staffId,
+                    "flag"                  => $data->flagPatient,
+                    "flag_reason"           => $data->flagReason,
+                    "state_of_origin"       => $data->stateOrigin,
+                    "state_of_residence"    => $data->stateResidence,
+            ]);
 
-        if ($data->prePatient){
-            $this->deletePrePatient((int)$data->prePatient);
-        }
+            if ($data->prePatient){
+                $this->deletePrePatient((int)$data->prePatient);
+            }
 
-        // if ($patient->sms){
-        //     $this->patientCardNumber->toSms($patient);
-        // }
+            if ($patient->sms){
+                SendCardNumber::dispatch($patient)->delay(5);
+            }
 
-        return $patient;
+            return $patient;
+        });
     }
 
     public function update(Request $data, Patient $patient, User $user): Patient
@@ -130,7 +135,7 @@ class PatientService
 
     public function sendFormLink($data, User $user)
     {
-        $notifiable  = new FormLinkParams(
+        $formLinkParams  = new FormLinkParams(
             config('app.url').'/form', 
             (int)$data->sponsorCategory, 
             (int)$data->sponsor, 
@@ -142,43 +147,44 @@ class PatientService
 
         $patientForm = $this->patientPreForm->create(
                 [
-                    'sponsor_category'  => $notifiable->sponsorCat,
-                    'sponsor_id'        => $notifiable->sponsor,
-                    'card_no'           => $notifiable->cardNumber,
-                    'patient_type'      => $notifiable->patientType,
-                    'phone'             => $notifiable->phone,
-                    'user_id'           => $notifiable->userId,
+                    'sponsor_category'  => $formLinkParams->sponsorCat,
+                    'sponsor_id'        => $formLinkParams->sponsor,
+                    'card_no'           => $formLinkParams->cardNumber,
+                    'patient_type'      => $formLinkParams->patientType,
+                    'phone'             => $formLinkParams->phone,
+                    'user_id'           => $formLinkParams->userId,
                     'id'                => rand(0000, 9999)
                 ]
             );
 
         $link = route('patientForm', ['patientPreForm' => $patientForm->id]);
 
-        return $this->formLinkNotifier->toSms($notifiable, $link, $notifiable->phone);
+        SendFormLink::dispatch($link, $formLinkParams);
+        return response()->json(['message' => 'Form link prepared and queued successfully'], 200);
     }
 
     public function getPaginatedPatients(DataTableQueryParams $params)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query      = $this->patient::with(['user', 'sponsor.sponsorCategory', 'visits']);
 
         if (! empty($params->searchTerm)) {
-            return $this->patient
-                        ->where('first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('phone', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('sex', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('date_of_birth', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where('first_name', 'LIKE', $searchTerm )
+                        ->orWhere('middle_name', 'LIKE', $searchTerm )
+                        ->orWhere('last_name', 'LIKE', $searchTerm )
+                        ->orWhere('card_no', 'LIKE', $searchTerm )
+                        ->orWhere('phone', 'LIKE', $searchTerm )
+                        ->orWhere('sex', 'LIKE', $searchTerm)
+                        ->orWhere('date_of_birth', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm )
+                        ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', $searchTerm )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->patient
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        
@@ -202,7 +208,7 @@ class PatientService
                 'createdAt'         => (new Carbon($patient->created_at))->format('d/m/Y'),
                 'createdBy'         => $patient->user->username,
                 'active'            => $patient->is_active,
-                'count'             => $patient->visits()->count(),
+                'count'             => $patient->visits->count(),
                 'patient'           => $patient->patientId()
             ];
          };
@@ -313,21 +319,21 @@ class PatientService
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
         $current = Carbon::now();
+        $query      = $this->patient::with(['user', 'sponsor.sponsorCategory', 'visits']);
 
         if (! empty($params->searchTerm)) {
-
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
             if($data->date){
                 $date = new Carbon($data->date);
 
-                return $this->patient
-                        ->where('sponsor_id', $data->sponsorId)
-                        ->where(function (Builder $query) use($params) {
-                            $query->where('first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('phone', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('sex', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' );
+                return $query->where('sponsor_id', $data->sponsorId)
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->where('first_name', 'LIKE', $searchTerm)
+                            ->orWhere('middle_name', 'LIKE', $searchTerm)
+                            ->orWhere('last_name', 'LIKE', $searchTerm)
+                            ->orWhere('card_no', 'LIKE', $searchTerm)
+                            ->orWhere('phone', 'LIKE', $searchTerm)
+                            ->orWhere('sex', 'LIKE', $searchTerm);
                         })
                         ->whereMonth('created_at', $date->month)
                         ->whereYear('created_at', $date->year)
@@ -335,15 +341,14 @@ class PatientService
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
-            return $this->patient
-                        ->where('sponsor_id', $data->sponsorId)
-                        ->where(function (Builder $query) use($params) {
-                            $query->where('first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('phone', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('sex', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' );
+            return $query->where('sponsor_id', $data->sponsorId)
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->where('first_name', 'LIKE', $searchTerm)
+                            ->orWhere('middle_name', 'LIKE', $searchTerm)
+                            ->orWhere('last_name', 'LIKE', $searchTerm)
+                            ->orWhere('card_no', 'LIKE', $searchTerm)
+                            ->orWhere('phone', 'LIKE', $searchTerm)
+                            ->orWhere('sex', 'LIKE', $searchTerm);
                         })
                         ->whereMonth('created_at', $current->month)
                         ->whereYear('created_at', $current->year)
@@ -354,16 +359,14 @@ class PatientService
         if($data->date){
             $date = new Carbon($data->date);
 
-            return $this->patient
-                ->where('sponsor_id', $data->sponsorId)
+            return $query->where('sponsor_id', $data->sponsorId)
                 ->whereMonth('created_at', $date->month)
                 ->whereYear('created_at', $date->year)
                 ->orderBy($orderBy, $orderDir)
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
         
-        return $this->patient
-                ->where('sponsor_id', $data->sponsorId)
+        return $query->where('sponsor_id', $data->sponsorId)
                 ->whereMonth('created_at', $current->month)
                 ->whereYear('created_at', $current->year)
                 ->orderBy($orderBy, $orderDir)

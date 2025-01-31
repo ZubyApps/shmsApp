@@ -32,10 +32,15 @@ class AppointmentService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
+        $query = $this->appointment::with([
+            'patient.sponsor', 
+            'user', 
+            'doctor', 
+            'patient.latestVisit.consultations',
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->appointment
-                        ->whereBetween('date', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+            return $query->whereBetween('date', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                         ->where(function (Builder $query) use($params) {
                             $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -48,14 +53,12 @@ class AppointmentService
         }
 
         if ($data->filterBy == 'My Appointments'){
-            return $this->appointment
-            ->where('doctor_id', '=', $user->id)
+            return $query->where('doctor_id', '=', $user->id)
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->appointment
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        

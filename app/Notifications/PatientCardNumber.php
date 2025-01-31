@@ -28,7 +28,7 @@ class PatientCardNumber extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['sms'];
+        return [ChurchPlusSmsService::class];
     }
 
     /**

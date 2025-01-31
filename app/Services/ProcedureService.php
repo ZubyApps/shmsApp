@@ -41,10 +41,16 @@ class ProcedureService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query = $this->procedure::with([
+            'prescription.visit.patient',
+            'prescription.visit.sponsor.sponsorCategory',
+            'user',
+            'prescription.resource',
+            'dateBookedBy',
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->procedure
-                        ->whereRelation('prescription.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->whereRelation('prescription.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('prescription.visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('prescription.visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -55,8 +61,7 @@ class ProcedureService
 
         if ($data->pending){
             if ($data->hmo){
-                return $this->procedure
-                    ->where(function(Builder $query) {
+                return $query->where(function(Builder $query) {
                         $query->whereRelation('prescription.visit.sponsor', 'category_name', '=', 'HMO')
                         ->orWhereRelation('prescription.visit.sponsor', 'category_name', '=', 'NHIS')
                         ->orWhereRelation('prescription.visit.sponsor', 'category_name', '=', 'Retainership');
@@ -66,8 +71,7 @@ class ProcedureService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
             if ($data->cash){
-                return $this->procedure
-                    ->where(function(Builder $query) {
+                return $query->where(function(Builder $query) {
                         $query->whereRelation('prescription.visit.sponsor', 'category_name', '=', 'Individual')
                         ->orWhereRelation('prescription.visit.sponsor', 'category_name', '=', 'Family')
                         ->orWhereRelation('prescription.visit.sponsor', 'category_name', '=', 'NHIS');
@@ -76,14 +80,12 @@ class ProcedureService
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
-            return $this->procedure
-                    ->whereNull('status')
+            return $query->whereNull('status')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->procedure
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        

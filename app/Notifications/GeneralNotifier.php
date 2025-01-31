@@ -36,7 +36,6 @@ class GeneralNotifier extends Notification
      */
     public function toMail(object $notifiable, $message, $recipient)
     {
-        // Log::info('General Notifier', ['model' => $notifiable]);
         return $this->churchPlusSmsService->sendSms($message, $recipient, 'SandraHosp', 1);
     }
 

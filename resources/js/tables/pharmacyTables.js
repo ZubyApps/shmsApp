@@ -206,9 +206,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
         const tableId = consultationItemsTable.table().container().id.split('_')[0]
         consultationItemsTable.rows().every(function () {
             let tr = $(this.node())
-            console.log(tr)
             let row = this.row(tr);
-            console.log(row)
             this.child(format(row.data(), tableId)).show()
         })
     })

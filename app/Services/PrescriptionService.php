@@ -54,8 +54,7 @@ class PrescriptionService
                 'doctor_on_call'    => $data->doc
             ]);
 
-            $procedure = $resourceSubCat == 'Procedure' || $resourceSubCat == 'Operation' ? $this->procedureService->create($prescription, $user) : '';
-            // var_dump($procedure?->id);
+            $resourceSubCat == 'Procedure' || $resourceSubCat == 'Operation' ? $this->procedureService->create($prescription, $user) : '';
             $visit  = $prescription->visit;
 
             $isNhis = $visit->sponsor->category_name == 'NHIS';
@@ -115,10 +114,15 @@ class PrescriptionService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query = $this->prescription::with([
+            'resource', 
+            'user', 
+            'thirdPartyServices.thirdParty', 
+            'procedure', 
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->prescription
-                        ->where('visit_id', $data->visitId)
+            return $query->where('visit_id', $data->visitId)
                         ->where(function(Builder $query) use ($params) {
                             $query->whereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
@@ -128,8 +132,7 @@ class PrescriptionService
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->prescription
-                    ->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
+        return $query->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
@@ -162,9 +165,19 @@ class PrescriptionService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query = $this->prescription::with([
+            'resource', 
+            'user', 
+            'thirdPartyServices.thirdParty', 
+            'visit' => function($query) {
+                $query->with(['sponsor.sponsorCategory', 'patient']);
+            },
+            'consultation',
+            'resultBy',
 
-        return $this->prescription
-                    ->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
+        ]);
+
+        return $query->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
                     ->whereRelation('resource', 'category', 'Investigations')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -177,10 +190,10 @@ class PrescriptionService
                 'id'                => $prescription->id,
                 'patient'           => $prescription->visit->patient->patientFullInfo(),
                 'sponsor'           => $prescription->visit->sponsor->name,
-                'type'              => $prescription->resource->resourceSubCategory->name,
+                'type'              => $prescription->resource->category,
                 'requested'         => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                 'resource'          => $prescription->resource->name,
-                'sponsorCategory'   => $prescription->visit->sponsor->sponsorCategory->name,
+                'sponsorCategory'   => $prescription->visit->sponsor->category_name,
                 'payClass'          => $prescription->visit->sponsor->sponsorCategory->pay_class,
                 'approved'          => $prescription->approved,
                 'rejected'          => $prescription->rejected,
@@ -195,7 +208,7 @@ class PrescriptionService
                 'sent'              => $prescription->result_date ? (new Carbon($prescription->result_date))->format('d/m/y g:ia') : '',
                 'staff'             => $prescription->resultBy->username ?? '',
                 'staffFullName'     => $prescription->resultBy?->nameInFull() ?? '',
-                'thirdParty'        => ThirdParty::whereRelation('thirdPartyServies','prescription_id', $prescription->id)->first()?->short_name ?? '',
+                'thirdParty'        => $prescription->thirdPartyServices->sortDesc()->first()?->thirdParty->short_name,
                 'removalReason'     => $prescription->dispense_comment ? $prescription->dispense_comment . ' - ' . $prescription->discontinuedBy?->username : ''
             ];
          };
@@ -203,38 +216,56 @@ class PrescriptionService
 
     public function getPaginatedMedications(DataTableQueryParams $params, $data)
     {
-        return DB::transaction(function () use ($params, $data) {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
 
-            $orderBy    = 'created_at';
-            $orderDir   =  'desc';
-    
-            return $this->prescription
-                        ->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
-                        ->whereRelation('resource', 'sub_category', 'Injectable')
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        });
+        $query = $this->prescription::with([
+            'resource', 
+            'visit',
+            'consultation',
+            'medicationCharts.user',
+            'medicationCharts.visit',
+            'medicationCharts.givenBy',
+            'nursingCharts.user',
+            'user',
+            'heldBy',
+            'visit.sponsor',
+            'visit.patient',
+        ]);
+
+        return $query->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
+                    ->whereRelation('resource', 'sub_category', 'Injectable')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
     public function getOtherPrescriptions(DataTableQueryParams $params, $data)
     {
-        return DB::transaction(function () use ($params, $data) {
+        $orderBy    = 'created_at';
+        $orderDir   =  'desc';
+        $query = $this->prescription::with([
+            'resource', 
+            'user', 
+            'visit.sponsor.sponsorCategory',
+            'visit.patient',
+            'consultation',
+            'nursingCharts.user',
+            'nursingCharts.visit',
+            'medicationCharts.user',
+            'heldBy',
+            'nursingCharts.doneBy'     
+        ]);
 
-            $orderBy    = 'created_at';
-            $orderDir   =  'desc';
-    
-            return $this->prescription
-                        ->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
-                        ->where(function(Builder $query) {
-                            $query->whereRelation('resource', 'category', 'Medical Services')
-                            ->orWhereRelation('resource', 'category', 'Consumables')
-                            ->orWhereRelation('resource', 'category', 'Medications')
-                            ->orWhere('chartable', true);
-                        })
-                        ->whereRelation('resource', 'sub_category', '!=', 'Injectable')
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        });
+        return $query->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
+                    ->where(function(Builder $query) {
+                        $query->whereRelation('resource', 'category', 'Medical Services')
+                        ->orWhereRelation('resource', 'category', 'Consumables')
+                        ->orWhereRelation('resource', 'category', 'Medications')
+                        ->orWhere('chartable', true);
+                    })
+                    ->whereRelation('resource', 'sub_category', '!=', 'Injectable')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
     public function getPrescriptionsTransformer(): callable
@@ -258,19 +289,19 @@ class PrescriptionService
                 'visitId'               => $prescription->visit->id,
                 'patient'               => $prescription->visit->patient->patientId(),
                 'sponsor'               => $prescription->visit->sponsor->name,
-                'sponsorCategory'       => $prescription->visit->sponsor->sponsorCategory->name,
+                'sponsorCategory'       => $prescription->visit->sponsor->category_name,
                 'payClass'              => $prescription->visit->sponsor->sponsorCategory->pay_class,
                 'approved'              => $prescription->approved,
                 'rejected'              => $prescription->rejected,
                 'chartable'             => $prescription->chartable,
                 'discontinued'          => $prescription->discontinued,
                 'paid'                  => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
-                'paidNhis'              => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
+                'paidNhis'              => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->category_name == 'NHIS',
                 'doseCount'             => $doseCount = $prescription->medicationCharts->count(),
                 'givenCount'            => $givenCount = $prescription->medicationCharts->where('dose_given', '!=', null)->count(),
                 'doseComplete'          => $this->completed($doseCount, $givenCount),
                 
-                'medicationCharts'      => $prescription->medicationCharts->map(fn(MedicationChart $medicationChart)=> [
+                'medicationCharts'      => $prescription->medicationCharts->map(fn(MedicationChart $medicationChart) => [
                     'id'                => $medicationChart->id ?? '',
                     'chartedAt'         => (new Carbon($medicationChart->created_at))->format('D d/m/y g:ia') ?? '',
                     'chartedBy'         => $medicationChart->user->username ?? '',
@@ -282,26 +313,28 @@ class PrescriptionService
                     'note'              => $medicationChart->not_given ? $medicationChart->not_given.' - '.$medicationChart->note ?? '' : $medicationChart->note ?? '' ,
                     'status'            => $medicationChart->status ?? '',
                     'doseCount'         => $medicationChart->dose_count,
-                    'count'             => $medicationChart::where('prescription_id', $medicationChart->prescription->id)->count(),
+                    'count'             => $prescription->medicationCharts->count(),
                     'patient'           => $medicationChart->visit->patient->patientId() ?? ''
                 ]),
+
                 'scheduleCount'         => $scheduleCount = $prescription->nursingCharts->count(),
                 'doneCount '            => $doneCount = $prescription->nursingCharts->where('time_done', '!=', null)->count(),
                 'serviceComplete'       => $this->completed($scheduleCount, $doneCount),
+
                 'prescriptionCharts'    => $prescription->nursingCharts->map(fn(NursingChart $nursingChart)=> [
                     'id'                => $nursingChart->id ?? '',
                     'chartedAt'         => (new Carbon($nursingChart->created_at))->format('D/m/y g:ia') ?? '',
                     'chartedBy'         => $nursingChart->user->username ?? '',
                     'carePrescribed'    => $nursingChart->care_prescribed ?? '',
-                    'treatment'         => $nursingChart->prescription->resource->name,
-                    'instruction'       => $nursingChart->prescription->note ?? '',
+                    'treatment'         => $prescription->resource->name,
+                    'instruction'       => $prescription->note ?? '',
                     'scheduledTime'     => (new Carbon($nursingChart->scheduled_time))->format('g:ia D jS') ?? '',
                     'timeDone'          => $nursingChart->time_done ? (new Carbon($nursingChart->time_done))->format('g:ia D jS') : '',
                     'doneBy'            => $nursingChart->doneBy->username ?? '',
                     'note'              => $nursingChart->note ?? $nursingChart->not_done ?? '',
                     'status'            => $nursingChart->status ?? '',
                     'scheduleCount'     => $nursingChart->schedule_count,
-                    'count'             => $nursingChart::where('prescription_id', $nursingChart->prescription->id)->count(),
+                    'count'             => $prescription->nursingCharts->count(),
                     'patient'           => $nursingChart->visit->patient->patientId() ?? ''
                 ]),
             ];
@@ -345,14 +378,26 @@ class PrescriptionService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query = $this->prescription::with([
+            'resource', 
+            'user', 
+            'visit.sponsor',
+            'visit.patient',
+            'consultation',
+            'nursingCharts.user',
+            'nursingCharts.visit',
+            'medicationCharts.user',
+            'heldBy',
+            'doctorOnCall'     
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->prescription
-                        ->where(function(Builder $query) use($params) {
-                            $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where(function(Builder $query) use($searchTerm) {
+                            $query->whereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('resource', 'name', 'LIKE', $searchTerm);
                         })
                         ->where(function(Builder $query) {
                             $query->whereRelation('resource', 'category', 'Medications')
@@ -365,8 +410,7 @@ class PrescriptionService
         }
 
         if ($data->viewer == 'pharmacy'){
-            return $this->prescription
-                    ->where('consultation_id', null)
+            return $query->where('consultation_id', null)
                     ->where('qty_dispensed', 0)
                     ->where(function(Builder $query) {
                         $query->whereRelation('resource', 'category', 'Medications')
@@ -378,8 +422,7 @@ class PrescriptionService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->prescription
-                    ->where('consultation_id', null)
+        return $query->where('consultation_id', null)
                     ->where(function(Builder $query) {
                         $query->whereRelation('resource', 'category', 'Medications')
                         ->orWhereRelation('resource', 'category', 'Medical Services')
@@ -400,7 +443,7 @@ class PrescriptionService
                 'patient'           => $prescription->visit->patient->patientId(),
                 'sponsor'           => $prescription->visit->sponsor->name,
                 'closed'            => $prescription->visit->closed,
-                'sponsorCategory'   => $prescription->visit->sponsor->sponsorCategory->name,
+                'sponsorCategory'   => $prescription->visit->sponsor->category_name,
                 'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                 'item'              => $prescription->resource->name,
                 'prescription'      => $prescription->prescription,

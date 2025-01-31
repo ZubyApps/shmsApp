@@ -52,17 +52,17 @@ class SponsorService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query      = $this->sponsor::with(['sponsorCategory', 'patients']);
 
         if (! empty($params->searchTerm)) {
-            return $this->sponsor
-                        ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where('name', 'LIKE', $searchTerm)
+                        ->orWhere('category_name', 'LIKE', $searchTerm)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->sponsor
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        
@@ -82,7 +82,7 @@ class SponsorService
                 'maxPayDays'        => $sponsor->max_pay_days,
                 'flag'              => $sponsor->flag,
                 'createdAt'         => (new Carbon($sponsor->created_at))->format('d/m/Y'),
-                'count'             => $sponsor->patients()->count()
+                'count'             => $sponsor->patients->count()
             ];
          };
     }

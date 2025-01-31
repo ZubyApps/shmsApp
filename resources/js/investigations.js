@@ -91,7 +91,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#ancPatientsVisitTable' )){
             $('#ancPatientsVisitTable').dataTable().fnDraw()
         } else {
-            ancPatientsVisitTable = getPatientsVisitsByFilterTable('ancPatientsVisitTable', 'ANC')
+            ancPatientsVisitTable = getPatientsVisitsByFilterTable('#ancPatientsVisitTable', 'ANC')
         }
     })
 

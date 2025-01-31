@@ -60,19 +60,29 @@ class ResourceService
     {
         $orderBy    = 'name';
         $orderDir   =  'asc';
+        $query = $this->resource::with([
+            'markedFor',
+            'resourceSubCategory.resourceCategory',
+            'medicationCategory',
+            'unitDescription',
+            'user',
+            'prescriptions',
+            'bulkRequests',
+            'addResources'
+        ]);
 
         if (! empty($params->searchTerm)) {
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
             return $this->resource
-                        ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('medicationCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->where('name', 'LIKE', $searchTerm)
+                        ->orWhere('sub_category', 'LIKE', $searchTerm)
+                        ->orWhere('category', 'LIKE', $searchTerm)
+                        ->orWhereRelation('medicationCategory', 'name', 'LIKE', $searchTerm)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->resource
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        
@@ -99,7 +109,7 @@ class ResourceService
                 'expired'           => $resource->expiry_date ? $this->dataDifferenceInDays($resource->expiry_date) : 'N/A',
                 'createdBy'         => $resource->user->username,
                 'createdAt'         => $resource->created_at->format('d/m/y'),
-                'count'             => $resource->prescriptions()->count() + $resource->bulkRequests()->count() + $resource->addResources()->count(),
+                'count'             => $resource->prescriptions->count() + $resource->bulkRequests->count() + $resource->addResources->count(),
             ];
          };
     }

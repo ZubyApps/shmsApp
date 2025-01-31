@@ -151,7 +151,7 @@ window.addEventListener('DOMContentLoaded', function () {
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
         shiftPerformance()
-        // nursesShiftReportTable.draw()
+        nursesShiftReportTable.draw()
         proceduresListTable.draw()
     })
 
@@ -164,8 +164,8 @@ window.addEventListener('DOMContentLoaded', function () {
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
         shiftPerformance()
-        // nursesShiftReportTable.draw()
-        // proceduresListTable.draw()
+        nursesShiftReportTable.draw()
+        proceduresListTable.draw()
     })
 
     bulkRequestsTab.addEventListener('click', function () {
@@ -177,7 +177,6 @@ window.addEventListener('DOMContentLoaded', function () {
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
         shiftPerformance()
-        // nursesShiftReportTable.draw()
     })
 
     theatreRequestTab.addEventListener('click', function () {
@@ -189,7 +188,6 @@ window.addEventListener('DOMContentLoaded', function () {
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
         shiftPerformance()
-        // nursesShiftReportTable.draw()
     })
 
     emergencyTab.addEventListener('click', function () {
@@ -201,7 +199,6 @@ window.addEventListener('DOMContentLoaded', function () {
         upcomingMedicationsTable.draw()
         upcomingNursingChartsTable.draw()
         shiftPerformance()
-        // nursesShiftReportTable.draw()
     })
 
     waitingBtn.addEventListener('click', function () {

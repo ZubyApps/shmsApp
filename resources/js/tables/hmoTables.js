@@ -626,7 +626,7 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to, date) =>
 }
 
 const getNhisReconTable = (tableId, date) => {
-    const nhisReconTable =  new DataTable('#'+tableId, {
+    const nhisReconTable =  new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/capitation', data: {
             'date': date,

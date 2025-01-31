@@ -47,20 +47,26 @@ class ReminderService
         $orderDir   =  'desc';
         $nullClause = $dept == 'HMO' ? 'whereNull' : 'whereNotNull';
         $dateColumn = $dept == 'HMO' ? 'month_sent_for' : 'set_from';
+        $query      = $this->reminder::with([
+            'firstReminderBy',
+            'secondReminderBy',
+            'finalReminderBy',
+            'confirmedPaidBy',
+            'user',
+            'visit.patient',
+            'sponsor'
+        ])
+        ->$nullClause('visit_id');
 
         if (! empty($params->searchTerm)) {
             if($data->startDate && $data->endDate){
                 if($dept == 'HMO'){
-                    return $this->reminder
-                        ->$nullClause('visit_id')
-                        ->whereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                    return $query->whereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->whereBetween($dateColumn, [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
                 }
-                return $this->reminder
-                        ->$nullClause('visit_id')
-                        ->where(function(Builder $query) use($params) {
+                return $query->where(function(Builder $query) use($params) {
                             $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -74,17 +80,13 @@ class ReminderService
             if($data->date){
                 $date = new Carbon($data->date);
                 if($dept == 'HMO'){
-                    return $this->reminder
-                            ->$nullClause('visit_id')
-                            ->whereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                    return $query->whereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->whereMonth($dateColumn, $date->month)
                             ->whereYear($dateColumn, $date->year)
                             ->orderBy($orderBy, $orderDir)
                             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
                 }
-                return $this->reminder
-                        ->$nullClause('visit_id')
-                        ->where(function(Builder $query) use($params) {
+                return $query->where(function(Builder $query) use($params) {
                             $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -97,15 +99,11 @@ class ReminderService
             }
 
             if($dept == 'HMO'){
-                return $this->reminder
-                        ->$nullClause('visit_id')
-                        ->whereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                return $query->whereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
-            return $this->reminder
-                        ->$nullClause('visit_id')
-                        ->where(function(Builder $query) use($params) {
+            return $query->where(function(Builder $query) use($params) {
                             $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -116,9 +114,7 @@ class ReminderService
         }
 
         if($data->startDate && $data->endDate){
-            return $this->reminder
-                    ->$nullClause('visit_id')
-                    ->whereBetween($dateColumn, [$data->startDate, $data->endDate])
+            return $query->whereBetween($dateColumn, [$data->startDate, $data->endDate])
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -126,16 +122,14 @@ class ReminderService
         if($data->date){
             $date = new Carbon($data->date);
 
-            return $this->reminder
-                    ->$nullClause('visit_id')
-                    ->whereMonth($dateColumn, $date->month)
+            return $query->whereMonth($dateColumn, $date->month)
                     ->whereYear($dateColumn, $date->year)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->reminder
-                    ->$nullClause('visit_id')
+        return $query
+                    // ->$nullClause('visit_id')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
@@ -179,18 +173,24 @@ class ReminderService
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
         $nullClause = $dept == 'HMO' ? 'whereNull' : 'whereNotNull';
+        $query      = $this->reminder::with([
+            'firstReminderBy',
+            'secondReminderBy',
+            'finalReminderBy',
+            'confirmedPaidBy',
+            'user',
+            'visit.patient',
+            'sponsor'
+        ])
+        ->$nullClause('visit_id');
 
         if (! empty($params->searchTerm)) {
             if($dept == 'HMO'){
-                return $this->reminder
-                        ->$nullClause('visit_id')
-                        ->whereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                return $query->whereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
-            return $this->reminder
-                        ->$nullClause('visit_id')
-                        ->where(function(Builder $query) use($params) {
+            return $query->where(function(Builder $query) use($params) {
                             $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -200,9 +200,7 @@ class ReminderService
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->reminder
-                    ->$nullClause('visit_id')
-                    ->where('remind', true)
+        return $query->where('remind', true)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 

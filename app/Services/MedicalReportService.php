@@ -51,17 +51,17 @@ Class MedicalReportService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query      = $this->medicalReport::with(['user', 'visit'])
+                        ->where('visit_id', $data->visitId);
 
         if (! empty($params->searchTerm)) {
-            return $this->medicalReport
-                        ->where('type', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->where('type', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('doctor', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->medicalReport
-                    ->where('visit_id', $data->visitId)
+        return $query->where('visit_id', $data->visitId)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 

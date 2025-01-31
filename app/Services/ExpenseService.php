@@ -61,18 +61,18 @@ class ExpenseService
         $orderBy    = 'created_at';
         $orderDir   = 'desc';
         $currentDate = new CarbonImmutable();
+        $query      =   $this->expense::with(['user', 'expenseCategory', 'approvedBy']);
 
         if (! empty($params->searchTerm)) {
-
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
             if ($data->accessor == 'billing'){
-                    return $this->expense
-                            ->whereRelation('user.designation', 'access_level', '<', 5)
-                            ->where(function (Builder $query) use($params){
-                                $query->where('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                      ->orWhere('comment', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                      ->orWhere('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                      ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                      ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    return $query->whereRelation('user.designation', 'access_level', '<', 5)
+                            ->where(function (Builder $query) use($searchTerm){
+                                $query->where('description', 'LIKE', $searchTerm )
+                                      ->orWhere('comment', 'LIKE', $searchTerm)
+                                      ->orWhere('created_at', 'LIKE', $searchTerm)
+                                      ->orWhereRelation('user', 'username', 'LIKE', $searchTerm)
+                                      ->orWhereRelation('expenseCategory', 'name', 'LIKE', $searchTerm);
                             })
                             ->orderBy($orderBy, $orderDir)
                             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -81,12 +81,11 @@ class ExpenseService
             if ($data->accessor == 'byExpenseCategory'){
 
                 if ($data->startDate && $data->endDate){
-                    return $this->expense
-                            ->where('expense_category_id', $data->expenseCategoryId)
-                            ->where(function (Builder $query) use($params){
-                                $query->where('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                      ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                      ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    return $query->where('expense_category_id', $data->expenseCategoryId)
+                            ->where(function (Builder $query) use($searchTerm){
+                                $query->where('description', 'LIKE', $searchTerm)
+                                      ->orWhereRelation('user', 'username', 'LIKE', $searchTerm)
+                                      ->orWhereRelation('expenseCategory', 'name', 'LIKE', $searchTerm);
                             })
                             ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                             ->orderBy($orderBy, $orderDir)
@@ -95,12 +94,11 @@ class ExpenseService
     
                 if($data->date){
                     $date = new Carbon($data->date);
-                    return $this->expense
-                        ->where('expense_category_id', $data->expenseCategoryId)
-                        ->where(function (Builder $query) use($params){
-                            $query->where('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                  ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                  ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    return $query->where('expense_category_id', $data->expenseCategoryId)
+                        ->where(function (Builder $query) use($searchTerm){
+                            $query->where('description', 'LIKE', $searchTerm)
+                                  ->orWhereRelation('user', 'username', 'LIKE', $searchTerm)
+                                  ->orWhereRelation('expenseCategory', 'name', 'LIKE', $searchTerm);
                         })
                         ->whereMonth('created_at', $date->month)
                         ->whereYear('created_at', $date->year)
@@ -108,25 +106,23 @@ class ExpenseService
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
                 }
                 
-                return $this->expense
-                        ->where('expense_category_id', $data->expenseCategoryId)
-                        ->where(function (Builder $query) use($params){
-                            $query->where('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                  ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                  ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                return $query->where('expense_category_id', $data->expenseCategoryId)
+                        ->where(function (Builder $query) use($searchTerm){
+                            $query->where('description', 'LIKE', $searchTerm)
+                                  ->orWhereRelation('user', 'username', 'LIKE', $searchTerm)
+                                  ->orWhereRelation('expenseCategory', 'name', 'LIKE', $searchTerm);
                         })
                         ->whereMonth('created_at', $currentDate->month)
                         ->whereYear('created_at', $currentDate->year)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }          
-            return $this->expense
-                    ->where(function (Builder $query) use($params){
-                        $query->where('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('comment', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhere('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('expenseCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            return $query->where(function (Builder $query) use($searchTerm){
+                        $query->where('description', 'LIKE', $searchTerm)
+                            ->orWhere('comment', 'LIKE', $searchTerm)
+                            ->orWhere('created_at', 'LIKE', $searchTerm)
+                            ->orWhereRelation('user', 'username', 'LIKE', $searchTerm)
+                            ->orWhereRelation('expenseCategory', 'name', 'LIKE', $searchTerm);
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -134,8 +130,7 @@ class ExpenseService
         }
 
         if ($data->accessor == 'billing'){
-            return $this->expense
-                    ->whereRelation('user.designation', 'access_level', '<', 5)
+            return $query->whereRelation('user.designation', 'access_level', '<', 5)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -143,8 +138,7 @@ class ExpenseService
         if ($data->accessor == 'byExpenseCategory'){
 
             if ($data->startDate && $data->endDate){
-                return $this->expense
-                    ->where('expense_category_id', $data->expenseCategoryId)
+                return $query->where('expense_category_id', $data->expenseCategoryId)
                     ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -152,24 +146,21 @@ class ExpenseService
 
             if($data->date){
                 $date = new Carbon($data->date);
-                return $this->expense
-                ->where('expense_category_id', $data->expenseCategoryId)
+                return $query->where('expense_category_id', $data->expenseCategoryId)
                 ->whereMonth('created_at', $date->month)
                 ->whereYear('created_at', $date->year)
                 ->orderBy($orderBy, $orderDir)
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
-            return $this->expense
-                    ->where('expense_category_id', $data->expenseCategoryId)
+            return $query->where('expense_category_id', $data->expenseCategoryId)
                     ->whereMonth('created_at', $currentDate->month)
                     ->whereYear('created_at', $currentDate->year)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->expense
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length)); 
     }
 

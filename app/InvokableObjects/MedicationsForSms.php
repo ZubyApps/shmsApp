@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\InvokableObjects;
 
+use App\Jobs\SendMedicationReminder;
 use App\Models\MedicationChart;
 use App\Notifications\MedicationNotifier;
 use Carbon\CarbonImmutable;
@@ -40,7 +41,9 @@ class MedicationsForSms
         }
 
         foreach($medications as $medication) {
-            $this->medicationNotifier->toSms($medication);
+            if ($medication->visit->patient->sms){
+                SendMedicationReminder::dispatch($medication)->delay(5);
+            }
         }
       }, 2);
    }

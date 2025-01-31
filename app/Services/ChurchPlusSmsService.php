@@ -23,13 +23,11 @@ class ChurchPlusSmsService
             return;
         }
 
-        $client = new Client();
+        $client = new Client(['request.options' => ['timeout' => 5, 'connection_timeout' => 5]]);
         
         $completeUrl = $this->baseUrl.'recipients='.$recipients.'&message='.$message.'&subject='.$subject.'&cid='.$this->tenantId.'&gateway='.$gateway;
 
-        // Log::info("", ["url1" => $completeUrl]);
-
-        $response = $client->request('POST', $completeUrl, []);
+        $response = $client->request('POST', $completeUrl);
 
         return $response->getBody()->getContents();
 

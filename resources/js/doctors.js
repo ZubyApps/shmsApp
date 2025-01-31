@@ -693,7 +693,6 @@ window.addEventListener('DOMContentLoaded', function () {
                         modal._element.querySelector('.historyBtn').setAttribute('data-patientid', patientId); modal._element.querySelector('.historyBtn').setAttribute('data-patienttype', patientType);
                             openDoctorModals(modal, saveConsultationBtn, response.data)
                             vitalSigsTableFunc(vitalSignsTableId, id, modal)
-                        waitingListOffcanvas.hide()
                     }
                     consultBtn.removeAttribute('disabled')
                 })
@@ -1017,10 +1016,10 @@ window.addEventListener('DOMContentLoaded', function () {
                     new Toast(div.querySelector('#saveConsultationToast'), {delay:2000}).show()
                     if ($.fn.DataTable.isDataTable( '#'+tableId )){$('#'+tableId).dataTable().fnDestroy()}
                     getPrescriptionTableByConsultation(tableId, response.data.id, null, modal)
-                    waitingTable.draw()
-                    outPatientsVisitTable.draw(false)
-                    ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
-                    inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
+                    // waitingTable.draw()
+                    // outPatientsVisitTable.draw(false)
+                    // ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+                    // inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
                 }
             })
             .catch((error) => {
@@ -1143,6 +1142,7 @@ window.addEventListener('DOMContentLoaded', function () {
             outPatientsVisitTable.draw(false)
             ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
             inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
+            if(waitingListOffcanvas._element.checkVisibility())(waitingTable.draw())
             emergencyTable.draw()
             appointmentsTable.draw()
             proceduresListTable.draw()
@@ -1382,7 +1382,6 @@ window.addEventListener('DOMContentLoaded', function () {
             const [prescriptionId, investigationTableId] = [btn.getAttribute('data-id'), btn.getAttribute('data-table')]
             btn.setAttribute('disabled', 'disabled')
             let data = { ...getDivData(resultDiv), prescriptionId, result: resultDiv.querySelector('#result').innerHTML }
-    
             http.patch(`/investigations/${url}/${prescriptionId}`, { ...data }, { "html": resultDiv })
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {

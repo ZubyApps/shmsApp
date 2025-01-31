@@ -150,7 +150,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
             {data: row => admissionStatus(row)},
             {
                 sortable: false,
-                data: row => tableId === 'inPatientsVisitTable' ? detailsBtn1(row) : detailsBtn2(row)}
+                data: row => tableId === '#inPatientsVisitTable' ? detailsBtn1(row) : detailsBtn2(row)}
     ]
 
     filter === 'Inpatient' ? preparedColumns.splice(9, 0, {data: row => wardState(row)},) : ''

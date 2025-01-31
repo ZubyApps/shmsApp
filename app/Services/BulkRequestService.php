@@ -46,20 +46,25 @@ class BulkRequestService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query = $this->bulkRequest::with([
+            'resource', 
+            'user', 
+            'approvedBy',
+            'dispensedBy',
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->bulkRequest
-                        ->where('department', 'Lab')
-                        ->where(function (Builder $query) use($params) {
-                            $query->whereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where('department', 'Lab')
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRelation('resource', 'name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('user', 'username', 'LIKE', $searchTerm);
                         })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->bulkRequest
-                    ->where('department', 'Lab')
+        return $query->where('department', 'Lab')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length)); 
     }
@@ -68,20 +73,25 @@ class BulkRequestService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query = $this->bulkRequest::with([
+            'resource.markedFor', 
+            'user', 
+            'approvedBy',
+            'dispensedBy',
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->bulkRequest
-                        ->where('department', 'Nurses')
-                        ->where(function (Builder $query) use($params) {
-                            $query->whereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where('department', 'Nurses')
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRelation('resource', 'name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('user', 'username', 'LIKE', $searchTerm);
                         })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->bulkRequest
-                    ->where('department', 'Nurses')
+        return $query->where('department', 'Nurses')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length)); 
     }
@@ -90,20 +100,25 @@ class BulkRequestService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query = $this->bulkRequest::with([
+            'resource.markedFor', 
+            'user', 
+            'approvedBy',
+            'dispensedBy',
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->bulkRequest
-                        ->where(function (Builder $query) use($params) {
-                            $query->whereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRelation('resource', 'name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('user', 'username', 'LIKE', $searchTerm);
                         })
                         ->whereNot('department', 'Theatre')
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->bulkRequest
-                    ->whereNot('department', 'Theatre')
+        return $query->whereNot('department', 'Theatre')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length)); 
     }
@@ -112,20 +127,25 @@ class BulkRequestService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query = $this->bulkRequest::with([
+            'resource.markedFor', 
+            'user', 
+            'approvedBy',
+            'dispensedBy',
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->bulkRequest
-                        ->where('department', 'Theatre')
-                        ->where(function (Builder $query) use($params) {
-                            $query->whereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where('department', 'Theatre')
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRelation('resource', 'name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('user', 'username', 'LIKE', $searchTerm);
                         })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->bulkRequest
-                    ->where('department', 'Theatre')
+        return $query->where('department', 'Theatre')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length)); 
     }

@@ -191,26 +191,40 @@ class VisitService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
+        $query = $this->visit::with([
+            'sponsor', 
+            'user', 
+            'patient', 
+            'vitalSigns', 
+            'prescriptions', 
+            'payments', 
+            'antenatalRegisteration', 
+            'waitingFor', 
+        ])
+        ->withCount([
+            'prescriptions as emergencyPrescriptions' => function (Builder $query) {
+            $query->where('consultation_id', null)
+                    ->whereRelation('resource', 'sub_category', '!=', 'Hospital Card');
+            },
+        ])
+        ->whereNull('consulted');
 
         if (! empty($params->searchTerm)) {
-            return $this->visit
-                        ->Where('consulted', null)
-                        ->where(function (Builder $query) use($params) {
-                            $query->where('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where(function (Builder $query) use($searchTerm) {
+                            $query->where('created_at', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', $searchTerm);
                         })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         
-        return $this->visit
-                    ->where('consulted', null)
-                    ->where('closed', false)
+        return $query->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
@@ -239,7 +253,7 @@ class VisitService
                 'status'            => $visit->status,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
-                'emergency'         => $visit->prescriptions()->where('consultation_id', null)->whereRelation('resource', 'sub_category', '!=', 'Hospital Card')->count(),
+                'emergency'         => $visit->emergencyPrescriptions,//prescriptions()->where('consultation_id', null)->whereRelation('resource', 'sub_category', '!=', 'Hospital Card')->count(),
                 'closed'            => $visit->closed,
                 'initiatedBy'       => $visit->user->username,
                 'payments'          => $visit->payments->count(),
@@ -406,49 +420,53 @@ class VisitService
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
         $current = Carbon::now();
+        $query      = $this->visit::with([
+            'sponsor', 
+            'user',
+            'consultations', 
+            'patient', 
+            'doctor', 
+            'antenatalRegisteration', 
+        ])
+        ->WhereNotNull('consulted');
 
         if (! empty($params->searchTerm)) {
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
             if ($data->startDate && $data->endDate){
                 if ($data->filterListBy){
-                    return $this->visit
-                        ->Where('consulted', '!=', null)
-                        ->where(function (Builder $query) use($data) {
+                    return $query->where(function (Builder $query) use($data) {
                             $query->where('admission_status', $data->filterListBy)
                             ->orWhereRelation('patient', 'patient_type', $data->filterListBy);
                         })
                         ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                        ->where(function (Builder $query) use($params) {
-                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', $searchTerm);
                         })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
                 }
-                return $this->visit
-                        ->Where('consulted', '!=', null)
-                        ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                        ->where(function (Builder $query) use($params) {
-                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                return $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', $searchTerm);
                         })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
-            return $this->visit
-                        ->Where('consulted', '!=', null)
-                        ->whereDay('created_at', $current->today())
-                        ->where(function (Builder $query) use($params) {
-                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            return $query->whereDay('created_at', $current->today())
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', $searchTerm);
                         })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -456,9 +474,7 @@ class VisitService
 
         if ($data->startDate && $data->endDate){
             if ($data->filterListBy){
-                return $this->visit
-                    ->Where('consulted', '!=', null)
-                    ->where(function (Builder $query) use($data) {
+                return $query->where(function (Builder $query) use($data) {
                         $query->where('admission_status', $data->filterListBy)
                         ->orWhereRelation('patient', 'patient_type', $data->filterListBy);
                     })
@@ -466,16 +482,12 @@ class VisitService
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
-            return $this->visit
-                    ->Where('consulted', '!=', null)
-                    ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+            return $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->visit
-                    ->Where('consulted', '!=', null)
-                    ->whereDate('created_at', $current->format('Y-m-d'))
+        return $query->whereDate('created_at', $current->format('Y-m-d'))
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
@@ -485,6 +497,7 @@ class VisitService
     public function getVisitsTransformer(): callable
     {
        return  function (Visit $visit) {
+        $latestConsultation = $visit->consultations->sortDesc()->first();
             return [
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->created_at))->format('d/M/y g:ia'),
@@ -503,9 +516,9 @@ class VisitService
                 'sponsor'           => $visit->sponsor->name,
                 'sponsorCategory'   => $visit->sponsor->category_name,
                 'status'            => $visit->admission_status,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
+                'diagnosis'         => $latestConsultation?->icd11_diagnosis ?? 
+                                       $latestConsultation?->provisional_diagnosis ?? 
+                                       $latestConsultation?->assessment,
                 'ancCount'          => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : '',
                 'closed'            => true
             ];

@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
+use App\Jobs\SendTestResultDone;
 use App\Models\Consultation;
 use App\Models\Prescription;
 use App\Models\User;
@@ -34,20 +35,40 @@ class InvestigationService
     {
         $orderBy    = 'consulted';
         $orderDir   =  'desc';
+        $query = $this->visit::with([
+            'sponsor', 
+            'consultations', 
+            'patient', 
+            'prescriptions', 
+            'doctor', 
+            'closedOpenedBy',
+            'payments'
+        ])
+        ->withCount([
+            'prescriptions as labPrescribed' => function (Builder $query) {
+            $query->whereRelation('resource', 'category', '=', 'Investigations')
+                    ->whereRelation('resource', 'sub_category', '!=', 'Imaging');
+            }, 
+            'prescriptions as labDone' => function (Builder $query) {
+            $query->whereRelation('resource', 'category', '=', 'Investigations')
+                    ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
+                    ->where('result_date', '!=', null);
+            },
+        ])
+        ->whereNotNull('consulted');
 
         if (! empty($params->searchTerm)) {
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where(function (Builder $query) use($params) {
-                        $query->where('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where(function (Builder $query) use($searchTerm) {
+                        $query->where('created_at', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
+                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
                     })
                     
                     ->orderBy($orderBy, $orderDir)
@@ -55,9 +76,7 @@ class InvestigationService
         }
 
         if ($data->filterBy == 'Outpatient'){
-            return $this->visit
-            ->where('consulted', '!=', null)
-            ->where('closed', false)
+            return $query->where('closed', false)
             ->whereHas('prescriptions', function(Builder $query){
                 $query->where('result', '=', null)
                 ->whereRelation('resource', 'category', '=', 'Investigations')
@@ -70,9 +89,7 @@ class InvestigationService
         }
 
         if ($data->filterBy == 'Inpatient'){
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('closed', false)
+            return $query->where('closed', false)
                     ->whereHas('prescriptions', function(Builder $query){
                             $query->where('result', '=', null)
                             ->whereRelation('resource', 'category', '=', 'Investigations')
@@ -86,9 +103,7 @@ class InvestigationService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
         if ($data->filterBy == 'ANC'){
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('closed', false)
+            return $query->where('closed', false)
                     ->whereHas('prescriptions', function(Builder $query){
                         $query->where('result', '=', null)
                         ->whereRelation('resource', 'category', '=', 'Investigations')
@@ -99,9 +114,7 @@ class InvestigationService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('closed', false)
+        return $query->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -109,31 +122,25 @@ class InvestigationService
     public function getConsultedVisitsLabTransformer(): callable
     {
        return  function (Visit $visit) {
+        $latestConsultation = $visit->consultations->sortDesc()->first();
         $ward = $this->ward->where('id', $visit->ward)->first();
             return [
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
                 'doctor'            => $visit->doctor->username,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
+                'diagnosis'         => $latestConsultation?->icd11_diagnosis ?? 
+                                       $latestConsultation?->provisional_diagnosis ?? 
+                                       $latestConsultation?->assessment,
                 'sponsor'           => $visit->sponsor->name,
                 'admissionStatus'   => $visit->admission_status,
                 'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
                 'wardId'            => $visit->ward ?? '',
                 'wardPresent'       => $ward?->visit_id == $visit->id,
                 'patientType'       => $visit->patient->patient_type,
-                'labPrescribed'     => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource', 'category', '=', 'Investigations')
-                                        ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
-                                        ->count(),
-                'labDone'           => Prescription::where('visit_id', $visit->id)
-                                        ->whereRelation('resource', 'category', '=', 'Investigations')
-                                        ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
-                                        ->where('result_date','!=', null)
-                                        ->count(),
-                'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
+                'labPrescribed'     => $visit->labPrescribed,
+                'labDone'           => $visit->labDone,
+                'sponsorCategory'   => $visit->sponsor->category_name,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
@@ -153,18 +160,29 @@ class InvestigationService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query = $this->prescription::with([
+            'resource', 
+            'user', 
+            'visit' => function ($query) {
+                $query->with([
+                    'sponsor.sponsorCategory',
+                    'patient'
+                ]);
+            },
+            'consultation',
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->prescription
-                    ->whereRelation('resource', 'category', 'Investigations')
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->whereRelation('resource', 'category', 'Investigations')
                     ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
-                    ->where(function (Builder $query) use($params) {
-                        $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                    ->where(function (Builder $query) use($searchTerm) {
+                        $query->whereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm)
+                        ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('resource', 'sub_category', 'LIKE', $searchTerm);
                         })
                     ->whereRelation('visit', 'consulted', '!=', null)
                     ->where('discontinued', false)
@@ -173,8 +191,7 @@ class InvestigationService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->prescription
-                    ->whereRelation('resource', 'category', 'Investigations')
+        return $query->whereRelation('resource', 'category', 'Investigations')
                     ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
                     ->whereRelation('visit', 'consulted', '!=', null)
                     ->where(function (Builder $query) {
@@ -191,18 +208,29 @@ class InvestigationService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query = $this->prescription::with([
+            'resource', 
+            'user', 
+            'consultation',
+            'visit' => function ($query) {
+                $query->with([
+                    'sponsor.sponsorCategory',
+                    'patient'
+                ]);
+            }
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->prescription
-                        ->whereRelation('resource', 'category', 'Investigations')
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->whereRelation('resource', 'category', 'Investigations')
                         ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
-                        ->where(function (Builder $query) use($params) {
-                            $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm)
+                            ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('resource', 'sub_category', 'LIKE', $searchTerm);
                             })
                         ->where('discontinued', false)
                         ->whereRelation('visit', 'consulted', '!=', null)
@@ -211,8 +239,7 @@ class InvestigationService
         }
 
         if ($data->notLab){
-            return $this->prescription
-                    ->whereRelation('resource', 'category', 'Investigations')
+            return $query->whereRelation('resource', 'category', 'Investigations')
                     ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
                     ->whereRelation('visit', 'consulted', '!=', null)
                     ->whereRelation('consultation', 'admission_status', '=', 'Outpatient')
@@ -221,8 +248,7 @@ class InvestigationService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->prescription
-                    ->whereRelation('resource', 'category', 'Investigations')
+        return $query->whereRelation('resource', 'category', 'Investigations')
                     ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
                     ->whereRelation('visit', 'consulted', '!=', null)
                     ->whereRelation('consultation', 'admission_status', '=', 'Outpatient')
@@ -238,21 +264,21 @@ class InvestigationService
             return [
                 'id'                => $prescription->id,
                 'requested'         => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
-                'type'              => $prescription->resource->resourceSubCategory->name,
+                'type'              => $prescription->resource->category,
                 'doctor'            => $prescription->user->username,
                 'patient'           => $prescription->visit->patient->patientId(),
-                'sponsor'           => $prescription->visit->patient->sponsor->name,
+                'sponsor'           => $prescription->visit->sponsor->name,
                 'diagnosis'         => $prescription->consultation->icd11_diagnosis ??
                                        $prescription->consultation->provisional_diagnosis ??
                                        $prescription->consultation->assessment,
                 'resource'          => $prescription->resource->name,
                 'result'            => $prescription->result_date,
-                'sponsorCategory'       => $prescription->visit->sponsor->sponsorCategory->name,
+                'sponsorCategory'       => $prescription->visit->sponsor->category_name,
                 'sponsorCategoryClass'  => $prescription->visit->sponsor->sponsorCategory->pay_class,
                 'approved'          => $prescription->approved,
                 'rejected'          => $prescription->rejected,
                 'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
-                'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
+                'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->category_name == 'NHIS',
             ];
          };
     }
@@ -275,9 +301,9 @@ class InvestigationService
                 'stock_level' => $resource->stock_level - 1
             ]);
     
-            // if ($prescription->visit->patient->sms){
-            //     $this->investigationNotifier->toSms($prescription);
-            // }
+            if ($prescription->visit->patient->sms){
+                SendTestResultDone::dispatch($prescription)->onQueue('high')->delay(5);
+            }
     
             return $prescription;
 
@@ -287,12 +313,10 @@ class InvestigationService
     public function updateLabResultRecord(Request $data, Prescription $prescription, User $user): Prescription
     {
         $prescription->update([
-            'test_sample'       => $data->sample,
-            'result'            => $data->result,
-            // 'result_date'       => Carbon::now(),
-            // 'result_by'         => $user->id,
-            'discontinued'      => false,
-            'dispense_comment'  => null,
+                'test_sample'       => $data->sample,
+                'result'            => $data->result,
+                'discontinued'      => false,
+                'dispense_comment'  => null,
             ]);
 
         return $prescription;

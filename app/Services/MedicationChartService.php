@@ -124,16 +124,17 @@ class MedicationChartService
     {
         $orderBy    = 'scheduled_time';
         $orderDir   =  'asc';
+        $query = $this->medicationChart::with([
+            'user', 
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->medicationChart
-                        ->whereRelation('prescription.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->whereRelation('prescription.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->medicationChart
-                    ->where('prescription_id', $data->prescriptionId)
+        return $query->where('prescription_id', $data->prescriptionId)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -156,29 +157,35 @@ class MedicationChartService
     {
         $orderBy    = 'scheduled_time';
         $orderDir   =  'asc';
+        $query = $this->medicationChart::with([
+            'user',
+            'prescription.resource',
+            'visit.patient',
+            'givenBy',
+            'prescription.medicationCharts',
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->medicationChart
-                        ->where('status', false)
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where('status', false)
                         ->whereRelation('visit', 'discharge_reason', null)
                         ->where(function (Builder $query){
                             $query->whereRelation('visit', 'admission_status', '=', 'Inpatient')
                             ->orWhereRelation('visit', 'admission_status', '=','Observation');
                         })
-                        ->where(function (Builder $query) use($params) {
-                            $query->WhereRelation('prescription.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->WhereRelation('prescription.resource', 'name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm)
+                            ->orWhereRelation('visit.sponsor', 'name', 'LIKE', $searchTerm);
                         })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->medicationChart
-                    ->where('status', false)
+        return $query->where('status', false)
                     ->whereRelation('prescription', 'discontinued', false)
                     ->whereRelation('visit', 'discharge_reason', null)
                     ->where(function (Builder $query){
@@ -207,7 +214,7 @@ class MedicationChartService
                 'date'              => (new Carbon($medicationChart->scheduled_time))->format('jS/M/y'),
                 'time'              => (new Carbon($medicationChart->scheduled_time))->format('g:iA'),
                 'doseCount'         => $medicationChart->dose_count,
-                'count'             => $medicationChart::where('prescription_id', $medicationChart->prescription->id)->count(),
+                'count'             => $medicationChart->prescription->medicationCharts->count(),//::where('prescription_id', $medicationChart->prescription->id)->count(),
                 'discontinued'      => $medicationChart->prescription->discontinued,
                 'rawDateTime'       => $medicationChart->scheduled_time,
                 'timeGiven'         => $medicationChart->time_given ? (new Carbon($medicationChart->time_given))->format('jS/M/y g:iA') : '',

@@ -43,17 +43,21 @@ Class ShiftReportService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query = $this->shiftReport::with([
+            'user',
+            'viewedBy',
+            'viewedBy1',
+            'viewedBy2',
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->shiftReport
-                        ->where('department', $data->department)
+            return $query->where('department', $data->department)
                         ->whereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->shiftReport
-                    ->where('department', $data->department)
+        return $query->where('department', $data->department)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 

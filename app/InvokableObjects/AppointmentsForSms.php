@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\InvokableObjects;
 
+use App\Jobs\SendAppointmentReminder;
 use App\Models\Appointment;
 use App\Notifications\AppointmentNotifier;
 use Carbon\CarbonImmutable;
@@ -29,7 +30,11 @@ class AppointmentsForSms
         }
 
         foreach($appointments as $appointment) {
-            $this->appointmentNotifier->toSms($appointment);
+            // $this->appointmentNotifier->toSms($appointment);
+            if ($appointment->patient->sms){
+                SendAppointmentReminder::dispatch($appointment);
+                info('appointments in', ['patient' => $appointment->patient->first_name, 'doctor' => $appointment->doctor->username, 'sms' => $appointment->patient->sms]);
+            }
         }
       }, 2);
    }

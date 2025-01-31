@@ -50,17 +50,16 @@ class VitalSignsService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
+        $query      = $this->vitalSigns::with(['user', 'visit.patient']);
 
         if (! empty($params->searchTerm)) {
-            return $this->vitalSigns
-                        ->Where('visit_id', $data->visitId)
+            return $query->Where('visit_id', $data->visitId)
                         ->WhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->vitalSigns
-                    ->Where('visit_id', $data->visitId)
+        return $query->Where('visit_id', $data->visitId)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 

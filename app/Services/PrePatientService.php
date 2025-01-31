@@ -66,24 +66,24 @@ class PrePatientService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query      = $this->patientPreForm::with(['sponsor', 'sponsor.sponsorCategory', 'user']);
 
         if (! empty($params->searchTerm)) {
-            return $this->patientPreForm
-                        ->where('first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('phone', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where('first_name', 'LIKE', $searchTerm)
+                        ->orWhere('middle_name', 'LIKE', $searchTerm)
+                        ->orWhere('last_name', 'LIKE', $searchTerm)
+                        ->orWhere('card_no', 'LIKE', $searchTerm)
+                        ->orWhere('phone', 'LIKE', $searchTerm)
                         ->orWhere('sex', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('date_of_birth', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', $searchTerm)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->patientPreForm
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        

@@ -854,7 +854,7 @@ const wardState = (row) => {
 
 const searchMin = (table, tableId, value) => {
     const searchInput = $(tableId+'_filter input');
-    searchInput.off();
+    searchInput.off('keyup keypress input');
     searchInput.on('keyup', function(e) {
         if(this.value.length > value) {
             table.search( this.value ).draw();
@@ -865,6 +865,6 @@ const searchMin = (table, tableId, value) => {
     });
 }
 
-const searchPlaceholderText = '...atleast 3 letters';
+const searchPlaceholderText = '...3 characters min';
 
 export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText}

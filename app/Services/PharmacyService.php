@@ -36,19 +36,49 @@ class PharmacyService
     {
         $orderBy    = 'consulted';
         $orderDir   =  'desc';
+        $query = $this->visit::with([
+            'sponsor', 
+            'consultations', 
+            'patient',  
+            'prescriptions', 
+            'antenatalRegisteration', 
+            'doctor', 
+            'closedOpenedBy',
+            'payments'
+        ])
+        ->withCount([
+            'prescriptions as countPrescribed' => function (Builder $query) {
+            $query->whereRelation('resource', 'category', '=', 'Medications')
+                    ->orWhereRelation('resource', 'category', '=', 'Consumables');
+            },
+            'prescriptions as countBilled' => function (Builder $query) {
+                $query->where(function (Builder $query) {
+                    $query->whereRelation('resource', 'category', '=', 'Medications')
+                    ->orWhereRelation('resource', 'category', '=', 'Consumables');
+                        })
+                ->where('qty_billed', '!=', 0);
+            },
+            'prescriptions as countDispensed' => function (Builder $query) {
+                $query->where(function (Builder $query) {
+                    $query->whereRelation('resource', 'category', '=', 'Medications')
+                    ->orWhereRelation('resource', 'category', '=', 'Consumables');
+                        })
+                ->where('qty_dispensed', '!=', 0);
+            },
+        ])
+        ->whereNotNull('consulted');
 
         if (! empty($params->searchTerm)) {
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where(function (Builder $query) use($params) {
-                        $query->where('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where(function (Builder $query) use($searchTerm) {
+                        $query->where('created_at', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
+                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
                     })
                     
                     ->orderBy($orderBy, $orderDir)
@@ -56,9 +86,7 @@ class PharmacyService
         }
 
         if ($data->filterBy == 'Outpatient'){
-            return $this->visit
-            ->where('consulted', '!=', null)
-            ->where('pharmacy_done_by', null)
+            return $query->where('pharmacy_done_by', null)
             ->where(function (Builder $query) {
                 $query->whereHas('prescriptions', function(Builder $query){
                     $query->where(function (Builder $query) {
@@ -75,9 +103,7 @@ class PharmacyService
         }
 
         if ($data->filterBy == 'Inpatient'){
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('pharmacy_done_by', null)
+            return $query->where('pharmacy_done_by', null)
                     ->where('admission_status', '!=', 'Outpatient')
                     ->whereHas('prescriptions', function(Builder $query){
                         $query->where(function (Builder $query) {
@@ -91,9 +117,7 @@ class PharmacyService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
         if ($data->filterBy == 'ANC'){
-            return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('pharmacy_done_by', null)
+            return $query->where('pharmacy_done_by', null)
                     ->whereHas('prescriptions', function(Builder $query){
                         $query->where(function (Builder $query) {
                             $query->whereRelation('resource', 'category', '=', 'Medications')
@@ -105,9 +129,7 @@ class PharmacyService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->visit
-                    ->where('consulted', '!=', null)
-                    ->where('pharmacy_done_by', null)
+        return $query->where('pharmacy_done_by', null)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -115,43 +137,25 @@ class PharmacyService
     public function getPharmacyVisitsTransformer(): callable
     {
         return  function (Visit $visit) {
-           $ward = $this->ward->where('id', $visit->ward)->first();
+            $latestConsultation = $visit->consultations->sortDesc()->first();
+            $ward = $this->ward->where('id', $visit->ward)->first();
             return [
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
                 'doctor'            => $visit->doctor->username,
                 'ancRegId'          => $visit->antenatalRegisteration?->id,
-                'diagnosis'         => Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->icd11_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->provisional_diagnosis ?? 
-                                       Consultation::where('visit_id', $visit->id)->orderBy('id', 'desc')->first()?->assessment,
+                'diagnosis'         => $latestConsultation?->icd11_diagnosis ?? $latestConsultation?->provisional_diagnosis ?? $latestConsultation?->assessment,
                 'sponsor'           => $visit->sponsor->name,
                 'admissionStatus'   => $visit->admission_status,
                 'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
                 'wardId'            => $visit->ward ?? '',
                 'wardPresent'       => $ward?->visit_id == $visit->id,
                 'patientType'       => $visit->patient->patient_type,
-                'countPrescribed'   => Prescription::where('visit_id', $visit->id)
-                                        ->where(function (Builder $query) {
-                                            $query->whereRelation('resource', 'category', '=', 'Medications')
-                                            ->orWhereRelation('resource', 'category', '=', 'Consumables');
-                                        })
-                                        ->count(),
-                'countBilled'       => Prescription::where('visit_id', $visit->id)
-                                        ->where(function (Builder $query) {
-                                            $query->whereRelation('resource', 'category', '=', 'Medications')
-                                            ->orWhereRelation('resource', 'category', '=', 'Consumables');
-                                        })
-                                        ->where('qty_billed', '!=', 0)
-                                        ->count(),
-                'countDispensed'    => Prescription::where('visit_id', $visit->id)
-                                        ->where(function (Builder $query) {
-                                            $query->whereRelation('resource', 'category', '=', 'Medications')
-                                            ->orWhereRelation('resource', 'category', '=', 'Consumables');
-                                        })
-                                        ->where('qty_dispensed', '!=', 0)
-                                        ->count(),
-                'sponsorCategory'   => $visit->sponsor->sponsorCategory->name,
+                'countPrescribed'   => $visit->countPrescribed,
+                'countBilled'       => $visit->countBilled,
+                'countDispensed'    => $visit->countDispensed,
+                'sponsorCategory'   => $visit->sponsor->category_name,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
@@ -269,10 +273,29 @@ class PharmacyService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query = $this->consultation::with([
+            'visit.sponsor.sponsorCategory', 
+            'user', 
+            'prescriptions' => function ($query) {
+                $query->where(function(Builder $query) {
+                    $query->whereRelation('resource', 'category', 'Medications')
+                          ->orWhereRelation('resource', 'category', 'Consumables');
+                })
+                ->with([
+                    'resource.unitDescription',
+                    'hmsBillBy',
+                    'dispensedBy',
+                    'approvedBy',
+                    'rejectedBy',
+                    'user',
+                    'visit.sponsor',
+                ])
+                ->orderBy('created_at', 'desc');
+            } 
+        ]);
 
             if (! empty($params->searchTerm)) {
-                return $this->consultation
-                            ->where('visit_id', $data->visitId)
+                return $query->where('visit_id', $data->visitId)
                             ->where(function (Builder $query) use($params) {
                                 $query->where('icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                                 ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
@@ -284,8 +307,7 @@ class PharmacyService
                             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
-        return $this->consultation
-                ->where('visit_id', $data->visitId)
+        return $query->where('visit_id', $data->visitId)
                 ->orderBy($orderBy, $orderDir)
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -302,10 +324,10 @@ class PharmacyService
                 'consulted'             => (new Carbon($consultation->created_at))->format('D d/m/y g:ia'),                
                 'conId'                 => $consultation->id,
                 'sponsor'               => $consultation->visit->sponsor->name,
-                'sponsorCategory'       => $consultation->visit->sponsor->sponsorCategory->name,
+                'sponsorCategory'       => $consultation->visit->sponsor->category_name,
                 'sponsorCategoryClass'  => $consultation->visit->sponsor->sponsorCategory->pay_class,
                 'closed'                => $consultation->visit->closed,
-                'prescriptions'         => (new Prescription)->forPharmacy($consultation->id)->map(fn(Prescription $prescription)=> [
+                'prescriptions'         => $consultation->prescriptions->map(fn(Prescription $prescription)=> [
                     'id'                => $prescription->id ?? '',
                     'price'             => $prescription->resource?->selling_price ?? '',
                     'prescribedBy'      => $prescription->user?->username ?? '',
@@ -332,7 +354,7 @@ class PharmacyService
                     'note'              => $prescription->note ?? '',
                     'status'            => $prescription->status ?? '',
                     'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
-                    'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->sponsorCategory->name == 'NHIS',
+                    'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->category_name == 'NHIS',
                     'amountPaid'        => $prescription->paid ?? 0,
                     'blink'             => $prescription->resource->stock_level <= $prescription->resource->reorder_level,
                 ]),
@@ -344,10 +366,12 @@ class PharmacyService
     {
         $orderBy    = 'expiry_date';
         $orderDir   =  'asc';
+        $query      = $this->resource::with([
+            'prescriptions',
+        ]);
 
         if (! empty($params->searchTerm)) {
-            return $this->resource
-                        ->where(function (Builder $query) {
+            return $query->where(function (Builder $query) {
                             $query->where('category', 'Medications')
                             ->orWhere('category', 'Consumables')->whereNot('sub_category', 'Lab');
                         })
@@ -361,8 +385,7 @@ class PharmacyService
         }
 
         if ($data->filterBy === 'expiration'){
-            return $this->resource
-                    ->where('is_active', true)
+            return $query->where('is_active', true)
                     ->where(function (Builder $query) {
                         $query->where('category', 'Medications')
                         ->orWhere('category', 'Consumables')->whereNot('sub_category', 'Lab');
@@ -373,8 +396,7 @@ class PharmacyService
         }
 
         if ($data->filterBy === 'stockLevel'){
-            return $this->resource
-                    ->where('is_active', true)
+            return $query->where('is_active', true)
                     ->where(function (Builder $query) {
                         $query->where('category', 'Medications')
                         ->orWhere('category', 'Consumables')->whereNot('sub_category', 'Lab');
