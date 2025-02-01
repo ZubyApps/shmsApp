@@ -32,7 +32,7 @@ class SendCardNumber implements ShouldQueue
         $firstName = $this->patient->first_name;
         $gateway = $helperService->nccTextTime() ? 1 : 2;
 
-        info('card number', ['sent to' => 'LastName']);
+        info('card number', ['sent to' => $firstName]);
 
         $churchPlusSmsService
                     ->sendSms('Dear ' .$firstName. ', welcome to Sandra Hospital, your Hospital Card Number is '.'['.$this->patient->card_no.'] courtesy of our Hospital Management System', $this->patient->phone, 'SandraHosp', $gateway);
