@@ -302,7 +302,7 @@ class InvestigationService
             ]);
     
             if ($prescription->visit->patient->sms){
-                SendTestResultDone::dispatch($prescription)->onQueue('high')->delay(5);
+                SendTestResultDone::dispatch($prescription)->delay(5);
             }
     
             return $prescription;
