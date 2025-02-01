@@ -39,6 +39,7 @@ class SponsorService
             'email'                 => $data->email,
             'registration_bill'     => $data->registerationBill,
             'sponsor_category_id'   => $data->category,
+            'category_name'         => SponsorCategory::findOrFail($data->category)->name,
             'user_id'               => $user->id,
             'max_pay_days'          => $data->maxPayDays,
             'flag'                  => $data->flagSponsor,
