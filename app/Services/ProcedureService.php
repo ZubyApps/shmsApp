@@ -100,6 +100,7 @@ class ProcedureService
     {
         return  function (Procedure $procedure) {
            $prescription = $procedure->prescription;
+           
             return [
                 'id'                => $procedure->id,
                 'patient'           => $prescription->visit->patient->patientId(),
