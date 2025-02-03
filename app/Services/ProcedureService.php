@@ -42,10 +42,15 @@ class ProcedureService
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
         $query = $this->procedure::with([
-            'prescription.visit.patient',
-            'prescription.visit.sponsor.sponsorCategory',
+            'prescription' => function($query) {
+                $query->select('id', 'approved', 'rejected', 'nhis_bill', 'paid', 'visit_id', 'resource_id')
+                ->with([
+                    'visit.sponsor.sponsorCategory',
+                    'visit.patient',
+                    'resource'
+                ]);
+            },
             'user',
-            'prescription.resource',
             'dateBookedBy',
         ]);
 
@@ -93,20 +98,26 @@ class ProcedureService
 
     public function getLoadTransformer(): callable
     {
-       return  function (Procedure $procedure) {
+        return  function (Procedure $procedure) {
+           $prescription = $procedure->prescription;
             return [
                 'id'                => $procedure->id,
-                'patient'           => $procedure->prescription->visit->patient->patientId(),
-                'phone'             => $procedure->prescription->visit->patient->phone,
+                'patient'           => $prescription->visit->patient->patientId(),
+                'phone'             => $prescription->visit->patient->phone,
                 'prescribedBy'      => $procedure->user->username,
-                'sponsor'           => $procedure->prescription->visit->sponsor->name,
-                'sponsorCat'        => $procedure->prescription->visit->sponsor->sponsorCategory->name,
-                'procedure'         => $procedure->prescription->resource->name,
+                'sponsor'           => $prescription->visit->sponsor->name,
+                'sponsorCat'        => $prescription->visit->sponsor->category_name,
+                'procedure'         => $prescription->resource->name,
                 'bookedDate'        => $procedure->booked_date ? (new Carbon($procedure->booked_date))->format('D d/m/y g:ia') : '',
                 'dateBookedBy'      => $procedure?->dateBookedBy?->username,
                 'comment'           => $procedure->comment,
                 'status'            => $procedure->status,
                 'statusUpdatedBy'   => $procedure?->statusUpdatedBy?->username,
+                'approved'          => $prescription->approved,
+                'rejected'          => $prescription->rejected,
+                'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
+                'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->category_name == 'NHIS',
+                'payClass'          => $prescription->visit->sponsor->sponsorCategory->pay_class,
                 'createdAt'         => (new Carbon($procedure->created_at))->format('d/m/y g:ia'),
             ];
          };

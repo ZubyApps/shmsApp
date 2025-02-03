@@ -393,9 +393,9 @@ const sponsorAndPayPercent = (row) => {
 
 const displayPaystatus = (row, credit, NHIS) => {
     if (credit || NHIS){
-        return  `<i class="bi ${+row.approved ? 'bi-check-circle-fill text-primary' : row.rejected ? 'bi-x-circle-fill text-danger' : 'bi-dash-circle-fill text-secondary'} tooltip-test" title=${row.approved ? 'approved' : row.rejected ? 'rejected' : 'not processed'}></i> ${row.paid || row.paidNhis ? '<i class="bi bi-p-circle-fill text-primary tooltip-test" title="paid"></i>': ''}  ${row.thirdParty ? `<small>(${row.thirdParty})</small>` : ''}` 
+        return  `<i class="bi ${+row.approved ? 'bi-check-circle-fill text-primary' : row.rejected ? 'bi-x-circle-fill text-danger' : 'bi-dash-circle-fill text-secondary'} tooltip-test" title=${row.approved ? 'approved' : row.rejected ? 'rejected' : 'not-processed'}></i> ${row.paid || row.paidNhis ? '<i class="bi bi-p-circle-fill text-primary tooltip-test" title="paid"></i>': ''}  ${row.thirdParty ? `<small>(${row.thirdParty})</small>` : ''}` 
     } else {
-        return  row.paid ? `<i class="bi bi-p-circle-fill tooltip-test text-primary" title="paid"></i> ${row.thirdParty  ? `<small>(${row.thirdParty})</small>` : ''}` : `<i class="bi bi-dash-circle-fill text-secondary tooltip-test" title="not processed"></i> ${row.thirdParty ? `</small>(${row.thirdParty})</small>` : ''}`
+        return  row.paid ? `<i class="bi bi-p-circle-fill tooltip-test text-primary" title="paid"></i> ${row.thirdParty  ? `<small>(${row.thirdParty})</small>` : ''}` : `<i class="bi bi-dash-circle-fill text-secondary tooltip-test" title="not-processed"></i> ${row.thirdParty ? `</small>(${row.thirdParty})</small>` : ''}`
     }
 }
 

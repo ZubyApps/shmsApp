@@ -949,7 +949,12 @@ const getProceduresListTable = (tableId, pending, hmo, cash) => {
                 data: "phone"},
             {data: "prescribedBy"},
             {data: row => row.sponsor + ' - ' + row.sponsorCat},
-            {data: row => `<span class="fw-semibold text-primary">${row.procedure}</span>`},
+            {data: row => function () {
+                console.log(row.payClass)
+                const credit        = row.payClass == 'Credit'
+                const NHIS          = row.sponsorCat == 'NHIS'
+                return `<span class="fw-semibold text-${row.rejected ? 'danger' : 'primary'}">${row.procedure +' '+ displayPaystatus(row, credit, NHIS)}</span>`}
+            },
             {data: row => function () {
                 if (row.bookedDate){
                     return `<span class="bookDateBtn p-0" data-procedure="${row.procedure}" data-id="${ row.id}">${row.bookedDate}</span>`
