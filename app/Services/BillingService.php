@@ -181,12 +181,20 @@ class BillingService
         $orderDir   =  'desc';
 
         return  $this->visit::with([
-                        'sponsor', 
+                        'sponsor.sponsorCategory', 
                         'patient', 
-                        'prescriptions.thirdPartyServices.thirdParty',
-                        'prescriptions.user',
-                        'prescriptions.resource',
-                        'reminders'
+                        'prescriptions' => function ($query) {
+                            $query->with([
+                                'thirdPartyServices.thirdParty',
+                                'user',
+                                'resource.unitDescription',
+                            ]);
+                        },
+                        'doctor',  
+                        'reminders',
+                        'discountBy',
+                        'consultations',
+                        'payments',
                     ])
                     ->where('id', $data->visitId)
                     ->orderBy($orderBy, $orderDir)
@@ -224,7 +232,7 @@ class BillingService
                 'outstandingCardNoBalance'   => $this->sponsorsAllowed($visit->sponsor, ['Family', 'Retainership', 'NHIS', 'Individual']) ? $this->sameCardNoOustandings($visit) : null,
                 'outstandingNhisBalance'=> $this->sponsorsAllowed($visit->sponsor, ['NHIS']) ? $visit->patient->allNhisBills() - $visit->patient->allDiscounts() - $this->determinePayP($visit->patient) : null,
                 'payMethods'            => $this->payMethodService->list(),
-                'notBilled'             => $visit->prescriptions->whereNull('qty_billed')->count(),
+                'notBilled'             => $visit->prescriptions->where('qty_billed', 0)->count(),
                 'user'                  => auth()->user()->designation->access_level > 4,
                 'reminder'              => $visit->reminders->first(),
                 'prescriptions'         => $visit->prescriptions->map(fn(Prescription $prescription) => [
