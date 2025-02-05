@@ -271,7 +271,7 @@ class DoctorService
                 'labDone'           => $visit->labDone,
                 'chartableMedications'  => $visit->prescriptionsCharted,
                 'doseCount'         => $visit->medicationCharts->count(),
-                'givenCount'        => $visit->medicationCharts->whereNull('dose_given')->count(),
+                'givenCount'        => $visit->medicationCharts->whereNotNull('dose_given')->count(),
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
