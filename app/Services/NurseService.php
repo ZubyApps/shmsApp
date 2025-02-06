@@ -62,13 +62,13 @@ class NurseService
                       ->orWhereRelation('resource', 'category', 'Consumables');
             });
             },
-        ])
-        ->whereNotNull('consulted');
+        ]);
 
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-            return $query->where(function (Builder $query) use($searchTerm) {
+            return $query->whereNotNull('consulted')
+                    ->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
@@ -85,7 +85,8 @@ class NurseService
         }
 
         if ($data->filterBy == 'Outpatient'){
-            return $query->where('nurse_done_by', null)
+            return $query->whereNotNull('consulted')
+            ->where('nurse_done_by', null)
             ->where('closed', false)
             ->where(function(Builder $query) {
                 $query->whereRelation('prescriptions.resource', 'sub_category', '=', 'Injectable');
@@ -97,7 +98,8 @@ class NurseService
         }
 
         if ($data->filterBy == 'Inpatient'){
-            return $query->where('nurse_done_by', null)
+            return $query->whereNotNull('consulted')
+                    ->where('nurse_done_by', null)
                     ->where('closed', false)
                     ->where(function(Builder $query) {
                         $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
@@ -119,7 +121,8 @@ class NurseService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $query->where('nurse_done_by', null)
+        return $query->whereNotNull('consulted')
+                    ->where('nurse_done_by', null)
                     ->where('closed', false)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
