@@ -96,7 +96,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
     const theatreItemInput         = theatreRequestModal._element.querySelector('#item')
     const [outPatientsTab, inPatientsTab, ancPatientsTab, bulkRequestsTab, theatreRequestTab, emergencyTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-theatreRequests-tab'), document.querySelector('#nav-emergency-tab')]
-    
+    const [inPatientsView, outPatientsView, ancPatientsView, emergencyView] = [document.querySelector('#nav-inPatients-view'), document.querySelector('#nav-outPatients-view'), document.querySelector('#nav-ancPatients-view'), document.querySelector('#nav-emergency-view')]
     bmiCalculator(document.querySelectorAll('#height, .weight'))
     lmpCalculator(document.querySelectorAll('#lmp'), document.querySelectorAll('#registerationDiv'))
 
@@ -110,13 +110,39 @@ window.addEventListener('DOMContentLoaded', function () {
     const proceduresListTable           = getProceduresListTable('proceduresListTable', 'pending')
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #bulkRequestsTable, #emergencyTable, #nursesReportTable, #upcomingMedicationsTable, #upcomingNursingChartsTable, #waitingTable, #medicationsTable, #otherPrescriptionsTable, #ancVitalSignsTable, #vitalSignsTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
 
-    const shiftPerformance = () => {
-        getShiftPerformance('Nurse', shiftPerformanceDiv)
-    }
+    const debounce = (func, wait) => {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    };
+
+    const refreshHomeTables = debounce(() => {
+        getShiftPerformance('Nurse', shiftPerformanceDiv);
+        upcomingMedicationsTable.draw();
+        upcomingNursingChartsTable.draw();
+        proceduresListTable.draw()
+        nursesShiftReportTable.draw()
+    }, 60000);
+
+    const refreshPartialHomeTables = debounce(() => {
+        upcomingMedicationsTable.draw();
+        upcomingNursingChartsTable.draw();
+    }, 5000);
+
+    const refreshMainTables = debounce(() => {
+        getShiftPerformance('Nurse', shiftPerformanceDiv);
+        inPatientsView.checkVisibility() ? inPatientsVisitTable.draw() : ''
+        outPatientsView.checkVisibility() ? outPatientsVisitTable.draw() : ''
+        ancPatientsView.checkVisibility() ? ancPatientsVisitTable.draw() : ''
+        emergencyView.checkVisibility() ? emergencyTable.draw() : ''
+    }, 2000);
 
     shiftReportBtn.addEventListener('click', function () {nursesShiftReportTable.draw()})
 
-    shiftPerformance()
+    // shiftPerformance()
+     getShiftPerformance('Nurse', shiftPerformanceDiv);
 
     newNursesShiftReportBtn.addEventListener('click', function () {
         newShiftReportTemplateModal.show()
@@ -135,11 +161,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
     inPatientsTab.addEventListener('click', function() {
         inPatientsVisitTable.draw();
-        upcomingMedicationsTable.draw();
-        upcomingNursingChartsTable.draw();
-        shiftPerformance();
+        // upcomingMedicationsTable.draw();
+        // upcomingNursingChartsTable.draw();
+        refreshHomeTables();
+        // debounce(shiftPerformance, 10000)
         // nursesShiftReportTable.draw()
-        proceduresListTable.draw()
+        // proceduresListTable.draw()
     });
 
     outPatientsTab.addEventListener('click', function () {
@@ -148,11 +175,11 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             outPatientsVisitTable = getPatientsVisitsByFilterTable('#outPatientsVisitTable', 'Outpatient')
         }
-        upcomingMedicationsTable.draw()
-        upcomingNursingChartsTable.draw()
-        shiftPerformance()
-        nursesShiftReportTable.draw()
-        proceduresListTable.draw()
+        // upcomingMedicationsTable.draw()
+        // upcomingNursingChartsTable.draw()
+        refreshHomeTables()
+        // nursesShiftReportTable.draw()
+        // proceduresListTable.draw()
     })
 
     ancPatientsTab.addEventListener('click', function () {
@@ -161,11 +188,11 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             ancPatientsVisitTable = getPatientsVisitsByFilterTable('#ancPatientsVisitTable', 'ANC')
         }
-        upcomingMedicationsTable.draw()
-        upcomingNursingChartsTable.draw()
-        shiftPerformance()
-        nursesShiftReportTable.draw()
-        proceduresListTable.draw()
+        // upcomingMedicationsTable.draw()
+        // upcomingNursingChartsTable.draw()
+        refreshHomeTables()
+        // nursesShiftReportTable.draw()
+        // proceduresListTable.draw()
     })
 
     bulkRequestsTab.addEventListener('click', function () {
@@ -174,9 +201,10 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             bulkRequestsTable = getBulkRequestTable('bulkRequestsTable', 'nurses')
         }
-        upcomingMedicationsTable.draw()
-        upcomingNursingChartsTable.draw()
-        shiftPerformance()
+        refreshPartialHomeTables()
+        // upcomingMedicationsTable.draw()
+        // upcomingNursingChartsTable.draw()
+        // shiftPerformance()
     })
 
     theatreRequestTab.addEventListener('click', function () {
@@ -185,9 +213,10 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             theatreRequestsTable = getBulkRequestTable('theatreRequestsTable', 'theatre')
         }
-        upcomingMedicationsTable.draw()
-        upcomingNursingChartsTable.draw()
-        shiftPerformance()
+        refreshPartialHomeTables()
+        // upcomingMedicationsTable.draw()
+        // upcomingNursingChartsTable.draw()
+        // shiftPerformance()
     })
 
     emergencyTab.addEventListener('click', function () {
@@ -196,9 +225,10 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             emergencyTable = getEmergencyTable('emergencyTable', 'nurse')
         }
-        upcomingMedicationsTable.draw()
-        upcomingNursingChartsTable.draw()
-        shiftPerformance()
+        // upcomingMedicationsTable.draw()
+        // upcomingNursingChartsTable.draw()
+        // shiftPerformance()
+        refreshHomeTables()
     })
 
     waitingBtn.addEventListener('click', function () {
@@ -236,37 +266,42 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     waitingListCanvas._element.addEventListener('hide.bs.offcanvas', function () {
-        inPatientsVisitTable.draw()
-        outPatientsVisitTable ? outPatientsVisitTable.draw() : ''
-        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-        upcomingMedicationsTable.draw()
-        upcomingNursingChartsTable.draw()
-        shiftPerformance()
+        // inPatientsVisitTable.draw()
+        // outPatientsVisitTable ? outPatientsVisitTable.draw() : ''
+        // ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+        // upcomingMedicationsTable.draw()
+        // upcomingNursingChartsTable.draw()
+        // refreshHomeTables()
+        refreshMainTables()
         // proceduresListTable.draw()
     })
 
     document.querySelectorAll('#upcomingMedicationsoffcanvas, #upcomingNursingChartsoffcanvas').forEach(canvas => {
         canvas.addEventListener('show.bs.offcanvas', function () {
-            upcomingMedicationsTable.draw()
-            upcomingNursingChartsTable.draw()
+            const medicationCanvas = canvas.id =='upcomingMedicationsoffcanvas'
+            medicationCanvas ? upcomingMedicationsTable.draw() : upcomingNursingChartsTable.draw()
         })
 
     })
 
-    document.querySelectorAll('#upcomingMedicationsoffcanvas, #upcomingNursingChartsoffcanvas, #shiftReportOffcanvas').forEach(canvas => {
+    document.querySelectorAll('#upcomingMedicationsoffcanvas, #upcomingNursingChartsoffcanvas, #shiftReportOffcanvas, #proceduresListOffcanvas').forEach(canvas => {
         canvas.addEventListener('hide.bs.offcanvas', function () {
-            inpatientsMedChartBtn.classList.remove('colour-change', 'colour-change1')
-            inpatientsMedChartBtn.classList.add('btn-primary')
-            nursingChartBtn.classList.remove('colour-change', 'colour-change1')
-            nursingChartBtn.classList.add('btn-primary')
-            inPatientsVisitTable.draw()
-            outPatientsVisitTable ? outPatientsVisitTable.draw() : ''
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-            upcomingMedicationsTable.draw()
-            upcomingNursingChartsTable.draw()
-            shiftPerformance()
-            // nursesShiftReportTable.draw();
-            // proceduresListTable.draw()
+            if (canvas.id =='upcomingMedicationsoffcanvas'){
+                inpatientsMedChartBtn.classList.remove('colour-change', 'colour-change1')
+                inpatientsMedChartBtn.classList.add('btn-primary')
+                upcomingMedicationsTable.draw()
+            }
+            if (canvas.id =='upcomingNursingChartsoffcanvas'){
+                nursingChartBtn.classList.remove('colour-change', 'colour-change1')
+                nursingChartBtn.classList.add('btn-primary')
+                upcomingNursingChartsTable.draw()
+            }
+            canvas.id =='shiftReportOffcanvas' ? nursesShiftReportTable.draw() : ''
+            canvas.id =='proceduresListOffcanvas' ? proceduresListTable.draw() : ''
+            console.log(inPatientsView.checkVisibility(), outPatientsView.checkVisibility(), ancPatientsView.checkVisibility())
+            inPatientsView.checkVisibility() ? inPatientsVisitTable.draw() : ''
+            outPatientsView.checkVisibility() ? outPatientsVisitTable.draw() : ''
+            ancPatientsView.checkVisibility() ? ancPatientsVisitTable.draw() : ''
         })
     })
 
@@ -473,9 +508,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                             markDoneBtn.removeAttribute('disabled') 
-                            inPatientsVisitTable.draw(false); upcomingMedicationsTable.draw(); upcomingNursingChartsTable.draw()
-                            outPatientsVisitTable ? outPatientsVisitTable.draw(false) : ''
-                            ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+                            refreshMainTables()
                         }
                       })
                     .catch((error) => {
@@ -501,7 +534,8 @@ window.addEventListener('DOMContentLoaded', function () {
         http.patch(`/visits/discharge/${id}`, getDivData(dischargeDetailsDiv), {html:dischargeDetailsDiv})
         .then((response) => {
             if (response) {clearDivValues(dischargeDetailsDiv);  clearValidationErrors(dischargeDetailsDiv)
-                inPatientsVisitTable.draw(false); upcomingMedicationsTable.draw(); upcomingNursingChartsTable.draw()
+                // inPatientsVisitTable.draw(false); upcomingMedicationsTable.draw(); upcomingNursingChartsTable.draw()
+                refreshMainTables()
                 dischargeModal.hide()
             }
             saveDischargeBtn.removeAttribute('disabled')
@@ -777,18 +811,24 @@ window.addEventListener('DOMContentLoaded', function () {
             })
     
 
-    document.querySelectorAll('#medicationPrescriptionsModal, #otherPrescriptionsModal, #investigationAndManagementModal, #vitalsignsModal, #ancVitalsignsModal, #chartMedicationModal, #wardAndBedModal').forEach(modal => {
+    document.querySelectorAll('#medicationPrescriptionsModal, #otherPrescriptionsModal, #investigationAndManagementModal, #vitalsignsModal, #ancVitalsignsModal, #wardAndBedModal').forEach(modal => {
             modal.addEventListener('hide.bs.modal', function(event) {
-            inPatientsVisitTable.draw()
+            // inPatientsVisitTable.draw()
             // waitingTable.draw()
-            outPatientsVisitTable ? outPatientsVisitTable.draw(false) : ''
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+            // outPatientsVisitTable ? outPatientsVisitTable.draw(false) : ''
+            // ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
             // bulkRequestsTable ? bulkRequestsTable.draw(false) : ''
-            emergencyTable ? emergencyTable.draw(false) : ''
-            medicationsTable ? medicationsTable.draw(false) : ''
-            upcomingMedicationsTable.draw(false)
-            upcomingNursingChartsTable.draw(false)
-            shiftPerformance()
+            if (modal.id == 'investigationAndManagementModal'){
+                medicationsTable ? medicationsTable.draw(false) : ''
+                emergencyTable ? emergencyTable.draw(false) : ''
+                waitingListCanvas._element.checkVisibility() ? waitingTable.draw(false) : ''
+            }else{
+                refreshMainTables()
+                refreshPartialHomeTables()
+            }
+            // upcomingMedicationsTable.draw(false)
+            // upcomingNursingChartsTable.draw(false)
+            // shiftPerformance()
             modal.id == 'wardAndBedModal' ? clearSelectList(modal) : ''
         })
     })
@@ -798,15 +838,15 @@ window.addEventListener('DOMContentLoaded', function () {
             regularTreatmentDiv.innerHTML = ''
             ancTreatmentDiv.innerHTML = ''
             visitHistoryDiv.innerHTML = ''
-            inPatientsVisitTable.draw(false)
-            outPatientsVisitTable ? outPatientsVisitTable.draw(false) : ''
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+            // inPatientsVisitTable.draw(false)
+            // outPatientsVisitTable ? outPatientsVisitTable.draw(false) : ''
+            // ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
             // bulkRequestsTable ? bulkRequestsTable.draw(false) : ''
             // emergencyTable ? emergencyTable.draw(false) : ''
-            upcomingMedicationsTable.draw()
-            upcomingNursingChartsTable.draw()
-            shiftPerformance()
-            nursesShiftReportTable.draw()
+            // upcomingMedicationsTable.draw()
+            // upcomingNursingChartsTable.draw()
+            refreshMainTables()
+            // nursesShiftReportTable.draw()
         })
     })
 
