@@ -12,16 +12,14 @@ use App\Services\DatatablesService;
 use App\Services\VisitService;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
-
-use function Pest\Laravel\json;
+use Illuminate\Support\Facades\Cache;
 
 class VisitController extends Controller
 {
     public function __construct(
         private readonly DatatablesService $datatablesService, 
         private readonly VisitService $visitService)
-    {
-        
+    {   
     }
 
     public function storeVisit(StoreVisitRequest $request, Patient $patient)
@@ -72,11 +70,26 @@ class VisitController extends Controller
 
     public function getPatientAverageWaitingTime()
     {
+        if (Cache::get("lastWeek")){
+            $averageWaitingTime = Cache::getMultiple(["lastWeek", "thisWeek", "lastMonth", "thisMonth"]);
+            info('cached average');
+            return response()->json(
+                [
+                    "lastWeek" => $averageWaitingTime["lastWeek"], 
+                    "thisWeek" => $averageWaitingTime["thisWeek"], 
+                    "lastMonth" => $averageWaitingTime["lastMonth"], 
+                    "thisMonth" => $averageWaitingTime["thisMonth"]
+                ]
+            );
+        }
+
         $day        = new CarbonImmutable();
         $lastWeek   = $this->visitService->averageWaitingTime($day->subWeek(), 'startOfWeek', 'endOfWeek');
         $thisWeek   = $this->visitService->averageWaitingTime($day, 'startOfWeek', 'endOfWeek');
         $lastMonth  = $this->visitService->averageWaitingTime($day->subMonth(), 'startOfMonth', 'endOfMonth');
         $thisMonth  = $this->visitService->averageWaitingTime($day, 'startOfMonth', 'endOfMonth');
+        info('new average');
+        Cache::putMany(["lastWeek" => $lastWeek, "thisWeek" => $thisWeek, "lastMonth" => $lastMonth, "thisMonth" => $thisMonth], now()->addHours(2));
 
         return response()->json(["lastWeek" => $lastWeek, "thisWeek" => $thisWeek, "lastMonth" => $lastMonth, "thisMonth" => $thisMonth]);
     }
