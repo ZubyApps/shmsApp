@@ -950,7 +950,6 @@ const getProceduresListTable = (tableId, pending, hmo, cash) => {
             {data: "prescribedBy"},
             {data: row => row.sponsor + ' - ' + row.sponsorCat},
             {data: row => function () {
-                console.log(row.payClass)
                 const credit        = row.payClass == 'Credit'
                 const NHIS          = row.sponsorCat == 'NHIS'
                 return `<span class="fw-semibold text-${row.rejected ? 'danger' : 'primary'}">${row.procedure +' '+ displayPaystatus(row, credit, NHIS)}</span>`}

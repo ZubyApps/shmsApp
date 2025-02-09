@@ -1,7 +1,7 @@
 import { Offcanvas, Modal, Toast } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { clearDivValues, getDivData, clearValidationErrors, resetFocusEndofLine, openModals, displayMedicalReportModal, removeDisabled} from "./helpers"
+import { clearDivValues, getDivData, clearValidationErrors, resetFocusEndofLine, openModals, displayMedicalReportModal, removeDisabled, debounce} from "./helpers"
 import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable, getBalancingTable, getDueCashRemindersTable, getBillReminderTable } from "./tables/billingTables";
 import { getOutpatientsInvestigationTable } from "./tables/investigationTables";
 import html2pdf  from "html2pdf.js"
@@ -11,6 +11,7 @@ $.fn.dataTable.ext.errMode = 'throw';
 
 
 window.addEventListener('DOMContentLoaded', function () {
+    const waitingListCanvas             = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
     const billingModal                  = new Modal(document.getElementById('billingModal'))
     const dischargeBillModal            = new Modal(document.getElementById('dischargeBillModal'))
     const outstandingBillsModal         = new Modal(document.getElementById('outstandingBillsModal'))
@@ -61,6 +62,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const expensesTab                   = document.querySelector('#nav-expenses-tab')
     const balancingTab                  = document.querySelector('#nav-balancing-tab')
     const billRemindersTab              = document.querySelector('#nav-billReminders-tab')
+    const [outPatientsView, inPatientsView, ancPatientsView] = [document.querySelector('#nav-outPatients-view'), document.querySelector('#nav-inPatients-view'), document.querySelector('#nav-ancPatients-view')]
 
     const reportModalBody               = viewMedicalReportModal._element.querySelector('.reportModalBody')
     const patientsFullName              = viewMedicalReportModal._element.querySelector('#patientsFullName')
@@ -109,15 +111,24 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    const refreshPrimeHomeTables = debounce(() => {
+        dueCashRemindersTable.draw(false)
+        proceduresListTable.draw(false);
+    }, 60000)
+
+    const refreshMainTables = debounce(() => {
+        outPatientsView.checkVisibility() ? outPatientsVisitTable.draw(false) : '';
+        ancPatientsView.checkVisibility() ? ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : '' : ''
+        inPatientsView.checkVisibility() ? inPatientsVisitTable ? inPatientsVisitTable.draw(false) : '' : ''
+        }, 100)
+
     inPatientsTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#inPatientsVisitTable' )){
             $('#inPatientsVisitTable').dataTable().fnDraw()
         } else {
             inPatientsVisitTable = getPatientsVisitsByFilterTable('#inPatientsVisitTable', 'Inpatient', 'consulted')
         }
-        billingShiftReportTable.draw()
-        dueCashRemindersTable.draw()
-        proceduresListTable.draw()
+        refreshPrimeHomeTables()
     })
 
     ancPatientsTab.addEventListener('click', function () {
@@ -126,8 +137,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             ancPatientsVisitTable = getPatientsVisitsByFilterTable('#ancPatientsVisitTable', 'ANC', 'consulted')
         }
-        billingShiftReportTable.draw()
-        dueCashRemindersTable.draw()
+        refreshPrimeHomeTables()
     })
 
     openVisitsTab.addEventListener('click', function () {
@@ -136,8 +146,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             openVisitsTable = getPatientsVisitsByFilterTable('#openVisitsTable', '', 'openvisits')
         }
-        billingShiftReportTable.draw()
-        dueCashRemindersTable.draw()
+        refreshPrimeHomeTables()
     })
 
     expensesTab.addEventListener('click', function () {
@@ -146,8 +155,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             expensesTable = getExpensesTable('#expensesTable', 'billing')
         }
-        billingShiftReportTable.draw()
-        dueCashRemindersTable.draw()
+        refreshPrimeHomeTables()
     })
 
     balancingTab.addEventListener('click', function () {
@@ -156,8 +164,6 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             balancingTable = getBalancingTable('balancingTable')
         }
-        billingShiftReportTable.draw()
-        dueCashRemindersTable.draw()
     })
 
     billRemindersTab.addEventListener('click', function () {
@@ -224,15 +230,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('#waitingListOffcanvas2, #offcanvasInvestigations, #viewShiftReportTemplateModal, #newShiftReportTemplateModal, #dueRemindersListOffcanvas, #proceduresListOffcanvas').forEach(canvas => {
         canvas.addEventListener('hide.bs.offcanvas', function () {
-            outPatientsVisitTable.draw()
-            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-            billingShiftReportTable.draw()
-            dueCashRemindersTable.draw()
-            billRemindersTable ? billRemindersTable.draw() : ''
-            proceduresListTable.draw()
+            refreshMainTables();
+            refreshPrimeHomeTables()
         })
-
     })
     
     document.querySelector('#waitingTable').addEventListener('click', function (event) {
@@ -382,8 +382,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const sponsorOutstandingsBtn    = event.target.closest('.sponsorOutstandingsBtn')
             const cardNoOutstandingsBtn     = event.target.closest('.cardNoOutstandingsBtn')
             const thirdPartyServiceBtn      = event.target.closest('.thirdPartyServiceBtn')
-            const registerBillReminderBtn   = event.target.closest('.registerBillReminderBtn')
-            
+            const registerBillReminderBtn   = event.target.closest('.registerBillReminderBtn')  
 
             if (payBtn) {
                 payBtn.setAttribute('disabled', 'disabled')
@@ -497,14 +496,12 @@ window.addEventListener('DOMContentLoaded', function () {
                 saveBillReminderBtn.removeAttribute('disabled')
         })
         .catch((error) => {
-            // hmoReportsTable ? hmoReportsTable.draw(false) : ''
             saveBillReminderBtn.removeAttribute('disabled')
             console.log(error.response.data.message)
         })
     })
 
     dischargeBillBtn.addEventListener('click', function () {
-        // dischargeBillModal._element.querySelector('#note').value = 'Discharge Bill'
         dischargeBillModal.show()
     })
 
@@ -655,12 +652,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('#billingModal, #billModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function () {
-            outPatientsVisitTable.draw()
-            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-            openVisitsTable ? openVisitsTable.draw() : ''
-            billingShiftReportTable.draw()
-            proceduresListTable.draw()
+            if (waitingListCanvas._element.classList.contains('show')){
+                waitingTable.draw(false);
+            }else{
+                refreshMainTables();
+                refreshPrimeHomeTables()
+            }
         })
     })
 
@@ -678,10 +675,6 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable('#outstandingBillsTable')){
             $('#outstandingBillsTable').dataTable().fnDestroy()
             }
-        outPatientsVisitTable.draw()
-        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
-        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-        billingShiftReportTable.draw()
     })
 
     downloadBillSummaryBtn.addEventListener('click', function () {

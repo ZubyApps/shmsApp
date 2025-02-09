@@ -213,31 +213,31 @@
         <div>
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <button class="nav-link active" id="nav-outPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-outPatients" 
+                    <button class="nav-link active" id="nav-outPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-outPatients-view" 
                         type="button" role="tab" aria-controls="nav-outPatients" aria-selected="true">OutPatients</button>
     
-                    <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients"
+                    <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients-view"
                         type="button" role="tab" aria-controls="nav-inPatients" aria-selected="false">Inpatients</button>
     
-                    <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients"
+                    <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients-view"
                         type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button>
 
-                    <button class="nav-link" id="nav-openVisits-tab" data-bs-toggle="tab" data-bs-target="#nav-openVisits"
+                    <button class="nav-link" id="nav-openVisits-tab" data-bs-toggle="tab" data-bs-target="#nav-openVisits-view"
                         type="button" role="tab" aria-controls="nav-openVisits" aria-selected="false">Open Visits</button>
 
-                    <button class="nav-link" id="nav-expenses-tab" data-bs-toggle="tab" data-bs-target="#nav-expenses"
+                    <button class="nav-link" id="nav-expenses-tab" data-bs-toggle="tab" data-bs-target="#nav-expenses-view"
                         type="button" role="tab" aria-controls="nav-expenses" aria-selected="false">Expenses</button>
 
-                    <button class="nav-link" id="nav-balancing-tab" data-bs-toggle="tab" data-bs-target="#nav-balancing"
+                    <button class="nav-link" id="nav-balancing-tab" data-bs-toggle="tab" data-bs-target="#nav-balancing-view"
                         type="button" role="tab" aria-controls="nav-balancing" aria-selected="false">Balancing</button>
                     
-                    <button class="nav-link" id="nav-billReminders-tab" data-bs-toggle="tab" data-bs-target="#nav-billReminders"
+                    <button class="nav-link" id="nav-billReminders-tab" data-bs-toggle="tab" data-bs-target="#nav-billReminders-view"
                         type="button" role="tab" aria-controls="nav-billReminders" aria-selected="false">Bill Reminders</button>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
                 <!-- patients table -->
-                <div class="tab-pane fade show active" id="nav-outPatients" role="tabpanel"
+                <div class="tab-pane fade show active" id="nav-outPatients-view" role="tabpanel"
                     aria-labelledby="nav-outPatients-tab" tabindex="0">
                     <div class="py-4">
                         <table id="outPatientsVisitTable" class="table align-middle table-sm">
@@ -257,7 +257,7 @@
                     </div>
                 </div>
                 <!-- inpatients table -->
-                <div class="tab-pane fade" id="nav-inPatients" role="tabpanel" aria-labelledby="nav-inPatients-tab"
+                <div class="tab-pane fade" id="nav-inPatients-view" role="tabpanel" aria-labelledby="nav-inPatients-tab"
                     tabindex="0">
                     <div class="py-4 ">
                         <table id="inPatientsVisitTable" class="table align-middle table-sm">
@@ -278,7 +278,7 @@
                     </div>
                 </div>
                 <!-- Anc table -->
-                <div class="tab-pane fade" id="nav-ancPatients" role="tabpanel" aria-labelledby="nav-ancPatients-tab"
+                <div class="tab-pane fade" id="nav-ancPatients-view" role="tabpanel" aria-labelledby="nav-ancPatients-tab"
                     tabindex="0">
                     <div class="py-4 ">
                         <table id="ancPatientsVisitTable" class="table align-middle table-sm">
@@ -298,7 +298,7 @@
                     </div>
                 </div>
                 <!-- Open Records table -->
-                <div class="tab-pane fade" id="nav-openVisits" role="tabpanel" aria-labelledby="nav-openVisits-tab"
+                <div class="tab-pane fade" id="nav-openVisits-view" role="tabpanel" aria-labelledby="nav-openVisits-tab"
                     tabindex="0">
                     <div class="py-4 ">
                         <table id="openVisitsTable" class="table table-sm">
@@ -318,7 +318,7 @@
                     </div>
                 </div>
                 <!-- Expenses table -->
-                <div class="tab-pane fade" id="nav-expenses" role="tabpanel" aria-labelledby="nav-expenses-tab"
+                <div class="tab-pane fade" id="nav-expenses-view" role="tabpanel" aria-labelledby="nav-expenses-tab"
                     tabindex="0">
                     <div class="py-4 ">
                         <div class="text-start py-3">
@@ -359,7 +359,7 @@
                     </div>
                 </div>
                 <!-- Balancing table -->
-                <div class="tab-pane fade" id="nav-balancing" role="tabpanel" aria-labelledby="nav-balancing-tab"
+                <div class="tab-pane fade" id="nav-balancing-view" role="tabpanel" aria-labelledby="nav-balancing-tab"
                     tabindex="0">
                     <div class="py-4 ">
                         <x-form-div class="col-xl-4 py-3 balancingDateDiv">
@@ -381,7 +381,7 @@
                     </div>
                 </div>
                 <!-- Bill reminders tracker table -->
-                <div class="tab-pane fade" id="nav-billReminders" role="tabpanel" aria-labelledby="nav-billReminders-tab"
+                <div class="tab-pane fade" id="nav-billReminders-view" role="tabpanel" aria-labelledby="nav-billReminders-tab"
                     tabindex="0">
                     <x-form-div class="col-xl-8 pt-3 billRemindersDatesDiv">
                         <x-input-span class="">Start</x-input-span>

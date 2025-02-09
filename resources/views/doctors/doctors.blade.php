@@ -197,26 +197,26 @@
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     
-                    <button class="nav-link active" id="nav-outPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-outPatients"
+                    <button class="nav-link active" id="nav-outPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-outPatients-view"
                     type="button" role="tab" aria-controls="nav-outPatients" aria-selected="false">OutPatients</button>
 
-                    <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients" 
+                    <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients-view" 
                     type="button" role="tab" aria-controls="nav-inPatients"  aria-selected="true">Inpatients</button>
 
-                    <button class="nav-link" id="nav-ancPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-ancPatients"
+                    <button class="nav-link" id="nav-ancPatients-tab"  data-bs-toggle="tab"  data-bs-target="#nav-ancPatients-view"
                     type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button>
 
                     {{-- <button class="nav-link" id="nav-appointments-tab"  data-bs-toggle="tab"  data-bs-target="#nav-appointments"
                     type="button" role="tab" aria-controls="nav-appointments" aria-selected="false">Appointments</button> --}}
 
-                    <button class="nav-link" id="nav-procedures-tab" data-bs-toggle="tab" data-bs-target="#nav-procedures"
+                    <button class="nav-link" id="nav-procedures-tab" data-bs-toggle="tab" data-bs-target="#nav-procedures-view"
                     type="button" role="tab" aria-controls="nav-procedures" aria-selected="false">Procedures</button>
                     
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
                 <!-- your regular patients table -->
-                <div class="tab-pane fade show active"  id="nav-outPatients" aria-labelledby="nav-outPatients-tab" role="tabpanel"  tabindex="0">
+                <div class="tab-pane fade show active"  id="nav-outPatients-view" aria-labelledby="nav-outPatients-tab" role="tabpanel"  tabindex="0">
                     <x-form-div class="col-md-4 pt-2">
                         <x-input-span id="filterListLabel">Filter List<x-required-span /></x-input-span>
                         <select class="form-select form-select-md" name="filterList" id="filterListOutPatients">
@@ -247,7 +247,7 @@
                 </div>
 
                 <!--all regular patients table -->
-                <div class="tab-pane fade" id="nav-inPatients" aria-labelledby="nav-inPatients-tab" role="tabpanel"   tabindex="0">
+                <div class="tab-pane fade" id="nav-inPatients-view" aria-labelledby="nav-inPatients-tab" role="tabpanel"   tabindex="0">
                     <x-form-div class="col-md-4 pt-2">
                         <x-input-span id="filterListLabel">Filter List<x-required-span /></x-input-span>
                         <select class="form-select form-select-md" name="filterList" id="filterListInPatients">
@@ -279,7 +279,7 @@
                 </div>
 
                 <!-- your anc patients table -->
-                <div class="tab-pane fade"  id="nav-ancPatients" aria-labelledby="nav-ancPatients-tab" role="tabpanel"  tabindex="0">
+                <div class="tab-pane fade"  id="nav-ancPatients-view" aria-labelledby="nav-ancPatients-tab" role="tabpanel"  tabindex="0">
                     <x-form-div class="col-md-4 pt-2">
                         <x-input-span id="filterListLabel">Filter List<x-required-span /></x-input-span>
                         <select class="form-select form-select-md" name="filterList" id="filterListAncPatients">
@@ -309,7 +309,7 @@
                     </div>
                 </div>
                 <!-- procedures table -->
-                <div class="tab-pane fade" id="nav-procedures" role="tabpanel" aria-labelledby="nav-procedures-tab" tabindex="0">
+                <div class="tab-pane fade" id="nav-procedures-view" role="tabpanel" aria-labelledby="nav-procedures-tab" tabindex="0">
                     <div class="py-4 ">
                         <table id="proceduresTable" class="table table-hover align-middle table-sm proceduresTable">
                             <thead>

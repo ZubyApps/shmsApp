@@ -1,7 +1,7 @@
 import { Modal, Toast, Offcanvas } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal, populateAncReviewDiv, resetFocusEndofLine, populateAppointmentModal, displayWardList, clearSelectList} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal, populateAncReviewDiv, resetFocusEndofLine, populateAppointmentModal, displayWardList, clearSelectList, debounce} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
 import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable, getOtherPrescriptionsByFilter, getMedicalReportTable, getPatientsFileTable, getProceduresListTable} from "./tables/doctorstables"
@@ -90,6 +90,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const patientsFullName                  = viewMedicalReportModal._element.querySelector('#patientsFullName')
     const patientsInfo                      = viewMedicalReportModal._element.querySelector('#patientsInfo')
     const [outPatientsTab, ancPatientsTab, inPatientsTab, proceduresTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-procedures-tab')]
+    const [outPatientsView, inPatientsView, ancPatientsView] = [document.querySelector('#nav-outPatients-view'), document.querySelector('#nav-inPatients-view'), document.querySelector('#nav-ancPatients-view')]
     const [resourceInput]         = [document.querySelectorAll('#resource')]
     const emergencyListCount      = document.querySelector('#emergencyListCount')
     const appointmentsListBtn     = document.querySelector('#appointmentsListBtn')
@@ -145,6 +146,18 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #medicalReportTable, #emergencyTable, #patientsFilesTable, #appointmentsTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
+
+    const refreshHomeTables = debounce(() => {
+        emergencyTable.draw(false);
+        appointmentsTable.draw(false);
+        proceduresListTable.draw(false);
+    }, 30000)
+
+    const refreshMainTables = debounce(() => {
+        outPatientsView.checkVisibility() ? outPatientsVisitTable.draw(false) : '';
+        ancPatientsView.checkVisibility() ? ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : '' : ''
+        inPatientsView.checkVisibility() ? inPatientsVisitTable ? inPatientsVisitTable.draw(false) : '' : ''
+    }, 100)
 
     outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw(false)})
 
@@ -349,7 +362,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     wardAndBedModal.show()
                 })
             }
-            if (dischargedBtn){dischargedBtn.setAttribute('disabled', 'disabled'); populateDischargeModal(dischargeModal, dischargedBtn); dischargeModal.show() }
+            // if (dischargedBtn){dischargedBtn.setAttribute('disabled', 'disabled'); populateDischargeModal(dischargeModal, dischargedBtn); dischargeModal.show() }
             if (dischargedBtn){dischargedBtn.setAttribute('disabled', 'disabled'); populateDischargeModal(dischargeModal, dischargedBtn); dischargeModal.show() }
 
             if (historyBtn){
@@ -386,10 +399,8 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.patch(`/visits/${string}/${visitId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
-                            outPatientsVisitTable.draw(false)
-                            ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
-                            inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
-                            waitingTable.draw(false)
+                            refreshMainTables()
+                            waitingListOffcanvas._element.classList.contains('show') ? waitingTable.draw(false) : ''
                         }
                     })
                     .catch((error) => {
@@ -766,21 +777,14 @@ window.addEventListener('DOMContentLoaded', function () {
     proceduresListBtn.addEventListener('click', function () {proceduresListTable.draw(false)})
 
     waitingListOffcanvas._element.addEventListener('hide.bs.offcanvas', () => {
-        outPatientsVisitTable.draw(false)
-        ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
-        inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
-        emergencyTable.draw(false)
-        appointmentsTable.draw()
+        refreshMainTables()
+        refreshHomeTables()
     })
 
     document.querySelectorAll('#dischargeModal, #wardAndBedModal, #vitalsignsModal, #ancVitalsignsModal, #investigationAndManagementModal').forEach(modal => {
         modal.addEventListener('hidden.bs.modal', () => {
-            outPatientsVisitTable ? outPatientsVisitTable.draw(false) : ''
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
-            inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
-            emergencyTable.draw()
-            appointmentsTable.draw()
-            proceduresListTable.draw()
+            refreshHomeTables()
+            refreshMainTables()
             clearValidationErrors(modal)
             modal.id == 'wardAndBedModal' ? clearSelectList(modal) : ''
         })
@@ -1016,10 +1020,6 @@ window.addEventListener('DOMContentLoaded', function () {
                     new Toast(div.querySelector('#saveConsultationToast'), {delay:2000}).show()
                     if ($.fn.DataTable.isDataTable( '#'+tableId )){$('#'+tableId).dataTable().fnDestroy()}
                     getPrescriptionTableByConsultation(tableId, response.data.id, null, modal)
-                    // waitingTable.draw()
-                    // outPatientsVisitTable.draw(false)
-                    // ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
-                    // inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
                 }
             })
             .catch((error) => {
@@ -1139,13 +1139,9 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#newConsultationModal, #ancConsultationModal, #ancReviewModal, #newReviewModal, #specialistConsultationModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function(event) {
             doctorsModalClosingTasks(event, modal, textareaHeight)
-            outPatientsVisitTable.draw(false)
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
-            inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
-            if(waitingListOffcanvas._element.checkVisibility())(waitingTable.draw())
-            emergencyTable.draw()
-            appointmentsTable.draw()
-            proceduresListTable.draw()
+            if(waitingListOffcanvas._element.classList.contains('show'))(waitingTable.draw())
+            refreshMainTables()
+            refreshHomeTables()
             clearSelectList(modal)
          })
     })
@@ -1417,12 +1413,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 modal.querySelector('#ega').value = ''
                 clearSelectList(modal)
             }
-            outPatientsVisitTable.draw(false)
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
-            inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
-            emergencyTable.draw()
-            appointmentsTable.draw()
-            proceduresListTable.draw()
+            refreshMainTables()
+            refreshHomeTables()
         })
     })
 

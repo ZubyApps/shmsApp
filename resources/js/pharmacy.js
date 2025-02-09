@@ -8,6 +8,7 @@ import { getLabTableByConsultation, getMedicationsByFilter, getOtherPrescription
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getbillingTableByVisit } from "./tables/billingTables";
 import { getAncVitalSignsTable, getEmergencyTable } from "./tables/nursesTables";
+import { debounce } from "chart.js/helpers";
 $.fn.dataTable.ext.errMode = 'throw';
 
 
@@ -46,6 +47,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const [outPatientsTab, inPatientsTab, ancPatientsTab, expirationStockTab, bulkRequestsTab, theatreRequestTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-expirationStock-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-theatreRequests-tab')]
 
+    const [outPatientsView, inPatientsView, ancPatientsView] = [document.querySelector('#nav-outPatients-view'), document.querySelector('#nav-inPatients-view'), document.querySelector('#nav-ancPatients-view')]
+    
     let  outPatientsTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable, theatreRequestsTable
 
     const inPatientsVisitTable  = getPatientsVisitByFilterTable('inPatientsTable', 'Inpatient')
@@ -59,6 +62,17 @@ window.addEventListener('DOMContentLoaded', function () {
     newPharmacyReportBtn.addEventListener('click', function () {
         newShiftReportTemplateModal.show()
     })
+
+    const refreshMainTables = debounce(() => {
+            outPatientsView.checkVisibility() ? outPatientsTable.draw(false) : '';
+            ancPatientsView.checkVisibility() ? ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : '' : ''
+            inPatientsView.checkVisibility() ? inPatientsVisitTable ? inPatientsVisitTable.draw(false) : '' : ''
+    }, 100)
+
+    const refreshHomeTables = debounce(() => {
+        emergencyTable.draw(false);
+        pharmacyShiftReportTable.draw(false);
+    }, 30000)
 
     emergencyTable.on('draw.init', function() {
         const count = emergencyTable.rows().count()
@@ -453,10 +467,8 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     billingDispenseModal._element.addEventListener('hide.bs.modal', function () {
-        inPatientsVisitTable.draw(false)
-        outPatientsTable ? outPatientsTable.draw(false) : ''
-        ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
-        emergencyTable.draw(false)
+        refreshMainTables()
+        refreshHomeTables()
     })
 
     bulkRequestBtn.addEventListener('click', function () {
@@ -569,19 +581,12 @@ window.addEventListener('DOMContentLoaded', function () {
         requestTheatreBtn.setAttribute('disabled', 'disabled')
         const itemId    =  getDatalistOptionId(theatreRequestModal._element, theatreItemInput, theatreRequestModal._element.querySelector(`#itemList${dept}`))
         const itemStock =  getDatalistOptionStock(theatreRequestModal._element, theatreItemInput, theatreRequestModal._element.querySelector(`#itemList${dept}`))
-        // const quantity  = theatreRequestModal._element.querySelector('#quantity').value
         if (!itemId) {
             clearValidationErrors(theatreRequestModal._element)
             const message = {"item": ["Please pick an item from the list"]}               
             handleValidationErrors(message, theatreRequestModal._element)
             requestTheatreBtn.removeAttribute('disabled')
             return
-        // } else if (itemStock - quantity < 0){
-        //     clearValidationErrors(theatreRequestModal._element)
-        //     const message = {"quantity": ["This quantity is more than the available stock, please reduce the quantity"]}               
-        //     handleValidationErrors(message, theatreRequestModal._element)
-        //     requestTheatreBtn.removeAttribute('disabled')
-        //     return
         } else {clearValidationErrors(theatreRequestModal._element)}
         http.post(`/bulkrequests/${itemId}`, getDivData(theatreRequestModal._element), {"html": theatreRequestModal._element})
         .then((response) => {
@@ -718,13 +723,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal, #viewShiftReportTemplateModal ,#newShiftReportTemplateModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function(event) {
-            regularTreatmentDiv.innerHTML = ''
-            ancTreatmentDiv.innerHTML = ''
-            inPatientsVisitTable.draw()
-            outPatientsTable ? outPatientsTable.draw() : ''
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
-            emergencyTable.draw()
-            pharmacyShiftReportTable.draw()
+            regularTreatmentDiv.innerHTML = '';
+            ancTreatmentDiv.innerHTML = '';
+            refreshMainTables();
+            refreshHomeTables();
         })
     })
 

@@ -223,28 +223,28 @@
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <button class="nav-link active" id="nav-verifyPatients-tab" data-bs-toggle="tab"
-                        data-bs-target="#nav-verifyPatients" type="button" role="tab" aria-controls="nav-verifyPatients"
+                        data-bs-target="#nav-verifyPatients-view" type="button" role="tab" aria-controls="nav-verifyPatients"
                         aria-selected="true">Verification</button>
 
-                    <button class="nav-link" id="nav-treatments-tab" data-bs-toggle="tab" data-bs-target="#nav-treatments"
+                    <button class="nav-link" id="nav-treatments-tab" data-bs-toggle="tab" data-bs-target="#nav-treatments-view"
                         type="button" role="tab" aria-controls="nav-treatments" aria-selected="false">Treatments</button>
 
-                    <button class="nav-link" id="nav-sentBills-tab" data-bs-toggle="tab" data-bs-target="#nav-sentBills"
+                    <button class="nav-link" id="nav-sentBills-tab" data-bs-toggle="tab" data-bs-target="#nav-sentBills-view"
                         type="button" role="tab" aria-controls="nav-sentBills" aria-selected="false">Sent Bills</button>
 
-                    <button class="nav-link" id="nav-hmoReports-tab" data-bs-toggle="tab" data-bs-target="#nav-hmoReports"
+                    <button class="nav-link" id="nav-hmoReports-tab" data-bs-toggle="tab" data-bs-target="#nav-hmoReports-view"
                         type="button" role="tab" aria-controls="nav-hmoReports" aria-selected="false">Reports</button>
 
-                    <button class="nav-link" id="nav-nhisRecon-tab" data-bs-toggle="tab" data-bs-target="#nav-nhisRecon"
+                    <button class="nav-link" id="nav-nhisRecon-tab" data-bs-toggle="tab" data-bs-target="#nav-nhisRecon-view"
                         type="button" role="tab" aria-controls="nav-nhisRecon" aria-selected="false">NHIS Capitation</button>
 
-                    <button class="nav-link" id="nav-billReminders-tab" data-bs-toggle="tab" data-bs-target="#nav-billReminders"
+                    <button class="nav-link" id="nav-billReminders-tab" data-bs-toggle="tab" data-bs-target="#nav-billReminders-view"
                         type="button" role="tab" aria-controls="nav-billReminders" aria-selected="false">Bill Reminders</button>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
                 <!-- patients table -->
-                <div class="tab-pane fade show active" id="nav-verifyPatients" role="tabpanel"
+                <div class="tab-pane fade show active" id="nav-verifyPatients-view" role="tabpanel"
                     aria-labelledby="nav-verifyPatients-tab" tabindex="0">
                     <div class="py-4">
                         <table id="verificationTable" class="table table-hover table-sm">
@@ -265,7 +265,7 @@
                     </div>
                 </div>
                 <!-- treatments table -->
-                <div class="tab-pane fade" id="nav-treatments" role="tabpanel" aria-labelledby="nav-treatments-tab" tabindex="0">
+                <div class="tab-pane fade" id="nav-treatments-view" role="tabpanel" aria-labelledby="nav-treatments-tab" tabindex="0">
                     <x-form-div class="col-md-4 pt-2">
                         <x-input-span id="filterListLabel">Filter List<x-required-span /></x-input-span>
                         <select class="form-select form-select-md" name="filterList" id="filterList">
@@ -297,7 +297,7 @@
                     </div>
                 </div>
                 <!-- bills table -->
-                <div class="tab-pane fade" id="nav-sentBills" role="tabpanel" aria-labelledby="nav-sentBills-tab" tabindex="0">
+                <div class="tab-pane fade" id="nav-sentBills-view" role="tabpanel" aria-labelledby="nav-sentBills-tab" tabindex="0">
                     <x-form-div class="col-xl-8 pt-3 datesDiv">
                         <x-input-span class="">Start</x-input-span>
                         <x-form-input type="date" name="startDate" id="startDate" />
@@ -343,7 +343,7 @@
                     </div>
                 </div>
                 <!-- reports table -->
-                <div class="tab-pane fade" id="nav-hmoReports" role="tabpanel" aria-labelledby="nav-hmoReports-tab"
+                <div class="tab-pane fade" id="nav-hmoReports-view" role="tabpanel" aria-labelledby="nav-hmoReports-tab"
                     tabindex="0">
                     <x-form-div class="col-xl-10 pt-2 reportsDatesDiv">
                         <x-input-span id="filterListLabel">Category List<x-required-span /></x-input-span>
@@ -408,7 +408,7 @@
                     </div>
                 </div>
                 <!-- nhis capitation reconciliation table -->
-                <div class="tab-pane fade" id="nav-nhisRecon" role="tabpanel" aria-labelledby="nav-nhisRecon-tab"
+                <div class="tab-pane fade" id="nav-nhisRecon-view" role="tabpanel" aria-labelledby="nav-nhisRecon-tab"
                     tabindex="0">
                     <x-form-div class="col-xl-4 pt-2 nhisMonthYearDiv">
                         <x-input-span class="">Month/Year</x-input-span>
@@ -453,7 +453,7 @@
                     </div>
                 </div>
                 <!-- Hmo Bill reminders tracker table -->
-                <div class="tab-pane fade" id="nav-billReminders" role="tabpanel" aria-labelledby="nav-billReminders-tab"
+                <div class="tab-pane fade" id="nav-billReminders-view" role="tabpanel" aria-labelledby="nav-billReminders-tab"
                     tabindex="0">
                     <x-form-div class="col-xl-8 pt-3 billRemindersDatesDiv">
                         <x-input-span class="">Start</x-input-span>

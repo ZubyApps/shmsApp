@@ -7,6 +7,7 @@ import { getPatientsVisitsByFilterTable, getInpatientsInvestigationsTable, getOu
 import { getLabTableByConsultation } from "./tables/doctorstables";
 import { getBulkRequestTable } from "./tables/pharmacyTables";
 import html2pdf  from "html2pdf.js"
+import { debounce } from "chart.js/helpers";
 $.fn.dataTable.ext.errMode = 'throw';
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -43,6 +44,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const inPatientsTab             = document.querySelector('#nav-inPatients-tab')
     const ancPatientsTab            = document.querySelector('#nav-ancPatients-tab')
     const bulkRequestsTab           = document.querySelector('#nav-bulkRequests-tab')
+    const [outPatientsView, inPatientsView, ancPatientsView] = [document.querySelector('#nav-outPatients-view'), document.querySelector('#nav-inPatients-view'), document.querySelector('#nav-ancPatients-view')]
 
     const testListDiv               = labResultModal._element.querySelector('.testListDiv')
     const multipleTestsListDiv      = labResultModal._element.querySelector('.multipleTestsListDiv')
@@ -77,6 +79,12 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    const refreshMainTables = debounce(() => {
+        outPatientsView.checkVisibility() ? outPatientsVisitsTable.draw(false) : '';
+        ancPatientsView.checkVisibility() ? ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : '' : ''
+        inPatientsView.checkVisibility() ? inPatientsVisitTable ? inPatientsVisitTable.draw(false) : '' : ''
+    }, 100)
+
     outPatientsTab.addEventListener('click', function() {outPatientsVisitsTable.draw()})
 
     inPatientsTab.addEventListener('click', function () {
@@ -105,16 +113,15 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('#offcanvasInvestigations, #offcanvasOutpatientsInvestigations').forEach(canvas => {
         canvas.addEventListener('show.bs.offcanvas', function () {
-            inpatientsInvestigationsTable.draw()
-            outpatientInvestigationTable.draw()
+            canvas.id === 'offcanvasInvestigations' ? inpatientsInvestigationsTable.draw() : outpatientInvestigationTable.draw();
         })
 
     })
 
-    inpatientsInvestigationsList._element.addEventListener('hide.bs.offcanvas', function () {
-        outPatientsVisitsTable.draw()
-        inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
-        ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+    document.querySelectorAll('#offcanvasInvestigations, #offcanvasOutpatientsInvestigations').forEach(canvas => {
+        canvas.addEventListener('hide.bs.offcanvas', function () {
+            refreshMainTables()
+        })
     })
 
     document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable').forEach(table => {
@@ -195,9 +202,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal, #investigationsModal, #addResultModal, #updateResultModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function () {
-            outPatientsVisitsTable.draw()
-            inPatientsVisitTable ? inPatientsVisitTable.draw() : ''
-            ancPatientsVisitTable ? ancPatientsVisitTable.draw() : ''
+            refreshMainTables()
             modal.id == 'addResultModal' || modal.id == 'updateResultModal' ?
              '':
             regularTreatmentDiv.innerHTML = ''

@@ -87,22 +87,22 @@
         <div>
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <button class="nav-link active" id="nav-outPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-outPatients" 
+                    <button class="nav-link active" id="nav-outPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-outPatients-view" 
                     type="button" role="tab" aria-controls="nav-outPatients" aria-selected="true">OutPatients</button>
 
-                    <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients"
+                    <button class="nav-link" id="nav-inPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-inPatients-view"
                         type="button" role="tab" aria-controls="nav-inPatients" aria-selected="false">Inpatients</button>
 
-                    <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients"
+                    <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients-view"
                         type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button>
 
-                    <button class="nav-link" id="nav-bulkRequests-tab" data-bs-toggle="tab" data-bs-target="#nav-bulkRequests"
+                    <button class="nav-link" id="nav-bulkRequests-tab" data-bs-toggle="tab" data-bs-target="#nav-bulkRequests-view"
                         type="button" role="tab" aria-controls="nav-bulkRequests" aria-selected="false">Bulk Requests</button>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
                 <!-- patients table -->
-                <div class="tab-pane fade show active" id="nav-outPatients" role="tabpanel"
+                <div class="tab-pane fade show active" id="nav-outPatients-view" role="tabpanel"
                     aria-labelledby="nav-outPatients-tab" tabindex="0">
                     <div class="py-4">
                         <table id="outPatientsVisitTable" class="table table-hover table-sm">
@@ -123,7 +123,7 @@
                     </div>
                 </div>
                 <!-- active table -->
-                <div class="tab-pane fade" id="nav-inPatients" role="tabpanel" aria-labelledby="nav-inPatients-tab" tabindex="0">
+                <div class="tab-pane fade" id="nav-inPatients-view" role="tabpanel" aria-labelledby="nav-inPatients-tab" tabindex="0">
                     <div class="py-4">
                         <table id="inPatientsVisitTable" class="table table-hover table-sm">
                             <thead>
@@ -144,7 +144,7 @@
                     </div>
                 </div>
                 <!-- sponsors table -->
-                <div class="tab-pane fade" id="nav-ancPatients" role="tabpanel" aria-labelledby="nav-ancPatients-tab" tabindex="0">
+                <div class="tab-pane fade" id="nav-ancPatients-view" role="tabpanel" aria-labelledby="nav-ancPatients-tab" tabindex="0">
                     <div class="py-4 ">
                         <table id="ancPatientsVisitTable" class="table table-hover align-middle table-sm">
                             <thead>
@@ -164,7 +164,7 @@
                     </div>
                 </div>
                 <!-- bulk request table -->
-                <div class="tab-pane fade" id="nav-bulkRequests" role="tabpanel" aria-labelledby="nav-bulkRequests-tab" tabindex="0">
+                <div class="tab-pane fade" id="nav-bulkRequests-view" role="tabpanel" aria-labelledby="nav-bulkRequests-tab" tabindex="0">
                     <div class="text-start py-4">
                         <button type="button" id="newBulkRequestBtn" class="btn btn-primary">
                             <i class="bi bi-plus-circle me-1"></i>
