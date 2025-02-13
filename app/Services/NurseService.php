@@ -10,6 +10,7 @@ use App\Models\Visit;
 use App\Models\Ward;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+// use Illuminate\Support\Facades\Cache;
 
 class NurseService
 {
@@ -67,6 +68,24 @@ class NurseService
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            if ($data->filterBy == 'ANC'){
+                return $query->whereNotNull('consulted')
+                    ->whereRelation('patient', 'patient_type', '=', 'ANC')
+                    ->where(function (Builder $query) use($searchTerm) {
+                        $query->where('created_at', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
+                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
+                    })
+                    
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
             return $query->whereNotNull('consulted')
                     ->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)
@@ -98,7 +117,12 @@ class NurseService
         }
 
         if ($data->filterBy == 'Inpatient'){
-            return $query->whereNotNull('consulted')
+            // if (Cache::get('nursesInpatients') && (int)$params->start < 1){
+            //     info('cached inpatients');
+            //     return Cache::get('nursesInpatients');
+            // }
+            // info('fresh inpatients');
+            $nursesInpatients = $query->whereNotNull('consulted')
                     ->where('nurse_done_by', null)
                     ->where('closed', false)
                     ->where(function(Builder $query) {
@@ -112,6 +136,8 @@ class NurseService
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            // Cache::forever('nursesInpatients', $nursesInpatients);
+            return $nursesInpatients;
         }
         if ($data->filterBy == 'ANC'){
             return $query->where('nurse_done_by', null)
@@ -186,6 +212,8 @@ class NurseService
 
     public function done(Visit $visit, User $user)
     {
+        // if ($visit->admission_status == 'Inpatient'){
+            // Cache::forget('nursesInpatients'); info('nursesInpatients forgotten markAsDone');}
         if ($visit->nurse_done_by){
             return $visit->update([
                 'nurse_done_by' => null,
