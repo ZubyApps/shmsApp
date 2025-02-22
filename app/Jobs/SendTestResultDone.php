@@ -47,7 +47,7 @@ class SendTestResultDone implements ShouldQueue
         info('Investigation', ['sent to' => $firstName, 'gateway' => $gateway]);
     }
 
-    private function recentlySent(Prescription $prescription): bool
+    private function recentlySent(Prescription $prescription)
     {
         $end = CarbonImmutable::now();
         $start = $end->subMinutes(30);
