@@ -12,7 +12,6 @@ class NursesAfternoonShift
 {
    public function __invoke()
    {
-      // Log::info('this ran in afternoon shift');
       (new CloseNursesShift)();
       
       $date = CarbonImmutable::now();

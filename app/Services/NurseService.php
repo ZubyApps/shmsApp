@@ -117,11 +117,6 @@ class NurseService
         }
 
         if ($data->filterBy == 'Inpatient'){
-            // if (Cache::get('nursesInpatients') && (int)$params->start < 1){
-            //     info('cached inpatients');
-            //     return Cache::get('nursesInpatients');
-            // }
-            // info('fresh inpatients');
             $nursesInpatients = $query->whereNotNull('consulted')
                     ->where('nurse_done_by', null)
                     ->where('closed', false)
@@ -136,7 +131,6 @@ class NurseService
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            // Cache::forever('nursesInpatients', $nursesInpatients);
             return $nursesInpatients;
         }
         if ($data->filterBy == 'ANC'){
@@ -212,8 +206,6 @@ class NurseService
 
     public function done(Visit $visit, User $user)
     {
-        // if ($visit->admission_status == 'Inpatient'){
-            // Cache::forget('nursesInpatients'); info('nursesInpatients forgotten markAsDone');}
         if ($visit->nurse_done_by){
             return $visit->update([
                 'nurse_done_by' => null,

@@ -34,7 +34,7 @@ class SendTestResultDone implements ShouldQueue
     {
         $firstName = $this->prescription->visit->patient->first_name;
 
-        if ($this->recentlySent($this->prescription)) {
+        if ($this->recentlySent($this->prescription) > 1) {
             info('Investigation not sent', ['recently sent (less than 30min ago)' => $firstName]);
             return;
         }
@@ -53,9 +53,6 @@ class SendTestResultDone implements ShouldQueue
         $start = $end->subMinutes(30);
         $visit = $prescription->visit;
 
-        return $visit->prescriptions
-            ->where('result', '!=', null)
-            ->whereBetween('result_date', [$start, $end])
-            ->isNotEmpty();
+        return $visit->prescriptions->where('result', '!=', null)->whereBetween('result_date', [$start, $end])->count();
     }
 }
