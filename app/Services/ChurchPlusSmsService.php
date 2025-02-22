@@ -34,7 +34,6 @@ class ChurchPlusSmsService
         // ]);
 
         $response = Http::connectTimeout(10)->timeout(10)->post($completeUrl);
-        info('message sent'. now());
         return $response->getBody()->getContents();
 
     }
