@@ -38,11 +38,12 @@ class VitalSignsService
                     "note"                  => $data->note,
             ]);
 
-            if ($vitalSign->visit->vitalSigns->count() == 1){
-                $vitalSign->visit->update(['first_vitalsigns' => Carbon::now()]);
+            $visit = $vitalSign->visit;
+
+            if ($visit->vitalSigns->count() == 1){
+                $visit->update(['first_vitalsigns' => Carbon::now()]);
             }
 
-            return;
     }, 2);
     }
 

@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
-use App\Models\Consultation;
 use App\Models\Patient;
 use App\Models\Resource;
 use App\Models\ResourceSubCategory;
@@ -253,7 +252,7 @@ class VisitService
                 'status'            => $visit->status,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
-                'emergency'         => $visit->emergencyPrescriptions,//prescriptions()->where('consultation_id', null)->whereRelation('resource', 'sub_category', '!=', 'Hospital Card')->count(),
+                'emergency'         => $visit->emergencyPrescriptions,
                 'closed'            => $visit->closed,
                 'initiatedBy'       => $visit->user->username,
                 'payments'          => $visit->payments->count(),
@@ -279,7 +278,6 @@ class VisitService
                         }
                         $this->paymentService->prescriptionsPaymentSeiveNhis($totalPayments, $prescription->visit->prescriptions());
                     }
-
                     return $visit;
                 });
 

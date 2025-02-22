@@ -570,7 +570,6 @@ class MedReportService
         return  function (Prescription $prescription) {
 
             $pVisit = $prescription->visit;
-            $pConsultation = $prescription->consultation;
 
             return [
                     'id'                => $prescription->id,

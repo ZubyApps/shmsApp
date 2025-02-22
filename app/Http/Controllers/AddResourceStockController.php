@@ -21,9 +21,12 @@ class AddResourceStockController extends Controller
     
     public function store(StoreAddResourceStockRequest $request)
     {
-        $addResourceStock = $this->addResourceStockService->create($request, $request->user());
-
-        return $addResourceStock;
+        try {
+            $addResourceStock = $this->addResourceStockService->create($request, $request->user());
+            return response()->json($addResourceStock, 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to create resource stock'], 500);
+        }
     }
 
     public function load(Request $request)
@@ -39,9 +42,14 @@ class AddResourceStockController extends Controller
 
     public function destroy(AddResourceStock $addResourceStock)
     {
-        $addResourceStock->resource()->update([
-            'stock_level' => $addResourceStock->resource->stock_level - $addResourceStock->final_quantity
-        ]);
-        return $addResourceStock->destroy($addResourceStock->id);
+        try {
+            $addResourceStock->resource()->update([
+                'stock_level' => $addResourceStock->resource->stock_level - $addResourceStock->final_quantity
+            ]);
+            $addResourceStock->delete();
+            return response()->json(['message' => 'Resource stock deleted successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete resource stock'], 500);
+        }
     }
 }

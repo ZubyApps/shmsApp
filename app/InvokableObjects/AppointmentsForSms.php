@@ -6,16 +6,11 @@ namespace App\InvokableObjects;
 
 use App\Jobs\SendAppointmentReminder;
 use App\Models\Appointment;
-use App\Notifications\AppointmentNotifier;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 
 class AppointmentsForSms
 {
-    public function __construct(private readonly AppointmentNotifier $appointmentNotifier)
-    {
-    }
-
     public function __invoke()
    {
        DB::transaction(function () {   
@@ -29,13 +24,20 @@ class AppointmentsForSms
             return;
         }
 
-        foreach($appointments as $appointment) {
-            // $this->appointmentNotifier->toSms($appointment);
-            if ($appointment->patient->sms){
+        // foreach($appointments as $appointment) {
+        //     if ($appointment->patient->sms){
+        //         SendAppointmentReminder::dispatch($appointment);
+        //         info('appointments in', ['patient' => $appointment->patient->first_name, 'doctor' => $appointment->doctor->username, 'sms' => $appointment->patient->sms]);
+        //     }
+        // }
+
+        $appointments->each(function ($appointment) {
+            if ($appointment->patient->sms) {
                 SendAppointmentReminder::dispatch($appointment);
                 info('appointments in', ['patient' => $appointment->patient->first_name, 'doctor' => $appointment->doctor->username, 'sms' => $appointment->patient->sms]);
             }
-        }
+        });
+
       }, 2);
    }
 }

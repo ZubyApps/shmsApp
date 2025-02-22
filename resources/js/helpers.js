@@ -299,7 +299,7 @@ const detailsBtn2 = (row) => {
 }
 
 const prescriptionStatusContorller = (row, tableId) => {
-    return `<span class="text-decoration-underline btn tootip-test ${row.doseComplete ? '' : 'discontinueBtn'} position-relative" title="${row.doseComplete ? 'completed' : 'discontinue'}" data-id="${row.id}" data-table="${tableId}">
+    return `<span class="text-decoration-underline btn tootip-test ${row.doseComplete ? '' : 'discontinueBtn'} position-relative" title="${row.doseComplete ? 'completed' : 'discontinue'}" data-id="${row.id}" data-table="${tableId}" data-discontinue=${row.discontinued}>
                 ${row.prescription == '' ? row.note ?? '' : row.prescription}  ${row.held ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">${'held - '+ row.held + ' by ' + row.heldBy}</span>` : ''}
             </span>`      
 }

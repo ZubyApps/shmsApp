@@ -21,7 +21,6 @@ class ReminderController extends Controller
         private readonly DatatablesService $datatablesService, 
         private readonly ReminderService $reminderService,
         private readonly HelperService $helperService,
-        private readonly OutstandingNotifier $outstandingNotifier
         )
     {
         

@@ -17,7 +17,7 @@ class SendTestResultDone implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    // public $timeout = 4;
+    public $timeout = 12;
 
     /**
      * Create a new job instance.
@@ -34,10 +34,8 @@ class SendTestResultDone implements ShouldQueue
     {
         $firstName = $this->prescription->visit->patient->first_name;
 
-        if ($this->recentlySent($this->prescription) > 1){
-
+        if ($this->recentlySent($this->prescription)) {
             info('Investigation not sent', ['recently sent (less than 30min ago)' => $firstName]);
-
             return;
         }
         
@@ -49,12 +47,15 @@ class SendTestResultDone implements ShouldQueue
         info('Investigation', ['sent to' => $firstName, 'gateway' => $gateway]);
     }
 
-    public function recentlySent(Prescription $prescription)
+    private function recentlySent(Prescription $prescription): bool
     {
-        $end = new CarbonImmutable();
+        $end = CarbonImmutable::now();
         $start = $end->subMinutes(30);
         $visit = $prescription->visit;
-        
-        return $visit->prescriptions->where('result', '!=', null)->whereBetween('result_date', [$start, $end])->count();
+
+        return $visit->prescriptions
+            ->where('result', '!=', null)
+            ->whereBetween('result_date', [$start, $end])
+            ->isNotEmpty();
     }
 }

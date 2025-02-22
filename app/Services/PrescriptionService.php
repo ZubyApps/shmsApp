@@ -9,7 +9,6 @@ use App\Models\MedicationChart;
 use App\Models\NursingChart;
 use App\Models\Prescription;
 use App\Models\Resource;
-use App\Models\ThirdParty;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,7 +32,7 @@ class PrescriptionService
         return DB::transaction(function () use($data, $resource, $user) {
             $bill = 0;
             $nhisBill = fn($value)=>$value/10;
-            $resourceSubCat = $resource->resourceSubCategory->name;
+            $resourceSubCat = $resource->sub_category;
             if ($data->quantity){
                 $bill = $resource->selling_price * $data->quantity;
             }
@@ -48,7 +47,7 @@ class PrescriptionService
                 'hms_bill'          => $bill,
                 'hms_bill_date'     => $data->quantity ? new Carbon() : null,
                 'hms_bill_by'       => $data->quantity ? $user->id : null,
-                'chartable'         => $resource->sub_category == 'Injectable' ? true : $data->chartable ?? false,
+                'chartable'         => $resourceSubCat == 'Injectable' ? true : $data->chartable ?? false,
                 'note'              => $data->note,
                 'route'             => $data->route,
                 'doctor_on_call'    => $data->doc
@@ -69,7 +68,7 @@ class PrescriptionService
                 'total_capitation'  => $isNhis ? $visit->totalPrescriptionCapitations() : 0,
                 'total_paid'        => $totalPayments,
                 'pharmacy_done_by'  => $resource->category == 'Medications' || $resource->category == 'Consumables' ? null : $visit->pharmacy_done_by,
-                'nurse_done_by'     => $resource->sub_category == 'Injectable' || $resource->category == 'Consumables' ? null : $visit->nurse_done_by,
+                'nurse_done_by'     => $resourceSubCat == 'Injectable' || $resource->category == 'Consumables' ? null : $visit->nurse_done_by,
                 'hmo_done_by'       => null
             ]);
 

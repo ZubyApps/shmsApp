@@ -6,17 +6,12 @@ namespace App\InvokableObjects;
 
 use App\Jobs\SendMedicationReminder;
 use App\Models\MedicationChart;
-use App\Notifications\MedicationNotifier;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class MedicationsForSms
 {
-    public function __construct(private readonly MedicationNotifier $medicationNotifier)
-    {
-    }
-
     public function __invoke()
    {
        DB::transaction(function () {   
@@ -25,10 +20,10 @@ class MedicationsForSms
         $time2 = $time1->subSeconds(59);
 
         $medications = MedicationChart::where(function(Builder $query) {
-                            $query->whereRelation('visit', 'admission_status', '=', 'Outpatient')
+                        $query->whereRelation('visit', 'admission_status', '=', 'Outpatient')
                             ->orWhere(function(Builder $query) {
                                 $query->whereRelation('visit', 'admission_status', '=', 'Inpatient')
-                                ->whereRelation('visit', 'discharge_reason', '!=', null);
+                                      ->whereRelation('visit', 'discharge_reason', '!=', null);
                             });
                         })
                         ->whereRelation('visit.patient', 'sms', '=', true)
@@ -40,11 +35,16 @@ class MedicationsForSms
             return;
         }
 
-        foreach($medications as $medication) {
-            if ($medication->visit->patient->sms){
+        // foreach($medications as $medication) {
+        //     if ($medication->visit->patient->sms){
+        //         SendMedicationReminder::dispatch($medication)->delay(5);
+        //     }
+        // }
+        $medications->each(function ($medication) {
+            if ($medication->visit->patient->sms) {
                 SendMedicationReminder::dispatch($medication)->delay(5);
             }
-        }
+        });
       }, 2);
    }
 }

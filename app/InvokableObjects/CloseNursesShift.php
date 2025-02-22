@@ -12,21 +12,42 @@ class CloseNursesShift
 {
    public function __invoke()
    {
-      DB::transaction(function () {
-         $nursesOnDuty = User::whereRelation('designation', 'designation', 'Nurse')->where('is_active', true)->get();
+      // DB::transaction(function () {
+      //    $nursesOnDuty = User::whereRelation('designation', 'designation', 'Nurse')->where('is_active', true)->get();
    
-         $shiftPerformance = ShiftPerformance::where('department', 'Nurse')->where('is_closed', false)->orderBy('id', 'desc')->first();
+      //    $shiftPerformance = ShiftPerformance::where('department', 'Nurse')->where('is_closed', false)->orderBy('id', 'desc')->first();
          
-         if (!$shiftPerformance){
-            return;
-        }
-         $shiftPerformance->update([
-            'is_closed' => true
-            ]);
+      //    if (!$shiftPerformance){
+      //       return;
+      //   }
+      //    $shiftPerformance->update([
+      //       'is_closed' => true
+      //       ]);
    
-         foreach($nursesOnDuty as $nurse){
-            $nurse->update(['is_active' => false]);
+      //    foreach($nursesOnDuty as $nurse){
+      //       $nurse->update(['is_active' => false]);
+      //    }
+      // }, 2);
+
+      DB::transaction(function () {
+         $nursesOnDuty = User::whereRelation('designation', 'designation', 'Nurse')
+             ->where('is_active', true)
+             ->pluck('id');
+
+         $shiftPerformance = ShiftPerformance::where('department', 'Nurse')
+             ->where('is_closed', false)
+             ->orderBy('id', 'desc')
+             ->first();
+
+         if (!$shiftPerformance) {
+             return;
          }
-      }, 2);
+
+         $shiftPerformance->update(['is_closed' => true]);
+
+         if ($nursesOnDuty->isNotEmpty()) {
+             User::whereIn('id', $nursesOnDuty)->update(['is_active' => false]);
+         }
+     }, 2);
    }
 }

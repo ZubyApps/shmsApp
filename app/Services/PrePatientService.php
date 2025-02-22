@@ -7,8 +7,6 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Patient;
 use App\Models\PatientPreForm;
-use App\Notifications\FormLinkNotifier;
-use App\Notifications\PatientCardNumber;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,8 +16,6 @@ class PrePatientService
     public function __construct(
         private readonly Patient $patient, 
         private readonly HelperService $helperService, 
-        private readonly PatientCardNumber $patientCardNumber,
-        private readonly FormLinkNotifier $formLinkNotifier,
         private readonly PatientPreForm $patientPreForm
         )
     {

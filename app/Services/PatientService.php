@@ -11,14 +11,11 @@ use App\Jobs\SendFormLink;
 use App\Models\Patient;
 use App\Models\PatientPreForm;
 use App\Models\User;
-use App\Notifications\FormLinkNotifier;
-use App\Notifications\PatientCardNumber;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class PatientService
@@ -26,8 +23,6 @@ class PatientService
     public function __construct(
         private readonly Patient $patient, 
         private readonly HelperService $helperService, 
-        private readonly PatientCardNumber $patientCardNumber,
-        private readonly FormLinkNotifier $formLinkNotifier,
         private readonly PatientPreForm $patientPreForm,
         private readonly ChurchPlusSmsService $churchPlusSmsService
         )

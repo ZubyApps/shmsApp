@@ -16,6 +16,8 @@ class SendFormLink implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $timeout = 12;
+    
     /**
      * Create a new job instance.
      */
@@ -29,11 +31,12 @@ class SendFormLink implements ShouldQueue
      */
     public function handle(ChurchPlusSmsService $churchPlusSmsService, HelperService $helperService): void
     {
-        $recipient = $this->params->phone;
+        $recipientPhone = $this->params->phone;
         $gateway = $helperService->nccTextTime() ? 1 : 2;
-        
-        $message = 'Sandra Hospital Patient Registeration Form link '.$this->link.'. This link expires in 5mins';
-        $churchPlusSmsService->sendSms($message, $recipient, 'SandraH', $gateway);
-        info('Link', ['sent to' => $recipient, 'msg' => $message]);
+
+        $message = 'Sandra Hospital Patient Registration Form link ' . $this->link . '. This link expires in 5 minutes';
+        $churchPlusSmsService->sendSms($message, $recipientPhone, 'SandraH', $gateway);
+
+        info('Link sent', ['recipient' => $recipientPhone, 'message' => $message]);
     }
 }

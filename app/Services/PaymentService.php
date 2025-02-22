@@ -14,8 +14,7 @@ use Illuminate\Support\Facades\DB;
 Class PaymentService
 {
     public function __construct(private readonly Payment $payment)
-    {
-        
+    {       
     }
 
     public function create(Request $data, User $user): Payment
@@ -72,71 +71,26 @@ Class PaymentService
         });
     }
 
-    // public function prescriptionsPaymentSeive(mixed $totalPayments, mixed $prescriptions): void
-    // {
-    //     array_reduce([$prescriptions], function($carry, $prescription) {
-    //         foreach($prescription as $p){
-    //             $bill = $p->approved ? 0 : $p->hms_bill;
-    //             $p->update(['paid' => $carry >= $bill ? $bill : ($carry < $bill && $carry > 0 ? $carry : 0)]);
-    //             $carry = $carry - $bill;
-    //         }
-    //         return $carry;
-
-    //     }, $totalPayments);
-    // }
-
-    // public function prescriptionsPaymentSeive(mixed $totalPayments, mixed $prescriptions, bool $hmoFlag = false): void
-    // {
-    //     array_reduce([$prescriptions], function($carry, $prescription) use($prescriptions, $totalPayments, $hmoFlag) {
-
-    //         $billToUse  = $hmoFlag ? 'hmo_bill' : 'hms_bill';
-    //         // $totalBill  = $prescriptions->sum($billToUse);
-    //         // $pCount     = $prescriptions->count();
-
-    //         foreach($prescription as $key => $p){
-    //             $bill = $p->approved && !$hmoFlag ? 0 : $p->$billToUse;
-    //             $paid = $p->paid;
-                
-    //             if ($carry >= $bill){
-    //                 // if ($totalPayments > $totalBill && $key === $pCount - 1){
-    //                 //     $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $carry ]);
-    //                 // } else {
-    //                 //     $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
-    //                 // }
-    //                 $p->update(['paid' => $bill == 0 && $p->qty_billed > 0 ? $paid : $bill]);
-    //             }
-
-    //             if ($carry < $bill && $carry > 0){
-    //                 $p->update(['paid' => $carry ]);
-    //             }
-
-    //             if ($carry <= 0 && $bill > 0){
-    //                 $p->update(['paid' => 0 ]);
-    //             }
-
-    //             $carry = $carry - $bill;
-    //         }
-    //         return $carry;
-
-    //     }, $totalPayments);
-    // }
     public function prescriptionsPaymentSeive(mixed $totalPayments, mixed $prescriptions): void
     {
-        array_reduce([$prescriptions], function($carry, $prescription) use($prescriptions) {
+        $filteredPrescriptions = $prescriptions->reject(function (object $value) {
+                    $value->update(['paid' => 0]);
+            return $value->qty_billed < 1;
+        });
 
-            $pCount = $prescriptions->count();
+        array_reduce([$filteredPrescriptions], function($carry, $prescription) {
 
-            foreach($prescription as $key => $p){
+            foreach($prescription as $p){
                 $bill = $p->approved ? 0 : $p->hms_bill;
-                
-                if ($carry >= $bill){
-                    $p->update(['paid' => $key === ($pCount - 1) ? $carry : $bill]);
-                }
 
+                if ($carry >= $bill){
+                    $p->update(['paid' => $p->id == $prescription->last()->id ? $carry : $bill]);
+                }
+                
                 if ($carry < $bill && $carry > 0){
                     $p->update(['paid' => $carry ]);
                 }
-
+                
                 if ($carry <= 0 && $bill > 0){
                     $p->update(['paid' => 0 ]);
                 }
@@ -147,31 +101,20 @@ Class PaymentService
 
         }, $totalPayments);
     }
-
-    // public function prescriptionsPaymentSeiveNhis(mixed $totalPayments, mixed $prescriptions): void
-    // {
-    //     array_reduce([$prescriptions], function($carry, $prescription) {
-    //         foreach($prescription as $p){
-    //             $bill = $p->approved ? $p->nhis_bill : $p->hms_bill;
-    //             $p->update(['paid' => $carry >= $bill ? $bill : ($carry < $bill && $carry > 0 ? $carry : 0)]);
-    //             $carry = $carry - $bill;
-    //         }
-    //         return $carry;
-
-    //     }, $totalPayments);
-    // }
     
     public function prescriptionsPaymentSeiveNhis(mixed $totalPayments, mixed $prescriptions): void
     {
-        array_reduce([$prescriptions], function($carry, $prescription) use($prescriptions, $totalPayments) {
+        $filteredPrescriptions = $prescriptions->reject(function (object $value) {
+                    $value->update(['paid' => 0]);
+            return $value->qty_billed < 1;
+        });
+        array_reduce([$filteredPrescriptions], function($carry, $prescription) {
 
-            $pCount = $prescriptions->count();
-
-            foreach($prescription as $key => $p){
+            foreach($prescription as $p){
                 $bill = $p->approved ? $p->nhis_bill : $p->hms_bill;
                 
                 if ($carry >= $bill){
-                    $p->update(['paid' => $key === ($pCount - 1) ? $carry : $bill]);
+                    $p->update(['paid' => $p->id == $prescription->last()->id ? $carry : $bill]);
                 }
 
                 if ($carry < $bill && $carry > 0){
@@ -191,15 +134,13 @@ Class PaymentService
 
     public function prescriptionsPaymentSeiveHmo(mixed $totalPayments, mixed $prescriptions): void
     {
-        array_reduce([$prescriptions], function($carry, $prescription) use($prescriptions) {
+        array_reduce([$prescriptions], function($carry, $prescription) {
 
-            $pCount = $prescriptions->count();
-
-            foreach($prescription as $key => $p){
+            foreach($prescription as $p){
                 $bill = $p->hmo_bill;
                 
                 if ($carry >= $bill){
-                    $p->update(['paid' => $key === ($pCount - 1) ? $carry : $bill]);
+                    $p->update(['paid' => $p->id == $prescription->last()->id ? $carry : $bill]);
                 }
 
                 if ($carry < $bill && $carry > 0){

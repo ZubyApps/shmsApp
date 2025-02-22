@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 
 class ChurchPlusSmsService
 {
@@ -23,12 +24,17 @@ class ChurchPlusSmsService
             return;
         }
 
-        $client = new Client(['request.options' => ['timeout' => 5, 'connection_timeout' => 5]]);
+        // $client = new Client();
         
         $completeUrl = $this->baseUrl.'recipients='.$recipients.'&message='.$message.'&subject='.$subject.'&cid='.$this->tenantId.'&gateway='.$gateway;
 
-        $response = $client->request('POST', $completeUrl);
+        // $response = $client->request('POST', $completeUrl, [
+        //     'timeout' => 5,
+        //     'connection_timeout' => 5,
+        // ]);
 
+        $response = Http::connectTimeout(10)->timeout(10)->post($completeUrl);
+        info($response->getBody()->getContents());
         return $response->getBody()->getContents();
 
     }

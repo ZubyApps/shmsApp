@@ -188,16 +188,16 @@ class Visit extends Model
          return $totalBill;
     }
 
-    public function totalHmsOrNhisBills()
-    {
-        $totalBill = 0;
-         foreach($this->prescriptions as $prescription){
-            // Log::info($this->sponsor->category_name);
-            $totalBill += ($this->sponsor->category_name == 'NHIS' ?  $prescription->nhis_bill : $prescription->hms_bill);
-         }
+    // public function totalHmsOrNhisBills()
+    // {
+    //     $totalBill = 0;
+    //      foreach($this->prescriptions as $prescription){
+    //         // Log::info($this->sponsor->category_name);
+    //         $totalBill += ($this->sponsor->category_name == 'NHIS' ?  $prescription->nhis_bill : $prescription->hms_bill);
+    //      }
 
-         return $totalBill;
-    }
+    //      return $totalBill;
+    // }
 
     public function totalHmoBills()
     {

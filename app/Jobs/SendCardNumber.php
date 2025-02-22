@@ -16,6 +16,8 @@ class SendCardNumber implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $timeout = 12;
+    
     /**
      * Create a new job instance.
      */
@@ -30,11 +32,14 @@ class SendCardNumber implements ShouldQueue
     public function handle(ChurchPlusSmsService $churchPlusSmsService, HelperService $helperService): void
     {
         $firstName = $this->patient->first_name;
+        $cardNumber = $this->patient->card_no;
+        $phoneNumber = $this->patient->phone;
         $gateway = $helperService->nccTextTime() ? 1 : 2;
 
         info('card number', ['sent to' => $firstName]);
 
-        $churchPlusSmsService
-                    ->sendSms('Dear ' .$firstName. ', welcome to Sandra Hospital, your Hospital Card Number is '.'['.$this->patient->card_no.'] courtesy of our Hospital Management System', $this->patient->phone, 'SandraHosp', $gateway);
+        $message = 'Dear ' . $firstName . ', welcome to Sandra Hospital, your Hospital Card Number is [' . $cardNumber . '] courtesy of our Hospital Management System';
+
+        $churchPlusSmsService->sendSms($message, $phoneNumber, 'SandraHosp', $gateway);
     }
 }

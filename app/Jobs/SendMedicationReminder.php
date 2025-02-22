@@ -18,6 +18,8 @@ class SendMedicationReminder implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $timeout = 12;
+    
     /**
      * Create a new job instance.
      */

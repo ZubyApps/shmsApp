@@ -181,20 +181,28 @@ class BillingService
         $orderDir   =  'desc';
 
         return  $this->visit::with([
-                        'sponsor.sponsorCategory', 
-                        'patient', 
-                        'prescriptions' => function ($query) {
-                            $query->with([
-                                'thirdPartyServices.thirdParty',
-                                'user',
-                                'resource.unitDescription',
-                            ]);
-                        },
                         'doctor',  
                         'reminders',
                         'discountBy',
                         'consultations',
                         'payments',
+                        'sponsor'  => function ($query) {
+                            $query->with([
+                                'sponsorCategory',
+                                'visits',
+                            ]);
+                        }, 
+                        'patient.visits', 
+                        'prescriptions' => function ($query) {
+                            $query->with([
+                                'thirdPartyServices.thirdParty',
+                                'user',
+                                'resource.unitDescription',
+                                'visit',
+                                'approvedBy',
+                                'rejectedBy',
+                            ]);
+                        },
                     ])
                     ->where('id', $data->visitId)
                     ->orderBy($orderBy, $orderDir)
@@ -203,7 +211,14 @@ class BillingService
 
     public function getPatientBillTransformer(): callable
     {
-       return  function (Visit $visit) {
+        return  function (Visit $visit) {
+
+        $prescriptions  = $visit->prescriptions;
+        $totalNhisBills = $this->totalNhisBills($prescriptions);
+        $determinePayV  = $this->determinePayV($visit);
+        $determinePayP  = $this->determinePayP($visit->patient);
+        $allDiscountsP  = $this->allDiscountsP($visit->patient);
+
         $latestConsultation = $visit->consultations->sortDesc()->first();
             return [
                 'id'                    => $visit->id,
@@ -219,18 +234,18 @@ class BillingService
                 'came'                  => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'discount'              => $visit->discount ?? '',
                 'discountBy'            => $visit->discountBy?->username ?? '',
-                'subTotal'              => $visit->totalHmsBills() ?? 0,
-                'nhisSubTotal'          => ($visit->totalNhisBills()) ?? 0,
-                'nhisNetTotal'          => ($visit->totalNhisBills() - $visit->discount)  ?? 0,
-                'netTotal'              => $visit->totalHmsBills() - $visit->discount,
-                'totalPaid'             => $this->determinePayV($visit) ?? 0,
-                'balance'               => $visit->totalHmsBills() - $visit->discount - $this->determinePayV($visit) ?? 0,
-                'nhisBalance'           => $this->sponsorsAllowed($visit->sponsor, ['NHIS']) ? (($visit->totalNhisBills() - $visit->discount)) - $this->determinePayV($visit) ?? 0 : 'N/A',
+                'subTotal'              => $prescriptions->sum('hms_bill'),//totalHmsBills() ?? 0,
+                'nhisSubTotal'          => $totalNhisBills,//($visit->totalNhisBills()) ?? 0,
+                'nhisNetTotal'          => ($totalNhisBills - $visit->discount)  ?? 0,
+                'netTotal'              => $visit->prescriptions->sum('hms_bill') - $visit->discount,//->totalHmsBills() - $visit->discount,
+                'totalPaid'             => $determinePayV ?? 0,
+                'balance'               => $prescriptions->sum('hms_bill') - $visit->discount - $determinePayV ?? 0,
+                'nhisBalance'           => $this->sponsorsAllowed($visit->sponsor, ['NHIS']) ? (($totalNhisBills - $visit->discount)) - $determinePayV ?? 0 : 'N/A',
                 // 'outstandingPatientBalance'  => $visit->patient->allHmsBills() - $visit->patient->allDiscounts() - $this->determinePayP($visit->patient),
-                'outstandingPatientBalance'  => $visit->patient->allHmsOrNhisBills() - $visit->patient->allDiscounts() - $this->determinePayP($visit->patient),
-                'outstandingSponsorBalance'  => $this->sponsorsAllowed($visit->sponsor, ['Family', 'Retainership']) ? $visit->sponsor->allHmsBills() - $visit->sponsor->allDiscounts() - $this->determinePayS($visit->sponsor) : null,
+                'outstandingPatientBalance'  => $this->allHmsOrNhisBills($visit->patient) - $allDiscountsP - $determinePayP,
+                'outstandingSponsorBalance'  => $this->sponsorsAllowed($visit->sponsor, ['Family', 'Retainership']) ? $this->allHmsBillsS($visit->sponsor) - $this->allDiscountsS($visit->sponsor) - $this->determinePayS($visit->sponsor) : null,
                 'outstandingCardNoBalance'   => $this->sponsorsAllowed($visit->sponsor, ['Family', 'Retainership', 'NHIS', 'Individual']) ? $this->sameCardNoOustandings($visit) : null,
-                'outstandingNhisBalance'=> $this->sponsorsAllowed($visit->sponsor, ['NHIS']) ? $visit->patient->allNhisBills() - $visit->patient->allDiscounts() - $this->determinePayP($visit->patient) : null,
+                'outstandingNhisBalance'=> $this->sponsorsAllowed($visit->sponsor, ['NHIS']) ? $this->allNhisBillsP($visit->patient) - $allDiscountsP - $determinePayP : null,
                 'payMethods'            => $this->payMethodService->list(),
                 'notBilled'             => $visit->prescriptions->where('qty_billed', 0)->count(),
                 'user'                  => auth()->user()->designation->access_level > 4,
@@ -271,43 +286,162 @@ class BillingService
     public function sameCardNoOustandings(Visit $visit)
     {
         $cardNo = str_split($visit->patient->card_no, 9)[0];
-        $nhis = $visit->sponsor->category_name == 'NHIS';
+        // $nhis = $visit->sponsor->category_name == 'NHIS';
         if (str_contains($cardNo, 'ANC')){
             return null;
         };
         $patients = $this->patient->where('card_no', 'LIKE', '%' . addcslashes($cardNo, '%_') . '%' )->get();
-
         $allBills = 0;
         $allDiscounts = 0;
         $allPayments = 0;
 
         foreach($patients as $patient){
         //    $allBills        += $nhis ? $patient->allNhisBills() : $patient->allHmsBills();
-           $allBills        += $patient->allHmsOrNhisBills() ;
-           $allDiscounts    += $patient->allDiscounts();
-           $allPayments     += $patient->allPaidPrescriptions() > $patient->allPayments() ? $patient->allPaidPrescriptions() : $patient->allPayments() ;
+           $allBills        += $this->allHmsOrNhisBills($patient) ;
+           $allDiscounts    += $this->allDiscountsP($patient);
+           $allPayments     += $this->allPaidPrescriptions($patient) > $this->allPayments($patient) ? $this->allPaidPrescriptions($patient) : $this->allPayments($patient) ;
         //    $allPayments     +=  $patient->allPayments();
         }
-
         return $allBills - $allDiscounts - $allPayments;
     }
 
-    public function determinePayV(Visit $visit)
+    public function totalNhisBills($prescriptions)
     {
-        return $visit->totalPaidPrescriptions() > $visit->totalPayments() ? $visit->totalPaidPrescriptions() : $visit->totalPayments();
+        $totalNhisBills = 0;
+        foreach($prescriptions as $prescription) {
+            $approved   = $prescription->approved;
+            $hmsBill    = $prescription->hms_bill;
+                $totalNhisBills += $approved ? $hmsBill/10 : $hmsBill;
+            }
+        return $totalNhisBills;
+    }
+
+    public function determinePayV($visit)
+    {
+        // return $visit->totalPaidPrescriptions() > $visit->totalPayments() ? $visit->totalPaidPrescriptions() : $visit->totalPayments();
+        return $this->totalPaidPrescriptionsV($visit) > $this->totalPaymentsV($visit->payments) ? $this->totalPaidPrescriptionsV($visit) : $this->totalPaymentsV($visit->payments);
         // return $visit->totalPayments();
     }
 
     public function determinePayS($sponsor)
     {
-        return $sponsor->allPaidPrescriptions() > $sponsor->allPayments() ? $sponsor->allPaidPrescriptions() : $sponsor->allPayments();
+        return $this->allPaidPrescriptions($sponsor) > $this->allPayments($sponsor) ? $this->allPaidPrescriptions($sponsor) : $this->allPayments($sponsor);
         // return $sponsor->allPayments();
     }
 
     public function determinePayP($patient)
     {
-        return $patient->allPaidPrescriptions() > $patient->allPayments() ? $patient->allPaidPrescriptions() : $patient->allPayments();
+        return $this->allPaidPrescriptions($patient) > $this->allPayments($patient) ? $this->allPaidPrescriptions($patient) : $this->allPayments($patient);
         // return $patient->allPayments();
+    }
+
+    public function allPaidPrescriptions($model)
+    {
+        $allPayments = 0;
+        foreach($model->visits as $visit){
+            $allPayments += $this->totalPaidPrescriptionsV($visit);
+        }
+
+        return $allPayments;
+    }
+    public function totalPaidPrescriptionsV($visit)
+    {
+        $totalPayments = 0;
+        foreach($visit->prescriptions as $prescription){
+            $totalPayments += $prescription->paid;
+        }
+        
+        return $totalPayments;
+    }
+
+    public function totalPaymentsV($payments)
+    {
+        $totalPayments = 0;
+        foreach($payments as $payment){
+            $totalPayments += $payment->amount_paid;
+        }
+        
+        return $totalPayments;
+    }
+
+    public function totalHmsOrNhisBills($visit)
+    {
+        $totalBill = 0;
+         foreach($visit->prescriptions as $prescription){
+            $totalBill += ($visit->sponsor->category_name == 'NHIS' ?  $prescription->nhis_bill : $prescription->hms_bill);
+         }
+
+         return $totalBill;
+    }
+
+    public function allHmsOrNhisBills($patient)
+    {
+        $allHmsBills = 0;
+        foreach($patient->visits as $visit){
+            $allHmsBills += $this->totalHmsOrNhisBills($visit);
+        }
+
+        return $allHmsBills;
+    }
+
+    public function allDiscountsP($patient)
+    {
+        $allDiscounts = 0;
+        foreach($patient->visits as $visit){
+            $allDiscounts += $visit->discount;
+        }
+
+        return $allDiscounts;
+    }
+
+    public function allDiscountsS($sponsor)
+    {
+        $allDiscounts = 0;
+        foreach($sponsor->visits as $visit){
+            $allDiscounts += $visit->discount;
+        }
+
+        return $allDiscounts;
+    }
+
+    public function allHmsBillsS($sponsor)
+    {
+        $allHmsBills = 0;
+        foreach($sponsor->visits as $visit){
+            $allHmsBills += $visit->totalHmsBills();
+        }
+
+        return $allHmsBills;
+    }
+
+    public function allHmoBillsP($patient)
+    {
+        $allHmoBills = 0;
+        foreach($patient->visits as $visit){
+            $allHmoBills += $visit->totalHmoBills();
+        }
+
+        return $allHmoBills;
+    }
+
+    public function allNhisBillsP($patient)
+    {
+        $allNhisBills = 0;
+        foreach($patient->visits as $visit){
+            $allNhisBills += $visit->totalNhisBills();
+        }
+
+        return $allNhisBills;
+    }
+
+    public function allPayments($model)
+    {
+        $allPayments = 0;
+        foreach($model->visits as $visit){
+            $allPayments += $this->totalPaymentsV($visit->payments);
+        }
+
+        return $allPayments;
     }
 
     public function getPatientPaymentTable(DataTableQueryParams $params, $data)

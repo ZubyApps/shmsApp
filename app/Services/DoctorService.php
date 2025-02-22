@@ -235,6 +235,150 @@ class DoctorService
             ->paginate($params->length, '*', '', (($params->length + $params->start) / $params->length));
     }
 
+    // private function baseQuery(): Builder
+    // {
+    //     return $this->visit::with([
+    //         'sponsor',
+    //         'consultations.updatedBy',
+    //         'patient.visits',
+    //         'vitalSigns',
+    //         'prescriptions',
+    //         'medicationCharts',
+    //         'antenatalRegisteration.ancVitalSigns',
+    //         'doctor',
+    //         'closedOpenedBy',
+    //         'doctorDoneBy',
+    //         'payments'
+    //     ])
+    //     ->withCount([
+    //         'prescriptions as labPrescribed' => function (Builder $query) {
+    //             $query->whereRelation('resource', 'category', '=', 'Investigations');
+    //         },
+    //         'prescriptions as labDone' => function (Builder $query) {
+    //             $query->whereRelation('resource', 'category', '=', 'Investigations')
+    //                 ->where('result_date', '!=', null);
+    //         },
+    //         'prescriptions as prescriptionsCharted' => function (Builder $query) {
+    //             $query->where('chartable', true)
+    //                 ->where('discontinued', false)
+    //                 ->whereDoesntHave('medicationCharts')
+    //                 ->whereRelation('resource', 'sub_category', '=', 'Injectable');
+    //         }
+    //     ])
+    //     ->whereNotNull('consulted');
+    // }
+
+    // private function applySearch(Builder $query, string $searchTerm): Builder
+    // {
+    //     $searchTerm = '%' . addcslashes($searchTerm, '%_') . '%';
+    //     return $query->where(function (Builder $query) use ($searchTerm) {
+    //         $query->where('created_at', 'LIKE', $searchTerm)
+    //             ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+    //             ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+    //             ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+    //             ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+    //             ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
+    //             ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
+    //             ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+    //             ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
+    //     });
+    // }
+
+    // private function paginateQuery(Builder $query, DataTableQueryParams $params, string $orderBy = 'consulted', string $orderDir = 'desc')
+    // {
+    //     return $query->orderBy($orderBy, $orderDir)
+    //         ->paginate($params->length, '*', '', (($params->length + $params->start) / $params->length));
+    // }
+
+    // private function generalFilters(Builder $query, string $method)
+    // {
+    //     if ($method == 'outPatient') {
+    //         $query = $query->where('admission_status', 'Outpatient')
+    //             ->whereRelation('patient', 'patient_type', '!=', 'ANC');
+    //     }
+    //     if ($method = 'inPatient') {
+    //         $query = $query->where(function (Builder $query) {
+    //             $query->where('admission_status', '=', 'Inpatient')
+    //                 ->orWhere('admission_status', '=', 'Observation');
+    //         });
+    //     }
+    //     return $query->where('doctor_done_by', null)
+    //         ->where('closed', false);
+    // }
+
+    // public function getPaginatedOutpatientConsultedVisits($data, DataTableQueryParams $params, User $user)
+    // {
+    //     $query = $this->baseQuery()->where('admission_status', 'Outpatient')
+    //         ->whereRelation('patient', 'patient_type', '!=', 'ANC');
+
+    //     if (!empty($params->searchTerm)) {
+    //         $query = $this->applySearch($query, $params->searchTerm);
+    //         return $this->paginateQuery($query, $params);
+    //     }
+
+    //     if ($data->filterBy == 'My Patients') {
+    //         $query->where('doctor_id', $user->id)
+    //             ->where('doctor_done_by', null)
+    //             ->where('closed', false);
+    //     } else {
+    //         $query->where('doctor_done_by', null)
+    //             ->where('closed', false);
+    //     }
+
+    //     return $this->paginateQuery($query, $params);
+    // }
+
+    // public function getPaginatedInpatientConsultedVisits($data, DataTableQueryParams $params, User $user)
+    // {
+    //     $query = $this->baseQuery();
+
+    //     if (!empty($params->searchTerm)) {
+    //         $query = $this->applySearch($query, $params->searchTerm);
+    //         return $this->paginateQuery($query, $params);
+    //     }
+
+    //     if ($data->filterBy == 'My Patients') {
+    //         $query->where('doctor_id', $user->id)
+    //         ->where(function (Builder $query) {
+    //             $query->where('admission_status', '=', 'Inpatient')
+    //             ->orWhere('admission_status', '=', 'Observation');
+    //         })
+    //         ->where('doctor_done_by', null)
+    //         ->where('closed', false);
+    //     } else {
+    //         $query->where('doctor_done_by', null)
+    //             ->where(function (Builder $query) {
+    //                 $query->where('admission_status', '=', 'Inpatient')
+    //                 ->orWhere('admission_status', '=', 'Observation');
+    //             })
+    //             ->where('closed', false)
+    //             ->whereRelation('patient', 'patient_type', '!=', 'ANC');
+    //     }
+
+    //     return $this->paginateQuery($query, $params);
+    // }
+
+    // public function getPaginatedAncConsultedVisits($data, DataTableQueryParams $params, User $user)
+    // {
+    //     $query = $this->baseQuery()->whereRelation('patient', 'patient_type', 'ANC');
+
+    //     if (!empty($params->searchTerm)) {
+    //         $query = $this->applySearch($query, $params->searchTerm);
+    //         return $this->paginateQuery($query, $params);
+    //     }
+
+    //     if ($data->filterBy == 'My Patients') {
+    //         $query->where('doctor_id', $user->id)
+    //             ->where('doctor_done_by', null)
+    //             ->where('closed', false);
+    //     } else {
+    //         $query->where('doctor_done_by', null)
+    //             ->where('closed', false);
+    //     }
+
+    //     return $this->paginateQuery($query, $params);
+    // }
+
     public function getConsultedVisitsTransformer(): callable
     {
         return  function (Visit $visit) {

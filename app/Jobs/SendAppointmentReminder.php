@@ -17,6 +17,8 @@ class SendAppointmentReminder implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $timeout = 12;
+    
     /**
      * Create a new job instance.
      */
@@ -30,17 +32,17 @@ class SendAppointmentReminder implements ShouldQueue
      */
     public function handle(ChurchPlusSmsService $churchPlusSmsService, HelperService $helperService): void
     {
-        $firstName = $this->appointment->patient->first_name;
-        $doctor    = $this->appointment->doctor->username;
-        $date      = (new Carbon($this->appointment->date))->format('g:iA');
+        $patientFirstName = $this->appointment->patient->first_name;
+        $doctorUsername = $this->appointment->doctor->username;
+        $appointmentTime = (new Carbon($this->appointment->date))->format('g:iA');
         $gateway = $helperService->nccTextTime() ? 1 : 2;
-        
-        info('appointments', ['patient' => $firstName, 'doctor' => $doctor]);
 
-        $churchPlusSmsService
-        ->sendSms('Dear ' .$doctor. ', your appointment with ' . $firstName . ' is today by '. $date . '. Courtesy- Sandra Hospital Management System', $this->appointment->doctor->phone_number, 'SandraHosp', $gateway);
+        info('appointments', ['patient' => $patientFirstName, 'doctor' => $doctorUsername]);
 
-        $churchPlusSmsService
-        ->sendSms('Dear ' .$firstName. ', your appointment with ' .$doctor. ' is today by '. $date . '. Courtesy- Sandra Hospital Management System', $this->appointment->patient->phone, 'SandraHosp', $gateway);
+        $messageForDoctor = 'Dear ' . $doctorUsername . ', your appointment with ' . $patientFirstName . ' is today by ' . $appointmentTime . '. Courtesy- Sandra Hospital Management System';
+        $messageForPatient = 'Dear ' . $patientFirstName . ', your appointment with ' . $doctorUsername . ' is today by ' . $appointmentTime . '. Courtesy- Sandra Hospital Management System';
+
+        $churchPlusSmsService->sendSms($messageForDoctor, $this->appointment->doctor->phone_number, 'SandraHosp', $gateway);
+        $churchPlusSmsService->sendSms($messageForPatient, $this->appointment->patient->phone, 'SandraHosp', $gateway);
     }
 }

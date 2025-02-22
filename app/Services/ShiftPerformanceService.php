@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 Class ShiftPerformanceService
 {
@@ -37,17 +36,13 @@ Class ShiftPerformanceService
     {
         return DB::transaction(function () {
             $shiftPerformance = $this->shiftPerformance->where('department', 'Nurse')->where('is_closed', false)->orderBy('id', 'desc')->first();
-            $nursesOnDuty = User::whereRelation('designation', 'designation', 'Nurse')->where('is_active', true)->get();
-            $nurses     = [];
-      
-            foreach($nursesOnDuty as $nurse){
-               $nurses[] = $nurse->username;
-            }
             
             if (!$shiftPerformance){
                 return;
             }
 
+            $nursesOnDuty = User::whereRelation('designation', 'designation', 'Nurse')->where('is_active', true)->pluck('username')->toArray();
+            
             $injectablesChartRate   = $this->injectablesChartRate($shiftPerformance);
             $othersChartRate        = $this->othersChartRate($shiftPerformance);
             $injectablesGivenRate   = $this->injectablesGivenRate($shiftPerformance);
@@ -67,11 +62,11 @@ Class ShiftPerformanceService
                     'service_time'              => $this->serviceTime($shiftPerformance),
                     'inpatient_vitals_count'    => $inpatientsVitals ? $inpatientsVitals['visitsVCount'] . '/' . $inpatientsVitals['visitsCount'] : $inpatientsVitals,
                     'outpatient_vitals_count'   => $outpatientsVitals ? $outpatientsVitals['visitsVCount'] . '/' . $outpatientsVitals['visitsCount'] : $outpatientsVitals,
+                    'staff'                     => $nursesOnDuty
                 ]);
     
                 $shiftPerformance->update([
                     'performance'  => $this->getPerformance($shiftPerformance),
-                    'staff'        => $nurses
                 ]);
     
                 $shiftPerformance->first_med_res    = $shiftPerformance->first_med_res ? CarbonInterval::seconds($shiftPerformance->first_med_res)->cascade()->forHumans() : null;
@@ -79,382 +74,765 @@ Class ShiftPerformanceService
                 $shiftPerformance->first_vitals_res = $shiftPerformance->first_vitals_res ? CarbonInterval::seconds($shiftPerformance->first_vitals_res)->cascade()->forHumans() : null;
                 $shiftPerformance->medication_time  = $shiftPerformance->medication_time ? ($shiftPerformance->medication_time < 0 ? 'Many served on time': CarbonInterval::seconds($shiftPerformance->medication_time)->cascade()->forHumans()) : null;
                 $shiftPerformance->service_time  = $shiftPerformance->service_time ? ($shiftPerformance->service_time < 0 ? 'Many served on time': CarbonInterval::seconds($shiftPerformance->service_time)->cascade()->forHumans()) : null;
-                $details = ['notChartedInjectables' => $injectablesChartRate ? $injectablesChartRate['notChartedUniqueInjectables'] : '', 'notChartedOthers' => $othersChartRate ? $othersChartRate['notChartedUniqueOthers'] : '', 'notStartedInjectables' => $injectablesGivenRate ? $injectablesGivenRate['notStartedUniqueInjectables'] : '', 'notStartedOthers' => $othersDoneRate ? $othersDoneRate['notStartedUniqueOthers'] : '', 'inpatientsNoV' =>  $inpatientsVitals ? $inpatientsVitals['visitsNoVitals'] : '', 'outpatientsNoV' => $outpatientsVitals ? $outpatientsVitals['visitsNoVitals'] : ''];
+                $details = [
+                    'notChartedInjectables' => $injectablesChartRate ? $injectablesChartRate['notChartedUniqueInjectables'] : '',
+                    'notChartedOthers' => $othersChartRate ? $othersChartRate['notChartedUniqueOthers'] : '',
+                    'notStartedInjectables' => $injectablesGivenRate ? $injectablesGivenRate['notStartedUniqueInjectables'] : '',
+                    'notStartedOthers' => $othersDoneRate ? $othersDoneRate['notStartedUniqueOthers'] : '',
+                    'inpatientsNoV' => $inpatientsVitals ? $inpatientsVitals['visitsNoVitals'] : '',
+                    'outpatientsNoV' => $outpatientsVitals ? $outpatientsVitals['visitsNoVitals'] : ''
+                ];
 
             return response()->json(['shiftPerformance' => $shiftPerformance, 'details' => $details ? $details : '']);
         }, 2);
     }
 
+    // public function injectablesChartRate($shiftPerformance)
+    // {
+    //     $shiftEnd = new Carbon($shiftPerformance->shift_end);
+    //     $shiftEndTimer = $shiftEnd->subMinutes(20);
+    //     $notCharted = [];
+
+    //     $totalInjectablePrescriptions = $this->prescription
+    //                                 // ->where('chartable', true)
+    //                                 ->whereRelation('resource', 'sub_category', '=' ,'Injectable')
+    //                                 ->where('discontinued', false)
+    //                                 ->where('held', null)
+    //                                 // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                 ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                 ->count();
+
+    //     $totalInjectablePrescriptionsCharted      = $this->prescription->prescriptionsChartedPerShift($shiftPerformance, 'medicationCharts');
+    //     $totalInjectablePrescriptionsNotCharted   = $this->prescription->prescriptionsNotChartedPerShift($shiftPerformance, 'medicationCharts');
+
+    //     foreach($totalInjectablePrescriptionsNotCharted as $NotChartedPrescription){
+    //         array_push($notCharted, $NotChartedPrescription->visit->patient->card_no . ' ' . $NotChartedPrescription->visit->patient->first_name);
+    //     }
+
+    //     $notChartedUniqueInjectables = array_values(array_unique($notCharted));
+
+    //     $all = new Collection(['totalInjectablePrescriptions' => $totalInjectablePrescriptions, 'totalInjectablePrescriptionsCharted' => $totalInjectablePrescriptionsCharted, 'notChartedUniqueInjectables' => $notChartedUniqueInjectables]);
+
+    //     return $totalInjectablePrescriptions ? $all : null;
+    // }
+
     public function injectablesChartRate($shiftPerformance)
     {
         $shiftEnd = new Carbon($shiftPerformance->shift_end);
         $shiftEndTimer = $shiftEnd->subMinutes(20);
-        $notCharted = [];
 
-        $totalInjectablePrescriptions = $this->prescription
-                                    // ->where('chartable', true)
-                                    ->whereRelation('resource', 'sub_category', '=' ,'Injectable')
-                                    ->where('discontinued', false)
-                                    ->where('held', null)
-                                    // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                    ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                    ->count();
+        // Use eager loading to reduce the number of queries
+        $prescriptions = $this->prescription
+            ->with(['visit.patient'])
+            ->whereRelation('resource', 'sub_category', 'Injectable')
+            ->where('discontinued', false)
+            ->where('held', null)
+            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->get();
 
-        $totalInjectablePrescriptionsCharted      = $this->prescription->prescriptionsChartedPerShift($shiftPerformance, 'medicationCharts');
-        $totalInjectablePrescriptionsNotCharted   = $this->prescription->prescriptionsNotChartedPerShift($shiftPerformance, 'medicationCharts');
+        $totalInjectablePrescriptions = $prescriptions->count();
 
-        foreach($totalInjectablePrescriptionsNotCharted as $NotChartedPrescription){
-            array_push($notCharted, $NotChartedPrescription->visit->patient->card_no . ' ' . $NotChartedPrescription->visit->patient->first_name);
-        }
+        $totalInjectablePrescriptionsCharted = $prescriptions->filter(function ($prescription) {
+            return $prescription->medicationCharts->isNotEmpty();
+        })->count();
 
-        $notChartedUniqueInjectables = array_values(array_unique($notCharted));
+        $totalInjectablePrescriptionsNotCharted = $prescriptions->filter(function ($prescription) {
+            return $prescription->medicationCharts->isEmpty();
+        });
 
-        $all = new Collection(['totalInjectablePrescriptions' => $totalInjectablePrescriptions, 'totalInjectablePrescriptionsCharted' => $totalInjectablePrescriptionsCharted, 'notChartedUniqueInjectables' => $notChartedUniqueInjectables]);
+        $notChartedUniqueInjectables = $totalInjectablePrescriptionsNotCharted->map(function ($prescription) {
+            return $prescription->visit->patient->card_no . ' ' . $prescription->visit->patient->first_name;
+        })->unique()->values()->all();
+
+        $all = new Collection([
+            'totalInjectablePrescriptions' => $totalInjectablePrescriptions,
+            'totalInjectablePrescriptionsCharted' => $totalInjectablePrescriptionsCharted,
+            'notChartedUniqueInjectables' => array_values($notChartedUniqueInjectables)
+        ]);
 
         return $totalInjectablePrescriptions ? $all : null;
     }
     
+    // public function othersChartRate($shiftPerformance)
+    // {
+    //     $shiftEnd = new Carbon($shiftPerformance->shift_end);
+    //     $shiftEndTimer = $shiftEnd->subMinutes(20);
+    //     $notCharted = [];
+        
+    //     $totalOtherPrescriptions = $this->prescription
+    //                                 ->where('chartable', true)
+    //                                 ->whereRelation('resource', 'sub_category', '!=' ,'Injectable')
+    //                                 ->where('discontinued', false)
+    //                                 ->where('held', null)
+    //                                 // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                 ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                 ->count();
+
+    //     $totalOtherPrescriptionsCharted      = $this->prescription->prescriptionsChartedPerShift($shiftPerformance, 'nursingCharts', '!=');
+    //     $totalOtherPrescriptionsNotCharted   = $this->prescription->prescriptionsNotChartedPerShift($shiftPerformance, 'nursingCharts', '!=');
+
+    //     foreach($totalOtherPrescriptionsNotCharted as $NotChartedPrescription){
+    //         array_push($notCharted, $NotChartedPrescription->visit->patient->card_no . ' ' . $NotChartedPrescription->visit->patient->first_name);
+    //     }
+
+    //     $notChartedUniqueOthers = array_values(array_unique($notCharted));
+
+    //     $all = new Collection(['totalOtherPrescriptions' => $totalOtherPrescriptions, 'totalOtherPrescriptionsCharted' => $totalOtherPrescriptionsCharted, 'notChartedUniqueOthers' => $notChartedUniqueOthers]);
+
+    //     return $totalOtherPrescriptions ? $all : null;
+    // }
+
     public function othersChartRate($shiftPerformance)
     {
         $shiftEnd = new Carbon($shiftPerformance->shift_end);
         $shiftEndTimer = $shiftEnd->subMinutes(20);
-        $notCharted = [];
-        
-        $totalOtherPrescriptions = $this->prescription
-                                    ->where('chartable', true)
-                                    ->whereRelation('resource', 'sub_category', '!=' ,'Injectable')
-                                    ->where('discontinued', false)
-                                    ->where('held', null)
-                                    // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                    ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                    ->count();
 
-        $totalOtherPrescriptionsCharted      = $this->prescription->prescriptionsChartedPerShift($shiftPerformance, 'nursingCharts', '!=');
-        $totalOtherPrescriptionsNotCharted   = $this->prescription->prescriptionsNotChartedPerShift($shiftPerformance, 'nursingCharts', '!=');
+        // Use eager loading to reduce the number of queries
+        $prescriptions = $this->prescription
+            ->with(['visit.patient', 'nursingCharts'])
+            ->where('chartable', true)
+            ->whereRelation('resource', 'sub_category', '!=', 'Injectable')
+            ->where('discontinued', false)
+            ->where('held', null)
+            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->get();
 
-        foreach($totalOtherPrescriptionsNotCharted as $NotChartedPrescription){
-            array_push($notCharted, $NotChartedPrescription->visit->patient->card_no . ' ' . $NotChartedPrescription->visit->patient->first_name);
-        }
+        $totalOtherPrescriptions = $prescriptions->count();
 
-        $notChartedUniqueOthers = array_values(array_unique($notCharted));
+        $totalOtherPrescriptionsCharted = $prescriptions->filter(function ($prescription) {
+            return $prescription->nursingCharts->isNotEmpty();
+        })->count();
 
-        $all = new Collection(['totalOtherPrescriptions' => $totalOtherPrescriptions, 'totalOtherPrescriptionsCharted' => $totalOtherPrescriptionsCharted, 'notChartedUniqueOthers' => $notChartedUniqueOthers]);
+        $totalOtherPrescriptionsNotCharted = $prescriptions->filter(function ($prescription) {
+            return $prescription->nursingCharts->isEmpty();
+        });
+
+        $notChartedUniqueOthers = $totalOtherPrescriptionsNotCharted->map(function ($prescription) {
+            return $prescription->visit->patient->card_no . ' ' . $prescription->visit->patient->first_name;
+        })->unique()->values()->all();
+
+        $all = new Collection([
+            'totalOtherPrescriptions' => $totalOtherPrescriptions,
+            'totalOtherPrescriptionsCharted' => $totalOtherPrescriptionsCharted,
+            'notChartedUniqueOthers' => array_values($notChartedUniqueOthers)
+        ]);
 
         return $totalOtherPrescriptions ? $all : null;
     }
+
+    // public function injectablesGivenRate($shiftPerformance)
+    // {
+    //     $shiftEnd = new Carbon($shiftPerformance->shift_end);
+    //     $shiftEndTimer = $shiftEnd->subMinutes(20);
+    //     $notGiven = [];
+
+    //     $totalInjectablesPrescriptions      = $this->prescription
+    //                                         ->where('chartable', true)
+    //                                         ->whereRelation('resource', 'sub_category', '=' ,'Injectable')
+    //                                         ->where('discontinued', false)
+    //                                         ->where('held', null)
+    //                                         ->whereHas('medicationCharts')
+    //                                         // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                         ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                         ->count();
+
+    //         $totalInjectablePrescriptionsStarted = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'medicationCharts');
+    //         $totalInjectablePrescriptionsNotStarted   = $this->prescription->prescriptionsNotGivenPerShift($shiftPerformance, 'medicationCharts');
+
+    //         foreach($totalInjectablePrescriptionsNotStarted as $NotStartedPrescription){
+    //             array_push($notGiven, $NotStartedPrescription->visit->patient->card_no . ' ' . $NotStartedPrescription->visit->patient->first_name);
+    //         }
+    
+    //         $notStartedUniqueIjnectables = array_values(array_unique($notGiven));
+    
+    //         $all = new Collection(['totalInjectablePrescriptions' => $totalInjectablesPrescriptions, 'totalInjectablePrescriptionsStarted' => $totalInjectablePrescriptionsStarted, 'notStartedUniqueInjectables' => $notStartedUniqueIjnectables]);
+    
+    //         return $totalInjectablesPrescriptions ? $all : null;
+    // }
 
     public function injectablesGivenRate($shiftPerformance)
     {
         $shiftEnd = new Carbon($shiftPerformance->shift_end);
         $shiftEndTimer = $shiftEnd->subMinutes(20);
-        $notGiven = [];
 
-        $totalInjectablesPrescriptions      = $this->prescription
-                                            ->where('chartable', true)
-                                            ->whereRelation('resource', 'sub_category', '=' ,'Injectable')
-                                            ->where('discontinued', false)
-                                            ->where('held', null)
-                                            ->whereHas('medicationCharts')
-                                            // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                            ->count();
+        // Use eager loading to reduce the number of queries
+        $prescriptions = $this->prescription
+            ->with(['visit.patient', 'medicationCharts'])
+            ->whereRelation('resource', 'sub_category', 'Injectable')
+            ->where('discontinued', false)
+            ->where('held', null)
+            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->get();
 
-            $totalInjectablePrescriptionsStarted = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'medicationCharts');
-            $totalInjectablePrescriptionsNotStarted   = $this->prescription->prescriptionsNotGivenPerShift($shiftPerformance, 'medicationCharts');
+        $totalInjectablesPrescriptions = $prescriptions->count();
 
-            foreach($totalInjectablePrescriptionsNotStarted as $NotStartedPrescription){
-                array_push($notGiven, $NotStartedPrescription->visit->patient->card_no . ' ' . $NotStartedPrescription->visit->patient->first_name);
-            }
-    
-            $notStartedUniqueIjnectables = array_values(array_unique($notGiven));
-    
-            $all = new Collection(['totalInjectablePrescriptions' => $totalInjectablesPrescriptions, 'totalInjectablePrescriptionsStarted' => $totalInjectablePrescriptionsStarted, 'notStartedUniqueInjectables' => $notStartedUniqueIjnectables]);
-    
-            return $totalInjectablesPrescriptions ? $all : null;
+        $totalInjectablePrescriptionsStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
+            return $prescription->medicationCharts->filter(function ($chart) use ($shiftPerformance, $shiftEndTimer){
+                return $chart->scheduled_time >= $shiftPerformance->shift_start && $chart->scheduled_time <= $shiftEndTimer && $chart->time_given !== null;
+            })->isNotEmpty();
+        })->count();
+
+        $totalInjectablePrescriptionsNotStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
+            return $prescription->medicationCharts->filter(function ($chart) use ($shiftPerformance, $shiftEndTimer) {
+                return $chart->scheduled_time >= $shiftPerformance->shift_start && $chart->scheduled_time <= $shiftEndTimer && $chart->time_given === null;
+            })->isNotEmpty();
+        });
+
+        $notStartedUniqueInjectables = $totalInjectablePrescriptionsNotStarted->map(function ($prescription) {
+            return $prescription->visit->patient->card_no . ' ' . $prescription->visit->patient->first_name;
+        })->unique()->values()->all();
+
+        $all = new Collection([
+            'totalInjectablePrescriptions' => $totalInjectablesPrescriptions,
+            'totalInjectablePrescriptionsStarted' => $totalInjectablePrescriptionsStarted,
+            'notStartedUniqueInjectables' => array_values($notStartedUniqueInjectables)
+        ]);
+
+        return $totalInjectablesPrescriptions ? $all : null;
     }
+
+    // public function othersDoneRate($shiftPerformance)
+    // {
+    //     $shiftEnd = new Carbon($shiftPerformance->shift_end);
+    //     $shiftEndTimer = $shiftEnd->subMinutes(20);
+    //     $notGiven = [];
+
+    //     $totalOtherPrescriptions         = $this->prescription
+    //                                         ->where('chartable', true)
+    //                                         ->whereRelation('resource', 'sub_category', '!=' ,'Injectable')
+    //                                         ->where('discontinued', false)
+    //                                         ->where('held', null)
+    //                                         ->whereHas('nursingCharts')
+    //                                         // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                         ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                         ->count();
+
+    //         $totalOtherPrescriptionsStarted      = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'nursingCharts', '!=');
+    //         $totalOtherPrescriptionsNotStarted   = $this->prescription->prescriptionsNotGivenPerShift($shiftPerformance, 'nursingCharts', '!=');
+
+    //         foreach($totalOtherPrescriptionsNotStarted as $NotStartedPrescription){
+    //             array_push($notGiven, $NotStartedPrescription->visit->patient->card_no . ' ' . $NotStartedPrescription->visit->patient->first_name);
+    //         }
+    
+    //         $notStartedUniqueOthers = array_values(array_unique($notGiven));
+    
+    //         $all = new Collection(['totalOtherPrescriptions' => $totalOtherPrescriptions, 'totalOtherPrescriptionsStarted' => $totalOtherPrescriptionsStarted, 'notStartedUniqueOthers' => $notStartedUniqueOthers]);
+    
+    //         return $totalOtherPrescriptions ? $all : null;
+    // }
 
     public function othersDoneRate($shiftPerformance)
     {
         $shiftEnd = new Carbon($shiftPerformance->shift_end);
         $shiftEndTimer = $shiftEnd->subMinutes(20);
-        $notGiven = [];
 
-        $totalOtherPrescriptions         = $this->prescription
-                                            ->where('chartable', true)
-                                            ->whereRelation('resource', 'sub_category', '!=' ,'Injectable')
-                                            ->where('discontinued', false)
-                                            ->where('held', null)
-                                            ->whereHas('nursingCharts')
-                                            // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                            ->count();
+        // Use eager loading to reduce the number of queries
+        $prescriptions = $this->prescription
+            ->with(['visit.patient', 'nursingCharts'])
+            ->where('chartable', true)
+            ->whereRelation('resource', 'sub_category', '!=', 'Injectable')
+            ->where('discontinued', false)
+            ->where('held', null)
+            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->get();
 
-            $totalOtherPrescriptionsStarted      = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'nursingCharts', '!=');
-            $totalOtherPrescriptionsNotStarted   = $this->prescription->prescriptionsNotGivenPerShift($shiftPerformance, 'nursingCharts', '!=');
+        $totalOtherPrescriptions = $prescriptions->count();
 
-            foreach($totalOtherPrescriptionsNotStarted as $NotStartedPrescription){
-                array_push($notGiven, $NotStartedPrescription->visit->patient->card_no . ' ' . $NotStartedPrescription->visit->patient->first_name);
-            }
-    
-            $notStartedUniqueOthers = array_values(array_unique($notGiven));
-    
-            $all = new Collection(['totalOtherPrescriptions' => $totalOtherPrescriptions, 'totalOtherPrescriptionsStarted' => $totalOtherPrescriptionsStarted, 'notStartedUniqueOthers' => $notStartedUniqueOthers]);
-    
-            return $totalOtherPrescriptions ? $all : null;
+        $totalOtherPrescriptionsStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
+            return $prescription->nursingCharts->filter(function ($chart) use ($shiftPerformance, $shiftEndTimer) {
+                return $chart->scheduled_time >= $shiftPerformance->shift_start && $chart->scheduled_time <= $shiftEndTimer && $chart->time_done !== null;
+            })->isNotEmpty();
+        })->count();
+
+        $totalOtherPrescriptionsNotStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
+            return $prescription->nursingCharts->filter(function ($chart) use ($shiftPerformance, $shiftEndTimer) {
+                return $chart->scheduled_time >= $shiftPerformance->shift_start && $chart->scheduled_time <= $shiftEndTimer && $chart->time_done === null;
+            })->isNotEmpty();
+        });
+
+        $notStartedUniqueOthers = $totalOtherPrescriptionsNotStarted->map(function ($prescription) {
+            return $prescription->visit->patient->card_no . ' ' . $prescription->visit->patient->first_name;
+        })->unique()->values()->all();
+
+        $all = new Collection([
+            'totalOtherPrescriptions' => $totalOtherPrescriptions,
+            'totalOtherPrescriptionsStarted' => $totalOtherPrescriptionsStarted,
+            'notStartedUniqueOthers' => array_values($notStartedUniqueOthers)
+        ]);
+
+        return $totalOtherPrescriptions ? $all : null;
     }
+
+    // public function firstMedicationResolution($shiftPerformance)
+    // {
+    //     $shiftEnd = new Carbon($shiftPerformance->shift_end);
+    //     $shiftEndTimer = $shiftEnd->subMinutes(20);
+
+    //     $prescriptionsWithoutMc = $this->prescription
+    //                                     // ->where('chartable', true)
+    //                                     ->whereRelation('resource', 'sub_category', '=' ,'Injectable')
+    //                                     ->where('discontinued', false)
+    //                                     ->where('held', null)
+    //                                     // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                     ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                     ->whereDoesntHave('medicationCharts')->count();
+
+    //     $prescriptionsWithMc    = $this->prescription
+    //                                     // ->where('chartable', true)
+    //                                     ->whereRelation('resource', 'sub_category', '=' ,'Injectable')
+    //                                     ->where('discontinued', false)
+    //                                     ->where('held', null)
+    //                                     // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                     ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                     ->whereHas('medicationCharts')->count();
+
+    //     $averageFMRTime = DB::table('prescriptions')
+    //                         ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, prescriptions.created_at))) AS averageFMRTime')
+    //                         ->leftJoin('medication_charts', 'prescriptions.id', 'medication_charts.prescription_id')
+    //                         ->where('medication_charts.dose_count', 1)
+    //                         ->where('prescriptions.held', null)
+    //                         ->where('prescriptions.discontinued', false)
+    //                         // ->whereBetween('prescriptions.created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                         ->whereBetween('prescriptions.hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                         ->get()->first()->averageFMRTime;
+        
+    //     return $prescriptionsWithoutMc > 0 || $prescriptionsWithMc > 0 ? $averageFMRTime : null;     
+    // }
 
     public function firstMedicationResolution($shiftPerformance)
     {
         $shiftEnd = new Carbon($shiftPerformance->shift_end);
         $shiftEndTimer = $shiftEnd->subMinutes(20);
 
-        $prescriptionsWithoutMc = $this->prescription
-                                        // ->where('chartable', true)
-                                        ->whereRelation('resource', 'sub_category', '=' ,'Injectable')
-                                        ->where('discontinued', false)
-                                        ->where('held', null)
-                                        // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                        ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                        ->whereDoesntHave('medicationCharts')->count();
+        // Use eager loading to reduce the number of queries
+        $prescriptions = $this->prescription
+            ->with(['medicationCharts'])
+            ->whereRelation('resource', 'sub_category', 'Injectable')
+            ->where('discontinued', false)
+            ->where('held', null)
+            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->get();
 
-        $prescriptionsWithMc    = $this->prescription
-                                        // ->where('chartable', true)
-                                        ->whereRelation('resource', 'sub_category', '=' ,'Injectable')
-                                        ->where('discontinued', false)
-                                        ->where('held', null)
-                                        // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                        ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                        ->whereHas('medicationCharts')->count();
+        $prescriptionsWithoutMc = $prescriptions->filter(function ($prescription) {
+            return $prescription->medicationCharts->isEmpty();
+        })->count();
+
+        $prescriptionsWithMc = $prescriptions->filter(function ($prescription) {
+            return $prescription->medicationCharts->isNotEmpty();
+        })->count();
 
         $averageFMRTime = DB::table('prescriptions')
-                            ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, prescriptions.created_at))) AS averageFMRTime')
-                            ->leftJoin('medication_charts', 'prescriptions.id', 'medication_charts.prescription_id')
-                            ->where('medication_charts.dose_count', 1)
-                            ->where('prescriptions.held', null)
-                            ->where('prescriptions.discontinued', false)
-                            // ->whereBetween('prescriptions.created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                            ->whereBetween('prescriptions.hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
-                            ->get()->first()->averageFMRTime;
-        
-        return $prescriptionsWithoutMc > 0 || $prescriptionsWithMc > 0 ? $averageFMRTime : null;     
+            ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, prescriptions.created_at))) AS averageFMRTime')
+            ->leftJoin('medication_charts', 'prescriptions.id', 'medication_charts.prescription_id')
+            ->where('medication_charts.dose_count', 1)
+            ->where('prescriptions.held', null)
+            ->where('prescriptions.discontinued', false)
+            ->whereBetween('prescriptions.hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->value('averageFMRTime');
+
+        return $prescriptionsWithoutMc > 0 || $prescriptionsWithMc > 0 ? $averageFMRTime : null;
     }
+
+    // public function firstServicesResolution($shiftPerformance)
+    // {
+    //     $shiftEnd = new Carbon($shiftPerformance->shift_end);
+    //     $shiftEndTimer = $shiftEnd->subMinutes(20);
+
+    //     $prescriptionsWithoutNc = $this->prescription
+    //                                     ->where('chartable', true)
+    //                                     ->whereRelation('resource', 'sub_category', '!=' ,'Injectable')
+    //                                     ->where('discontinued', false)
+    //                                     ->where('held', null)
+    //                                     ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                     // ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                     ->whereDoesntHave('nursingCharts')->count();
+
+    //     $prescriptionsWithNc    = $this->prescription
+    //                                     // ->where('chartable', true)
+    //                                     ->whereRelation('resource', 'sub_category', '!=' ,'Injectable')
+    //                                     ->where('discontinued', false)
+    //                                     ->where('held', null)
+    //                                     ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                     // ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                     ->whereHas('nursingCharts')->count();
+
+    //     $averageFSRTime = DB::table('prescriptions')
+    //                         ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(nursing_charts.time_done, prescriptions.created_at))) AS averageFSRTime')
+    //                         ->leftJoin('nursing_charts', 'prescriptions.id', 'nursing_charts.prescription_id')
+    //                         ->where('nursing_charts.schedule_count', 1)
+    //                         ->where('prescriptions.held', null)
+    //                         ->where('prescriptions.discontinued', false)
+    //                         ->whereBetween('prescriptions.created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                         // ->whereBetween('prescriptions.hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                         ->get()->first()->averageFSRTime;
+        
+    //     return $prescriptionsWithoutNc > 0 || $prescriptionsWithNc > 0 ? $averageFSRTime : null;     
+    // }
 
     public function firstServicesResolution($shiftPerformance)
     {
         $shiftEnd = new Carbon($shiftPerformance->shift_end);
         $shiftEndTimer = $shiftEnd->subMinutes(20);
 
-        $prescriptionsWithoutNc = $this->prescription
-                                        ->where('chartable', true)
-                                        ->whereRelation('resource', 'sub_category', '!=' ,'Injectable')
-                                        ->where('discontinued', false)
-                                        ->where('held', null)
-                                        ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                        // ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                        ->whereDoesntHave('nursingCharts')->count();
+        // Use eager loading to reduce the number of queries
+        $prescriptions = $this->prescription
+            ->with(['nursingCharts'])
+            ->where('chartable', true)
+            ->whereRelation('resource', 'sub_category', '!=', 'Injectable')
+            ->where('discontinued', false)
+            ->where('held', null)
+            ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->get();
 
-        $prescriptionsWithNc    = $this->prescription
-                                        // ->where('chartable', true)
-                                        ->whereRelation('resource', 'sub_category', '!=' ,'Injectable')
-                                        ->where('discontinued', false)
-                                        ->where('held', null)
-                                        ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                        // ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                        ->whereHas('nursingCharts')->count();
+        $prescriptionsWithoutNc = $prescriptions->filter(function ($prescription) {
+            return $prescription->nursingCharts->isEmpty();
+        })->count();
+
+        $prescriptionsWithNc = $prescriptions->filter(function ($prescription) {
+            return $prescription->nursingCharts->isNotEmpty();
+        })->count();
 
         $averageFSRTime = DB::table('prescriptions')
-                            ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(nursing_charts.time_done, prescriptions.created_at))) AS averageFSRTime')
-                            ->leftJoin('nursing_charts', 'prescriptions.id', 'nursing_charts.prescription_id')
-                            ->where('nursing_charts.schedule_count', 1)
-                            ->where('prescriptions.held', null)
-                            ->where('prescriptions.discontinued', false)
-                            ->whereBetween('prescriptions.created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                            // ->whereBetween('prescriptions.hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
-                            ->get()->first()->averageFSRTime;
-        
-        return $prescriptionsWithoutNc > 0 || $prescriptionsWithNc > 0 ? $averageFSRTime : null;     
+            ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(nursing_charts.time_done, prescriptions.created_at))) AS averageFSRTime')
+            ->leftJoin('nursing_charts', 'prescriptions.id', 'nursing_charts.prescription_id')
+            ->where('nursing_charts.schedule_count', 1)
+            ->where('prescriptions.held', null)
+            ->where('prescriptions.discontinued', false)
+            ->whereBetween('prescriptions.created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->value('averageFSRTime');
+
+        return $prescriptionsWithoutNc > 0 || $prescriptionsWithNc > 0 ? $averageFSRTime : null;
     }
+
+    // public function firstVitalsignsResolution($shiftPerformance)
+    // {
+    //     $shiftEnd = new Carbon($shiftPerformance->shift_end);
+    //     $shiftEndTimer = $shiftEnd->subMinutes(10);
+
+    //     $visitsWithoutVs    = $this->visit
+    //                             ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                             ->whereDoesntHave('vitalSigns')
+    //                             ->count();
+
+    //     $visitsWithVs       = $this->visit
+    //                             ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                             ->whereHas('vitalSigns')
+    //                             ->count();
+
+    //     $averageFVRTime = DB::table('visits')
+    //                 ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(first_vitalsigns, created_at))) AS averageFVRTime')
+    //                 ->whereBetween('visits.created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                 ->get()->first()?->averageFVRTime;
+
+    //     return $visitsWithoutVs > 0 || $visitsWithVs > 0 ? $averageFVRTime : null;        
+    // }
 
     public function firstVitalsignsResolution($shiftPerformance)
     {
         $shiftEnd = new Carbon($shiftPerformance->shift_end);
         $shiftEndTimer = $shiftEnd->subMinutes(10);
 
-        $visitsWithoutVs    = $this->visit
-                                ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                ->whereDoesntHave('vitalSigns')
-                                ->count();
+        // Use eager loading to reduce the number of queries
+        $visits = $this->visit
+            ->with(['vitalSigns'])
+            ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->get();
 
-        $visitsWithVs       = $this->visit
-                                ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                ->whereHas('vitalSigns')
-                                ->count();
+        $visitsWithoutVs = $visits->filter(function ($visit) {
+            return $visit->vitalSigns->isEmpty();
+        })->count();
+
+        $visitsWithVs = $visits->filter(function ($visit) {
+            return $visit->vitalSigns->isNotEmpty();
+        })->count();
 
         $averageFVRTime = DB::table('visits')
-                    ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(first_vitalsigns, created_at))) AS averageFVRTime')
-                    ->whereBetween('visits.created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                    ->get()->first()?->averageFVRTime;
+            ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(first_vitalsigns, created_at))) AS averageFVRTime')
+            ->whereBetween('visits.created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->value('averageFVRTime');
 
-        return $visitsWithoutVs > 0 || $visitsWithVs > 0 ? $averageFVRTime : null;        
+        return $visitsWithoutVs > 0 || $visitsWithVs > 0 ? $averageFVRTime : null;
     }
+
+    // public function medicationTime($shiftPerformance)
+    // {
+    //     $medicatonsDueInShift = $this->medicationChart
+    //                             ->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+    //                             ->orWhereBetween('time_given', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+    //                             ->whereRelation('visit', 'admission_status', '!=', 'Outpatient')
+    //                             ->count();
+
+    //     $averageMedicationTimes = DB::table('medication_charts')
+    //                             ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, medication_charts.scheduled_time))) AS averageMedicationTime')
+    //                             ->leftJoin('visits', 'visits.id', 'medication_charts.visit_id')
+    //                             ->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+    //                             ->where('visits.admission_status', '!=', 'OutPatient')
+    //                             ->get()->first()->averageMedicationTime;
+
+    //     $averageMedicationTime = $medicatonsDueInShift ? ($averageMedicationTimes ? $averageMedicationTimes : null) : null;
+
+    //     return $medicatonsDueInShift > 0 ? $averageMedicationTime : null;        
+    // }
 
     public function medicationTime($shiftPerformance)
-    {
-        $medicatonsDueInShift = $this->medicationChart
-                                ->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
-                                ->orWhereBetween('time_given', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
-                                ->whereRelation('visit', 'admission_status', '!=', 'Outpatient')
-                                ->count();
+{
+    $medicationsDueInShift = $this->medicationChart
+        ->where(function ($query) use ($shiftPerformance) {
+            $query->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+                  ->orWhereBetween('time_given', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
+        })
+        ->whereRelation('visit', 'admission_status', '!=', 'Outpatient')
+        ->count();
 
-        $averageMedicationTimes = DB::table('medication_charts')
-                                ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, medication_charts.scheduled_time))) AS averageMedicationTime')
-                                ->leftJoin('visits', 'visits.id', 'medication_charts.visit_id')
-                                ->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
-                                ->where('visits.admission_status', '!=', 'OutPatient')
-                                ->get()->first()->averageMedicationTime;
+    $averageMedicationTime = DB::table('medication_charts')
+        ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, medication_charts.scheduled_time))) AS averageMedicationTime')
+        ->leftJoin('visits', 'visits.id', 'medication_charts.visit_id')
+        ->whereBetween('medication_charts.scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+        ->where('visits.admission_status', '!=', 'OutPatient')
+        ->value('averageMedicationTime');
 
-        $averageMedicationTime = $medicatonsDueInShift ? ($averageMedicationTimes ? $averageMedicationTimes : null) : null;
+    return $medicationsDueInShift > 0 ? $averageMedicationTime : null;
+}
 
-        return $medicatonsDueInShift > 0 ? $averageMedicationTime : null;        
-    }
+    // public function serviceTime($shiftPerformance)
+    // {
+    //     $servicesDueInShift = $this->nursingChart
+    //                             ->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+    //                             ->orWhereBetween('time_done', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+    //                             ->whereRelation('visit', 'admission_status', '!=', 'Outpatient')
+    //                             ->count();
+
+    //     $averageServiceTimes = DB::table('nursing_charts')
+    //                             ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(nursing_charts.time_done, nursing_charts.scheduled_time))) AS averageServiceTime')
+    //                             ->leftJoin('visits', 'visits.id', 'nursing_charts.visit_id')
+    //                             ->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+    //                             ->where('visits.admission_status', '!=', 'OutPatient')
+    //                             ->get()->first()->averageServiceTime;
+
+    //     $averageServiceTime = $servicesDueInShift ? ($averageServiceTimes ? $averageServiceTimes : null) : null;
+
+    //     return $servicesDueInShift > 0 ? $averageServiceTime : null;        
+    // }
 
     public function serviceTime($shiftPerformance)
     {
         $servicesDueInShift = $this->nursingChart
-                                ->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
-                                ->orWhereBetween('time_done', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
-                                ->whereRelation('visit', 'admission_status', '!=', 'Outpatient')
-                                ->count();
+            ->where(function ($query) use ($shiftPerformance) {
+                $query->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+                    ->orWhereBetween('time_done', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
+            })
+            ->whereRelation('visit', 'admission_status', '!=', 'Outpatient')
+            ->count();
 
-        $averageServiceTimes = DB::table('nursing_charts')
-                                ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(nursing_charts.time_done, nursing_charts.scheduled_time))) AS averageServiceTime')
-                                ->leftJoin('visits', 'visits.id', 'nursing_charts.visit_id')
-                                ->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
-                                ->where('visits.admission_status', '!=', 'OutPatient')
-                                ->get()->first()->averageServiceTime;
+        $averageServiceTime = DB::table('nursing_charts')
+            ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(nursing_charts.time_done, nursing_charts.scheduled_time))) AS averageServiceTime')
+            ->leftJoin('visits', 'visits.id', 'nursing_charts.visit_id')
+            ->whereBetween('nursing_charts.scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+            ->where('visits.admission_status', '!=', 'OutPatient')
+            ->value('averageServiceTime');
 
-        $averageServiceTime = $servicesDueInShift ? ($averageServiceTimes ? $averageServiceTimes : null) : null;
-
-        return $servicesDueInShift > 0 ? $averageServiceTime : null;        
+        return $servicesDueInShift > 0 ? $averageServiceTime : null;
     }
     
+    // public function inpatientsVitalsignsCount($shiftPerformance)
+    // {
+    //     $shiftStart         = new CarbonImmutable($shiftPerformance->shift_start);
+    //     $shiftStartTimer    = $shiftStart->addHour();
+    //     $count              = 2;
+    //     $noVitals           = [];
+
+    //     if ($shiftPerformance->shift == 'Night Shift'){
+    //         $shiftStartTimer = $shiftStart->addHours(3);
+    //         $count = 3;
+    //     }
+
+    //     $visitsCount = $this->visit
+    //             ->where('created_at', '<', $shiftStartTimer)
+    //             ->where(function (EloquentBuilder $query) {
+    //                 $query->where('admission_status', '=', 'Inpatient')
+    //                 ->orWhere('admission_status', '=', 'Observation');
+    //             })
+    //             ->where('doctor_done_by', null)
+    //             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+    //             ->count();
+
+    //     $visitsVCount = $this->visit
+    //             ->where('created_at', '<', $shiftStartTimer)
+    //             ->where(function (EloquentBuilder $query) {
+    //                 $query->where('admission_status', '=', 'Inpatient')
+    //                 ->orWhere('admission_status', '=', 'Observation');
+    //             })
+    //             ->where('doctor_done_by', '=', null)
+    //             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+    //             ->where(function (EloquentBuilder $query) use ($shiftPerformance, $count) {
+    //                 $query->whereHas('vitalSigns', function ($query) use ($shiftPerformance) {
+    //                             $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
+    //                     }, '>=', $count);
+    //                     // ->orWhereHas('antenatalRegisteration.ancVitalSigns', function ($query) use ($shiftPerformance) {
+    //                     //         $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
+    //                     // }, '>=', $count);
+    //             })
+    //             ->count();
+               
+    //     $visitsNoVitals = $this->visit
+    //             ->where('created_at', '<', $shiftStartTimer)
+    //             ->where(function (EloquentBuilder $query) {
+    //                 $query->where('admission_status', '=', 'Inpatient')
+    //                 ->orWhere('admission_status', '=', 'Observation');
+    //             })
+    //             ->where('doctor_done_by', '=', null)
+    //             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+    //             ->where(function (EloquentBuilder $query) use ($shiftPerformance, $count) {
+    //                 $query->whereHas('vitalSigns', function ($query) use ($shiftPerformance) {
+    //                         $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
+    //                     }, '<', $count);
+    //                     // ->orWhereHas('antenatalRegisteration.ancVitalSigns', function ($query) use ($shiftPerformance) {
+    //                     //     $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
+    //                     // }, '<', $count);
+    //             })
+    //             ->get();
+
+    //     foreach($visitsNoVitals as $visitNoVitals){
+    //         array_push($noVitals, $visitNoVitals->patient->card_no . ' ' . $visitNoVitals->patient->first_name);
+    //     }
+
+    //     $all = new Collection(['visitsCount' => $visitsCount, 'visitsVCount' => $visitsVCount, 'visitsNoVitals' => $noVitals]);
+
+    //     return $visitsCount ? $all : null;
+    // }
+
     public function inpatientsVitalsignsCount($shiftPerformance)
     {
-        $shiftStart         = new CarbonImmutable($shiftPerformance->shift_start);
-        $shiftStartTimer    = $shiftStart->addHour();
-        $count              = 2;
-        $noVitals           = [];
+        $shiftStart = new CarbonImmutable($shiftPerformance->shift_start);
+        $shiftStartTimer = $shiftStart->addHour();
+        $count = 2;
 
-        if ($shiftPerformance->shift == 'Night Shift'){
+        if ($shiftPerformance->shift == 'Night Shift') {
             $shiftStartTimer = $shiftStart->addHours(3);
             $count = 3;
         }
 
-        $visitsCount = $this->visit
-                ->where('created_at', '<', $shiftStartTimer)
-                ->where(function (EloquentBuilder $query) {
-                    $query->where('admission_status', '=', 'Inpatient')
+        // Use eager loading to reduce the number of queries
+        $visits = $this->visit
+            ->with(['patient', 'vitalSigns'])
+            ->where('created_at', '<', $shiftStartTimer)
+            ->where(function (EloquentBuilder $query) {
+                $query->where('admission_status', '=', 'Inpatient')
                     ->orWhere('admission_status', '=', 'Observation');
-                })
-                ->where('doctor_done_by', null)
-                ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-                ->count();
+            })
+            ->where('doctor_done_by', null)
+            ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+            ->get();
 
-        $visitsVCount = $this->visit
-                ->where('created_at', '<', $shiftStartTimer)
-                ->where(function (EloquentBuilder $query) {
-                    $query->where('admission_status', '=', 'Inpatient')
-                    ->orWhere('admission_status', '=', 'Observation');
-                })
-                ->where('doctor_done_by', '=', null)
-                ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-                ->where(function (EloquentBuilder $query) use ($shiftPerformance, $count) {
-                    $query->whereHas('vitalSigns', function ($query) use ($shiftPerformance) {
-                                $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
-                        }, '>=', $count);
-                        // ->orWhereHas('antenatalRegisteration.ancVitalSigns', function ($query) use ($shiftPerformance) {
-                        //         $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
-                        // }, '>=', $count);
-                })
-                ->count();
-               
-        $visitsNoVitals = $this->visit
-                ->where('created_at', '<', $shiftStartTimer)
-                ->where(function (EloquentBuilder $query) {
-                    $query->where('admission_status', '=', 'Inpatient')
-                    ->orWhere('admission_status', '=', 'Observation');
-                })
-                ->where('doctor_done_by', '=', null)
-                ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-                ->where(function (EloquentBuilder $query) use ($shiftPerformance, $count) {
-                    $query->whereHas('vitalSigns', function ($query) use ($shiftPerformance) {
-                            $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
-                        }, '<', $count);
-                        // ->orWhereHas('antenatalRegisteration.ancVitalSigns', function ($query) use ($shiftPerformance) {
-                        //     $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
-                        // }, '<', $count);
-                })
-                ->get();
+        $visitsCount = $visits->count();
 
-        foreach($visitsNoVitals as $visitNoVitals){
-            array_push($noVitals, $visitNoVitals->patient->card_no . ' ' . $visitNoVitals->patient->first_name);
-        }
+        $visitsVCount = $visits->filter(function ($visit) use ($shiftPerformance, $count) {
+            return $visit->vitalSigns->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->count() >= $count;
+        })->count();
 
-        $all = new Collection(['visitsCount' => $visitsCount, 'visitsVCount' => $visitsVCount, 'visitsNoVitals' => $noVitals]);
+        $visitsNoVitals = $visits->filter(function ($visit) use ($shiftPerformance, $count) {
+            return $visit->vitalSigns->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->count() < $count;
+        });
+
+        $noVitals = $visitsNoVitals->map(function ($visit) {
+            return $visit->patient->card_no . ' ' . $visit->patient->first_name;
+        })->all();
+
+        $all = new Collection([
+            'visitsCount' => $visitsCount,
+            'visitsVCount' => $visitsVCount,
+            'visitsNoVitals' => array_values($noVitals)
+        ]);
 
         return $visitsCount ? $all : null;
     }
+
+    // public function outpatientssVitalsignsCount($shiftPerformance)
+    // {
+    //     $shiftEnd      = new Carbon($shiftPerformance->shift_end);
+    //     $shiftEndTimer = $shiftEnd->subMinutes(10);
+    //     $noVitals      = [];
+
+    //     $visitsCount = $this->visit
+    //             ->where('closed', false)
+    //             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+    //             ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //             ->count();
+
+    //     $visitsVCount = $this->visit
+    //             ->where('closed', false)
+    //             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+    //             ->whereHas('vitalSigns', function ($query) use ($shiftPerformance, $shiftEndTimer) {
+    //                     $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer]);
+    //                 }, '>=', 1
+    //             )
+    //             ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //             ->count();
+
+    //     $visitsNoVitals = $this->visit
+    //             ->where('closed', false)
+    //             ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+    //             ->whereDoesntHave('vitalSigns', function ($query) use ($shiftPerformance, $shiftEndTimer) {
+    //                     $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer]);
+    //                 })
+    //             ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //             ->get();
+
+    //     foreach($visitsNoVitals as $visitNoVitals){
+    //         array_push($noVitals, $visitNoVitals->patient->card_no . ' ' . $visitNoVitals->patient->first_name);
+    //     }
+
+    //     $all = new Collection(['visitsCount' => $visitsCount, 'visitsVCount' => $visitsVCount, 'visitsNoVitals' => $noVitals]);
+
+    //     return $visitsCount ? $all : null;
+    // }
 
     public function outpatientssVitalsignsCount($shiftPerformance)
-    {
-        $shiftEnd      = new Carbon($shiftPerformance->shift_end);
-        $shiftEndTimer = $shiftEnd->subMinutes(10);
-        $noVitals      = [];
+{
+    $shiftEnd = new Carbon($shiftPerformance->shift_end);
+    $shiftEndTimer = $shiftEnd->subMinutes(10);
 
-        $visitsCount = $this->visit
-                ->where('closed', false)
-                ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-                ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                ->count();
+    // Use eager loading to reduce the number of queries
+    $visits = $this->visit
+        ->with(['patient', 'vitalSigns'])
+        ->where('closed', false)
+        ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+        ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+        ->get();
 
-        $visitsVCount = $this->visit
-                ->where('closed', false)
-                ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-                ->whereHas('vitalSigns', function ($query) use ($shiftPerformance, $shiftEndTimer) {
-                        $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer]);
-                    }, '>=', 1
-                )
-                ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                ->count();
+    $visitsCount = $visits->count();
 
-        $visitsNoVitals = $this->visit
-                ->where('closed', false)
-                ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-                ->whereDoesntHave('vitalSigns', function ($query) use ($shiftPerformance, $shiftEndTimer) {
-                        $query->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer]);
-                    })
-                ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                ->get();
+    $visitsVCount = $visits->filter(function ($visit) use ($shiftPerformance, $shiftEndTimer) {
+        return $visit->vitalSigns->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])->count() >= 1;
+    })->count();
 
-        foreach($visitsNoVitals as $visitNoVitals){
-            array_push($noVitals, $visitNoVitals->patient->card_no . ' ' . $visitNoVitals->patient->first_name);
-        }
+    $visitsNoVitals = $visits->filter(function ($visit) use ($shiftPerformance, $shiftEndTimer) {
+        return $visit->vitalSigns->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])->isEmpty();
+    });
 
-        $all = new Collection(['visitsCount' => $visitsCount, 'visitsVCount' => $visitsVCount, 'visitsNoVitals' => $noVitals]);
+    $noVitals = $visitsNoVitals->map(function ($visit) {
+        return $visit->patient->card_no . ' ' . $visit->patient->first_name;
+    })->all();
 
-        return $visitsCount ? $all : null;
-    }
+    $all = new Collection([
+        'visitsCount' => $visitsCount,
+        'visitsVCount' => $visitsVCount,
+        'visitsNoVitals' => array_values($noVitals)
+    ]);
+
+    return $visitsCount ? $all : null;
+}
 
     public function secondsToPercent($seconds, $indicator)
     {
         if ($indicator == 'FMR'){
-            return $seconds < 600 ? 100 : ($seconds > 600 && $seconds < 1200 ? 90 : ($seconds > 1200 && $seconds < 2400 ? 80 : ($seconds > 2400 && $seconds < 3600 ? 60 : ($seconds > 3600 && $seconds < 5400 ? 40 : 20))));
+            return $seconds < 660 ? 100 : ($seconds > 660 && $seconds < 1260 ? 90 : ($seconds > 1260 && $seconds < 2460 ? 80 : ($seconds > 2460 && $seconds < 3660 ? 60 : ($seconds > 3660 && $seconds < 5460 ? 40 : 20))));
         }
         if ($indicator == 'FVR'){
-            return $seconds < 300 ? 100 : ($seconds > 300 && $seconds < 600 ? 90 : ($seconds > 600 && $seconds < 900 ? 80 : ($seconds > 900 && $seconds < 1200 ? 70 : ($seconds > 1200 && $seconds < 1500 ? 60 : ($seconds > 1500 && $seconds < 2400 ? 40 : 20)))));
+            return $seconds < 360 ? 100 : ($seconds > 360 && $seconds < 660 ? 90 : ($seconds > 660 && $seconds < 960 ? 80 : ($seconds > 960 && $seconds < 1260 ? 70 : ($seconds > 1260 && $seconds < 1560 ? 60 : ($seconds > 1560 && $seconds < 2460 ? 40 : 20)))));
         }
         if ($indicator == 'MT'){
-            return $seconds < 120 ? 100 : ($seconds > 120 && $seconds < 300 ? 80 : ($seconds > 300 && $seconds < 600 ? 70 : ($seconds > 600 && $seconds < 900 ? 50 : ($seconds > 900 && $seconds < 1200 ? 40 : 20))));
+            return $seconds < 180 ? 100 : ($seconds > 180 && $seconds < 360 ? 80 : ($seconds > 360 && $seconds < 660 ? 70 : ($seconds > 660 && $seconds < 960 ? 50 : ($seconds > 960 && $seconds < 1260 ? 40 : 20))));
         }
     }
 

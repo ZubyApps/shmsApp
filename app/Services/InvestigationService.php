@@ -6,12 +6,10 @@ namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
 use App\Jobs\SendTestResultDone;
-use App\Models\Consultation;
 use App\Models\Prescription;
 use App\Models\User;
 use App\Models\Visit;
 use App\Models\Ward;
-use App\Notifications\InvestigationNotifier;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -24,7 +22,6 @@ class InvestigationService
         private readonly Prescription $prescription,
         private readonly PayPercentageService $payPercentageService,
         private readonly HelperService $helperService,
-        private readonly InvestigationNotifier $investigationNotifier,
         private readonly Ward $ward,
         )
     {

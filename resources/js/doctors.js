@@ -1245,7 +1245,8 @@ window.addEventListener('DOMContentLoaded', function () {
             }
 
             if (discontinueBtn){
-                if (confirm('Are you sure you want to discontinue prescription?')) {
+                const state = discontinueBtn.getAttribute('data-discontinue')
+                if (confirm(`Are you sure you want to ${state == 0 ? 'DISCOUNTINUE' : 'COUNTINUE'} prescription?`)) {
                     const prescriptionId = discontinueBtn.getAttribute('data-id')
                     const treatmentTableId = discontinueBtn.getAttribute('data-table')
                     http.patch(`/prescription/${prescriptionId}`)
