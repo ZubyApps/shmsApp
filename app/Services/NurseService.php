@@ -10,7 +10,6 @@ use App\Models\Visit;
 use App\Models\Ward;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-// use Illuminate\Support\Facades\Cache;
 
 class NurseService
 {
