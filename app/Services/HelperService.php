@@ -4,9 +4,11 @@ declare(strict_types = 1);
 
 namespace App\Services;
 
-use App\Models\Ward;
 use Carbon\Carbon;
+use App\Models\Ward;
 use Carbon\CarbonImmutable;
+use App\DataObjects\DataTableQueryParams;
+use Illuminate\Database\Eloquent\Builder;
 
 class HelperService
 {
@@ -40,5 +42,11 @@ class HelperService
     public function displayWard(Ward $ward)
     {
         return $ward->short_name . '-Bed' . $ward->bed_number;
+    }
+
+    public function paginateQuery(Builder $query, DataTableQueryParams $params, string $orderBy = 'consulted', string $orderDir = 'desc')
+    {
+        return $query->orderBy($orderBy, $orderDir)
+            ->paginate($params->length, '*', '', (($params->length + $params->start) / $params->length));
     }
 }

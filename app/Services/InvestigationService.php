@@ -56,7 +56,7 @@ class InvestigationService
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-            return $query->where(function (Builder $query) use($searchTerm) {
+            $query = $query->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
@@ -66,54 +66,38 @@ class InvestigationService
                         ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
                         ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
                         ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
-                    })
+                    });
                     
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            return $this->helperService->paginateQuery($query, $params);
         }
 
         if ($data->filterBy == 'Outpatient'){
-            return $query->where('closed', false)
-            ->whereHas('prescriptions', function(Builder $query){
-                $query->where('result', '=', null)
-                ->whereRelation('resource', 'category', '=', 'Investigations')
-                ->whereRelation('resource', 'sub_category', '!=', 'Imaging');
-            })
-            ->where('admission_status', '=', 'Outpatient')
-            ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-            ->orderBy($orderBy, $orderDir)
-            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            $query->where('admission_status', '=', 'Outpatient')
+                ->whereRelation('patient', 'patient_type', '!=', 'ANC');
         }
 
         if ($data->filterBy == 'Inpatient'){
-            return $query->where('closed', false)
-                    ->whereHas('prescriptions', function(Builder $query){
-                            $query->where('result', '=', null)
-                            ->whereRelation('resource', 'category', '=', 'Investigations')
-                            ->whereRelation('resource', 'sub_category', '!=', 'Imaging');
-                        })
-                    ->where(function (Builder $query) {
+            $query->where(function (Builder $query) {
                         $query->where('admission_status', '=', 'Inpatient')
                         ->orWhere('admission_status', '=', 'Observation');
-                    })
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                    });
         }
         if ($data->filterBy == 'ANC'){
-            return $query->where('closed', false)
+            $query->whereRelation('patient', 'patient_type', '=', 'ANC');
+        }
+
+        $query = $this->generalFilters($query);
+        return $this->helperService->paginateQuery($query, $params);
+    }
+
+    private function generalFilters(Builder $query)
+    {
+        return $query->where('closed', false)
                     ->whereHas('prescriptions', function(Builder $query){
                         $query->where('result', '=', null)
                         ->whereRelation('resource', 'category', '=', 'Investigations')
                         ->whereRelation('resource', 'sub_category', '!=', 'Imaging');
-                    })
-                    ->whereRelation('patient', 'patient_type', '=', 'ANC')
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        return $query->where('closed', false)
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                    });
     }
 
     public function getConsultedVisitsLabTransformer(): callable

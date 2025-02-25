@@ -71,11 +71,11 @@ class DoctorService
         });
     }
 
-    private function paginateQuery(Builder $query, DataTableQueryParams $params, string $orderBy = 'consulted', string $orderDir = 'desc')
-    {
-        return $query->orderBy($orderBy, $orderDir)
-            ->paginate($params->length, '*', '', (($params->length + $params->start) / $params->length));
-    }
+    // private function paginateQuery(Builder $query, DataTableQueryParams $params, string $orderBy = 'consulted', string $orderDir = 'desc')
+    // {
+    //     return $query->orderBy($orderBy, $orderDir)
+    //         ->paginate($params->length, '*', '', (($params->length + $params->start) / $params->length));
+    // }
 
     private function generalFilters(Builder $query, string $method)
     {
@@ -99,7 +99,7 @@ class DoctorService
 
         if (!empty($params->searchTerm)) {
             $query = $this->applySearch($query, $params->searchTerm);
-            return $this->paginateQuery($query, $params);
+            return $this->helperService->paginateQuery($query, $params);
         }
 
         if ($data->filterBy == 'My Patients') {
@@ -108,7 +108,7 @@ class DoctorService
 
         $query = $this->generalFilters($query, 'outPatients');
         
-        return $this->paginateQuery($query, $params);
+        return $this->helperService->paginateQuery($query, $params);
     }
 
     public function getPaginatedInpatientConsultedVisits($data, DataTableQueryParams $params, User $user)
@@ -117,7 +117,7 @@ class DoctorService
 
         if (!empty($params->searchTerm)) {
             $query = $this->applySearch($query, $params->searchTerm);
-            return $this->paginateQuery($query, $params);
+            return $this->helperService->paginateQuery($query, $params);
         }
 
         if ($data->filterBy == 'My Patients') {
@@ -126,7 +126,7 @@ class DoctorService
 
         $query = $this->generalFilters($query, 'inPatients');
 
-        return $this->paginateQuery($query, $params);
+        return $this->helperService->paginateQuery($query, $params);
     }
 
     public function getPaginatedAncConsultedVisits($data, DataTableQueryParams $params, User $user)
@@ -135,7 +135,7 @@ class DoctorService
 
         if (!empty($params->searchTerm)) {
             $query = $this->applySearch($query, $params->searchTerm);
-            return $this->paginateQuery($query, $params);
+            return $this->helperService->paginateQuery($query, $params);
         }
 
         if ($data->filterBy == 'My Patients') {
@@ -144,7 +144,7 @@ class DoctorService
 
         $query = $this->generalFilters($query, '');
 
-        return $this->paginateQuery($query, $params);
+        return $this->helperService->paginateQuery($query, $params);
     }
 
     public function getConsultedVisitsTransformer(): callable
