@@ -261,6 +261,7 @@ Class ShiftPerformanceService
             ->whereRelation('resource', 'sub_category', 'Injectable')
             ->where('discontinued', false)
             ->where('held', null)
+            ->whereHas('medicationCharts')
             ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
             ->get();
 
