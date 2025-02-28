@@ -568,7 +568,8 @@ class PrescriptionService
                             ->whereYear('prescriptions.created_at', $data->year)
                             ->where(function(QueryBuilder $query) {
                                 $query->where('sponsors.category_name', 'Individual')
-                                ->orWhere('sponsors.category_name', 'Family');
+                                ->orWhere('sponsors.category_name', 'Family')
+                                ->orWhere('sponsors.category_name', 'NHIS');
                             })
                             ->groupBy('month_name', 'month')
                             ->orderBy('month')
@@ -582,7 +583,8 @@ class PrescriptionService
                         ->whereYear('prescriptions.created_at', $currentDate->year)
                         ->where(function(QueryBuilder $query) {
                             $query->where('sponsors.category_name', 'Individual')
-                            ->orWhere('sponsors.category_name', 'Family');
+                            ->orWhere('sponsors.category_name', 'Family')
+                            ->orWhere('sponsors.category_name', 'NHIS');
                         })
                         ->groupBy('month_name', 'month')
                         ->orderBy('month')
