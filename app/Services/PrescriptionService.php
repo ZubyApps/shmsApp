@@ -562,30 +562,30 @@ class PrescriptionService
         if ($data->year){
 
             return DB::table('prescriptions')
-                            ->selectRaw('SUM(paid) as cashPaid, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
+                            ->selectRaw('SUM(prescriptions.paid) as cashPaid, MONTH(prescriptions.created_at) as month, MONTHNAME(prescriptions.created_at) as month_name')
                             ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
                             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                            ->whereYear('prescriptions.created_at', $data->year)
                             ->where(function(QueryBuilder $query) {
                                 $query->where('sponsors.category_name', 'HMO')
                                 ->orWhere('sponsors.category_name', 'NHIS')
                                 ->orWhere('sponsors.category_name', 'Retainership');
                             })
-                            ->whereYear('prescriptions.created_at', $data->year)
                             ->groupBy('month_name', 'month')
                             ->orderBy('month')
                             ->get();
         }
 
         return DB::table('prescriptions')
-                        ->selectRaw('SUM(paid + capitation) as cashPaid, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
+                        ->selectRaw('SUM(prescriptions.paid) as cashPaid, MONTH(prescriptions.created_at) as month, MONTHNAME(prescriptions.created_at) as month_name')
                         ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
                         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-                            ->where(function(QueryBuilder $query) {
-                                $query->where('sponsors.category_name', 'HMO')
-                                ->orWhere('sponsors.category_name', 'NHIS')
-                                ->orWhere('sponsors.category_name', 'Retainership');
-                            })
                         ->whereYear('prescriptions.created_at', $currentDate->year)
+                        ->where(function(QueryBuilder $query) {
+                            $query->where('sponsors.category_name', 'HMO')
+                            ->orWhere('sponsors.category_name', 'NHIS')
+                            ->orWhere('sponsors.category_name', 'Retainership');
+                        })
                         ->groupBy('month_name', 'month')
                         ->orderBy('month')
                         ->get();
