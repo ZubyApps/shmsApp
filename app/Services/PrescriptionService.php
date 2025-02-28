@@ -570,7 +570,7 @@ class PrescriptionService
                                 ->orWhere('sponsors.category_name', 'NHIS')
                                 ->orWhere('sponsors.category_name', 'Retainership');
                             })
-                            ->whereYear('created_at', $data->year)
+                            ->whereYear('prescriptions.created_at', $data->year)
                             ->groupBy('month_name', 'month')
                             ->orderBy('month')
                             ->get();
@@ -585,7 +585,7 @@ class PrescriptionService
                                 ->orWhere('sponsors.category_name', 'NHIS')
                                 ->orWhere('sponsors.category_name', 'Retainership');
                             })
-                        ->whereYear('created_at', $currentDate->year)
+                        ->whereYear('prescriptions.created_at', $currentDate->year)
                         ->groupBy('month_name', 'month')
                         ->orderBy('month')
                         ->get();
