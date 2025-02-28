@@ -12,6 +12,7 @@ use App\Models\Resource;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -552,5 +553,41 @@ class PrescriptionService
             'held_at' => new Carbon(),
             'held_by' => $user->id,
         ]);
+    }
+
+    public function totalYearlyIncomeFromPrescriptionCash($data)
+    {
+        $currentDate = new Carbon();
+
+        if ($data->year){
+
+            return DB::table('prescriptions')
+                            ->selectRaw('SUM(paid) as cashPaid, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
+                            ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
+                            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                            ->where(function(QueryBuilder $query) {
+                                $query->where('sponsors.category_name', 'HMO')
+                                ->orWhere('sponsors.category_name', 'NHIS')
+                                ->orWhere('sponsors.category_name', 'Retainership');
+                            })
+                            ->whereYear('created_at', $data->year)
+                            ->groupBy('month_name', 'month')
+                            ->orderBy('month')
+                            ->get();
+        }
+
+        return DB::table('prescriptions')
+                        ->selectRaw('SUM(paid + capitation) as cashPaid, MONTH(created_at) as month, MONTHNAME(created_at) as month_name')
+                        ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
+                        ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                            ->where(function(QueryBuilder $query) {
+                                $query->where('sponsors.category_name', 'HMO')
+                                ->orWhere('sponsors.category_name', 'NHIS')
+                                ->orWhere('sponsors.category_name', 'Retainership');
+                            })
+                        ->whereYear('created_at', $currentDate->year)
+                        ->groupBy('month_name', 'month')
+                        ->orderBy('month')
+                        ->get();
     }
 }

@@ -509,7 +509,8 @@ class ReportController extends Controller
         $chart = $request->input('chart');
         $params = $chart ? null : $this->datatablesService->getDataTableQueryParameters($request);
         
-        $totalCashPatients = $this->paymentService->totalYearlyIncomeFromCashPatients($request);
+        $totalCashPatients = $this->prescriptionService->totalYearlyIncomeFromPrescriptionCash($request);
+        // $totalCashPatients = $this->paymentService->totalYearlyIncomeFromCashPatients($request);
         $totalHmoPatients = $this->hmoService->totalYearlyIncomeFromHmoPatients($request);
         $totalExpenses  = $this->expenseService->totalYearlyExpense($request);
         $incomeArray = [...$totalCashPatients, ...$totalHmoPatients, ...$totalExpenses];
