@@ -562,7 +562,7 @@ class PrescriptionService
         if ($data->year){
 
             return DB::table('prescriptions')
-                            ->selectRaw('SUM(prescriptions.paid) as cashPaid, MONTH(prescriptions.created_at) as month, MONTHNAME(prescriptions.created_at) as month_name')
+                            ->selectRaw('SUM(prescriptions.paid + prescriptions.capitation) as cashPaid, MONTH(prescriptions.created_at) as month, MONTHNAME(prescriptions.created_at) as month_name')
                             ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
                             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                             ->whereYear('prescriptions.created_at', $data->year)
@@ -577,7 +577,7 @@ class PrescriptionService
         }
 
         return DB::table('prescriptions')
-                        ->selectRaw('SUM(prescriptions.paid) as cashPaid, MONTH(prescriptions.created_at) as month, MONTHNAME(prescriptions.created_at) as month_name')
+                        ->selectRaw('SUM(prescriptions.paid + prescriptions.capitation) as cashPaid, MONTH(prescriptions.created_at) as month, MONTHNAME(prescriptions.created_at) as month_name')
                         ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
                         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                         ->whereYear('prescriptions.created_at', $currentDate->year)
