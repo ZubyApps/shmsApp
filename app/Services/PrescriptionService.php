@@ -569,7 +569,8 @@ class PrescriptionService
                             ->where(function(QueryBuilder $query) {
                                 $query->where('sponsors.category_name', 'Individual')
                                 ->orWhere('sponsors.category_name', 'Family')
-                                ->orWhere('sponsors.category_name', 'NHIS');
+                                ->orWhere('sponsors.category_name', 'NHIS')
+                                ->orWhere('sponsors.category_name', 'Retainership');
                             })
                             ->groupBy('month_name', 'month')
                             ->orderBy('month')
@@ -584,7 +585,8 @@ class PrescriptionService
                         ->where(function(QueryBuilder $query) {
                             $query->where('sponsors.category_name', 'Individual')
                             ->orWhere('sponsors.category_name', 'Family')
-                            ->orWhere('sponsors.category_name', 'NHIS');
+                            ->orWhere('sponsors.category_name', 'NHIS')
+                            ->orWhere('sponsors.category_name', 'Retainership');
                         })
                         ->groupBy('month_name', 'month')
                         ->orderBy('month')
