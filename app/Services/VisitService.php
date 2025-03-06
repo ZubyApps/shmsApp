@@ -270,13 +270,13 @@ class VisitService
                     ]);
 
                     $prescriptions  = $visit->prescriptions;
-                    $totalPayments  = $visit->payments;
+                    $totalPayments  = $visit->totalPayments();
             
                     if ($visit->sponsor->category_name == 'NHIS'){
                         foreach($prescriptions as $prescription){
                             $prescription->update(['nhis_bill' => $prescription->hms_bill/10]);
                         }
-                        $this->paymentService->prescriptionsPaymentSeiveNhis($totalPayments, $prescription->visit->prescriptions());
+                        $this->paymentService->prescriptionsPaymentSeiveNhis($totalPayments, $prescription->visit->prescriptions);
                     }
                     return $visit;
                 });
