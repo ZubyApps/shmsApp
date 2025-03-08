@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
+use App\Models\Resource;
 use App\Models\Sponsor;
 use App\Models\SponsorCategory;
 use App\Models\User;
@@ -53,7 +54,7 @@ class SponsorService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query      = $this->sponsor::with(['sponsorCategory', 'patients']);
+        $query      = $this->sponsor::with(['sponsorCategory', 'patients', 'resources.unitDescription', 'user']);
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
@@ -82,8 +83,20 @@ class SponsorService
                 'registrationBill'  => $sponsor->registration_bill,
                 'maxPayDays'        => $sponsor->max_pay_days,
                 'flag'              => $sponsor->flag,
+                'createdBy'         => $sponsor->user->username,
                 'createdAt'         => (new Carbon($sponsor->created_at))->format('d/m/Y'),
-                'count'             => $sponsor->patients->count()
+                'count'             => $sponsor->patients->count(),
+                'showHmo'           => auth()->user()->designation->designation === 'HMO Officer',
+                'showAll'           => auth()->user()->designation->access_level > 4,
+                'resources'         => $sponsor->resources->map(fn(Resource $resource)=> [
+                    'id'            => $resource->id,
+                    'name'          => $resource->name,
+                    'sellingPrice'  => $resource->pivot->selling_price,
+                    'category'      => $resource->category,
+                    'subCategory'   => $resource->sub_category,
+                    'unit'          => $resource->unitDescription->short_name,
+                    'createdBy'     => $resource->pivot->createdByUser?->username,
+                ])
             ];
          };
     }

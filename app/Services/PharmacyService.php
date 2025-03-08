@@ -176,11 +176,12 @@ class PharmacyService
         return DB::transaction(function () use($data, $prescription, $user) {
             $visit    = $prescription->visit;
             $bill     = 0;
+            $sponsor = $visit?->sponsor;
 
             $nhisBill = fn($value)=>$value/10;
 
             if ($data->quantity){
-                $bill = $prescription->resource->selling_price * $data->quantity;
+                $bill = $prescription->resource->getSellingPriceForSponsor($sponsor) * $data->quantity;
             }
 
             $prescription->update([
@@ -329,7 +330,7 @@ class PharmacyService
                 'closed'                => $consultation->visit->closed,
                 'prescriptions'         => $consultation->prescriptions->map(fn(Prescription $prescription)=> [
                     'id'                => $prescription->id ?? '',
-                    'price'             => $prescription->resource?->selling_price ?? '',
+                    'price'             => $prescription->resource?->getSellingPriceForSponsor($consultation->visit->sponsor) ?? '',
                     'prescribedBy'      => $prescription->user?->username ?? '',
                     'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia') ?? '',
                     'item'              => $prescription->resource->nameWithIndicators(),

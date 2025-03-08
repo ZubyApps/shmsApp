@@ -1,5 +1,5 @@
 import { Modal } from "bootstrap"
-import { getDivData, clearDivValues, clearValidationErrors, displayList, openModals, getPatientSponsorDatalistOptionId, getOrdinal } from "./helpers"
+import { getDivData, clearDivValues, clearValidationErrors, displayList, openModals, getPatientSponsorDatalistOptionId, getOrdinal, displayItemsList, getDatalistOptionId } from "./helpers"
 import http from "./http"
 import $ from 'jquery';
 import { getAgeAggregateTable, getAllPatientsTable, getNewRegisteredPatientsTable, getPatientsBySponsorTable, getPrePatientsTable, getSexAggregateTable, getSponsorsTable, getVisitsSummaryTable, getVisitsTable } from "./tables/patientsTables";
@@ -19,6 +19,7 @@ window.addEventListener('DOMContentLoaded', function(){
     const treatmentDetailsModal             = new Modal(document.getElementById('treatmentDetailsModal'))
     const ancTreatmentDetailsModal          = new Modal(document.getElementById('ancTreatmentDetailsModal'))
     const appointmentModal                  = new Modal(document.getElementById('appointmentModal'))
+    const sponsorTariffModal                = new Modal(document.getElementById('sponsorTariffModal'))
 
     const regularTreatmentDiv               = treatmentDetailsModal._element.querySelector('#treatmentDiv')
     const ancTreatmentDiv                   = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
@@ -38,12 +39,15 @@ window.addEventListener('DOMContentLoaded', function(){
     const searchVisitsByMonthBtn            = document.querySelector('.searchVisitsByMonthBtn')
     const sendLinkBtn                       = document.querySelector('#sendLinkBtn')
     const saveAppointmentBtn                = document.querySelector('#saveAppointmentBtn')
+    const saveSellingPriceBtn               = sponsorTariffModal._element.querySelector('#saveSellPriceBtn')
     
     const newPatientSponsorInputEl          = document.querySelector('#newPatientSponsor')
     const updatePatientSponsorInputEl       = document.querySelector('#updatePatientSponsor')
 
     const newPatientSponsorDatalistEl       = document.querySelector('#newSponsorList')
     const updatePatientSponsorDatalistEl    = document.querySelector('#updateSponsorList')
+
+    const resourceInput                     = sponsorTariffModal._element.querySelector('#resource')
 
     const searchVisitsWithDatesBtn          = document.querySelector('.searchVisitsWithDatesBtn')
 
@@ -146,6 +150,8 @@ window.addEventListener('DOMContentLoaded', function(){
     document.querySelector('#sponsorsTable').addEventListener('click', function (event) {
         const editBtn    = event.target.closest('.updateBtn')
         const deleteBtn  = event.target.closest('.deleteBtn')
+        const sponsorTariffBtn  = event.target.closest('.sponsorTariffBtn')
+        const deleteTariffBtn  = event.target.closest('.deleteTariffBtn')
 
         if (editBtn) {
             editBtn.setAttribute('disabled', 'disabled')
@@ -176,9 +182,68 @@ window.addEventListener('DOMContentLoaded', function(){
                     .catch((error) => {
                         alert(error)
                     })
-            }
-            
+            } 
         }
+
+        if (sponsorTariffBtn){
+            const sponsorId = sponsorTariffBtn.getAttribute('data-id')
+            const sponsor = sponsorTariffBtn.getAttribute('data-sponsor')
+
+            sponsorTariffModal._element.querySelector('#sponsorName').value = sponsor
+            saveSellingPriceBtn.setAttribute('data-id', sponsorId)
+            sponsorTariffModal.show()
+        }
+
+        if (deleteTariffBtn){
+            const resourceId = deleteTariffBtn.getAttribute('data-id')
+            const sponsorId = deleteTariffBtn.getAttribute('data-sponsor')
+
+            deleteTariffBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Tariff?')) {
+                http.delete(`/resources/remove/sellingprice/${sponsorId}/${resourceId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            sponsorsTable.draw()
+                        }
+                        deleteTariffBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        deleteTariffBtn.removeAttribute('disabled')
+                        alert(error)
+                    })
+            }
+        }
+    })
+
+    resourceInput.addEventListener('input', function () {
+        const datalistEl = sponsorTariffModal._element.querySelector(`#resourceList`)
+            if (resourceInput.value <= 2) {
+            datalistEl.innerHTML = ''
+            }
+            if (resourceInput.value.length > 2) {
+                http.get(`/resources/list2`, {params: {resource: resourceInput.value}}).then((response) => {
+                    displayItemsList(datalistEl, response.data, 'itemOption')
+                })
+            }
+    })
+
+    saveSellingPriceBtn.addEventListener('click', function () {
+        const sponsorId = this.getAttribute('data-id')
+        const resourceId = getDatalistOptionId(sponsorTariffModal._element, resourceInput, sponsorTariffModal._element.querySelector(`#resourceList`))
+        saveSellingPriceBtn.setAttribute('disabled', 'disabled')
+        http.post(`/resources/sellingprice/${sponsorId}/${resourceId}`, getDivData(sponsorTariffModal._element), {"html": sponsorTariffModal._element})
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                clearDivValues(sponsorTariffModal._element)
+                sponsorsTable.draw(false)
+                sponsorTariffModal.hide()
+            }
+            saveSellingPriceBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            saveSellingPriceBtn.removeAttribute('disabled')
+            alert(error.response.data.message)
+        })
     })
 
     createSponsorBtn.addEventListener('click', function () {

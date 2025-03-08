@@ -16,6 +16,7 @@
 @include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isAnc' => false, 'isLab' => false, 'isHmo' => true, 'id' => 'treatmentDetailsModal'])
 @include('nurses.treatmentDetailsModal', ['title' => 'ANC Treatment Details', 'isAnc' => true, 'isLab' => false, 'isHmo' => true, 'id' => 'ancTreatmentDetailsModal'])
 @include('doctors.appointmentModal', ['title' => 'Set Appointment', 'isDoctor' => false, 'id' => 'appointmentModal'])
+@include('patients.sponsorTariffModal')
 
 <div class="container mt-5">
     <div>
@@ -90,6 +91,7 @@
                                 <th>Registration Bill</th>
                                 <th>Max Pay Days</th>
                                 <th>Flag</th>
+                                <th>CreatedBy</th>
                                 <th>Created</th>
                                 <th>Actions</th>
                             </tr>

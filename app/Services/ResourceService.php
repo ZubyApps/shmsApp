@@ -145,6 +145,18 @@ class ResourceService
         }      
     }
 
+    public function getFormattedList2($data)
+    {
+        if (! empty($data->resource)){
+            return $this->resource
+                        ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
+                        // ->where('is_active', true)
+                        // ->whereNot('flag','LIKE', '%' . addcslashes($data->sponsorCat, '%_') . '%' )
+                        ->orderBy('name', 'asc')
+                        ->get();
+        }      
+    }
+
     public function getBulkList($data)
     {
         if (! empty($data->resource)){

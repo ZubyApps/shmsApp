@@ -33,6 +33,7 @@ use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResourceCategoryController;
 use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\ResourceSponsorController;
 use App\Http\Controllers\ResourceStockDateController;
 use App\Http\Controllers\ResourceSubCategoryController;
 use App\Http\Controllers\ResourceSupplierController;
@@ -146,7 +147,12 @@ Route::middleware('auth')->group(function () {
             Route::post('', [ResourceController::class, 'store']);
             Route::get('/load', [ResourceController::class, 'load']);
             Route::get('/list', [ResourceController::class, 'list']);
-            Route::get('/theatrematch', [ResourceController::class, 'theatreMatch'])->withoutMiddleware('strict');
+            Route::withoutMiddleware('strict')->group(function () {
+                Route::get('/list2', [ResourceController::class, 'list2']);
+                Route::get('/theatrematch', [ResourceController::class, 'theatreMatch']);
+                Route::post('sellingprice/{sponsor}/{resource}', [ResourceSponsorController::class, 'storeSponsorSellingPrice']);
+                Route::delete('remove/sellingprice/{sponsor}/{resource}', [ResourceSponsorController::class, 'removeSponsorSellingPrice']);
+            });
             Route::get('/list/bulk', [ResourceController::class, 'listBulk']);
             Route::get('/{resource}', [ResourceController::class, 'edit']);
             Route::get('/addstock/{resource}', [ResourceController::class, 'edit'])->name('Addstock');

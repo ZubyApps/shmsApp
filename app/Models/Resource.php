@@ -85,4 +85,27 @@ class Resource extends Model
 
         return ' - '.$resource->stock_level.' '.$resource->unitDescription?->short_name.' left';
     }
+
+    public function sponsors()
+    {
+        return $this->belongsToMany(Sponsor::class)
+                    ->using(ResourceSponsor::class)
+                    ->withPivot('selling_price', 'user_id')
+                    ->withTimestamps();
+    }
+
+    public function getSellingPriceForSponsor(?Sponsor $sponsor = null): int
+    {
+        if ($sponsor) {
+            $sponsorPrice = $this->sponsors()
+                ->where('sponsor_id', $sponsor->id)
+                ->first()
+                ?->pivot
+                ?->selling_price;
+
+            return $sponsorPrice ?? $this->selling_price ?? 0;
+        }
+
+        return $this->selling_price ?? 0;
+    }
 }

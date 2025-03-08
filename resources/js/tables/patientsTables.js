@@ -40,6 +40,7 @@ const getSponsorsTable = (tableId) => {
             {data: "registrationBill"},
             {data: "maxPayDays"},
             {data: row => row.flag ? '<span class="fw-bold text-danger">Yes</span>' : 'No' },
+            {data: "createdBy"},
             {data: "createdAt"},
             {
                 sortable: false,
@@ -67,6 +68,91 @@ const getSponsorsTable = (tableId) => {
         ]
     })
 
+    function format(data) {
+        let count = 1
+        // console.log(data.id)
+        const resources = data?.resources
+        if (resources?.length > 0) {
+            let child = `
+            <table class="table align-middle" id="has">
+            <div class="text-start py-2">
+                <button type="button" class="btn btn-primary sponsorTariffBtn" data-id="${data?.id}"  data-sponsor="${data?.name}">
+                    <i class="bi bi-plus-circle me-1"></i>
+                    Tariff
+                </button>
+            </div>
+                                <thead >
+                                    <tr class="fw-semibold fs-italics">
+                                        <td class="text-secondary">S/N</td>
+                                        <td class="text-secondary">Name</td>
+                                        <td class="text-secondary">Tariff</td>
+                                        <td class="text-secondary">Category</td>
+                                        <td class="text-secondary">Sub-Category</td>
+                                        <td class="text-secondary">Unit</td>
+                                        <td class="text-secondary">Created By</td>
+                                        <td class="text-secondary">Action</td>
+                                    </tr>
+                                </thead>
+                            <tbody>`
+                            resources.forEach(r => {
+                                const thisCount = count++
+                                child += `
+                                <tr>
+                                    <td>${thisCount}</td>
+                                    <td>${r.name}</td>
+                                    <td>${r.sellingPrice}</td>
+                                    <td>${r.category}</td>
+                                    <td>${r.subCategory}</td>
+                                    <td>${r.unit}</td>
+                                    <td>${r.createdBy}</td>
+                                    <td>
+                                        <i class="bi bi-trash3-fill text-primary deleteTariffBtn" data-id="${r.id}" data-sponsor="${data?.id}"></i>
+                                    </td>
+                                </tr>
+                                `
+                            })
+                        child+= `
+                            </tbody>
+                        </table>
+                        `
+                    return ( child)
+            } else {
+                let noChild = `
+                <div class="text-start py-2">
+                    <button type="button" class="btn btn-primary sponsorTariffBtn" data-id="${data?.id}" data-sponsor="${data?.name}">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Tariff
+                    </button>
+                </div>
+                <table class="table align-middle table-sm">
+                     <tr>
+                         <td align="center" colspan="8" class="text-secondary">
+                            No tariffed resource found 
+                         </td>
+                     </tr>
+                 </table>
+                `
+                return (noChild)
+             }
+    }
+
+    sponsorsTable.on('click', 'tr', function (e) {
+        let tr = e.target.closest('tr');
+        let row = sponsorsTable.row(tr);
+        const data = row.data()
+        const categoryArray = ['HMO', 'NHIS', 'Retainership']
+        if (row.child.isShown()) {
+            row.child.hide();
+        }
+        else {
+            if (data.showHmo) {
+                categoryArray.includes(data.category) ? row.child(format(data)).show() : '';
+            } else if (data.showAll) {
+                row.child(format(data)).show();
+            }
+        }
+    });
+
     return sponsorsTable
 }
 
@@ -80,7 +166,6 @@ const getAllPatientsTable = (tableId) => {
         language: {
             searchPlaceholder: searchPlaceholderText
         },
-        // searchDelay: 500,
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary'},

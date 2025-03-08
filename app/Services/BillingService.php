@@ -256,7 +256,7 @@ class BillingService
                     'prescribedBy'      => $prescription->user->username,
                     'description'       => $prescription->resource->unitDescription?->short_name,
                     'item'              => $prescription->resource->name,
-                    'unitPrice'         => $prescription->resource->selling_price,
+                    'unitPrice'         => $prescription->resource->getSellingPriceForSponsor($visit->sponsor),
                     'quantity'          => $prescription->qty_billed ?? '',
                     'hmsBill'           => $prescription->hms_bill ?? '',
                     'nhisBill'          => $prescription->nhis_bill ?? '',

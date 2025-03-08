@@ -220,77 +220,77 @@ Class ShiftPerformanceService
         return $totalOtherPrescriptions ? $all : null;
     }
 
-    public function injectablesGivenRate($shiftPerformance)
-    {
-        $shiftEnd = new Carbon($shiftPerformance->shift_end);
-        $shiftEndTimer = $shiftEnd->subMinutes(20);
-        $notGiven = [];
-
-        $totalInjectablesPrescriptions      = $this->prescription
-                                            ->where('chartable', true)
-                                            ->whereRelation('resource', 'sub_category', '=' ,'Injectable')
-                                            ->where('discontinued', false)
-                                            ->where('held', null)
-                                            ->whereHas('medicationCharts')
-                                            // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
-                                            ->count();
-
-            $totalInjectablePrescriptionsStarted = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'medicationCharts');
-            $totalInjectablePrescriptionsNotStarted   = $this->prescription->prescriptionsNotGivenPerShift($shiftPerformance, 'medicationCharts');
-
-            foreach($totalInjectablePrescriptionsNotStarted as $NotStartedPrescription){
-                array_push($notGiven, $NotStartedPrescription->visit->patient->card_no . ' ' . $NotStartedPrescription->visit->patient->first_name);
-            }
-    
-            $notStartedUniqueIjnectables = array_values(array_unique($notGiven));
-    
-            $all = new Collection(['totalInjectablePrescriptions' => $totalInjectablesPrescriptions, 'totalInjectablePrescriptionsStarted' => $totalInjectablePrescriptionsStarted, 'notStartedUniqueInjectables' => $notStartedUniqueIjnectables]);
-    
-            return $totalInjectablesPrescriptions ? $all : null;
-    }
-
     // public function injectablesGivenRate($shiftPerformance)
     // {
     //     $shiftEnd = new Carbon($shiftPerformance->shift_end);
     //     $shiftEndTimer = $shiftEnd->subMinutes(20);
+    //     $notGiven = [];
 
-    //     // Use eager loading to reduce the number of queries
-    //     $prescriptions = $this->prescription
-    //         ->with(['visit.patient', 'medicationCharts'])
-    //         ->whereRelation('resource', 'sub_category', 'Injectable')
-    //         ->where('discontinued', false)
-    //         ->where('held', null)
-    //         ->whereHas('medicationCharts')
-    //         ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
-    //         ->get();
+    //     $totalInjectablesPrescriptions      = $this->prescription
+    //                                         ->where('chartable', true)
+    //                                         ->whereRelation('resource', 'sub_category', '=' ,'Injectable')
+    //                                         ->where('discontinued', false)
+    //                                         ->where('held', null)
+    //                                         ->whereHas('medicationCharts')
+    //                                         // ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                         ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+    //                                         ->count();
 
-    //     $totalInjectablesPrescriptions = $prescriptions->count();
+    //         $totalInjectablePrescriptionsStarted = $this->prescription->prescriptionsGivenPerShift($shiftPerformance, 'medicationCharts');
+    //         $totalInjectablePrescriptionsNotStarted   = $this->prescription->prescriptionsNotGivenPerShift($shiftPerformance, 'medicationCharts');
 
-    //     $totalInjectablePrescriptionsStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
-    //         return $prescription->medicationCharts->filter(function ($chart) use ($shiftPerformance, $shiftEndTimer){
-    //             return $chart->scheduled_time >= $shiftPerformance->shift_start && $chart->scheduled_time <= $shiftEndTimer && $chart->time_given !== null;
-    //         })->isNotEmpty();
-    //     })->count();
-
-    //     $totalInjectablePrescriptionsNotStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
-    //         return $prescription->medicationCharts->filter(function ($chart) use ($shiftPerformance, $shiftEndTimer) {
-    //             return $chart->scheduled_time >= $shiftPerformance->shift_start && $chart->scheduled_time <= $shiftEndTimer && $chart->time_given === null;
-    //         })->isNotEmpty();
-    //     });
-
-    //     $notStartedUniqueInjectables = $totalInjectablePrescriptionsNotStarted->map(function ($prescription) {
-    //         return $prescription->visit->patient->card_no . ' ' . $prescription->visit->patient->first_name;
-    //     })->unique()->values()->all();
-
-    //     $all = new Collection([
-    //         'totalInjectablePrescriptions' => $totalInjectablesPrescriptions,
-    //         'totalInjectablePrescriptionsStarted' => $totalInjectablePrescriptionsStarted,
-    //         'notStartedUniqueInjectables' => array_values($notStartedUniqueInjectables)
-    //     ]);
-
-    //     return $totalInjectablesPrescriptions ? $all : null;
+    //         foreach($totalInjectablePrescriptionsNotStarted as $NotStartedPrescription){
+    //             array_push($notGiven, $NotStartedPrescription->visit->patient->card_no . ' ' . $NotStartedPrescription->visit->patient->first_name);
+    //         }
+    
+    //         $notStartedUniqueIjnectables = array_values(array_unique($notGiven));
+    
+    //         $all = new Collection(['totalInjectablePrescriptions' => $totalInjectablesPrescriptions, 'totalInjectablePrescriptionsStarted' => $totalInjectablePrescriptionsStarted, 'notStartedUniqueInjectables' => $notStartedUniqueIjnectables]);
+    
+    //         return $totalInjectablesPrescriptions ? $all : null;
     // }
+
+    public function injectablesGivenRate($shiftPerformance)
+    {
+        $shiftEnd = new Carbon($shiftPerformance->shift_end);
+        $shiftEndTimer = $shiftEnd->subMinutes(20);
+
+        // Use eager loading to reduce the number of queries
+        $prescriptions = $this->prescription
+            ->with(['visit.patient', 'medicationCharts'])
+            ->whereRelation('resource', 'sub_category', 'Injectable')
+            ->where('discontinued', false)
+            ->where('held', null)
+            ->whereHas('medicationCharts')
+            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->get();
+
+        $totalInjectablesPrescriptions = $prescriptions->count();
+
+        $totalInjectablePrescriptionsStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
+            return $prescription->medicationCharts->filter(function ($chart) {
+                return $chart->time_given !== null;
+            })->isNotEmpty();
+        })->count();
+
+        $totalInjectablePrescriptionsNotStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
+            return $prescription->medicationCharts->filter(function ($chart) use ($shiftPerformance, $shiftEndTimer) {
+                return $chart->time_given === null;
+            })->isNotEmpty();
+        });
+
+        $notStartedUniqueInjectables = $totalInjectablePrescriptionsNotStarted->map(function ($prescription) {
+            return $prescription->visit->patient->card_no . ' ' . $prescription->visit->patient->first_name;
+        })->unique()->values()->all();
+
+        $all = new Collection([
+            'totalInjectablePrescriptions' => $totalInjectablesPrescriptions,
+            'totalInjectablePrescriptionsStarted' => $totalInjectablePrescriptionsStarted,
+            'notStartedUniqueInjectables' => array_values($notStartedUniqueInjectables)
+        ]);
+
+        return $totalInjectablesPrescriptions ? $all : null;
+    }
 
     // public function othersDoneRate($shiftPerformance)
     // {

@@ -42,6 +42,16 @@ class ResourceController extends Controller
 
     }
 
+    public function list2(Request $request)
+    {
+        $resources = $this->resourceService->getFormattedList2($request);
+
+        $listTransformer = $this->resourceService->listTransformer();
+
+        return array_map($listTransformer, (array)$resources->getIterator());
+
+    }
+
     public function store(StoreResourceRequest $request)
     {
         $resource = $this->resourceService->create($request, $request->user());

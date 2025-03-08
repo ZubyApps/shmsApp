@@ -116,4 +116,12 @@ class Sponsor extends Model
 
         return $allDiscounts;
     }
+
+    public function resources()
+    {
+        return $this->belongsToMany(Resource::class)
+                    ->using(ResourceSponsor::class)
+                    ->withPivot('selling_price', 'user_id')
+                    ->withTimestamps();
+    }
 }

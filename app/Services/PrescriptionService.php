@@ -10,6 +10,7 @@ use App\Models\NursingChart;
 use App\Models\Prescription;
 use App\Models\Resource;
 use App\Models\User;
+use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -34,8 +35,12 @@ class PrescriptionService
             $bill = 0;
             $nhisBill = fn($value)=>$value/10;
             $resourceSubCat = $resource->sub_category;
+
+            $visit = Visit::findOrFail($data->visitId);
+            $sponsor = $visit?->sponsor;
+
             if ($data->quantity){
-                $bill = $resource->selling_price * $data->quantity;
+                $bill = $resource->getSellingPriceForSponsor($sponsor) * $data->quantity;
             }
 
             $prescription = $user->prescriptions()->create([
@@ -54,16 +59,19 @@ class PrescriptionService
                 'doctor_on_call'    => $data->doc
             ]);
 
-            $resourceSubCat == 'Procedure' || $resourceSubCat == 'Operation' ? $this->procedureService->create($prescription, $user) : '';
-            $visit  = $prescription->visit;
+            if ($resourceSubCat == 'Procedure' || $resourceSubCat == 'Operation'){
+                $this->procedureService->create($prescription, $user);
+            }
 
-            $isNhis = $visit->sponsor->category_name == 'NHIS';
+            $isNhis = $sponsor->category_name == 'NHIS';
 
-            $isNhis && $bill ? $prescription->update(['nhis_bill' => $nhisBill($bill)]) : '';
+            if ($isNhis && $bill > 0){
+                $prescription->update(['nhis_bill' => $nhisBill($bill)]);
+            } 
 
             $totalPayments = $visit->totalPayments();
 
-            $prescription->visit->update([
+            $visit->update([
                 'total_hms_bill'    => $visit->totalHmsBills(),
                 'total_nhis_bill'   => $isNhis ? $visit->totalNhisBills() : 0,
                 'total_capitation'  => $isNhis ? $visit->totalPrescriptionCapitations() : 0,
