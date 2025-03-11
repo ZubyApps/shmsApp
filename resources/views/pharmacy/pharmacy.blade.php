@@ -257,6 +257,7 @@
                                     <th>Expiring in</th>
                                     <th>Times Prescribed(30days)</th>
                                     <th>Times Dispensed(30days)</th>
+                                    <th>Quantity</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -284,6 +285,7 @@
                                     <th>Expiring in</th>
                                     <th>Times Prescribed(30days)</th>
                                     <th>Times Dispensed(30days)</th>
+                                    <th>Quantity</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>

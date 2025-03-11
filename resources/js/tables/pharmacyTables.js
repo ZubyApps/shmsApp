@@ -223,9 +223,14 @@ const getExpirationStockTable = (tableId, filter) => {
         orderMulti: true,
         search:true,
         searchDelay: 500,
-        lengthMenu:[50, 100, 150, 200, 300],
-        dom: 'lfrtip<"my-5 text-center "B>',
+        lengthMenu:[100, 150, 200, 250, 300],
+        dom: 'l<"my-5 text-center "B>frtip',
         buttons: [
+            {
+                extend:'colvis',
+                text:'Show/Hide',
+                className:'btn btn-primary'       
+            },
             {extend: 'copy', className: 'btn-primary', exportOptions: getExportOptions()},
             {extend: 'csv', className: 'btn-primary', exportOptions: getExportOptions()},
             {extend: 'excel', className: 'btn-primary', exportOptions: getExportOptions()},
@@ -254,6 +259,7 @@ const getExpirationStockTable = (tableId, filter) => {
             },
             {data: "prescriptionFrequency"},
             {data: "dispenseFrequency"},
+            {data: "quantity"},
         ]
     });
 

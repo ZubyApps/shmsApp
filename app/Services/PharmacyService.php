@@ -423,6 +423,7 @@ class PharmacyService
                 'prescriptionFrequency' => $resource->prescriptions->where('created_at', '>', (new Carbon())->subDays(30))->count(),
                 'dispenseFrequency'     => $resource->prescriptions->where('dispense_date', '>', (new Carbon())->subDays(30))->count(),
                 'flag'                  => $resource->expiry_date ? $this->helperService->flagExpired($resource->expiry_date) : '',
+                'quantity'              => '',
             ];
         };
     }
