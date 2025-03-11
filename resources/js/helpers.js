@@ -875,11 +875,12 @@ const debounce = (func, wait) => {
     };
 };
 
-const getExportOptions = () => {
+const getExportOptions = (table) => {
     return {
         rows: function (idx, data, node) {
             return !$(node).hasClass('d-none');
-        }
+        },
+        columns: ':visible'
     };
 };
 
