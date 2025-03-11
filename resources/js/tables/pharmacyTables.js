@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
+import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, getExportOptions, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -215,7 +215,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
 }
 
 const getExpirationStockTable = (tableId, filter) => {
-    return new DataTable('#'+tableId, {
+    const expirationStockTable = new DataTable('#'+tableId, {
         serverSide: true,
         ajax: {url: '/pharmacy/load/expiratonstock', data: {
             'filterBy': filter
@@ -226,14 +226,14 @@ const getExpirationStockTable = (tableId, filter) => {
         lengthMenu:[50, 100, 150, 200, 300],
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
-            {extend: 'copy', className: 'btn-primary'},
-            {extend: 'csv', className: 'btn-primary'},
-            {extend: 'excel', className: 'btn-primary'},
-            {extend: 'pdfHtml5', className: 'btn-primary'},
-            {extend: 'print', className: 'btn-primary'},
+            {extend: 'copy', className: 'btn-primary', exportOptions: getExportOptions()},
+            {extend: 'csv', className: 'btn-primary', exportOptions: getExportOptions()},
+            {extend: 'excel', className: 'btn-primary', exportOptions: getExportOptions()},
+            {extend: 'pdfHtml5', className: 'btn-primary', exportOptions: getExportOptions()},
+            {extend: 'print', className: 'btn-primary', exportOptions: getExportOptions()},
              ],
         language: {
-            emptyTable: 'No Medications'
+            emptyTable: 'No Items on this table'
         },
         columns: [
             {data: "name"},
@@ -256,6 +256,14 @@ const getExpirationStockTable = (tableId, filter) => {
             {data: "dispenseFrequency"},
         ]
     });
+
+    expirationStockTable.on('click', 'tr', function (e) {
+        let tr = e.target.closest('tr');
+        let row = expirationStockTable.row(tr);
+        row.row(tr).nodes().to$().toggleClass('d-none');
+    });
+
+    return expirationStockTable
 }
 
 const getBulkRequestTable = (tableId, urlSuffix) => {

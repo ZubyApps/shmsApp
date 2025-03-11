@@ -38,18 +38,18 @@ window.addEventListener('DOMContentLoaded', function () {
     const regularTreatmentDiv       = treatmentDetailsModal._element.querySelector('#treatmentDiv')
     const ancTreatmentDiv           = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
 
-    const filterListOption          = document.querySelector('#filterList')
+    // const filterListOption          = document.querySelector('#filterList')
 
     const itemInput                 = bulkRequestModal._element.querySelector('#item')
     const theatreItemInput          = theatreRequestModal._element.querySelector('#item')
     const emergencyListCount        = document.querySelector('#emergencyListCount')
     const shiftBadgeSpan            = document.querySelector('#shiftBadgeSpan')
 
-    const [outPatientsTab, inPatientsTab, ancPatientsTab, expirationStockTab, bulkRequestsTab, theatreRequestTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-expirationStock-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-theatreRequests-tab')]
+    const [outPatientsTab, inPatientsTab, ancPatientsTab, bulkRequestsTab, theatreRequestTab, lowStockTab, expirationStockTab]  = [document.querySelector('#nav-outPatients-tab'), document.querySelector('#nav-inPatients-tab'), document.querySelector('#nav-ancPatients-tab'), document.querySelector('#nav-bulkRequests-tab'), document.querySelector('#nav-theatreRequests-tab'), document.querySelector('#nav-lowStock-tab'), document.querySelector('#nav-expirationStock-tab'),]
 
     const [outPatientsView, inPatientsView, ancPatientsView] = [document.querySelector('#nav-outPatients-view'), document.querySelector('#nav-inPatients-view'), document.querySelector('#nav-ancPatients-view')]
     
-    let  outPatientsTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, expirationStockTable, bulkRequestsTable, theatreRequestsTable
+    let  outPatientsTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, bulkRequestsTable, theatreRequestsTable, lowStockTable, expirationStockTable
 
     const inPatientsVisitTable  = getPatientsVisitByFilterTable('inPatientsTable', 'Inpatient')
     const emergencyTable    = getEmergencyTable('emergencyTable', 'pharmacy')
@@ -99,14 +99,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    expirationStockTab.addEventListener('click', function () {
-        if ($.fn.DataTable.isDataTable( '#expirationStockTable' )){
-            $('#expirationStockTable').dataTable().fnDraw()
-        } else {
-            expirationStockTable = getExpirationStockTable('expirationStockTable', 'expiration')
-        }
-    })
-
+    
     bulkRequestsTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#bulkRequestsTable' )){
             $('#bulkRequestsTable').dataTable().fnDraw()
@@ -114,12 +107,28 @@ window.addEventListener('DOMContentLoaded', function () {
             bulkRequestsTable = getBulkRequestTable('bulkRequestsTable', 'pharmacy')
         }
     })
-
+    
     theatreRequestTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#theatreRequestsTable' )){
             $('#theatreRequestsTable').dataTable().fnDraw()
         } else {
             theatreRequestsTable = getBulkRequestTable('theatreRequestsTable', 'theatre')
+        }
+    })
+    
+    lowStockTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#lowStockTable' )){
+            $('#lowStockTable').dataTable().fnDraw()
+        } else {
+            lowStockTable = getExpirationStockTable('lowStockTable', 'stockLevel')
+        }
+    })
+
+    expirationStockTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#expirationStockTable' )){
+            $('#expirationStockTable').dataTable().fnDraw()
+        } else {
+            expirationStockTable = getExpirationStockTable('expirationStockTable', 'expiration')
         }
     })
 
@@ -212,12 +221,12 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    filterListOption.addEventListener('change', function () {
-        if ($.fn.DataTable.isDataTable( '#expirationStockTable' )){
-            $('#expirationStockTable').dataTable().fnDestroy()
-        }
-        getExpirationStockTable('expirationStockTable', filterListOption.value)
-    })
+    // filterListOption.addEventListener('change', function () {
+    //     if ($.fn.DataTable.isDataTable( '#expirationStockTable' )){
+    //         $('#expirationStockTable').dataTable().fnDestroy()
+    //     }
+    //     getExpirationStockTable('expirationStockTable', filterListOption.value)
+    // })
 
     document.querySelectorAll('#visitPrescriptionsTable, #emergencyTable').forEach(table => {
         table.addEventListener('click', function (event) {

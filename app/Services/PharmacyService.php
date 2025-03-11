@@ -417,7 +417,7 @@ class PharmacyService
                 'category'              => $resource->category,
                 'stockLevel'            => $resource->stock_level,
                 'reOrderLevel'          => $resource->reorder_level,
-                'description'           => $resource->unit_description,
+                'description'           => $resource->unitDescription?->short_name,
                 'sellingPrice'          => $resource->selling_price,
                 'expiring'              => $resource->expiry_date ? $this->helperService->twoPartDiffInTimeToCome($resource->expiry_date) : '',
                 'prescriptionFrequency' => $resource->prescriptions->where('created_at', '>', (new Carbon())->subDays(30))->count(),

@@ -98,15 +98,17 @@
                     <button class="nav-link" id="nav-ancPatients-tab" data-bs-toggle="tab" data-bs-target="#nav-ancPatients-view"
                         type="button" role="tab" aria-controls="nav-ancPatients" aria-selected="false">ANC Patients</button>
 
-                    <button class="nav-link" id="nav-expirationStock-tab" data-bs-toggle="tab" data-bs-target="#nav-expirationStock"
-                        type="button" role="tab" aria-controls="nav-expirationStock" aria-selected="false">Expiration/Stock</button>
-
                     <button class="nav-link" id="nav-bulkRequests-tab" data-bs-toggle="tab" data-bs-target="#nav-bulkRequests"
                     type="button" role="tab" aria-controls="nav-bulkRequests" aria-selected="false">Bulk Requests</button>
 
                     <button class="nav-link" id="nav-theatreRequests-tab" data-bs-toggle="tab" data-bs-target="#nav-theatreRequests"
                     type="button" role="tab" aria-controls="nav-theatreRequests" aria-selected="false">Theatre Requests</button>
 
+                    <button class="nav-link" id="nav-lowStock-tab" data-bs-toggle="tab" data-bs-target="#nav-lowStock"
+                        type="button" role="tab" aria-controls="nav-lowStock" aria-selected="false">Low Stock</button>
+
+                    <button class="nav-link" id="nav-expirationStock-tab" data-bs-toggle="tab" data-bs-target="#nav-expirationStock"
+                        type="button" role="tab" aria-controls="nav-expirationStock" aria-selected="false">Expiring Stock</button>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
@@ -174,33 +176,6 @@
                         </table>
                     </div>
                 </div>
-                <!-- Near Expiration table -->
-                <div class="tab-pane fade" id="nav-expirationStock" role="tabpanel" aria-labelledby="nav-expirationStock-tab"
-                    tabindex="0">
-                    <x-form-div class="col-md-4 pt-2">
-                        <x-input-span id="filterListLabel">Display List<x-required-span /></x-input-span>
-                        <select class="form-select form-select-md" name="filterList" id="filterList">
-                            <option value="expiration">Close Expiration</option>
-                            <option value="stockLevel">Low Stock</option>
-                        </select>
-                    </x-form-div>
-                    <div class="pt-2 ">
-                        <table id="expirationStockTable" class="table table-hover table-sm expirationStockTable">
-                            <thead>
-                                <tr>
-                                    <th>Medication</th>
-                                    <th>Stock Level</th>
-                                    <th>Reorder Level</th>
-                                    <th>Selling Price</th>
-                                    <th>Expiring in</th>
-                                    <th>Times Prescribed(30days)</th>
-                                    <th>Times Dispensed(30days)</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
                 <!-- bulk request table -->
                 <div class="tab-pane fade" id="nav-bulkRequests" role="tabpanel" aria-labelledby="nav-bulkRequests-tab" tabindex="0">
                     <div class="text-start py-4">
@@ -255,6 +230,60 @@
                                     <th>Qty Confirmed</th>
                                     <th>Confirmed By</th>
                                     <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                 <!-- Low stock table -->
+                <div class="tab-pane fade" id="nav-lowStock" role="tabpanel" aria-labelledby="nav-lowStock-tab"
+                    tabindex="0">
+                    {{-- <x-form-div class="col-md-4 pt-2">
+                        <x-input-span id="filterListLabel">Display List<x-required-span /></x-input-span>
+                        <select class="form-select form-select-md" name="filterList" id="filterList">
+                            <option value="expiration">Close Expiration</option>
+                            <option value="stockLevel">Low Stock</option>
+                        </select>
+                    </x-form-div> --}}
+                    <div class="pt-2 ">
+                        <table id="lowStockTable" class="table table-hover table-sm lowStockTable">
+                            <thead>
+                                <tr>
+                                    <th>Medication</th>
+                                    <th>Stock Level</th>
+                                    <th>Reorder Level</th>
+                                    <th>Selling Price</th>
+                                    <th>Expiring in</th>
+                                    <th>Times Prescribed(30days)</th>
+                                    <th>Times Dispensed(30days)</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                 <!-- Near Expiration table -->
+                <div class="tab-pane fade" id="nav-expirationStock" role="tabpanel" aria-labelledby="nav-expirationStock-tab"
+                    tabindex="0">
+                    {{-- <x-form-div class="col-md-4 pt-2">
+                        <x-input-span id="filterListLabel">Display List<x-required-span /></x-input-span>
+                        <select class="form-select form-select-md" name="filterList" id="filterList">
+                            <option value="expiration">Close Expiration</option>
+                            <option value="stockLevel">Low Stock</option>
+                        </select>
+                    </x-form-div> --}}
+                    <div class="pt-2 ">
+                        <table id="expirationStockTable" class="table table-hover table-sm expirationStockTable">
+                            <thead>
+                                <tr>
+                                    <th>Medication</th>
+                                    <th>Stock Level</th>
+                                    <th>Reorder Level</th>
+                                    <th>Selling Price</th>
+                                    <th>Expiring in</th>
+                                    <th>Times Prescribed(30days)</th>
+                                    <th>Times Dispensed(30days)</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
