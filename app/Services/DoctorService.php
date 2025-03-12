@@ -71,12 +71,6 @@ class DoctorService
         });
     }
 
-    // private function paginateQuery(Builder $query, DataTableQueryParams $params, string $orderBy = 'consulted', string $orderDir = 'desc')
-    // {
-    //     return $query->orderBy($orderBy, $orderDir)
-    //         ->paginate($params->length, '*', '', (($params->length + $params->start) / $params->length));
-    // }
-
     private function generalFilters(Builder $query, string $method)
     {
         if ($method == 'outPatients') {
