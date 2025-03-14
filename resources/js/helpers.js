@@ -696,19 +696,19 @@ const getShiftPerformance = (dept, div) => {
                  }) : ''
 
                 details.notChartedInjectables.length > 0 ? details.notChartedInjectables.forEach(patient => {
-                    noChatPatientsInjectables +=  `<li class="dropdown-item text-secondary">${patient}</li>`
+                    noChatPatientsInjectables +=  `<li class="dropdown-item text-secondary patientInjNotCharted" data-patient="${patient.split(" ")[0]}">${patient}</li>`
                  }) : ''
 
                 details.notChartedOthers.length > 0 ? details.notChartedOthers.forEach(patient => {
-                    noChatPatientsOthers +=  `<li class="dropdown-item text-secondary">${patient}</li>`
+                    noChatPatientsOthers +=  `<li class="dropdown-item text-secondary patientOthersNotCharted" data-patient="${patient.split(" ")[0]}">${patient}</li>`
                  }) : ''
                 
                 details.notStartedInjectables.length > 0 ? details?.notStartedInjectables?.forEach(patient => {
-                    noStartPatientsInjectables +=  `<li class="dropdown-item text-secondary">${patient}</li>`
+                    noStartPatientsInjectables +=  `<li class="dropdown-item text-secondary patientInjNotStarted" data-patient="${patient.split(" ")[0]}">${patient}</li>`
                  }) : ''
 
                 details.notStartedOthers.length > 0 ? details.notStartedOthers.forEach(patient => {
-                    noStartPatientsOthers +=  `<li class="dropdown-item text-secondary">${patient}</li>`
+                    noStartPatientsOthers +=  `<li class="dropdown-item text-secondary patientOthersNotStarted" data-patient="${patient.split(" ")[0]}">${patient}</li>`
                  }) : ''
                 
                 div.innerHTML = `
@@ -717,7 +717,7 @@ const getShiftPerformance = (dept, div) => {
                     <div class="progress-bar text-dark fw-semibold fs-6 overflow-visible bg-${shiftPerformance.performance <= 45 ? 'danger' : shiftPerformance.performance > 45 && shiftPerformance.performance < 65 ? 'warning' : shiftPerformance.performance >= 65 && shiftPerformance.performance <= 91 ? 'primary' : 'success'}-subtle px-1" style="width: ${shiftPerformance.performance}%;"> ${shiftPerformance.shift} Performance ${shiftPerformance.performance}% <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="timeLeft">${getTimeToEndOfShift(shiftPerformance.shift_end)}</span></div>
                     </div>
                 </button>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu mainUl">
                     <li class=" text-secondary p-0">
                         <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
                             <li class="dropdown-item text-secondary">Injectables Chart Rate ${shiftPerformance.injectables_chart_rate ? '- '+ shiftPerformance.injectables_chart_rate :'- no activity'}</li>

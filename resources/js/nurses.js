@@ -140,6 +140,8 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    
+
     inPatientsTab.addEventListener('click', function() {
         inPatientsVisitTable.draw();
         shiftPerformance();
@@ -227,6 +229,43 @@ window.addEventListener('DOMContentLoaded', function () {
     waitingListCanvas._element.addEventListener('hide.bs.offcanvas', function () {
         shiftPerformance();
     })
+
+    setTimeout(() =>{
+        document.querySelector('.mainUl').addEventListener('click', function (event) {
+            const patientInjNotCharted      = event.target.closest('.patientInjNotCharted')
+            const patientOthersNotCharted   = event.target.closest('.patientOthersNotCharted')
+            const patientInjNotStarted      = event.target.closest('.patientInjNotStarted')
+            const patientOthersNotStarted   = event.target.closest('.patientOthersNotStarted')
+    
+            if (patientInjNotCharted){
+                const cardNo = patientInjNotCharted.getAttribute('data-patient')
+                inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
+                outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
+                ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+            }
+
+            if (patientOthersNotCharted){
+                const cardNo = patientOthersNotCharted.getAttribute('data-patient')
+                inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
+                outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
+                ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+            }
+
+            if (patientInjNotStarted){
+                const cardNo = patientInjNotStarted.getAttribute('data-patient')
+                inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
+                outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
+                ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+            }
+            
+            if (patientOthersNotStarted){
+                const cardNo = patientOthersNotStarted.getAttribute('data-patient')
+                inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
+                outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
+                ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+            }
+        })
+    }, 6000)
 
     document.querySelectorAll('#upcomingMedicationsoffcanvas, #upcomingNursingChartsoffcanvas').forEach(canvas => {
         canvas.addEventListener('show.bs.offcanvas', function () {

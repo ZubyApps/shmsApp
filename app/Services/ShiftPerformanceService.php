@@ -273,10 +273,14 @@ Class ShiftPerformanceService
             })->isNotEmpty();
         })->count();
 
+        // $totalInjectablePrescriptionsNotStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
+        //     return $prescription->medicationCharts->filter(function ($chart) use ($shiftPerformance, $shiftEndTimer) {
+        //         return $chart->time_given === null;
+        //     });
+        // });
+
         $totalInjectablePrescriptionsNotStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
-            return $prescription->medicationCharts->filter(function ($chart) use ($shiftPerformance, $shiftEndTimer) {
-                return $chart->time_given === null;
-            })->isNotEmpty();
+            return $prescription->medicationCharts[0]->time_given === null;
         });
 
         $notStartedUniqueInjectables = $totalInjectablePrescriptionsNotStarted->map(function ($prescription) {
@@ -340,15 +344,19 @@ Class ShiftPerformanceService
         $totalOtherPrescriptions = $prescriptions->count();
 
         $totalOtherPrescriptionsStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
-            return $prescription->nursingCharts->filter(function ($chart) use ($shiftPerformance, $shiftEndTimer) {
-                return $chart->scheduled_time >= $shiftPerformance->shift_start && $chart->scheduled_time <= $shiftEndTimer && $chart->time_done !== null;
+            return $prescription->nursingCharts->filter(function ($chart) {
+                return $chart->time_done !== null;
             })->isNotEmpty();
         })->count();
 
+        // $totalOtherPrescriptionsNotStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
+        //     return $prescription->nursingCharts->filter(function ($chart) {
+        //         return $chart->time_done === null;
+        //     })->isNotEmpty();
+        // });
+
         $totalOtherPrescriptionsNotStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
-            return $prescription->nursingCharts->filter(function ($chart) use ($shiftPerformance, $shiftEndTimer) {
-                return $chart->scheduled_time >= $shiftPerformance->shift_start && $chart->scheduled_time <= $shiftEndTimer && $chart->time_done === null;
-            })->isNotEmpty();
+            return $prescription->nursingCharts[0]->time_done === null;
         });
 
         $notStartedUniqueOthers = $totalOtherPrescriptionsNotStarted->map(function ($prescription) {
