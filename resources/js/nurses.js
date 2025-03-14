@@ -230,65 +230,63 @@ window.addEventListener('DOMContentLoaded', function () {
         shiftPerformance();
     })
 
-    setTimeout(() =>{
-        document.querySelector('.mainUl').addEventListener('click', function (event) {
-            const patientInjNotCharted      = event.target.closest('.patientInjNotCharted')
-            const patientOthersNotCharted   = event.target.closest('.patientOthersNotCharted')
-            const patientInjNotStarted      = event.target.closest('.patientInjNotStarted')
-            const patientOthersNotStarted   = event.target.closest('.patientOthersNotStarted')
-            const inpatientsNov             = event.target.closest('.inpatientsNov')
-            const outpatientsNov            = event.target.closest('.outpatientsNov')
-    
-            if (patientInjNotCharted){
-                const cardNo = patientInjNotCharted.getAttribute('data-patient')
-                inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
-                outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
-                ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
-            }
+    shiftPerformanceDiv.addEventListener('click', function (event) {
+        const patientInjNotCharted      = event.target.closest('.patientInjNotCharted')
+        const patientOthersNotCharted   = event.target.closest('.patientOthersNotCharted')
+        const patientInjNotStarted      = event.target.closest('.patientInjNotStarted')
+        const patientOthersNotStarted   = event.target.closest('.patientOthersNotStarted')
+        const inpatientsNov             = event.target.closest('.inpatientsNov')
+        const outpatientsNov            = event.target.closest('.outpatientsNov')
 
-            if (patientOthersNotCharted){
-                const cardNo = patientOthersNotCharted.getAttribute('data-patient')
-                inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
-                outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
-                ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
-            }
+        if (patientInjNotCharted){
+            const cardNo = patientInjNotCharted.getAttribute('data-patient')
+            inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
+            outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
+            ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+        }
 
-            if (patientInjNotStarted){
-                const cardNo = patientInjNotStarted.getAttribute('data-patient')
-                inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
-                outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
-                ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
-            }
+        if (patientOthersNotCharted){
+            const cardNo = patientOthersNotCharted.getAttribute('data-patient')
+            inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
+            outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
+            ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+        }
+
+        if (patientInjNotStarted){
+            const cardNo = patientInjNotStarted.getAttribute('data-patient')
+            inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
+            outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
+            ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+        }
+        
+        if (patientOthersNotStarted){
+            const cardNo = patientOthersNotStarted.getAttribute('data-patient')
+            inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
+            outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
+            ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+        }
+
+        if (inpatientsNov){
+            const cardNo = inpatientsNov.getAttribute('data-patient')
+            inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
+            outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
+            ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+        }
+
+        if (outpatientsNov){
+            const cardNo = outpatientsNov.getAttribute('data-patient')
+            const waitingList = outpatientsNov.getAttribute('data-location') == '(Waitinglist)'
             
-            if (patientOthersNotStarted){
-                const cardNo = patientOthersNotStarted.getAttribute('data-patient')
+            if (waitingList){
+                waitingListCanvas.show()
+                waitingTable.search(cardNo).draw()
+            } else {
                 inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
                 outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
                 ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
             }
-
-            if (inpatientsNov){
-                const cardNo = inpatientsNov.getAttribute('data-patient')
-                inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
-                outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
-                ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
-            }
-
-            if (outpatientsNov){
-                const cardNo = outpatientsNov.getAttribute('data-patient')
-                const waitingList = outpatientsNov.getAttribute('data-location') == '(Waitinglist)'
-                
-                if (waitingList){
-                    waitingListCanvas.show()
-                    waitingTable.search(cardNo).draw()
-                } else {
-                    inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
-                    outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
-                    ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
-                }
-            }
-        })
-    }, 6000)
+        }
+    })
 
     document.querySelectorAll('#upcomingMedicationsoffcanvas, #upcomingNursingChartsoffcanvas').forEach(canvas => {
         canvas.addEventListener('show.bs.offcanvas', function () {
