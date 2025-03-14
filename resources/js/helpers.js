@@ -688,11 +688,11 @@ const getShiftPerformance = (dept, div) => {
                 let noStartPatientsOthers       = ''
 
                 details.inpatientsNoV.length > 0 ? details.inpatientsNoV.forEach(patient => {
-                    inpatients +=  `<li class="dropdown-item text-secondary">${patient}</li>`
+                    inpatients +=  `<li class="dropdown-item text-secondary inpatientsNov" data-patient="${patient.split(" ")[0]}">${patient}</li>`
                  }) : ''
 
                 details.outpatientsNoV.length > 0 ? details.outpatientsNoV.forEach(patient => {
-                    outpatients +=  `<li class="dropdown-item text-secondary">${patient}</li>`
+                    outpatients +=  `<li class="dropdown-item text-secondary outpatientsNov" data-patient="${patient.split(" ")[0]}" data-location="${patient.split(" ")[2]}">${patient}</li>`
                  }) : ''
 
                 details.notChartedInjectables.length > 0 ? details.notChartedInjectables.forEach(patient => {

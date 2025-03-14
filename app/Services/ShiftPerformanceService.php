@@ -820,7 +820,7 @@ Class ShiftPerformanceService
     });
 
     $noVitals = $visitsNoVitals->map(function ($visit) {
-        return $visit->patient->card_no . ' ' . $visit->patient->first_name;
+        return $visit->patient->card_no . ' ' . $visit->patient->first_name. ' ' . ($visit->consulted ? '(Consulted)' : '(Waitinglist)');
     })->all();
 
     $all = new Collection([
