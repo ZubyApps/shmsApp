@@ -379,6 +379,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/{patient}', [PatientController::class, 'update']);
             Route::post('/initiate/{patient}', [PatientController::class, 'confirmVisit']);
             Route::patch('/knownclinicalinfo/{patient}', [PatientController::class, 'updateKnownClinicalInfo'])->withoutMiddleware('patients');
+            Route::get('/list', [PatientController::class, 'listPatients']);
         })->name('Patients');
     });
 

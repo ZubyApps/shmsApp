@@ -865,6 +865,35 @@ const searchMin = (table, tableId, value) => {
     });
 }
 
+const preSearch = (table, tableId, value) => {
+    const searchInput = $(tableId+'_filter input');
+    searchInput.off('keyup keypress input');
+    searchInput.on('keyup', function(e) {
+        if(this.value.length > value) {
+           http.get(`/patients/list`, {params: {fullId: this.value}}).then((response) => {
+                displayPatients(searchInput, response.data)
+            })
+        }
+        if (this.value.length == 0){
+            table.search( this.value ).draw();
+        }
+    });
+}
+
+function displayPatients(input, data){
+    const datalistEl = document.createElement("DATALIST")
+    datalistEl.setAttribute('id', 'patientsList')
+    data.forEach(patient => {
+        const option = document.createElement("OPTION")
+        option.setAttribute('value', patient.fullId)
+        option.setAttribute('name', patient.fullId)
+        option.setAttribute('data-cardNo', patient.cardNo)
+        
+        !datalistEl.options.namedItem(line.nameWithIndicators) ? datalistEl.appendChild(option) : ''
+    })
+    input.appendChild(datalistEl)
+}
+
 const searchPlaceholderText = '...3 characters min';
 
 const debounce = (func, wait) => {

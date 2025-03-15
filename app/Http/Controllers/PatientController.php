@@ -185,4 +185,14 @@ class PatientController extends Controller
     {
         return $this->patientService->deletePrePatient($patientPreForm->id);
     }
+
+    public function listPatients(Request $request)
+    {
+        $resources = $this->patientService->patientList($request);
+
+        $listTransformer = $this->patientService->listTransformer();
+
+        return array_map($listTransformer, (array)$resources->getIterator());
+
+    }
 }

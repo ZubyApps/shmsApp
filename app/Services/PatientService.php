@@ -367,4 +367,32 @@ class PatientService
                 ->orderBy($orderBy, $orderDir)
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
+
+    public function patientList($data)
+    {
+        if (! empty($data->fullId)){
+            $searchTerm = '%' . addcslashes($data->fullId, '%_') . '%';
+            return $this->patient::with('sponsor')
+                        ->where('first_name', 'LIKE', $searchTerm)
+                        ->orWhere('middle_name', 'LIKE', $searchTerm)
+                        ->orWhere('last_name', 'LIKE', $searchTerm)
+                        ->orWhere('phone', 'LIKE', $searchTerm )
+                        ->orWhere('sex', 'LIKE', $searchTerm)
+                        ->orWhere('date_of_birth', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm )
+                        ->orderBy('created_at', 'asc')
+                        ->pluck('first_name', 'middle_name', 'last_name', 'sponsor.name');
+        }      
+    }
+
+    public function listTransformer()
+    {
+        return function (Patient $patient){
+            return [
+                'fullId'    => $patient->patientId(),
+                'cardNo'    => $patient->card_no,
+                'sponsor'   => $patient->sponsor->name,
+            ];
+        };
+    }
 }
