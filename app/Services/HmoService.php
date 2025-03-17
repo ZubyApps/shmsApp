@@ -804,12 +804,13 @@ class HmoService
     {
         $orderBy    = 'name';
         $orderDir   =  'asc';
-        $month      = (new Carbon($data->date))->month;
+        $getDate     = (new Carbon($data->date));
+        $month      = $getDate->month;
         $current    = CarbonImmutable::now();
         $query      = $this->sponsor::with([
-                        'reminders' => function($query) use($current){
-                            $query->whereMonth('created_at', $current->month)
-                                ->whereYear('created_at', $current->year);
+                        'reminders' => function($query) use($getDate){
+                            $query->whereMonth('created_at', $getDate->month)
+                                ->whereYear('created_at', $getDate->year);
                         },
                     ])
                     ->withCount([
