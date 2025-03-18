@@ -356,7 +356,7 @@ Class ShiftPerformanceService
         // });
 
         $totalOtherPrescriptionsNotStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
-            return $prescription->nursingCharts->first()->time_done === null;
+            return $prescription->nursingCharts->first()?->time_done === null;
         });
 
         $notStartedUniqueOthers = $totalOtherPrescriptionsNotStarted->map(function ($prescription) {
