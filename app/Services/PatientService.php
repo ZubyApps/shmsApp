@@ -376,7 +376,9 @@ class PatientService
                 return $this->patient
                         ->where('patient_type', 'ANC')
                         ->where(function (Builder $query) use($searchTerm) {
-                            $query->whereRaw('CONCAT(first_name, " ", middle_name, " ", last_name) LIKE ?', [$searchTerm])
+                            $query->where('first_name', 'LIKE', $searchTerm)
+                            ->orWhere('middle_name', 'LIKE', $searchTerm)
+                            ->orWhere('last_name', 'LIKE', $searchTerm)
                             ->orWhere('card_no', 'LIKE', $searchTerm)
                             ->orWhere('phone', 'LIKE', $searchTerm);
                         })
@@ -384,7 +386,10 @@ class PatientService
                         ->get(['first_name', 'middle_name', 'last_name', 'card_no', 'sponsor_id', 'phone']);
             }
             return $this->patient
-                        ->whereRaw('CONCAT(first_name, " ", middle_name, " ", last_name) LIKE ?', [$searchTerm])
+                        // ->whereRaw('CONCAT(first_name, " ", middle_name, " ", last_name) LIKE ?', [$searchTerm])
+                        ->where('first_name', 'LIKE', $searchTerm)
+                        ->orWhere('middle_name', 'LIKE', $searchTerm)
+                        ->orWhere('last_name', 'LIKE', $searchTerm)
                         ->orWhere('card_no', 'LIKE', $searchTerm )
                         ->orWhere('phone', 'LIKE', $searchTerm )
                         ->orderBy('created_at', 'asc')
