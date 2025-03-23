@@ -39,7 +39,7 @@ class AdminController extends Controller
         $otherSettings = [];
         $params = $this->datatablesService->getDataTableQueryParameters($request);
         $otherSettings[0] = ["name" => "Pre Search", "value" => Cache::get("preSearch") ?? "Not Set", "desc" => "Change search behavior to prefetch the patient before searching for patients visit details"];
-        $otherSettings[1] = ["name" => "Nursing Performance Benchmark", "value" => Cache::get("nursingBenchmark", 30), "desc" => "Set the benchmark for calculating the nursing performance"];
+        $otherSettings[1] = ["name" => "Nursing Performance Benchmark", "value" => Cache::get("nursingBenchmark", 100), "desc" => "Set the benchmark for calculating the nursing performance"];
         // info($otherSettings);
         return response()->json([
             'data' => $otherSettings,
