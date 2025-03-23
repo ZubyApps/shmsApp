@@ -7,7 +7,7 @@ DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
 pdfMake.vfs = pdfFonts;
 $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
-import { admissionStatus, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getOrdinal, histroyBtn, prescriptionOnLatestConsultation, prescriptionStatusContorller, reviewBtn, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
+import { admissionStatus, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getOrdinal, histroyBtn, prescriptionOnLatestConsultation, prescriptionStatusContorller, preSearch, reviewBtn, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
 
 const getOutpatientsVisitTable = (tableId, filter) => {
     const outPatientsTable =  new DataTable(tableId, {
@@ -63,7 +63,7 @@ const getOutpatientsVisitTable = (tableId, filter) => {
             },
         ]
     });
-    outPatientsTable.on('draw.init', searchMin(outPatientsTable, tableId, 2))
+    outPatientsTable.on('draw.init', searchDecider(outPatientsTable, tableId, 2))
 
     return outPatientsTable
 }
@@ -124,7 +124,7 @@ const getInpatientsVisitTable = (tableId, filter) => {
         ]
     });
 
-    inpatientsTable.on('draw.init', searchMin(inpatientsTable, tableId, 2))
+    inpatientsTable.on('draw.init', searchDecider(inpatientsTable, tableId, 2))
 
     return inpatientsTable
 }
@@ -211,7 +211,7 @@ const getAncPatientsVisitTable = (tableId, filter) => {
         ]
     });
 
-    ancPatientsTable.on('draw.init', searchMin(ancPatientsTable, tableId, 2))
+    ancPatientsTable.on('draw.init', searchDecider(ancPatientsTable, tableId, 2, 'ANC'))
 
     return ancPatientsTable
 }
@@ -914,7 +914,7 @@ const getPatientsFileTable = (tableId, visitId, modal) => {
 }
 
 const getProceduresListTable = (tableId, pending, hmo, cash) => {
-    return new DataTable('#'+tableId, {
+    const procedureListTable = new DataTable(tableId, {
         serverSide: true,
         ajax: {url: `/procedures/load`, data: {
             'pending'   : pending,
@@ -939,7 +939,8 @@ const getProceduresListTable = (tableId, pending, hmo, cash) => {
         search:true,
         searchDelay: 500,
         language: {
-            emptyTable: 'No pending procedures'
+            emptyTable: 'No pending procedures',
+            searchPlaceholder: searchPlaceholderText
         },
         columns: [
             {data: "createdAt"},
@@ -1000,6 +1001,10 @@ const getProceduresListTable = (tableId, pending, hmo, cash) => {
             },
         ]
     });
+
+    procedureListTable.on('draw.init', searchDecider(procedureListTable, tableId, 2))
+
+    return procedureListTable
 }
 
 export {getOutpatientsVisitTable, getInpatientsVisitTable, getAncPatientsVisitTable, getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getSurgeryNoteTable, getMedicalReportTable, getPatientsFileTable, getProceduresListTable}

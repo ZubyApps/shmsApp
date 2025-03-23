@@ -648,12 +648,26 @@ window.addEventListener('DOMContentLoaded', function () {
             if (markAsResolvedBtn){
                 const visitId   = markAsResolvedBtn.getAttribute('data-id')
                 const state     = +markAsResolvedBtn.getAttribute('data-state')
-                const string    = state ? 'unmark' : 'mark'
+                const string    = state ? 'unmark' : 'mark'        
+
                 if (confirm(`Are you sure you want to ${string} as Resolved?`)) {
+
+                    const modalBody = $('#visitsBySponsorModal .modal-body');
+                    const scrollTop = modalBody.scrollTop();
+            
+                    visitsBySponsorTable.one('draw', function() {
+                        modalBody.scrollTop(scrollTop);
+                        if (/Chrome/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent)) {
+                            requestAnimationFrame(() => {
+                                modalBody.scrollTop(scrollTop);
+                            });
+                        }
+                    });
+
                     http.patch(`/visits/resolve/${visitId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
-                            visitsBySponsorTable ?  visitsBySponsorTable.draw(false) : ''
+                            visitsBySponsorTable ? visitsBySponsorTable.draw(false) : '';
                         }
                     })
                     .catch((error) => {

@@ -12,6 +12,7 @@
                         class="fw-bold pl-4">H</span>ospital</a>
             </div>
             <div class="col-6 d-flex justify-content-end align-items-center">
+                <input type="text" class="d-none" value="{{ $preSearch }}" id="preSearch">
                 {{-- <div class="btn-group mx-2">
                     <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown"
                         aria-expanded="false">

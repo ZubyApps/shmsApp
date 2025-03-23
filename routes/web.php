@@ -71,8 +71,13 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {    
     Route::middleware('strict')->group(function () {
-        Route::get('/admin', [AdminController::class, 'index'])->name('Admin');
-        Route::get('/admin/settings', [AdminController::class, 'settings'])->name('Settings');
+        Route::prefix('admin')->group(function () {
+            Route::get('', [AdminController::class, 'index'])->name('Admin');
+            Route::get('/settings', [AdminController::class, 'settings'])->name('Settings');
+            Route::put('/settings/presearch', [AdminController::class, 'preSearchSettings']);
+            Route::put('/settings/nursingbenchmark', [AdminController::class, 'nursingBenchMarkSetting']);
+            Route::get('/settings/load/othersettings', [AdminController::class, 'loadOtherSettings']);
+        });
 
         Route::prefix('users')->group(function () {
             Route::get('', [RegisteredUserController::class, 'create'])->name('users');
@@ -372,6 +377,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/load/summary/visits', [PatientController::class, 'loadVisitSummaryBySponsor']);
             Route::get('/load/bysponsor', [PatientController::class, 'loadPatientsBySponsor']);
             Route::get('/load/visits', [PatientController::class, 'loadVisit']);
+            Route::get('/list', [PatientController::class, 'listPatients']);
             Route::get('/{patient}', [PatientController::class, 'edit']);
             Route::get('/prepatients/{patientPreForm}', [PatientController::class, 'review']);
             Route::delete('/{patient}', [PatientController::class, 'destroy']);
@@ -379,7 +385,6 @@ Route::middleware('auth')->group(function () {
             Route::post('/{patient}', [PatientController::class, 'update']);
             Route::post('/initiate/{patient}', [PatientController::class, 'confirmVisit']);
             Route::patch('/knownclinicalinfo/{patient}', [PatientController::class, 'updateKnownClinicalInfo'])->withoutMiddleware('patients');
-            Route::get('/list', [PatientController::class, 'listPatients']);
         })->name('Patients');
     });
 
@@ -396,6 +401,7 @@ Route::middleware('auth')->group(function () {
         Route::post('', [SponsorController::class, 'store']);
         Route::get('/load', [SponsorController::class, 'load']);
         Route::get('/list', [SponsorController::class, 'list']);
+        Route::get('/hmolist', [SponsorController::class, 'listHmoSponsors']);
         Route::get('/{sponsor}', [SponsorController::class, 'edit']);
         Route::delete('/{sponsor}', [SponsorController::class, 'destroy']);
         Route::post('/{sponsor}', [SponsorController::class, 'update']);

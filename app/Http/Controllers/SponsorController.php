@@ -54,4 +54,14 @@ class SponsorController extends Controller
     {
         return $sponsor->destroy($sponsor->id);
     }
+
+    public function listHmoSponsors(Request $request)
+    {
+        $sponsor = $this->sponsorService->HmoSponsorList($request);
+
+        $listTransformer = $this->sponsorService->listTransformer();
+
+        return array_map($listTransformer, (array)$sponsor->getIterator());
+
+    }
 }

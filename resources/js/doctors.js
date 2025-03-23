@@ -125,7 +125,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const waitingTable = getWaitingTable('#waitingTable')
     const emergencyTable = getEmergencyTable('emergencyTable', 'doctor')
     appointmentsTable = getAppointmentsTable('appointmentsTable', 'My Appointments', appointmentsBadgeSpan)
-    const proceduresListTable = getProceduresListTable('proceduresListTable', 'pending')
+    const proceduresListTable = getProceduresListTable('#proceduresListTable', 'pending')
 
     emergencyTable.on('draw.init', function() {
         const count = emergencyTable.rows().count()
@@ -181,7 +181,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#proceduresTable' )){
             $('#proceduresTable').dataTable().fnDraw()
         } else {
-            proceduresTable = getProceduresListTable('proceduresTable')
+            proceduresTable = getProceduresListTable('#proceduresTable')
         }
     })
     

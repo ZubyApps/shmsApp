@@ -10,7 +10,7 @@ import 'datatables.net-fixedcolumns-bs5';
 import 'datatables.net-fixedheader-bs5';
 import 'datatables.net-select-bs5';
 import 'datatables.net-staterestore-bs5';
-import { getExpenseCategoryTable, getMarkedForTable, getMedicationCategoryTable, getPayMethodTable, getResourceCategoryTable, getResourceStockDateTable, getSponsorCategoryTable, getUnitDescriptionTable, getWardTable } from "./tables/settingsTables";
+import { getExpenseCategoryTable, getMarkedForTable, getMedicationCategoryTable, getOtherSettingsTable, getPayMethodTable, getResourceCategoryTable, getResourceStockDateTable, getSponsorCategoryTable, getUnitDescriptionTable, getWardTable } from "./tables/settingsTables";
 
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -87,8 +87,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const unitDescriptionTab                = document.querySelector('#nav-unitDescription-tab')
     const markedForTab                      = document.querySelector('#nav-markedFor-tab')
     const wardTab                           = document.querySelector('#nav-ward-tab')
+    const otherSettingsTab                  = document.querySelector('#nav-otherSettings-tab')
 
-    let resourceStockDateTable, resourceCategoryTable, payMethodTable, expenseCategoryTable, medicationCategoryTable, unitDescriptionTable, markedForTable, wardTable
+    let resourceStockDateTable, resourceCategoryTable, payMethodTable, expenseCategoryTable, medicationCategoryTable, unitDescriptionTable, markedForTable, wardTable, otherSettingsTable
 
     const sponsorCategoryTable = getSponsorCategoryTable('sponsorCategoryTable')
 
@@ -157,6 +158,14 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#wardTable').dataTable().fnDraw()
         } else {
             wardTable = getWardTable('wardTable')
+        }
+    })
+
+    otherSettingsTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#otherSettingsTable' )){
+            $('#otherSettingsTable').dataTable().fnDraw()
+        } else {
+            otherSettingsTable = getOtherSettingsTable('#otherSettingsTable')
         }
     })
 
@@ -896,6 +905,32 @@ window.addEventListener('DOMContentLoaded', function () {
             saveWardBtn.removeAttribute('disabled')
             console.log(error)
         })
+    })
+
+    document.querySelector('#otherSettingsTable').addEventListener('click', function (event) {
+        const optionSpan    = event.target.closest('.optionSpan')
+        
+        if (optionSpan){
+            const name          = optionSpan.getAttribute('data-name') 
+            const div           = optionSpan.parentElement
+            const optionSelect  = div.querySelector('.optionSelect')
+            optionSpan.classList.add('d-none')
+            optionSelect.classList.remove('d-none')
+            const urlSuffix           = name == 'Pre Search' ? 'presearch' : 'nursingbenchmark'
+            optionSelect.addEventListener('blur', function () {
+                http.put(`/admin/settings/${urlSuffix}`, {preSearch: optionSelect.value}, {'html' : div})
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300){
+                        otherSettingsTable ? otherSettingsTable.draw() : ''
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    otherSettingsTable ? otherSettingsTable.draw() : ''
+
+                })
+            })
+        }
     })
 
     newSponsorCategoryModal._element.addEventListener('hidden.bs.modal', function () {

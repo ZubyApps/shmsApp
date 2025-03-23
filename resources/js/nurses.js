@@ -1,4 +1,4 @@
-import { Offcanvas, Modal, Toast } from "bootstrap";
+import { Offcanvas, Modal, Toast, Dropdown } from "bootstrap";
 import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, populateWardAndBedModal, clearItemsList, getSelectedResourceValues, getDatalistOptionStock, getShiftPerformance, displayWardList, clearSelectList, debounce } from "./helpers"
 import $ from 'jquery';
 import http from "./http";
@@ -11,7 +11,7 @@ import { visitDetails } from "./dynamicHTMLfiles/visits";
 $.fn.dataTable.ext.errMode = 'throw';
 
 window.addEventListener('DOMContentLoaded', function () {
-    const waitingListCanvas                 = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
+    const waitingListCanvas             = new Offcanvas(document.getElementById('waitingListOffcanvas2'))
 
     const treatmentDetailsModal         = new Modal(document.getElementById('treatmentDetailsModal'))
     const consultationHistoryModal      = new Modal(document.getElementById('consultationHistoryModal'))
@@ -42,6 +42,11 @@ window.addEventListener('DOMContentLoaded', function () {
     const newShiftReportTemplateModal   = new Modal(document.getElementById('newShiftReportTemplateModal'))
     const editShiftReportTemplateModal  = new Modal(document.getElementById('editShiftReportTemplateModal'))
     const viewShiftReportTemplateModal  = new Modal(document.getElementById('viewShiftReportTemplateModal'))
+    let nursingPerformanceDropDown;
+    setTimeout(() => {
+        nursingPerformanceDropDown    = new Dropdown(document.getElementById('nursingPerformanceDropdown'))
+        console.log(nursingPerformanceDropDown)
+    }, 10000)
 
     const visitHistoryDiv           = consultationHistoryModal._element.querySelector('#visitHistoryDiv')
     const addVitalsignsDiv          = document.querySelectorAll('#addVitalsignsDiv')
@@ -69,7 +74,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveAncBtn                = updateAncRegisterationModal._element.querySelector('#saveAncBtn') 
     const deleteAncBtn              = viewAncRegisterationModal._element.querySelector('#deleteAncBtn')
     const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
-    const theatreRequestBtn        = document.querySelector('#newTheatreRequestBtn')
+    const theatreRequestBtn         = document.querySelector('#newTheatreRequestBtn')
     const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
     const requestTheatreBtn        = theatreRequestModal._element.querySelector('#requestBulkBtn')
     const moreHistoryBtn            = consultationHistoryModal._element.querySelector('#moreHistoryBtn')
@@ -107,7 +112,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const upcomingMedicationsTable      = getUpcomingMedicationsTable('upcomingMedicationsTable', inpatientsMedChartBtn, inpatientMedicationBadgeSpan)
     const upcomingNursingChartsTable    = getUpcomingNursingChartsTable('upcomingNursingChartsTable', nursingChartBtn, inpatientNursingBadgeSpan)
     const nursesShiftReportTable        = getShiftReportTable('nursesShiftReportTable', 'nurses', shiftBadgeSpan)
-    const proceduresListTable           = getProceduresListTable('proceduresListTable', 'pending')
+    const proceduresListTable           = getProceduresListTable('#proceduresListTable', 'pending') 
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #bulkRequestsTable, #emergencyTable, #nursesReportTable, #upcomingMedicationsTable, #upcomingNursingChartsTable, #waitingTable, #medicationsTable, #otherPrescriptionsTable, #ancVitalSignsTable, #vitalSignsTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
 
     const shiftPerformance = debounce(() => {
@@ -205,6 +210,7 @@ window.addEventListener('DOMContentLoaded', function () {
         .catch((error) => {
             console.log(error)
         })
+
         waitingTable.draw()
     })
 
@@ -243,6 +249,7 @@ window.addEventListener('DOMContentLoaded', function () {
             inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
             outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
             ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+            nursingPerformanceDropDown ? nursingPerformanceDropDown.hide() : ''
         }
 
         if (patientOthersNotCharted){
@@ -250,6 +257,7 @@ window.addEventListener('DOMContentLoaded', function () {
             inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
             outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
             ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+            nursingPerformanceDropDown ? nursingPerformanceDropDown.hide() : ''
         }
 
         if (patientInjNotStarted){
@@ -257,6 +265,7 @@ window.addEventListener('DOMContentLoaded', function () {
             inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
             outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
             ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+            nursingPerformanceDropDown ? nursingPerformanceDropDown.hide() : ''
         }
         
         if (patientOthersNotStarted){
@@ -264,6 +273,7 @@ window.addEventListener('DOMContentLoaded', function () {
             inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
             outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
             ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+            nursingPerformanceDropDown ? nursingPerformanceDropDown.hide() : ''
         }
 
         if (inpatientsNov){
@@ -271,6 +281,7 @@ window.addEventListener('DOMContentLoaded', function () {
             inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
             outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
             ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+            nursingPerformanceDropDown ? nursingPerformanceDropDown.hide() : ''
         }
 
         if (outpatientsNov){
@@ -285,6 +296,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
                 ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
             }
+            nursingPerformanceDropDown ? nursingPerformanceDropDown.hide() : ''
         }
     })
 

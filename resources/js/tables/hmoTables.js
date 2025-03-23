@@ -1,7 +1,7 @@
 import jQuery from "jquery";
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, admissionStatusX, deferredCondition, detailsBtn, displayPaystatus, getOrdinal, selectReminderOptions, sponsorAndPayPercent, flagSponsorReason, flagPatientReason, flagIndicator, searchPlaceholderText, searchMin } from "../helpers";
+import { admissionStatus, admissionStatusX, deferredCondition, detailsBtn, displayPaystatus, getOrdinal, selectReminderOptions, sponsorAndPayPercent, flagSponsorReason, flagPatientReason, flagIndicator, searchPlaceholderText, searchMin, preSearch, searchDecider } from "../helpers";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -13,14 +13,15 @@ $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
 const getWaitingTable = (tableId) => {
-    return new DataTable('#'+tableId, {
+    const waitingTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  '/visits/load/waiting',
         orderMulti: true,
         search:true,
         searchDelay: 500,
         language: {
-            emptyTable: 'No patient is waiting'
+            emptyTable: 'No patient is waiting',
+            searchPlaceholder: searchPlaceholderText
         },
         columns: [
             {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
@@ -66,6 +67,10 @@ const getWaitingTable = (tableId) => {
             },
         ]
     });
+
+    waitingTable.on('draw.init', searchMin(waitingTable, tableId, 2))
+
+    return waitingTable
 }
 
 const getVerificationTable = (tableId) => {
@@ -104,7 +109,7 @@ const getVerificationTable = (tableId) => {
         ]
     });
 
-    verificationTable.on('draw.init', searchMin(verificationTable, tableId, 2))
+    verificationTable.on('draw.init', searchDecider(verificationTable, tableId, 2))
 
     return verificationTable
 }
@@ -175,7 +180,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
         ]
     });
 
-    allHmoPatientsVisitTable.on('draw.init', searchMin(allHmoPatientsVisitTable, tableId, 2))
+    allHmoPatientsVisitTable.on('draw.init', searchDecider(allHmoPatientsVisitTable, tableId, 2))
 
     return allHmoPatientsVisitTable
 }
@@ -249,7 +254,7 @@ const getApprovalListTable = (tableId, sponsor) => {
         ]
     });
 
-    approvalListTable.on('draw.init', searchMin(approvalListTable, tableId, 2))
+    approvalListTable.on('draw.init', searchDecider(approvalListTable, tableId, 2))
 
     return approvalListTable
 }
@@ -380,7 +385,7 @@ const getSentBillsTable = (tableId, startDate, endDate, date, filterByOpen) => {
         ]
     });
 
-    sentBillsTable.on('draw.init', searchMin(sentBillsTable, tableId, 2))
+    sentBillsTable.on('draw.init', searchDecider(sentBillsTable, tableId, 2))
 
     return sentBillsTable
 }
@@ -478,7 +483,7 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
             },
         ]
     });
-    reportSummayTable.on('draw.init', searchMin(reportSummayTable, tableId, 2))
+    reportSummayTable.on('draw.init', searchDecider(reportSummayTable, tableId, 2, 'hmoSponsors'))
 
     return reportSummayTable
 }

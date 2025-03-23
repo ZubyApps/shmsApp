@@ -1,16 +1,17 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, prescriptionStatusContorller, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
+import { admissionStatus, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, prescriptionStatusContorller, preSearch, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
 
 const getWaitingTable = (tableId) => {
-    return new DataTable(tableId, {
+    const waitingTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  '/visits/load/waiting',
         orderMulti: true,
         search:true,
         searchDelay: 500,
         language: {
-            emptyTable: 'No patient is waiting'
+            emptyTable: 'No patient is waiting',
+            searchPlaceholder: searchPlaceholderText
         },
         columns: [
             {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
@@ -60,6 +61,9 @@ const getWaitingTable = (tableId) => {
             }
         ]
     });
+    waitingTable.on('draw.init', searchMin(waitingTable, tableId, 2))
+
+    return waitingTable;
 }
 
 const getPatientsVisitsByFilterTable = (tableId, filter) => {
@@ -170,8 +174,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
         },
         columns: preparedColumns
     });
-
-    allPatientsTable.on('draw.init', searchMin(allPatientsTable, tableId, 2))
+    allPatientsTable.on('draw.init', searchDecider(allPatientsTable, tableId, 2, filter))
 
     return allPatientsTable
 }

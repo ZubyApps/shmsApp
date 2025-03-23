@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import {admissionStatusX, deferredCondition, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, searchMin, searchPlaceholderText, selectReminderOptions, sponsorAndPayPercent, wardState } from "../helpers";
+import {admissionStatusX, deferredCondition, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, preSearch, searchDecider, searchMin, searchPlaceholderText, selectReminderOptions, sponsorAndPayPercent, wardState } from "../helpers";
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -13,13 +13,15 @@ $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
 const getWaitingTable = (tableId) => {
-    return new DataTable('#'+tableId, {
+    const waitingTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  '/visits/load/waiting',
         orderMulti: true,
         search:true,
         language: {
-            emptyTable: 'No patient is waiting'
+            emptyTable: 'No patient is waiting',
+            searchPlaceholder: searchPlaceholderText
+
         },
         columns: [
             {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
@@ -70,6 +72,10 @@ const getWaitingTable = (tableId) => {
             },
         ]
     });
+
+    waitingTable.on('draw.init', searchMin(waitingTable, tableId, 2))
+
+    return waitingTable;
 }
 
 const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, sponsorId, cardNo, sponsorCat) => {
@@ -127,7 +133,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, s
         columns: preparedColumns
     });
 
-    patientsVisitisByFilterTable.on('draw.init', searchMin(patientsVisitisByFilterTable, tableId, 2))
+    patientsVisitisByFilterTable.on('draw.init', searchDecider(patientsVisitisByFilterTable, tableId, 2))
 
     return patientsVisitisByFilterTable
 }
@@ -197,7 +203,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
         ]
     });
 
-    function format(data, tableId) {
+    function format(data) {
         const credit        = data.sponsorCategoryClass == 'Credit'
         const NHIS          = data.sponsorCategory == 'NHIS'
         const balance       = data.sponsorCategory == 'NHIS' ? data.nhisBalance : data.balance
@@ -405,11 +411,11 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
     }
 
     billingTable.on('draw', function() {
-        const tableId = billingTable.table().container().id.split('_')[0]
+        // const tableId = billingTable.table().container().id.split('_')[0]
         billingTable.rows().every(function () {
             let tr = $(this.node())
             let row = this.row(tr);
-            this.child(format(row.data(), tableId)).show()
+            this.child(format(row.data())).show()
         })
     })
 

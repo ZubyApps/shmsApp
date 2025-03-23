@@ -1,6 +1,6 @@
 import $, { data } from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatusX, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, sponsorAndPayPercent } from '../helpers';
+import { admissionStatusX, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, searchDecider, searchPlaceholderText, sponsorAndPayPercent } from '../helpers';
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -504,6 +504,9 @@ const getVisitsBySponsorTable = (tableId, sponsorId, modal, startDate, endDate, 
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        language: {
+            searchPlaceholder: searchPlaceholderText
+        },
         lengthMenu:[50, 100, 150, 200, 500],
         drawCallback: function (settings) {
             var api = this.api()
@@ -537,7 +540,7 @@ const getVisitsBySponsorTable = (tableId, sponsorId, modal, startDate, endDate, 
             {data: row => function () {
                 return `
                 <div class="d-flex flex-">
-                    <button type="submit" class="ms-1 btn  markAsResolvedBtn" data-id="${row.id}" data-table="${tableId}" data-state="${row.resolved}">
+                    <button type="button" class="ms-1 btn markAsResolvedBtn" data-id="${row.id}" data-table="${tableId}" data-state="${row.resolved}">
                         ${row.resolved ? '<i class="bi bi-check-circle-fill text-primary"></i>' : 'Resolve'}
                     </button>
                 </div>
@@ -553,6 +556,8 @@ const getVisitsBySponsorTable = (tableId, sponsorId, modal, startDate, endDate, 
         modal._element.querySelector('#from').value = ''
         modal._element.querySelector('#to').value = ''
     })
+
+    visitsBySponsorTable.on('draw.init', searchDecider(visitsBySponsorTable, '#'+tableId, 2))
 
     return visitsBySponsorTable
 }

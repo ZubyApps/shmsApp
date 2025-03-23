@@ -88,12 +88,12 @@ window.addEventListener('DOMContentLoaded', function () {
     const patientsFullName                  = viewMedicalReportModal._element.querySelector('#patientsFullName')
     const patientsInfo                      = viewMedicalReportModal._element.querySelector('#patientsInfo')
 
-    const waitingTable          = getWaitingTable('waitingTable')
+    const waitingTable          = getWaitingTable('#waitingTable')
     const verificationTable     = getVerificationTable('#verificationTable')
     const hmoApprovalListTable  = getApprovalListTable('#hmoApprovalListTable',null)
     const nhisApprovalListTable = getApprovalListTable('#nhisApprovalListTable', 'NHIS')
     const dueHmoRemindersTable  = getDueHmoRemindersTable('dueRemindersListTable')
-    const proceduresListTable   = getProceduresListTable('proceduresListTable', 'pending', 'hmo')
+    const proceduresListTable   = getProceduresListTable('#proceduresListTable', 'pending', 'hmo')
     let hmotreatmentsTable, visitPrescriptionsTable, sentBillsTable, hmoReportsTable, reconciliationTable, medicalReportTable, nhisReconTable, billRemindersTable
 
     hmoApprovalListTable.on('draw.init', function() {

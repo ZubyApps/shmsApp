@@ -77,11 +77,11 @@ window.addEventListener('DOMContentLoaded', function () {
     let inPatientsVisitTable, ancPatientsVisitTable, billingTable, paymentTable, openVisitsTable, expensesTable, balancingTable, medicalReportTable, billRemindersTable
 
     const outPatientsVisitTable = getPatientsVisitsByFilterTable('#outPatientsVisitTable', 'Outpatient', 'consulted')
-    const waitingTable = getWaitingTable('waitingTable')
+    const waitingTable = getWaitingTable('#waitingTable')
     const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable', true)
     const billingShiftReportTable = getShiftReportTable('billingShiftReportTable', 'billing', shiftBadgeSpan)
     const dueCashRemindersTable = getDueCashRemindersTable('dueRemindersListTable')
-    const proceduresListTable   = getProceduresListTable('proceduresListTable', 'pending', null, 'cash')
+    const proceduresListTable   = getProceduresListTable('#proceduresListTable', 'pending', null, 'cash')
 
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #outpatientInvestigationsTable, #waitingTable, #billingTable, #openVisitsTable, #expensesTable, #balancingTable, #billingShiftReportTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})    
 

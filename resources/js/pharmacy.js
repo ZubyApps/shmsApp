@@ -51,7 +51,7 @@ window.addEventListener('DOMContentLoaded', function () {
     
     let  outPatientsTable, ancPatientsVisitTable, visitPrescriptionsTable, billingTable, bulkRequestsTable, theatreRequestsTable, lowStockTable, expirationStockTable
 
-    const inPatientsVisitTable  = getPatientsVisitByFilterTable('inPatientsTable', 'Inpatient')
+    const inPatientsVisitTable  = getPatientsVisitByFilterTable('#inPatientsTable', 'Inpatient')
     const emergencyTable    = getEmergencyTable('emergencyTable', 'pharmacy')
     const pharmacyShiftReportTable = getShiftReportTable('pharmacyShiftReportTable', 'pharmacy', shiftBadgeSpan)
 
@@ -87,7 +87,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#outPatientsTable' )){
             $('#outPatientsTable').dataTable().fnDraw()
         } else {
-            outPatientsTable = getPatientsVisitByFilterTable('outPatientsTable', 'Outpatient')
+            outPatientsTable = getPatientsVisitByFilterTable('#outPatientsTable', 'Outpatient')
         }
     })
 
@@ -95,7 +95,7 @@ window.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable( '#ancPatientsTable' )){
             $('#ancPatientsTable').dataTable().fnDraw()
         } else {
-            ancPatientsVisitTable = getPatientsVisitByFilterTable('ancPatientsTable', 'ANC')
+            ancPatientsVisitTable = getPatientsVisitByFilterTable('#ancPatientsTable', 'ANC')
         }
     })
 

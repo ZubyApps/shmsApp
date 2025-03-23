@@ -10,6 +10,7 @@ use App\Models\Sponsor;
 use App\Models\SponsorCategory;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class SponsorService
@@ -99,5 +100,31 @@ class SponsorService
                 ])
             ];
          };
+    }
+
+    public function HmoSponsorList($data)
+    {
+        if (! empty($data->fullId)){
+            $searchTerm = '%' . addcslashes($data->fullId, '%_') . '%';
+
+            return $this->sponsor
+                        ->where(function (Builder $query) {
+                            $query->where('category_name', 'HMO')
+                            ->orWhere('category_name', 'NHIS')
+                            ->orWhere('category_name', 'Retainership');
+                        })
+                        ->Where('name', 'LIKE', $searchTerm)
+                        ->orderBy('created_at', 'asc')
+                        ->get(['name']);
+        }      
+    }
+
+    public function listTransformer()
+    {
+        return function (Sponsor $sponsor){
+            return [
+                'name' => $sponsor->name,
+            ];
+        };
     }
 }

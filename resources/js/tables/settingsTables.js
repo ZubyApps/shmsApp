@@ -434,4 +434,72 @@ const getWardTable = (table) => {
     return wardTable
 }
 
-export {getSponsorCategoryTable, getResourceStockDateTable, getResourceCategoryTable, getPayMethodTable, getExpenseCategoryTable, getMedicationCategoryTable, getUnitDescriptionTable, getMarkedForTable, getWardTable}
+const getOtherSettingsTable = (tableId) => {
+    const otherSettingsTable = new DataTable(tableId, {
+        serverSide: true,
+        ajax:  '/admin/settings/load/othersettings',
+        orderMulti: true,
+        search:true,
+        // searchDelay: 500,
+        columns: [
+            {data:row => () => {
+                return `<span class="text-primary"> ${row.name}</span>`
+            }},
+            {data: row => () => {
+                return `
+                <div class="d-flex text-secondary">
+                    <span class="btn btn-${row.value == 'Not set' ? 'white' : 'outline-primary'} optionSpan" data-name="${row.name}"> ${row.value == 0 ? 'Off' : row.value == 1 ? 'On' : row.value}</span>
+                    ${row.name != 'Pre Search' ? `
+                        <select class ="form-select form-select-md optionSelect d-none ms-1">
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                            <option value="25">25</option>
+                            <option value="30">30</option>
+                        </select>
+                        ` :`
+                        <select class ="form-select form-select-md optionSelect d-none ms-1">
+                            <option value="">Select option</option>
+                            <option value="1">On</option>
+                            <option value="0">Off</option>
+                        </select>
+                    `}
+                    
+                </div>
+                `
+            }},
+            {data: "desc"},
+            // {data: "createdBy"},
+            // {data: "createdAt"},
+            // {
+            //     sortable: false,
+            //     data: row => () => {
+            //         if (row.count < 1) {
+            //              return `
+            //                 <div class="d-flex flex-">
+            //                     <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
+            //                         <i class="bi bi-pencil-fill"></i>
+            //                     </button>
+            //                     <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
+            //                         <i class="bi bi-trash3-fill"></i>
+            //                     </button>
+            //                 </div>
+            //             `
+            //         } else {
+            //             return `
+            //             <div class="d-flex flex-">
+            //                 <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
+            //                     <i class="bi bi-pencil-fill"></i>
+            //                 </button>
+            //             </div>
+            //         `
+            //         }
+                           
+            //     } 
+            //         }
+        ]
+    });
+    return otherSettingsTable
+}
+
+export {getSponsorCategoryTable, getResourceStockDateTable, getResourceCategoryTable, getPayMethodTable, getExpenseCategoryTable, getMedicationCategoryTable, getUnitDescriptionTable, getMarkedForTable, getWardTable, getOtherSettingsTable}

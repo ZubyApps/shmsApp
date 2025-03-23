@@ -712,7 +712,7 @@ const getShiftPerformance = (dept, div) => {
                  }) : ''
                 
                 div.innerHTML = `
-                <button type="button" id="newPatient" class="btn p-0 position-relative" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                <button type="button" id="nursingPerformanceDropdown" class="btn p-0 position-relative" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     <div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
                     <div class="progress-bar text-dark fw-semibold fs-6 overflow-visible bg-${shiftPerformance.performance <= 45 ? 'danger' : shiftPerformance.performance > 45 && shiftPerformance.performance < 65 ? 'warning' : shiftPerformance.performance >= 65 && shiftPerformance.performance <= 91 ? 'primary' : 'success'}-subtle px-1" style="width: ${shiftPerformance.performance}%;"> ${shiftPerformance.shift} Performance ${shiftPerformance.performance}% <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="timeLeft">${getTimeToEndOfShift(shiftPerformance.shift_end)}</span></div>
                     </div>
@@ -865,33 +865,118 @@ const searchMin = (table, tableId, value) => {
     });
 }
 
-const preSearch = (table, tableId, value) => {
-    const searchInput = $(tableId+'_filter input');
+// const preSearch = (table, tableId, value) => {
+//     const searchInput = $(tableId+'_filter input');
+
+//     const datalistEl = document.createElement("DATALIST")
+
+//     datalistEl.setAttribute('id', 'patientsList')
+
+//     searchInput.off();
+
+//     searchInput.on('keyup', function(e) {
+//         if(this.value.length > value) {
+//            http.get(`/patients/list/`, {params: {fullId: this.value}}).then((response) => {
+//                 displayPatients(searchInput, datalistEl, response.data)
+//             })
+//             const selectedOption = datalistEl.options.namedItem(this.value)
+//             if (selectedOption){
+//                 table.search( selectedOption.getAttribute('data-cardNo') ).draw();
+//                 this.value = selectedOption.getAttribute('data-cardNo')
+//                 searchInput.empty()
+//             }
+//         }
+//         searchInput.on('blur', function(e) {
+//             searchInput.empty()
+//         })
+//         if (this.value.length == 0){
+//             table.search( this.value ).draw();
+//             searchInput.empty()
+//         }
+//     });
+// }
+
+const preSearch = (table, tableId, value, type) => {
+
+    const searchInput = $(tableId + '_filter input');
+    const uniqueDatalistId = `patientsList${tableId.replace('#', '')}`;
+    const datalistEl = document.createElement("datalist");
+    datalistEl.setAttribute('id', uniqueDatalistId);
+
+    // Append once to DOM
+    searchInput.append(datalistEl);
+    searchInput.attr('list', uniqueDatalistId); // Set list attribute once
+
     searchInput.off('keyup keypress input');
+
     searchInput.on('keyup', function(e) {
-        if(this.value.length > value) {
-           http.get(`/patients/list`, {params: {fullId: this.value}}).then((response) => {
-                displayPatients(searchInput, response.data)
-            })
+        datalistEl.innerHTML = ''; // Clear previous options
+
+        if (this.value.length > value) {
+            if (type == 'hmoSponsors'){
+                http.get(`/sponsors/hmolist/`, { params: { fullId: this.value, type: type } })
+                    .then((response) => {
+                        displaySponsors(datalistEl, response.data);
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching patients:', error);
+                    });
+            } else {
+                http.get(`/patients/list/`, { params: { fullId: this.value, type: type } })
+                    .then((response) => {
+                        displayPatients(datalistEl, response.data);
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching patients:', error);
+                    });
+            }
+
+        } else if (this.value.length === 0) {
+            table.search('').draw();
         }
-        if (this.value.length == 0){
-            table.search( this.value ).draw();
+    });
+
+    // Handle selection
+    searchInput.on('input', function() { // 'change' + 'input' for broader support
+        const selectedOption = datalistEl.querySelector(`option[value="${this.value}"]`);
+        if (selectedOption) {
+            const value = selectedOption.getAttribute('data-cardNo') ?? this.value;
+            this.value = value;
+            table.search(value).draw();
+        }
+    });
+
+    searchInput.on('blur', function() {
+        datalistEl.innerHTML = '';
+    });
+};
+
+function displayPatients(datalistEl, data) {
+    data.forEach(patient => {
+        const fullId = patient.fullId;
+        if (!datalistEl.querySelector(`option[value="${fullId}"]`)) {
+            const option = document.createElement("option");
+            option.setAttribute('value', fullId);
+            option.setAttribute('data-cardNo', patient.cardNo);
+            datalistEl.appendChild(option);
         }
     });
 }
 
-function displayPatients(input, data){
-    const datalistEl = document.createElement("DATALIST")
-    datalistEl.setAttribute('id', 'patientsList')
-    data.forEach(patient => {
-        const option = document.createElement("OPTION")
-        option.setAttribute('value', patient.fullId)
-        option.setAttribute('name', patient.fullId)
-        option.setAttribute('data-cardNo', patient.cardNo)
-        
-        !datalistEl.options.namedItem(line.nameWithIndicators) ? datalistEl.appendChild(option) : ''
-    })
-    input.appendChild(datalistEl)
+function displaySponsors(datalistEl, data) {
+    data.forEach(sponsor => {
+        const name = sponsor.name;
+        if (!datalistEl.querySelector(`option[value="${name}"]`)) {
+            const option = document.createElement("option");
+            option.setAttribute('value', name);
+            datalistEl.appendChild(option);
+        }
+    });
+}
+
+const searchDecider = (table, tableId, value, type) => {
+    const preSearchOn = +document.querySelector('#preSearch').value
+    return preSearchOn ? preSearch(table, tableId, value, type) : searchMin(table, tableId, value)
 }
 
 const searchPlaceholderText = '...3 characters min';
@@ -913,4 +998,4 @@ const getExportOptions = (table) => {
     };
 };
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions}
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider}

@@ -53,6 +53,9 @@
 
                     <button class="nav-link" id="nav-ward-tab" data-bs-toggle="tab" data-bs-target="#nav-ward"
                         type="button" role="tab" aria-controls="nav-ward" aria-selected="false">Wards</button>
+
+                    <button class="nav-link" id="nav-otherSettings-tab" data-bs-toggle="tab" data-bs-target="#nav-otherSettings"
+                        type="button" role="tab" aria-controls="nav-otherSettings" aria-selected="false">Other Settings</button>
                 </div>
             </nav>
             <div class="tab-content px-2" id="nav-tabContent">
@@ -242,7 +245,6 @@
                             <tbody></tbody>
                         </table>
                     </div>
-                   
                 </div>
                 <!-- markedFor table -->
                 <div class="tab-pane fade" id="nav-markedFor" role="tabpanel" aria-labelledby="nav-markedFor-tab"
@@ -300,6 +302,29 @@
                         </table>
                     </div>
                    
+                </div>
+                <!-- Others table -->
+                <div class="tab-pane fade" id="nav-otherSettings" role="tabpanel" aria-labelledby="nav-otherSettings-tab" tabindex="0">
+                    <div class="text-start my-4">
+                        {{-- <button class="btn btn-primary" type="button" id="addMarkedForBtn">
+                            <i class="bi bi-plus-circle"></i>
+                            Mark For
+                        </button> --}}
+                    </div>
+                    <div class="container">
+                        <table id="otherSettingsTable" class="table table-hover align-middle table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Setting</th>
+                                    <th>Options</th>
+                                    <th>Description</th>
+                                    {{-- <th>Set By</th> --}}
+                                    {{-- <th>Actions</th> --}}
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

@@ -17,6 +17,7 @@ use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 Class ShiftPerformanceService
@@ -64,9 +65,11 @@ Class ShiftPerformanceService
                     'outpatient_vitals_count'   => $outpatientsVitals ? $outpatientsVitals['visitsVCount'] . '/' . $outpatientsVitals['visitsCount'] : $outpatientsVitals,
                     'staff'                     => $nursesOnDuty
                 ]);
-    
+
+                $busyCount = ($inpatientsVitals ? $inpatientsVitals['visitsCount'] : 0) + ($outpatientsVitals ? $outpatientsVitals['visitsCount'] : 0);
+
                 $shiftPerformance->update([
-                    'performance'  => $this->getPerformance($shiftPerformance),
+                    'performance'  => $this->getPerformance($shiftPerformance, $busyCount),
                 ]);
     
                 $shiftPerformance->first_med_res    = $shiftPerformance->first_med_res ? CarbonInterval::seconds($shiftPerformance->first_med_res)->cascade()->forHumans() : null;
@@ -280,7 +283,7 @@ Class ShiftPerformanceService
         // });
 
         $totalInjectablePrescriptionsNotStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
-            return $prescription->medicationCharts[0]->time_given === null;
+            return $prescription->medicationCharts->first()->time_given === null;
         });
 
         $notStartedUniqueInjectables = $totalInjectablePrescriptionsNotStarted->map(function ($prescription) {
@@ -338,6 +341,7 @@ Class ShiftPerformanceService
             ->whereRelation('resource', 'sub_category', '!=', 'Injectable')
             ->where('discontinued', false)
             ->where('held', null)
+            ->whereHas('nursingCharts')
             ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
             ->get();
 
@@ -356,7 +360,7 @@ Class ShiftPerformanceService
         // });
 
         $totalOtherPrescriptionsNotStarted = $prescriptions->filter(function ($prescription) use ($shiftPerformance, $shiftEndTimer) {
-            return $prescription->nursingCharts->first()?->time_done === null;
+            return $prescription->nursingCharts->first()->time_done === null;
         });
 
         $notStartedUniqueOthers = $totalOtherPrescriptionsNotStarted->map(function ($prescription) {
@@ -743,8 +747,8 @@ Class ShiftPerformanceService
             return $visit->vitalSigns->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->count() < $count;
         });
 
-        $noVitals = $visitsNoVitals->map(function ($visit) {
-            return $visit->patient->card_no . ' ' . $visit->patient->first_name;
+        $noVitals = $visitsNoVitals->map(function ($visit) use ($shiftPerformance, $count) {
+            return $visit->patient->card_no . ' ' . $visit->patient->first_name . ' (' . $visit->vitalSigns->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])->count() .'/'. $count . ')';
         })->all();
 
         $all = new Collection([
@@ -797,55 +801,103 @@ Class ShiftPerformanceService
     // }
 
     public function outpatientssVitalsignsCount($shiftPerformance)
-{
-    $shiftEnd = new Carbon($shiftPerformance->shift_end);
-    $shiftEndTimer = $shiftEnd->subMinutes(10);
-
-    // Use eager loading to reduce the number of queries
-    $visits = $this->visit
-        ->with(['patient', 'vitalSigns'])
-        ->where('closed', false)
-        ->whereRelation('patient', 'patient_type', '!=', 'ANC')
-        ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
-        ->get();
-
-    $visitsCount = $visits->count();
-
-    $visitsVCount = $visits->filter(function ($visit) use ($shiftPerformance, $shiftEndTimer) {
-        return $visit->vitalSigns->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])->count() >= 1;
-    })->count();
-
-    $visitsNoVitals = $visits->filter(function ($visit) use ($shiftPerformance, $shiftEndTimer) {
-        return $visit->vitalSigns->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])->isEmpty();
-    });
-
-    $noVitals = $visitsNoVitals->map(function ($visit) {
-        return $visit->patient->card_no . ' ' . $visit->patient->first_name. ' ' . ($visit->consulted ? '(Consulted)' : '(Waitinglist)');
-    })->all();
-
-    $all = new Collection([
-        'visitsCount' => $visitsCount,
-        'visitsVCount' => $visitsVCount,
-        'visitsNoVitals' => array_values($noVitals)
-    ]);
-
-    return $visitsCount ? $all : null;
-}
-
-    public function secondsToPercent($seconds, $indicator)
     {
+        $shiftEnd = new Carbon($shiftPerformance->shift_end);
+        $shiftEndTimer = $shiftEnd->subMinutes(10);
+
+        // Use eager loading to reduce the number of queries
+        $visits = $this->visit
+            ->with(['patient', 'vitalSigns'])
+            ->where('closed', false)
+            ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+            ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->get();
+
+        $visitsCount = $visits->count();
+
+        $visitsVCount = $visits->filter(function ($visit) use ($shiftPerformance, $shiftEndTimer) {
+            return $visit->vitalSigns->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])->count() >= 1;
+        })->count();
+
+        $visitsNoVitals = $visits->filter(function ($visit) use ($shiftPerformance, $shiftEndTimer) {
+            return $visit->vitalSigns->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])->isEmpty();
+        });
+
+        $noVitals = $visitsNoVitals->map(function ($visit) {
+            return $visit->patient->card_no . ' ' . $visit->patient->first_name. ' ' . ($visit->consulted ? '(Consulted)' : '(Waitinglist)');
+        })->all();
+
+        $all = new Collection([
+            'visitsCount' => $visitsCount,
+            'visitsVCount' => $visitsVCount,
+            'visitsNoVitals' => array_values($noVitals)
+        ]);
+
+        return $visitsCount ? $all : null;
+    }
+
+    public function secondsToPercent($seconds, $indicator, $busyCount)
+    {
+        $benchMark  = (int)Cache::get('nursingBenchmark',100);
+        info('Nursing Performance', ['benchMarck' => $benchMark, 'busyCount' => $busyCount]);
+        $busyCount1 = $busyCount <= $benchMark;
+        $busyCount2 = $busyCount > $benchMark && $busyCount < $benchMark + 10;
+        $busyCount3 = $busyCount > $benchMark + 10 && $busyCount < $benchMark + 20;
+        $busyCount4 = $busyCount > $benchMark + 20 && $busyCount < $benchMark + 30;
+        $busyCount5 = $busyCount >= $benchMark + 30;
+        // $busyCount1 = $busyCount <= 15;
+        // $busyCount2 = $busyCount > 10 && $busyCount < 25;
+        // $busyCount3 = $busyCount > 25 && $busyCount < 35;
+        // $busyCount4 = $busyCount > 35 && $busyCount < 45;
+        // $busyCount5 = $busyCount >= 45;
+
+        info('', ['busyCount1' => $busyCount1, 'busyCount2' => $busyCount2, 'busyCount3' => $busyCount3, 'busyCount4' => $busyCount4, 'busyCount5' => $busyCount5]);
+
+        $FMR    = $busyCount1 ? 0 : ($busyCount2 ? 300 : ($busyCount3 ? 600 :  ($busyCount4 ? 900 :  ($busyCount5 ? 1200 :  1500))));
+        $FVR    = $busyCount1 ? 0 : ($busyCount2 ? 300 : ($busyCount3 ? 600 :  ($busyCount4 ? 900 :  ($busyCount5 ? 1200 :  1500))));
+        $MT     = $busyCount1 ? 0 : ($busyCount2 ? 300 : ($busyCount3 ? 600 :  ($busyCount4 ? 900 :  ($busyCount5 ? 1200 :  1500))));
+
+        info('', ['FMR' => $FMR, 'FVR' => $FVR, 'MT' => $MT]);
+
+        $FMR1 = 600  + $FMR;
+        $FMR2 = 1260 + $FMR;
+        $FMR3 = 2460 + $FMR;
+        $FMR4 = 3660 + $FMR;
+        $FMR5 = 5460 + $FMR;
+
+        info('', ['FMR1' => $FMR1, 'FMR2' => $FMR2, 'FMR3' => $FMR3, 'FMR4' => $FMR4, 'FMR5' => $FMR5]);
+
+        $FVR1 = 300  + $FVR;
+        $FVR2 = 600  + $FVR;
+        $FVR3 = 900  + $FVR;
+        $FVR4 = 1200 + $FVR;
+        $FVR5 = 1500 + $FVR;
+
+        info('', ['FVR1' => $FVR1, 'FVR2' => $FVR2, 'FVR3' => $FVR3, 'FVR4' => $FVR4, 'FVR5' => $FVR5]);
+
+        $MT1 = 180  + $MT;
+        $MT2 = 360  + $MT;
+        $MT3 = 660  + $MT;
+        $MT4 = 960  + $MT;
+        $MT5 = 1260 + $MT;
+
+        info('', ['MT1' => $MT1, 'MT2' => $MT2, 'MT3' => $MT3, 'MT4' => $MT4, 'MT5' => $MT5]);
+
         if ($indicator == 'FMR'){
-            return $seconds < 660 ? 100 : ($seconds > 660 && $seconds < 1260 ? 90 : ($seconds > 1260 && $seconds < 2460 ? 80 : ($seconds > 2460 && $seconds < 3660 ? 60 : ($seconds > 3660 && $seconds < 5460 ? 40 : 20))));
+            return $seconds < $FMR1 ? 100 : ($seconds > $FMR1  && $seconds < $FMR2 ? 90 : ($seconds > $FMR2 && $seconds < $FMR3 ? 80 : ($seconds > $FMR3 && $seconds < $FMR4 ? 60 : ($seconds > $FMR4 && $seconds < $FMR5 ? 40 : 20))));
+            // return $seconds < 660 ? 100 : ($seconds > 660  && $seconds < 1260 ? 90 : ($seconds > 1260 && $seconds < 2460 ? 80 : ($seconds > 2460 && $seconds < 3660 ? 60 : ($seconds > 3660 && $seconds < 5460 ? 40 : 20))));
         }
         if ($indicator == 'FVR'){
-            return $seconds < 360 ? 100 : ($seconds > 360 && $seconds < 660 ? 90 : ($seconds > 660 && $seconds < 960 ? 80 : ($seconds > 960 && $seconds < 1260 ? 70 : ($seconds > 1260 && $seconds < 1560 ? 60 : ($seconds > 1560 && $seconds < 2460 ? 40 : 20)))));
+            return $seconds < $FVR1 ? 100 : ($seconds >  $FVR1 && $seconds <  $FVR2 ? 90 : ($seconds >  $FVR2 && $seconds <  $FVR3 ? 80 : ($seconds >  $FVR3 && $seconds <  $FVR4 ? 70 : ($seconds >  $FVR4 && $seconds <  $FVR5 ? 60 : 40))));
+            // return $seconds < 360 ? 100 : ($seconds > 360 && $seconds < 660 ? 90 : ($seconds > 660 && $seconds < 960 ? 80 : ($seconds > 960 && $seconds < 1260 ? 70 : ($seconds > 1260 && $seconds < 1560 ? 60 : ($seconds > 1560 && $seconds < 2460 ? 40 : 20)))));
         }
         if ($indicator == 'MT'){
-            return $seconds < 180 ? 100 : ($seconds > 180 && $seconds < 360 ? 80 : ($seconds > 360 && $seconds < 660 ? 70 : ($seconds > 660 && $seconds < 960 ? 50 : ($seconds > 960 && $seconds < 1260 ? 40 : 20))));
+            return $seconds < $MT1 ? 100 : ($seconds > $MT1 && $seconds < $MT2 ? 80 : ($seconds > $MT2 && $seconds < $MT3 ? 70 : ($seconds > $MT3 && $seconds < $MT4 ? 50 : ($seconds > $MT4 && $seconds < $MT5 ? 40 : 20))));
+            // return $seconds < 180 ? 100 : ($seconds > 180 && $seconds < 360 ? 80 : ($seconds > 360 && $seconds < 660 ? 70 : ($seconds > 660 && $seconds < 960 ? 50 : ($seconds > 960 && $seconds < 1260 ? 40 : 20))));
         }
     }
 
-    public function getPerformance($shiftPerformance)
+    public function getPerformance($shiftPerformance, $busyCount)
     {
         $totalPoints = 0;
 
@@ -866,23 +918,23 @@ Class ShiftPerformanceService
                                             $shiftPerformance->others_done_rate === null ? '': $totalPoints++;
 
         $convertFirstMedRes             =   $shiftPerformance->first_med_res === null ? null :
-                                            ($this->secondsToPercent($shiftPerformance->first_med_res, 'FMR') /100 ) * 20; 
+                                            ($this->secondsToPercent($shiftPerformance->first_med_res, 'FMR', $busyCount) /100 ) * 20; 
                                             $shiftPerformance->first_med_res === null ? '' : $totalPoints++;
 
         $convertFirstServRes            =   $shiftPerformance->first_serv_res === null ? null :
-                                            ($this->secondsToPercent($shiftPerformance->first_serv_res, 'FMR') /100 ) * 20; 
+                                            ($this->secondsToPercent($shiftPerformance->first_serv_res, 'FMR', $busyCount) /100 ) * 20; 
                                             $shiftPerformance->first_serv_res === null ? '' : $totalPoints++;
 
         $convertFirstVitalsRes          =   $shiftPerformance->first_vitals_res === null ? null :
-                                            ($this->secondsToPercent($shiftPerformance->first_vitals_res, 'FVR') / 100) * 20; 
+                                            ($this->secondsToPercent($shiftPerformance->first_vitals_res, 'FVR', $busyCount) / 100) * 20; 
                                             $shiftPerformance->first_vitals_res === null ? '' : $totalPoints++;
 
         $convertMedicationTime          =   $shiftPerformance->medication_time === null ? null : 
-                                            ($this->secondsToPercent($shiftPerformance->medication_time, 'MT') / 100) * 20; 
+                                            ($this->secondsToPercent($shiftPerformance->medication_time, 'MT', $busyCount) / 100) * 20; 
                                             $shiftPerformance->medication_time === null ? '' : $totalPoints++;
 
         $convertServiceTime             =   $shiftPerformance->service_time === null ? null : 
-                                            ($this->secondsToPercent($shiftPerformance->service_time, 'MT') / 100) * 20; 
+                                            ($this->secondsToPercent($shiftPerformance->service_time, 'MT', $busyCount) / 100) * 20; 
                                             $shiftPerformance->service_time === null ? '' : $totalPoints++;
 
         $convertInPsVC                  =   $shiftPerformance->inpatient_vitals_count === null ? null : 

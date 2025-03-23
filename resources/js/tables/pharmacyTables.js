@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, getExportOptions, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
+import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, getExportOptions, preSearch, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -32,7 +32,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
     
     filter === 'Inpatient' ? preparedColumns.splice(7, 0, {data: row => wardState(row)},) : ''
 
-    const allPatientsTable = new DataTable('#'+tableId, {
+    const allPatientsTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/pharmacy/load/consulted',  data: {
             'filterBy': filter 
@@ -48,7 +48,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
         columns: preparedColumns
     });
 
-    allPatientsTable.on('draw.init', searchMin(allPatientsTable, tableId, 2))
+    allPatientsTable.on('draw.init', searchDecider(allPatientsTable, tableId, 2, filter))
 
     return allPatientsTable
 }
@@ -76,7 +76,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
         ]
     });
 
-    function format(data, tableId) {
+    function format(data) {
         const credit = data.sponsorCategoryClass == 'Credit'
         const NHIS = data.sponsorCategory == 'NHIS'
         const prescriptions = data.prescriptions
@@ -201,13 +201,13 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
     modal._element.addEventListener('hidden.bs.modal', function () {
         consultationItemsTable.destroy()
     })
-
+    
     consultationItemsTable.on('draw', function() {
-        const tableId = consultationItemsTable.table().container().id.split('_')[0]
+        // const tableId = consultationItemsTable.table().container().id.split('_')[0]
         consultationItemsTable.rows().every(function () {
             let tr = $(this.node())
             let row = this.row(tr);
-            this.child(format(row.data(), tableId)).show()
+            this.child(format(row.data())).show()
         })
     })
     

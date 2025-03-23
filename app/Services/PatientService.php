@@ -372,16 +372,23 @@ class PatientService
     {
         if (! empty($data->fullId)){
             $searchTerm = '%' . addcslashes($data->fullId, '%_') . '%';
-            return $this->patient::with('sponsor')
-                        ->where('first_name', 'LIKE', $searchTerm)
-                        ->orWhere('middle_name', 'LIKE', $searchTerm)
-                        ->orWhere('last_name', 'LIKE', $searchTerm)
-                        ->orWhere('phone', 'LIKE', $searchTerm )
-                        ->orWhere('sex', 'LIKE', $searchTerm)
-                        ->orWhere('date_of_birth', 'LIKE', $searchTerm)
-                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm )
+            if ($data->type == 'ANC'){
+                return $this->patient
+                        ->where('patient_type', 'ANC')
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRaw('CONCAT(first_name, " ", middle_name, " ", last_name) LIKE ?', [$searchTerm])
+                            ->orWhere('card_no', 'LIKE', $searchTerm)
+                            ->orWhere('phone', 'LIKE', $searchTerm);
+                        })
                         ->orderBy('created_at', 'asc')
-                        ->pluck('first_name', 'middle_name', 'last_name', 'sponsor.name');
+                        ->get(['first_name', 'middle_name', 'last_name', 'card_no', 'sponsor_id', 'phone']);
+            }
+            return $this->patient
+                        ->whereRaw('CONCAT(first_name, " ", middle_name, " ", last_name) LIKE ?', [$searchTerm])
+                        ->orWhere('card_no', 'LIKE', $searchTerm )
+                        ->orWhere('phone', 'LIKE', $searchTerm )
+                        ->orderBy('created_at', 'asc')
+                        ->get(['first_name', 'middle_name', 'last_name', 'card_no', 'sponsor_id', 'phone']);
         }      
     }
 
@@ -389,9 +396,8 @@ class PatientService
     {
         return function (Patient $patient){
             return [
-                'fullId'    => $patient->patientId(),
+                'fullId'    => $patient->patientId() .' ('. $patient->phone. ') ('. $patient->sponsor->name. ')',
                 'cardNo'    => $patient->card_no,
-                'sponsor'   => $patient->sponsor->name,
             ];
         };
     }

@@ -188,11 +188,11 @@ class PatientController extends Controller
 
     public function listPatients(Request $request)
     {
-        $resources = $this->patientService->patientList($request);
+        $patients = $this->patientService->patientList($request);
 
         $listTransformer = $this->patientService->listTransformer();
 
-        return array_map($listTransformer, (array)$resources->getIterator());
+        return array_map($listTransformer, (array)$patients->getIterator());
 
     }
 }
