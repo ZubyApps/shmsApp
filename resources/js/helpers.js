@@ -914,7 +914,7 @@ const preSearch = (table, tableId, value, type) => {
 
         if (this.value.length > value) {
             if (type == 'hmoSponsors'){
-                http.get(`/sponsors/hmolist/`, { params: { fullId: this.value, type: type } })
+                http.get(`/sponsors/hmolist`, { params: { fullId: this.value, type: type } })
                     .then((response) => {
                         displaySponsors(datalistEl, response.data);
                     })
@@ -922,7 +922,7 @@ const preSearch = (table, tableId, value, type) => {
                         console.error('Error fetching patients:', error);
                     });
             } else {
-                http.get(`/patients/list/`, { params: { fullId: this.value, type: type } })
+                http.get(`/patients/list`, { params: { fullId: this.value, type: type } })
                     .then((response) => {
                         displayPatients(datalistEl, response.data);
                     })
