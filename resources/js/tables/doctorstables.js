@@ -225,7 +225,8 @@ const getWaitingTable = (tableId) => {
         searchDelay: 500,
         lengthMenu:[25, 50, 100, 150, 200],
         language: {
-            emptyTable: 'No patient is waiting'
+            emptyTable: 'No patient is waiting',
+            searchPlaceholder: searchPlaceholderText
         },
         columns: [
             {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
