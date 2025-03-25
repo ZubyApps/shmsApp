@@ -275,8 +275,8 @@
                                 <th>Paid</th>
                                 <th>Discount</th>
                                 <th>Cap</th>
-                                <th>(Paid+Cap) - HMS</th>
-                                <th>(Paid+Cap) - HMO</th>
+                                <th>(Paid+Cap+Dis) - HMS</th>
+                                <th>(Paid+Cap+Dis) - HMO</th>
                                 <th>HMS Debt%</th>
                                 <th>HMO Debt%</th>
                             </tr>
