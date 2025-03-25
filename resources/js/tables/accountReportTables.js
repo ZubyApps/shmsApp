@@ -382,13 +382,13 @@ const getVisitSummaryTable1 = (tableId, startDate, endDate, date) => {
             {data: row => account.format(row.totalPaid)},
             {data: row => account.format(row.discount)},
             {data: row => account.format(row.totalCapitation)},
-            {data: row => account.format((+row.totalPaid + +row.totalCapitation + +row.totalCapitation) - +row.totalHmsBill)},
-            {data: row => sponsors.includes(row.category) ? account.format((+row.totalPaid + +row.totalCapitation + +row.totalCapitation) - +row.totalHmoBill) : 'N/A'},
+            {data: row => account.format((+row.totalPaid + +row.totalCapitation + +row.discount) - +row.totalHmsBill)},
+            {data: row => sponsors.includes(row.category) ? account.format((+row.totalPaid + +row.totalCapitation + +row.discount) - +row.totalHmoBill) : 'N/A'},
             {data: row => () => {
                 if (row.totalHmsBill == 0){
                     return 'No bill'
                 }
-                let debt = (((+row.totalHmsBill - (+row.totalPaid + +row.totalCapitation + +row.totalCapitation))/row.totalHmsBill) * 100).toFixed(1) 
+                let debt = (((+row.totalHmsBill - (+row.totalPaid + +row.totalCapitation + +row.discount))/row.totalHmsBill) * 100).toFixed(1) 
                 return `<span class="text-${debt >= 10 ? 'danger': debt <= 10 && debt >= 7 ? 'primary' : 'success' } fw-bold">${debt + '%'}</span>`
                 },
             },
@@ -399,7 +399,7 @@ const getVisitSummaryTable1 = (tableId, startDate, endDate, date) => {
                 if (row.totalHmoBill == 0){
                     return 'No bill'
                 }
-                let debt = (((+row.totalHmoBill - (+row.totalPaid + +row.totalCapitation + +row.totalCapitation))/row.totalHmoBill) * 100).toFixed(1) 
+                let debt = (((+row.totalHmoBill - (+row.totalPaid + +row.totalCapitation + +row.discount))/row.totalHmoBill) * 100).toFixed(1) 
                 return `<span class="text-${debt >= 10 ? 'danger': debt <= 10 && debt >= 7 ? 'primary' : 'success' } fw-bold ">${debt + '%'}</span>`
                 },
             },
