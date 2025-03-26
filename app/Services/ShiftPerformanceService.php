@@ -604,8 +604,8 @@ Class ShiftPerformanceService
 {
     $medicationsDueInShift = $this->medicationChart
         ->where(function ($query) use ($shiftPerformance) {
-            $query->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
-                  ->orWhereBetween('time_given', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
+            $query->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
+                //   ->orWhereBetween('time_given', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
         })
         ->whereRelation('visit', 'admission_status', '!=', 'Outpatient')
         ->get();
