@@ -604,12 +604,11 @@ Class ShiftPerformanceService
     public function medicationTime($shiftPerformance)
 {
     $medicationsDueInShift = $this->medicationChart
-        ->where(function ($query) use ($shiftPerformance) {
-            $query->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
+        ->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
                 //   ->orWhereBetween('time_given', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
-        })
-        ->whereRelation('prescription', 'discontinued', false)
         ->whereRelation('visit', 'admission_status', '!=', 'Outpatient')
+        ->whereRelation('prescription', 'discontinued', false)
+        ->whereRelation('visit', 'discharge_reason', null)
         ->get();
 
     $medicationsDueInShiftC     = $medicationsDueInShift->count();
