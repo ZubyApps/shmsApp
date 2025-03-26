@@ -27,7 +27,8 @@ Class ShiftPerformanceService
         private readonly Prescription $prescription,
         private readonly MedicationChart $medicationChart,
         private readonly NursingChart $nursingChart,
-        private readonly Visit $visit
+        private readonly Visit $visit,
+        private readonly HelperService $helperService
         )
     {
         
@@ -43,13 +44,15 @@ Class ShiftPerformanceService
             }
 
             $nursesOnDuty = User::whereRelation('designation', 'designation', 'Nurse')->where('is_active', true)->pluck('username')->toArray();
+            $timingSwaper = $this->helperService->prescriptionTimeSwapper();
             
-            $injectablesChartRate   = $this->injectablesChartRate($shiftPerformance);
-            $othersChartRate        = $this->othersChartRate($shiftPerformance);
-            $injectablesGivenRate   = $this->injectablesGivenRate($shiftPerformance);
-            $othersDoneRate         = $this->othersDoneRate($shiftPerformance);
+            $injectablesChartRate   = $this->injectablesChartRate($shiftPerformance, $timingSwaper);
+            $othersChartRate        = $this->othersChartRate($shiftPerformance, $timingSwaper);
+            $injectablesGivenRate   = $this->injectablesGivenRate($shiftPerformance, $timingSwaper);
+            $othersDoneRate         = $this->othersDoneRate($shiftPerformance, $timingSwaper);
             $inpatientsVitals       = $this->inpatientsVitalsignsCount($shiftPerformance);
             $outpatientsVitals      = $this->outpatientssVitalsignsCount($shiftPerformance);
+            $medicationTimeValues   = $this->medicationTime($shiftPerformance);
 
             $shiftPerformance->update([
                     'injectables_chart_rate'    => $injectablesChartRate ? $injectablesChartRate['totalInjectablePrescriptionsCharted'] . '/' . $injectablesChartRate['totalInjectablePrescriptions'] : $injectablesChartRate,
@@ -59,15 +62,16 @@ Class ShiftPerformanceService
                     'first_med_res'             => $this->firstMedicationResolution($shiftPerformance),
                     'first_serv_res'            => $this->firstServicesResolution($shiftPerformance),
                     'first_vitals_res'          => $this->firstVitalsignsResolution($shiftPerformance),
-                    'medication_time'           => $this->medicationTime($shiftPerformance),
+                    'medication_time'           => $medicationTimeValues ? $medicationTimeValues['averageMedicationTime'] : $medicationTimeValues, //$this->medicationTime($shiftPerformance),
                     'service_time'              => $this->serviceTime($shiftPerformance),
                     'inpatient_vitals_count'    => $inpatientsVitals ? $inpatientsVitals['visitsVCount'] . '/' . $inpatientsVitals['visitsCount'] : $inpatientsVitals,
                     'outpatient_vitals_count'   => $outpatientsVitals ? $outpatientsVitals['visitsVCount'] . '/' . $outpatientsVitals['visitsCount'] : $outpatientsVitals,
                     'staff'                     => $nursesOnDuty
                 ]);
 
-                $busyCount = ($inpatientsVitals ? $inpatientsVitals['visitsCount'] : 0) + ($outpatientsVitals ? $outpatientsVitals['visitsCount'] : 0);
-
+                $busyCount = ($injectablesChartRate ? $injectablesChartRate['totalInjectablePrescriptions'] : 0) + ($medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0);
+                info('busyCount values =>', ['totalInjectablePrescriptions' => $injectablesChartRate ? $injectablesChartRate['totalInjectablePrescriptions'] : 0, 'medicationsDueInShift' => $medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0]);
+                info('busyCount =>', [$busyCount]);
                 $shiftPerformance->update([
                     'performance'  => $this->getPerformance($shiftPerformance, $busyCount),
                 ]);
@@ -119,18 +123,24 @@ Class ShiftPerformanceService
     //     return $totalInjectablePrescriptions ? $all : null;
     // }
 
-    public function injectablesChartRate($shiftPerformance)
+    public function setColumn($timingSwaper)
     {
-        $shiftEnd = new Carbon($shiftPerformance->shift_end);
-        $shiftEndTimer = $shiftEnd->subMinutes(20);
+        return $timingSwaper ? 'created_at' : 'hms_bill_date';
+    }
 
+    public function injectablesChartRate($shiftPerformance, $timingSwaper)
+    {
+        $shiftEnd       = new Carbon($shiftPerformance->shift_end);
+        $shiftEndTimer  = $shiftEnd->subMinutes(20);
+        // $column         = $this->setColumn($timingSwaper);
+        // info('column', [$column]);
         // Use eager loading to reduce the number of queries
         $prescriptions = $this->prescription
             ->with(['visit.patient'])
             ->whereRelation('resource', 'sub_category', 'Injectable')
             ->where('discontinued', false)
             ->where('held', null)
-            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->whereBetween($this->setColumn($timingSwaper), [$shiftPerformance->shift_start, $shiftEndTimer])
             ->get();
 
         $totalInjectablePrescriptions = $prescriptions->count();
@@ -185,7 +195,7 @@ Class ShiftPerformanceService
     //     return $totalOtherPrescriptions ? $all : null;
     // }
 
-    public function othersChartRate($shiftPerformance)
+    public function othersChartRate($shiftPerformance,  $timingSwaper)
     {
         $shiftEnd = new Carbon($shiftPerformance->shift_end);
         $shiftEndTimer = $shiftEnd->subMinutes(20);
@@ -197,7 +207,7 @@ Class ShiftPerformanceService
             ->whereRelation('resource', 'sub_category', '!=', 'Injectable')
             ->where('discontinued', false)
             ->where('held', null)
-            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->whereBetween($this->setColumn($timingSwaper), [$shiftPerformance->shift_start, $shiftEndTimer])
             ->get();
 
         $totalOtherPrescriptions = $prescriptions->count();
@@ -253,7 +263,7 @@ Class ShiftPerformanceService
     //         return $totalInjectablesPrescriptions ? $all : null;
     // }
 
-    public function injectablesGivenRate($shiftPerformance)
+    public function injectablesGivenRate($shiftPerformance, $timingSwaper)
     {
         $shiftEnd = new Carbon($shiftPerformance->shift_end);
         $shiftEndTimer = $shiftEnd->subMinutes(20);
@@ -265,7 +275,7 @@ Class ShiftPerformanceService
             ->where('discontinued', false)
             ->where('held', null)
             ->whereHas('medicationCharts')
-            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->whereBetween($this->setColumn($timingSwaper), [$shiftPerformance->shift_start, $shiftEndTimer])
             ->get();
 
         $totalInjectablesPrescriptions = $prescriptions->count();
@@ -329,7 +339,7 @@ Class ShiftPerformanceService
     //         return $totalOtherPrescriptions ? $all : null;
     // }
 
-    public function othersDoneRate($shiftPerformance)
+    public function othersDoneRate($shiftPerformance, $timingSwaper)
     {
         $shiftEnd = new Carbon($shiftPerformance->shift_end);
         $shiftEndTimer = $shiftEnd->subMinutes(20);
@@ -342,7 +352,7 @@ Class ShiftPerformanceService
             ->where('discontinued', false)
             ->where('held', null)
             ->whereHas('nursingCharts')
-            ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
+            ->whereBetween($this->setColumn($timingSwaper), [$shiftPerformance->shift_start, $shiftEndTimer])
             ->get();
 
         $totalOtherPrescriptions = $prescriptions->count();
@@ -604,7 +614,12 @@ Class ShiftPerformanceService
         ->where('visits.admission_status', '!=', 'OutPatient')
         ->value('averageMedicationTime');
 
-    return $medicationsDueInShift > 0 ? $averageMedicationTime : null;
+        $all = new Collection([
+            'medicationsDueInShift' => $medicationsDueInShift,
+            'averageMedicationTime' => $averageMedicationTime
+        ]);
+
+    return $medicationsDueInShift > 0 ? $all : null;
 }
 
     // public function serviceTime($shiftPerformance)
@@ -842,9 +857,13 @@ Class ShiftPerformanceService
         info('Nursing Performance', ['benchMarck' => $benchMark, 'busyCount' => $busyCount]);
         $busyCount1 = $busyCount <= $benchMark;
         $busyCount2 = $busyCount > $benchMark && $busyCount < $benchMark + 10;
-        $busyCount3 = $busyCount > $benchMark + 10 && $busyCount < $benchMark + 20;
-        $busyCount4 = $busyCount > $benchMark + 20 && $busyCount < $benchMark + 30;
-        $busyCount5 = $busyCount >= $benchMark + 30;
+        $busyCount3 = $busyCount > $benchMark + 5 && $busyCount < $benchMark + 10;
+        $busyCount4 = $busyCount > $benchMark + 10 && $busyCount < $benchMark + 15;
+        $busyCount5 = $busyCount > $benchMark + 15 && $busyCount < $benchMark + 20;
+        $busyCount6 = $busyCount > $benchMark + 20 && $busyCount < $benchMark + 25;
+        $busyCount7 = $busyCount > $benchMark + 25 && $busyCount < $benchMark + 30;
+        $busyCount7 = $busyCount > $benchMark + 30 && $busyCount < $benchMark + 35;
+        $busyCount8 = $busyCount >= $benchMark + 35;
         // $busyCount1 = $busyCount <= 15;
         // $busyCount2 = $busyCount > 10 && $busyCount < 25;
         // $busyCount3 = $busyCount > 25 && $busyCount < 35;
@@ -853,17 +872,17 @@ Class ShiftPerformanceService
 
         info('', ['busyCount1' => $busyCount1, 'busyCount2' => $busyCount2, 'busyCount3' => $busyCount3, 'busyCount4' => $busyCount4, 'busyCount5' => $busyCount5]);
 
-        $FMR    = $busyCount1 ? 0 : ($busyCount2 ? 300 : ($busyCount3 ? 600 :  ($busyCount4 ? 900 :  ($busyCount5 ? 1200 :  1500))));
-        $FVR    = $busyCount1 ? 0 : ($busyCount2 ? 300 : ($busyCount3 ? 600 :  ($busyCount4 ? 900 :  ($busyCount5 ? 1200 :  1500))));
-        $MT     = $busyCount1 ? 0 : ($busyCount2 ? 300 : ($busyCount3 ? 600 :  ($busyCount4 ? 900 :  ($busyCount5 ? 1200 :  1500))));
+        $FMR    = $busyCount1 ? 0 : ($busyCount2 ? 300 : ($busyCount3 ? 480 :  ($busyCount4 ? 660 :  ($busyCount5 ? 840 :  ($busyCount6 ? 1020 :  ($busyCount7 ? 1200 :  ($busyCount8 ? 1380 :  1560)))))));
+        $FVR    = $busyCount1 ? 0 : ($busyCount2 ? 300 : ($busyCount3 ? 480 :  ($busyCount4 ? 660 :  ($busyCount5 ? 840 :  ($busyCount6 ? 1020 :  ($busyCount7 ? 1200 :  ($busyCount8 ? 1380 :  1560)))))));
+        $MT     = $busyCount1 ? 0 : ($busyCount2 ? 180 : ($busyCount3 ? 360 :  ($busyCount4 ? 540 :  ($busyCount5 ? 720 :  ($busyCount5 ? 900 :  ($busyCount5 ? 1080 :  ($busyCount5 ? 1260 :  1440)))))));
 
         info('', ['FMR' => $FMR, 'FVR' => $FVR, 'MT' => $MT]);
 
         $FMR1 = 600  + $FMR;
-        $FMR2 = 1260 + $FMR;
-        $FMR3 = 2460 + $FMR;
-        $FMR4 = 3660 + $FMR;
-        $FMR5 = 5460 + $FMR;
+        $FMR2 = 900  + $FMR;
+        $FMR3 = 1200 + $FMR;
+        $FMR4 = 1500 + $FMR;
+        $FMR5 = 1800 + $FMR;
 
         info('', ['FMR1' => $FMR1, 'FMR2' => $FMR2, 'FMR3' => $FMR3, 'FMR4' => $FMR4, 'FMR5' => $FMR5]);
 

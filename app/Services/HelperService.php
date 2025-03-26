@@ -49,4 +49,11 @@ class HelperService
         return $query->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start) / $params->length));
     }
+
+    public function prescriptionTimeSwapper()
+    {
+        $start = new CarbonImmutable('19:30:00');
+        $end = $start->addHours(12)->addMinutes(30);
+        return Carbon::now()->between($start, $end);
+    }
 }
