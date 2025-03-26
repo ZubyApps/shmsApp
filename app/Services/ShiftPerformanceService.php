@@ -71,7 +71,8 @@ Class ShiftPerformanceService
                 ]);
 
                 $busyCount = ($injectablesChartRate ? $injectablesChartRate['totalInjectablePrescriptions'] : 0) + ($medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0);
-                $medicationTimeCounts = (($medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0) - ($medicationTimeValues ? $medicationTimeValues['medicationsGivenInShift'] : 0)) . ' medications left';
+                // $medicationTimeCounts = (($medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0) - ($medicationTimeValues ? $medicationTimeValues['medicationsGivenInShift'] : 0)) . ' medications left';
+                $medicationTimeCounts = ($medicationTimeValues ? $medicationTimeValues['medicationsNotGiven'] : 0) . ' medications left';
                 info('busyCount values =>', ['totalInjectablePrescriptions' => $injectablesChartRate ? $injectablesChartRate['totalInjectablePrescriptions'] : 0, 'medicationsDueInShift' => $medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0, 'medicationsGivenInShift' => $medicationTimeValues ? $medicationTimeValues['medicationsGivenInShift'] : 0]);
                 info('busyCount =>', [$busyCount]);
                 $shiftPerformance->update([
@@ -613,6 +614,7 @@ Class ShiftPerformanceService
     $medicationsDueInShiftC     = $medicationsDueInShift->count();
     $medicationsGivenInShift    = $medicationsDueInShift->whereNotNull('time_given')->count();
     $medicationsNotGiven        = $medicationsDueInShift->whereNull('time_given');
+    $medicationsNotGivenCount   = $medicationsDueInShift->whereNull('time_given')->count();
 
     $notGivenMedications = $medicationsNotGiven->map(function ($medicationChart) {
         return $medicationChart->visit->patient->card_no . ' ' . $medicationChart->visit->patient->first_name;
@@ -629,7 +631,8 @@ Class ShiftPerformanceService
             'medicationsDueInShift'     => $medicationsDueInShiftC,
             'medicationsGivenInShift'   => $medicationsGivenInShift,
             'averageMedicationTime'     => $averageMedicationTime,
-            'notGivenMedications'       => array_values($notGivenMedications)
+            'notGivenMedications'       => array_values($notGivenMedications),
+            'medicationsNotGiven'  => $medicationsNotGivenCount,
         ]);
 
     return $medicationsDueInShiftC > 0 ? $all : null;
