@@ -71,7 +71,7 @@ Class ShiftPerformanceService
                 ]);
 
                 $busyCount = ($injectablesChartRate ? $injectablesChartRate['totalInjectablePrescriptions'] : 0) + ($medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0);
-                $medicationTimeCounts = ($medicationTimeValues ? $medicationTimeValues['medicationsGivenInShift'] : 0) . ' medications left';
+                $medicationTimeCounts = (($medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0) - ($medicationTimeValues ? $medicationTimeValues['medicationsGivenInShift'] : 0)) . ' medications left';
                 info('busyCount values =>', ['totalInjectablePrescriptions' => $injectablesChartRate ? $injectablesChartRate['totalInjectablePrescriptions'] : 0, 'medicationsDueInShift' => $medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0, 'medicationsGivenInShift' => $medicationTimeValues ? $medicationTimeValues['medicationsGivenInShift'] : 0]);
                 info('busyCount =>', [$busyCount]);
                 $shiftPerformance->update([
