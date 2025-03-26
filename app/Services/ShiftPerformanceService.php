@@ -608,6 +608,7 @@ Class ShiftPerformanceService
             $query->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
                 //   ->orWhereBetween('time_given', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
         })
+        ->whereRelation('prescription', 'discontinued', false)
         ->whereRelation('visit', 'admission_status', '!=', 'Outpatient')
         ->get();
 
