@@ -686,6 +686,7 @@ const getShiftPerformance = (dept, div) => {
                 let noChatPatientsOthers        = ''
                 let noStartPatientsInjectables  = ''
                 let noStartPatientsOthers       = ''
+                let notGivenPatientsMedications = ''
 
                 details.inpatientsNoV.length > 0 ? details.inpatientsNoV.forEach(patient => {
                     inpatients +=  `<li class="dropdown-item text-secondary inpatientsNov" data-patient="${patient.split(" ")[0]}">${patient}</li>`
@@ -709,6 +710,10 @@ const getShiftPerformance = (dept, div) => {
 
                 details.notStartedOthers.length > 0 ? details.notStartedOthers.forEach(patient => {
                     noStartPatientsOthers +=  `<li class="dropdown-item text-secondary patientOthersNotStarted" data-patient="${patient.split(" ")[0]}">${patient}</li>`
+                 }) : ''
+                
+                details.notGivenMedications.length > 0 ? details.notGivenMedications.forEach(patient => {
+                    notGivenPatientsMedications +=  `<li class="dropdown-item text-secondary patientOthersNotStarted" data-patient="${patient.split(" ")[0]}">${patient}</li>`
                  }) : ''
                 
                 div.innerHTML = `
@@ -753,7 +758,14 @@ const getShiftPerformance = (dept, div) => {
                     <li class="dropdown-item text-secondary">Avg First Medication Time ${shiftPerformance.first_med_res ? '- '+ shiftPerformance.first_med_res :'- no activity'}</li>
                     <li class="dropdown-item text-secondary">Avg First Service Time ${shiftPerformance.first_serv_res ? '- '+ shiftPerformance.first_serv_res :'- no activity'}</li>
                     <li class="dropdown-item text-secondary">Avg First Vitalsigns Time ${shiftPerformance.first_vitals_res ?'- '+ shiftPerformance.first_vitals_res :'- no activity'}</li>
-                    <li class="dropdown-item text-secondary">Avg Medication Giving Time ${shiftPerformance.medication_time ? '- '+ shiftPerformance.medication_time :'- no activity'}</li>
+                    <li class=" text-secondary p-0">
+                        <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
+                            <li class="dropdown-item text-secondary">Medication Giving Time ${shiftPerformance.medication_time ? '- '+ shiftPerformance.medication_time :'- no activity'}</li>
+                        </button>
+                        <ul class="dropdown-menu ${details.notGivenMedications.length > 0 ? '' : 'd-none'}">
+                            ${notGivenPatientsMedications}
+                        </ul>
+                    </li>
                     <li class="dropdown-item text-secondary">Avg Service Giving Time ${shiftPerformance.service_time ? '- '+ shiftPerformance.service_time :'- no activity'}</li>
                     <li class=" text-secondary p-0">
                         <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
@@ -989,6 +1001,20 @@ const debounce = (func, wait) => {
     };
 };
 
+// New dynamic debounce for adjustable delays
+const dynamicDebounce = (func) => {
+    let timeout;
+    let currentDelay = 500; // Default delay
+
+    const debounced = function(delay = currentDelay, ...args) {
+        clearTimeout(timeout);
+        currentDelay = delay; // Update delay dynamically
+        timeout = setTimeout(() => func(...args), currentDelay);
+    };
+
+    return debounced;
+};
+
 const getExportOptions = (table) => {
     return {
         rows: function (idx, data, node) {
@@ -998,4 +1024,4 @@ const getExportOptions = (table) => {
     };
 };
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider}
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider, dynamicDebounce}

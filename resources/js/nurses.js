@@ -1,5 +1,5 @@
 import { Offcanvas, Modal, Toast, Dropdown } from "bootstrap";
-import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, populateWardAndBedModal, clearItemsList, getSelectedResourceValues, getDatalistOptionStock, getShiftPerformance, displayWardList, clearSelectList, debounce } from "./helpers"
+import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, populateWardAndBedModal, clearItemsList, getSelectedResourceValues, getDatalistOptionStock, getShiftPerformance, displayWardList, clearSelectList, debounce, dynamicDebounce } from "./helpers"
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
@@ -113,11 +113,15 @@ window.addEventListener('DOMContentLoaded', function () {
     const upcomingNursingChartsTable    = getUpcomingNursingChartsTable('upcomingNursingChartsTable', nursingChartBtn, inpatientNursingBadgeSpan)
     const nursesShiftReportTable        = getShiftReportTable('nursesShiftReportTable', 'nurses', shiftBadgeSpan)
     const proceduresListTable           = getProceduresListTable('#proceduresListTable', 'pending') 
-    $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #bulkRequestsTable, #emergencyTable, #nursesReportTable, #upcomingMedicationsTable, #upcomingNursingChartsTable, #waitingTable, #medicationsTable, #otherPrescriptionsTable, #ancVitalSignsTable, #vitalSignsTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
+    $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #bulkRequestsTable, #emergencyTable, #nursesReportTable, #upcomingMedicationsTable, #upcomingNursingChartsTable, #waitingTable, #medicationsTable, #otherPrescriptionsTable, #ancVitalSignsTable, #vitalSignsTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''});
 
-    const shiftPerformance = debounce(() => {
+    const shiftPerformance = () => {
         getShiftPerformance('Nurse', shiftPerformanceDiv);
-    }, 60000)
+    } 
+        
+    const shiftPerformanceDebounced = dynamicDebounce(shiftPerformance);
+
+    shiftPerformanceDebounced(0)
 
     const refreshMainTables = debounce(() => {
         inPatientsView.checkVisibility() ? inPatientsVisitTable.draw(false) : ''
@@ -127,8 +131,6 @@ window.addEventListener('DOMContentLoaded', function () {
     }, 1000);
 
     shiftReportBtn.addEventListener('click', function () {nursesShiftReportTable.draw()})
-
-    getShiftPerformance('Nurse', shiftPerformanceDiv);
 
     newNursesShiftReportBtn.addEventListener('click', function () {
         newShiftReportTemplateModal.show()
@@ -145,11 +147,9 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    
-
     inPatientsTab.addEventListener('click', function() {
         inPatientsVisitTable.draw();
-        shiftPerformance();
+        shiftPerformanceDebounced(10000);
     });
 
     outPatientsTab.addEventListener('click', function () {
@@ -158,7 +158,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             outPatientsVisitTable = getPatientsVisitsByFilterTable('#outPatientsVisitTable', 'Outpatient')
         }
-        shiftPerformance();
+        shiftPerformanceDebounced(10000);
     })
 
     ancPatientsTab.addEventListener('click', function () {
@@ -167,7 +167,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             ancPatientsVisitTable = getPatientsVisitsByFilterTable('#ancPatientsVisitTable', 'ANC')
         }
-        shiftPerformance();
+        shiftPerformanceDebounced(10000);
     })
 
     bulkRequestsTab.addEventListener('click', function () {
@@ -176,7 +176,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             bulkRequestsTable = getBulkRequestTable('bulkRequestsTable', 'nurses')
         }
-        shiftPerformance()
+        shiftPerformanceDebounced(10000);
     })
 
     theatreRequestTab.addEventListener('click', function () {
@@ -185,7 +185,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             theatreRequestsTable = getBulkRequestTable('theatreRequestsTable', 'theatre')
         }
-        shiftPerformance()
+        shiftPerformanceDebounced(10000);
     })
 
     emergencyTab.addEventListener('click', function () {
@@ -194,7 +194,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             emergencyTable = getEmergencyTable('emergencyTable', 'nurse')
         }
-        shiftPerformance()
+        shiftPerformanceDebounced(10000);
     })
 
     waitingBtn.addEventListener('click', function () {
@@ -233,7 +233,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     waitingListCanvas._element.addEventListener('hide.bs.offcanvas', function () {
-        shiftPerformance();
+        shiftPerformanceDebounced(5000)
     })
 
     shiftPerformanceDiv.addEventListener('click', function (event) {
@@ -311,21 +311,21 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#upcomingMedicationsoffcanvas, #upcomingNursingChartsoffcanvas, #shiftReportOffcanvas, #proceduresListOffcanvas').forEach(canvas => {
         canvas.addEventListener('hide.bs.offcanvas', function () {
             if (canvas.id =='upcomingMedicationsoffcanvas'){
-                inpatientsMedChartBtn.classList.remove('colour-change', 'colour-change1')
-                inpatientsMedChartBtn.classList.add('btn-primary')
-                upcomingMedicationsTable.draw()
+                inpatientsMedChartBtn.classList.remove('colour-change', 'colour-change1');
+                inpatientsMedChartBtn.classList.add('btn-primary');
+                upcomingMedicationsTable.draw();
             }
             if (canvas.id =='upcomingNursingChartsoffcanvas'){
-                nursingChartBtn.classList.remove('colour-change', 'colour-change1')
-                nursingChartBtn.classList.add('btn-primary')
-                upcomingNursingChartsTable.draw()
+                nursingChartBtn.classList.remove('colour-change', 'colour-change1');
+                nursingChartBtn.classList.add('btn-primary');
+                upcomingNursingChartsTable.draw();
             }
-            canvas.id =='shiftReportOffcanvas' ? nursesShiftReportTable.draw() : ''
-            canvas.id =='proceduresListOffcanvas' ? proceduresListTable.draw() : ''
-            inPatientsView.checkVisibility() ? inPatientsVisitTable.draw() : ''
-            outPatientsView.checkVisibility() ? outPatientsVisitTable.draw() : ''
-            ancPatientsView.checkVisibility() ? ancPatientsVisitTable.draw() : ''
-            shiftPerformance()
+            canvas.id =='shiftReportOffcanvas' ? nursesShiftReportTable.draw() : '';
+            canvas.id =='proceduresListOffcanvas' ? proceduresListTable.draw() : '';
+            inPatientsView.checkVisibility() ? inPatientsVisitTable.draw() : '';
+            outPatientsView.checkVisibility() ? outPatientsVisitTable.draw() : '';
+            ancPatientsView.checkVisibility() ? ancPatientsVisitTable.draw() : '';
+            shiftPerformanceDebounced(10000);
         })
     })
 
@@ -560,7 +560,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response) {clearDivValues(dischargeDetailsDiv);  clearValidationErrors(dischargeDetailsDiv)
                 // inPatientsVisitTable.draw(false); upcomingMedicationsTable.draw(); upcomingNursingChartsTable.draw()
                 dischargeModal.hide()
-                shiftPerformance();
+                shiftPerformanceDebounced(10000);
                 refreshMainTables();
             }
             saveDischargeBtn.removeAttribute('disabled')
@@ -848,7 +848,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 modal.id == 'otherPrescriptionsModal' ? upcomingNursingChartsTable.draw(false) : '';
                 modal.id == 'vitalsignsModal' ? waitingCanvas ? waitingTable.draw(false) : '' : '';
                 refreshMainTables()
-                shiftPerformance();
+                shiftPerformanceDebounced(1000);
             }
             modal.id == 'wardAndBedModal' ? clearSelectList(modal) : ''
         })
@@ -860,7 +860,7 @@ window.addEventListener('DOMContentLoaded', function () {
             ancTreatmentDiv.innerHTML = ''
             visitHistoryDiv.innerHTML = ''
             refreshMainTables();
-            shiftPerformance();
+            shiftPerformanceDebounced();
         })
     })
 
