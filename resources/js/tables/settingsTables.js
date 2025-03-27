@@ -451,11 +451,11 @@ const getOtherSettingsTable = (tableId) => {
                     <span class="btn btn-${row.value == 'Not set' ? 'white' : 'outline-primary'} optionSpan" data-name="${row.name}"> ${row.value == 0 ? 'Off' : row.value == 1 ? 'On' : row.value}</span>
                     ${row.name != 'Pre Search' ? `
                         <select class ="form-select form-select-md optionSelect d-none ms-1">
-                            <option value="10">10</option>
-                            <option value="15">15</option>
-                            <option value="20">20</option>
-                            <option value="25">25</option>
                             <option value="30">30</option>
+                            <option value="35">35</option>
+                            <option value="40">40</option>
+                            <option value="45">45</option>
+                            <option value="50">50</option>
                         </select>
                         ` :`
                         <select class ="form-select form-select-md optionSelect d-none ms-1">
