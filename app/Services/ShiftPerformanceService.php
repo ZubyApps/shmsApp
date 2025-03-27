@@ -615,9 +615,9 @@ Class ShiftPerformanceService
         ->get();
 
     $medicationsDueInShiftC     = $medicationsDueInShift->count();
-    $medicationsGivenInShift    = $medicationsDueInShift->whereNotNull('time_given')->count();
-    $medicationsNotGiven        = $medicationsDueInShift->whereNull('time_given');
-    $medicationsNotGivenCount   = $medicationsDueInShift->whereNull('time_given')->count();
+    $medicationsGivenInShift    = $medicationsDueInShift->whereNotNull('time_given')->where('status', true)->count();
+    $medicationsNotGiven        = $medicationsDueInShift->whereNull('time_given')->where('status', false);
+    $medicationsNotGivenCount   = $medicationsDueInShift->whereNull('time_given')->where('status', false)->count();
 
     $notGivenMedications = $medicationsNotGiven->map(function ($medicationChart) {
         return $medicationChart->visit->patient->card_no . ' ' . $medicationChart->visit->patient->first_name;
@@ -677,9 +677,9 @@ Class ShiftPerformanceService
             ->get();
 
             $servicesDueInShiftC    = $servicesDueInShift->count();
-            $servicesDoneInShift    = $servicesDueInShift->whereNotNull('time_done')->count();
-            $servicesNotDone        = $servicesDueInShift->whereNull('time_done');
-            $servicesNotDoneCount   = $servicesDueInShift->whereNull('time_done')->count();
+            $servicesDoneInShift    = $servicesDueInShift->whereNotNull('time_done')->where('status', true)->count();
+            $servicesNotDone        = $servicesDueInShift->whereNull('time_done')->where('status', false);
+            $servicesNotDoneCount   = $servicesDueInShift->whereNull('time_done')->where('status', false)->count();
 
             $notDoneServices = $servicesNotDone->map(function ($medicationChart) {
                 return $medicationChart->visit->patient->card_no . ' ' . $medicationChart->visit->patient->first_name;
