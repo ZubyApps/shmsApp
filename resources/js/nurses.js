@@ -45,7 +45,6 @@ window.addEventListener('DOMContentLoaded', function () {
     let nursingPerformanceDropDown;
     setTimeout(() => {
         nursingPerformanceDropDown    = new Dropdown(document.getElementById('nursingPerformanceDropdown'))
-        console.log(nursingPerformanceDropDown)
     }, 10000)
 
     const visitHistoryDiv           = consultationHistoryModal._element.querySelector('#visitHistoryDiv')

@@ -377,22 +377,22 @@ class PatientService
                         ->where('patient_type', 'ANC')
                         ->where(function (Builder $query) use($searchTerm) {
                             $query->whereRaw('CONCAT_WS(" ", first_name, middle_name, last_name) LIKE ?', [$searchTerm])
-                            // ->where('first_name', 'LIKE', $searchTerm)
-                            // ->orWhere('middle_name', 'LIKE', $searchTerm)
-                            // ->orWhere('last_name', 'LIKE', $searchTerm)
-                            ->orWhere('card_no', 'LIKE', $searchTerm)
-                            ->orWhere('phone', 'LIKE', $searchTerm);
+                                ->orWhereRaw('CONCAT_WS(" ", last_name, middle_name, first_name) LIKE ?', [$searchTerm])
+                                ->orWhereRaw('CONCAT_WS(" ", first_name, last_name, middle_name) LIKE ?', [$searchTerm])
+                                ->orWhereRaw('CONCAT_WS(" ", last_name, first_name, middle_name) LIKE ?', [$searchTerm]);
                         })
+                        ->orWhere('card_no', 'LIKE', $searchTerm)
+                        ->orWhere('phone', 'LIKE', $searchTerm)
                         ->orderBy('created_at', 'asc')
                         ->get(['first_name', 'middle_name', 'last_name', 'card_no', 'sponsor_id', 'phone']);
             }
             return $this->patient
-                        ->whereRaw('CONCAT_WS(" ", first_name, middle_name, last_name) LIKE ?', [$searchTerm])
-                        // ->whereRaw('CONCAT(first_name, " ", COALESCE(middle_name, ""), " ", last_name) LIKE ?', [$searchTerm])
-                        // ->whereRaw('CONCAT(first_name, " ", middle_name, " ", last_name) LIKE ?', [$searchTerm])
-                        // ->where('first_name', 'LIKE', $searchTerm)
-                        // ->orWhere('middle_name', 'LIKE', $searchTerm)
-                        // ->orWhere('last_name', 'LIKE', $searchTerm)
+                        ->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRaw('CONCAT_WS(" ", first_name, middle_name, last_name) LIKE ?', [$searchTerm])
+                                ->orWhereRaw('CONCAT_WS(" ", last_name, middle_name, first_name) LIKE ?', [$searchTerm])
+                                ->orWhereRaw('CONCAT_WS(" ", first_name, last_name, middle_name) LIKE ?', [$searchTerm])
+                                ->orWhereRaw('CONCAT_WS(" ", last_name, first_name, middle_name) LIKE ?', [$searchTerm]);
+                        })
                         ->orWhere('card_no', 'LIKE', $searchTerm )
                         ->orWhere('phone', 'LIKE', $searchTerm )
                         ->orderBy('created_at', 'asc')

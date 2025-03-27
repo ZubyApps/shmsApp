@@ -687,6 +687,7 @@ const getShiftPerformance = (dept, div) => {
                 let noStartPatientsInjectables  = ''
                 let noStartPatientsOthers       = ''
                 let notGivenPatientsMedications = ''
+                let notDonePatientsServices     = ''
 
                 details.inpatientsNoV.length > 0 ? details.inpatientsNoV.forEach(patient => {
                     inpatients +=  `<li class="dropdown-item text-secondary inpatientsNov" data-patient="${patient.split(" ")[0]}">${patient}</li>`
@@ -714,6 +715,10 @@ const getShiftPerformance = (dept, div) => {
                 
                 details.notGivenMedications.length > 0 ? details.notGivenMedications.forEach(patient => {
                     notGivenPatientsMedications +=  `<li class="dropdown-item text-secondary patientOthersNotStarted" data-patient="${patient.split(" ")[0]}">${patient}</li>`
+                 }) : ''
+                 
+                details.notDoneServices.length > 0 ? details.notDoneServices.forEach(patient => {
+                    notDonePatientsServices +=  `<li class="dropdown-item text-secondary patientOthersNotStarted" data-patient="${patient.split(" ")[0]}">${patient}</li>`
                  }) : ''
                 
                 div.innerHTML = `
@@ -766,7 +771,14 @@ const getShiftPerformance = (dept, div) => {
                             ${notGivenPatientsMedications}
                         </ul>
                     </li>
-                    <li class="dropdown-item text-secondary">Avg Service Giving Time ${shiftPerformance.service_time ? '- '+ shiftPerformance.service_time :'- no activity'}</li>
+                    <li class=" text-secondary p-0">
+                        <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
+                            <li class="dropdown-item text-secondary">Avg Service Giving Time ${shiftPerformance.service_time ? '- '+ shiftPerformance.service_time :'- no activity'}</li>
+                        </button>
+                        <ul class="dropdown-menu ${details.notDoneServices.length > 0 ? '' : 'd-none'}">
+                            ${notDonePatientsServices}
+                        </ul>
+                    </li>
                     <li class=" text-secondary p-0">
                         <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
                             <li class="dropdown-item text-secondary">Inpatient Vitalsigns Rate ${shiftPerformance.inpatient_vitals_count ? '- '+ shiftPerformance.inpatient_vitals_count :'- no activity'}</li>

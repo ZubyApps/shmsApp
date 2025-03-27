@@ -54,6 +54,7 @@ Class ShiftPerformanceService
             $inpatientsVitals       = $this->inpatientsVitalsignsCount($shiftPerformance);
             $outpatientsVitals      = $this->outpatientssVitalsignsCount($shiftPerformance);
             $medicationTimeValues   = $this->medicationTime($shiftPerformance);
+            $serviceTimeValues      = $this->serviceTime($shiftPerformance);
 
             $shiftPerformance->update([
                     'injectables_chart_rate'    => $injectablesChartRate ? $injectablesChartRate['totalInjectablePrescriptionsCharted'] . '/' . $injectablesChartRate['totalInjectablePrescriptions'] : $injectablesChartRate,
@@ -64,17 +65,18 @@ Class ShiftPerformanceService
                     'first_serv_res'            => $this->firstServicesResolution($shiftPerformance),
                     'first_vitals_res'          => $this->firstVitalsignsResolution($shiftPerformance),
                     'medication_time'           => $medicationTimeValues ? $medicationTimeValues['averageMedicationTime'] : $medicationTimeValues, //$this->medicationTime($shiftPerformance),
-                    'service_time'              => $this->serviceTime($shiftPerformance),
+                    'service_time'              => $serviceTimeValues ? $serviceTimeValues['averageServiceTime'] : $serviceTimeValues, //$this->serviceTime($shiftPerformance),
                     'inpatient_vitals_count'    => $inpatientsVitals ? $inpatientsVitals['visitsVCount'] . '/' . $inpatientsVitals['visitsCount'] : $inpatientsVitals,
                     'outpatient_vitals_count'   => $outpatientsVitals ? $outpatientsVitals['visitsVCount'] . '/' . $outpatientsVitals['visitsCount'] : $outpatientsVitals,
                     'staff'                     => $nursesOnDuty
                 ]);
 
-                $busyCount = ($injectablesChartRate ? $injectablesChartRate['totalInjectablePrescriptions'] : 0) + ($medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0);
-                // $medicationTimeCounts = (($medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0) - ($medicationTimeValues ? $medicationTimeValues['medicationsGivenInShift'] : 0)) . ' medications left';
-                $medicationTimeCounts = ($medicationTimeValues ? $medicationTimeValues['medicationsNotGiven'] : 0) . ' medications left';
-                info('busyCount values =>', ['totalInjectablePrescriptions' => $injectablesChartRate ? $injectablesChartRate['totalInjectablePrescriptions'] : 0, 'medicationsDueInShift' => $medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0, 'medicationsGivenInShift' => $medicationTimeValues ? $medicationTimeValues['medicationsGivenInShift'] : 0]);
+                $busyCount = ($injectablesChartRate ? $injectablesChartRate['totalInjectablePrescriptions'] : 0) + ($medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0) + ($serviceTimeValues ? $serviceTimeValues['servicesNotDone'] : 0);
+                $medicationTimeCounts = ($medicationTimeValues ? $medicationTimeValues['medicationsNotGiven'] : 0) . ' medication(s) left';
+                $serviceTimeCounts = ($serviceTimeValues ? $serviceTimeValues['servicesNotDone'] : 0) . ' service(s) left';
+                info('busyCount values =>', ['totalInjectablePrescriptions' => $injectablesChartRate ? $injectablesChartRate['totalInjectablePrescriptions'] : 0, 'medicationsDueInShift' => $medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0, 'medicationsGivenInShift' => $medicationTimeValues ? $medicationTimeValues['medicationsGivenInShift'] : 0, 'servicesDoneInShift' => $serviceTimeValues ? $serviceTimeValues['servicesDoneInShift'] : 0]);
                 info('busyCount =>', [$busyCount]);
+
                 $shiftPerformance->update([
                     'performance'  => $this->getPerformance($shiftPerformance, $busyCount),
                 ]);
@@ -83,7 +85,7 @@ Class ShiftPerformanceService
                 $shiftPerformance->first_serv_res    = $shiftPerformance->first_serv_res ? CarbonInterval::seconds($shiftPerformance->first_serv_res)->cascade()->forHumans() : null;
                 $shiftPerformance->first_vitals_res = $shiftPerformance->first_vitals_res ? CarbonInterval::seconds($shiftPerformance->first_vitals_res)->cascade()->forHumans() : null;
                 $shiftPerformance->medication_time  = $shiftPerformance->medication_time ? ($shiftPerformance->medication_time < 0 ? 'Many served on time': CarbonInterval::seconds($shiftPerformance->medication_time)->cascade()->forHumans()) . ' (' . $medicationTimeCounts . ')' : 'Medications count ('. $medicationTimeCounts .')' ;
-                $shiftPerformance->service_time  = $shiftPerformance->service_time ? ($shiftPerformance->service_time < 0 ? 'Many served on time': CarbonInterval::seconds($shiftPerformance->service_time)->cascade()->forHumans()) : null;
+                $shiftPerformance->service_time  = $shiftPerformance->service_time ? ($shiftPerformance->service_time < 0 ? 'Many served on time': CarbonInterval::seconds($shiftPerformance->service_time)->cascade()->forHumans()) . ' (' . $serviceTimeCounts . ')' : 'Services count ('. $serviceTimeCounts .')';
                 $details = [
                     'notChartedInjectables' => $injectablesChartRate ? $injectablesChartRate['notChartedUniqueInjectables'] : '',
                     'notChartedOthers' => $othersChartRate ? $othersChartRate['notChartedUniqueOthers'] : '',
@@ -92,6 +94,7 @@ Class ShiftPerformanceService
                     'inpatientsNoV' => $inpatientsVitals ? $inpatientsVitals['visitsNoVitals'] : '',
                     'outpatientsNoV' => $outpatientsVitals ? $outpatientsVitals['visitsNoVitals'] : '',
                     'notGivenMedications' => $medicationTimeValues ? $medicationTimeValues['notGivenMedications'] : '',
+                    'notDoneServices' => $serviceTimeValues ? $serviceTimeValues['notDoneServices'] : '',
                 ];
 
             return response()->json(['shiftPerformance' => $shiftPerformance, 'details' => $details ? $details : '']);
@@ -623,8 +626,11 @@ Class ShiftPerformanceService
     $averageMedicationTime = DB::table('medication_charts')
         ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, medication_charts.scheduled_time))) AS averageMedicationTime')
         ->leftJoin('visits', 'visits.id', 'medication_charts.visit_id')
+        ->leftJoin('prescriptions', 'prescriptions.id', 'medication_charts.visit_id')
         ->whereBetween('medication_charts.scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
         ->where('visits.admission_status', '!=', 'OutPatient')
+        ->where('visits.discharge_reason', '=', null)
+        ->where('prescriptions.discontinued', '=', false)
         ->value('averageMedicationTime');
 
         $all = new Collection([
@@ -632,7 +638,7 @@ Class ShiftPerformanceService
             'medicationsGivenInShift'   => $medicationsGivenInShift,
             'averageMedicationTime'     => $averageMedicationTime,
             'notGivenMedications'       => array_values($notGivenMedications),
-            'medicationsNotGiven'  => $medicationsNotGivenCount,
+            'medicationsNotGiven'       => $medicationsNotGivenCount,
         ]);
 
     return $medicationsDueInShiftC > 0 ? $all : null;
@@ -661,21 +667,43 @@ Class ShiftPerformanceService
     public function serviceTime($shiftPerformance)
     {
         $servicesDueInShift = $this->nursingChart
-            ->where(function ($query) use ($shiftPerformance) {
-                $query->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
-                    ->orWhereBetween('time_done', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
-            })
+                ->whereBetween('scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
+            // ->where(function ($query) use ($shiftPerformance) {
+                    // ->orWhereBetween('time_done', [$shiftPerformance->shift_start, $shiftPerformance->shift_end]);
+            // })
             ->whereRelation('visit', 'admission_status', '!=', 'Outpatient')
-            ->count();
+            ->whereRelation('prescription', 'discontinued', false)
+            ->whereRelation('visit', 'discharge_reason', null)
+            ->get();
+
+            $servicesDueInShiftC    = $servicesDueInShift->count();
+            $servicesDoneInShift    = $servicesDueInShift->whereNotNull('time_done')->count();
+            $servicesNotDone        = $servicesDueInShift->whereNull('time_done');
+            $servicesNotDoneCount   = $servicesDueInShift->whereNull('time_done')->count();
+
+            $notDoneServices = $servicesNotDone->map(function ($medicationChart) {
+                return $medicationChart->visit->patient->card_no . ' ' . $medicationChart->visit->patient->first_name;
+            })->unique()->values()->all();
 
         $averageServiceTime = DB::table('nursing_charts')
             ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(nursing_charts.time_done, nursing_charts.scheduled_time))) AS averageServiceTime')
             ->leftJoin('visits', 'visits.id', 'nursing_charts.visit_id')
+            ->leftJoin('prescriptions', 'prescriptions.id', 'nursing_charts.visit_id')
             ->whereBetween('nursing_charts.scheduled_time', [$shiftPerformance->shift_start, $shiftPerformance->shift_end])
             ->where('visits.admission_status', '!=', 'OutPatient')
+            ->where('visits.discharge_reason', '=', null)
+            ->where('prescriptions.discontinued', '=', false)
             ->value('averageServiceTime');
 
-        return $servicesDueInShift > 0 ? $averageServiceTime : null;
+            $all = new Collection([
+                'servicesDueInShift'    => $servicesDueInShiftC,
+                'servicesDoneInShift'   => $servicesDoneInShift,
+                'averageServiceTime'    => $averageServiceTime,
+                'notDoneServices'       => array_values($notDoneServices),
+                'servicesNotDone'       => $servicesNotDoneCount,
+            ]);
+
+        return $servicesDueInShiftC > 0 ? $all : null;
     }
     
     // public function inpatientsVitalsignsCount($shiftPerformance)
