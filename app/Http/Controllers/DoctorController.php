@@ -8,6 +8,7 @@ use App\Services\DoctorService;
 use App\Services\ResourceService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class DoctorController extends Controller
 {
@@ -28,7 +29,8 @@ class DoctorController extends Controller
         return view('doctors.doctors', [
             'doctors'       => $this->userService->listStaff(designation: 'Doctor'),
             'thirdParties'  => $this->thirdPartyController->showAll('id', 'short_name'),
-            'wards'         => $this->wardController->showAll('id', 'short_name', 'long_name', 'bed_number', 'visit_id')
+            'wards'         => $this->wardController->showAll('id', 'short_name', 'long_name', 'bed_number', 'visit_id'),
+            'feverBenchMark' => Cache::get('feverBenchmark', 37.3)
         ]);
     }
 

@@ -76,6 +76,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/settings', [AdminController::class, 'settings'])->name('Settings');
             Route::put('/settings/presearch', [AdminController::class, 'preSearchSettings']);
             Route::put('/settings/nursingbenchmark', [AdminController::class, 'nursingBenchMarkSetting']);
+            Route::put('/settings/feverBenchmark', [AdminController::class, 'feverBenchMarkSetting']);
             Route::get('/settings/load/othersettings', [AdminController::class, 'loadOtherSettings']);
         });
 

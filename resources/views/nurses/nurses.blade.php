@@ -34,6 +34,7 @@
 @include('extras.shiftReportTemplateModal', ['title' => 'View Report', 'isUpdate' => false, 'dept' => 'nurses', 'isView' => true, 'id' => 'viewShiftReportTemplateModal'])
 
 <div class="container mt-5">
+    <input type="text" class="d-none" value="{{ $feverBenchMark }}" id="feverBenchMark">
     <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="upcomingMedicationsoffcanvas"
         aria-labelledby="upcomingMedicationsoffcanvasLabel">
         <div class="offcanvas-header">

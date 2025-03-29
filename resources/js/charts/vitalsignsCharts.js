@@ -1,7 +1,8 @@
 import { Chart, registerables } from "chart.js";
 Chart.register(...registerables)
 
-function getVitalsignsChartByVisit(chart, vitals, modal){    
+function getVitalsignsChartByVisit(chart, vitals, modal){   
+    const feverBenchmark = document.querySelector('#feverBenchMark').value ?? 37.3 
     const vitalsignsChart = new Chart(chart, {
         type: 'line',
         data: {
@@ -15,7 +16,7 @@ function getVitalsignsChartByVisit(chart, vitals, modal){
             tension: 0.5,
             pointRadius: 5,
             pointBackgroundColor: (context) => {
-                return context.dataset.data[context.dataIndex] > 37.2 ? "#dc3545" : "#0d6efd";
+                return context.dataset.data[context.dataIndex] >= feverBenchmark ? "#dc3545" : "#0d6efd";
             }
             },
         ]

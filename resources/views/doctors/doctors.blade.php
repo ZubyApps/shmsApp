@@ -34,6 +34,7 @@
 @include('doctors.procedureBookingModal', ['title' => 'Set Operation/Procedure Date & Details', 'isDoctor' => true, 'id' => 'procedureBookingModal'])
 
     <div class="container mt-5">
+        <input type="text" class="d-none" value="{{ $feverBenchMark }}" id="feverBenchMark">
         <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas1"
             aria-labelledby="waitingListOffcanvasLabel">
             <div class="offcanvas-header">

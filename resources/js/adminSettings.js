@@ -916,9 +916,9 @@ window.addEventListener('DOMContentLoaded', function () {
             const optionSelect  = div.querySelector('.optionSelect')
             optionSpan.classList.add('d-none')
             optionSelect.classList.remove('d-none')
-            const urlSuffix           = name == 'Pre Search' ? 'presearch' : 'nursingbenchmark'
+            const urlSuffix           = name == 'Pre Search' ? 'presearch' : name == 'Nursing Performance Benchmark' ? 'nursingbenchmark' : 'feverBenchmark'
             optionSelect.addEventListener('blur', function () {
-                http.put(`/admin/settings/${urlSuffix}`, {preSearch: optionSelect.value}, {'html' : div})
+                http.put(`/admin/settings/${urlSuffix}`, {value: optionSelect.value}, {'html' : div})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300){
                         otherSettingsTable ? otherSettingsTable.draw() : ''

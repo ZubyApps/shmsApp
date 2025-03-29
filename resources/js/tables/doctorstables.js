@@ -320,6 +320,7 @@ const getWaitingTable = (tableId) => {
 }
 
 const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
+    const feverBenchmark = document.querySelector('#feverBenchMark').value ?? 37.3
     const vitalSignsByVisit =  new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/vitalsigns/load/table', data: {
@@ -334,7 +335,7 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
         columns: [
             {data: "created_at"},
             {data: row => () => {
-                    if (Number(row.temperature?.split('°C')[0]) > 37.2){
+                    if (Number(row.temperature?.split('°C')[0]) >= feverBenchmark){
                     return  `<span class="text-danger fw-semibold">${row.temperature}</span>` 
                     } else {
                     return row.temperature

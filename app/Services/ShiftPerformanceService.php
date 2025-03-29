@@ -898,7 +898,7 @@ Class ShiftPerformanceService
     public function secondsToPercent($seconds, $indicator, $busyCount)
     {
         $benchMark  = (int)Cache::get('nursingBenchmark',100);
-        info('Nursing Performance', ['benchMarck' => $benchMark, 'busyCount' => $busyCount]);
+        // info('Nursing Performance', ['benchMarck' => $benchMark, 'busyCount' => $busyCount]);
         $busyCount1 = $busyCount <= $benchMark;
         $busyCount2 = $busyCount > $benchMark && $busyCount < $benchMark + 10;
         $busyCount3 = $busyCount > $benchMark + 5 && $busyCount < $benchMark + 10;
@@ -914,13 +914,13 @@ Class ShiftPerformanceService
         // $busyCount4 = $busyCount > 35 && $busyCount < 45;
         // $busyCount5 = $busyCount >= 45;
 
-        info('', ['busyCount1' => $busyCount1, 'busyCount2' => $busyCount2, 'busyCount3' => $busyCount3, 'busyCount4' => $busyCount4, 'busyCount5' => $busyCount5]);
+        // info('', ['busyCount1' => $busyCount1, 'busyCount2' => $busyCount2, 'busyCount3' => $busyCount3, 'busyCount4' => $busyCount4, 'busyCount5' => $busyCount5]);
 
         $FMR    = $busyCount1 ? 0 : ($busyCount2 ? 300 : ($busyCount3 ? 480 :  ($busyCount4 ? 660 :  ($busyCount5 ? 840 :  ($busyCount6 ? 1020 :  ($busyCount7 ? 1200 :  ($busyCount8 ? 1380 :  1560)))))));
         $FVR    = $busyCount1 ? 0 : ($busyCount2 ? 300 : ($busyCount3 ? 480 :  ($busyCount4 ? 660 :  ($busyCount5 ? 840 :  ($busyCount6 ? 1020 :  ($busyCount7 ? 1200 :  ($busyCount8 ? 1380 :  1560)))))));
         $MT     = $busyCount1 ? 0 : ($busyCount2 ? 180 : ($busyCount3 ? 360 :  ($busyCount4 ? 540 :  ($busyCount5 ? 720 :  ($busyCount5 ? 900 :  ($busyCount5 ? 1080 :  ($busyCount5 ? 1260 :  1440)))))));
 
-        info('', ['FMR' => $FMR, 'FVR' => $FVR, 'MT' => $MT]);
+        // info('', ['FMR' => $FMR, 'FVR' => $FVR, 'MT' => $MT]);
 
         $FMR1 = 600  + $FMR;
         $FMR2 = 900  + $FMR;
@@ -928,7 +928,7 @@ Class ShiftPerformanceService
         $FMR4 = 1500 + $FMR;
         $FMR5 = 1800 + $FMR;
 
-        info('', ['FMR1' => $FMR1, 'FMR2' => $FMR2, 'FMR3' => $FMR3, 'FMR4' => $FMR4, 'FMR5' => $FMR5]);
+        // info('', ['FMR1' => $FMR1, 'FMR2' => $FMR2, 'FMR3' => $FMR3, 'FMR4' => $FMR4, 'FMR5' => $FMR5]);
 
         $FVR1 = 300  + $FVR;
         $FVR2 = 600  + $FVR;
@@ -936,7 +936,7 @@ Class ShiftPerformanceService
         $FVR4 = 1200 + $FVR;
         $FVR5 = 1500 + $FVR;
 
-        info('', ['FVR1' => $FVR1, 'FVR2' => $FVR2, 'FVR3' => $FVR3, 'FVR4' => $FVR4, 'FVR5' => $FVR5]);
+        // info('', ['FVR1' => $FVR1, 'FVR2' => $FVR2, 'FVR3' => $FVR3, 'FVR4' => $FVR4, 'FVR5' => $FVR5]);
 
         $MT1 = 180  + $MT;
         $MT2 = 360  + $MT;
@@ -944,7 +944,7 @@ Class ShiftPerformanceService
         $MT4 = 960  + $MT;
         $MT5 = 1260 + $MT;
 
-        info('', ['MT1' => $MT1, 'MT2' => $MT2, 'MT3' => $MT3, 'MT4' => $MT4, 'MT5' => $MT5]);
+        // info('', ['MT1' => $MT1, 'MT2' => $MT2, 'MT3' => $MT3, 'MT4' => $MT4, 'MT5' => $MT5]);
 
         if ($indicator == 'FMR'){
             return $seconds < $FMR1 ? 100 : ($seconds > $FMR1  && $seconds < $FMR2 ? 90 : ($seconds > $FMR2 && $seconds < $FMR3 ? 80 : ($seconds > $FMR3 && $seconds < $FMR4 ? 60 : ($seconds > $FMR4 && $seconds < $FMR5 ? 40 : 20))));

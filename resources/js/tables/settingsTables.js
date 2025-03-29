@@ -449,7 +449,7 @@ const getOtherSettingsTable = (tableId) => {
                 return `
                 <div class="d-flex text-secondary">
                     <span class="btn btn-${row.value == 'Not set' ? 'white' : 'outline-primary'} optionSpan" data-name="${row.name}"> ${row.value == 0 ? 'Off' : row.value == 1 ? 'On' : row.value}</span>
-                    ${row.name != 'Pre Search' ? `
+                    ${row.name == 'Nursing Performance Benchmark' ? `
                         <select class ="form-select form-select-md optionSelect d-none ms-1">
                             <option value="10">10</option>
                             <option value="30">30</option>
@@ -458,11 +458,20 @@ const getOtherSettingsTable = (tableId) => {
                             <option value="45">45</option>
                             <option value="50">50</option>
                         </select>
-                        ` :`
+                        ` : row.name == 'Pre Search' ?`
                         <select class ="form-select form-select-md optionSelect d-none ms-1">
                             <option value="">Select option</option>
                             <option value="1">On</option>
                             <option value="0">Off</option>
+                        </select>
+                    `: `
+                        <select class ="form-select form-select-md optionSelect d-none ms-1">
+                            <option value="">Select option</option>
+                            <option value="37.2">37.2</option>
+                            <option value="37.3">37.3</option>
+                            <option value="37.4">37.4</option>
+                            <option value="37.5">37.5</option>
+                            <option value="37.6">37.6</option>
                         </select>
                     `}
                     
