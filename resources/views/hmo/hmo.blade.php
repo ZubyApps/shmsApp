@@ -21,6 +21,7 @@
 
 
     <div class="container p-1 mt-5 bg-white">
+        <input type="text" class="d-none" value="{{ $feverBenchMark }}" id="feverBenchMark">
         <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2" aria-labelledby="waitingListOffcanvasLabel" aria-expanded="false">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>

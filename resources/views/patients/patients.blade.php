@@ -19,6 +19,7 @@
 @include('patients.sponsorTariffModal')
 
 <div class="container mt-5">
+    <input type="text" class="d-none" value="{{ $feverBenchMark }}" id="feverBenchMark">
     <div>
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">

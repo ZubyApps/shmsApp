@@ -15,6 +15,7 @@ use App\Services\PrePatientService;
 use App\Services\UserService;
 use App\Services\VisitService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class PatientController extends Controller
 {
@@ -32,9 +33,11 @@ class PatientController extends Controller
 
     public function index()
     {
-        return view('patients.patients', 
-        ['categories' => $this->sponsorCategoryController->showAll('id', 'name')],
-        ['doctors' => $this->userService->listStaff(designation: 'Doctor')]
+        return view('patients.patients', [
+            'categories' => $this->sponsorCategoryController->showAll('id', 'name'),
+            'doctors' => $this->userService->listStaff(designation: 'Doctor'),
+            'feverBenchMark' => Cache::get('feverBenchmark', 37.3)
+            ]
         );
     }
 

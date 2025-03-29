@@ -320,7 +320,7 @@ const getWaitingTable = (tableId) => {
 }
 
 const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
-    const feverBenchmark = document.querySelector('#feverBenchMark').value ?? 37.3
+    const feverBenchmark = document.querySelector('#feverBenchMark')?.value ?? 37.3
     const vitalSignsByVisit =  new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/vitalsigns/load/table', data: {

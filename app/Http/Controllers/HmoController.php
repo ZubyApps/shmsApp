@@ -8,6 +8,7 @@ use App\Models\Visit;
 use App\Services\DatatablesService;
 use App\Services\HmoService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class HmoController extends Controller
 {
@@ -23,7 +24,9 @@ class HmoController extends Controller
     public function index()
     {
         return view('hmo.hmo',
-        ['categories' =>$this->sponsorCategoryController->showAll('id', 'name')]
+        ['categories' =>$this->sponsorCategoryController->showAll('id', 'name'),
+        'feverBenchMark' => Cache::get('feverBenchmark', 37.3)
+        ]
     );
     }
 
