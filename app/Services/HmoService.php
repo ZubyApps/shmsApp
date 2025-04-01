@@ -982,6 +982,7 @@ class HmoService
     }
 
     public function reportTableHtmlFormat($text, $reminder, $type){
+        info('reminder', ['reminder' => $reminder, 'month sent for' => $reminder->month_sent_for, 'type' => $type]);   
         if ($type){
             return '<span class="confirmedPaidBtn" data-id="' . $reminder->id .'" data-sponsor="'. $reminder->sponsor->name .'" data-monthYear="'. $this->monthYearCoverter($reminder->month_sent_for) .'">'. $text .' - '. $reminder?->$type.'</span>';
         }
