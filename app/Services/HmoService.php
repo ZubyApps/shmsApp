@@ -812,8 +812,6 @@ class HmoService
                         'reminders' => function($query) use($getDate){
                             $query->whereMonth('month_sent_for', $getDate->month)
                             ->whereYear('month_sent_for', $getDate->year);
-                            // $query->whereMonth('created_at', $getDate->month)
-                            //     ->whereYear('created_at', $getDate->year);
                         },
                     ])
                     ->withCount([
@@ -915,7 +913,6 @@ class HmoService
 
         if ($data->date){
             $date = new Carbon($data->date);
-            info('Report table query', ['month date' => $date]);
             return $query->where(function (Builder $query) {
                         $query->where('category_name', 'HMO')
                         ->orWhere('category_name', 'NHIS' )
@@ -951,7 +948,6 @@ class HmoService
             $monthName  = (new Carbon($data->date ?? $data->startDate))->monthName;
             $year       = (new Carbon($data->date ?? $data->startDate))->year;
             $monthYear  = (new Carbon($data->date ?? $data->startDate))->format('F Y');
-            info('Report table', ['hmo report date' => $data->date, $data->startDate => 'startDate', 'monthName' => $monthName, 'year' => $year, 'monthYear' => $monthYear, 'reminder' => $sponsor->reminders->first()]);
             return [
                 'id'                => $sponsor->id,
                 'sponsor'           => $sponsor->name,
@@ -984,7 +980,6 @@ class HmoService
     }
 
     public function reportTableHtmlFormat($text, $reminder, $type){
-        info('table html format', ['month sent for' => $reminder->month_sent_for, 'type' => $type]);   
         if ($type){
             return '<span class="confirmedPaidBtn" data-id="' . $reminder->id .'" data-sponsor="'. $reminder->sponsor->name .'" data-monthYear="'. $this->monthYearCoverter($reminder->month_sent_for) .'">'. $text .' - '. $reminder?->$type.'</span>';
         }
