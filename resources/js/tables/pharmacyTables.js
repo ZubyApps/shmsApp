@@ -48,7 +48,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
         columns: preparedColumns
     });
 
-    allPatientsTable.on('draw.init', searchDecider(allPatientsTable, tableId, 2, filter))
+    allPatientsTable.on('draw.init', searchMin(allPatientsTable, tableId, 2, filter))
 
     return allPatientsTable
 }
