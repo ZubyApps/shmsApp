@@ -949,7 +949,7 @@ class HmoService
             $monthName  = (new Carbon($data->date ?? $data->startDate))->monthName;
             $year       = (new Carbon($data->date ?? $data->startDate))->year;
             $monthYear  = (new Carbon($data->date ?? $data->startDate))->format('F Y');
-            info('Report table', ['hmo report date' => $data->date, 'monthName' => $monthName, 'year' => $year, 'monthYear' => $monthYear]);
+            info('Report table', ['hmo report date' => $data->date, $data->startDate => 'startDate', 'monthName' => $monthName, 'year' => $year, 'monthYear' => $monthYear, 'reminder' => $sponsor->reminders->first()]);
             return [
                 'id'                => $sponsor->id,
                 'sponsor'           => $sponsor->name,
