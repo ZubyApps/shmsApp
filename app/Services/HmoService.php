@@ -192,11 +192,11 @@ class HmoService
 
         return $query->where('hmo_done_by', null)
                     ->where('closed', false)
-                    ->where(function (Builder $query) {
-                        $query->whereRelation('sponsor', 'category_name', 'HMO')
-                        ->orWhereRelation('sponsor', 'category_name', 'NHIS')
-                        ->orWhereRelation('sponsor', 'category_name', 'Retainership');
-                    })
+                        ->where(function (Builder $query) {
+                            $query->whereRelation('sponsor', 'category_name', 'HMO')
+                            ->orWhereRelation('sponsor', 'category_name', 'NHIS')
+                            ->orWhereRelation('sponsor', 'category_name', 'Retainership');
+                        })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -912,7 +912,7 @@ class HmoService
 
         if ($data->date){
             $date = new Carbon($data->date);
-
+            info('Report table query', ['month date' => $date]);
             return $query->where(function (Builder $query) {
                         $query->where('category_name', 'HMO')
                         ->orWhere('category_name', 'NHIS' )
@@ -944,6 +944,7 @@ class HmoService
 
     public function getReportsSummaryTransformer($data)
     {
+        info('Report table', ['hmo report date' => $data->date]);
         return function (Sponsor $sponsor) use ($data){
             $monthName  = (new Carbon($data->date))->monthName;
             $year       = (new Carbon($data->date))->year;
