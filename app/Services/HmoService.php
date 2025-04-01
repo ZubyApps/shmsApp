@@ -945,11 +945,11 @@ class HmoService
 
     public function getReportsSummaryTransformer($data)
     {
-        info('Report table', ['hmo report date' => $data->date]);
         return function (Sponsor $sponsor) use ($data){
             $monthName  = (new Carbon($data->date))->monthName;
             $year       = (new Carbon($data->date))->year;
             $monthYear  = (new Carbon($data->date))->format('F Y');
+            info('Report table', ['hmo report date' => $data->date, 'monthName' => $monthName, 'year' => $year, 'monthYear' => $monthYear]);
             return [
                 'id'                => $sponsor->id,
                 'sponsor'           => $sponsor->name,
