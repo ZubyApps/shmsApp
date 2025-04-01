@@ -806,7 +806,7 @@ class HmoService
         $orderDir   =  'asc';
         $getDate     = (new Carbon($data->date));
         $month      = $getDate->month;
-        info('get date', ['get date' => $getDate]);
+        info('get date', ['get date' => $getDate, 'get month' => $getDate->month]);
         $current    = CarbonImmutable::now();
         $query      = $this->sponsor::with([
                         'reminders' => function($query) use($getDate){
