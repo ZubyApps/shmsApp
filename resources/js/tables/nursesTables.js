@@ -844,6 +844,7 @@ const getNursesReportTable = (tableId, visitId, modal) => {
         },
         columns: [
             {data: "date"},
+            {data: "shift"},
             {data: "report"},
             {data: "writtenBy"},
             {data: row => function () {

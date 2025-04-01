@@ -21,6 +21,7 @@ Class NursesReportService
     public function create(Request $data, Visit $visit, User $user): NursesReport
     {
        $nursesReport = $user->nursesReports()->create([
+            'shift'        => $data->shift,
             'report'       => $data->report,
             'visit_id'     => $visit->id,
             'patient_id'   => $visit->patient->id,
@@ -33,6 +34,7 @@ Class NursesReportService
     public function update(Request $data, NursesReport $nursesReport, User $user): NursesReport
     {
        $nursesReport->update([
+            'shift'        => $data->shift,
             'report'       => $data->report,
             'user_id'      => $user->id
         ]);
@@ -67,6 +69,7 @@ Class NursesReportService
             return [
                 'id'                => $nursesReport->id,
                 'date'              => (new Carbon($nursesReport->created_at))->format('D d/m/y g:ia'),
+                'shift'             => $nursesReport->shift,
                 'report'            => $nursesReport->report,
                 'writtenBy'         => $nursesReport->user->username,
                 'closed'            => $nursesReport->visit->closed

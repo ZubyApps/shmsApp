@@ -32,27 +32,35 @@ class SendTestResultDone implements ShouldQueue
      */
     public function handle(ChurchPlusSmsService $churchPlusSmsService, HelperService $helperService): void
     {
-        $firstName = $this->prescription->visit->patient->first_name;
+        $visit = $this->prescription->visit;
 
-        if ($this->recentlySent($this->prescription) > 1) {
+        $firstName = $visit->patient->first_name;
+
+        $totalInvestigations = $visit->prescriptions()->whereRelation('resource', 'category', 'Investigations')
+                                    ->whereRelation('resource', 'sub_category', '!=', 'Imaging');
+
+        $totalInvestigationsC = $totalInvestigations->count();
+
+        $totalInvestigationsDone = $totalInvestigations->where('result', '!=', null)->count();
+
+        if ($this->recentlySent($totalInvestigations) > 1) {
             info('Investigation not sent', ['recently sent (less than 30min ago)' => $firstName]);
             return;
         }
-        
         $gateway = $helperService->nccTextTime() ? 1 : 2;
 
         $churchPlusSmsService
-        ->sendSms('Dear ' .$firstName. ', your test result is ready. This notification is courtesy of our Hospital Management System. To opt out, visit reception', $this->prescription->visit->patient->phone, 'SandraHosp', $gateway);
+        ->sendSms('Dear ' .$firstName. ' ' . $totalInvestigationsDone . ' out of ' . $totalInvestigationsC . ' of your test result(s) are ready. This notification is courtesy of our Hospital Management System. To opt out, visit reception', $this->prescription->visit->patient->phone, 'SandraHosp', $gateway);
 
         info('Investigation', ['sent to' => $firstName, 'gateway' => $gateway]);
     }
 
-    private function recentlySent(Prescription $prescription)
+    private function recentlySent($prescriptions)
     {
         $end = CarbonImmutable::now();
         $start = $end->subMinutes(30);
-        $visit = $prescription->visit;
+        // $visit = $prescription->visit;
 
-        return $visit->prescriptions->where('result', '!=', null)->whereBetween('result_date', [$start, $end])->count();
+        return $prescriptions->where('result', '!=', null)->whereBetween('result_date', [$start, $end])->count();
     }
 }

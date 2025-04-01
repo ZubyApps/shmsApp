@@ -33,6 +33,7 @@
                                     <thead>
                                         <tr>
                                             <th>Date</th>
+                                            <th>Shift</th>
                                             <th>Report</th>
                                             <th>Written By</th>
                                             <th>Actions</th>

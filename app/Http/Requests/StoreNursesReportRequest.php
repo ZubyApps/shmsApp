@@ -22,7 +22,8 @@ class StoreNursesReportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'report' => ['required', 'min:50']
+            'shift'  => ['required'],
+            'report' => ['required', 'min:4']
         ];
     }
 }

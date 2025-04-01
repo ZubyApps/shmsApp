@@ -532,20 +532,20 @@ window.addEventListener('DOMContentLoaded', function () {
     requestBulkBtn.addEventListener('click', function () {
         requestBulkBtn.setAttribute('disabled', 'disabled')
         const itemId =  getDatalistOptionId(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList`))
-        const itemStock =  getDatalistOptionStock(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList`))
-        const quantity  = bulkRequestModal._element.querySelector('#quantity').value
+        // const itemStock =  getDatalistOptionStock(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList`))
+        // const quantity  = bulkRequestModal._element.querySelector('#quantity').value
         if (!itemId) {
             clearValidationErrors(bulkRequestModal._element)
             const message = {"item": ["Please pick an item from the list"]}               
             handleValidationErrors(message, bulkRequestModal._element)
             requestBulkBtn.removeAttribute('disabled')
             return
-        } else if (itemStock - quantity < 0){
-            clearValidationErrors(bulkRequestModal._element)
-            const message = {"quantity": ["This quantity is more than the available stock, please reduce the quantity or add to the stock"]}               
-            handleValidationErrors(message, bulkRequestModal._element)
-            requestBulkBtn.removeAttribute('disabled')
-            return
+        // } else if (itemStock - quantity < 0){
+        //     clearValidationErrors(bulkRequestModal._element)
+        //     const message = {"quantity": ["This quantity is more than the available stock, please reduce the quantity or add to the stock"]}               
+        //     handleValidationErrors(message, bulkRequestModal._element)
+        //     requestBulkBtn.removeAttribute('disabled')
+        //     return
         } else {clearValidationErrors(bulkRequestModal._element)}
         
         http.post(`/bulkrequests/${itemId}`, getDivData(bulkRequestModal._element), {"html": bulkRequestModal._element})

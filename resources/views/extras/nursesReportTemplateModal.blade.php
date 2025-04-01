@@ -19,6 +19,17 @@
                                     <x-form-input name="sponsorName" value="" id="sponsorName" readonly/>
                                 </x-form-div>
                             </div>
+                            <div class="row">
+                                <x-form-div class="col-xl-12">
+                                    <x-input-span>Shift</x-input-span>
+                                    <select class="form-select form-select-md" name="shift" id="shift">
+                                        <option value="">Select</option>
+                                        <option value="Morning Shift">Morning Shift</option>
+                                        <option value="Afternoon Shift">Afternoon Shift</option>
+                                        <option value="Night Shift">Night Shift</option>
+                                    </select>
+                                </x-form-div>
+                            </div>
                         </div>
                         <div class="mb-2 form-control" id="medicalReportDetailsDiv">
                             <div class="row">

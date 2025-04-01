@@ -678,7 +678,7 @@ window.addEventListener('DOMContentLoaded', function () {
     createNursesReportBtn.addEventListener('click', function() {
         createNursesReportBtn.setAttribute('disabled', 'disabled')
         const visitId       = createNursesReportBtn.getAttribute('data-visitid')
-        http.post(`nursesreport/${visitId}`, {report: newNursesReportTemplateModal._element.querySelector('#report').value}, {'html': newNursesReportTemplateModal._element})
+        http.post(`nursesreport/${visitId}`, {report: newNursesReportTemplateModal._element.querySelector('#report').value, shift: newNursesReportTemplateModal._element.querySelector('#shift').value}, {'html': newNursesReportTemplateModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300) {
                 newNursesReportTemplateModal.hide()
@@ -697,7 +697,7 @@ window.addEventListener('DOMContentLoaded', function () {
     saveNursesReportBtn.addEventListener('click', function() {
         saveNursesReportBtn.setAttribute('disabled', 'disabled')
         const id = saveNursesReportBtn.getAttribute('data-id')
-        http.patch(`nursesreport/${id}`, {report: editNursesReportTemplateModal._element.querySelector('#report').value}, {'html': editNursesReportTemplateModal._element})
+        http.patch(`nursesreport/${id}`, {report: editNursesReportTemplateModal._element.querySelector('#report').value, shift: editNursesReportTemplateModal._element.querySelector('#shift').value}, {'html': editNursesReportTemplateModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300) {
                 editNursesReportTemplateModal.hide()
@@ -1001,20 +1001,20 @@ window.addEventListener('DOMContentLoaded', function () {
         const dept      = itemInput.dataset.dept
         requestBulkBtn.setAttribute('disabled', 'disabled')
         const itemId    =  getDatalistOptionId(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList${dept}`))
-        const itemStock =  getDatalistOptionStock(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList${dept}`))
-        const quantity  = bulkRequestModal._element.querySelector('#quantity').value
+        // const itemStock =  getDatalistOptionStock(bulkRequestModal._element, itemInput, bulkRequestModal._element.querySelector(`#itemList${dept}`))
+        // const quantity  = bulkRequestModal._element.querySelector('#quantity').value
         if (!itemId) {
             clearValidationErrors(bulkRequestModal._element)
             const message = {"item": ["Please pick an item from the list"]}               
             handleValidationErrors(message, bulkRequestModal._element)
             requestBulkBtn.removeAttribute('disabled')
             return
-        } else if (itemStock - quantity < 0){
-            clearValidationErrors(bulkRequestModal._element)
-            const message = {"quantity": ["This quantity is more than the available stock, please reduce the quantity"]}               
-            handleValidationErrors(message, bulkRequestModal._element)
-            requestBulkBtn.removeAttribute('disabled')
-            return
+        // } else if (+quantity < 0){
+        //     clearValidationErrors(bulkRequestModal._element)
+        //     const message = {"quantity": ["Quantity must be greater than 0"]}               
+        //     handleValidationErrors(message, bulkRequestModal._element)
+        //     requestBulkBtn.removeAttribute('disabled')
+        //     return
         } else {clearValidationErrors(bulkRequestModal._element)}
         http.post(`/bulkrequests/${itemId}`, getDivData(bulkRequestModal._element), {"html": bulkRequestModal._element})
         .then((response) => {
