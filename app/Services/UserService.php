@@ -154,7 +154,7 @@ class UserService
         ]);
     }
 
-    public function listStaff(String $designation = null, string $special_note = null)
+    public function listStaff(?string $designation = null, ?string $special_note = null)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
@@ -162,6 +162,7 @@ class UserService
         if ($special_note == 'Management'){
             return $this->user
                         ->where('special_note', $special_note)
+                        ->where('date_of_exit', null)
                         ->orderBy($orderBy, $orderDir)
                         ->get(['id', 'username']);
         }
