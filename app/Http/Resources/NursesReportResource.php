@@ -16,7 +16,6 @@ class NursesReportResource extends JsonResource
     {
         return [
             'id'            => $this->id,
-            
             'shift'        => $this->shift,
             'report'        => $this->report,
             'patient'       => $this->patient->patientId(),
