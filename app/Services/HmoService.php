@@ -49,7 +49,7 @@ class HmoService
                             ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
                             ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm);
                         })
-                        
+                        ->orWhere('verification_status', 'LIKE', $searchTerm)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -98,7 +98,7 @@ class HmoService
             $visit->update([
                 'verification_status'   => $request->status,
                 'verification_code'     => $request->codeText,
-                'verified_at'           => $request->status === 'Verified' ? new Carbon() : null,
+                'verified_at'           => $request->status === 'Verified' || $request->status === 'Exponged' ? new Carbon() : null,
                 'verified_by'           => $request->user()->id,
             ]);
 
@@ -1141,7 +1141,12 @@ class HmoService
         return DB::transaction(function () use($data, $visit) {
             $prescriptions  = $visit->prescriptions;
 
-            $this->paymentService->prescriptionsPaymentSeiveHmo((float)$data->bulkPayment, $prescriptions);
+            if ($visit->sponsor->category_name == 'Retainership'){
+                $this->paymentService->prescriptionsPaymentSeiveRetanership((float)$data->bulkPayment, $prescriptions);
+            } else {
+                $this->paymentService->prescriptionsPaymentSeiveHmo((float)$data->bulkPayment, $prescriptions);
+            }
+                
 
             $visit->total_paid = $visit->totalPaidPrescriptions();
             $visit->save();

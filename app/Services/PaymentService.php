@@ -138,7 +138,31 @@ Class PaymentService
 
             foreach($prescription as $p){
                 $bill = $p->hmo_bill;
-                
+                if ($carry >= $bill){    
+                    $p->update(['paid' => $p->id == $prescription->last()->id ? $carry : $bill]);
+                }
+
+                if ($carry < $bill && $carry > 0){
+                    $p->update(['paid' => $carry ]);
+                }
+
+                if ($carry <= 0 && $bill > 0){
+                    $p->update(['paid' => 0 ]);
+                }
+
+                $carry = $carry - $bill;
+            }
+            return $carry;
+
+        }, $totalPayments);
+    }
+
+    public function prescriptionsPaymentSeiveRetanership(mixed $totalPayments, mixed $prescriptions): void
+    {
+        array_reduce([$prescriptions], function($carry, $prescription) {
+
+            foreach($prescription as $p){
+                $bill = $p->hms_bill;
                 if ($carry >= $bill){
                     $p->update(['paid' => $p->id == $prescription->last()->id ? $carry : $bill]);
                 }
