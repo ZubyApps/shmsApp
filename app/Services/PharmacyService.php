@@ -411,6 +411,7 @@ class PharmacyService
                         $query->where('category', 'Medications')
                         ->orWhere('category', 'Consumables')->whereNot('sub_category', 'Lab');
                     })
+                    ->where('stock_level', '>', 0)
                     ->where('expiry_date', '<', (new Carbon())->addMonths(6))
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -422,7 +423,6 @@ class PharmacyService
                         $query->where('category', 'Medications')
                         ->orWhere('category', 'Consumables')->whereNot('sub_category', 'Lab');
                     })
-                    // ->where('reorder_level', '!=', 0)
                     ->whereColumn('stock_level', '<','reorder_level')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
