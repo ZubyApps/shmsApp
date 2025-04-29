@@ -359,7 +359,7 @@ class InvestigationService
             return $this->prescription
                         ->where('visit_id', $visit->id)
                         ->whereRelation('resource', 'category', 'Investigations')
-                        ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
+                        // ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
                         ->whereRelation('visit', 'consulted', '!=', null)
                         ->where('result_date', '!=', null)
                         ->orderBy('created_at', 'asc')
