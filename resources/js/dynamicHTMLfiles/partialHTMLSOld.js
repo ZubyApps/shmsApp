@@ -71,37 +71,37 @@ const review = (count, line) => {
                     <div class="themed-grid-col col-xl-6">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary">Complain</label> 
-                            <div class="textarea-pre-wrap">${line.complaint}</div>
+                            <div>${line.complaint}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Examination Findings </label>                                                    
-                            <div class="textarea-pre-wrap">${line.examinationFindings}</div>
+                            <div>${line.examinationFindings}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Selected ICD11 Diagnosis </label>
-                            <div class="textarea-pre-wrap">${line.selectedDiagnosis}</div>
+                            <div>${line.selectedDiagnosis}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Provisional Diagnosis </label>
-                            <div class="textarea-pre-wrap">${line.provisionalDiagnosis}</div>
+                            <div>${line.provisionalDiagnosis}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> History Of Care </label>
-                            <div class="textarea-pre-wrap">${line.historyOfCare}</div>
+                            <div>${line.historyOfCare}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Assessment </label>
-                            <div class="textarea-pre-wrap">${line.assessment}</div>
+                            <div>${line.assessment}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
@@ -146,55 +146,55 @@ const consultation = (line) => {
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary">Presenting Complain</label>
-                            <div class="textarea-pre-wrap">${line.presentingComplain}</div>
+                            <div>${line.presentingComplain}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary">History of Presenting Complain </label>
-                            <div class="textarea-pre-wrap">${line.historyOfPresentingComplain}</div>
+                            <div>${line.historyOfPresentingComplain}</div>
                         </div>
                     </div> 
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Past Medical Surgical History</label>                            
-                            <div class="textarea-pre-wrap">${line.pastMedicalHistory}</div>
+                            <div>${line.pastMedicalHistory}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary">Obstetrics/Gynecological History</label>
-                            <div class="textarea-pre-wrap">${line.obGynHistory}</div>
+                            <div>${line.obGynHistory}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary">Examination Findings</label>                                                    
-                            <div class="textarea-pre-wrap">${line.examinationFindings}</div>
+                            <div>${line.examinationFindings}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary">Selected ICD11 Diagnosis</label>
-                            <div class="selectedDiagnosis textarea-pre-wrap">${line.selectedDiagnosis}</div>
+                            <div class="selectedDiagnosis">${line.selectedDiagnosis}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Provisional Diagnosis </label> 
-                            <div class="additionalDiagnosis textarea-pre-wrap">${line.provisionalDiagnosis}</div>
+                            <div class="additionalDiagnosis">${line.provisionalDiagnosis}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> History Of Care </label>
-                            <div class="textarea-pre-wrap">${line.historyOfCare}</div>
+                            <div>${line.historyOfCare}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Physicians Plan </label>
-                            <div class="textarea-pre-wrap">${line.plan}</div>
+                            <div>${line.plan}</div>
                         </div>
                     </div>
                 </div>                                           
@@ -275,19 +275,19 @@ const AncConsultation = (line, iteration, count) => {
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary">Obstetrics/Gynecological History</label>
-                            <div class="textarea-pre-wrap">${line.obGynHistory}</div>
+                            <div>${line.obGynHistory}</div>
                         </div>
                     </div>                   
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Selected ICD11 Diagnosis </label>
-                            <div class="textarea-pre-wrap">${line.selectedDiagnosis}</div>
+                            <div>${line.selectedDiagnosis}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Provisional Diagnosis </label> 
-                            <div class="textarea-pre-wrap">${line.provisionalDiagnosis}</div>
+                            <div>${line.provisionalDiagnosis}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
@@ -299,13 +299,13 @@ const AncConsultation = (line, iteration, count) => {
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Remarks </label>
-                            <div class="textarea-pre-wrap">${line.remarks}</div>
+                            <div>${line.remarks}</div>
                         </div>
                     </div>
                     <div class="themed-grid-col col-xl-6 mt-4">
                         <div class="form-outline mb-2">
                             <label class="form-label fw-bold text-secondary"> Physicians Plan </label>
-                            <div class="textarea-pre-wrap">${line.plan}</div>
+                            <div>${line.plan}</div>
                         </div>
                     </div>
                 </div>
