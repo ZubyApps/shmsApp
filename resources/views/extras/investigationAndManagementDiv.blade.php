@@ -59,37 +59,39 @@
         </div>
         <x-toast-successful  id="saveInvestigationAndManagementToast"></x-toast-successful>
     </div>
-    <div class="mb-2 form-control overflow-auto">
-        <table id="prescriptionTable{{ $type }}" class="table table-hover align-middle table-sm prescriptionTable">
-            <thead>
-                <tr>
-                    <th>Prescribed</th>
-                    <th>Resource</th>
-                    <th>Prescription</th>
-                    <th>Route</th>
-                    <th>Qty</th>
-                    <th>Bill</th>
-                    <th>Note</th>
-                    <th>Chartable</th>
-                    <th>By</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-            <tfoot>
-                <tr class="">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td class="fw-semibold"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </tfoot>
-        </table>
+    <div class="mb-2 form-control">
+        <div class="overflow-auto">
+            <table id="prescriptionTable{{ $type }}" class="table table-hover align-middle table-sm prescriptionTable">
+                <thead>
+                    <tr>
+                        <th>Prescribed</th>
+                        <th>Resource</th>
+                        <th>Prescription</th>
+                        <th>Route</th>
+                        <th>Qty</th>
+                        <th>Bill</th>
+                        <th>Note</th>
+                        <th>Chartable</th>
+                        <th>By</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr class="">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="fw-semibold"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
     </div>
 </div>
