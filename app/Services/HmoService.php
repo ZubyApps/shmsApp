@@ -947,6 +947,7 @@ class HmoService
 
         if ($data->startDate && $data->endDate){
 
+            $startDate = new Carbon($data->startDate);
             $visitConstraintsRange = function (Builder $query) use ($data) {
                 $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                       ->whereNotNull('consulted')
@@ -954,9 +955,9 @@ class HmoService
             };
 
             $query = $this->sponsor::with([
-                'reminders' => function($query) use($data){
-                    $query->whereMonth('month_sent_for', $data->startDate->month)
-                    ->whereYear('month_sent_for', $data->startDate->year);
+                'reminders' => function($query) use($startDate){
+                    $query->whereMonth('month_sent_for', $startDate->month)
+                    ->whereYear('month_sent_for', $startDate->year);
                 },
             ])
             ->withCount([
