@@ -807,7 +807,151 @@ class HmoService
         $getDate     = (new Carbon($data->date ?? $data->startDate));
         $month      = $getDate->month;
         $current    = CarbonImmutable::now();
-        $query      = $this->sponsor::with([
+        
+        if (! empty($params->searchTerm)) {
+            $query = $this->sponsor::with([
+                'reminders' => function($query) use($getDate){
+                    $query->whereMonth('month_sent_for', $getDate->month)
+                    ->whereYear('month_sent_for', $getDate->year);
+                },
+            ])
+            ->withCount([
+                'visits as visitsCount' => function (Builder $query) use ($month) {
+                    $query->whereMonth('created_at', $month);
+                    },
+                'visits as billsSent' => function (Builder $query) use ($month) {
+                    $query->whereMonth('created_at', $month)->whereNotNull('hmo_done_by');
+                    },
+            ])
+            ->withSum(['visits as totalHmsBill' => function (Builder $query) use ($month){
+                $query->whereMonth('created_at', $month);
+            }], 'total_hms_bill')
+            ->withSum(['visits as totalHmoBill' => function (Builder $query) use ($month){
+                $query->whereMonth('created_at', $month);
+            }], 'total_hmo_bill')
+            ->withSum(['visits as nhisBill' => function (Builder $query) use ($month){
+                $query->whereMonth('created_at', $month);
+            }], 'total_nhis_bill')
+            ->withSum(['visits as totalPaid' => function (Builder $query) use ($month){
+                $query->whereMonth('created_at', $month);
+            }], 'total_paid')
+            ->withSum(['visits as totalCapitation' => function (Builder $query) use ($month){
+                $query->whereMonth('created_at', $month);
+            }], 'total_capitation')
+            ->withSum(['visits as discount' => function (Builder $query) use ($month){
+                $query->whereMonth('created_at', $month);
+            }], 'discount');
+
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            return $query->where(function (Builder $query) use ($searchTerm){
+                    $query->where('name', 'LIKE', $searchTerm)
+                    ->orWhere('category_name', 'LIKE', $searchTerm);
+                })
+                ->where(function (Builder $query) {
+                    $query->where('category_name', 'HMO')
+                    ->orWhere('category_name', 'NHIS' )
+                    ->orWhere('category_name', 'Retainership' );
+                })
+                ->whereHas('visits', function(Builder $query){
+                    $query->where('consulted', '!=', null)
+                        ->where('hmo_done_by', '!=', null);
+                })
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->category){
+            if ($data->startDate && $data->endDate){
+                $query = $this->sponsor::with([
+                    'reminders' => function($query) use($data){
+                        $query->whereMonth('month_sent_for', $data->startDate->month)
+                        ->whereYear('month_sent_for', $data->startDate->year);
+                    },
+                ])
+                ->withCount([
+                    'visits as visitsCount' => function (Builder $query) use ($data) {
+                        $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+                        },
+                    'visits as billsSent' => function (Builder $query) use ($data) {
+                        $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->whereNotNull('hmo_done_by');
+                        },
+                ])
+                ->withSum(['visits as totalHmsBill' => function (Builder $query) use ($data){
+                    $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+                }], 'total_hms_bill')
+                ->withSum(['visits as totalHmoBill' => function (Builder $query) use ($data){
+                    $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+                }], 'total_hmo_bill')
+                ->withSum(['visits as nhisBill' => function (Builder $query) use ($data){
+                    $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+                }], 'total_nhis_bill')
+                ->withSum(['visits as totalPaid' => function (Builder $query) use ($data){
+                    $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+                }], 'total_paid')
+                ->withSum(['visits as totalCapitation' => function (Builder $query) use ($data){
+                    $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+                }], 'total_capitation')
+                ->withSum(['visits as discount' => function (Builder $query) use ($data){
+                    $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+                }], 'discount');
+
+                return $query->where('category_name', $data->category)
+                        ->whereHas('visits', function(Builder $query) use($data){
+                            $query->WhereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                                  ->where('consulted', '!=', null)
+                                  ->where('hmo_done_by', '!=', null);
+                        })
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+    
+            if ($data->date){
+                $date   = new Carbon($data->date);
+                $query  = $this->sponsor::with([
+                        'reminders' => function($query) use($date){
+                            $query->whereMonth('month_sent_for', $date->month)
+                            ->whereYear('month_sent_for', $date->year);
+                        },
+                    ])
+                    ->withCount([
+                        'visits as visitsCount' => function (Builder $query) use ($date) {
+                            $query->whereMonth('created_at', $date->month);
+                            },
+                        'visits as billsSent' => function (Builder $query) use ($date) {
+                            $query->whereMonth('created_at', $date->month)->whereNotNull('hmo_done_by');
+                            },
+                    ])
+                    ->withSum(['visits as totalHmsBill' => function (Builder $query) use ($date){
+                        $query->whereMonth('created_at', $date->month);
+                    }], 'total_hms_bill')
+                    ->withSum(['visits as totalHmoBill' => function (Builder $query) use ($date){
+                        $query->whereMonth('created_at', $date->month);
+                    }], 'total_hmo_bill')
+                    ->withSum(['visits as nhisBill' => function (Builder $query) use ($date){
+                        $query->whereMonth('created_at', $date->month);
+                    }], 'total_nhis_bill')
+                    ->withSum(['visits as totalPaid' => function (Builder $query) use ($date){
+                        $query->whereMonth('created_at', $date->month);
+                    }], 'total_paid')
+                    ->withSum(['visits as totalCapitation' => function (Builder $query) use ($date){
+                        $query->whereMonth('created_at', $date->month);
+                    }], 'total_capitation')
+                    ->withSum(['visits as discount' => function (Builder $query) use ($date){
+                        $query->whereMonth('created_at', $date->month);
+                    }], 'discount');
+    
+                return $query->where('category_name', $data->category)
+                        ->whereHas('visits', function(Builder $query) use($date){
+                            $query->whereMonth('created_at', $date->month)
+                                  ->whereYear('created_at', $date->year)
+                                  ->where('consulted', '!=', null)
+                                  ->where('hmo_done_by', '!=', null);
+                        })
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+            
+            $query      = $this->sponsor::with([
                         'reminders' => function($query) use($getDate){
                             $query->whereMonth('month_sent_for', $getDate->month)
                             ->whereYear('month_sent_for', $getDate->year);
@@ -839,51 +983,7 @@ class HmoService
                     ->withSum(['visits as discount' => function (Builder $query) use ($month){
                         $query->whereMonth('created_at', $month);
                     }], 'discount');
-        
-        if (! empty($params->searchTerm)) {
-            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-            return $query->where(function (Builder $query) use ($searchTerm){
-                    $query->where('name', 'LIKE', $searchTerm)
-                    ->orWhere('category_name', 'LIKE', $searchTerm);
-                })
-                ->where(function (Builder $query) {
-                    $query->where('category_name', 'HMO')
-                    ->orWhere('category_name', 'NHIS' )
-                    ->orWhere('category_name', 'Retainership' );
-                })
-                ->whereHas('visits', function(Builder $query){
-                    $query->where('consulted', '!=', null)
-                        ->where('hmo_done_by', '!=', null);
-                })
-                ->orderBy($orderBy, $orderDir)
-                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
 
-        if ($data->category){
-            if ($data->startDate && $data->endDate){
-                return $query->where('category_name', $data->category)
-                        ->whereHas('visits', function(Builder $query) use($data){
-                            $query->WhereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                                  ->where('consulted', '!=', null)
-                                  ->where('hmo_done_by', '!=', null);
-                        })
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
-    
-            if ($data->date){
-                $date = new Carbon($data->date);
-    
-                return $query->where('category_name', $data->category)
-                        ->whereHas('visits', function(Builder $query) use($date){
-                            $query->whereMonth('created_at', $date->month)
-                                  ->whereYear('created_at', $date->year)
-                                  ->where('consulted', '!=', null)
-                                  ->where('hmo_done_by', '!=', null);
-                        })
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
             return $query->where('category_name', $data->category)
                         ->whereHas('visits', function(Builder $query) use($current){
                             $query->whereMonth('created_at', $current->month)
@@ -896,6 +996,40 @@ class HmoService
         }
 
         if ($data->startDate && $data->endDate){
+
+            $query = $this->sponsor::with([
+                'reminders' => function($query) use($data){
+                    $query->whereMonth('month_sent_for', $data->startDate->month)
+                    ->whereYear('month_sent_for', $data->startDate->year);
+                },
+            ])
+            ->withCount([
+                'visits as visitsCount' => function (Builder $query) use ($data) {
+                    $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+                    },
+                'visits as billsSent' => function (Builder $query) use ($data) {
+                    $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])->whereNotNull('hmo_done_by');
+                    },
+            ])
+            ->withSum(['visits as totalHmsBill' => function (Builder $query) use ($data){
+                $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+            }], 'total_hms_bill')
+            ->withSum(['visits as totalHmoBill' => function (Builder $query) use ($data){
+                $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+            }], 'total_hmo_bill')
+            ->withSum(['visits as nhisBill' => function (Builder $query) use ($data){
+                $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+            }], 'total_nhis_bill')
+            ->withSum(['visits as totalPaid' => function (Builder $query) use ($data){
+                $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+            }], 'total_paid')
+            ->withSum(['visits as totalCapitation' => function (Builder $query) use ($data){
+                $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+            }], 'total_capitation')
+            ->withSum(['visits as discount' => function (Builder $query) use ($data){
+                $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+            }], 'discount');
+
             return $query->where(function (Builder $query) {
                         $query->where('category_name', 'HMO')
                         ->orWhere('category_name', 'NHIS' )
@@ -912,6 +1046,40 @@ class HmoService
 
         if ($data->date){
             $date = new Carbon($data->date);
+
+            $query  = $this->sponsor::with([
+                'reminders' => function($query) use($date){
+                    $query->whereMonth('month_sent_for', $date->month)
+                    ->whereYear('month_sent_for', $date->year);
+                },
+            ])
+            ->withCount([
+                'visits as visitsCount' => function (Builder $query) use ($date) {
+                    $query->whereMonth('created_at', $date->month);
+                    },
+                'visits as billsSent' => function (Builder $query) use ($date) {
+                    $query->whereMonth('created_at', $date->month)->whereNotNull('hmo_done_by');
+                    },
+            ])
+            ->withSum(['visits as totalHmsBill' => function (Builder $query) use ($date){
+                $query->whereMonth('created_at', $date->month);
+            }], 'total_hms_bill')
+            ->withSum(['visits as totalHmoBill' => function (Builder $query) use ($date){
+                $query->whereMonth('created_at', $date->month);
+            }], 'total_hmo_bill')
+            ->withSum(['visits as nhisBill' => function (Builder $query) use ($date){
+                $query->whereMonth('created_at', $date->month);
+            }], 'total_nhis_bill')
+            ->withSum(['visits as totalPaid' => function (Builder $query) use ($date){
+                $query->whereMonth('created_at', $date->month);
+            }], 'total_paid')
+            ->withSum(['visits as totalCapitation' => function (Builder $query) use ($date){
+                $query->whereMonth('created_at', $date->month);
+            }], 'total_capitation')
+            ->withSum(['visits as discount' => function (Builder $query) use ($date){
+                $query->whereMonth('created_at', $date->month);
+            }], 'discount');
+
             return $query->where(function (Builder $query) {
                         $query->where('category_name', 'HMO')
                         ->orWhere('category_name', 'NHIS' )
@@ -926,6 +1094,40 @@ class HmoService
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
+
+        $query  = $this->sponsor::with([
+            'reminders' => function($query) use($getDate){
+                $query->whereMonth('month_sent_for', $getDate->month)
+                ->whereYear('month_sent_for', $getDate->year);
+            },
+        ])
+        ->withCount([
+            'visits as visitsCount' => function (Builder $query) use ($month) {
+                $query->whereMonth('created_at', $month);
+                },
+            'visits as billsSent' => function (Builder $query) use ($month) {
+                $query->whereMonth('created_at', $month)->whereNotNull('hmo_done_by');
+                },
+        ])
+        ->withSum(['visits as totalHmsBill' => function (Builder $query) use ($month){
+            $query->whereMonth('created_at', $month);
+        }], 'total_hms_bill')
+        ->withSum(['visits as totalHmoBill' => function (Builder $query) use ($month){
+            $query->whereMonth('created_at', $month);
+        }], 'total_hmo_bill')
+        ->withSum(['visits as nhisBill' => function (Builder $query) use ($month){
+            $query->whereMonth('created_at', $month);
+        }], 'total_nhis_bill')
+        ->withSum(['visits as totalPaid' => function (Builder $query) use ($month){
+            $query->whereMonth('created_at', $month);
+        }], 'total_paid')
+        ->withSum(['visits as totalCapitation' => function (Builder $query) use ($month){
+            $query->whereMonth('created_at', $month);
+        }], 'total_capitation')
+        ->withSum(['visits as discount' => function (Builder $query) use ($month){
+            $query->whereMonth('created_at', $month);
+        }], 'discount');
+
         return $query->where(function (Builder $query) {
                         $query->where('category_name', 'HMO')
                         ->orWhere('category_name', 'NHIS' )
