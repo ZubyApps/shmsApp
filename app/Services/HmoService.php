@@ -807,6 +807,13 @@ class HmoService
         $getDate     = (new Carbon($data->date ?? $data->startDate));
         $month      = $getDate->month;
         $current    = CarbonImmutable::now();
+
+        $visitConstraintsWithoutDate = function (Builder $query) use ($getDate) {
+            $query->whereMonth('created_at', $getDate->month)
+                  ->whereYear('created_at', $getDate->year)
+                  ->whereNotNull('consulted')
+                  ->whereNotNull('hmo_done_by');
+        };
         
         if (! empty($params->searchTerm)) {
             
@@ -817,31 +824,15 @@ class HmoService
                 },
             ])
             ->withCount([
-                'visits as visitsCount' => function (Builder $query) use ($month) {
-                    $query->whereMonth('created_at', $month);
-                    },
-                'visits as billsSent' => function (Builder $query) use ($month) {
-                    $query->whereMonth('created_at', $month)->whereNotNull('hmo_done_by');
-                    },
+                'visits as visitsCount' => $visitConstraintsWithoutDate,
+                'visits as billsSent' => $visitConstraintsWithoutDate,
             ])
-            ->withSum(['visits as totalHmsBill' => function (Builder $query) use ($month){
-                $query->whereMonth('created_at', $month);
-            }], 'total_hms_bill')
-            ->withSum(['visits as totalHmoBill' => function (Builder $query) use ($month){
-                $query->whereMonth('created_at', $month);
-            }], 'total_hmo_bill')
-            ->withSum(['visits as nhisBill' => function (Builder $query) use ($month){
-                $query->whereMonth('created_at', $month);
-            }], 'total_nhis_bill')
-            ->withSum(['visits as totalPaid' => function (Builder $query) use ($month){
-                $query->whereMonth('created_at', $month);
-            }], 'total_paid')
-            ->withSum(['visits as totalCapitation' => function (Builder $query) use ($month){
-                $query->whereMonth('created_at', $month);
-            }], 'total_capitation')
-            ->withSum(['visits as discount' => function (Builder $query) use ($month){
-                $query->whereMonth('created_at', $month);
-            }], 'discount');
+            ->withSum(['visits as totalHmsBill' => $visitConstraintsWithoutDate], 'total_hms_bill')
+            ->withSum(['visits as totalHmoBill' => $visitConstraintsWithoutDate], 'total_hmo_bill')
+            ->withSum(['visits as nhisBill' => $visitConstraintsWithoutDate], 'total_nhis_bill')
+            ->withSum(['visits as totalPaid' => $visitConstraintsWithoutDate], 'total_paid')
+            ->withSum(['visits as totalCapitation' => $visitConstraintsWithoutDate], 'total_capitation')
+            ->withSum(['visits as discount' => $visitConstraintsWithoutDate], 'discount');
 
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
             return $query->where(function (Builder $query) use ($searchTerm){
@@ -853,10 +844,7 @@ class HmoService
                     ->orWhere('category_name', 'NHIS' )
                     ->orWhere('category_name', 'Retainership' );
                 })
-                ->whereHas('visits', function(Builder $query){
-                    $query->where('consulted', '!=', null)
-                        ->where('hmo_done_by', '!=', null);
-                })
+                ->whereHas('visits', $visitConstraintsWithoutDate)
                 ->orderBy($orderBy, $orderDir)
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -941,39 +929,18 @@ class HmoService
                         },
                     ])
                     ->withCount([
-                        'visits as visitsCount' => function (Builder $query) use ($month) {
-                            $query->whereMonth('created_at', $month);
-                            },
-                        'visits as billsSent' => function (Builder $query) use ($month) {
-                            $query->whereMonth('created_at', $month)->whereNotNull('hmo_done_by');
-                            },
+                        'visits as visitsCount' => $visitConstraintsWithoutDate,
+                        'visits as billsSent' => $visitConstraintsWithoutDate,
                     ])
-                    ->withSum(['visits as totalHmsBill' => function (Builder $query) use ($month){
-                        $query->whereMonth('created_at', $month);
-                    }], 'total_hms_bill')
-                    ->withSum(['visits as totalHmoBill' => function (Builder $query) use ($month){
-                        $query->whereMonth('created_at', $month);
-                    }], 'total_hmo_bill')
-                    ->withSum(['visits as nhisBill' => function (Builder $query) use ($month){
-                        $query->whereMonth('created_at', $month);
-                    }], 'total_nhis_bill')
-                    ->withSum(['visits as totalPaid' => function (Builder $query) use ($month){
-                        $query->whereMonth('created_at', $month);
-                    }], 'total_paid')
-                    ->withSum(['visits as totalCapitation' => function (Builder $query) use ($month){
-                        $query->whereMonth('created_at', $month);
-                    }], 'total_capitation')
-                    ->withSum(['visits as discount' => function (Builder $query) use ($month){
-                        $query->whereMonth('created_at', $month);
-                    }], 'discount');
+                    ->withSum(['visits as totalHmsBill' => $visitConstraintsWithoutDate], 'total_hms_bill')
+                    ->withSum(['visits as totalHmoBill' => $visitConstraintsWithoutDate], 'total_hmo_bill')
+                    ->withSum(['visits as nhisBill' => $visitConstraintsWithoutDate], 'total_nhis_bill')
+                    ->withSum(['visits as totalPaid' => $visitConstraintsWithoutDate], 'total_paid')
+                    ->withSum(['visits as totalCapitation' => $visitConstraintsWithoutDate], 'total_capitation')
+                    ->withSum(['visits as discount' => $visitConstraintsWithoutDate], 'discount');
 
             return $query->where('category_name', $data->category)
-                        ->whereHas('visits', function(Builder $query) use($current){
-                            $query->whereMonth('created_at', $current->month)
-                                  ->whereYear('created_at', $current->year)
-                                  ->where('consulted', '!=', null)
-                                  ->where('hmo_done_by', '!=', null);
-                        })
+                        ->whereHas('visits', $visitConstraintsWithoutDate)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -1057,43 +1024,22 @@ class HmoService
             },
         ])
         ->withCount([
-            'visits as visitsCount' => function (Builder $query) use ($month) {
-                $query->whereMonth('created_at', $month);
-                },
-            'visits as billsSent' => function (Builder $query) use ($month) {
-                $query->whereMonth('created_at', $month)->whereNotNull('hmo_done_by');
-                },
+            'visits as visitsCount' => $visitConstraintsWithoutDate,
+            'visits as billsSent' => $visitConstraintsWithoutDate,
         ])
-        ->withSum(['visits as totalHmsBill' => function (Builder $query) use ($month){
-            $query->whereMonth('created_at', $month);
-        }], 'total_hms_bill')
-        ->withSum(['visits as totalHmoBill' => function (Builder $query) use ($month){
-            $query->whereMonth('created_at', $month);
-        }], 'total_hmo_bill')
-        ->withSum(['visits as nhisBill' => function (Builder $query) use ($month){
-            $query->whereMonth('created_at', $month);
-        }], 'total_nhis_bill')
-        ->withSum(['visits as totalPaid' => function (Builder $query) use ($month){
-            $query->whereMonth('created_at', $month);
-        }], 'total_paid')
-        ->withSum(['visits as totalCapitation' => function (Builder $query) use ($month){
-            $query->whereMonth('created_at', $month);
-        }], 'total_capitation')
-        ->withSum(['visits as discount' => function (Builder $query) use ($month){
-            $query->whereMonth('created_at', $month);
-        }], 'discount');
+        ->withSum(['visits as totalHmsBill' => $visitConstraintsWithoutDate], 'total_hms_bill')
+        ->withSum(['visits as totalHmoBill' => $visitConstraintsWithoutDate], 'total_hmo_bill')
+        ->withSum(['visits as nhisBill' => $visitConstraintsWithoutDate], 'total_nhis_bill')
+        ->withSum(['visits as totalPaid' => $visitConstraintsWithoutDate], 'total_paid')
+        ->withSum(['visits as totalCapitation' => $visitConstraintsWithoutDate], 'total_capitation')
+        ->withSum(['visits as discount' => $visitConstraintsWithoutDate], 'discount');
 
         return $query->where(function (Builder $query) {
                         $query->where('category_name', 'HMO')
                         ->orWhere('category_name', 'NHIS' )
                         ->orWhere('category_name', 'Retainership' );
                     })
-                    ->whereHas('visits', function(Builder $query) use($current){
-                        $query->whereMonth('created_at', $current->month)
-                              ->whereYear('created_at', $current->year)
-                              ->where('consulted', '!=', null)
-                              ->where('hmo_done_by', '!=', null);
-                    })
+                    ->whereHas('visits', $visitConstraintsWithoutDate)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));                        
     }
