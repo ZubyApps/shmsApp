@@ -264,16 +264,17 @@ window.addEventListener('DOMContentLoaded', function () {
             }
     
             if (addResultBtn) {
+                // investigationsModal.hide()
                 createResultBtn.setAttribute('data-id', addResultBtn.getAttribute('data-id'))
                 createResultBtn.setAttribute('data-table', addResultBtn.getAttribute('data-table'))
                 populatePatientSponsor(addResultModal, addResultBtn)
                 addResultModal._element.querySelector('#diagnosis').value = addResultBtn.getAttribute('data-diagnosis')
                 addResultModal._element.querySelector('#investigation').value = addResultBtn.getAttribute('data-investigation')
-                investigationsModal.hide()
                 addResultModal.show()
             }
     
             if (updateResultBtn) {
+                // investigationsModal.hide()
                 const prescriptionId = updateResultBtn.getAttribute('data-id')
                 saveResultBtn.setAttribute('data-table', updateResultBtn.getAttribute('data-table'))
                 populatePatientSponsor(updateResultModal, updateResultBtn)
@@ -282,7 +283,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.get(`/investigations/${prescriptionId}`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
-                        investigationsModal.hide()
                         openModals(updateResultModal, saveResultBtn, response.data.data)
                         updateResultModal._element.querySelector('#result').innerHTML = response.data.data?.result ?? ''
                     }
