@@ -269,8 +269,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 populatePatientSponsor(addResultModal, addResultBtn)
                 addResultModal._element.querySelector('#diagnosis').value = addResultBtn.getAttribute('data-diagnosis')
                 addResultModal._element.querySelector('#investigation').value = addResultBtn.getAttribute('data-investigation')
-                addResultModal.show()
                 investigationsModal.hide()
+                addResultModal.show()
             }
     
             if (updateResultBtn) {
@@ -282,6 +282,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.get(`/investigations/${prescriptionId}`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
+                        investigationsModal.hide()
                         openModals(updateResultModal, saveResultBtn, response.data.data)
                         updateResultModal._element.querySelector('#result').innerHTML = response.data.data?.result ?? ''
                     }
@@ -289,7 +290,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 .catch((error) => {
                     alert(error)
                 })
-                investigationsModal.hide()
             }
 
             if (printThisBtn) {

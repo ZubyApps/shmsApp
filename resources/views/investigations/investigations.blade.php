@@ -13,7 +13,7 @@
 @include('investigations.addResultModal', ['title' => 'Update Result', 'isUpdate' => true, 'id' => 'updateResultModal'])
 
 
-    <div class="container p-1 mt-5 bg-white">
+    <div class="container mt-5 bg-white">
 
         <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="offcanvasInvestigations"
             aria-labelledby="offcanvasInvestigationsLabel">
