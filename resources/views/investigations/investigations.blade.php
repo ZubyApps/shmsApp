@@ -5,12 +5,12 @@
 
 @include('nurses.treatmentDetailsModal', ['title' => 'Treatment Details', 'isAnc' => false, 'isLab' => true, 'isHmo' => false, 'id' => 'treatmentDetailsModal'])
 @include('nurses.treatmentDetailsModal', ['title' => 'ANC Treatment Details', 'isAnc' => true, 'isLab' => false, 'isHmo' => true, 'id' => 'ancTreatmentDetailsModal'])
-@include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
-@include('investigations.addResultModal', ['title' => 'Update Result', 'isUpdate' => true, 'id' => 'updateResultModal'])
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
 @include('extras.bulkRequestModal', ['title' => 'Bulk Request', 'dept' => 'Lab', 'isPharmacy' => false, 'id' => 'bulkRequestModal'])
 @include('extras.labResultModal', ['title' => 'Lab Result', 'dept' => 'Lab', 'isPharmacy' => false, 'id' => 'labResultModal'])
 @include('investigations.removeTestModal', ['title' => 'Remove Test', 'dept' => 'Lab', 'id' => 'removeTestModal'])
+@include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
+@include('investigations.addResultModal', ['title' => 'Update Result', 'isUpdate' => true, 'id' => 'updateResultModal'])
 
 
     <div class="container p-1 mt-5 bg-white">
