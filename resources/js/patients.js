@@ -40,7 +40,7 @@ window.addEventListener('DOMContentLoaded', function(){
     const sendLinkBtn                       = document.querySelector('#sendLinkBtn')
     const saveAppointmentBtn                = document.querySelector('#saveAppointmentBtn')
     const saveSellingPriceBtn               = sponsorTariffModal._element.querySelector('#saveSellPriceBtn')
-    const updateVisits                      = document.getElementById('updateVisits')
+    // const updateVisits                      = document.getElementById('updateVisits')
     
     const newPatientSponsorInputEl          = document.querySelector('#newPatientSponsor')
     const updatePatientSponsorInputEl       = document.querySelector('#updatePatientSponsor')
@@ -507,20 +507,20 @@ window.addEventListener('DOMContentLoaded', function(){
         })
     })
 
-    updateVisits.addEventListener('click', function () {
-        if (confirm('Are you sure you want to update all visits?')) {
-            updateVisits.setAttribute('disabled', 'disabled')
-            http.get('/patients/updatevisits')
-            .then((response) => {
-                if (response.status >= 200 || response.status <= 300){
-                    alert(response.data.message)
-                }
-            }
-            ).catch((error) => {
-                console.log(error)
-            })
-        }
-    })
+    // updateVisits.addEventListener('click', function () {
+    //     if (confirm('Are you sure you want to update all visits?')) {
+    //         updateVisits.setAttribute('disabled', 'disabled')
+    //         http.get('/patients/updatevisits')
+    //         .then((response) => {
+    //             if (response.status >= 200 || response.status <= 300){
+    //                 alert(response.data.message)
+    //             }
+    //         }
+    //         ).catch((error) => {
+    //             console.log(error)
+    //         })
+    //     }
+    // })
 
     searchVisitsWithDatesBtn.addEventListener('click', function () {
         if (!datesDiv.querySelector('#startDate').value && !datesDiv.querySelector('#endDate').value){
