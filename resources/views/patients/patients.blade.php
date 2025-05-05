@@ -51,10 +51,10 @@
                         <i class="bi bi-plus-circle me-1"></i>
                         Patient
                     </button>
-                    <button type="button" id="updateVisits" class="btn btn-primary">
+                    {{-- <button type="button" id="updateVisits" class="btn btn-primary">
                         <i class="bi bi-plus-circle me-1"></i>
                         Update Visits
-                    </button>
+                    </button> --}}
                 </div>
                 <div class="py-2">
                     <table id="allPatientsTable" class="table table-hover table-sm">
