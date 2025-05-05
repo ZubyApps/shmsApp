@@ -661,6 +661,7 @@ class HmoService
                 'flagSponsor'       => $visit->sponsor->flag,
                 'flagPatient'       => $visit->patient->flag,
                 'flagReason'        => $visit->patient?->flag_reason,
+                'visitType'         => $visit->visit_type,
             ];
         };
     }
