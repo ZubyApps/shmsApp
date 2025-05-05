@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import {admissionStatusX, deferredCondition, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, preSearch, searchDecider, searchMin, searchPlaceholderText, selectReminderOptions, sponsorAndPayPercent, wardState } from "../helpers";
+import {admissionStatusX, deferredCondition, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, preSearch, searchDecider, searchMin, searchPlaceholderText, selectReminderOptions, sponsorAndPayPercent, visitType, wardState } from "../helpers";
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -27,7 +27,7 @@ const getWaitingTable = (tableId) => {
             {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
             {data: "sex"},
             {data: "age"},
-            {data: row => `<span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor}</span>`},
+            {data: row => `<div><span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor}</span></div>${row.visitType == 'ANC' ? visitType(row, null, 50) : ''}`},
             {data: row => `<span class="tooltip-test" title="initiated by ${row.initiatedBy}">${row.came}</span>`},
             {data: "waitingFor"},
             {data: "doctor"},
