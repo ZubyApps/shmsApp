@@ -92,7 +92,7 @@ const getVerificationTable = (tableId) => {
             {data: "age"},
             {data: row => 
                         `
-                    <button class="btn changeSponsorBtn ${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}" data-id="${ row.id }" data-patient="${ row.patient }" data-phone="${ row.phone }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-staffid="${ row.staffId }">${row.sponsor}</button>`
+                    <div><button class="btn changeSponsorBtn ${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}" data-id="${ row.id }" data-patient="${ row.patient }" data-phone="${ row.phone }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-staffid="${ row.staffId }">${row.sponsor}</button></div>${row.visitType == 'ANC' ? visitType(row, null, 50) : ''}`
             },
             {data: "30dayCount"},
             {data: "doctor"},

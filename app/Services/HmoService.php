@@ -88,6 +88,7 @@ class HmoService
                 'phone'             => $visit->patient->phone,
                 'status'            => $visit->verification_status ?? '',
                 '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
+                'visitType'         => $visit->visit_type
             ];
          };
     }
