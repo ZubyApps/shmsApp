@@ -19,7 +19,7 @@ class PatientHistoryBioResource extends JsonResource
             'ancRegId'      => $this->antenatalRegisteration?->id,
             "patientId"     => $this->patientId(),
             'cardNo'        => $this->card_no,
-            "patientType"   => $this->patient_type,
+            "visitType"     => '',
             "sponsorName"   => $this->sponsor->name,
             "age"           => $this->age(),
             "sex"           => $this->sex,

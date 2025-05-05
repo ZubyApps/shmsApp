@@ -17,7 +17,7 @@
                                 <option {{ $isUpdate ? 'hidden' : '' }} value="Regular.New">Regular New</option>
                                 <option {{ $isUpdate ? 'hidden' : '' }} value="Regular.Old">Regular Old</option>
                                 <option {{ !$isUpdate ? 'hidden' : '' }} value="Regular">Regular</option>
-                                <option class="ancOption" value="ANC">ANC</option>
+                                {{-- <option class="ancOption" value="ANC">ANC</option> --}}
                             </select>
                         </x-form-div>
                     </div>

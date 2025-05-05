@@ -34,7 +34,7 @@ class SendCardNumber implements ShouldQueue
         $firstName = $this->patient->first_name;
         $cardNumber = $this->patient->card_no;
         $phoneNumber = $this->patient->phone;
-        $gateway = $helperService->nccTextTime() ? 1 : 2;
+        $gateway = $helperService->nccTextTime() ? 1 : 1;
 
         info('card number', ['sent to' => $firstName]);
 

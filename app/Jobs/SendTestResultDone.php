@@ -47,7 +47,7 @@ class SendTestResultDone implements ShouldQueue
             info('Investigation not sent', ['recently sent (less than 30min ago)' => $firstName]);
             return;
         }
-        $gateway = $helperService->nccTextTime() ? 1 : 2;
+        $gateway = $helperService->nccTextTime() ? 1 : 1;
 
         $churchPlusSmsService
         ->sendSms('Dear ' .$firstName. ' ' . $totalInvestigationsDone . ' out of ' . $totalInvestigationsC . ' of your test result(s) are ready. This notification is courtesy of our Hospital Management System. To opt out, visit reception', $this->prescription->visit->patient->phone, 'SandraHosp', $gateway);
@@ -59,7 +59,6 @@ class SendTestResultDone implements ShouldQueue
     {
         $end = CarbonImmutable::now();
         $start = $end->subMinutes(30);
-        // $visit = $prescription->visit;
 
         return $prescriptions->where('result', '!=', null)->whereBetween('result_date', [$start, $end])->count();
     }

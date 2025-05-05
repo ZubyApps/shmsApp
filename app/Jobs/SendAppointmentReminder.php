@@ -35,7 +35,7 @@ class SendAppointmentReminder implements ShouldQueue
         $patientFirstName = $this->appointment->patient->first_name;
         $doctorUsername = $this->appointment->doctor->username;
         $appointmentTime = (new Carbon($this->appointment->date))->format('g:iA');
-        $gateway = $helperService->nccTextTime() ? 1 : 2;
+        $gateway = $helperService->nccTextTime() ? 1 : 1;
 
         info('appointments', ['patient' => $patientFirstName, 'doctor' => $doctorUsername]);
 

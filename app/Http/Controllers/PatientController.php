@@ -198,4 +198,9 @@ class PatientController extends Controller
         return array_map($listTransformer, (array)$patients->getIterator());
 
     }
+
+    public function updatePatientsVisitTypes(Request $request)
+    {
+        return $this->patientService->populateVisitTypes($request);
+    }
 }

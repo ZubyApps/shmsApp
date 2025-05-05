@@ -59,7 +59,7 @@ class InvestigationService
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
 
             if ($data->filterBy == 'ANC'){
-                return $query->whereRelation('patient', 'patient_type', '=', 'ANC')
+                return $query->where('visit_type', '=', 'ANC')
                     ->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
@@ -93,7 +93,7 @@ class InvestigationService
 
         if ($data->filterBy == 'Outpatient'){
             $query->where('admission_status', '=', 'Outpatient')
-                ->whereRelation('patient', 'patient_type', '!=', 'ANC');
+                ->where('visit_type', '!=', 'ANC');
         }
 
         if ($data->filterBy == 'Inpatient'){
@@ -103,7 +103,7 @@ class InvestigationService
                     });
         }
         if ($data->filterBy == 'ANC'){
-            $query->whereRelation('patient', 'patient_type', '=', 'ANC');
+            $query->where('visit_type', '=', 'ANC');
         }
 
         $query = $this->generalFilters($query);
@@ -138,7 +138,7 @@ class InvestigationService
                 'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
                 'wardId'            => $visit->ward ?? '',
                 'wardPresent'       => $ward?->visit_id == $visit->id,
-                'patientType'       => $visit->patient->patient_type,
+                'visitType'         => $visit->visit_type,
                 'labPrescribed'     => $visit->labPrescribed,
                 'labDone'           => $visit->labDone,
                 'sponsorCategory'   => $visit->sponsor->category_name,

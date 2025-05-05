@@ -274,8 +274,8 @@ window.addEventListener('DOMContentLoaded', function () {
                     const btnHtml = consultationDetailsBtn.innerHTML
                     consultationDetailsBtn.innerHTML = loadingSpinners()
         
-                    const [visitId, patientType, ancRegId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-patientType'), consultationDetailsBtn.getAttribute('data-ancregid')]
-                    const isAnc = patientType === 'ANC'
+                    const [visitId, visitType, ancRegId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-visitType'), consultationDetailsBtn.getAttribute('data-ancregid')]
+                    const isAnc = visitType === 'ANC'
                     const [modal, div, displayFunction, vitalSignsTable, id, suffixId] = isAnc ? [ancTreatmentDetailsModal, ancTreatmentDiv, AncPatientReviewDetails, getAncVitalSignsTable, ancRegId, 'AncConDetails'] : [treatmentDetailsModal, regularTreatmentDiv, regularReviewDetails, getVitalSignsTableByVisit, visitId, 'ConDetails']
                     http.get(`/consultation/consultations/${visitId}`)
                         .then((response) => {
@@ -1228,7 +1228,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 })
 
-function openHmoModals(modal, button, { id, visitId, ancRegId, patientType, ...data }) {
+function openHmoModals(modal, button, { id, visitId, ancRegId, visitType, ...data }) {
     for (let name in data) {
 
         const nameInput = modal._element.querySelector(`[name="${name}"]`)

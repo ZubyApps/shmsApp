@@ -21,7 +21,7 @@ class PatientBioResource extends JsonResource
             "visitId"       => $this->id,
             'ancRegId'      => $this->patient->antenatalRegisteration?->id,
             "patientId"     => $this->patient->patientId(),
-            "patientType"   => $this->patient->patient_type,
+            "visitType"     => $this->visit_type,
             "sponsorName"   => $this->sponsor->name . ' - ' . $this->sponsor->category_name,
             "age"           => $this->patient->age(),
             "sex"           => $this->patient->sex,

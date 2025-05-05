@@ -40,6 +40,7 @@ window.addEventListener('DOMContentLoaded', function(){
     const sendLinkBtn                       = document.querySelector('#sendLinkBtn')
     const saveAppointmentBtn                = document.querySelector('#saveAppointmentBtn')
     const saveSellingPriceBtn               = sponsorTariffModal._element.querySelector('#saveSellPriceBtn')
+    const updateVisits                      = document.getElementById('updateVisits')
     
     const newPatientSponsorInputEl          = document.querySelector('#newPatientSponsor')
     const updatePatientSponsorInputEl       = document.querySelector('#updatePatientSponsor')
@@ -490,8 +491,10 @@ window.addEventListener('DOMContentLoaded', function(){
         confirmVisitBtn.setAttribute('disabled', 'disabled')
         const patientId = confirmVisitBtn.getAttribute('data-id')
         const doctorId  = initiatePatientModal._element.querySelector('#doctor').value
+        const visitType = initiatePatientModal._element.querySelector('#visitType').value
+        const patient   = initiatePatientModal._element.querySelector('#patientId').value
 
-        http.post(`/visits/${patientId}`, {doctor :doctorId}, {"html": initiatePatientModal._element})
+        http.post(`/visits/${patientId}`, {doctor :doctorId, visitType: visitType, patient}, {"html": initiatePatientModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 initiatePatientModal.hide()
@@ -502,6 +505,21 @@ window.addEventListener('DOMContentLoaded', function(){
             confirmVisitBtn.removeAttribute('disabled')
             console.log(error)
         })
+    })
+
+    updateVisits.addEventListener('click', function () {
+        if (confirm('Are you sure you want to update all visits?')) {
+            updateVisits.setAttribute('disabled', 'disabled')
+            http.get('/patients/updatevisits')
+            .then((response) => {
+                if (response.status >= 200 || response.status <= 300){
+                    alert(response.data.message)
+                }
+            }
+            ).catch((error) => {
+                console.log(error)
+            })
+        }
     })
 
     searchVisitsWithDatesBtn.addEventListener('click', function () {
@@ -533,8 +551,8 @@ window.addEventListener('DOMContentLoaded', function(){
         if (consultationDetailsBtn) {
             consultationDetailsBtn.setAttribute('disabled', 'disabled')
 
-            const [visitId, patientType, ancRegId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-patientType'), consultationDetailsBtn.getAttribute('data-ancregid')]
-            const isAnc = patientType === 'ANC'
+            const [visitId, visitType, ancRegId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-visitType'), consultationDetailsBtn.getAttribute('data-ancregid')]
+            const isAnc = visitType === 'ANC'
             const [modal, div, displayFunction, vitalSignsTable, id, suffixId] = isAnc ? [ancTreatmentDetailsModal, ancTreatmentDiv, AncPatientReviewDetails, getAncVitalSignsTable, ancRegId, 'AncConDetails'] : [treatmentDetailsModal, regularTreatmentDiv, regularReviewDetails, getVitalSignsTableByVisit, visitId, 'ConDetails']
             http.get(`/consultation/consultations/${visitId}`)
                 .then((response) => {
@@ -662,7 +680,7 @@ function openPatientModal(modal, button, {id, sponsorId, sponsorCategoryId, ...d
     modal.show()
 }
 
-function openHmoModals(modal, button, { id, visitId, ancRegId, patientType, ...data }) {
+function openHmoModals(modal, button, { id, visitId, ancRegId, visitType, ...data }) {
     for (let name in data) {
 
         const nameInput = modal._element.querySelector(`[name="${name}"]`)

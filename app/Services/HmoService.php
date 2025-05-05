@@ -152,7 +152,7 @@ class HmoService
             return $query->where('closed', false)
             ->where('hmo_done_by', null)
             ->where('admission_status', '=', 'Outpatient')
-            ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+            ->where('visit_type', '!=', 'ANC')
             ->where(function (Builder $query) {
                 $query->whereRelation('sponsor', 'category_name', 'HMO')
                 ->orWhereRelation('sponsor', 'category_name', 'NHIS')
@@ -180,7 +180,7 @@ class HmoService
         if ($data->filterBy == 'ANC'){
             return $query->where('hmo_done_by', null)
                     ->where('closed', false)
-                    ->whereRelation('patient', 'patient_type', '=', 'ANC')
+                    ->where('visit_type', '=', 'ANC')
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
                         ->orWhereRelation('sponsor', 'category_name', 'NHIS')
@@ -223,13 +223,13 @@ class HmoService
                 'flagReason'        => $visit->patient?->flag_reason,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'admissionStatus'   => $latestConsultation?->admission_status,
-                'patientType'       => $visit->patient->patient_type,
+                'visitType'         => $visit->visit_type,
                 'labPrescribed'     => $visit->labPrescribed,
                 'labDone'           => $visit->labDone,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
-                'thirtyDayCount'    => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
+                'thirtyDayCount'    => $visit->visit_type == 'ANC' ? $visit->consultations->count() : $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
                 'discharged'        => $visit->discharge_reason,
                 'reason'            => $visit->discharge_reason,
                 'doctorDoneAt'      => $visit->doctor_done_at ? (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') : '',

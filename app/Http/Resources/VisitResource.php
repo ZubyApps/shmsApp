@@ -19,7 +19,8 @@ class VisitResource extends JsonResource
             'id'            => $this->id,
             'ancRegId'      => $this->antenatalRegisteration?->id,
             'came'          => (new Carbon($this->created_at))->format('D jS M Y - g:ia'),
-            'consultations' => new ConsultationReviewCollection($this->consultations)
+            'consultations' => new ConsultationReviewCollection($this->consultations),
+            'visitType'     => $this->visit_type,
         ];
     }
 }

@@ -56,7 +56,7 @@ class BillingService
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
 
             if ($data->filterBy == 'ANC'){
-                return $query->whereRelation('patient', 'patient_type', '=', 'ANC')
+                return $query->where('visit_type', '=', 'ANC')
                     ->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
@@ -92,8 +92,8 @@ class BillingService
         if ($data->filterBy == 'Outpatient'){
             return $query->where('closed', false)
                     ->where('admission_status', '=', 'Outpatient')
+                    ->where('visit_type', '!=', 'ANC')
                     ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
-                    ->whereRelation('patient', 'patient_type', '!=', 'ANC')
                     ->where(function (Builder $query){
                         $query->where(function (Builder $query){
                             $query->where('total_nhis_bill', '>', 0)
@@ -132,7 +132,7 @@ class BillingService
         }
         if ($data->filterBy == 'ANC'){
             return $query->where('closed', false)
-                    ->whereRelation('patient', 'patient_type', '=', 'ANC')
+                    ->where('visit_type', '=', 'ANC')
                     ->whereRelation('sponsor.sponsorCategory', 'pay_class', '=', 'Cash')
                     ->where(function (Builder $query){
                         $query->where(function (Builder $query){
@@ -178,7 +178,7 @@ class BillingService
                 'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
                 'wardId'            => $visit->ward ?? '',
                 'wardPresent'       => $ward?->visit_id == $visit->id,
-                'patientType'       => $visit->patient->patient_type,
+                'visitType'         => $visit->visit_type,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),

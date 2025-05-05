@@ -77,7 +77,7 @@ class AncVitalSignsService
                 'weight'                            => $ancVitalSigns->weight,
                 'remarks'                           => $ancVitalSigns->remarks,
                 'by'                                => $ancVitalSigns->user->username,
-                'patientType'                       => $ancVitalSigns->antenatalRegisteration->patient->patient_type
+                'visitType'                       => $ancVitalSigns->antenatalRegisteration->visit->visit_type
             ];
          };
     }

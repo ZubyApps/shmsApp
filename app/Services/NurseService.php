@@ -69,7 +69,7 @@ class NurseService
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
             if ($data->filterBy == 'ANC'){
                 return $query->whereNotNull('consulted')
-                    ->whereRelation('patient', 'patient_type', '=', 'ANC')
+                    ->where('visit_type', '=', 'ANC')
                     ->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
@@ -112,7 +112,7 @@ class NurseService
                 $query->whereRelation('prescriptions.resource', 'sub_category', '=', 'Injectable');
             })
             ->where('admission_status', '=', 'Outpatient')
-            ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+            ->where('visit_type', '!=', 'ANC')
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -137,7 +137,7 @@ class NurseService
         if ($data->filterBy == 'ANC'){
             return $query->where('nurse_done_by', null)
                     ->where('closed', false)
-                    ->whereRelation('patient', 'patient_type', '=', 'ANC')
+                    ->where('visit_type', '=', 'ANC')
                     ->orderBy('created_at', $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -177,12 +177,12 @@ class NurseService
                 'wardPresent'       => $ward?->visit_id == $visit->id,
                 'updatedBy'         => $latestConsultation?->updatedBy?->username ?? 'Nurse...',
                 'conId'             => $latestConsultation?->id,
-                'patientType'       => $visit->patient->patient_type,
+                'visitType'       => $visit->visit_type,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
-                'chartableMedications'  => $visit->prescriptionsCharted,//(new Prescription())->prescriptionsCharted($visit->id, 'medicationCharts'),
-                'otherChartables'       => $visit->otherChartables,//(new Prescription())->prescriptionsCharted($visit->id, 'nursingCharts', '!='),
-                'otherPrescriptions'    => $visit->otherPrescriptions,//(new Prescription())->otherPrescriptions($visit->id),
+                'chartableMedications'  => $visit->prescriptionsCharted,
+                'otherChartables'       => $visit->otherChartables,
+                'otherPrescriptions'    => $visit->otherPrescriptions,
                 'doseCount'         => $visit->medicationCharts->count(),
                 'givenCount'        => $visit->medicationCharts->where('dose_given', '!=', null)->count(),
                 'scheduleCount'     => $visit->nursingCharts->count(),
@@ -196,11 +196,12 @@ class NurseService
                 'remark'            => $visit->discharge_remark ?? '',
                 'doctorDone'        => $visit->doctorDoneBy?->username ?? '',
                 'doctorDoneAt'      => $visit->doctor_done_at ? (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') : '',
-                'ancCount'          => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : '',
+                'ancCount'          => $visit->visit_type == 'ANC' ? $visit->consultations->count() : '',
                 'nurseDoneBy'       => $visit->nurseDoneBy?->username,
                 'nurseDoneAt'       => $visit->nurse_done_at ? (new Carbon($visit->nurse_done_at))->format('d/m/y g:ia') : '',
                 'closed'            => $visit->closed,
-                'closedBy'          => $visit->closedOpenedBy?->username
+                'closedBy'          => $visit->closedOpenedBy?->username,
+                'visitType'         => $visit->visit_type,
             ];
          };
     }

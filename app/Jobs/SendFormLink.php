@@ -32,7 +32,7 @@ class SendFormLink implements ShouldQueue
     public function handle(ChurchPlusSmsService $churchPlusSmsService, HelperService $helperService): void
     {
         $recipientPhone = $this->params->phone;
-        $gateway = $helperService->nccTextTime() ? 1 : 2;
+        $gateway = $helperService->nccTextTime() ? 1 : 1;
 
         $message = 'Sandra Hospital Patient Registration Form link ' . $this->link . '. This link expires in 5 minutes';
         $churchPlusSmsService->sendSms($message, $recipientPhone, 'SandraH', $gateway);

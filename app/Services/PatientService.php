@@ -18,6 +18,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
+use function Pest\Laravel\json;
+
 class PatientService
 {
     public function __construct(
@@ -374,15 +376,15 @@ class PatientService
             $searchTerm = '%' . addcslashes($data->fullId, '%_') . '%';
             if ($data->type == 'ANC'){
                 return $this->patient
-                        ->where('patient_type', 'ANC')
+                        ->whereRelation('visits', 'visit_type', 'ANC')
                         ->where(function (Builder $query) use($searchTerm) {
                             $query->whereRaw('CONCAT_WS(" ", first_name, middle_name, last_name) LIKE ?', [$searchTerm])
                                 ->orWhereRaw('CONCAT_WS(" ", last_name, middle_name, first_name) LIKE ?', [$searchTerm])
                                 ->orWhereRaw('CONCAT_WS(" ", first_name, last_name, middle_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", last_name, first_name, middle_name) LIKE ?', [$searchTerm]);
+                                ->orWhereRaw('CONCAT_WS(" ", last_name, first_name, middle_name) LIKE ?', [$searchTerm])
+                                ->orWhere('card_no', 'LIKE', $searchTerm)
+                                ->orWhere('phone', 'LIKE', $searchTerm);
                         })
-                        ->orWhere('card_no', 'LIKE', $searchTerm)
-                        ->orWhere('phone', 'LIKE', $searchTerm)
                         ->orderBy('created_at', 'asc')
                         ->get(['first_name', 'middle_name', 'last_name', 'card_no', 'sponsor_id', 'phone']);
             }
@@ -408,5 +410,31 @@ class PatientService
                 'cardNo'    => $patient->card_no,
             ];
         };
+    }
+
+    public function populateVisitTypes()
+    {
+        DB::beginTransaction();
+        try {
+            // Update visits for ANC patients
+            DB::table('visits')
+                ->join('patients', 'visits.patient_id', '=', 'patients.id')
+                ->where('patients.patient_type', 'ANC')
+                ->update(['visits.visit_type' => 'ANC']);
+
+            // Update visits for non-ANC patients
+            DB::table('visits')
+                ->join('patients', 'visits.patient_id', '=', 'patients.id')
+                ->where('patients.patient_type', '!=', 'ANC')
+                ->update(['visits.visit_type' => 'Regular']);
+
+            DB::commit();
+            info('Visit types updated successfully');
+            return response()->json(['message' => 'Visit types updated successfully'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            info('Error updating visit types: ' . $e->getMessage());
+            return response()->json(['message' => 'Error updating visit types'], 500);
+        }
     }
 }

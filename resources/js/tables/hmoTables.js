@@ -135,7 +135,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
             {data: "diagnosis"},
             {data: row => sponsorAndPayPercent(row)},
             {data: row => () => {
-                return row.patientType == "ANC" ? row.thirtyDayCount+getOrdinal(row.thirtyDayCount)+' ANC' : row.thirtyDayCount
+                return row.visitType == "ANC" ? row.thirtyDayCount+getOrdinal(row.thirtyDayCount)+' ANC' : row.thirtyDayCount
                 }
             },
             {data: row =>  `
@@ -162,7 +162,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                     </a>
                         <ul class="dropdown-menu">
                         <li>
-                            <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }" data-ancregid="${row.ancRegId}">
+                            <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-visitType="${ row.visitType }" data-ancregid="${row.ancRegId}">
                                 Details
                             </a>
                             <a class="dropdown-item patientBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-hmodoneby="${ row.hmoDoneBy }" data-age="${ row.age }" data-sex="${ row.sex }" data-staffId="${ row.staffId }" data-phone="${ row.phone }">

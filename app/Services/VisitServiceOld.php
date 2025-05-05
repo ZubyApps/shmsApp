@@ -18,61 +18,30 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
-class VisitService
+class VisitServiceOld
 {
     public function __construct(private readonly Visit $visit, private readonly PaymentService $paymentService, private readonly Ward $ward)
     {
     }
 
-    public function create(Request $data, Patient $patient, User $user)
+    public function create(Request $data, Patient $patient, User $user): Visit
     {
         return DB::transaction(function () use ($data, $patient, $user) {
 
             $sponsorArray = ['Individual', 'Family'];
-                        
-            Validator::make($data->all(), [
-                'visitType' => [
-                    'required',
-                    // Custom rule to check for open ANC visit
-                    function ($attribute, $value, $fail) use ($patient) {
-                        if ($value === 'ANC' && $patient->visits()
-                            ->where('visit_type', 'ANC')
-                            ->where('closed', false)
-                            ->exists()) {
-                            $fail('This patient already has an open ANC visit.');
-                        }
-                    },
-                ],
-                'patient' => [
-                    function ($attribute, $value, $fail) use ($patient, $data) {
-                        if ($data->visitType == 'ANC' && strtolower($patient->sex) === 'male') {
-                            $fail('This patient is male and cannot initiate an ANC visit.');
-                        }
-                    }
-                ]
-            ])->validate();                
+
+            $patient->update([
+                "is_active" => true
+            ]); 
     
             $visit = $user->visits()->create([
                     "patient_id" => $patient->id,
                     "sponsor_id" => $patient->sponsor->id,
-                    "waiting_for"=> $data->doctor,
-                    "visit_type" => $data->visitType,
+                    "waiting_for"=> $data->doctor
             ]);
-
-            $patientSponsor = $patient->sponsor->category_name;
-            $visitType      = $visit->visit_type;
-            $patientVisitsC = $patient->visits->count();
-            $patientSponsorVisitsC = $patient->sponsor->visits->count();
-
-            if ($visitType == 'Regular'){
-                $patient->update([
-                    "is_active" => true
-                ]);
-            }
     
-            if (in_array($patientSponsor, $sponsorArray)){
+            if (in_array($patient->sponsor->category_name, $sponsorArray)){
 
                 $subcat = ResourceSubCategory::firstOrCreate(['name' => 'Hospital Card'], [
                     'name' => 'Hospital Card',
@@ -81,16 +50,16 @@ class VisitService
                     'resource_category_id' => 6
                 ]);
     
-                if ($patientVisitsC < 2 && $patientSponsor == 'Individual'){
+                if ($patient->visits->count() < 2 && $patient->sponsor->category_name == 'Individual'){
                     
-                    if ($visitType == 'ANC'){
+                    if ($patient->patient_type == 'ANC'){
                         $resource = Resource::firstOrCreate(['name' => 'Antenatal Card'],[
                             'name'              => 'Antenatal Card',
                             'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
                             'reorder_level'     => 0,
                             'purchase_price'    => 100,
                             'selling_price'     => 1000,
-                            'unit_description'  => 1,
+                            // 'unit_description'  => 'Service(s)',
                             'category'          => 'Other Services',
                             'sub_category'      => 'Hospital Card',
                             'stock_level'       => 500,
@@ -114,14 +83,14 @@ class VisitService
                             'total_hms_bill'    => $prescription->visit->totalHmsBills(),
                         ]);
                         
-                    } else if ($visitType == 'Regular') {
+                    } else if ($patient->patient_type == 'Regular.New') {
                         $resource = Resource::firstOrCreate(['name' => 'Individual Card'],[
                             'name'              => 'Individual Card',
                             'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
                             'reorder_level'     => 0,
                             'purchase_price'    => 200,
                             'selling_price'     => 2000,
-                            'unit_description'  => 1,
+                            // 'unit_description'  => 'Service(s)',
                             'category'          => 'Other Services',
                             'sub_category'      => 'Hospital Card',
                             'stock_level'       => 1000,
@@ -147,7 +116,7 @@ class VisitService
                     }
                 }
     
-                if ($patientSponsor == 'Family' && $patientSponsorVisitsC < 2 && $patientVisitsC < 2 && $visitType == 'Regular'){
+                if ($patient->sponsor->category_name == 'Family' && $patient->sponsor->visits->count() < 2 && $patient->visits->count() < 2 && $patient->patient_type == 'Regular.New'){
     
                     $resource = Resource::firstOrCreate(['name' => 'Family Card'], [
                         'name'              => 'Family Card',
@@ -155,7 +124,7 @@ class VisitService
                         'reorder_level'     => 0,
                         'purchase_price'    => 350,
                         'selling_price'     => 3500,
-                        'unit_description'  => 1,
+                        // 'unit_description'  => 'Service(s)',
                         'category'          => 'Other Services',
                         'sub_category'      => 'Hospital Card',
                         'stock_level'       => 1000,
@@ -180,14 +149,14 @@ class VisitService
                     ]);
                 }
 
-                if ($patientSponsor == 'Family' && $patientSponsorVisitsC < 2 && $patientVisitsC > 1){
+                if ($patient->sponsor->category_name == 'Family' && $patient->sponsor->visits->count() < 2 && $patient->visits->count() > 1){
                     $resource = Resource::firstOrCreate(['name' => 'Family Card Upgrade'], [
                         'name'              => 'Family Card Upgrade',
                         'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
                         'reorder_level'     => 0,
                         'purchase_price'    => 150,
                         'selling_price'     => 1500,
-                        'unit_description'  => 1,
+                        // 'unit_description'  => 'Service(s)',
                         'category'          => 'Other Services',
                         'sub_category'      => 'Hospital Card',
                         'stock_level'       => 1000,
@@ -279,7 +248,7 @@ class VisitService
                 'came'              => (new Carbon($visit->created_at))->diffForHumans(['parts' => 2, 'short' => true]),
                 'waitingFor'        => $visit->waitingFor->username ?? '',
                 'doctor'            => $visit->doctor->username ?? '',
-                'visitType'       => $visit->visit_type,
+                'visitType'         => $visit->visit_type,
                 'status'            => $visit->status,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
@@ -287,8 +256,7 @@ class VisitService
                 'closed'            => $visit->closed,
                 'initiatedBy'       => $visit->user->username,
                 'payments'          => $visit->payments->count(),
-                'prescriptions'     => $visit->prescriptions->count(),
-                'visitType'         => $visit->visit_type,
+                'prescriptions'     => $visit->prescriptions->count()
             ];
          };
     }
@@ -341,11 +309,7 @@ class VisitService
                 'closed_opened_by'  => $user->id
             ]);
 
-            $noOpenVisit = $visit->patient->visits()->where('closed', false)->count() < 2;
-
-            if ($visit->visit_type == 'Regular' || $noOpenVisit){
-                $visit->patient()->update(['is_active' => false]);
-            }
+            $visit->patient()->update(['is_active' => false]);
         });
     }
 
@@ -357,10 +321,7 @@ class VisitService
                 'closed_opened_at'  => new Carbon(), 
                 'closed_opened_by'  => $user->id
             ]);
-
-            if ($visit->visit_type == 'Regular'){
-                $visit->patient()->update(['is_active' => true]);
-            }
+            $visit->patient()->update(['is_active' => true]);
         });
     }
 
@@ -473,7 +434,7 @@ class VisitService
                 if ($data->filterListBy){
                     return $query->where(function (Builder $query) use($data) {
                             $query->where('admission_status', $data->filterListBy)
-                            ->orWhere('visit_type', $data->filterListBy);
+                            ->orWhereRelation('patient', 'patient_type', $data->filterListBy);
                         })
                         ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                         ->where(function (Builder $query) use($searchTerm) {
@@ -513,7 +474,7 @@ class VisitService
             if ($data->filterListBy){
                 return $query->where(function (Builder $query) use($data) {
                         $query->where('admission_status', $data->filterListBy)
-                        ->orWhere('visit_type', $data->filterListBy);
+                        ->orWhereRelation('patient', 'patient_type', $data->filterListBy);
                     })
                     ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                     ->orderBy($orderBy, $orderDir)
@@ -556,7 +517,7 @@ class VisitService
                 'diagnosis'         => $latestConsultation?->icd11_diagnosis ?? 
                                        $latestConsultation?->provisional_diagnosis ?? 
                                        $latestConsultation?->assessment,
-                'ancCount'          => $visit->visit_type == 'ANC' ? $visit->consultations->count() : '',
+                'ancCount'          => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : '',
                 'closed'            => true
             ];
          };

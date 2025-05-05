@@ -81,7 +81,7 @@ Route::middleware('auth')->group(function () {
         });
 
         Route::prefix('users')->group(function () {
-            Route::get('', [RegisteredUserController::class, 'create'])->name('users');
+            Route::get('', [RegisteredUserController::class, 'create'])->name('Users');
             Route::post('', [RegisteredUserController::class, 'store'])->name('register');
             Route::get('/allstaff', [RegisteredUserController::class, 'loadAllUsers']);
             Route::get('/activestaff', [RegisteredUserController::class, 'loadActiveUsers']);
@@ -379,6 +379,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/load/bysponsor', [PatientController::class, 'loadPatientsBySponsor']);
             Route::get('/load/visits', [PatientController::class, 'loadVisit']);
             Route::get('/list', [PatientController::class, 'listPatients']);
+            Route::get('/updatevisits', [PatientController::class, 'updatePatientsVisitTypes']);
             Route::get('/{patient}', [PatientController::class, 'edit']);
             Route::get('/prepatients/{patientPreForm}', [PatientController::class, 'review']);
             Route::delete('/{patient}', [PatientController::class, 'destroy']);

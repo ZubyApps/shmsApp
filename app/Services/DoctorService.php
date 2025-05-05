@@ -76,7 +76,7 @@ class DoctorService
     {
         if ($method == 'outPatients') {
             $query = $query->where('admission_status', 'Outpatient')
-                ->whereRelation('patient', 'patient_type', '!=', 'ANC');
+                        ->where('visit_type', '!=', 'ANC');
         }
         if ($method == 'inPatients') {
             $query = $query->where(function (Builder $query) {
@@ -126,7 +126,7 @@ class DoctorService
 
     public function getPaginatedAncConsultedVisits($data, DataTableQueryParams $params, User $user)
     {
-        $query = $this->baseQuery()->whereRelation('patient', 'patient_type', 'ANC');
+        $query = $this->baseQuery()->where('visit_type', '=', 'ANC');
 
         if (!empty($params->searchTerm)) {
             $query = $this->applySearch($query, $params->searchTerm);
@@ -173,7 +173,7 @@ class DoctorService
                 'wardId'            => $visit->ward ?? '',
                 'wardPresent'       => $ward?->visit_id == $visit->id,
                 'updatedBy'         => $latestConsultation?->updatedBy?->username ?? 'Nurse...',
-                'patientType'       => $visit->patient->patient_type,
+                'visitType'         => $visit->visit_type,
                 'labPrescribed'     => $visit->labPrescribed,
                 'labDone'           => $visit->labDone,
                 'chartableMedications'  => $visit->prescriptionsCharted,
@@ -188,9 +188,10 @@ class DoctorService
                 '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count() . ' visit(s)',
                 'doctorDone'        => $visit->doctorDoneBy->username ?? '',
                 'doctorDoneAt'      => $visit->doctor_done_at ? (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') : '',
-                'ancCount'          => explode(".", $visit->patient->patient_type)[0] == 'ANC' ? $visit->consultations->count() : '',
+                'ancCount'          => $visit->visit_type == 'ANC' ? $visit->consultations->count() : '',
                 'closed'            => $visit->closed,
-                'closedBy'          => $visit->closedOpenedBy?->username
+                'closedBy'          => $visit->closedOpenedBy?->username,
+                'visitType'         => $visit->visit_type,
 
             ];
         };

@@ -349,12 +349,12 @@ window.addEventListener('DOMContentLoaded', function () {
                 consultationDetailsBtn.setAttribute('disabled', 'disabled')
                 const btnHtml = consultationDetailsBtn.innerHTML
                 consultationDetailsBtn.innerHTML = loadingSpinners()
-                const [visitId, patientType, ancRegId, closed, patientId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-patientType'), consultationDetailsBtn.getAttribute('data-ancregid'), +consultationDetailsBtn.getAttribute('data-closed'), consultationDetailsBtn.getAttribute('data-patientid')] 
-                const isAnc = patientType === 'ANC'
+                const [visitId, visitType, ancRegId, closed, patientId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-visitType'), consultationDetailsBtn.getAttribute('data-ancregid'), +consultationDetailsBtn.getAttribute('data-closed'), consultationDetailsBtn.getAttribute('data-patientid')] 
+                const isAnc = visitType === 'ANC'
                 const [modal, div, displayFunction, vitalSignsTable, id, suffixId] = isAnc ? [ancTreatmentDetailsModal, ancTreatmentDiv, AncPatientReviewDetails, getAncVitalSignsTable, ancRegId, 'AncConDetails'] : [treatmentDetailsModal, regularTreatmentDiv, regularReviewDetails, getVitalSignsTableByVisit, visitId, 'ConDetails']
                 createDeliveryNoteBtn.setAttribute('data-visitid', visitId); uploadFileBtn.setAttribute('data-id', visitId);
                 closed ? modal._element.querySelector('.addVitalsignsDiv').classList.add('d-none') : modal._element.querySelector('.addVitalsignsDiv').classList.remove('d-none')
-                modal._element.querySelector('.historyBtn').setAttribute('data-patienttype', patientType); modal._element.querySelector('.historyBtn').setAttribute('data-patientid', patientId)
+                modal._element.querySelector('.historyBtn').setAttribute('data-visittype', visitType); modal._element.querySelector('.historyBtn').setAttribute('data-patientid', patientId)
                 http.get(`/consultation/consultations/${visitId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
@@ -400,7 +400,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const [btn, modal, id, getTable] = isAnc ? [vitalsignsBtn, ancVitalsignsModal, vitalsignsBtn.getAttribute('data-ancregid'), getAncVitalSignsTable] : [vitalsignsBtn, vitalsignsModal, vitalsignsBtn.getAttribute('data-id'), getVitalSignsTableByVisit]
 
                 const tableId = '#' + modal._element.querySelector('.vitalsTable').id
-                modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-patienttype', vitalsignsBtn.getAttribute('data-patienttype'))
+                modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-visittype', vitalsignsBtn.getAttribute('data-visittype'))
                 populateVitalsignsModal(modal, btn, id)
    
                 modal.show()
@@ -478,7 +478,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (historyBtn){
                 historyBtn.setAttribute('disabled', 'disabled')
                 const patientId     = historyBtn.getAttribute('data-patientid')
-                const isAnc         = historyBtn.getAttribute('data-patienttype') === 'ANC'
+                const isAnc         = historyBtn.getAttribute('data-visittype') === 'ANC'
                 http.get(`/consultation/history/${patientId}`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
@@ -869,7 +869,7 @@ window.addEventListener('DOMContentLoaded', function () {
             addVitalsignsDiv.forEach(div => {
                 if (div.dataset.div === addBtn.dataset.btn) {
                     addBtn.setAttribute('disabled', 'disabled')
-                    const isAnc     = addBtn.getAttribute('data-patienttype') == 'ANC'
+                    const isAnc     = addBtn.getAttribute('data-visittype') == 'ANC'
                     const visitId   = addBtn.getAttribute('data-id')
                     const ancRegId  = addBtn.getAttribute('data-ancregid')
                     const tableId   = div.parentNode.parentNode.querySelector('.vitalsTable').id
@@ -903,7 +903,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const deleteBtn = event.target.closest('.deleteBtn')
 
             if (deleteBtn) {
-                const url  = deleteBtn.dataset.patienttype == 'ANC' ? 'ancvitalsigns' : 'vitalsigns'
+                const url  = deleteBtn.dataset.visittype == 'ANC' ? 'ancvitalsigns' : 'vitalsigns'
                 deleteBtn.setAttribute('disabled', 'disabled')
                 if (confirm('Are you sure you want to delete this record?')) {
                     const id = deleteBtn.getAttribute('data-id')
@@ -1616,7 +1616,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 })
 
-function openNurseModals(modal, button, { id, visitId, ancRegId, patientType, ...data }) {
+function openNurseModals(modal, button, { id, visitId, ancRegId, visitType, ...data }) {
     for (let name in data) {
 
         const nameInput = modal._element.querySelector(`[name="${name}"]`)
@@ -1626,10 +1626,10 @@ function openNurseModals(modal, button, { id, visitId, ancRegId, patientType, ..
     
     modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
     modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-ancregid', ancRegId)
-    modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-patienttype', patientType)
+    modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-visittype', visitType)
 }
 
-function openNurseModals1(modal, button, { id, visitId, ancRegId, patientType, cardNo, ...data }) {
+function openNurseModals1(modal, button, { id, visitId, ancRegId, visitType, cardNo, ...data }) {
     for (let name in data) {
 
         const nameInput = modal._element.querySelector(`[name="${name}"]`)
@@ -1640,7 +1640,7 @@ function openNurseModals1(modal, button, { id, visitId, ancRegId, patientType, c
     if (modal._element.id !== 'consultationHistoryModal'){
         modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
         modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-ancregid', ancRegId)
-        modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-patienttype', patientType)
+        modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-visittype', visitType)
     
         if (modal._element.id !== 'consultationReviewModal') {
             button.setAttribute('data-id', visitId)

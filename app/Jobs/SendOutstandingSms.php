@@ -31,7 +31,7 @@ class SendOutstandingSms implements ShouldQueue
      */
     public function handle(ChurchPlusSmsService $churchPlusSmsService, HelperService $helperService): void
     {
-        $gateway = $helperService->nccTextTime() ? 1 : 2;
+        $gateway = $helperService->nccTextTime() ? 1 : 1;
 
         $churchPlusSmsService->sendSms($this->message, $this->recipient, 'SandraHosp', $gateway);
 

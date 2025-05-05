@@ -135,7 +135,7 @@ Class ShiftPerformanceService
             ->with(['vitalSigns'])
             ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
             ->where('closed', false)
-            ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+            ->where('visit_type', '!=', 'ANC')
             ->get();
     }
 
@@ -431,7 +431,7 @@ Class ShiftPerformanceService
                     ->orWhere('admission_status', '=', 'Observation');
             })
             ->where('doctor_done_by', null)
-            ->whereRelation('patient', 'patient_type', '!=', 'ANC')
+            ->where('visit_type', '!=', 'ANC')
             ->get();
 
         $visitsCount = $visits->count();

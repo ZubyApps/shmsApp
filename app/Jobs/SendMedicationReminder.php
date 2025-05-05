@@ -33,7 +33,7 @@ class SendMedicationReminder implements ShouldQueue
      */
     public function handle(ChurchPlusSmsService $churchPlusSmsService, HelperService $helperService): void
     {
-        $gateway = $helperService->nccTextTime() ? 1 : 2;
+        $gateway = $helperService->nccTextTime() ? 1 : 1;
 
         $firstName = $this->medicationChart->visit->patient->first_name;
         

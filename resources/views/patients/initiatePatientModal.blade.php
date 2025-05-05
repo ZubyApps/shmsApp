@@ -9,7 +9,7 @@
             <div class="modal-body">
                 <x-form-div class="col-xl-12">
                     <x-input-span>Initiate</x-input-span>
-                    <x-form-input name="patientId" id="patientId" readonly/>
+                    <x-form-input name="patientId" id="patientId" name="patient" readonly/>
                     <x-input-span>visit?</x-input-span>
                 </x-form-div>
                 <x-form-div class="col-xl-12">
@@ -19,6 +19,14 @@
                         @foreach ($doctors as $doctor)
                             <option value="{{ $doctor->id }}" name="{{ $doctor->username }}">{{ $doctor->username }}</option>
                         @endforeach
+                    </select>
+                </x-form-div>
+                <x-form-div class="col-xl-12">
+                    <x-input-span id="visitTypeLabel">Visit Type</x-input-span>
+                    <select class="form-select form-select-md" name="visitType" id="visitType">
+                        {{-- <option value="">Select</option> --}}
+                        <option value="Regular">Regular</option>
+                        <option value="ANC">ANC</option>
                     </select>
                 </x-form-div>
             </div>

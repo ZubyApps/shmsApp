@@ -435,7 +435,7 @@ const getVisitsTable = (tableId, startDate, endDate, filterListBy) => {
                 visible: false,
                 data: "seen"
             },
-            {data: "patientType"},
+            {data: "visitType"},
             {data: "patient"},
             {data: "phone"},
             {data: "address"},
@@ -458,7 +458,7 @@ const getVisitsTable = (tableId, startDate, endDate, filterListBy) => {
             },
             {data: "doctor"},
             {data: row => `
-                        <a class="consultationDetailsBtn tooltip-test text-dark" title="details" href="#"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-patientType="${ row.patientType }" data-ancregid="${row.ancRegId}">
+                        <a class="consultationDetailsBtn tooltip-test text-dark" title="details" href="#"  data-id="${ row.id }" data-patientId="${ row.patientId }" data-visitType="${ row.visitType }" data-ancregid="${row.ancRegId}">
                             ${row.diagnosis}
                         </a>
                 `},
