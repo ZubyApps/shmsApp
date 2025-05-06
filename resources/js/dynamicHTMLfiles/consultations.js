@@ -2,7 +2,6 @@ import { updateInvestigationAndManagement, investigations, review, consultation,
 
 const regularReviewDetails = (iteration, numberConverter, count, length, line, viewer, isDoctorDone, closed, isHistory = 0, visitIteration) => {
     const usableIteration = isHistory ? visitIteration+'-'+iteration : iteration
-    console.log(iteration, length)
     return `
                 <div class="btn btn-primary d-flex justify-content-center mb-1 text-outline-primary input-group-text text-center collapseConsultationBtn" id="collapseReview" data-bs-toggle="collapse" href="#collapseExample${usableIteration}" role="button" aria-expanded="true" aria-controls="collapseExample" data-goto="#goto${usableIteration}" data-ishistory="${isHistory}">
                     <span class="mx-2 fw-semibold">${iteration > 1 && !line.specialistFlag ? count + numberConverter(count) + ' Review ' : line.specialistFlag ? 'Specialist Consultation ' : 'Initial Consultation '} ${ `(${line.date})`}</span>

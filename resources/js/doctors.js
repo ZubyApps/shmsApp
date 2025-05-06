@@ -335,10 +335,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 handleConsultationReview();
             }
 
-            if (updateResourceListBtn){
+            if (table.id !== 'consultationReviewModal' && updateResourceListBtn){
                 updateResourceListBtn.setAttribute('disabled', 'disabled')
                 resourceInput.forEach(input => {input.setAttribute('data-sponsorcat', updateResourceListBtn.getAttribute('data-sponsorcat'))})
                 investigationAndManagementModal._element.querySelector('.investigationAndManagementDiv').classList.remove('d-none')
+                investigationAndManagementModal._element.querySelector('.addDiv').classList.remove('d-none')
                 const btn = investigationAndManagementModal._element.querySelector('#addInvestigationAndManagementBtn')
                 const [conId, visitId] = [updateResourceListBtn.dataset?.conid , updateResourceListBtn.dataset.id]
                 populatePatientSponsor(investigationAndManagementModal, updateResourceListBtn)
@@ -1249,6 +1250,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const btn = investigationAndManagementModal._element.querySelector('#addInvestigationAndManagementBtn')
                 const addDiv = investigationAndManagementModal._element.querySelector('.addDiv')
                 const conId = updateResourceListBtn.dataset.conid
+                console.log('consultation review');
                 updateResourceListBtn.dataset.last === 'last' ? addDiv.classList.remove('d-none') : addDiv.classList.add('d-none') 
                 btn.setAttribute('data-conid', updateResourceListBtn.dataset.conid)
                 btn.setAttribute('data-visitid', updateResourceListBtn.dataset.visitid)

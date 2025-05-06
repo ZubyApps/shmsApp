@@ -1,6 +1,6 @@
-<div class="d-none investigationAndManagementDiv" id="investigationAndManagementDiv{{ $type}}" data-div="{{ strtolower($type) }}">
+<div class="d-none investigationAndManagementDiv form-control" id="investigationAndManagementDiv{{ $type}}" data-div="{{ strtolower($type) }}">
+    <x-form-span>Investigation & Management</x-form-span>
     <div class="mb-2 form-control addDiv">
-        <x-form-span>Investigation & Management</x-form-span>
         <div class="row">
             <x-form-div class="col-xl-6">
                 <x-input-span id="resourceLabel">Medical Resource<x-required-span /></x-input-span>
