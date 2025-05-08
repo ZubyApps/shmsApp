@@ -81,40 +81,41 @@ class VisitService
                     'resource_category_id' => 6
                 ]);
     
-                if ($patientVisitsC < 2 && $patientSponsor == 'Individual'){
+                if ($patientVisitsC < 2 && $patientSponsor == 'Individual' && $visitType == 'Regular'){
                     
-                    if ($visitType == 'ANC'){
-                        $resource = Resource::firstOrCreate(['name' => 'Antenatal Card'],[
-                            'name'              => 'Antenatal Card',
-                            'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
-                            'reorder_level'     => 0,
-                            'purchase_price'    => 100,
-                            'selling_price'     => 1000,
-                            'unit_description'  => 1,
-                            'category'          => 'Other Services',
-                            'sub_category'      => 'Hospital Card',
-                            'stock_level'       => 500,
-                            'resource_sub_category_id' => $subcat->id,
-                            'user_id'           => 1,
-                        ]);
+                    // if ($visitType == 'ANC'){
+                    //     $resource = Resource::firstOrCreate(['name' => 'Antenatal Card'],[
+                    //         'name'              => 'Antenatal Card',
+                    //         'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
+                    //         'reorder_level'     => 0,
+                    //         'purchase_price'    => 100,
+                    //         'selling_price'     => 1000,
+                    //         'unit_description'  => 1,
+                    //         'category'          => 'Other Services',
+                    //         'sub_category'      => 'Hospital Card',
+                    //         'stock_level'       => 500,
+                    //         'resource_sub_category_id' => $subcat->id,
+                    //         'user_id'           => 1,
+                    //     ]);
 
-                        $prescription = $user->prescriptions()->create([
-                            'resource_id'       => $resource->id,
-                            'prescription'      => null,
-                            'consultation_id'   => null,
-                            'visit_id'          => $visit->id,
-                            'qty_billed'        => 1,
-                            'qty_dispensed'     => 1,
-                            'hms_bill'          => $resource->selling_price,
-                            'hms_bill_date'     => new Carbon(),
-                            'hms_bill_by'       => $user->id,
-                        ]);
+                    //     $prescription = $user->prescriptions()->create([
+                    //         'resource_id'       => $resource->id,
+                    //         'prescription'      => null,
+                    //         'consultation_id'   => null,
+                    //         'visit_id'          => $visit->id,
+                    //         'qty_billed'        => 1,
+                    //         'qty_dispensed'     => 1,
+                    //         'hms_bill'          => $resource->selling_price,
+                    //         'hms_bill_date'     => new Carbon(),
+                    //         'hms_bill_by'       => $user->id,
+                    //     ]);
     
-                        $prescription->visit->update([
-                            'total_hms_bill'    => $prescription->visit->totalHmsBills(),
-                        ]);
+                    //     $prescription->visit->update([
+                    //         'total_hms_bill'    => $prescription->visit->totalHmsBills(),
+                    //     ]);
                         
-                    } else if ($visitType == 'Regular') {
+                    // } else 
+                    // if ($visitType == 'Regular') {
                         $resource = Resource::firstOrCreate(['name' => 'Individual Card'],[
                             'name'              => 'Individual Card',
                             'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
@@ -144,7 +145,7 @@ class VisitService
                         $prescription->visit->update([
                             'total_hms_bill'    => $prescription->visit->totalHmsBills(),
                         ]);
-                    }
+                    // }
                 }
     
                 if ($patientSponsor == 'Family' && $patientSponsorVisitsC < 2 && $patientVisitsC < 2 && $visitType == 'Regular'){
@@ -279,7 +280,6 @@ class VisitService
                 'came'              => (new Carbon($visit->created_at))->diffForHumans(['parts' => 2, 'short' => true]),
                 'waitingFor'        => $visit->waitingFor->username ?? '',
                 'doctor'            => $visit->doctor->username ?? '',
-                'visitType'       => $visit->visit_type,
                 'status'            => $visit->status,
                 'vitalSigns'        => $visit->vitalSigns->count(),
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
