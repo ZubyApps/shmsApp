@@ -115,6 +115,7 @@ class InvestigationService
         return $query->where('closed', false)
                     ->whereHas('prescriptions', function(Builder $query){
                         $query->where('result', '=', null)
+                        ->where('discontinued', false)
                         ->whereRelation('resource', 'category', '=', 'Investigations')
                         ->whereRelation('resource', 'sub_category', '!=', 'Imaging');
                     });
