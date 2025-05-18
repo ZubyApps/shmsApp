@@ -88,7 +88,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                 const isAnc = row.visitType == 'ANC'
                         return `
                         <div class="d-flex flex" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-patientid="${ row.patientId }" data-ancregid="${ row.ancRegId }" data-sponsorcat="${row.sponsorCategory}">
-                                <button class=" btn btn${chartables < 1 ? row.scheduleCount ? '-outline-primary px-1' : '-outline-primary' : '-primary px-1'} viewOtherPrescriptionsBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${row.sponsor}" data-sponsorcat="${row.sponsorCategory}">
+                                <button class=" btn btn${chartables < 1 ? row.scheduleCount ? '-outline-primary px-1' : '-outline-primary' : '-primary px-1'} viewOtherPrescriptionsBtn tooltip-test" title="other medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${row.sponsor}" data-sponsorcat="${row.sponsorCategory}">
                                     ${(chartables < 1 ? '' : chartables + ' | ') + ' ' + (row.scheduleCount ? (row.doneCount + '/' + row.scheduleCount) + ' | ' : '' )+ ' ' + row.otherPrescriptions}
                                 </button>
                                 ${ row.ancRegId ? 
@@ -975,4 +975,131 @@ const getShiftReportTable = (tableId, department, shiftBadgeSpan) => {
     return shiftReportTable
 }
 
-export {getWaitingTable, getPatientsVisitsByFilterTable, getNurseMedicationsByFilter, getMedicationChartByPrescription, getPrescriptionChartByPrescription, getOtherPrescriptionsByFilterNurses, getUpcomingMedicationsTable, getDeliveryNoteTable, getAncVitalSignsTable, getUpcomingNursingChartsTable, getEmergencyTable, getNursesReportTable, getShiftReportTable}
+const getLabourRecordTable = (tableId, visitId, view, modal) => {
+    const labourRecordTable = new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:   {url: '/labourrecord/load', data: {
+            'visitId': visitId,
+        }},
+        orderMulti: true,
+        searching:false,
+        lengthChange: false,
+        language: {
+            emptyTable: 'No Labour Record'
+        },
+        columns: [
+            {data: "date"},
+            {data: "onset"},
+            {data: "membranesRuptured"},
+            {data: "contractionsBegan"},
+            {data: "examiner"},
+            {data: row => function () {
+                return `
+                <div class="d-flex flex- ${view || row.closed ? '' : 'd-none'}">
+                    <button class=" btn btn-outline-primary viewLabourSummaryBtn tooltip-test ${row.summarizedBy ? '' : 'd-none'}" title="view labour summary" id="viewLabourSummaryBtn" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-zoom-in"></i>
+                    </button>
+                    <button class="ms-1 btn btn-outline-primary updateLabourSummaryBtn tooltip-test" title="update labour summary" id="updateLabourSummaryBtn" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button class="ms-1 btn btn-outline-primary deleteLabourSummaryBtn tooltip-test" title="delete summary" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+            `
+                }
+            },
+            {data: row => function () {
+                return `
+                <div class="d-flex flex- ${view || row.closed ? '' : 'd-none'}">
+                    <button class=" btn btn-outline-primary viewLabourRecordBtn tooltip-test" title="view labour record" id="viewLabourRecordBtn" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-zoom-in"></i>
+                    </button>
+                    <button class="ms-1 btn btn-outline-primary updateLabourRecordBtn tooltip-test" title="update labour record" id="updateLabourRecordBtn" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button class="ms-1 btn btn-outline-primary deleteLabourRecordBtn tooltip-test" title="delete labour record" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+            `
+                }
+            },
+            {data: row => function () {
+                return `
+                <div class="d-flex flex- ${view || row.closed ? '' : 'd-none'}">
+                    <button class=" btn btn-outline-primary partographBtn tooltip-test" title="create partograph" id="partographBtn" data-id="${row.id}" data-sponsor="${row.sponsorName + ' - ' + row.sponsorCategory}" data-patient="${row.patient}">
+                        Open
+                    </button>
+                </div>
+            `
+                }
+            },
+        ]
+    });
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        labourRecordTable.destroy()
+    })
+
+    return labourRecordTable
+}
+
+const getPartographTable = (tableId, labourRecordId, modal, parameterType, labourInProgressDebounced, accordionCollapseList) => {
+    const partographTable = new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:   {url: '/partograph/load', data: {
+            'labourRecordId': labourRecordId,
+            'parameterType': parameterType,
+        }},
+        orderMulti: true,
+        searching:false,
+        lengthChange: false,
+        language: {
+            emptyTable: 'No Record Found'
+        },
+        columns: [
+            {data: row => `<div class="d-flex">
+                            <span class="recordedAtSpanBtn tooltip-test" title="edit time">${row.recordedAt}</span>
+                            <input class="ms-1 form-control recordedAtInput d-none" value="${row.recordedAtRaw}" data-record='${JSON.stringify(row)}' data-id="${row.id}" data-table="${tableId}" type="datetime-local" style="width:10rem;" name="recordedAt">
+                        </div>
+                    `},
+            {data: row => () => {
+                const entries = [];
+                for (const [key, value] of Object.entries(row.value)){
+                   entries.push(
+                    `<div class="d-flex">
+                        ${key}:
+                        <span class="valueSpanBtn tooltip-test" title="edit value">${value}</span>
+                        <input class="ms-1 form-control valueInput d-none" value="${value}" data-record='${JSON.stringify(row)}' data-key="${key}" data-id="${row.id}" data-table="${tableId}" type="text" style="width:4rem;" name="value">
+                    </div>
+
+                    `);
+                }
+                return entries.join(', ');
+            }},
+            {data: "recordedBy"},
+            {data: row => function () {
+                return `
+                <div class="d-flex flex- ${row.closed ? 'd-none' : ''}">
+                    <button type="button" class="ms-1 btn btn-outline-primary deletePartographBtn tooltip-test" title="delete partograph record" data-id="${row.id}" data-table="${tableId}">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </div>
+            `
+                }
+            },
+        ]
+    });
+
+    modal._element.addEventListener('hidden.bs.modal', function () {
+        labourInProgressDebounced(0)
+        accordionCollapseList.forEach((item) => {
+            item.hide()
+        })
+    })
+
+    return partographTable
+}
+
+export {getWaitingTable, getPatientsVisitsByFilterTable, getNurseMedicationsByFilter, getMedicationChartByPrescription, getPrescriptionChartByPrescription, getOtherPrescriptionsByFilterNurses, getUpcomingMedicationsTable, getDeliveryNoteTable, getAncVitalSignsTable, getUpcomingNursingChartsTable, getEmergencyTable, getNursesReportTable, getShiftReportTable, getLabourRecordTable, getPartographTable}

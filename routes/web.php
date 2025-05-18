@@ -16,6 +16,7 @@ use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\HmoController;
 use App\Http\Controllers\InvestigationController;
+use App\Http\Controllers\LabourRecordController;
 use App\Http\Controllers\MarkedForController;
 use App\Http\Controllers\MedicalReportController;
 use App\Http\Controllers\MedicationCategoryController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\MedicationChartController;
 use App\Http\Controllers\NurseController;
 use App\Http\Controllers\NursesReportController;
 use App\Http\Controllers\NursingChartController;
+use App\Http\Controllers\PartographController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientsFileController;
 use App\Http\Controllers\PayMethodController;
@@ -623,6 +625,28 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{procedure}', [ProcedureController::class, 'destroy']);
         Route::patch('/{procedure}', [ProcedureController::class, 'update']);
         Route::patch('/status/{procedure}', [ProcedureController::class, 'updateStatus']);
+    });
+
+    Route::prefix('labourrecord')->group(function () {
+        Route::post('', [LabourRecordController::class, 'store']);
+        Route::get('/load', [LabourRecordController::class, 'loadLabourRecordTable']);
+        Route::get('/inprogress', [LabourRecordController::class, 'labourInProgressDetails']);
+        Route::patch('/{labourRecord}', [LabourRecordController::class, 'update']);
+        Route::patch('/summary/{labourRecord}', [LabourRecordController::class, 'updateLabourSummary']);
+        Route::delete('summary/{labourRecord}', [LabourRecordController::class, 'deleteLabourSummary']);
+        Route::delete('/{labourRecord}', [LabourRecordController::class, 'destroy']);
+        Route::get('/{labourRecord}', [LabourRecordController::class, 'edit']);
+        Route::get('/summary/{labourRecord}', [LabourRecordController::class, 'editLabourSummary']);
+    });
+
+    Route::prefix('partograph')->group(function () {
+        Route::post('', [PartographController::class, 'store']);
+        Route::get('/load', [PartographController::class, 'loadPartographTables']);
+        Route::get('/load/chart', [PartographController::class, 'loadPartographChartByLabourRecord']);
+        Route::patch('/{partograph}', [PartographController::class, 'update']);
+        Route::delete('/{partograph}', [PartographController::class, 'destroy']);
+        Route::get('/{partograph}', [PartographController::class, 'edit']);
+        Route::get('/summary/{partograph}', [PartographController::class, 'editLabourSummary']);
     });
 });
 

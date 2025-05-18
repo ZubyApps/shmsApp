@@ -1,18 +1,19 @@
-import { Modal, Toast, Offcanvas } from "bootstrap"
+import { Modal, Toast, Offcanvas, Collapse } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal, populateAncReviewDiv, resetFocusEndofLine, populateAppointmentModal, displayWardList, clearSelectList, debounce, populateModal} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal, populateAncReviewDiv, resetFocusEndofLine, populateAppointmentModal, displayWardList, clearSelectList, debounce, populateModal, getLabourInProgressDetails, dynamicDebounce, populateLabourModals, exclusiveCheckboxer, savePatographValues} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
 import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable, getOtherPrescriptionsByFilter, getMedicalReportTable, getPatientsFileTable, getProceduresListTable} from "./tables/doctorstables"
 import { getAncVitalsignsChart, getVitalsignsChartByVisit } from "./charts/vitalsignsCharts"
 import $ from 'jquery';
 import { getbillingTableByVisit } from "./tables/billingTables"
-import { getAncVitalSignsTable, getDeliveryNoteTable, getEmergencyTable, getNurseMedicationsByFilter } from "./tables/nursesTables"
+import { getAncVitalSignsTable, getDeliveryNoteTable, getEmergencyTable, getNurseMedicationsByFilter, getPartographTable } from "./tables/nursesTables"
 import { visitDetails } from "./dynamicHTMLfiles/visits"
 import html2pdf  from "html2pdf.js"
 import { getAppointmentsTable } from "./tables/appointmentsTables"
-import { fetchData } from "./httpHelpers"
+import { httpRequest } from "./httpHelpers"
+import { getPartographCharts } from "./charts/partographCharts"
 $.fn.dataTable.ext.errMode = 'throw';
 
 window.addEventListener('DOMContentLoaded', function () {
@@ -44,6 +45,13 @@ window.addEventListener('DOMContentLoaded', function () {
     const viewMedicalReportModal            = new Modal(document.getElementById('viewMedicalReportModal'))
     const appointmentModal                  = new Modal(document.getElementById('appointmentModal'))
     const procedureBookingModal             = new Modal(document.getElementById('procedureBookingModal'))
+    const newLabourRecordModal          = new Modal(document.getElementById('newLabourRecordModal'))
+    const updateLabourRecordModal       = new Modal(document.getElementById('updateLabourRecordModal'))
+    const viewLabourRecordModal         = new Modal(document.getElementById('viewLabourRecordModal'))
+    const saveLabourSummaryModal        = new Modal(document.getElementById('saveLabourSummaryModal'))
+    const viewLabourSummaryModal        = new Modal(document.getElementById('viewLabourSummaryModal'))
+    const partographModal               = new Modal(document.getElementById('partographModal'))
+    const accordionCollapseList = [...document.querySelectorAll('.accordion-collapse')].map(accordionCollapseEl => new Collapse(accordionCollapseEl, {toggle:false}))
     
     const regularConsultationReviewDiv      = consultationReviewModal._element.querySelector('#consultationReviewDiv')
     const ancReviewDiv                      = ancConsultationReviewModal._element.querySelector('.ancReviewDiv')
@@ -57,6 +65,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const newMedicalReportDetailsDiv        = newMedicalReportTemplateModal._element.querySelector('#medicalReportDetailsDiv')
     const editMedicalReportDetailsDiv       = editMedicalReportTemplateModal._element.querySelector('#medicalReportDetailsDiv')
     const appointmentDetailsDiv             = appointmentModal._element.querySelector('#appointmentDetails')
+    const labourInProgressDiv               = document.querySelector('#labourInProgressDiv')
     
     const reviewPatientbtn                  = consultationReviewModal._element.querySelector('#reviewPatientBtn')
     const reviewAncPatientbtn               = ancConsultationReviewModal._element.querySelector('#reviewAncPatientBtn')
@@ -97,9 +106,21 @@ window.addEventListener('DOMContentLoaded', function () {
     const appointmentsListBtn     = document.querySelector('#appointmentsListBtn')
     const appointmentsBadgeSpan   = document.querySelector('#appointmentsBadgeSpan')
     const proceduresListCount     = document.querySelector('#proceduresListCount')
+    const newLabourRecordBtn        = consultationReviewModal._element.querySelector('#newLabourRecordBtn')
+    const createLabourRecordBtn     = newLabourRecordModal._element.querySelector('#createLabourRecordBtn')
+    const saveLabourRecordBtn       = updateLabourRecordModal._element.querySelector('#saveLabourRecordBtn')
+    const saveLabourSummaryBtn      = saveLabourSummaryModal._element.querySelector('#saveLabourSummaryBtn')
+    const partographAddButtons      = document.querySelectorAll('.addValueBtn')
 
     bmiCalculator(document.querySelectorAll('#height, .weight'))
     lmpCalculator(document.querySelectorAll('#lmp'), consultationDiv)
+    const examinationClassNames = ['.methodOfDeliver', '.placentaMembranes', '.placentaMembranesState', '.perineum', '.baby','.spontaneousInduced', '.gCondition', '.multipleSingleton', '.mRupturedIntact'];
+        const labourModals = [newLabourRecordModal, updateLabourRecordModal, saveLabourSummaryModal, viewLabourSummaryModal,]
+        examinationClassNames.forEach(name => {
+            labourModals.forEach(labourModal => {
+                exclusiveCheckboxer({className: name, modal: labourModal})
+            })
+        });
 
     clearDiagnosisBtns.forEach(btn => {btn.addEventListener('click', function () { btn.parentElement.parentElement.querySelector('#selectedDiagnosis').value = ''})})
     // Auto textarea adjustment
@@ -119,8 +140,15 @@ window.addEventListener('DOMContentLoaded', function () {
     // ICD11 handler
     ECT.Handler.configure(mySettings, myCallbacks)
     //visit Tables and consultations that are active
-    let inPatientsVisitTable, ancPatientsVisitTable, prescriptionTable, medicalReportTable, patientsFilesTable, surgeryNoteTable, deliveryNoteTable, appointmentsTable, proceduresTable
+    let inPatientsVisitTable, ancPatientsVisitTable, prescriptionTable, medicalReportTable, patientsFilesTable, surgeryNoteTable, deliveryNoteTable, appointmentsTable, proceduresTable, partographCharts
 
+    const labourInProgress = () => {
+        getLabourInProgressDetails(labourInProgressDiv);
+    }
+
+    const labourInProgressDebounced = dynamicDebounce(labourInProgress);
+
+    labourInProgressDebounced(0)
     
     let outPatientsVisitTable = getOutpatientsVisitTable('#outPatientsVisitTable', 'My Patients')
     const waitingTable = getWaitingTable('#waitingTable')
@@ -160,7 +188,7 @@ window.addEventListener('DOMContentLoaded', function () {
         inPatientsView.checkVisibility() ? inPatientsVisitTable ? inPatientsVisitTable.draw(false) : '' : ''
     }, 100)
 
-    outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw(false)})
+    outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw(false); labourInProgressDebounced(0)})
 
     ancPatientsTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#ancPatientsVisitTable' )){
@@ -168,6 +196,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             ancPatientsVisitTable = getAncPatientsVisitTable('#ancPatientsVisitTable', 'My Patients')
         }
+        labourInProgressDebounced(0)
     })
 
     inPatientsTab.addEventListener('click', function () {
@@ -176,6 +205,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             inPatientsVisitTable = getInpatientsVisitTable('#inPatientsVisitTable', 'My Patients')
         }
+        labourInProgressDebounced(0)
     })
 
     proceduresTab.addEventListener('click', function () {
@@ -184,6 +214,20 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             proceduresTable = getProceduresListTable('#proceduresTable')
         }
+    })
+
+    document.querySelectorAll('#labourInProgressDiv').forEach(element => {
+        element.addEventListener('click', function (event) {
+            const goToPatientsVisit    = event.target.closest('.goToPatientsVisit')
+    
+            if (goToPatientsVisit){
+                const cardNo = goToPatientsVisit.getAttribute('data-patient')
+                inPatientsView.checkVisibility() ? inPatientsVisitTable.search(cardNo).draw(false) : ''
+                outPatientsView.checkVisibility() ? outPatientsVisitTable.search(cardNo).draw(false) : ''
+                ancPatientsView.checkVisibility() ? ancPatientsVisitTable.search(cardNo).draw(false) : ''
+            }
+
+        })
     })
     
     document.querySelectorAll('#filterListOutPatients, #filterListInPatients, #filterListAncPatients, #filterAppointments').forEach(filterInput => {
@@ -226,13 +270,13 @@ window.addEventListener('DOMContentLoaded', function () {
 
                 const { id: visitId, ancregid: ancRegId, doctordone: isDoctorDone, closed, patientid: patientId, sponsorcat: sponsorCat, visittype: visitType} = consultationReviewBtn.dataset;
 
-
                 uploadFileBtn.setAttribute('data-id', visitId); createSurgeryNoteBtn.setAttribute('data-id', visitId); 
                 const isAnc = visitType === 'ANC'
                 resourceInput.forEach(input => {input.setAttribute('data-sponsorcat', consultationReviewBtn.getAttribute('data-sponsorcat'))})
 
                 populateDischargeModal(dischargeModal, consultationReviewBtn, visitId)
                 populateAppointmentModal(appointmentModal, consultationReviewBtn, visitId)
+                populateLabourModals([newLabourRecordModal, viewLabourRecordModal, updateLabourRecordModal, saveLabourSummaryModal, viewLabourSummaryModal], consultationReviewBtn);
                 
                 const modalsToPopulate = [addResultModal, updateResultModal, investigationAndManagementModal]
                 modalsToPopulate.forEach(modal => {populatePatientSponsor(modal, consultationReviewBtn)})
@@ -277,7 +321,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 async function handleConsultationReview() {
                     try {
                         // Fetch consultations
-                        const { consultations, bio: patientBio, latestLmp: lmp } = await fetchData(`/consultation/consultations/${visitId}`, {}, 'Failed to fetch consultations');
+                        const { consultations, bio: patientBio, latestLmp: lmp } = await httpRequest(`/consultation/consultations/${visitId}`, 'GET', {}, 'Failed to fetch consultations');
             
                         populateAncReviewDiv(ancReviewDiv, consultationReviewBtn);
                         openDoctorModals(config.modal, config.div, patientBio);
@@ -305,19 +349,20 @@ window.addEventListener('DOMContentLoaded', function () {
                         });
             
                         // Render vital signs table
-                        config.vitalSignsTable(`#vitalSignsConsultation${config.suffixId}`, config.id, config.modal);
                         if (isAnc) {
                             config.vitalSignsTable(`#vitalSignsTableAncReviewDiv`, config.id, config.modal);
                             // Fetch ward list
                             const wardData = await fetchData(`/ward/list`, {}, 'Failed to fetch ward list');
                             displayWardList(config.modal._element.querySelector("#ward"), wardData);
                         }
-            
+                        config.vitalSignsTable(`#vitalSignsConsultation${config.suffixId}`, config.id, config.modal);
+
                         // Fetch and render chart
-                        const chartData = await fetchData(`/${config.url}/load/chart`, { params: { visitId: config.id, ancRegId: config.id } }, 'Failed to fetch chart data');
+                        const chartData = await httpRequest(`/${config.url}/load/chart`, 'GET',{ params: { visitId: config.id, ancRegId: config.id } }, 'Failed to fetch chart data');
                         config.vitalSignsChart(config.modal._element.querySelector(`#vitalsignsChart${config.suffixId}`), { data: chartData }, config.modal);
             
                         // Render remaining tables
+                        labourRecordTable   = getLabourRecordTable('labourRecordTable', visitId, true, config.modal._element)
                         deliveryNoteTable = getDeliveryNoteTable('deliveryNoteTable', visitId, false, config.modal._element);
                         surgeryNoteTable = getSurgeryNoteTable('surgeryNoteTable', visitId, true, config.modal._element);
                         patientsFilesTable = getPatientsFileTable(`patientsFileTable${config.suffixId}`, visitId, config.modal._element);
@@ -409,7 +454,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 historyBtn.setAttribute('disabled', 'disabled')
                 const patientId     = historyBtn.getAttribute('data-patientid')
                 const isAnc         = historyBtn.getAttribute('data-visitType') === 'ANC'
-                console.log
+
                 populatePatientSponsor(investigationAndManagementModal, historyBtn)
                 http.get(`/consultation/history/${patientId}`)
                 .then((response) => {
@@ -472,6 +517,8 @@ window.addEventListener('DOMContentLoaded', function () {
             }
         })
     })
+
+    newLabourRecordBtn.addEventListener('click', function() {newLabourRecordModal.show()})
 
     fileBtns.forEach(btn => {btn.addEventListener('click', function() {fileModal.show()})}); newSurgeryBtn.addEventListener('click', function() {newSurgeryModal.show()});
 
@@ -835,7 +882,6 @@ window.addEventListener('DOMContentLoaded', function () {
         updateBtn.addEventListener('click', function () {
             knownClinicalInfoDiv.forEach(div => {
                 if (div.dataset.div === updateBtn.dataset.btn) {
-                    console.log(div.dataset.div, updateBtn.dataset.btn, div)
                     toggleAttributeLoop(querySelectAllTags(div, ['input, select, textarea']), 'disabled', '')        
                     updateBtn.textContent === "Done" ? updateBtn.innerHTML = `Update` : updateBtn.textContent = "Done"
                     if (updateBtn.textContent === 'Update'){
@@ -1250,7 +1296,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const btn = investigationAndManagementModal._element.querySelector('#addInvestigationAndManagementBtn')
                 const addDiv = investigationAndManagementModal._element.querySelector('.addDiv')
                 const conId = updateResourceListBtn.dataset.conid
-                console.log('consultation review');
+
                 updateResourceListBtn.dataset.last === 'last' ? addDiv.classList.remove('d-none') : addDiv.classList.add('d-none') 
                 btn.setAttribute('data-conid', updateResourceListBtn.dataset.conid)
                 btn.setAttribute('data-visitid', updateResourceListBtn.dataset.visitid)
@@ -1546,6 +1592,303 @@ window.addEventListener('DOMContentLoaded', function () {
             console.log(error)
         })
     })
+
+     //labour record
+    createLabourRecordBtn.addEventListener('click', function () {
+        createLabourRecordBtn.setAttribute('disabled', 'disabled')
+        const visitId = createLabourRecordBtn.dataset.visitid
+
+        let data = { ...getDivData(newLabourRecordModal._element), visitId}
+        http.post('/labourrecord', { ...data }, { "html": newLabourRecordModal._element })
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                newLabourRecordModal.hide()
+                clearDivValues(newLabourRecordModal._element)
+                labourRecordTable ? labourRecordTable.draw(false) : ''
+                labourInProgressDebounced(0);
+            }
+            createLabourRecordBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            createLabourRecordBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
+        })
+    })
+
+    saveLabourRecordBtn.addEventListener('click', function () {
+        saveLabourRecordBtn.setAttribute('disabled', 'disabled')
+        const id = saveLabourRecordBtn.dataset.id
+
+        http.patch(`/labourrecord/${id}`, getDivData(updateLabourRecordModal._element), { "html": updateLabourRecordModal._element })
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                updateLabourRecordModal.hide()
+                labourRecordTable ? labourRecordTable.draw(false) : ''
+            }
+            saveLabourRecordBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            saveLabourRecordBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
+        })
+    })
+
+    //labour summary
+    saveLabourSummaryBtn.addEventListener('click', function () {
+        saveLabourSummaryBtn.setAttribute('disabled', 'disabled')
+        const id = saveLabourSummaryBtn.dataset.id
+
+        http.patch(`/labourrecord/summary/${id}`, getDivData(saveLabourSummaryModal._element), { "html": saveLabourSummaryModal._element })
+        .then((response) => {
+            if (response.status >= 200 || response.status <= 300){
+                saveLabourSummaryModal.hide()
+                labourRecordTable ? labourRecordTable.draw(false) : ''
+                labourInProgressDebounced(0);
+            }
+            saveLabourSummaryBtn.removeAttribute('disabled')
+        })
+        .catch((error) => {
+            saveLabourSummaryBtn.removeAttribute('disabled')
+            console.log(error.response.data.message)
+        })
+    })
+
+    document.querySelectorAll('#labourRecordTable, #labourInProgressDiv').forEach(table => {
+        table.addEventListener('click', async function (event) {
+            const labourRecordBtn       = event.target.closest('.updateLabourRecordBtn, .viewLabourRecordBtn')
+            const deleteLabourRecordBtn = event.target.closest('.deleteLabourRecordBtn')
+            const labourSummaryBtn      = event.target.closest('.updateLabourSummaryBtn, .viewLabourSummaryBtn')
+            const deleteLabourSummaryBtn = event.target.closest('.deleteLabourSummaryBtn')
+            const partographBtn         = event.target.closest('.partographBtn')
+    
+            if (labourRecordBtn) {
+                const isUpdate = labourRecordBtn.id == 'updateLabourRecordBtn'
+                const [btn, modalBtn, modal ] = isUpdate ? [labourRecordBtn, saveLabourRecordBtn, updateLabourRecordModal] : [labourRecordBtn, saveLabourRecordBtn, viewLabourRecordModal]
+                btn.setAttribute('disabled', 'disabled')
+                http.get(`/labourrecord/${btn.getAttribute('data-id')}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            openModals(modal, modalBtn, response.data.data)
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+                setTimeout(()=>{btn.removeAttribute('disabled')}, 2000)
+            }
+
+            if (deleteLabourRecordBtn){
+                deleteLabourRecordBtn.setAttribute('disabled', 'disabled')
+                const id = deleteLabourRecordBtn.getAttribute('data-id')
+                const tableId = deleteLabourRecordBtn.getAttribute('data-table')
+                if (confirm('Are you sure you want to delete Labour Record?')) {
+                    http.delete(`/labourrecord/${id}`)
+                        .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                if ($.fn.DataTable.isDataTable('#' + tableId)) {
+                                    $('#' + tableId).dataTable().fnDraw(false)
+                                }
+                                labourInProgressDebounced(0)
+                            }
+                            deleteLabourRecordBtn.removeAttribute('disabled')
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                            deleteLabourRecordBtn.removeAttribute('disabled')
+                        })
+                } deleteLabourRecordBtn.removeAttribute('disabled')
+            }
+
+            if (labourSummaryBtn) {
+                const isUpdate = labourSummaryBtn.id == 'updateLabourSummaryBtn'
+                const [btn, modalBtn, modal ] = isUpdate ? [labourSummaryBtn, saveLabourSummaryBtn, saveLabourSummaryModal] : [labourSummaryBtn, saveLabourSummaryBtn, viewLabourSummaryModal]
+                btn.setAttribute('disabled', 'disabled')
+                const location = btn.dataset.location
+                if (location) {populateLabourModals([modal], btn)}
+                http.get(`/labourrecord/summary/${btn.getAttribute('data-id')}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            openModals(modal, modalBtn, response.data.data)
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+                setTimeout(()=>{btn.removeAttribute('disabled')}, 2000)
+            }
+
+            if (deleteLabourSummaryBtn){
+                deleteLabourSummaryBtn.setAttribute('disabled', 'disabled')
+                const id = deleteLabourSummaryBtn.getAttribute('data-id')
+                const tableId = deleteLabourSummaryBtn.getAttribute('data-table')
+                if (confirm('Are you sure you want to delete Labour Summary?')) {
+                    try{
+                        await httpRequest(`/labourrecord/summary/${id}`, 'DELETE')
+                        if ($.fn.DataTable.isDataTable('#' + tableId)) {
+                            $('#' + tableId).dataTable().fnDraw(false)
+                        }
+                        labourInProgressDebounced(0)
+                    } catch (error) {
+                        console.log(error)
+                        deleteLabourSummaryBtn.removeAttribute('disabled')
+                    }
+                }
+                    
+            }
+
+            if (partographBtn) {
+                partographBtn.setAttribute('disabled', 'disabled');
+                const labourRecordId = partographBtn.getAttribute('data-id');
+                partographModal._element.querySelector('#patient').value = partographBtn.getAttribute('data-patient');
+                partographModal._element.querySelector('#sponsor').value = partographBtn.getAttribute('data-sponsor');
+                partographModal._element.querySelector('#labourRecordId').value = labourRecordId;
+        
+                // Initialize charts (await since getPartographCharts is async)
+                partographCharts = await getPartographCharts(partographModal, labourRecordId);
+        
+                // Show the modal
+                partographModal.show();
+                partographBtn.removeAttribute('disabled', 'disabled');
+            }
+        })
+    })
+
+    savePatographValues(partographAddButtons, partographModal, partographCharts);
+
+    accordionCollapseList.forEach(div => {
+        const divElement = div._element
+
+        divElement.addEventListener('shown.bs.collapse', () => {
+            const tableId = divElement.dataset.table
+            const parameterType = divElement.dataset.parametertype
+            const labourRecordId = partographModal._element.querySelector('#labourRecordId').value
+            if ($.fn.DataTable.isDataTable( '#'+tableId )){
+                $('#'+tableId).dataTable().fnDestroy()
+            }
+            getPartographTable(tableId, labourRecordId, partographModal, parameterType, labourInProgressDebounced, accordionCollapseList)
+        })
+    })
+
+    partographModal._element.addEventListener('click', function (event) {
+        const deletePartographBtn = event.target.closest('.deletePartographBtn')
+        const valueSpanBtn = event.target.closest('.valueSpanBtn')
+        const recordedAtSpanBtn = event.target.closest('.recordedAtSpanBtn')
+
+        if (deletePartographBtn){
+            deletePartographBtn.setAttribute('disabled', 'disabled')
+            const id = deletePartographBtn.getAttribute('data-id')
+            const tableId = deletePartographBtn.getAttribute('data-table')
+            if (confirm('Are you sure you want to delete Partograph Record?')) {
+                http.delete(`/partograph/${id}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            if ($.fn.DataTable.isDataTable('#' + tableId)) {
+                                $('#' + tableId).dataTable().fnDraw(false)
+                            }
+                            if (partographCharts) {
+                                partographCharts.updateCharts();
+                            }
+                        }
+                        deletePartographBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        deletePartographBtn.removeAttribute('disabled')
+                    })
+            } deletePartographBtn.removeAttribute('disabled')
+        }
+
+        if (valueSpanBtn){
+            const div          = valueSpanBtn.parentElement
+            const valueInput   = div.querySelector('.valueInput')
+
+            valueSpanBtn.classList.add('d-none')
+            valueInput.classList.remove('d-none')
+
+            resetFocusEndofLine(valueInput)
+
+            valueInput.addEventListener('blur', async function () {
+                const {id, key, table: tableId} = valueInput.dataset
+
+                let record;
+                try {
+                    record = JSON.parse(valueInput.dataset.record);
+                } catch (e) {
+                    console.error('Failed to parse record:', e);
+                    record = [];
+                }
+        
+                record.value[key] = valueInput.value;
+
+                const {recordedAt, recordedAtRaw, ...newRecord} = record;
+
+                try {
+                    const partographUpdated = await httpRequest(`/partograph/${id}`, 'PATCH', {data: newRecord});
+
+                    if ($.fn.DataTable.isDataTable( '#'+tableId )){
+                            $('#'+tableId).dataTable().fnDraw()
+                        }
+                    // Update charts with fresh data
+                    if (partographCharts) {
+                        await partographCharts.updateCharts();
+                    } else {
+                        // Fallback: Reinitialize charts if partographCharts is not set
+                        partographCharts = await getPartographCharts(partographModal, labourRecordId);
+                    }
+
+                } catch (error) {
+                console.log(error);
+                button.removeAttribute('disabled');
+            }
+
+            })
+        }
+
+        if (recordedAtSpanBtn){
+            const div               = recordedAtSpanBtn.parentElement
+            const recordedAtInput   = div.querySelector('.recordedAtInput')
+
+            recordedAtSpanBtn.classList.add('d-none')
+            recordedAtInput.classList.remove('d-none')
+
+                recordedAtInput.addEventListener('blur', async function () {
+                const {id, table: tableId} = recordedAtInput.dataset
+
+                let record;
+                try {
+                    record = JSON.parse(recordedAtInput.dataset.record);
+                } catch (e) {
+                    console.error('Failed to parse record:', e);
+                    record = [];
+                }
+        
+                record.recordedAtRaw = recordedAtInput.value;
+
+                const {value: _, ...newRecord} = record;
+
+                try {
+                    const partographUpdated = await httpRequest(`/partograph/${id}`, 'PATCH', {data: newRecord});
+
+                    if ($.fn.DataTable.isDataTable( '#'+tableId )){
+                            $('#'+tableId).dataTable().fnDraw()
+                        }
+                    // Update charts with fresh data
+                    if (partographCharts) {
+                        await partographCharts.updateCharts();
+                    } else {
+                        // Fallback: Reinitialize charts if partographCharts is not set
+                        partographCharts = await getPartographCharts(partographModal, labourRecordId);
+                    }
+
+                } catch (error) {
+                console.log(error);
+                button.removeAttribute('disabled');
+            }
+
+            })
+        }
+    })
+    
 })
 
 function displayResourceList(datalistEl, data) {

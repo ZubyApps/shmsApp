@@ -18,8 +18,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
-use function Pest\Laravel\json;
-
 class PatientService
 {
     public function __construct(

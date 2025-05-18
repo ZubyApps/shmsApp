@@ -238,4 +238,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(UnitDescription::class);
     }
+
+    public function labourRecords(): HasMany
+    {
+        return $this->hasMany(LabourRecord::class);
+    }
+
+    public function partographs(): HasMany
+    {
+        return $this->hasMany(Partograph::class);
+    }
 }

@@ -44,8 +44,8 @@
                             <x-form-div class="registrationBillDiv1 col-xl-6">
                                 <x-input-span>Registration Bill</x-input-span>
                                 <select class="form-select form-select-md familyRegistrationBill" name="{{ $isUpdate ? 'registerationBill' : '' }}">
-                                    <option class="familyRegistrationBillOption" value="3500">3500</option>
-                                    <option value="1500">1500 (Upgrade)</option>
+                                    <option class="familyRegistrationBillOption" value="5000">5000</option>
+                                    <option value="1500">2000 (Upgrade)</option>
                                     <option value="old">Old</option>
                                     <option class="{{ !$isUpdate ? 'd-none' : ''  }}" value="">N/A</option>  
                                 </select>

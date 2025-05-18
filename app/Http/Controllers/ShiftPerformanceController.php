@@ -17,9 +17,6 @@ class ShiftPerformanceController extends Controller
     {
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function UpdateDeptPreformance(Request $request)
     {
         return $this->shiftPerformanceService->update();

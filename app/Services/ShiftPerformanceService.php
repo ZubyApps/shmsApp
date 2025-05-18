@@ -67,8 +67,8 @@ Class ShiftPerformanceService
                     'first_med_res'             => $this->firstMedicationResolution($shiftPerformance, $injectablePrescriptions),
                     'first_serv_res'            => $this->firstServicesResolution($shiftPerformance, $otherPrescriptions),
                     'first_vitals_res'          => $this->firstVitalsignsResolution($shiftPerformance, $shiftsVisits),
-                    'medication_time'           => $medicationTimeValues ? $medicationTimeValues['averageMedicationTime'] : $medicationTimeValues, //$this->medicationTime($shiftPerformance),
-                    'service_time'              => $serviceTimeValues ? $serviceTimeValues['averageServiceTime'] : $serviceTimeValues, //$this->serviceTime($shiftPerformance),
+                    'medication_time'           => $medicationTimeValues ? $medicationTimeValues['averageMedicationTime'] : $medicationTimeValues,
+                    'service_time'              => $serviceTimeValues ? $serviceTimeValues['averageServiceTime'] : $serviceTimeValues,
                     'inpatient_vitals_count'    => $inpatientsVitals ? $inpatientsVitals['visitsVCount'] . '/' . $inpatientsVitals['visitsCount'] : $inpatientsVitals,
                     'outpatient_vitals_count'   => $outpatientsVitals ? $outpatientsVitals['visitsVCount'] . '/' . $outpatientsVitals['visitsCount'] : $outpatientsVitals,
                     'staff'                     => $nursesOnDuty

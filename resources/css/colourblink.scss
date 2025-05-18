@@ -49,3 +49,16 @@
     color: #dc3545;
   }
 }
+
+.colour-change4 {
+  animation:colour-blink4 1s infinite;
+}
+
+@keyframes colour-blink4 {
+  100% {
+    color: #ff0623;
+  }
+  100% {
+    color: #0e0607;
+  }
+}

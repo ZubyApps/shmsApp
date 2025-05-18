@@ -32,6 +32,12 @@
 @include('nurses.wardAndBedModal', ['title' => 'Update Admission Details', 'isNurses' => false, 'id' => 'wardAndBedModal'])
 @include('doctors.appointmentModal', ['title' => 'Set Appointment', 'isDoctor' => true, 'id' => 'appointmentModal'])
 @include('doctors.procedureBookingModal', ['title' => 'Set Operation/Procedure Date & Details', 'isDoctor' => true, 'id' => 'procedureBookingModal'])
+@include('nurses.labourRecordModal', ['title' => 'New Labour Record', 'isUpdate' => false, 'dept' => 'doctors', 'isView' => false, 'id' => 'newLabourRecordModal'])
+@include('nurses.labourRecordModal', ['title' => 'Update Labour Record', 'isUpdate' => true, 'dept' => 'doctors', 'isView' => false, 'id' => 'updateLabourRecordModal'])
+@include('nurses.labourRecordModal', ['title' => 'View Labour Record', 'isUpdate' => false, 'dept' => 'doctors', 'isView' => true, 'id' => 'viewLabourRecordModal'])
+@include('nurses.summaryOfLabourModal', ['title' => 'Save Labour Summary', 'isUpdate' => true, 'dept' => 'doctors', 'isView' => false, 'id' => 'saveLabourSummaryModal'])
+@include('nurses.summaryOfLabourModal', ['title' => 'View Labour Summary', 'isUpdate' => false, 'dept' => 'doctors', 'isView' => true, 'id' => 'viewLabourSummaryModal'])
+@include('nurses.partographModal', ['title' => 'Partograph', 'isDoctor' => true, 'id' => 'partographModal', ])
 
     <div class="container mt-5">
         <input type="text" class="d-none" value="{{ $feverBenchMark }}" id="feverBenchMark">
@@ -192,6 +198,7 @@
                 <i class="bi bi-list-check"></i>
                 Procedures List <span class="badge text-bg-danger" id="proceduresListCount"></span>
             </button>
+            <div class="text-end my-2" id="labourInProgressDiv"></div>
         </div>
 
         <div>

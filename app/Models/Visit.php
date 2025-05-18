@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Log;
 
 class Visit extends Model
@@ -176,6 +177,11 @@ class Visit extends Model
     public function ward(): HasOne
     {
         return $this->hasOne(Ward::class);
+    }
+
+    public function labourRecords(): HasMany
+    {
+        return $this->hasMany(LabourRecord::class);
     }
 
     public function totalHmsBills()

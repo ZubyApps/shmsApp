@@ -32,6 +32,12 @@
 @include('extras.shiftReportTemplateModal', ['title' => 'New Report', 'isUpdate' => false, 'dept' => 'nurses', 'isView' => false, 'id' => 'newShiftReportTemplateModal'])
 @include('extras.shiftReportTemplateModal', ['title' => 'Edit Report', 'isUpdate' => true, 'dept' => 'nurses', 'isView' => false, 'id' => 'editShiftReportTemplateModal'])
 @include('extras.shiftReportTemplateModal', ['title' => 'View Report', 'isUpdate' => false, 'dept' => 'nurses', 'isView' => true, 'id' => 'viewShiftReportTemplateModal'])
+@include('nurses.labourRecordModal', ['title' => 'New Labour Record', 'isUpdate' => false, 'dept' => 'nurses', 'isView' => false, 'id' => 'newLabourRecordModal'])
+@include('nurses.labourRecordModal', ['title' => 'Update Labour Record', 'isUpdate' => true, 'dept' => 'nurses', 'isView' => false, 'id' => 'updateLabourRecordModal'])
+@include('nurses.labourRecordModal', ['title' => 'View Labour Record', 'isUpdate' => false, 'dept' => 'nurses', 'isView' => true, 'id' => 'viewLabourRecordModal'])
+@include('nurses.summaryOfLabourModal', ['title' => 'Save Labour Summary', 'isUpdate' => true, 'dept' => 'nurses', 'isView' => false, 'id' => 'saveLabourSummaryModal'])
+@include('nurses.summaryOfLabourModal', ['title' => 'View Labour Summary', 'isUpdate' => false, 'dept' => 'nurses', 'isView' => true, 'id' => 'viewLabourSummaryModal'])
+@include('nurses.partographModal', ['title' => 'Partograph', 'isDoctor' => true, 'id' => 'partographModal', ])
 
 <div class="container mt-5">
     <input type="text" class="d-none" value="{{ $feverBenchMark }}" id="feverBenchMark">
@@ -211,7 +217,11 @@
         <button type="button" id="shiftReportBtn" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#shiftReportOffcanvas" aria-controls="emergencyListOffcanvas">
             General Shift Reports <span class="badge text-bg-danger" id="shiftBadgeSpan"></span>
         </button>
-        <div class="text-end my-2" id="shiftPerformanceDiv"></div>
+        <div class="row">
+            <div class="col-xl-6 mt-2" id="labourInProgressDiv"></div>
+            <div class="col-xl-6 text-end my-2" id="shiftPerformanceDiv"></div>
+
+        </div>
     </div>
 
     <div>

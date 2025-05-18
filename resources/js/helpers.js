@@ -2,6 +2,9 @@ import $ from 'jquery';
 import http from "./http";
 import { getAncPatientsVisitTable, getInpatientsVisitTable, getOutpatientsVisitTable } from './tables/doctorstables';
 import { isNumber } from 'chart.js/helpers';
+import { elements } from 'chart.js';
+import { httpRequest } from './httpHelpers';
+import { getPartographCharts } from './charts/partographCharts';
 
 function clearDivValues(div) {
     const tagName = div.querySelectorAll('input, select, textarea')
@@ -64,8 +67,14 @@ function getOrdinal(n) {
     ]
 
     fields.forEach(select => {
-        select.hasAttribute('name') ?
-            data[select.name] = select.value : ''
+        if (select.hasAttribute('name')){
+            if (select.type == 'checkbox'){
+                data[select.name] = select.checked
+            } else {
+                data[select.name] = select.value
+            }
+
+        }
     })
 
     return data
@@ -111,9 +120,15 @@ function dispatchEvent(tag, event) {
 
 function handleValidationErrors(errors, domElement) {
     let elementId = []
+    let element;
+
     for (const name in errors) {
-        const element = domElement.querySelector(`[name="${ name }"]`)
-        
+        if (name.split('.')[0] == 'value'){
+            element = domElement.querySelector(`[name="${ name.split('.')[1] }"]`)
+        } else {
+            element = domElement.querySelector(`[name="${ name }"]`)
+        }
+
         elementId.push(element.id)
 
         element.classList.add('is-invalid')
@@ -177,10 +192,13 @@ function getDatalistOptionStock(modal, inputEl, datalistEl) {
 
 function openModals(modal, button, {id, ...data}) {
     for (let name in data) {
-
         const nameInput = modal._element.querySelector(`[name="${ name }"]`)
 
-        nameInput.value = data[name]
+        if (nameInput.type == 'checkbox'){
+            nameInput.checked = data[name];
+        } else {
+            nameInput.value = data[name]
+        }
     }
     
     button.setAttribute('data-id', id)
@@ -286,7 +304,7 @@ const detailsBtn2 = (row) => {
             </a>
                 <ul class="dropdown-menu">
                 <li>
-                    <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details" data-id="${ row.id }" data-visittype="${ row.visitType }" data-patientid="${ row.patientId }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">
+                    <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details" data-id="${ row.id }" data-visittype="${ row.visitType }" data-patientid="${ row.patientId }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-age="${ row.age }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">
                         Details
                     </a>
                     <a class="dropdown-item markDoneBtn btn tooltip-test" title="${row.nurseDoneBy ? 'Unmark?' : 'mark?'}"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
@@ -312,7 +330,7 @@ const detailsBtn1 = (row) => {
         </a>
             <ul class="dropdown-menu">
             <li>
-                <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details" data-id="${ row.id }" data-visittype="${ row.visitType }" data-patientid="${ row.patientId }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">
+                <a class=" btn btn-outline-primary dropdown-item consultationDetailsBtn tooltip-test" title="details" data-id="${ row.id }" data-visittype="${ row.visitType }" data-patientid="${ row.patientId }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-age="${ row.age }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}">
                     Details
                 </a>
                 <a class="dropdown-item reportsListBtn btn tooltip-test" title="write report"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
@@ -639,6 +657,13 @@ const populateVitalsignsModal = (modal, btn, id) => {
     modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-ancregid', id)
 }
 
+const populateLabourModals = (modals, btn) => {
+    modals.forEach(modal => {
+        populatePatientSponsor(modal, btn)
+        modal._element.querySelector('#age').value = btn.getAttribute('data-age')
+    })
+}
+
 const displayItemsList = (datalistEl, data, optionName) => {
     data.forEach(line => {
         const option = document.createElement("OPTION")
@@ -693,7 +718,7 @@ const getShiftPerformance = (dept, div) => {
                 let notDonePatientsServices     = ''
 
                 details.inpatientsNoV.length > 0 ? details.inpatientsNoV.forEach(patient => {
-                    inpatients +=  `<li class="dropdown-item text-secondary inpatientsNov" data-patient="${patient.split(" ")[0]}">${patient}</li>`
+                    inpatients +=  `<li class="dropdown-item text-secondary inpatientsNov goToPatientsVisit" data-patient="${patient.split(" ")[0]}">${patient}</li>`
                  }) : ''
 
                 details.outpatientsNoV.length > 0 ? details.outpatientsNoV.forEach(patient => {
@@ -701,27 +726,27 @@ const getShiftPerformance = (dept, div) => {
                  }) : ''
 
                 details.notChartedInjectables.length > 0 ? details.notChartedInjectables.forEach(patient => {
-                    noChatPatientsInjectables +=  `<li class="dropdown-item text-secondary patientInjNotCharted" data-patient="${patient.split(" ")[0]}">${patient}</li>`
+                    noChatPatientsInjectables +=  `<li class="dropdown-item text-secondary patientInjNotCharted goToPatientsVisit" data-patient="${patient.split(" ")[0]}">${patient}</li>`
                  }) : ''
 
                 details.notChartedOthers.length > 0 ? details.notChartedOthers.forEach(patient => {
-                    noChatPatientsOthers +=  `<li class="dropdown-item text-secondary patientOthersNotCharted" data-patient="${patient.split(" ")[0]}">${patient}</li>`
+                    noChatPatientsOthers +=  `<li class="dropdown-item text-secondary patientOthersNotCharted goToPatientsVisit" data-patient="${patient.split(" ")[0]}">${patient}</li>`
                  }) : ''
                 
                 details.notStartedInjectables.length > 0 ? details?.notStartedInjectables?.forEach(patient => {
-                    noStartPatientsInjectables +=  `<li class="dropdown-item text-secondary patientInjNotStarted" data-patient="${patient.split(" ")[0]}">${patient}</li>`
+                    noStartPatientsInjectables +=  `<li class="dropdown-item text-secondary patientInjNotStarted goToPatientsVisit" data-patient="${patient.split(" ")[0]}">${patient}</li>`
                  }) : ''
 
                 details.notStartedOthers.length > 0 ? details.notStartedOthers.forEach(patient => {
-                    noStartPatientsOthers +=  `<li class="dropdown-item text-secondary patientOthersNotStarted" data-patient="${patient.split(" ")[0]}">${patient}</li>`
+                    noStartPatientsOthers +=  `<li class="dropdown-item text-secondary patientOthersNotStarted goToPatientsVisit" data-patient="${patient.split(" ")[0]}">${patient}</li>`
                  }) : ''
                 
                 details.notGivenMedications.length > 0 ? details.notGivenMedications.forEach(patient => {
-                    notGivenPatientsMedications +=  `<li class="dropdown-item text-secondary patientOthersNotStarted" data-patient="${patient.split(" ")[0]}">${patient}</li>`
+                    notGivenPatientsMedications +=  `<li class="dropdown-item text-secondary patientOthersNotStarted goToPatientsVisit" data-patient="${patient.split(" ")[0]}">${patient}</li>`
                  }) : ''
                  
                 details.notDoneServices.length > 0 ? details.notDoneServices.forEach(patient => {
-                    notDonePatientsServices +=  `<li class="dropdown-item text-secondary patientOthersNotStarted" data-patient="${patient.split(" ")[0]}">${patient}</li>`
+                    notDonePatientsServices +=  `<li class="dropdown-item text-secondary patientOthersNotStarted goToPatientsVisit" data-patient="${patient.split(" ")[0]}">${patient}</li>`
                  }) : ''
                 
                 div.innerHTML = `
@@ -1069,4 +1094,185 @@ const populateModal = ({ modal, sourceBtn, attributes = [], values = [], element
     });
 };
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider, dynamicDebounce, visitType, populateModal}
+const exclusiveCheckboxer = ({className, modal }) => {
+    const checkboxes = modal._element.querySelectorAll(className);
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('click', () => {
+            checkboxes.forEach(otherCheckbox => {
+                if (otherCheckbox !== checkbox) {
+                    otherCheckbox.checked = false;
+                }
+            });
+        });
+    });
+};
+
+const setAttributesId = (elements, attributes, ids) => {
+    elements.forEach(element => {
+        ids.forEach(id => {
+            attributes.forEach(attr => {
+                element.setAttribute(attr, id);
+            })
+        })
+    })
+}
+
+const savePatographValues = (buttons, modal, partographCharts) => {
+    buttons.forEach(button => {
+        button.addEventListener('click', async () => {
+            button.setAttribute('disabled', 'disabled');
+    
+            const div = button.parentElement.parentElement;
+            const labourRecordId = modal._element.querySelector('#labourRecordId').value;
+            const { param: parameterType, table: tableId } = button.dataset;
+            const data = { ...getPartographDivData(div), parameterType, labourRecordId };
+            try {
+                const responseData = await httpRequest(`/partograph`, 'POST', {
+                    data,
+                    html: div
+                }, 'Failed to save partograph');
+                clearDivValues(div);
+                clearValidationErrors(div);
+                button.removeAttribute('disabled');
+                // update table
+                if ($.fn.DataTable.isDataTable( '#'+tableId )){
+                        $('#'+tableId).dataTable().fnDraw()
+                    }
+                // Update charts with fresh data
+                if (partographCharts) {
+                    await partographCharts.updateCharts();
+                } else {
+                    // Fallback: Reinitialize charts if partographCharts is not set
+                    partographCharts = await getPartographCharts(partographModal, labourRecordId);
+                }
+            } catch (error) {
+                console.log(error);
+                button.removeAttribute('disabled');
+            }
+        });
+    });
+
+    modal._element.addEventListener('hidden.bs.modal', function () {
+        clearValidationErrors(modal._element)
+    })
+}
+
+function getPartographDivData(div) {
+    let data = {}
+    const fields = [
+        ...div.getElementsByTagName('input'),
+        ...div.getElementsByTagName('select'),
+        ...div.getElementsByTagName('textarea')
+    ]
+
+    fields.forEach(select => {
+        if (select.hasAttribute('name')){
+            if (select.classList.contains('value')){
+                if (!data['value']) {
+                    data['value'] = {};
+                }
+                data['value'][select.name] = select.value;
+            } else {
+                data[select.name] = select.value
+            }
+
+        }
+    })
+
+
+    return data
+}
+
+ const getLabourInProgressDetails = async (div) => {
+    try {
+        
+        const labourInProgressDetails = await httpRequest(`/labourrecord/inprogress`, 'GET', {}, 'Failed to get labour in progress details')
+        let displayRecords = '';
+        let nextCervixCheck = [];
+        
+        if (labourInProgressDetails.length == 0){return div.innerHTML = ''}
+
+        labourInProgressDetails.forEach(record => {
+            nextCervixCheck.push({
+                patient : record.patient.split(' ')[1],
+                time : record.nextCervixCheck
+            })
+            
+            displayRecords += `
+            <li class=" text-secondary p-0">
+                <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
+                    <li class="dropdown-item text-secondary">${record.patient} (${record.sponsorName} - ${record.sponsorCategory})</li>
+                </button>
+                <ul class="dropdown-menu">
+                    <li class="dropdown-item text-secondary">Onset: ${record.onset}</li>
+                    <li class="dropdown-item text-secondary">Contractions Began: ${record.contractionsBegan}</li>
+                    <li class="dropdown-item text-secondary">Labour Record Created At : ${record.date}</li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="dropdown-item text-secondary">Examiner: ${record.examiner}</li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="dropdown-item text-secondary partographBtn" data-id="${record.id}" data-patient="${record.patient}" data-sponsor="${record.sponsorName + ' - ' + record.sponsorCategory}">Click to view Partograph</li>
+                    <li class="dropdown-item text-secondary goToPatientsVisit" data-patient="${record.patient.split(" ")[0]}">Click to go to Patient's visit</li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="dropdown-item text-secondary updateLabourSummaryBtn" id="updateLabourSummaryBtn" data-id="${record.id}" data-sponsorcat="${record.sponsorCategory}" data-patient="${ record.patient }" data-age="${ record.age }" data-sponsor="${ record.sponsorName }" data-location="labourInProgress">Click to Summarize Labour (After Delivery)</li>
+                </ul>
+            </li>`
+        })
+    
+        div.innerHTML = `
+            <button type="button" id="labourInProgressDropdown" class="btn p-0 position-relative fw-semibold fs-6" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                <div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
+                    <div class="progress-bar text-black fw-semibold fs-6 overflow-visible bg-warning px-2" style="width: 100%;"> Labour in Progress (${labourInProgressDetails.length}) <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="timeLeftToVE">${getTimeToNextObservation(nextCervixCheck)}</span></div>
+                </div>
+            </button>
+            <ul class="dropdown-menu mainUl">
+                ${displayRecords}
+            </ul>`
+    } catch (error) {
+        console.log(error)
+    }
+
+ }
+
+let veSetInt; // Persist interval reference outside the function
+
+const getTimeToNextObservation = (timeForObservation) => {
+    // Find the object with the closest (soonest) time in the future
+    if (!Array.isArray(timeForObservation) || timeForObservation.length === 0) return '';
+    
+    // Filter out any invalid or missing time values
+    const validTimes = timeForObservation.filter(obj => obj && obj.time && new Date(obj.time) > new Date());
+    // If no valid times, return empty string
+    if (validTimes.length === 0) return '';
+
+    // Find the object with the minimum time (soonest)
+    const closestObj = validTimes.reduce((minObj, obj) => {
+        return new Date(obj.time) < new Date(minObj.time) ? obj : minObj;
+    });
+    
+    const closestTime = closestObj.time;
+    const timeLeft = getMinsDiff(new Date(), new Date(closestTime))
+    
+    if (timeLeft <= 30 && timeLeft >= 0){
+        clearInterval(veSetInt);
+        veSetInt = setInterval(function () {
+            const timeLeftNow = new Date(closestTime).getTime() - new Date().getTime()
+            
+            let mins = Math.floor((timeLeftNow % (1000 * 60 * 60)) / (1000 * 60))
+            let secs = Math.floor((timeLeftNow % (1000 * 60)) / 1000)
+
+            if (timeLeftNow > 0 ){
+                document.getElementById("timeLeftToVE").innerHTML = 'Next VE for '+ closestObj.patient + ' ' + mins + ' mins ' + secs + ' secs' + ' left';
+            } else {
+                document.getElementById("timeLeftToVE").innerHTML
+                clearInterval(veSetInt);
+            }
+
+        }, 1000)
+    } else {
+        clearInterval(veSetInt);
+    }
+
+    return ''
+}
+
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider, dynamicDebounce, visitType, populateModal, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, getPartographDivData, getLabourInProgressDetails, getTimeToNextObservation}

@@ -77,6 +77,32 @@
                         </div>
                         @if (!$isAnc && !$isLab && !$isHmo)   
                         <div class="my-2 form-control">
+                            <span class="fw-bold"> Labour Record </span>
+                            <div class="text-start py-3">
+                                <button type="button" id="newLabourRecordBtn" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle me-1"></i>
+                                    Labour
+                                </button>
+                            </div>
+                            <div class="row overflow-auto m-1">
+                                <table id="labourRecordTable" class="table table-sm labourRecordTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Onset</th>
+                                            <th>Membrane Rupture</th>
+                                            <th>Contractions Began</th>
+                                            <th>Examiner</th>
+                                            <th>Labour Summary</th>
+                                            <th>Labour Record</th>
+                                            <th>Partograph</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="my-2 form-control">
                             <span class="fw-bold"> Delivery Note </span>
                             <div class="text-start py-3">
                                 <button type="button" id="newDeliveryNoteBtn" class="btn btn-primary">

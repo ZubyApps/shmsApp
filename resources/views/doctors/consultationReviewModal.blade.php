@@ -98,53 +98,79 @@
                         </div>
                         <div id="consultationReviewDiv" data-bs-spy="scroll" tabindex="0" data-bs-smooth-scroll="true">
                         </div>
-                        @if (!$isAnc)   
-                        <div class="my-2 form-control">
-                            <span class="fw-bold text-primary"> Delivery Note </span>
-                            <div class="row overflow-auto m-1">
-                                <table id="deliveryNoteTable" class="table table-sm deliveryNoteTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Time of Admission</th>
-                                            <th>Time of Delivery</th>
-                                            <th>Mode of Delivery</th>
-                                            <th>Sex</th>
-                                            <th>EBL</th>
-                                            <th>Nurse</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
+                        @if (!$isAnc)
+                            <div class="my-2 form-control">
+                                <span class="fw-bold"> Labour Record </span>
+                                <div class="text-start py-3">
+                                    <button type="button" id="newLabourRecordBtn" class="btn btn-primary">
+                                        <i class="bi bi-plus-circle me-1"></i>
+                                        Labour
+                                    </button>
+                                </div>
+                                <div class="row overflow-auto m-1">
+                                    <table id="labourRecordTable" class="table table-sm labourRecordTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Onset</th>
+                                                <th>Membrane Rupture</th>
+                                                <th>Contractions Began</th>
+                                                <th>Examiner</th>
+                                                <th>Labour Summary</th>
+                                                <th>Labour Record</th>
+                                                <th>Partograph</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-                        <div class="mb-2 form-control">
-                            <x-form-span>Surgery Note</x-form-span>
-                            <div class="text-start py-3">
-                                <button type="button" id="newSurgeryBtn" class="btn btn-primary">
-                                    <i class="bi bi-plus-circle me-1"></i>
-                                    Surgery
-                                </button>
+                            <div class="my-2 form-control">
+                                <span class="fw-bold text-primary"> Delivery Note </span>
+                                <div class="row overflow-auto m-1">
+                                    <table id="deliveryNoteTable" class="table table-sm deliveryNoteTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Time of Admission</th>
+                                                <th>Time of Delivery</th>
+                                                <th>Mode of Delivery</th>
+                                                <th>Sex</th>
+                                                <th>EBL</th>
+                                                <th>Nurse</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
                             </div>
-                            <div class="row overflow-auto m-1">
-                                <table id="surgeryNoteTable" class="table table-sm surgeryNoteTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Operation</th>
-                                            <th>Aneasthesia</th>
-                                            <th>Surgeon</th>
-                                            <th>Surgeons Notes</th>
-                                            <th>PostOp Notes</th>
-                                            <th>Saved By</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
+                            <div class="mb-2 form-control">
+                                <x-form-span>Surgery Note</x-form-span>
+                                <div class="text-start py-3">
+                                    <button type="button" id="newSurgeryBtn" class="btn btn-primary">
+                                        <i class="bi bi-plus-circle me-1"></i>
+                                        Surgery
+                                    </button>
+                                </div>
+                                <div class="row overflow-auto m-1">
+                                    <table id="surgeryNoteTable" class="table table-sm surgeryNoteTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Operation</th>
+                                                <th>Aneasthesia</th>
+                                                <th>Surgeon</th>
+                                                <th>Surgeons Notes</th>
+                                                <th>PostOp Notes</th>
+                                                <th>Saved By</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
                         @endif
                         @if ($isAnc)
                             <div class="my-2 ancReviewDiv">
