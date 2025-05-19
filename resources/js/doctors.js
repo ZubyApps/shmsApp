@@ -8,7 +8,7 @@ import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsu
 import { getAncVitalsignsChart, getVitalsignsChartByVisit } from "./charts/vitalsignsCharts"
 import $ from 'jquery';
 import { getbillingTableByVisit } from "./tables/billingTables"
-import { getAncVitalSignsTable, getDeliveryNoteTable, getEmergencyTable, getNurseMedicationsByFilter, getPartographTable } from "./tables/nursesTables"
+import { getAncVitalSignsTable, getDeliveryNoteTable, getEmergencyTable, getLabourRecordTable, getNurseMedicationsByFilter, getPartographTable } from "./tables/nursesTables"
 import { visitDetails } from "./dynamicHTMLfiles/visits"
 import html2pdf  from "html2pdf.js"
 import { getAppointmentsTable } from "./tables/appointmentsTables"
