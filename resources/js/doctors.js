@@ -1,7 +1,7 @@
 import { Modal, Toast, Offcanvas, Collapse } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal, populateAncReviewDiv, resetFocusEndofLine, populateAppointmentModal, displayWardList, clearSelectList, debounce, populateModal, getLabourInProgressDetails, dynamicDebounce, populateLabourModals, exclusiveCheckboxer, savePatographValues} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal, populateAncReviewDiv, resetFocusEndofLine, populateAppointmentModal, displayWardList, clearSelectList, debounce, populateModal, getLabourInProgressDetails, dynamicDebounce, populateLabourModals, exclusiveCheckboxer, savePatographValues, setAttributesId} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
 import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable, getOtherPrescriptionsByFilter, getMedicalReportTable, getPatientsFileTable, getProceduresListTable} from "./tables/doctorstables"
@@ -269,8 +269,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 consultationReviewBtn.setAttribute('disabled', 'disabled')
 
                 const { id: visitId, ancregid: ancRegId, doctordone: isDoctorDone, closed, patientid: patientId, sponsorcat: sponsorCat, visittype: visitType} = consultationReviewBtn.dataset;
-
-                uploadFileBtn.setAttribute('data-id', visitId); createSurgeryNoteBtn.setAttribute('data-id', visitId); 
+                setAttributesId([createSurgeryNoteBtn, uploadFileBtn, createLabourRecordBtn], ['data-visitid'], [visitId]);
                 const isAnc = visitType === 'ANC'
                 resourceInput.forEach(input => {input.setAttribute('data-sponsorcat', consultationReviewBtn.getAttribute('data-sponsorcat'))})
 
@@ -523,7 +522,7 @@ window.addEventListener('DOMContentLoaded', function () {
     fileBtns.forEach(btn => {btn.addEventListener('click', function() {fileModal.show()})}); newSurgeryBtn.addEventListener('click', function() {newSurgeryModal.show()});
 
     uploadFileBtn.addEventListener('click', function() { uploadFileBtn.setAttribute('disabled', 'disabled')
-        const visitId = uploadFileBtn.getAttribute('data-id')
+        const visitId = uploadFileBtn.getAttribute('data-visitid')
         http.post(`/patientsfiles/${visitId}`, { filename : fileModal._element.querySelector('#filename').value,
             patientsFile: fileModal._element.querySelector('#patientsFile').files[0],
             thirdParty : fileModal._element.querySelector('#thirdParty').value,
@@ -1402,7 +1401,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     createSurgeryNoteBtn.addEventListener('click', function () {
         createSurgeryNoteBtn.setAttribute('disabled', 'disabled')
-        const visitId = createSurgeryNoteBtn.dataset.id
+        const visitId = createSurgeryNoteBtn.dataset.visitid
 
         let data = { ...getDivData(newSurgeryModal._element), visitId }
         http.post('/surgerynote', {...data}, {"html": newSurgeryModal._element})
@@ -1611,7 +1610,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
         .catch((error) => {
             createLabourRecordBtn.removeAttribute('disabled')
-            console.log(error.response.data.message)
+            console.log(error.response.data)
         })
     })
 
