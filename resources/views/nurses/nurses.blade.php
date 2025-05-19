@@ -197,7 +197,7 @@
         </div>
     </div>
 
-    <div class="text-start mb-4">
+    <div class="text-start mb-2">
         <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="waitingBtn" data-bs-target="#waitingListOffcanvas2" aria-controls="waitingListOffcanvas2">
             <i class="bi bi-list-check"></i>
             Waiting List
@@ -217,11 +217,11 @@
         <button type="button" id="shiftReportBtn" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#shiftReportOffcanvas" aria-controls="emergencyListOffcanvas">
             General Shift Reports <span class="badge text-bg-danger" id="shiftBadgeSpan"></span>
         </button>
-        <div class="row">
-            <div class="col-xl-6 mt-2" id="labourInProgressDiv"></div>
-            <div class="col-xl-6 text-end my-2" id="shiftPerformanceDiv"></div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-xl-6" id="labourInProgressDiv"></div>
+        <div class="col-xl-6 text-end my-2" id="shiftPerformanceDiv"></div>
 
-        </div>
     </div>
 
     <div>

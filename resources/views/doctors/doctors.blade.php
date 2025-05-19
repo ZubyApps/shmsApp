@@ -177,7 +177,7 @@
             </div>
         </div>
 
-        <div class="text-start mb-4">
+        <div class="text-start mb-2">
             <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" id="waitingBtn"
                 data-bs-target="#waitingListOffcanvas1" aria-controls="waitingListOffcanvas">
                 <i class="bi bi-list-check"></i>
@@ -198,8 +198,8 @@
                 <i class="bi bi-list-check"></i>
                 Procedures List <span class="badge text-bg-danger" id="proceduresListCount"></span>
             </button>
-            <div class="text-end my-2" id="labourInProgressDiv"></div>
         </div>
+        <div class="text-end mb-2" id="labourInProgressDiv"></div>
 
         <div>
             <nav>
