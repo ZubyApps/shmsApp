@@ -113,7 +113,7 @@
                                             <tr>
                                                 <th>Date</th>
                                                 <th>Onset</th>
-                                                <th>Membrane Rupture</th>
+                                                <th>Cervical Dilation</th>
                                                 <th>Contractions Began</th>
                                                 <th>Examiner</th>
                                                 <th>Labour Summary</th>

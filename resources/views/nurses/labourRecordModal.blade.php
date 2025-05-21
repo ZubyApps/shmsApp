@@ -98,6 +98,11 @@
                                             <x-form-input name="oxytocies" class="form-check-input py-3 mt-0" type="checkbox" :disabled="$isView"/>
                                         </x-form-div>
                                         <x-form-div>
+                                            <x-input-span >Cervical DIlation</x-input-span>
+                                            <x-form-input name="cervicalDilation"  :readonly="$isView"/>
+                                            <x-input-span >cm</x-input-span>
+                                        </x-form-div>
+                                        <x-form-div>
                                             <x-input-span >Membrane Ruptured at</x-input-span>
                                             <x-form-input name="mRupturedAt" type="datetime-local"  :readonly="$isView"/>
                                         </x-form-div>

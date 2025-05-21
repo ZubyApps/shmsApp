@@ -1201,11 +1201,13 @@ function getPartographDivData(div) {
             displayRecords += `
             <li class=" text-secondary p-0">
                 <button type="button" class="btn p-0 position-relative border-0 dropdown-item" data-bs-toggle="dropdown" aria-expanded="false">
-                    <li class="dropdown-item text-secondary">${record.patient} (${record.sponsorName} - ${record.sponsorCategory})</li>
+                    <li class="dropdown-item text-secondary">${record.patient} - ${record.age} - (${record.sponsorName} - ${record.sponsorCategory})</li>
                 </button>
                 <ul class="dropdown-menu">
+                    <li class="dropdown-item text-secondary fw-semibold">Inital Examination</li>
                     <li class="dropdown-item text-secondary">Onset: ${record.onset}</li>
                     <li class="dropdown-item text-secondary">Contractions Began: ${record.contractionsBegan}</li>
+                    <li class="dropdown-item text-secondary">Cervical Dilation: ${record.cervicalDilation}cm</li>
                     <li class="dropdown-item text-secondary">Labour Record Created At : ${record.date}</li>
                     <li><hr class="dropdown-divider"></li>
                     <li class="dropdown-item text-secondary">Examiner: ${record.examiner}</li>

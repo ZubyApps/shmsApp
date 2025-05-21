@@ -28,6 +28,7 @@ return new class extends Migration
             $table->boolean('induced')->default(false);
             $table->boolean('amniotomy')->default(false);
             $table->boolean('oxytocies')->default(false);
+            $table->string('cervical_dilation')->nullable(false);
             $table->dateTime('m_ruptured_at')->nullable();
             $table->dateTime('contractions_began')->nullable();
             

@@ -32,6 +32,7 @@ Class LabourRecordService
             'induced' => $data->induced,
             'amniotomy' => $data->amniotomy,
             'oxytocies' => $data->oxytocies,
+            'cervical_dilation' => $data->cervicalDilation,
             'm_ruptured_at' => $data->mRupturedAt,
             'contractions_began' => $data->contractionsBegan,
 
@@ -92,6 +93,7 @@ Class LabourRecordService
             'induced' => $data->induced,
             'amniotomy' => $data->amniotomy,
             'oxytocies' => $data->oxytocies,
+            'cervical_dilation' => $data->cervicalDilation,
             'm_ruptured_at' => $data->mRupturedAt,
             'contractions_began' => $data->contractionsBegan,
 
@@ -287,9 +289,9 @@ Class LabourRecordService
                 'date'              => $labourRecord->created_at->format('d/m/y g:ia'),
                 'onset'             => $labourRecord->onset ? $labourRecord->onset->format('d/m/y g:ia') : '',
                 'onsetHours'        => $labourRecord->onset_hours ? $labourRecord->onset_hours . 'hr(s)' : '',
-                'membranesRuptured' => $labourRecord->m_ruptured_at ?  $labourRecord->m_ruptured_at->format('d/m/y g:ia') : '',
                 'contractionsBegan' => $labourRecord->contractions_began ? $labourRecord->contractions_began->format('d/m/y g:ia') : '',
                 'examiner'          => $labourRecord->user->username,
+                'cervicalDilation'  => $labourRecord->cervical_dilation,
                 'patient'           => $labourRecord->visit->patient->patientId(),
                 'age'               => $labourRecord->visit->patient->age(),
                 'sponsorName'       => $labourRecord->visit->sponsor->name,
