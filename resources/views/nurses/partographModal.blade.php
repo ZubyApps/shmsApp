@@ -30,12 +30,12 @@
                                 <x-form-span>Fetal Heart Rate</x-form-span>
                                 <div class="accordion " id="accordionFlushExample">
                                     <div class="accordion-item">
-                                      <h2 class="accordion-header">
+                                        <h2 class="accordion-header">
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                                          <span>Fetal Heart Rate Input & Table</span>
+                                            <span>Fetal Heart Rate Input & Table</span>
                                         </button>
-                                      </h2>
-                                      <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample" data-table="fetalHeartRateTable" data-parametertype="fetal_heart_rate">
+                                        </h2>
+                                        <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample" data-table="fetalHeartRateTable" data-parametertype="fetal_heart_rate">
                                         <div class="accordion-body">
                                             <div class="form-control mb-1">
                                                     <x-form-span><small>Fetal Heart Rate Input</small></x-form-span>
@@ -72,7 +72,7 @@
                                                 </table>
                                             </div>
                                         </div>
-                                      </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="overflow-auto">
@@ -85,12 +85,12 @@
                                 <x-form-span>Cervix Dialation & Presenting Part Descent</x-form-span>
                                 <div class="accordion " id="accordionFlushExample">
                                     <div class="accordion-item">
-                                      <h2 class="accordion-header">
+                                        <h2 class="accordion-header">
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                                          <span>Cervical Dilation Input & Table</span>
+                                            <span>Cervical Dilation Input & Table</span>
                                         </button>
-                                      </h2>
-                                      <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample" data-table="cervicalDilationTable" data-parametertype="cervical_dilation">
+                                        </h2>
+                                        <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample" data-table="cervicalDilationTable" data-parametertype="cervical_dilation">
                                         <div class="accordion-body">
                                             <div class="form-control mb-1">
                                                     <x-form-span><small>Cervical Dilation</small></x-form-span>
@@ -127,15 +127,15 @@
                                                 </table>
                                             </div>
                                         </div>
-                                      </div>
+                                        </div>
                                     </div>
                                     <div class="accordion-item">
-                                      <h2 class="accordion-header">
+                                        <h2 class="accordion-header">
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
                                             <span>Descent Input & Table</span>
                                         </button>
-                                      </h2>
-                                      <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample" data-table="descentTable" data-parameterType="descent">
+                                        </h2>
+                                        <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample" data-table="descentTable" data-parameterType="descent">
                                         <div class="accordion-body">
                                             <div class="form-control">
                                                 <x-form-span><small>Descent</small></x-form-span>
@@ -171,7 +171,7 @@
                                                 </table>
                                             </div>
                                         </div>
-                                      </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="overflow-auto">
@@ -184,12 +184,12 @@
                                 <x-form-span>Uterine Contractions</x-form-span>
                                 <div class="accordion " id="accordionFlushExample">
                                     <div class="accordion-item">
-                                      <h2 class="accordion-header">
+                                        <h2 class="accordion-header">
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
-                                          <span>Contractions Input & Table</span>
+                                            <span>Contractions Input & Table</span>
                                         </button>
-                                      </h2>
-                                      <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample" data-table="uterineContractionsTable" data-parametertype="uterine_contractions">
+                                        </h2>
+                                        <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample" data-table="uterineContractionsTable" data-parametertype="uterine_contractions">
                                         <div class="accordion-body">
                                             <div class="form-control mb-1">
                                                 <x-form-span><small>Uterine Contractions Input</small></x-form-span>
@@ -239,7 +239,7 @@
                                                 </table>
                                             </div>
                                         </div>
-                                      </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="overflow-auto">

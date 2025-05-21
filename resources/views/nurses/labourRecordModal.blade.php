@@ -99,7 +99,7 @@
                                         </x-form-div>
                                         <x-form-div>
                                             <x-input-span >Cervical DIlation</x-input-span>
-                                            <x-form-input name="cervicalDilation"  :readonly="$isView"/>
+                                            <x-form-input name="cervicalilation"  :readonly="$isView"/>
                                             <x-input-span >cm</x-input-span>
                                         </x-form-div>
                                         <x-form-div>
@@ -172,6 +172,7 @@
                                         <x-form-input name="foetalHeartRate" id="pulseRate" :readonly="$isView"/>
                                     </x-form-div>
                                 </div>
+                            </div>
                         </div>
                         <div class="mb-2 form-control">
                             <x-form-span>PV</x-form-span>
