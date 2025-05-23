@@ -75,11 +75,13 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="overflow-auto">
+                                {{-- <div class="overflow-auto">
                                     <div class="chart-container" style="position: relative; height:80vh; width:70vw">
-                                        <canvas id="fetalHeartRateChart"></canvas>
                                     </div>
-                                </div>
+                                </div> --}}
+                                <x-chart-canvas-div>
+                                    <canvas id="fetalHeartRateChart"></canvas>
+                                </x-chart-canvas-div>
                             </div>
                             <div class="form-control mb-2">
                                 <x-form-span>Cervix Dialation & Presenting Part Descent</x-form-span>

@@ -28,6 +28,7 @@ class LabourRecordResource extends JsonResource
             'induced' => $this->induced,
             'amniotomy' => $this->amniotomy,
             'oxytocies' => $this->oxytocies,
+            'cervicalDilation' => $this->cervical_dilation,
             'mRupturedAt' => $this->m_ruptured_at ? $this->m_ruptured_at->toDateTimeString() : null,
             'contractionsBegan' => $this->contractions_began ? $this->contractions_began->toDateTimeString() : null,
 

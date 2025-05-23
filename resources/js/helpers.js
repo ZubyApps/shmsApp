@@ -1207,7 +1207,7 @@ function getPartographDivData(div) {
                     <li class="dropdown-item text-secondary fw-semibold">Inital Examination</li>
                     <li class="dropdown-item text-secondary">Onset: ${record.onset}</li>
                     <li class="dropdown-item text-secondary">Contractions Began: ${record.contractionsBegan}</li>
-                    <li class="dropdown-item text-secondary">Cervical Dilation: ${record.cervicalDilation}cm</li>
+                    <li class="dropdown-item text-secondary">Cervical Dilation: ${record.cervicalDilation ? record.cervicalDilation + 'cm' : ''}</li>
                     <li class="dropdown-item text-secondary">Labour Record Created At : ${record.date}</li>
                     <li><hr class="dropdown-divider"></li>
                     <li class="dropdown-item text-secondary">Examiner: ${record.examiner}</li>

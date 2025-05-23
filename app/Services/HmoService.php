@@ -520,8 +520,8 @@ class HmoService
                             ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
                             ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', $searchTerm);
+                            ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
+                            // ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', $searchTerm);
                         })
                         ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
                         ->orderBy($orderBy, $orderDir)
@@ -538,8 +538,8 @@ class HmoService
                             ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
                             ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', $searchTerm);
+                            ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
+                            // ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', $searchTerm);
                         })
                         ->whereMonth('created_at', $date->month)
                         ->whereYear('created_at', $date->year)

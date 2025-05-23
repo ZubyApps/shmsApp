@@ -990,7 +990,7 @@ const getLabourRecordTable = (tableId, visitId, view, modal) => {
         columns: [
             {data: "date"},
             {data: "onset"},
-            {data: row => row.cervicalDilation + 'cm'},
+            {data: row => row.cervicalDilation ? row.cervicalDilation + 'cm' : null},
             {data: "contractionsBegan"},
             {data: "examiner"},
             {data: row => function () {
