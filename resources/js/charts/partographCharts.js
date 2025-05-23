@@ -2119,9 +2119,154 @@ function createContractionsChart() {
     return ContractionsChart;
 }
 
+// // Observations Chart
+// function createObservationsChart() {
+//     const observationsChart = modal._element.querySelector('#observationsChart');
+//     const ObservationsChart = new Chart(observationsChart, {
+//         type: 'scatter',
+//         data: {
+//             datasets: [
+//                 {
+//                     label: 'Maternal & Fetal Observations',
+//                     data: [],
+//                     pointRadius: 0, // No default points, use text
+//                     showLine: false
+//                 }
+//             ]
+//         },
+//         options: {
+//             scales: {
+//                 x: {
+//                     type: 'linear',
+//                     title: { display: true, text: 'Hours since first observation' },
+//                     min: 0,
+//                     max: 18,
+//                     ticks: { stepSize: 1 }
+//                 },
+//                 y: {
+//                     type: 'category',
+//                     labels: ['Drug', 'Fluid', 'Oxytocin', 'Moulding', 'Position', 'Caput', 'Urine'],
+//                     title: { display: true, text: 'Observations' },
+//                     reverse: true // Top-to-bottom order
+//                 }
+//             },
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             plugins: {
+//                 legend: { display: false },
+//                 tooltip: {
+//                     callbacks: {
+//                         label: function(context) {
+//                             const point = context.raw;
+//                             switch (point.parameterType) {
+//                                 case 'urine':
+//                                     return `Urine: Protein ${point.value.protein || 'N/A'}, Glucose ${point.value.glucose || 'N/A'}, Volume ${point.value.volume || 'N/A'}mL`;
+//                                 case 'caput':
+//                                     return `Caput: ${point.value.degree || '0'}`;
+//                                 case 'position':
+//                                     return `Position: ${point.value.position || 'N/A'}`;
+//                                 case 'moulding':
+//                                     return `Moulding: ${point.value.degree || '0'}`;
+//                                 case 'oxytocin':
+//                                     return `Oxytocin: ${point.value.dosage || 'N/A'} units`;
+//                                 case 'fluid':
+//                                     return `Fluid: ${point.value.status || 'N/A'}`;
+//                                 case 'drug':
+//                                     return `Drug: ${point.value.type || 'N/A'}`;
+//                                 default:
+//                                     return 'Unknown';
+//                             }
+//                         }
+//                     }
+//                 },
+//                 observationsText: {
+//                     enableObservationsText: true // Enable plugin for this chart
+//                 }
+//             }
+//         }
+//     });
+
+//     function updateObservationsData(data) {
+//         console.log('updateObservationsData called with:', JSON.stringify(data, null, 2));
+//         if (!data || !Array.isArray(data) || !data.length) {
+//             console.log('No valid data, skipping update');
+//             return;
+//         }
+
+//         const relevantTypes = ['urine', 'caput', 'position', 'moulding', 'oxytocin', 'fluid', 'drug'];
+//         const relevantData = data.filter(item => relevantTypes.includes(item.parameterType) && item.recordedAtRaw);
+//         console.log('relevantData:', JSON.stringify(relevantData, null, 2));
+//         if (!relevantData.length) {
+//             console.log('No observations data, skipping update');
+//             return;
+//         }
+
+//         const dates = relevantData.map(item => new Date(item.recordedAtRaw)).filter(date => !isNaN(date));
+//         if (!dates.length) {
+//             console.log('No valid dates, skipping update');
+//             return;
+//         }
+//         const minDate = dates.reduce((min, date) => (date < min ? date : min), dates[0]);
+
+//         const observationsData = [];
+//         let maxHours = 0;
+
+//         relevantData.forEach(item => {
+//             const date = new Date(item.recordedAtRaw);
+//             if (isNaN(date)) {
+//                 console.warn(`Invalid recordedAtRaw: ${item.recordedAtRaw}`);
+//                 return;
+//             }
+//             const hours = (date - minDate) / (1000 * 60 * 60);
+//             maxHours = Math.max(maxHours, hours);
+//             if (item.value && item.parameterType) {
+//                 const yValue = {
+//                     urine: 'Urine',
+//                     caput: 'Caput',
+//                     position: 'Position',
+//                     moulding: 'Moulding',
+//                     oxytocin: 'Oxytocin',
+//                     fluid: 'Fluid',
+//                     drug: 'Drug'
+//                 }[item.parameterType];
+//                 observationsData.push({
+//                     x: hours,
+//                     y: yValue,
+//                     parameterType: item.parameterType,
+//                     value: item.value
+//                 });
+//             } else {
+//                 console.warn(`Missing or invalid value for item:`, JSON.stringify(item, null, 2));
+//             }
+//         });
+
+//         observationsData.sort((a, b) => a.x - b.x);
+//         console.log('observationsData:', JSON.stringify(observationsData, null, 2));
+//         if (observationsData.length) {
+//             ObservationsChart.data.datasets[0].data = [...observationsData];
+//             ObservationsChart.options.scales.x.max = Math.max(maxHours + 1, 18);
+//             console.log('Updating chart with maxHours:', maxHours);
+//             ObservationsChart.update('active');
+//         } else {
+//             console.log('No valid observations data to update chart');
+//         }
+//     }
+
+//     chartManager.updateFunctions.updateObservationsData = updateObservationsData;
+//     updateObservationsData(data);
+//     return ObservationsChart;
+// }
+
 // Observations Chart
 function createObservationsChart() {
     const observationsChart = modal._element.querySelector('#observationsChart');
+    if (!observationsChart) {
+        console.error('Observations canvas #observationsChart not found');
+        return null;
+    }
+
+    const { minDate, maxDate } = getTimeBounds(data, ['urine', 'caput', 'position', 'moulding', 'oxytocin', 'fluid', 'drug']);
+
     const ObservationsChart = new Chart(observationsChart, {
         type: 'scatter',
         data: {
@@ -2137,11 +2282,23 @@ function createObservationsChart() {
         options: {
             scales: {
                 x: {
-                    type: 'linear',
-                    title: { display: true, text: 'Hours since first observation' },
-                    min: 0,
-                    max: 18,
-                    ticks: { stepSize: 1 }
+                    type: 'time',
+                    time: { displayFormats: { minute: 'HH:mm' } },
+                    min: minDate,
+                    max: maxDate,
+                    ticks: {
+                        source: 'labels',
+                        callback: (value) => {
+                            const date = new Date(value);
+                            return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                        }
+                    },
+                    afterBuildTicks: (scale) => {
+                        const currentMin = scale.chart.options.scales.x.min;
+                        const currentMax = scale.chart.options.scales.x.max;
+                        scale.ticks = generateTicks(currentMin, currentMax, 60).map(date => ({ value: date.getTime() }));
+                    },
+                    title: { display: true, text: 'Time' }
                 },
                 y: {
                     type: 'category',
@@ -2188,6 +2345,10 @@ function createObservationsChart() {
 
     function updateObservationsData(data) {
         console.log('updateObservationsData called with:', JSON.stringify(data, null, 2));
+        if (!observationsChart || !observationsChart.isConnected) {
+            console.warn('Observations canvas is detached or null, skipping update');
+            return;
+        }
         if (!data || !Array.isArray(data) || !data.length) {
             console.log('No valid data, skipping update');
             return;
@@ -2201,15 +2362,8 @@ function createObservationsChart() {
             return;
         }
 
-        const dates = relevantData.map(item => new Date(item.recordedAtRaw)).filter(date => !isNaN(date));
-        if (!dates.length) {
-            console.log('No valid dates, skipping update');
-            return;
-        }
-        const minDate = dates.reduce((min, date) => (date < min ? date : min), dates[0]);
-
+        const { minDate, maxDate } = getTimeBounds(relevantData, relevantTypes);
         const observationsData = [];
-        let maxHours = 0;
 
         relevantData.forEach(item => {
             const date = new Date(item.recordedAtRaw);
@@ -2217,8 +2371,6 @@ function createObservationsChart() {
                 console.warn(`Invalid recordedAtRaw: ${item.recordedAtRaw}`);
                 return;
             }
-            const hours = (date - minDate) / (1000 * 60 * 60);
-            maxHours = Math.max(maxHours, hours);
             if (item.value && item.parameterType) {
                 const yValue = {
                     urine: 'Urine',
@@ -2230,7 +2382,7 @@ function createObservationsChart() {
                     drug: 'Drug'
                 }[item.parameterType];
                 observationsData.push({
-                    x: hours,
+                    x: date.getTime(),
                     y: yValue,
                     parameterType: item.parameterType,
                     value: item.value
@@ -2244,8 +2396,9 @@ function createObservationsChart() {
         console.log('observationsData:', JSON.stringify(observationsData, null, 2));
         if (observationsData.length) {
             ObservationsChart.data.datasets[0].data = [...observationsData];
-            ObservationsChart.options.scales.x.max = Math.max(maxHours + 1, 18);
-            console.log('Updating chart with maxHours:', maxHours);
+            ObservationsChart.options.scales.x.min = minDate;
+            ObservationsChart.options.scales.x.max = maxDate;
+            console.log('Updating chart with minDate:', minDate, 'maxDate:', maxDate);
             ObservationsChart.update('active');
         } else {
             console.log('No valid observations data to update chart');
