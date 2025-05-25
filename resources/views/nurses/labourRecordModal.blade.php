@@ -94,7 +94,7 @@
                                             <x-form-input name="amniotomy" class="form-check-input py-3 mt-0" type="checkbox" :disabled="$isView"/>
                                         </x-form-div>
                                         <x-form-div>
-                                            <x-input-span class="py-0">Oxytocies</x-input-span>
+                                            <x-input-span class="py-0">Oxytocics</x-input-span>
                                             <x-form-input name="oxytocies" class="form-check-input py-3 mt-0" type="checkbox" :disabled="$isView"/>
                                         </x-form-div>
                                         <x-form-div>

@@ -40,24 +40,30 @@
                                             <div class="form-control mb-1">
                                                     <x-form-span><small>Fetal Heart Rate Input</small></x-form-span>
                                                     <div class="row">
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div class="col-xl-4">
                                                             <x-input-span id="cervixDilationLabel">Fetal Heart Rate<x-required-span /></x-input-span>
                                                             <x-form-input name="bpm" class="value" id="fetal_heart_rate" type="number" />
                                                             <x-input-span>bpm</x-input-span>
                                                         </x-form-div>
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div class="col-xl-4">
                                                             <x-input-span>Recorded At</x-input-span>
                                                             <x-form-input type="datetime-local" name="recordedAt" id="recordedAt"/>
                                                         </x-form-div>
+                                                        <div class="d-flex justify-content-start col-xl-4">
+                                                            <button type="button" id="addValueBtn" data-param="fetal_heart_rate" data-table="fetalHeartRateTable" class="btn btn-primary addValueBtn">
+                                                                <i class="bi bi-plus-circle me-1"></i>
+                                                                add
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <div class="d-flex justify-content-center my-2">
+                                                    {{-- <div class="d-flex justify-content-center my-2">
                                                         <button type="button" id="addValueBtn" data-param="fetal_heart_rate" data-table="fetalHeartRateTable" class="btn btn-primary addValueBtn">
                                                             <i class="bi bi-plus-circle me-1"></i>
                                                             add
                                                         </button>
-                                                    </div>
-                                                </div>
-                                            <div class="form-control overflow-auto my-3">
+                                                    </div> --}}
+                                            </div>
+                                            <div class="form-control overflow-auto mb-1">
                                                 <x-form-span><small>Fetal Heart Rate Table</small></x-form-span>
                                                 <table id="fetalHeartRateTable" class="table table-hover align-middle table-sm fetatlHearRateTable">
                                                     <thead>
@@ -97,24 +103,30 @@
                                             <div class="form-control mb-1">
                                                     <x-form-span><small>Cervical Dilation</small></x-form-span>
                                                     <div class="row">
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span id="cervixDilationLabel">Cervical  Dilation<x-required-span /></x-input-span>
                                                             <x-form-input name="cm" class="value" id="cervical_dilation" type="number" />
                                                             <x-input-span>cm</x-input-span>
                                                         </x-form-div>
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Recorded At</x-input-span>
                                                             <x-form-input type="datetime-local" name="recordedAt" id="recordedAt"/>
                                                         </x-form-div>
+                                                        <div class="d-flex justify-content-start col-xl-4">
+                                                            <button type="button" id="addValueBtn" data-param="cervical_dilation" data-table="cervicalDilationTable" class="btn btn-primary addValueBtn">
+                                                                <i class="bi bi-plus-circle me-1"></i>
+                                                                add
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <div class="d-flex justify-content-center my-2">
+                                                    {{-- <div class="d-flex justify-content-center my-2">
                                                         <button type="button" id="addValueBtn" data-param="cervical_dilation" data-table="cervicalDilationTable" class="btn btn-primary addValueBtn">
                                                             <i class="bi bi-plus-circle me-1"></i>
                                                             add
                                                         </button>
-                                                    </div>
+                                                    </div> --}}
                                                 </div>
-                                            <div class="form-control overflow-auto my-3">
+                                            <div class="form-control overflow-auto mb-1">
                                                 <x-form-span><small>Cervical Dilation Table</small></x-form-span>
                                                 <table id="cervicalDilationTable" class="table table-hover align-middle table-sm cervicalDilationTable">
                                                     <thead>
@@ -142,21 +154,27 @@
                                             <div class="form-control">
                                                 <x-form-span><small>Descent</small></x-form-span>
                                                 <div class="row">
-                                                    <x-form-div class="col-xl-6">
+                                                    <x-form-div>
                                                         <x-input-span id="descentLabel">Descent<x-required-span /></x-input-span>
                                                         <x-form-input name="fifths" id="descent" class="value"/>
                                                     </x-form-div>
-                                                    <x-form-div class="col-xl-6">
+                                                    <x-form-div>
                                                         <x-input-span>Recorded At</x-input-span>
                                                         <x-form-input type="datetime-local" name="recordedAt" id="recordedAt"/>
                                                     </x-form-div>
+                                                    <div class="d-flex justify-content-start mb-1 col-xl-4">
+                                                        <button type="button" id="addValueBtn"  data-param="descent" data-table="descentTable" class="btn btn-primary addValueBtn">
+                                                            <i class="bi bi-plus-circle me-1"></i>
+                                                            add
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div class="d-flex justify-content-center my-2">
+                                                {{-- <div class="d-flex justify-content-center my-2">
                                                     <button type="button" id="addValueBtn"  data-param="descent" data-table="descentTable" class="btn btn-primary addValueBtn">
                                                         <i class="bi bi-plus-circle me-1"></i>
                                                         add
                                                     </button>
-                                                </div>
+                                                </div> --}}
                                             </div>
                                             <div class="form-control overflow-auto my-3">
                                                 <x-form-span><small>Presenting Part Descent Table</small></x-form-span>

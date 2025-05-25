@@ -8,29 +8,78 @@ import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 Chart.register(...registerables, annotationPlugin);
 
 // Custom plugin to draw lasting_seconds above bars
+// const lastingTextPlugin = {
+//     id: 'lastingText',
+//     afterDatasetsDraw(chart) {
+//         if (!chart.options.plugins.lastingText?.enableLastingText) return;
+//         const { ctx, data, scales } = chart;
+//         const dataset = data.datasets[0];
+//         if (!dataset || !dataset.data) return;
+//         // console.log('dataset - ' + [...dataset])
+//         ctx.font = 'bold 10px Arial';
+//         ctx.fillStyle = 'red';
+//         ctx.textAlign = 'center';
+//         ctx.textBaseline = 'bottom';
+        
+
+//         dataset.data.forEach((point) => {
+//             if (!point.y || point.y < 1) return;
+//             const pointLasting = parseInt(point.lasting) + 'secs'
+//             ctx.fillStyle = pointLasting > 60 ? 'red' :'black';
+//             const lasting = pointLasting + 'secs';
+//             const x = scales.x.getPixelForValue(point.x);
+//             const y = scales.y.getPixelForValue(point.y);
+//             ctx.fillText(lasting, x, y - 4);
+//             ctx.save();
+//         });
+
+//         ctx.restore();
+//     }
+// };
+
+
 const lastingTextPlugin = {
     id: 'lastingText',
     afterDatasetsDraw(chart) {
         if (!chart.options.plugins.lastingText?.enableLastingText) return;
+
         const { ctx, data, scales } = chart;
         const dataset = data.datasets[0];
         if (!dataset || !dataset.data) return;
 
-        ctx.save();
-        ctx.font = 'bold 10px Arial';
-        ctx.fillStyle = 'black';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-
-        dataset.data.forEach((point, index) => {
+        dataset.data.forEach((point) => {
+            // Skip if point.y is invalid or less than 1
             if (!point.y || point.y < 1) return;
-            const lasting = point.lasting !== null ? point.lasting + 'secs' : 'N/A';
+
+            // Save context state for this point
+            ctx.save();
+
+            // Set font and alignment for this point
+            ctx.font = 'bold 10px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+
+            // Set color based on lasting > 60
+            const lasting = !isNaN(point.lasting) && point.lasting !== null 
+                ? `${point.lasting}secs` 
+                : 'N/A';
+                const pointLasting = parseInt(point.lasting)
+                if (pointLasting > 60){
+                    ctx.fillStyle = 'red';
+                    ctx.font = 'bold 15px Arial';
+                }
+
+            // Debugging
+            // console.log(`point.lasting: ${point.lasting}, fillStyle: ${ctx.fillStyle}`);
+
+            // Draw the text
             const x = scales.x.getPixelForValue(point.x);
             const y = scales.y.getPixelForValue(point.y);
             ctx.fillText(lasting, x, y - 4);
-        });
 
-        ctx.restore();
+            // Restore context state to avoid affecting subsequent drawings
+            ctx.restore();
+        });
     }
 };
 
@@ -151,7 +200,7 @@ async function getPartographCharts(modal, labourRecordId) {
             return { minDate: now, maxDate: new Date(now.getTime() + 14 * 60 * 60 * 1000) };
         };
         const minDate = dates.reduce((min, date) => (date < min ? date : min), dates[0]);
-        const maxDate = new Date(minDate.getTime() + 14 * 60 * 60 * 1000); // 16 hours
+        const maxDate = new Date(minDate.getTime() + 14 * 60 * 60 * 1000); // 14 hours
         return { minDate, maxDate };
     }
 
@@ -464,17 +513,17 @@ function createCervicalDescentChart() {
 
     function updateCervicalDescentData(data) {
         console.log('updateCervicalDescentData called with:', data); // Debug
-        if (!data.length) {
-            console.log('No data, skipping update');
-            return;
-        }
+        // if (!data.length) {
+        //     console.log('No data, skipping update');
+        //     return;
+        // }
         const relevantData = data.filter(item =>
             item.parameterType === 'cervical_dilation' || item.parameterType === 'descent'
         );
-        if (!relevantData.length) {
-            console.log('No cervical_dilation/descent data, skipping update');
-            return;
-        }
+        // if (!relevantData.length) {
+        //     console.log('No cervical_dilation/descent data, skipping update');
+        //     return;
+        // }
 
         const { minDate, maxDate } = getTimeBounds(relevantData, ['cervical_dilation', 'descent']);
         const dilationData = [];
@@ -508,7 +557,7 @@ function createCervicalDescentChart() {
         CervicalDescentChart.options.plugins.annotation.annotations.actionLine.xMin = new Date(minDate.getTime() + 4 * 60 * 60 * 1000);
         CervicalDescentChart.options.plugins.annotation.annotations.actionLine.xMax = new Date(minDate.getTime() + 8 * 60 * 60 * 1000);
         console.log('Updating chart with minDate:', minDate, 'maxDate:', maxDate); // Debug
-        CervicalDescentChart.update('active'); // Force full redraw
+        CervicalDescentChart?.update('active'); // Force full redraw
     }
 
     chartManager.updateFunctions.updateCervicalDescentData = updateCervicalDescentData;
@@ -670,7 +719,11 @@ function createFetalHeartRateChart() {
                     label: 'Fetal Heart Rate (bpm)',
                     data: [],
                     borderWidth: 3,
-                    backgroundColor: '#28a745',
+                    // backgroundColor: '#28a745',
+                    pointBackgroundColor: (context) => {
+                        const y = context.dataset.data[context.dataIndex]?.y;
+                        return y >= 160 || y <= 120 ? "#dc3545" : "#28a745";
+                    },
                     tension: 0.5,
                     pointRadius: 5,
                     spanGaps: true
@@ -731,7 +784,7 @@ function createFetalHeartRateChart() {
                             borderDash: [5, 5],
                             label: {
                                 display: true,
-                                content: 'Fetal Distress Alert Line',
+                                content: 'Fetal tachycardia Alert Line',
                                 position: 'center',
                                 backgroundColor: 'rgba(255, 0, 0, 0.8)',
                                 color: 'white',
@@ -752,7 +805,7 @@ function createFetalHeartRateChart() {
                             borderDash: [5, 5],
                             label: {
                                 display: true,
-                                content: 'Bradycardia Alert Line',
+                                content: 'Fetal bradycardia Alert Line',
                                 position: 'center',
                                 backgroundColor: 'rgba(255, 0, 0, 0.8)',
                                 color: 'white',
@@ -770,15 +823,15 @@ function createFetalHeartRateChart() {
 
     function updateFetalHeartRateData(data) {
         console.log('updateFetalHeartRateData called with:', data); // Debug
-        if (!data.length) {
-            console.log('No data, skipping update');
-            return;
-        }
+        // if (!data.length) {
+        //     console.log('No data, skipping update');
+        //     return;
+        // }
         const relevantData = data.filter(item => item.parameterType === 'fetal_heart_rate');
-        if (!relevantData.length) {
-            console.log('No fetal_heart_rate data, skipping update');
-            return;
-        }
+        // if (!relevantData.length) {
+        //     console.log('No fetal_heart_rate data, skipping update');
+        //     return;
+        // }
 
         const { minDate, maxDate } = getTimeBounds(relevantData, ['fetal_heart_rate']);
         const fhrData = [];
@@ -2047,27 +2100,37 @@ function createContractionsChart() {
             console.warn('Contractions canvas is detached or null, skipping update');
             return;
         }
-        if (!data || !Array.isArray(data) || !data.length) {
-            console.log('No valid data, skipping update');
-            return;
-        }
+        // if (!data || !Array.isArray(data) || !data.length) {
+        //     console.log('No valid data, skipping update');
+        //     return;
+        // }
 
         const relevantData = data.filter(item => item.parameterType === 'uterine_contractions' && item.recordedAtRaw);
         console.log('relevantData:', JSON.stringify(relevantData, null, 2));
-        if (!relevantData.length) {
-            console.log('No uterine_contractions data, skipping update');
-            return;
-        }
+        // if (!relevantData.length) {
+        //     console.log('No uterine_contractions data, skipping update');
+        //     return;
+        // }
 
         const dates = relevantData.map(item => new Date(item.recordedAtRaw)).filter(date => !isNaN(date));
-        if (!dates.length) {
-            console.log('No valid dates, skipping update');
-            return;
-        }
+        // if (!dates.length) {
+        //     console.log('No valid dates, skipping update');
+        //     return;
+        // }
 
         const contractionsData = [];
         const backgroundColors = [];
-
+        const getColourShade = (strength, countPer10Min) => {
+            if (countPer10Min < 3){
+                return strength == 'W' ? '#a6bff2' : strength == 'M' ? '#4d7ee5' : '#1a4bb2'
+            }
+            if (countPer10Min > 2 && countPer10Min < 6){
+                return strength == 'W' ? '#a9f7c1' : strength == 'M' ? '#3eec74' : '#1ca447'
+            }
+            if (countPer10Min > 5){
+                return strength == 'W' ? '#f5c0bc' : strength == 'M' ? '#e14137' : '#b2231a'
+            }
+        }
         relevantData.forEach(item => {
             const date = new Date(item.recordedAtRaw);
             if (isNaN(date)) {
@@ -2076,12 +2139,13 @@ function createContractionsChart() {
             }
             if (item.parameterType === 'uterine_contractions' && item.value && item.value.count_per_10min != null) {
                 const strength = item.value.strength ? item.value.strength[0] : 'W';
-                const color = {
-                    'W': '#ff9999',
-                    'M': '#ff3333',
-                    'S': '#cc0000'
-                }[strength] || '#ff9999';
                 const count = parseFloat(item.value.count_per_10min);
+                const color = getColourShade(strength, count)
+                // const color = {
+                //     'W': '#ff9999',
+                //     'M': '#ff3333',
+                //     'S': '#cc0000'
+                // }[strength] || '#ff9999';
                 if (!isNaN(count)) {
                     contractionsData.push({
                         x: date,
@@ -2101,17 +2165,17 @@ function createContractionsChart() {
         contractionsData.sort((a, b) => a.x - b.x);
         console.log('contractionsData:', JSON.stringify(contractionsData, null, 2));
         console.log('backgroundColors:', backgroundColors);
-        if (contractionsData.length) {
-            ContractionsChart.data.datasets[0].data = [...contractionsData];
-            ContractionsChart.data.datasets[0].backgroundColor = [...backgroundColors];
-            // Update min/max from options
-            const minDate = ContractionsChart.options.scales.x.min;
-            const maxDate = ContractionsChart.options.scales.x.max;
-            console.log('Updating chart with minDate:', minDate, 'maxDate:', maxDate);
-            ContractionsChart.update('active');
-        } else {
-            console.log('No valid contraction data to update chart');
-        }
+        // if (contractionsData.length) {
+        ContractionsChart.data.datasets[0].data = [...contractionsData];
+        ContractionsChart.data.datasets[0].backgroundColor = [...backgroundColors];
+        // Update min/max from options
+        const minDate = ContractionsChart.options.scales.x.min;
+        const maxDate = ContractionsChart.options.scales.x.max;
+        console.log('Updating chart with minDate:', minDate, 'maxDate:', maxDate);
+        ContractionsChart.update('active');
+        // } else {
+        //     console.log('No valid contraction data to update chart');
+        // }
     }
 
     chartManager.updateFunctions.updateContractionsData = updateContractionsData;
@@ -2488,7 +2552,53 @@ function createBloodPressurePulseChart() {
                             return `${label}: ${value}${label.includes('BP') ? ' mmHg' : ' bpm'}`;
                         }
                     }
-                }
+                },
+                annotation: {
+                        annotations: {
+                            alertLine: {
+                                type: 'line',
+                                yMin: 140,
+                                yMax: 140,
+                                xMin: minDate,
+                                xMax: maxDate,
+                                borderColor: 'red',
+                                borderWidth: 2,
+                                borderDash: [5, 5],
+                                label: {
+                                    display: true,
+                                    content: 'Systolic Alert Line',
+                                    position: 'center',
+                                    backgroundColor: 'rgba(255, 0, 0, 0.8)',
+                                    color: 'white',
+                                    padding: 3,
+                                    font: { size: 12 },
+                                    borderRadius: 4,
+                                    yAdjust: -10
+                                }
+                            },
+                            actionLine: {
+                                type: 'line',
+                                yMin: 60,
+                                yMax: 60,
+                                xMin: minDate,
+                                xMax: maxDate,
+                                borderColor: 'red',
+                                borderWidth: 2,
+                                borderDash: [5, 5],
+                                label: {
+                                    display: true,
+                                    content: 'Diastolic Alert Line',
+                                    position: 'center',
+                                    backgroundColor: 'rgba(255, 0, 0, 0.8)',
+                                    color: 'white',
+                                    padding: 3,
+                                    font: { size: 12 },
+                                    borderRadius: 4,
+                                    yAdjust: -10
+                                }
+                            }
+                        }
+                    }
             }
         }
     });
@@ -2592,8 +2702,8 @@ function createTemperatureChart() {
                     title: { display: true, text: 'Time' }
                 },
                 y: {
-                    suggestedMin: 35,
-                    suggestedMax: 40,
+                    suggestedMin: 31,
+                    suggestedMax: 41,
                     title: { display: true, text: 'Temperature (°C)' },
                     ticks: { stepSize: 0.5 }
                 }
@@ -2608,7 +2718,53 @@ function createTemperatureChart() {
                             return `${context.dataset.label}: ${context.parsed.y} °C`;
                         }
                     }
-                }
+                },
+                annotation: {
+                        annotations: {
+                            alertLine: {
+                                type: 'line',
+                                yMin: 37.5,
+                                yMax: 37.5,
+                                xMin: minDate,
+                                xMax: maxDate,
+                                borderColor: 'red',
+                                borderWidth: 2,
+                                borderDash: [5, 5],
+                                label: {
+                                    display: true,
+                                    content: 'Hyperthermia Alert Line',
+                                    position: 'center',
+                                    backgroundColor: 'rgba(255, 0, 0, 0.8)',
+                                    color: 'white',
+                                    padding: 3,
+                                    font: { size: 12 },
+                                    borderRadius: 4,
+                                    yAdjust: -10
+                                }
+                            },
+                            actionLine: {
+                                type: 'line',
+                                yMin: 35,
+                                yMax: 35,
+                                xMin: minDate,
+                                xMax: maxDate,
+                                borderColor: 'red',
+                                borderWidth: 2,
+                                borderDash: [5, 5],
+                                label: {
+                                    display: true,
+                                    content: 'Hypothermia Alert Line',
+                                    position: 'center',
+                                    backgroundColor: 'rgba(255, 0, 0, 0.8)',
+                                    color: 'white',
+                                    padding: 3,
+                                    font: { size: 12 },
+                                    borderRadius: 4,
+                                    yAdjust: -10
+                                }
+                            }
+                        }
+                    }
             }
         }
     });

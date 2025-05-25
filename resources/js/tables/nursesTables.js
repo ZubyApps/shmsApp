@@ -1082,9 +1082,7 @@ const getPartographTable = (tableId, labourRecordId, modal, parameterType, labou
             {data: row => function () {
                 return `
                 <div class="d-flex flex- ${row.closed ? 'd-none' : ''}">
-                    <button type="button" class="ms-1 btn btn-outline-primary deletePartographBtn tooltip-test" title="delete partograph record" data-id="${row.id}" data-table="${tableId}">
-                        <i class="bi bi-trash3-fill"></i>
-                    </button>
+                    <i class="bi bi-trash3-fill text-primary deletePartographBtn tooltip-test" title="delete partograph record" data-id="${row.id}" data-table="${tableId}"></i>
                 </div>
             `
                 }

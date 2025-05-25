@@ -1786,7 +1786,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    partographModal._element.addEventListener('click', function (event) {
+    partographModal._element.addEventListener('click', async function (event) {
         const deletePartographBtn = event.target.closest('.deletePartographBtn')
         const valueSpanBtn = event.target.closest('.valueSpanBtn')
         const recordedAtSpanBtn = event.target.closest('.recordedAtSpanBtn')
@@ -1796,22 +1796,36 @@ window.addEventListener('DOMContentLoaded', function () {
             const id = deletePartographBtn.getAttribute('data-id')
             const tableId = deletePartographBtn.getAttribute('data-table')
             if (confirm('Are you sure you want to delete Partograph Record?')) {
-                http.delete(`/partograph/${id}`)
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300) {
-                            if ($.fn.DataTable.isDataTable('#' + tableId)) {
+                try{
+                    const partographDeleted = await httpRequest(`/partograph/${id}`, 'DELETE');
+                    if ($.fn.DataTable.isDataTable('#' + tableId)) {
                                 $('#' + tableId).dataTable().fnDraw(false)
-                            }
-                            if (partographCharts) {
-                                partographCharts.updateCharts();
-                            }
                         }
-                        deletePartographBtn.removeAttribute('disabled')
-                    })
-                    .catch((error) => {
-                        console.log(error)
-                        deletePartographBtn.removeAttribute('disabled')
-                    })
+                    console.log(partographCharts)
+                    if (partographCharts) {
+                        await partographCharts.updateCharts();
+                    }
+                    deletePartographBtn.removeAttribute('disabled')
+                } catch (error) {
+                    console.log(error)
+                    deletePartographBtn.removeAttribute('disabled')
+                }
+                // http.delete(`/partograph/${id}`)
+                //     .then((response) => {
+                //         if (response.status >= 200 || response.status <= 300) {
+                //             if ($.fn.DataTable.isDataTable('#' + tableId)) {
+                //                 $('#' + tableId).dataTable().fnDraw(false)
+                //             }
+                //             if (partographCharts) {
+                //                 partographCharts.updateCharts();
+                //             }
+                //         }
+                //         deletePartographBtn.removeAttribute('disabled')
+                //     })
+                //     .catch((error) => {
+                //         console.log(error)
+                //         deletePartographBtn.removeAttribute('disabled')
+                //     })
             } deletePartographBtn.removeAttribute('disabled')
         }
 
