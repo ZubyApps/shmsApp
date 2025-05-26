@@ -1298,7 +1298,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
                 updateResourceListBtn.dataset.last === 'last' ? addDiv.classList.remove('d-none') : addDiv.classList.add('d-none') 
                 btn.setAttribute('data-conid', updateResourceListBtn.dataset.conid)
-                btn.setAttribute('data-visitid', updateResourceListBtn.dataset.visitid)
+                btn.setAttribute('data-visitid', updateResourceListBtn.dataset.id)
                 btn.setAttribute('data-last', updateResourceListBtn.dataset.last)
                 btn.setAttribute('data-investigationtable', '#investigationTable'+conId)
                 btn.setAttribute('data-treatmenttable', '#treatmentTable'+conId)
