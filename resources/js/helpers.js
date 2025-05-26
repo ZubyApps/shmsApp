@@ -1123,7 +1123,6 @@ const savePatographValues = (buttons, modal, partographCharts) => {
             button.setAttribute('disabled', 'disabled');
     
             const div = button.parentElement.parentElement;
-            console.log(div)
             const labourRecordId = modal._element.querySelector('#labourRecordId').value;
             const { param: parameterType, table: tableId } = button.dataset;
             const data = { ...getPartographDivData(div), parameterType, labourRecordId };
@@ -1179,8 +1178,6 @@ function getPartographDivData(div) {
 
         }
     })
-    console.log(div)
-
 
     return data
 }

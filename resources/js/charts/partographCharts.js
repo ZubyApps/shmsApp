@@ -8,36 +8,6 @@ import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 Chart.register(...registerables, annotationPlugin);
 
 // Custom plugin to draw lasting_seconds above bars
-// const lastingTextPlugin = {
-//     id: 'lastingText',
-//     afterDatasetsDraw(chart) {
-//         if (!chart.options.plugins.lastingText?.enableLastingText) return;
-//         const { ctx, data, scales } = chart;
-//         const dataset = data.datasets[0];
-//         if (!dataset || !dataset.data) return;
-//         // console.log('dataset - ' + [...dataset])
-//         ctx.font = 'bold 10px Arial';
-//         ctx.fillStyle = 'red';
-//         ctx.textAlign = 'center';
-//         ctx.textBaseline = 'bottom';
-        
-
-//         dataset.data.forEach((point) => {
-//             if (!point.y || point.y < 1) return;
-//             const pointLasting = parseInt(point.lasting) + 'secs'
-//             ctx.fillStyle = pointLasting > 60 ? 'red' :'black';
-//             const lasting = pointLasting + 'secs';
-//             const x = scales.x.getPixelForValue(point.x);
-//             const y = scales.y.getPixelForValue(point.y);
-//             ctx.fillText(lasting, x, y - 4);
-//             ctx.save();
-//         });
-
-//         ctx.restore();
-//     }
-// };
-
-
 const lastingTextPlugin = {
     id: 'lastingText',
     afterDatasetsDraw(chart) {
@@ -68,9 +38,6 @@ const lastingTextPlugin = {
                     ctx.fillStyle = 'red';
                     ctx.font = 'bold 15px Arial';
                 }
-
-            // Debugging
-            // console.log(`point.lasting: ${point.lasting}, fillStyle: ${ctx.fillStyle}`);
 
             // Draw the text
             const x = scales.x.getPixelForValue(point.x);
@@ -195,6 +162,9 @@ async function getPartographCharts(modal, labourRecordId) {
             .filter(item => relevantTypes.includes(item.parameterType))
             .map(item => new Date(item.recordedAtRaw))
             .filter(date => !isNaN(date));
+            console.log(data)
+            console.log(!dates.length, relevantTypes)
+            console.log(dates)
         if (!dates.length){ 
             const now = new Date();
             return { minDate: now, maxDate: new Date(now.getTime() + 14 * 60 * 60 * 1000) };
@@ -512,7 +482,7 @@ function createCervicalDescentChart() {
     });
 
     function updateCervicalDescentData(data) {
-        console.log('updateCervicalDescentData called with:', data); // Debug
+        // console.log('updateCervicalDescentData called with:', data); // Debug
         // if (!data.length) {
         //     console.log('No data, skipping update');
         //     return;
@@ -544,7 +514,7 @@ function createCervicalDescentChart() {
 
         dilationData.sort((a, b) => a.x - b.x);
         descentData.sort((a, b) => a.x - b.x);
-        console.log('dilationData:', dilationData, 'descentData:', descentData); // Debug
+        // console.log('dilationData:', dilationData, 'descentData:', descentData); // Debug
         // Clone data to ensure reactivity
         CervicalDescentChart.data.datasets[0].data = [...dilationData];
         CervicalDescentChart.data.datasets[1].data = [...descentData];
@@ -556,7 +526,7 @@ function createCervicalDescentChart() {
         CervicalDescentChart.options.plugins.annotation.annotations.alertLine.xMax = new Date(minDate.getTime() + 4 * 60 * 60 * 1000);
         CervicalDescentChart.options.plugins.annotation.annotations.actionLine.xMin = new Date(minDate.getTime() + 4 * 60 * 60 * 1000);
         CervicalDescentChart.options.plugins.annotation.annotations.actionLine.xMax = new Date(minDate.getTime() + 8 * 60 * 60 * 1000);
-        console.log('Updating chart with minDate:', minDate, 'maxDate:', maxDate); // Debug
+        // console.log('Updating chart with minDate:', minDate, 'maxDate:', maxDate); // Debug
         CervicalDescentChart?.update('active'); // Force full redraw
     }
 
@@ -822,7 +792,7 @@ function createFetalHeartRateChart() {
     });
 
     function updateFetalHeartRateData(data) {
-        console.log('updateFetalHeartRateData called with:', data); // Debug
+        // console.log('updateFetalHeartRateData called with:', data); // Debug
         // if (!data.length) {
         //     console.log('No data, skipping update');
         //     return;
@@ -847,7 +817,7 @@ function createFetalHeartRateChart() {
         });
 
         fhrData.sort((a, b) => a.x - b.x);
-        console.log('fhrData:', fhrData); // Debug
+        // console.log('fhrData:', fhrData); // Debug
         // Clone data to ensure reactivity
         FetalHeartRateChart.data.datasets[0].data = [...fhrData];
         // Update x-axis
@@ -858,7 +828,7 @@ function createFetalHeartRateChart() {
         FetalHeartRateChart.options.plugins.annotation.annotations.alertLine.xMax = maxDate;
         FetalHeartRateChart.options.plugins.annotation.annotations.actionLine.xMin = minDate;
         FetalHeartRateChart.options.plugins.annotation.annotations.actionLine.xMax = maxDate;
-        console.log('Updating chart with minDate:', minDate, 'maxDate:', maxDate); // Debug
+        // console.log('Updating chart with minDate:', minDate, 'maxDate:', maxDate); // Debug
         FetalHeartRateChart.update('active'); // Force full redraw
     }
 
@@ -1661,119 +1631,119 @@ function createFetalHeartRateChart() {
 // }
 
 // Contractions Chart
-// function createContractionsChart() {
-//     const contractionsChart = modal._element.querySelector('#uterineContractionsChart');
-//     const { minDate, maxDate } = getTimeBounds(data, ['uterine_contractions']);
+function createContractionsChart() {
+    const contractionsChart = modal._element.querySelector('#uterineContractionsChart');
+    const { minDate, maxDate } = getTimeBounds(data, ['uterine_contractions']);
 
-//     const ContractionsChart = new Chart(contractionsChart, {
-//         type: 'line',
-//         data: {
-//             datasets: [
-//                 {
-//                     label: 'Contractions (per 10 min)',
-//                     data: [],
-//                     borderWidth: 3,
-//                     backgroundColor: '#ff00ff',
-//                     tension: 0.5,
-//                     pointRadius: 5,
-//                     spanGaps: true
-//                 }
-//             ]
-//         },
-//         options: {
-//             scales: {
-//                 x: {
-//                     type: 'time',
-//                     time: { displayFormats: { minute: 'HH:mm' } },
-//                     min: minDate,
-//                     max: maxDate,
-//                     ticks: {
-//                         source: 'labels',
-//                         callback: (value) => {
-//                             const date = new Date(value);
-//                             return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-//                         },
-//                         maxTicksLimit: 40
-//                     },
-//                     afterBuildTicks: (scale) => {
-//                         const currentMin = scale.chart.options.scales.x.min;
-//                         const currentMax = scale.chart.options.scales.x.max;
-//                         scale.ticks = generateTicks(currentMin, currentMax, 30).map(date => ({ value: date.getTime() }));
-//                     },
-//                     title: { display: true, text: 'Time' }
-//                 },
-//                 y: {
-//                     suggestedMin: 0,
-//                     suggestedMax: 5,
-//                     title: { display: true, text: 'Contractions (per 10 min)' },
-//                     ticks: { stepSize: 1 }
-//                 }
-//             },
-//             responsive: true,
-//             maintainAspectRatio: false,
-//             plugins: {
-//                 legend: { display: true },
-//                 tooltip: {
-//                     callbacks: {
-//                         label: function(context) {
-//                             return `${context.dataset.label}: ${context.parsed.y}`;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     });
+    const ContractionsChart = new Chart(contractionsChart, {
+        type: 'bar',
+        data: {
+            datasets: [
+                {
+                    label: 'Contractions (per 10 min)',
+                    data: [],
+                    borderWidth: 3,
+                    backgroundColor: '#ff00ff',
+                    tension: 0.5,
+                    pointRadius: 5,
+                    spanGaps: true
+                }
+            ]
+        },
+        options: {
+            scales: {
+                x: {
+                    type: 'time',
+                    time: { displayFormats: { minute: 'HH:mm' } },
+                    min: minDate,
+                    max: maxDate,
+                    ticks: {
+                        source: 'labels',
+                        callback: (value) => {
+                            const date = new Date(value);
+                            return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                        },
+                        maxTicksLimit: 40
+                    },
+                    afterBuildTicks: (scale) => {
+                        const currentMin = scale.chart.options.scales.x.min;
+                        const currentMax = scale.chart.options.scales.x.max;
+                        scale.ticks = generateTicks(currentMin, currentMax, 30).map(date => ({ value: date.getTime() }));
+                    },
+                    title: { display: true, text: 'Time' }
+                },
+                y: {
+                    suggestedMin: 0,
+                    suggestedMax: 5,
+                    title: { display: true, text: 'Contractions (per 10 min)' },
+                    ticks: { stepSize: 1 }
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.parsed.y}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
 
-//     function updateContractionsData(data) {
-//         console.log('updateContractionsData called with:', JSON.stringify(data, null, 2));
-//         if (!data || !Array.isArray(data) || !data.length) {
-//             console.log('No valid data, skipping update');
-//             return;
-//         }
-//         const relevantData = data.filter(item => item.parameterType === 'uterine_contractions' && item.recordedAtRaw);
-//         console.log('relevantData:', JSON.stringify(relevantData, null, 2));
-//         if (!relevantData.length) {
-//             console.log('No uterine_contractions data, skipping update');
-//             return;
-//         }
+    function updateContractionsData(data) {
+        console.log('updateContractionsData called with:', JSON.stringify(data, null, 2));
+        if (!data || !Array.isArray(data) || !data.length) {
+            console.log('No valid data, skipping update');
+            return;
+        }
+        const relevantData = data.filter(item => item.parameterType === 'uterine_contractions' && item.recordedAtRaw);
+        console.log('relevantData:', JSON.stringify(relevantData, null, 2));
+        if (!relevantData.length) {
+            console.log('No uterine_contractions data, skipping update');
+            return;
+        }
 
-//         const { minDate, maxDate } = getTimeBounds(relevantData, ['uterine_contractions']);
-//         const contractionData = [];
-//         relevantData.forEach(item => {
-//             const date = new Date(item.recordedAtRaw);
-//             if (isNaN(date)) {
-//                 console.warn(`Invalid recordedAtRaw: ${item.recordedAtRaw}`);
-//                 return;
-//             }
-//             if (item.value && typeof item.value === 'object' && 'count_per_10min' in item.value && item.value.count_per_10min != null) {
-//                 const count = parseInt(item.value.count_per_10min);
-//                 if (!isNaN(count)) {
-//                     contractionData.push({ x: date, y: count });
-//                 } else {
-//                     console.warn(`Invalid count value: ${item.value.count_per_10min}`);
-//                 }
-//             } else {
-//                 console.warn(`Missing or invalid value for item:`, JSON.stringify(item, null, 2));
-//             }
-//         });
+        const { minDate, maxDate } = getTimeBounds(relevantData, ['uterine_contractions']);
+        const contractionData = [];
+        relevantData.forEach(item => {
+            const date = new Date(item.recordedAtRaw);
+            if (isNaN(date)) {
+                console.warn(`Invalid recordedAtRaw: ${item.recordedAtRaw}`);
+                return;
+            }
+            if (item.value && typeof item.value === 'object' && 'count_per_10min' in item.value && item.value.count_per_10min != null) {
+                const count = parseInt(item.value.count_per_10min);
+                if (!isNaN(count)) {
+                    contractionData.push({ x: date, y: count });
+                } else {
+                    console.warn(`Invalid count value: ${item.value.count_per_10min}`);
+                }
+            } else {
+                console.warn(`Missing or invalid value for item:`, JSON.stringify(item, null, 2));
+            }
+        });
 
-//         contractionData.sort((a, b) => a.x - b.x);
-//         console.log('contractionData:', JSON.stringify(contractionData, null, 2));
-//         if (contractionData.length) {
-//             ContractionsChart.data.datasets[0].data = [...contractionData];
-//             ContractionsChart.options.scales.x.min = minDate;
-//             ContractionsChart.options.scales.x.max = maxDate;
-//             console.log('Updating chart with minDate:', minDate, 'maxDate:', maxDate);
-//             ContractionsChart.update('active');
-//         } else {
-//             console.log('No valid contraction data to update chart');
-//         }
-//     }
+        contractionData.sort((a, b) => a.x - b.x);
+        console.log('contractionData:', JSON.stringify(contractionData, null, 2));
+        if (contractionData.length) {
+            ContractionsChart.data.datasets[0].data = [...contractionData];
+            ContractionsChart.options.scales.x.min = minDate;
+            ContractionsChart.options.scales.x.max = maxDate;
+            console.log('Updating chart with minDate:', minDate, 'maxDate:', maxDate);
+            ContractionsChart.update('active');
+        } else {
+            console.log('No valid contraction data to update chart');
+        }
+    }
 
-//     chartManager.updateFunctions.updateContractionsData = updateContractionsData;
-//     updateContractionsData(data);
-//     return ContractionsChart;
-// }
+    chartManager.updateFunctions.updateContractionsData = updateContractionsData;
+    updateContractionsData(data);
+    return ContractionsChart;
+}
 
 // Observations Chart
 // function createObservationsChart() {
@@ -2024,12 +1994,12 @@ function createFetalHeartRateChart() {
 
 function createContractionsChart() {
     const contractionsChart = modal._element.querySelector('#uterineContractionsChart');
-    if (!contractionsChart) {
-        console.error('Contractions canvas #uterineContractionsChart not found');
-        return null;
-    }
-
     const { minDate, maxDate } = getTimeBounds(data, ['uterine_contractions']);
+    // if (!contractionsChart) {
+    //     console.error('Contractions canvas #uterineContractionsChart not found');
+    //     return null;
+    // }
+
 
     const ContractionsChart = new Chart(contractionsChart, {
         type: 'bar',
@@ -2117,7 +2087,7 @@ function createContractionsChart() {
         //     console.log('No valid dates, skipping update');
         //     return;
         // }
-
+        const { minDate, maxDate } = getTimeBounds(relevantData, ['uterine_contractions']);
         const contractionsData = [];
         const backgroundColors = [];
         const getColourShade = (strength, countPer10Min) => {
@@ -2130,6 +2100,7 @@ function createContractionsChart() {
             if (countPer10Min > 5){
                 return strength == 'W' ? '#f5c0bc' : strength == 'M' ? '#e14137' : '#b2231a'
             }
+            return '#000000'
         }
         relevantData.forEach(item => {
             const date = new Date(item.recordedAtRaw);
@@ -2169,8 +2140,10 @@ function createContractionsChart() {
         ContractionsChart.data.datasets[0].data = [...contractionsData];
         ContractionsChart.data.datasets[0].backgroundColor = [...backgroundColors];
         // Update min/max from options
-        const minDate = ContractionsChart.options.scales.x.min;
-        const maxDate = ContractionsChart.options.scales.x.max;
+        ContractionsChart.options.scales.x.min = minDate;
+        ContractionsChart.options.scales.x.max = maxDate;
+        // const minDate = ContractionsChart.options.scales.x.min;
+        // const maxDate = ContractionsChart.options.scales.x.max;
         console.log('Updating chart with minDate:', minDate, 'maxDate:', maxDate);
         ContractionsChart.update('active');
         // } else {
@@ -2408,23 +2381,23 @@ function createObservationsChart() {
     });
 
     function updateObservationsData(data) {
-        console.log('updateObservationsData called with:', JSON.stringify(data, null, 2));
+        // console.log('updateObservationsData called with:', JSON.stringify(data, null, 2));
         if (!observationsChart || !observationsChart.isConnected) {
             console.warn('Observations canvas is detached or null, skipping update');
             return;
         }
-        if (!data || !Array.isArray(data) || !data.length) {
-            console.log('No valid data, skipping update');
-            return;
-        }
+        // if (!data || !Array.isArray(data) || !data.length) {
+        //     console.log('No valid data, skipping update');
+        //     return;
+        // }
 
         const relevantTypes = ['urine', 'caput', 'position', 'moulding', 'oxytocin', 'fluid', 'drug'];
         const relevantData = data.filter(item => relevantTypes.includes(item.parameterType) && item.recordedAtRaw);
-        console.log('relevantData:', JSON.stringify(relevantData, null, 2));
-        if (!relevantData.length) {
-            console.log('No observations data, skipping update');
-            return;
-        }
+        // console.log('relevantData:', JSON.stringify(relevantData, null, 2));
+        // if (!relevantData.length) {
+        //     console.log('No observations data, skipping update');
+        //     return;
+        // }
 
         const { minDate, maxDate } = getTimeBounds(relevantData, relevantTypes);
         const observationsData = [];
@@ -2457,16 +2430,16 @@ function createObservationsChart() {
         });
 
         observationsData.sort((a, b) => a.x - b.x);
-        console.log('observationsData:', JSON.stringify(observationsData, null, 2));
-        if (observationsData.length) {
+        // console.log('observationsData:', JSON.stringify(observationsData, null, 2));
+        // if (observationsData.length) {
             ObservationsChart.data.datasets[0].data = [...observationsData];
             ObservationsChart.options.scales.x.min = minDate;
             ObservationsChart.options.scales.x.max = maxDate;
-            console.log('Updating chart with minDate:', minDate, 'maxDate:', maxDate);
+            // console.log('Updating chart with minDate:', minDate, 'maxDate:', maxDate);
             ObservationsChart.update('active');
-        } else {
-            console.log('No valid observations data to update chart');
-        }
+        // } else {
+        //     console.log('No valid observations data to update chart');
+        // }
     }
 
     chartManager.updateFunctions.updateObservationsData = updateObservationsData;
@@ -2605,15 +2578,15 @@ function createBloodPressurePulseChart() {
 
     function updateBloodPressurePulseData(data) {
         // console.log('updateBloodPressurePulseData called with:', data);
-        if (!data.length) {
-            console.log('No data, skipping update');
-            return;
-        }
+        // if (!data.length) {
+        //     console.log('No data, skipping update');
+        //     return;
+        // }
         const relevantData = data.filter(item => ['blood_pressure', 'pulse'].includes(item.parameterType));
-        if (!relevantData.length) {
-            console.log('No blood_pressure/pulse data, skipping update');
-            return;
-        }
+        // if (!relevantData.length) {
+        //     console.log('No blood_pressure/pulse data, skipping update');
+        //     return;
+        // }
 
         const { minDate, maxDate } = getTimeBounds(relevantData, ['blood_pressure', 'pulse']);
         const systolicData = [];
@@ -2771,15 +2744,15 @@ function createTemperatureChart() {
 
     function updateTemperatureData(data) {
         // console.log('updateTemperatureData called with:', data);
-        if (!data.length) {
-            console.log('No data, skipping update');
-            return;
-        }
+        // if (!data.length) {
+        //     console.log('No data, skipping update');
+        //     return;
+        // }
         const relevantData = data.filter(item => item.parameterType === 'temperature');
-        if (!relevantData.length) {
-            console.log('No temperature data, skipping update');
-            return;
-        }
+        // if (!relevantData.length) {
+        //     console.log('No temperature data, skipping update');
+        //     return;
+        // }
 
         const { minDate, maxDate } = getTimeBounds(relevantData, ['temperature']);
         const tempData = [];
