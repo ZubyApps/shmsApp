@@ -1067,16 +1067,26 @@ const getPartographTable = (tableId, labourRecordId, modal, parameterType, labou
             {data: row => () => {
                 const entries = [];
                 for (const [key, value] of Object.entries(row.value)){
-                   entries.push(
-                    `<div class="d-flex">
-                        ${key}:
-                        <span class="valueSpanBtn tooltip-test" title="edit value">${value}</span>
-                        <input class="ms-1 form-control valueInput d-none" value="${value}" data-record='${JSON.stringify(row)}' data-key="${key}" data-id="${row.id}" data-table="${tableId}" type="text" style="width:4rem;" name="value">
-                    </div>
-
-                    `);
+                    if (row.parameterType === 'uterine_contractions'){
+                        entries.push(
+                         `<div class="me-1"> 
+                             ${key.startsWith('c') ? 'Count/10mins' : key.startsWith('l') ? 'Lasting' : 'Strength'} :  <span class="valueSpanBtn tooltip-test" title="edit value">${value}</span>
+                                 <input class="ms-1 form-control valueInput d-none" value="${value}" data-record='${JSON.stringify(row)}' data-key="${key}" data-id="${row.id}" data-table="${tableId}" type="text" style="width:4rem;" name="value">,
+                          </div>
+                         `);
+                    } else {
+                        entries.push(
+                             `<div class="me-1"> 
+                                 ${key} :  <span class="valueSpanBtn tooltip-test" title="edit value">${value}</span>
+                                     <input class="ms-1 form-control valueInput d-none" value="${value}" data-record='${JSON.stringify(row)}' data-key="${key}" data-id="${row.id}" data-table="${tableId}" type="text" style="width:4rem;" name="value">,
+                              </div>
+                             `);
+                    }
                 }
-                return entries.join(', ');
+                    return `<div class="d-flex">
+                                ${entries.join(' ')}
+                            </div>
+                        `
             }},
             {data: "recordedBy"},
             {data: row => function () {

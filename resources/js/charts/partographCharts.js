@@ -1644,9 +1644,9 @@ function createContractionsChart() {
                     data: [],
                     borderWidth: 3,
                     backgroundColor: '#ff00ff',
-                    tension: 0.5,
-                    pointRadius: 5,
-                    spanGaps: true
+                    // tension: 0.5,
+                    // pointRadius: 5,
+                    // spanGaps: true
                 }
             ]
         },
@@ -1663,7 +1663,7 @@ function createContractionsChart() {
                             const date = new Date(value);
                             return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
                         },
-                        maxTicksLimit: 40
+                        // maxTicksLimit: 40
                     },
                     afterBuildTicks: (scale) => {
                         const currentMin = scale.chart.options.scales.x.min;

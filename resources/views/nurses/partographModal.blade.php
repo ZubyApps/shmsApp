@@ -176,7 +176,7 @@
                                                     </button>
                                                 </div> --}}
                                             </div>
-                                            <div class="form-control overflow-auto my-3">
+                                            <div class="form-control overflow-auto my-1">
                                                 <x-form-span><small>Presenting Part Descent Table</small></x-form-span>
                                                 <table id="descentTable" class="table table-hover align-middle table-sm descentTable">
                                                     <thead>
@@ -194,11 +194,14 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="overflow-auto">
+                                <x-chart-canvas-div>
+                                    <canvas id="cervicalDescentChart"></canvas>
+                                </x-chart-canvas-div>
+                                {{-- <div class="overflow-auto">
                                     <div class="chart-container" style="position: relative; height:80vh; width:70vw">
                                         <canvas id="cervicalDescentChart"></canvas>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="form-control mb-2">
                                 <x-form-span>Uterine Contractions</x-form-span>
@@ -236,15 +239,21 @@
                                                         <x-input-span>Recorded At</x-input-span>
                                                         <x-form-input type="datetime-local" name="recordedAt" id="recordedAt"/>
                                                     </x-form-div>
+                                                    <div class="d-flex justify-content-end mb-1">
+                                                        <button type="button" id="addValueBtn" data-param="uterine_contractions" data-table="uterineContractionsTable" class="btn btn-primary addValueBtn">
+                                                            <i class="bi bi-plus-circle me-1"></i>
+                                                            add
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div class="d-flex justify-content-center my-2">
+                                                {{-- <div class="d-flex justify-content-center my-2">
                                                     <button type="button" id="addValueBtn" data-param="uterine_contractions" data-table="uterineContractionsTable" class="btn btn-primary addValueBtn">
                                                         <i class="bi bi-plus-circle me-1"></i>
                                                         add
                                                     </button>
-                                                </div>
+                                                </div> --}}
                                             </div>
-                                            <div class="form-control overflow-auto my-3">
+                                            <div class="form-control overflow-auto my-1">
                                                 <x-form-span><small>Uterine Contractions Table</small></x-form-span>
                                                 <table id="uterineContractionsTable" class="table table-hover align-middle table-sm uterineContractionsTable">
                                                     <thead>
@@ -262,11 +271,14 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="overflow-auto">
+                                <x-chart-canvas-div>
+                                    <canvas id="uterineContractionsChart"></canvas>
+                                </x-chart-canvas-div>
+                                {{-- <div class="overflow-auto">
                                     <div class="chart-container" style="position: relative; height:80vh; width:70vw">
                                         <canvas id="uterineContractionsChart"></canvas>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="form-control mb-2">
                                 <x-form-span>Blood Pressure & Pulse</x-form-span>
@@ -283,29 +295,29 @@
                                                 <div class="form-control mb-1">
                                                     <x-form-span><small>Blood Pressure Input</small></x-form-span>
                                                     <div class="row">
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div class="col-xl-4">
                                                             <x-input-span>Systolic<x-required-span /></x-input-span>
                                                             <x-form-input class="value" name="systolic" id="bloodPressureSystolic" type="number" />
                                                             <x-input-span>mmHg</x-input-span>
                                                         </x-form-div>
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div class="col-xl-4">
                                                             <x-input-span>Diastolic<x-required-span /></x-input-span>
                                                             <x-form-input class="value" name="diastolic" id="bloodPressureDiastolic" type="number" />
                                                             <x-input-span>mmHg</x-input-span>
                                                         </x-form-div>
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div class="col-xl-4">
                                                             <x-input-span>Recorded At</x-input-span>
                                                             <x-form-input type="datetime-local" name="recordedAt" id="recordedAt"/>
                                                         </x-form-div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center my-2">
-                                                        <button type="button" id="addValueBtn" data-param="blood_pressure" data-table="bloodPressureTable" class="btn btn-primary addValueBtn">
-                                                            <i class="bi bi-plus-circle me-1"></i>
-                                                            add
-                                                        </button>
+                                                        <div class="d-flex justify-content-center mb-1">
+                                                            <button type="button" id="addValueBtn" data-param="blood_pressure" data-table="bloodPressureTable" class="btn btn-primary addValueBtn">
+                                                                <i class="bi bi-plus-circle me-1"></i>
+                                                                add
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="form-control overflow-auto my-3">
+                                                <div class="form-control overflow-auto mb-1">
                                                     <x-form-span><small>Blood Pressure Table</small></x-form-span>
                                                     <table id="bloodPressureTable" class="table table-hover align-middle table-sm bloodPressureTable">
                                                         <thead>
@@ -334,24 +346,24 @@
                                                 <div class="form-control mb-1">
                                                     <x-form-span><small>Pulse Input</small></x-form-span>
                                                     <div class="row">
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Pulse<x-required-span /></x-input-span>
                                                             <x-form-input class="value" name="bpm" id="pulseBpm" type="number" />
                                                             <x-input-span>bpm</x-input-span>
                                                         </x-form-div>
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Recorded At</x-input-span>
                                                             <x-form-input type="datetime-local" name="recordedAt" id="recordedAt"/>
                                                         </x-form-div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center my-2">
-                                                        <button type="button" id="addValueBtn" data-param="pulse" data-table="pulseTable" class="btn btn-primary addValueBtn">
-                                                            <i class="bi bi-plus-circle me-1"></i>
-                                                            add
-                                                        </button>
+                                                        <div class="d-flex justify-content-start mb-1 col-xl-4">
+                                                            <button type="button" id="addValueBtn" data-param="pulse" data-table="pulseTable" class="btn btn-primary addValueBtn">
+                                                                <i class="bi bi-plus-circle me-1"></i>
+                                                                add
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="form-control overflow-auto my-3">
+                                                <div class="form-control overflow-auto my-1">
                                                     <x-form-span><small>Pulse Table</small></x-form-span>
                                                     <table id="pulseTable" class="table table-hover align-middle table-sm pulseTable">
                                                         <thead>
@@ -369,11 +381,14 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="overflow-auto">
+                                <x-chart-canvas-div>
+                                    <canvas id="bloodPressurePulseChart"></canvas>
+                                </x-chart-canvas-div>
+                                {{-- <div class="overflow-auto">
                                     <div class="chart-container" style="position: relative; height:80vh; width:70vw">
                                         <canvas id="bloodPressurePulseChart"></canvas>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="form-control mb-2">
                                 <x-form-span>Temperature</x-form-span>
@@ -389,24 +404,24 @@
                                                 <div class="form-control mb-1">
                                                     <x-form-span><small>Temperature Input</small></x-form-span>
                                                     <div class="row">
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Temperature<x-required-span /></x-input-span>
                                                             <x-form-input class="value" name="celsius" id="temperature"  step="0.1" />
                                                             <x-input-span>°C</x-input-span>
                                                         </x-form-div>
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Recorded At</x-input-span>
                                                             <x-form-input type="datetime-local" name="recordedAt" id="recordedAt"/>
                                                         </x-form-div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center my-2">
-                                                        <button type="button" id="addValueBtn" data-param="temperature" data-table="temperatureTable" class="btn btn-primary addValueBtn">
-                                                            <i class="bi bi-plus-circle me-1"></i>
-                                                            add
-                                                        </button>
+                                                        <div class="d-flex justify-content-start my-1 col-xl-4">
+                                                            <button type="button" id="addValueBtn" data-param="temperature" data-table="temperatureTable" class="btn btn-primary addValueBtn">
+                                                                <i class="bi bi-plus-circle me-1"></i>
+                                                                add
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="form-control overflow-auto my-3">
+                                                <div class="form-control overflow-auto my-1">
                                                     <x-form-span><small>Temperature Table</small></x-form-span>
                                                     <table id="temperatureTable" class="table table-hover align-middle table-sm temperatureTable">
                                                         <thead>
@@ -424,11 +439,14 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="overflow-auto">
+                                <x-chart-canvas-div>
+                                    <canvas id="temperatureChart"></canvas>
+                                </x-chart-canvas-div>
+                                {{-- <div class="overflow-auto">
                                     <div class="chart-container" style="position: relative; height:80vh; width:70vw">
                                         <canvas id="temperatureChart"></canvas>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="form-control mb-2">
                                 <x-form-span>Maternal and Fetal Observations</x-form-span>
@@ -445,7 +463,7 @@
                                                 <div class="form-control mb-1">
                                                     <x-form-span><small>Urine Input</small></x-form-span>
                                                     <div class="row">
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Protein<x-required-span /></x-input-span>
                                                             <select class="form-select form-select-md value" name="protein" id="urineProtein">
                                                                 <option value="">Select</option>
@@ -455,7 +473,7 @@
                                                                 <option value="+++">+++</option>
                                                             </select>
                                                         </x-form-div>
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Glucose<x-required-span /></x-input-span>
                                                             <select class="form-select form-select-md value" name="glucose" id="urineGlucose">
                                                                 <option value="">Select</option>
@@ -465,24 +483,24 @@
                                                                 <option value="+++">+++</option>
                                                             </select>
                                                         </x-form-div>
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Volume</x-input-span>
                                                             <x-form-input class="value" name="volume" id="urineVolume" type="number" />
                                                             <x-input-span>mL</x-input-span>
                                                         </x-form-div>
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Recorded At</x-input-span>
                                                             <x-form-input type="datetime-local" name="recordedAt" id="recordedAt"/>
                                                         </x-form-div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center my-2">
-                                                        <button type="button" id="addValueBtn" data-param="urine" data-table="urineTable" class="btn btn-primary addValueBtn">
-                                                            <i class="bi bi-plus-circle me-1"></i>
-                                                            add
-                                                        </button>
+                                                        <div class="d-flex justify-content-center mb-1 col-xl-4">
+                                                            <button type="button" id="addValueBtn" data-param="urine" data-table="urineTable" class="btn btn-primary addValueBtn">
+                                                                <i class="bi bi-plus-circle me-1"></i>
+                                                                add
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="form-control overflow-auto my-3">
+                                                <div class="form-control overflow-auto my-1">
                                                     <x-form-span><small>Urine Table</small></x-form-span>
                                                     <table id="urineTable" class="table table-hover align-middle table-sm urineTable">
                                                         <thead>
@@ -511,7 +529,7 @@
                                                 <div class="form-control mb-1">
                                                     <x-form-span><small>Caput Input</small></x-form-span>
                                                     <div class="row">
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Degree<x-required-span /></x-input-span>
                                                             <select class="form-select form-select-md value" name="degree" id="caputDegree">
                                                                 <option value="">Select</option>
@@ -521,19 +539,19 @@
                                                                 <option value="+++">+++</option>
                                                             </select>
                                                         </x-form-div>
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Recorded At</x-input-span>
                                                             <x-form-input type="datetime-local" name="recordedAt" id="recordedAt"/>
                                                         </x-form-div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center my-2">
-                                                        <button type="button" id="addValueBtn" data-param="caput" data-table="caputTable" class="btn btn-primary addValueBtn">
-                                                            <i class="bi bi-plus-circle me-1"></i>
-                                                            add
-                                                        </button>
+                                                        <div class="d-flex justify-content-start mb-1 col-xl-4">
+                                                            <button type="button" id="addValueBtn" data-param="caput" data-table="caputTable" class="btn btn-primary addValueBtn">
+                                                                <i class="bi bi-plus-circle me-1"></i>
+                                                                add
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="form-control overflow-auto my-3">
+                                                <div class="form-control overflow-auto my-1">
                                                     <x-form-span><small>Caput Table</small></x-form-span>
                                                     <table id="caputTable" class="table table-hover align-middle table-sm caputTable">
                                                         <thead>
@@ -562,7 +580,7 @@
                                                 <div class="form-control mb-1">
                                                     <x-form-span><small>Position Input</small></x-form-span>
                                                     <div class="row">
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Position<x-required-span /></x-input-span>
                                                             <select class="form-select form-select-md value" name="position" id="positionValue">
                                                                 <option value="">Select</option>
@@ -574,19 +592,19 @@
                                                                 <option value="ROT">ROT</option>
                                                             </select>
                                                         </x-form-div>
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Recorded At</x-input-span>
                                                             <x-form-input type="datetime-local" name="recordedAt" id="recordedAt"/>
                                                         </x-form-div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center my-2">
-                                                        <button type="button" id="addValueBtn" data-param="position" data-table="positionTable" class="btn btn-primary addValueBtn">
-                                                            <i class="bi bi-plus-circle me-1"></i>
-                                                            add
-                                                        </button>
+                                                        <div class="d-flex justify-content-start mb-1 col-xl-4">
+                                                            <button type="button" id="addValueBtn" data-param="position" data-table="positionTable" class="btn btn-primary addValueBtn">
+                                                                <i class="bi bi-plus-circle me-1"></i>
+                                                                add
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="form-control overflow-auto my-3">
+                                                <div class="form-control overflow-auto my-1">
                                                     <x-form-span><small>Position Table</small></x-form-span>
                                                     <table id="positionTable" class="table table-hover align-middle table-sm positionTable">
                                                         <thead>
@@ -615,7 +633,7 @@
                                                 <div class="form-control mb-1">
                                                     <x-form-span><small>Moulding Input</small></x-form-span>
                                                     <div class="row">
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Degree<x-required-span /></x-input-span>
                                                             <select class="form-select form-select-md value" name="degree" id="mouldingDegree">
                                                                 <option value="">Select</option>
@@ -625,19 +643,19 @@
                                                                 <option value="+++">+++</option>
                                                             </select>
                                                         </x-form-div>
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Recorded At</x-input-span>
                                                             <x-form-input type="datetime-local" name="recordedAt" id="recordedAt"/>
                                                         </x-form-div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center my-2">
-                                                        <button type="button" id="addValueBtn" data-param="moulding" data-table="mouldingTable" class="btn btn-primary addValueBtn">
-                                                            <i class="bi bi-plus-circle me-1"></i>
-                                                            add
-                                                        </button>
+                                                        <div class="d-flex justify-content-start mb-1 col-xl-4">
+                                                            <button type="button" id="addValueBtn" data-param="moulding" data-table="mouldingTable" class="btn btn-primary addValueBtn">
+                                                                <i class="bi bi-plus-circle me-1"></i>
+                                                                add
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="form-control overflow-auto my-3">
+                                                <div class="form-control overflow-auto my-1">
                                                     <x-form-span><small>Moulding Table</small></x-form-span>
                                                     <table id="mouldingTable" class="table table-hover align-middle table-sm mouldingTable">
                                                         <thead>
@@ -666,24 +684,24 @@
                                                 <div class="form-control mb-1">
                                                     <x-form-span><small>Oxytocin Input</small></x-form-span>
                                                     <div class="row">
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Dosage<x-required-span /></x-input-span>
                                                             <x-form-input class="value" name="dosage" id="oxytocinDosage" type="number" />
                                                             <x-input-span>units</x-input-span>
                                                         </x-form-div>
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Recorded At</x-input-span>
                                                             <x-form-input type="datetime-local" name="recordedAt" id="recordedAt"/>
                                                         </x-form-div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center my-2">
-                                                        <button type="button" id="addValueBtn" data-param="oxytocin" data-table="oxytocinTable" class="btn btn-primary addValueBtn">
-                                                            <i class="bi bi-plus-circle me-1"></i>
-                                                            add
-                                                        </button>
+                                                        <div class="d-flex justify-content-start mb-1 col-xl-4">
+                                                            <button type="button" id="addValueBtn" data-param="oxytocin" data-table="oxytocinTable" class="btn btn-primary addValueBtn">
+                                                                <i class="bi bi-plus-circle me-1"></i>
+                                                                add
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="form-control overflow-auto my-3">
+                                                <div class="form-control overflow-auto my-1">
                                                     <x-form-span><small>Oxytocin Table</small></x-form-span>
                                                     <table id="oxytocinTable" class="table table-hover align-middle table-sm oxytocinTable">
                                                         <thead>
@@ -725,15 +743,15 @@
                                                             <x-input-span>Recorded At</x-input-span>
                                                             <x-form-input type="datetime-local" name="recordedAt" id="recordedAt"/>
                                                         </x-form-div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center my-2">
-                                                        <button type="button" id="addValueBtn" data-param="fluid" data-table="fluidTable" class="btn btn-primary addValueBtn">
-                                                            <i class="bi bi-plus-circle me-1"></i>
-                                                            add
-                                                        </button>
+                                                        <div class="d-flex justify-content-start mb-1 col-xl-4">
+                                                            <button type="button" id="addValueBtn" data-param="fluid" data-table="fluidTable" class="btn btn-primary addValueBtn">
+                                                                <i class="bi bi-plus-circle me-1"></i>
+                                                                add
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="form-control overflow-auto my-3">
+                                                <div class="form-control overflow-auto my-1">
                                                     <x-form-span><small>Fluid Table</small></x-form-span>
                                                     <table id="fluidTable" class="table table-hover align-middle table-sm fluidTable">
                                                         <thead>
@@ -762,7 +780,7 @@
                                                 <div class="form-control mb-1">
                                                     <x-form-span><small>Drug Input</small></x-form-span>
                                                     <div class="row">
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Type<x-required-span /></x-input-span>
                                                             <select class="form-select form-select-md value" name="type" id="drugType">
                                                                 <option value="">Select</option>
@@ -771,19 +789,19 @@
                                                                 <option value="Other">Other</option>
                                                             </select>
                                                         </x-form-div>
-                                                        <x-form-div class="col-xl-6">
+                                                        <x-form-div>
                                                             <x-input-span>Recorded At</x-input-span>
                                                             <x-form-input type="datetime-local" name="recordedAt" id="recordedAt"/>
                                                         </x-form-div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center my-2">
-                                                        <button type="button" id="addValueBtn" data-param="drug" data-table="drugTable" class="btn btn-primary addValueBtn">
-                                                            <i class="bi bi-plus-circle me-1"></i>
-                                                            add
-                                                        </button>
+                                                        <div class="d-flex justify-content-start mb-1 col-xl-4">
+                                                            <button type="button" id="addValueBtn" data-param="drug" data-table="drugTable" class="btn btn-primary addValueBtn">
+                                                                <i class="bi bi-plus-circle me-1"></i>
+                                                                add
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="form-control overflow-auto my-3">
+                                                <div class="form-control overflow-auto my-1">
                                                     <x-form-span><small>Drug Table</small></x-form-span>
                                                     <table id="drugTable" class="table table-hover align-middle table-sm drugTable">
                                                         <thead>
@@ -801,11 +819,14 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="overflow-auto mt-2">
+                                <x-chart-canvas-div>
+                                    <canvas id="observationsChart"></canvas>
+                                </x-chart-canvas-div>
+                                {{-- <div class="overflow-auto mt-2">
                                     <div class="chart-container" style="position: relative; height:80vh; width:70vw">
                                         <canvas id="observationsChart"></canvas>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>

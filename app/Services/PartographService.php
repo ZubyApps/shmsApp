@@ -44,7 +44,7 @@ Class PartographService
     public function getPartographData(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'recorded_at';
-        $orderDir   =  'desc';
+        $orderDir   =  'asc';
 
         return $this->partograph
                     ->where('labour_record_id', $data->labourRecordId)
