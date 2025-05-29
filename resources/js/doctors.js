@@ -351,7 +351,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         if (isAnc) {
                             config.vitalSignsTable(`#vitalSignsTableAncReviewDiv`, config.id, config.modal);
                             // Fetch ward list
-                            const wardData = await fetchData(`/ward/list`, {}, 'Failed to fetch ward list');
+                            const wardData = await httpRequest(`/ward/list`, 'GET', {}, 'Failed to fetch ward list');
                             displayWardList(config.modal._element.querySelector("#ward"), wardData);
                         }
                         config.vitalSignsTable(`#vitalSignsConsultation${config.suffixId}`, config.id, config.modal);
