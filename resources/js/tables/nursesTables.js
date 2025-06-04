@@ -1078,7 +1078,7 @@ const getPartographTable = (tableId, labourRecordId, modal, parameterType, labou
                         entries.push(
                              `<div class="me-1"> 
                                  ${key} :  <span class="valueSpanBtn tooltip-test" title="edit value">${value}</span>
-                                     <input class="ms-1 form-control valueInput d-none" value="${value}" data-record='${JSON.stringify(row)}' data-key="${key}" data-id="${row.id}" data-table="${tableId}" type="text" style="width:4rem;" name="value">,
+                                     <input class="ms-1 form-control valueInput d-none" value="${value}" data-record='${JSON.stringify(row)}' data-key="${key}" data-id="${row.id}" data-table="${tableId}" type="text" style="width:4rem;" name="value">
                               </div>
                              `);
                     }

@@ -777,7 +777,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const removeBtn     = event.target.closest('.closeVisitBtn, .deleteVisitBtn')
         const emergencyBtn  = event.target.closest('.emergencyBtn')
         const openVisitBtn  = event.target.closest('.openVisitBtn')
-        const historyBtn    = document.querySelector('.historyBtn')
+        // const historyBtn    = document.querySelector('.historyBtn')
 
         if (consultBtn) {
             consultBtn.setAttribute('disabled', 'disabled')

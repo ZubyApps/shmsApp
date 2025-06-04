@@ -415,10 +415,10 @@ Class ShiftPerformanceService
         $shiftStartTimer = $shiftStart->addHour();
         $count = 2;
 
-        if ($shiftPerformance->shift == 'Night Shift') {
-            $shiftStartTimer = $shiftStart->addHours(3);
-            $count = 3;
-        }
+        // if ($shiftPerformance->shift == 'Night Shift') {
+        //     $shiftStartTimer = $shiftStart->addHours(3);
+        //     $count = 3;
+        // }
 
         // Use eager loading to reduce the number of queries
         $visits = $this->visit
