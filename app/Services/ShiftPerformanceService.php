@@ -269,7 +269,7 @@ Class ShiftPerformanceService
         $shiftEnd               = new Carbon($shiftPerformance->shift_end);
         $shiftEndTimer          = $shiftEnd->subMinutes(20);
         $averageFMRTime = DB::table('prescriptions')
-            ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, prescriptions.created_at))) AS averageFMRTime')
+            ->selectRaw('AVG(TIME_TO_SEC(TIMEDIFF(medication_charts.time_given, prescriptions.hms_bill_date))) AS averageFMRTime')
             ->leftJoin('medication_charts', 'prescriptions.id', 'medication_charts.prescription_id')
             ->where('medication_charts.dose_count', 1)
             ->where('prescriptions.held', null)
