@@ -259,7 +259,7 @@ const getExpenseSummaryTable = (tableId, startDate, endDate, date) => {
             {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
             {extend: 'print', className: 'btn-primary', footer: true},
              ],
-        lengthMenu:[20, 40, 80, 120, 200],
+        lengthMenu:[25, 50, 100, 150, 200],
         language: {
             emptyTable: 'No expense'
         },
