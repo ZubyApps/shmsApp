@@ -77,7 +77,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                 const chartables = row.chartableMedications
                     return `
                     <div class="d-flex flex">
-                        <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewMedicationBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                        <button class=" btn btn${chartables < 1 ? '-outline-primary' : '-primary px-1'} viewMedicationBtn tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-closed="${row.closed}">
                             ${(chartables < 1 ? '' : chartables) + ' ' + row.givenCount + '/' + row.doseCount}
                         </button>
                     </div>`

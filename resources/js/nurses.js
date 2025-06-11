@@ -429,6 +429,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 medicationPrescriptionsModal._element.querySelector('.addPrescriptionBtn').setAttribute('data-patient', viewMedicationBtn.getAttribute('data-patient'))
                 medicationPrescriptionsModal._element.querySelector('.addPrescriptionBtn').setAttribute('data-sponsor', viewMedicationBtn.getAttribute('data-sponsor'))
                 medicationPrescriptionsModal._element.querySelector('.addPrescriptionBtn').setAttribute('data-sponsorcat', viewMedicationBtn.getAttribute('data-sponsorcat'))
+                medicationPrescriptionsModal._element.querySelector('.addPrescriptionBtn').setAttribute('data-closed', +viewMedicationBtn.getAttribute('data-closed'))
                 medicationPrescriptionsModal._element.querySelector('.addPrescriptionBtn').setAttribute('data-id', visitId)
                 medicationsTable = getNurseMedicationsByFilter(tableId, null, medicationPrescriptionsModal._element, visitId)
     
@@ -509,6 +510,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 investigationAndManagementModal._element.querySelector('.investigationAndManagementDiv').classList.remove('d-none')
                 const btn = investigationAndManagementModal._element.querySelector('#addInvestigationAndManagementBtn')
                 const visitId   =  addPrescriptionBtn.dataset?.id
+                const addDiv = investigationAndManagementModal._element.querySelector('.addDiv')
+                const closed = +addPrescriptionBtn.dataset.closed;
+                closed ? addDiv.classList.add('d-none') : addDiv.classList.remove('d-none');
                 populatePatientSponsor(investigationAndManagementModal, addPrescriptionBtn)
                 btn.setAttribute('data-visitid', visitId)
                 getPrescriptionTableByConsultation('prescriptionTableConReview', null, visitId, investigationAndManagementModal._element)
