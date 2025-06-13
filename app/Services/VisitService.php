@@ -80,8 +80,8 @@ class VisitService
                     'user_id'   => 1,
                     'resource_category_id' => 6
                 ]);
-    
-                if ($patientVisitsC < 2 && $patientSponsor == 'Individual' && $visitType == 'Regular'){
+
+                if ($patientVisitsC < 2 && $patientSponsor == 'Individual' && $patient->patient_type == 'Regular.New'){
                     
                     // if ($visitType == 'ANC'){
                     //     $resource = Resource::firstOrCreate(['name' => 'Antenatal Card'],[
@@ -121,7 +121,7 @@ class VisitService
                             'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
                             'reorder_level'     => 0,
                             'purchase_price'    => 200,
-                            'selling_price'     => 2000,
+                            'selling_price'     => 3000,
                             'unit_description'  => 1,
                             'category'          => 'Other Services',
                             'sub_category'      => 'Hospital Card',
@@ -148,14 +148,14 @@ class VisitService
                     // }
                 }
     
-                if ($patientSponsor == 'Family' && $patientSponsorVisitsC < 2 && $patientVisitsC < 2 && $visitType == 'Regular'){
+                if ($patientSponsor == 'Family' && $patientSponsorVisitsC < 2 && $patientVisitsC < 2 && $patient->patient_type == 'Regular.New'){
     
                     $resource = Resource::firstOrCreate(['name' => 'Family Card'], [
                         'name'              => 'Family Card',
                         'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
                         'reorder_level'     => 0,
-                        'purchase_price'    => 350,
-                        'selling_price'     => 3500,
+                        'purchase_price'    => 500,
+                        'selling_price'     => 5000,
                         'unit_description'  => 1,
                         'category'          => 'Other Services',
                         'sub_category'      => 'Hospital Card',
@@ -187,7 +187,7 @@ class VisitService
                         'flag'              => 'Family,HMO,NHIS,Individual,Retainership',
                         'reorder_level'     => 0,
                         'purchase_price'    => 150,
-                        'selling_price'     => 1500,
+                        'selling_price'     => 2000,
                         'unit_description'  => 1,
                         'category'          => 'Other Services',
                         'sub_category'      => 'Hospital Card',
