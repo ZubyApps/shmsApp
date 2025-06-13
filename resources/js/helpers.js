@@ -427,7 +427,7 @@ const admissionStatus = (row) => {
         <div class="dropdown">
             <a class="d-flex flex- btn tooltip-test text-decoration-none text-primary ${row.ward ? '' : 'colour-change'} tooltip-test" title="Inpatient" data-bs-toggle="dropdown" href="" >
             <i class="bi bi-hospital-fill"></i>
-                ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="discharged ${row.doctorDoneAt}"></i>` : ''}
+                ${row.discharged ? `<i class="ms-1 bi bi-arrow-up-right-circle-fill tooltip-test text-${dischargeColour(row.reason)}" title="${row.reason} discharge by ${row.doctorDone} at ${row.doctorDoneAt}"></i>` : ''}
             </a>
                 <ul class="dropdown-menu">
                 <li>
