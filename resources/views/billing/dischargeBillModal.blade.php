@@ -20,6 +20,7 @@
                             <option value="Private">Private</option>
                             <option value="Children">Children</option>
                             <option value="Observation">Observation</option>
+                            <option value="e-Private">e-Private</option>
                             <option value="SemiVIP">SemiVIP</option>
                             <option value="VIP">VIP</option>
                         </select>
