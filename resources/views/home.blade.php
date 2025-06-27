@@ -14,7 +14,7 @@
                     <p class="fs-5"><span class="fw-bold">S</span>andra <span class="fw-bold">H</span>ospital <span
                             class="fw-bold">M</span>anagement <span class="fw-bold">S</span>ystem</p>
                     <div class="">
-                        <a href="{{ $staffD === 'Bill Officer' || $staffD === 'HMO Officer' || $staffD === 'Nurse ' || $staffD === 'Records Clerk' || $staffD === 'Doctor' || $staffA > 4 ? '/patients' : '' }}" class="btn btn-outline-primary mx-1"><i class="bi bi-people-fill"> Patients</i></a>
+                        <a href="{{ $staffD === 'Bill Officer' || $staffD === 'HMO Officer' || $staffD === 'Nurse' || $staffD === 'Records Clerk' || $staffD === 'Doctor' || $staffA > 4 ? '/patients' : '' }}" class="btn btn-outline-primary mx-1"><i class="bi bi-people-fill"> Patients</i></a>
                         <a href="{{ $staffD === 'Doctor' || $staffA > 4 ? '/doctors' : '' }}" class="btn btn-outline-primary mx-1"><i class="bi bi-lungs-fill"> Doctors</i></a>
                         <a href="{{ $staffD === 'Doctor' || $staffD === 'Nurse' || $staffA > 4 ? '/nurses' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-thermometer-low"> Nurses</i></a>
                         <br>
@@ -23,7 +23,7 @@
                         <a href="{{ $staffD === 'HMO Officer' || $staffA > 4 ? '/hmo' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-calendar2-plus-fill"> HMO</i></a>
                         <br>
                         <a href="{{ $staffD === 'Bill Officer' || $staffA > 4 ? '/billing' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-receipt"> Billing</i></a>
-                        <a href="{{ $staffA > 4 ? '/resources' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-minecart-loaded"> Resources</i></a>
+                        <a href="{{ ($staffD === 'Pharmacy Tech' && $staffA > 3 ) || $staffA > 4 ? '/resources' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-minecart-loaded"> Resources</i></a>
                         <a href="{{ $staffA > 4 ? '/admin' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-person-fill"> Admin</i></a>
                         <br>
                         <a href="{{ $staffD === 'Bill Officer' || $staffD === 'HMO Officer' || $staffD === 'Records Clerk' || $staffA  > 4 ? '/thirdpartyservices' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-arrow-up-right-square-fill"> Third Party Services</i></a>

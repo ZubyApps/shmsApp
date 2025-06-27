@@ -150,41 +150,41 @@ Route::middleware('auth')->group(function () {
             Route::post('/{ward}', [WardController::class, 'update']);
         })->name('Ward');
 
-        Route::prefix('resources')->group(function (){
-            Route::get('', [ResourceController::class, 'index'])->name('Resources');
-            Route::post('', [ResourceController::class, 'store']);
-            Route::get('/load', [ResourceController::class, 'load']);
-            Route::get('/list', [ResourceController::class, 'list']);
-            Route::withoutMiddleware('strict')->group(function () {
-                Route::get('/list2', [ResourceController::class, 'list2']);
-                Route::get('/theatrematch', [ResourceController::class, 'theatreMatch']);
-                Route::post('sellingprice/{sponsor}/{resource}', [ResourceSponsorController::class, 'storeSponsorSellingPrice']);
-                Route::delete('remove/sellingprice/{sponsor}/{resource}', [ResourceSponsorController::class, 'removeSponsorSellingPrice']);
-            });
-            Route::get('/list/bulk', [ResourceController::class, 'listBulk']);
-            Route::get('/{resource}', [ResourceController::class, 'edit']);
-            Route::get('/addstock/{resource}', [ResourceController::class, 'edit'])->name('Addstock');
-            Route::delete('/{resource}', [ResourceController::class, 'destroy']);
-            Route::post('/{resource}', [ResourceController::class, 'update']);
-            Route::post('toggle/{resource}', [ResourceController::class, 'toggleIsActive']);
-        })->name('Resources');
+        // Route::prefix('resources')->group(function (){
+        //     Route::get('', [ResourceController::class, 'index'])->name('Resources');
+        //     Route::post('', [ResourceController::class, 'store']);
+        //     Route::get('/load', [ResourceController::class, 'load']);
+        //     Route::get('/list', [ResourceController::class, 'list']);
+        //     Route::withoutMiddleware('strict')->group(function () {
+        //         Route::get('/list2', [ResourceController::class, 'list2']);
+        //         Route::get('/theatrematch', [ResourceController::class, 'theatreMatch']);
+        //         Route::post('sellingprice/{sponsor}/{resource}', [ResourceSponsorController::class, 'storeSponsorSellingPrice']);
+        //         Route::delete('remove/sellingprice/{sponsor}/{resource}', [ResourceSponsorController::class, 'removeSponsorSellingPrice']);
+        //     });
+        //     Route::get('/list/bulk', [ResourceController::class, 'listBulk']);
+        //     Route::get('/{resource}', [ResourceController::class, 'edit']);
+        //     Route::get('/addstock/{resource}', [ResourceController::class, 'edit'])->name('Addstock');
+        //     Route::delete('/{resource}', [ResourceController::class, 'destroy']);
+        //     Route::post('/{resource}', [ResourceController::class, 'update']);
+        //     Route::post('toggle/{resource}', [ResourceController::class, 'toggleIsActive']);
+        // })->name('Resources');
     
-        Route::prefix('addresourcestock')->group(function (){
-            Route::post('', [AddResourceStockController::class, 'store']);
-            Route::get('/load', [AddResourceStockController::class, 'load']);
-            Route::get('/{addResourceStock}', [AddResourceStockController::class, 'edit']);
-            Route::delete('/{addResourceStock}', [AddResourceStockController::class, 'destroy']);
-            Route::post('/{addResourceStock}', [AddResourceStockController::class, 'update']);
-        })->name('AddStock');
+        // Route::prefix('addresourcestock')->group(function (){
+        //     Route::post('', [AddResourceStockController::class, 'store']);
+        //     Route::get('/load', [AddResourceStockController::class, 'load']);
+        //     Route::get('/{addResourceStock}', [AddResourceStockController::class, 'edit']);
+        //     Route::delete('/{addResourceStock}', [AddResourceStockController::class, 'destroy']);
+        //     Route::post('/{addResourceStock}', [AddResourceStockController::class, 'update']);
+        // })->name('AddStock');
     
-        Route::prefix('resourcesupplier')->group(function (){
-            Route::post('', [ResourceSupplierController::class, 'store']);
-            Route::get('/load', [ResourceSupplierController::class, 'load']);
-            Route::get('/list', [ResourceSupplierController::class, 'list']);
-            Route::get('/{resourceSupplier}', [ResourceSupplierController::class, 'edit']);
-            Route::delete('/{resourceSupplier}', [ResourceSupplierController::class, 'destroy']);
-            Route::post('/{resourceSupplier}', [ResourceSupplierController::class, 'update']);
-        })->name('Resource Supplier');
+        // Route::prefix('resourcesupplier')->group(function (){
+        //     Route::post('', [ResourceSupplierController::class, 'store']);
+        //     Route::get('/load', [ResourceSupplierController::class, 'load']);
+        //     Route::get('/list', [ResourceSupplierController::class, 'list']);
+        //     Route::get('/{resourceSupplier}', [ResourceSupplierController::class, 'edit']);
+        //     Route::delete('/{resourceSupplier}', [ResourceSupplierController::class, 'destroy']);
+        //     Route::post('/{resourceSupplier}', [ResourceSupplierController::class, 'update']);
+        // })->name('Resource Supplier');
     
         Route::prefix('paymethod')->group(function (){
             Route::post('', [PayMethodController::class, 'store']);
@@ -310,6 +310,44 @@ Route::middleware('auth')->group(function () {
             Route::get('/load/bulkrequests/pharmacy', [PharmacyController::class, 'expirationStock']);
             Route::patch('/done/{visit}', [PharmacyController::class, 'pharmacyDone']);
         });
+    });
+
+    Route::middleware('resources')->group(function () {
+        Route::prefix('resources')->group(function (){
+            Route::get('', [ResourceController::class, 'index'])->name('Resources');
+            Route::post('', [ResourceController::class, 'store']);
+            Route::get('/load', [ResourceController::class, 'load']);
+            Route::get('/list', [ResourceController::class, 'list']);
+            Route::withoutMiddleware('resources')->group(function () {
+                Route::get('/list2', [ResourceController::class, 'list2']);
+                Route::get('/theatrematch', [ResourceController::class, 'theatreMatch']);
+                Route::post('sellingprice/{sponsor}/{resource}', [ResourceSponsorController::class, 'storeSponsorSellingPrice']);
+                Route::delete('remove/sellingprice/{sponsor}/{resource}', [ResourceSponsorController::class, 'removeSponsorSellingPrice']);
+            });
+            Route::get('/list/bulk', [ResourceController::class, 'listBulk']);
+            Route::get('/{resource}', [ResourceController::class, 'edit']);
+            Route::get('/addstock/{resource}', [ResourceController::class, 'edit'])->name('Addstock');
+            Route::delete('/{resource}', [ResourceController::class, 'destroy']);
+            Route::post('/{resource}', [ResourceController::class, 'update']);
+            Route::post('toggle/{resource}', [ResourceController::class, 'toggleIsActive']);
+        })->name('Resources');
+
+        Route::prefix('addresourcestock')->group(function (){
+            Route::post('', [AddResourceStockController::class, 'store']);
+            Route::get('/load', [AddResourceStockController::class, 'load']);
+            Route::get('/{addResourceStock}', [AddResourceStockController::class, 'edit']);
+            Route::delete('/{addResourceStock}', [AddResourceStockController::class, 'destroy']);
+            Route::post('/{addResourceStock}', [AddResourceStockController::class, 'update']);
+        })->name('AddStock');
+    
+        Route::prefix('resourcesupplier')->group(function (){
+            Route::post('', [ResourceSupplierController::class, 'store']);
+            Route::get('/load', [ResourceSupplierController::class, 'load']);
+            Route::get('/list', [ResourceSupplierController::class, 'list']);
+            Route::get('/{resourceSupplier}', [ResourceSupplierController::class, 'edit']);
+            Route::delete('/{resourceSupplier}', [ResourceSupplierController::class, 'destroy']);
+            Route::post('/{resourceSupplier}', [ResourceSupplierController::class, 'update']);
+        })->name('Resource Supplier');
     });
 
     Route::middleware('hmo')->group(function () {

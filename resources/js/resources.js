@@ -255,7 +255,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.delete(`/resources/${resource}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
-                            resourceTable.draw()
+                            resourceTable.draw(false)
                         }
                         deleteBtn.removeAttribute('disabled')
                     })

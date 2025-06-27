@@ -70,6 +70,7 @@ class Kernel extends HttpKernel
         'nurse'  => \App\Http\Middleware\DoctorsAndNurses::class,
         'lab'  => \App\Http\Middleware\DoctorsAndLab::class,
         'pharmacy'  => \App\Http\Middleware\PharmacyOnly::class,
+        'resources'  => \App\Http\Middleware\ResourcesOnly::class,
         'hmo'  => \App\Http\Middleware\HmoOnly::class,
         'billing'  => \App\Http\Middleware\BillingOnly::class,
         'patients'  => \App\Http\Middleware\Patients::class,
