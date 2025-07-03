@@ -90,7 +90,7 @@
                                     </div>
                                 </div>
                                 <div class="overflow-auto">
-                                    <div class="chart-container" style="position: relative; height:60vh; width:90vw">
+                                    <div class="chart-container" style="position: relative; height:120vh; width:90vw">
                                         <canvas id="vitalsignsChart{{ $isAnc ? 'AncConReview' : 'ConReview' }}" class="vitalsignsChart"></canvas>
                                     </div>
                                 </div>

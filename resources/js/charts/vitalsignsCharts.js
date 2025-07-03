@@ -9,6 +9,42 @@ function getVitalsignsChartByVisit(chart, vitals, modal){
             labels: vitals.data.map((row, index, data) => {return index + 1}),
             datasets: [
                 {
+                    label: `Blood Pressure Systolic Chart`,
+                    data: vitals.data.map(row => row.bloodPressure?.split('/')[0]),
+                    borderWidth: 4,
+                    backgroundColor: ["#8b0ab3"],
+                    tension: 0.5,
+                    pointRadius: 5,
+                    // pointBackgroundColor: (context) => {
+                    //     return context.dataset.data[context.dataIndex] >= feverBenchmark ? "#dc3545" : "#0d6efd";
+                    // },
+                    spanGaps: true
+                },
+                {
+                    label: `Blood Pressure Diastolic Chart`,
+                    data: vitals.data.map(row => row.bloodPressure?.split('/')[1].replace('mmHg', '')),
+                    borderWidth: 4,
+                    backgroundColor: ["#e6b410cc"],
+                    tension: 0.5,
+                    pointRadius: 5,
+                    // pointBackgroundColor: (context) => {
+                    //     return context.dataset.data[context.dataIndex] >= feverBenchmark ? "#dc3545" : "#0d6efd";
+                    // },
+                    spanGaps: true
+                },
+                {
+                    label: `Pulse Chart`,
+                    data: vitals.data.map(row => row.pulseRate?.replace('bpm', '')),
+                    borderWidth: 4,
+                    backgroundColor: ["#d5f55f"],
+                    tension: 0.5,
+                    pointRadius: 5,
+                    // pointBackgroundColor: (context) => {
+                    //     return context.dataset.data[context.dataIndex] >= feverBenchmark ? "#dc3545" : "#0d6efd";
+                    // },
+                    spanGaps: true
+                },
+                {
                     label: `Temperature Chart`,
                     data: vitals.data.map(row => row.temperature?.replace('°C', '')),
                     borderWidth: 4,
@@ -19,15 +55,27 @@ function getVitalsignsChartByVisit(chart, vitals, modal){
                         return context.dataset.data[context.dataIndex] >= feverBenchmark ? "#dc3545" : "#0d6efd";
                     },
                     spanGaps: true
-            },
+                },
+                {
+                    label: `Respiration Chart`,
+                    data: vitals.data.map(row => row.respiratoryRate?.replace('cpm', '')),
+                    borderWidth: 4,
+                    backgroundColor: ["#5fe4f5"],
+                    tension: 0.5,
+                    pointRadius: 5,
+                    // pointBackgroundColor: (context) => {
+                    //     return context.dataset.data[context.dataIndex] >= feverBenchmark ? "#dc3545" : "#0d6efd";
+                    // },
+                    spanGaps: true
+                },
         ]
         },
         options: {
             scales: {
             y: {
                 beginAtZero: false,
-                suggestedMin: 35.0,
-                suggestedMax: 41.0,
+                suggestedMin: 20.0,
+                suggestedMax: 200.0,
                 ticks: {
                     stepSize: 0.1
                 }

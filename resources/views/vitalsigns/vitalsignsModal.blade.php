@@ -63,7 +63,7 @@
                             </div>
                         </div>
                         <div class="overflow-auto {{ !$isDoctor ? 'd-none' : '' }}">
-                            <div class="chart-container" style="position: relative; height:60vh; width:80vw">
+                            <div class="chart-container" style="position: relative; height:150vh; width:69vw">
                                 <canvas id="vitalsignsChart"></canvas>
                             </div>
                         </div>
