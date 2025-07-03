@@ -78,7 +78,8 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
 
     function format(data) {
         const credit = data.sponsorCategoryClass == 'Credit'
-        const NHIS = data.sponsorCategory == 'NHIS'
+        const sponsorCat = data.sponsorCategory
+        const NHIS = sponsorCat == 'NHIS'
         const prescriptions = data.prescriptions
         const closed = +data.closed
         let count = 1
@@ -101,6 +102,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                             </thead>
                                         <tbody>`
                                 prescriptions.forEach(p => {
+                                        const flag = p.flag.includes(sponsorCat) ? true : false;
                                         totalBill += NHIS && p.approved ? +p.nhisBill : +p.hmsBill
                                         child += `
                                             <tr>
@@ -113,7 +115,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 ${credit || NHIS ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>` : ''}
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
-                                                        <span class="${p.qtyDispensed || closed ? '': 'billQtySpan'} btn btn-${p.qtyBilled ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}" data-stock="${p.stock}">${p.qtyBilled ? p.qtyBilled+' '+p.unit : 'Bill'}</span>
+                                                        <span class="${p.qtyDispensed || closed || flag ? '': 'billQtySpan'} btn btn-${p.qtyBilled ? 'white text-secondary' : flag ? 'danger' : 'outline-primary'} tooltip-test" title="${flag ? 'Flagged' : ''}" data-id="${p.id}" data-stock="${p.stock}">${p.qtyBilled ? p.qtyBilled+' '+p.unit : flag ? 'Flagged' : 'Bill'}</span>
                                                         <input class="ms-1 form-control billQtyInput d-none text-secondary" type="number" style="width:6rem;" id="billQtyInput" value="${p.qtyBilled == 0 ? '' : p.qtyBilled}" name="quantity" id="quantity">
                                                         <span class="${closed ? '' : 'holdSpan'} btn btn-${p.reason ? 'danger' : 'outline-primary'} ms-1 ${p.qtyBilled ? 'd-none' : ''}" data-id="${p.id}">${p.reason ? p.reason : 'Hold'}</span>
                                                 

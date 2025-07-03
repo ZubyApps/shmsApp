@@ -378,6 +378,7 @@ class PharmacyService
                     'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->category_name == 'NHIS',
                     'amountPaid'        => $prescription->paid ?? 0,
                     'blink'             => $prescription->resource->stock_level <= $prescription->resource->reorder_level,
+                    'flag'              => $prescription->resource->flag
                 ]),
             ];
          };

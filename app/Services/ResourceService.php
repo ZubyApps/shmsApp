@@ -142,7 +142,7 @@ class ResourceService
             return $this->resource
                         ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
                         ->where('is_active', true)
-                        ->whereNot('flag','LIKE', '%' . addcslashes($data->sponsorCat, '%_') . '%' )
+                        // ->whereNot('flag','LIKE', '%' . addcslashes($data->sponsorCat, '%_') . '%' )
                         ->orderBy('name', 'asc')
                         ->get();
         }      
