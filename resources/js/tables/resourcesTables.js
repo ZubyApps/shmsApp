@@ -95,6 +95,7 @@ const getResourceTable = (tableId) => {
         },
         columns: [
             {data: "name"},
+            {data: "location"},
             {data: "flag"},
             {
                 visible: false,

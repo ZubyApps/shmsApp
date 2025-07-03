@@ -47,6 +47,10 @@
                                 <datalist name="medicationCategory" type="text" class="decoration-none bg-white medicationCategoryList" id="{{ $isUpdate ? 'updateMedicationCategoryList' : 'newMedicationCategoryList' }}"></datalist>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
+                                <x-input-span id="locationLabel">Location</x-input-span>
+                                <x-form-input type="text" class="location" name="location" id="location" />
+                            </x-form-div>
+                            <x-form-div class="col-xl-12">
                                 <x-input-span id="reOrderLabel">Re-order Level<x-required-span /></x-input-span>
                                 <x-form-input type="number" name="reOrder" id="reOrder" />
                             </x-form-div>

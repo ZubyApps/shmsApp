@@ -49,6 +49,7 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th>Location</th>
                                     <th>Flag</th>
                                     <th>Marked For</th>
                                     <th>Category</th>

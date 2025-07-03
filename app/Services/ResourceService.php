@@ -31,12 +31,13 @@ class ResourceService
             'purchase_price'            => $data->purchasePrice,
             'selling_price'             => $data->sellingPrice,
             'reorder_level'             => $data->reOrder,
+            'location'                  => $data->location,
             'unit_description_id'       => $data->unitDescription,
             'expiry_date'               => $data->expiryDate ? (new Carbon($data->expiryDate))->lastOfMonth() : null,
         ]);
     }
 
-    public function update(Request $data, Resource $resource, User $user): Resource
+    public function update(Request $data, Resource $resource): Resource
     {
        $resource->update([
             'name'                      => $data->name,
@@ -49,6 +50,7 @@ class ResourceService
             'purchase_price'            => $data->purchasePrice,
             'selling_price'             => $data->sellingPrice,
             'reorder_level'             => $data->reOrder,
+            'location'                  => $data->location,
             'unit_description_id'       => $data->unitDescription,
             'expiry_date'               => $data->expiryDate ? (new Carbon($data->expiryDate))->lastOfMonth() : null,
         ]);
@@ -104,6 +106,7 @@ class ResourceService
                 'sellingPrice'      => $resource->selling_price,
                 'reOrder'           => $resource->reorder_level,
                 'stock'             => $resource->stock_level,
+                'location'          => $resource->location,
                 'isActive'          => $resource->is_active,
                 'expiryDate'        => $resource->expiry_date ? (new Carbon($resource->expiry_date))->format('d/m/y') : 'N/A',
                 'expired'           => $resource->expiry_date ? $this->dataDifferenceInDays($resource->expiry_date) : 'N/A',

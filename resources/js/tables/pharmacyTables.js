@@ -242,6 +242,7 @@ const getExpirationStockTable = (tableId, filter) => {
         },
         columns: [
             {data: "name"},
+            {data: "location"},
             {data: row => () => {
                 if (row.stockLevel <= row.reOrderLevel) {
                     return `<span class="text-danger fw-semibold">${row.stockLevel +' '+ row.description}</span>`

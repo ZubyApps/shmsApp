@@ -34,7 +34,7 @@ class ResourceResource extends JsonResource
                 'resourceSubCategoryId' => $this->resourceSubCategory->id,
                 'medicationCategory'    => $this->medicationCategory?->name,
                 'medicationCategoryId'  => $this->medicationCategory?->id,
-                // 'unitDescription'       => $this->unit_description,
+                'location'              => $this->location,
                 'unitDescription'      => $this->unitDescription?->id,
                 'purchasePrice'         => $this->purchase_price,
                 'sellingPrice'          => $this->selling_price,

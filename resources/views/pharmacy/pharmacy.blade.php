@@ -251,6 +251,7 @@
                             <thead>
                                 <tr>
                                     <th>Medication</th>
+                                    <th>Location</th>
                                     <th>Stock Level</th>
                                     <th>Reorder Level</th>
                                     <th>Selling Price</th>
@@ -279,6 +280,7 @@
                             <thead>
                                 <tr>
                                     <th>Medication</th>
+                                    <th>Location</th>
                                     <th>Stock Level</th>
                                     <th>Reorder Level</th>
                                     <th>Selling Price</th>
