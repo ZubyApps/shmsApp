@@ -214,7 +214,8 @@ class ResourceService
                 'nameWithIndicators'    => $resource->nameWithIndicators(),
                 'name'                  => $resource->name,
                 'category'              => $resource->category,
-                'subCategory'           => $resource->sub_category
+                'subCategory'           => $resource->sub_category,
+                'flag'                  => $resource->flag
             ];
         };   
     }

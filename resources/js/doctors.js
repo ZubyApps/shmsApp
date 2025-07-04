@@ -1119,17 +1119,25 @@ window.addEventListener('DOMContentLoaded', function () {
         input.addEventListener('input', function () {
             const div = input.parentElement.parentElement.parentElement.parentElement.parentElement
             const datalistEl = div.querySelector(`#resourceList${div.dataset.div}`)
-            if (input.value < 2) {
+            const sponsorCat = input.dataset.sponsorcat
+            if (input.value.length < 2) {
                 datalistEl.innerHTML = ''
             }
             if (input.value.length > 2) {
-                http.get(`/doctors/list`, {params: {resource: input.value, sponsorCat: input.dataset.sponsorcat}}).then((response) => {
-                    displayResourceList(datalistEl, response.data)
+                http.get(`/doctors/list`, {params: {resource: input.value, sponsorCat: sponsorCat}}).then((response) => {
+                    displayResourceList(datalistEl, response.data, sponsorCat)
                 })
             }
             const selectedOption = datalistEl.options.namedItem(input.value)
             if (selectedOption){
                 clearValidationErrors(div)
+                const flag = selectedOption.getAttribute('data-flag')
+                console.log(flag, sponsorCat)
+                if (flag.includes(sponsorCat)){
+                    if (!confirm("This Item is flagged for " + sponsorCat +" patients. You have to confirm with the HMO Desk!")){
+                        input.value = ''
+                        return}
+                }
                 if (selectedOption.getAttribute('data-cat') == 'Medications'){
                     div.querySelector('.qty').classList.add('d-none')
                     div.querySelector('#quantity').value = ''
@@ -1890,18 +1898,21 @@ window.addEventListener('DOMContentLoaded', function () {
     
 })
 
-function displayResourceList(datalistEl, data) {
+function displayResourceList(datalistEl, data, sponsorCat) {
     data.forEach(line => {
+        const flagged = line.flag.includes(sponsorCat) ? '(NOT COVERED for '+ sponsorCat + ' patients)' : ''
         const option = document.createElement("OPTION")
         option.setAttribute('id', 'resourceOption')
-        option.setAttribute('value', line.nameWithIndicators)
+        option.setAttribute('value', line.nameWithIndicators + ' ' + flagged)
         option.setAttribute('data-id', line.id)
-        option.setAttribute('name', line.nameWithIndicators)
+        option.setAttribute('name', line.nameWithIndicators + ' ' + flagged)
         option.setAttribute('data-cat', line.category)
         option.setAttribute('data-subcat', line.subCategory)
         option.setAttribute('data-plainname', line.name)
+        option.setAttribute('data-flag', line.flag)
+        console.log(sponsorCat, line.flag, flagged)
 
-        !datalistEl.options.namedItem(line.nameWithIndicators) ? datalistEl.appendChild(option) : ''
+        !datalistEl.options.namedItem(line.nameWithIndicators + ' ' + flagged) ? datalistEl.appendChild(option) : ''
     })
 }
 

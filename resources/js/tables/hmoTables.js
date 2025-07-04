@@ -1,4 +1,3 @@
-import jQuery from "jquery";
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
 import { admissionStatus, admissionStatusX, deferredCondition, detailsBtn, displayPaystatus, getOrdinal, selectReminderOptions, sponsorAndPayPercent, flagSponsorReason, flagPatientReason, flagIndicator, searchPlaceholderText, searchMin, preSearch, searchDecider, visitType } from "../helpers";
@@ -209,15 +208,16 @@ const getApprovalListTable = (tableId, sponsor) => {
             {data: "prescribed"},
             {data: "diagnosis"},
             {data:row => () => {
-                return `<span class="text-primary fw-semibold">${row.resource}</span> ${row.approved ? 
+                return `<span class="text-primary fw-semibold position-relative">${row.resource} ${row.resourceFlagged ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">flagged</span>` : ''}</span> ${row.approved ? 
                     `<i class="ms-1 text-primary bi bi-check-circle-fill"></i>` : row.rejected ? 
-                    `<i class="ms-1 text-danger bi bi-x-circle-fill"></i>` : ''}`
+                    `<i class="ms-1 text-danger bi bi-x-circle-fill"></i>` : ''}` 
             }},
+            {data: row => account.format(row.resourcePrice)},
             {data: "prescription"},
             {data: "note"},
             {data: "quantity"},
             {data: "totalQuantity"},
-            {data: "hmsBill"},
+            {data: row => account.format(row.hmsBill)},
             {data: "hmsBillDate"},
             {
                 sortable: false,
@@ -260,7 +260,6 @@ const getApprovalListTable = (tableId, sponsor) => {
 }
 
 const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
-    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
     const visitPrescriptionsTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/visit/prescriptions', data: {
@@ -331,7 +330,6 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
 }
 
 const getSentBillsTable = (tableId, startDate, endDate, date, filterByOpen) => {
-    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
     const sentBillsTable = new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/hmo/sentbills', data: {

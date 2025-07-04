@@ -82,6 +82,7 @@
                                     <th>Prescribed</th>
                                     <th>Diagnosis</th>
                                     <th>Treatment</th>
+                                    <th>UnitPrice</th>
                                     <th>Prescription</th>
                                     <th>Note</th>
                                     <th>Qty</th>
@@ -116,6 +117,7 @@
                                     <th>Prescribed</th>
                                     <th>Diagnosis</th>
                                     <th>Treatment</th>
+                                    <th>UnitPrice</th>
                                     <th>Prescription</th>
                                     <th>Note</th>
                                     <th>Qty</th>

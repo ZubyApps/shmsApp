@@ -304,17 +304,22 @@ class HmoService
     public function getAllPrescriptionsTransformer(): callable
     {
        return  function (Prescription $prescription) {
+        $sponsorCategory = $prescription->visit->sponsor->category_name;
+        $flag = $prescription->resource->flag;
+
             return [
                 'id'                => $prescription->id,
                 'patient'           => $prescription->visit->patient->patientId(),
                 'sponsor'           => $prescription->visit->sponsor->name,
-                'sponsorCategory'   => $prescription->visit->sponsor->category_name,
+                'sponsorCategory'   => $sponsorCategory,
                 'doctor'            => $prescription->user->username,
                 'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                 'diagnosis'         => $prescription->consultation?->icd11_diagnosis ?? 
                                        $prescription->consultation?->provisional_diagnosis ?? 
                                        $prescription->consultation?->assessment, 
                 'resource'          => $prescription->resource->name,
+                'resourcePrice'     => $prescription->resource->selling_price,
+                'resourceFlagged'   => str_contains($flag, $sponsorCategory) ? true : false,
                 'prescription'      => $prescription->prescription,
                 'quantity'          => $prescription->qty_billed,
                 'totalQuantity'     => $prescription->resource->prescriptions->where('visit_id', $prescription->visit->id)->sum('qty_billed'),

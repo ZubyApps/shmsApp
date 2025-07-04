@@ -102,7 +102,8 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                             </thead>
                                         <tbody>`
                                 prescriptions.forEach(p => {
-                                        const flag = p.flag.includes(sponsorCat) ? true : false;
+                                        console.log(p.approved)
+                                        const flag = p.flag.includes(sponsorCat) && !p.approved ? true : false;
                                         totalBill += NHIS && p.approved ? +p.nhisBill : +p.hmsBill
                                         child += `
                                             <tr>
