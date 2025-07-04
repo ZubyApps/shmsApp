@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 
 class ProcedureService
 {
-    public function __construct(private readonly Procedure $procedure)
+    public function __construct(private readonly Procedure $procedure, private readonly PayPercentageService $payPercentageService)
     {
     }
 
@@ -101,6 +101,7 @@ class ProcedureService
     {
         return  function (Procedure $procedure) {
            $prescription = $procedure->prescription;
+           $visit = $prescription->visit;
            
             return [
                 'id'                => $procedure->id,
@@ -108,7 +109,7 @@ class ProcedureService
                 'phone'             => $prescription->visit->patient->phone,
                 'prescribedBy'      => $procedure->user->username,
                 'sponsor'           => $prescription->visit->sponsor->name,
-                'sponsorCat'        => $prescription->visit->sponsor->category_name,
+                'sponsorCategory'   => $prescription->visit->sponsor->category_name,
                 'procedure'         => $prescription->resource->name,
                 'bookedDate'        => $procedure->booked_date ? (new Carbon($procedure->booked_date))->format('D d/m/y g:ia') : '',
                 'dateBookedBy'      => $procedure?->dateBookedBy?->username,
@@ -121,6 +122,9 @@ class ProcedureService
                 'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->category_name == 'NHIS',
                 'payClass'          => $prescription->visit->sponsor->sponsorCategory->pay_class,
                 'createdAt'         => (new Carbon($procedure->created_at))->format('d/m/y g:ia'),
+                'payPercent'        => $this->payPercentageService->individual_Family($visit),
+                'payPercentNhis'    => $this->payPercentageService->nhis($visit),
+                'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
             ];
          };
     }
