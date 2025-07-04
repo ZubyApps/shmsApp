@@ -1134,7 +1134,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 const flag = selectedOption.getAttribute('data-flag')
                 console.log(flag, sponsorCat)
                 if (flag.includes(sponsorCat)){
-                    if (!confirm("This Item is flagged for " + sponsorCat +" patients. You have to confirm with the HMO Desk!")){
+                    if (!confirm("This Item is NOT COVERED for " + sponsorCat +" patients. You have to confirm with the HMO Desk!")){
                         input.value = ''
                         return}
                 }
