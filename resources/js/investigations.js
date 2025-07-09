@@ -19,8 +19,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const bulkRequestModal              = new Modal(document.getElementById('bulkRequestModal'))
     const labResultModal                = new Modal(document.getElementById('labResultModal'))
     const removeTestModal               = new Modal(document.getElementById('removeTestModal'))
-    const inpatientsInvestigationsList  = new Offcanvas(document.getElementById('offcanvasInvestigations'))
-    const outpatientsInvestigationsList = new Offcanvas(document.getElementById('offcanvasOutpatientsInvestigations'))
+    // const inpatientsInvestigationsList  = new Offcanvas(document.getElementById('offcanvasInvestigations'))
+    // const outpatientsInvestigationsList = new Offcanvas(document.getElementById('offcanvasOutpatientsInvestigations'))
 
     const regularTreatmentDiv       = treatmentDetailsModal._element.querySelector('#treatmentDiv')
     const ancTreatmentDiv           = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
@@ -34,6 +34,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
     const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
     const downloadResultBtn         = labResultModal._element.querySelector('#downloadResultBtn')
+    const resultDate                = labResultModal._element.querySelector('#resultDate')
+    const addressDiv                = labResultModal._element.querySelector('.addressDiv')
 
     const inpatientsInvestigationCount      = document.querySelector('#inpatientsInvestigationCount')
     const outpatientsInvestigationCount      = document.querySelector('#outpatientsInvestigationCount')
@@ -302,7 +304,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         labResultModal._element.querySelector('#result').innerHTML = response.data.data?.result ?? ''
                     }
                 })
-                labResultModal._element.querySelector('#resultDate').innerHTML = printThisBtn.getAttribute('data-sent')
+                resultDate.innerHTML = printThisBtn.getAttribute('data-sent')
                 labResultModal._element.querySelector('#StaffFullName').innerHTML = printThisBtn.getAttribute('data-stafffullname')
                 labResultModal.show()
             }
@@ -310,7 +312,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (printAllBtn){
                 const id = printAllBtn.getAttribute('data-id')
                 labResultModal._element.querySelector('#patientsId').innerHTML = printAllBtn.getAttribute('data-patient')
-                labResultModal._element.querySelector('#resultDate').innerHTML = new Date().toLocaleDateString('en-GB')
+                resultDate.innerHTML = new Date().toLocaleDateString('en-GB')
                 http.get(`/investigations/printall/${id}`)
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
@@ -511,6 +513,11 @@ window.addEventListener('DOMContentLoaded', function () {
 
     bulkRequestModal._element.addEventListener('hide.bs.modal', function () {
         bulkRequestsTable ? bulkRequestsTable.draw() : ''
+    })
+
+    resultDate.addEventListener('click', () => {
+        console.log('clicked')
+        addressDiv.classList.toggle('d-none');
     })
 
     downloadResultBtn.addEventListener('click', function () {

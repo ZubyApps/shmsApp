@@ -16,7 +16,12 @@
                     <br>
                     <br>
                     <br>
-                    <header class="d-flex flex-wrap justify-content-end align-items-top mb-4 px-4">
+                    <div class="text-left p-0 px-4 d-none addressDiv">
+                        <h4 class="">Sandra Hospital Makurdi</h4>
+                        <p>24 J.S Takar Way</p>
+                        <p>Makurdi, Benue State</p>
+                    </div>
+                    <header class="d-flex flex-wrap justify-content-start align-items-top mb-4 px-4">
                         <div class="text-right p-0">
                             <p id="resultDate"></p>
                         </div>
@@ -37,7 +42,7 @@
                             <div class="">
                                 <x-form-span class="fw-semibold">Signed By</x-form-span><br><br>
                                 <span class="staffFullName fw-semibold" name="StaffFullName" id="StaffFullName"></span><br>
-                                <span>Laboratory Technician</span>
+                                {{-- <span>Laboratory Technician</span> --}}
                             </div>
                         </div>
                     </div>
