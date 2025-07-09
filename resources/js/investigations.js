@@ -50,6 +50,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const testListDiv               = labResultModal._element.querySelector('.testListDiv')
     const multipleTestsListDiv      = labResultModal._element.querySelector('.multipleTestsListDiv')
+    const signedByDiv               = labResultModal._element.querySelector('.signedByDiv')
 
      // Auto textarea adjustment
      const textareaHeight = 90;
@@ -357,6 +358,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
     multipleTestsListDiv.addEventListener('click', function () {
         multipleTestsListDiv.setAttribute('contentEditable', 'true')
+    })
+
+    signedByDiv.addEventListener('click', function () {
+        signedByDiv.setAttribute('contentEditable', 'true')
     })
 
     labResultModal._element.addEventListener('hide.bs.modal', function (){

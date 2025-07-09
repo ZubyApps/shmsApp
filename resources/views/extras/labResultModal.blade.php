@@ -39,7 +39,7 @@
                             <div class="row overflow-auto my-2 multipleTestsListDiv"></div>
                         </div>
                         <div class="row mt-3">
-                            <div class="">
+                            <div class="signedByDiv">
                                 <x-form-span class="fw-semibold">Signed By</x-form-span><br><br>
                                 <span class="staffFullName fw-semibold" name="StaffFullName" id="StaffFullName"></span><br>
                                 {{-- <span>Laboratory Technician</span> --}}
