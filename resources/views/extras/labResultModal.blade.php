@@ -42,7 +42,7 @@
                             <div class="signedByDiv">
                                 <x-form-span class="fw-semibold">Signed By</x-form-span><br><br>
                                 <span class="staffFullName fw-semibold" name="StaffFullName" id="StaffFullName"></span><br>
-                                {{-- <span>Laboratory Technician</span> --}}
+                                <span>Laboratory Technician</span>
                             </div>
                         </div>
                     </div>
