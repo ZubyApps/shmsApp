@@ -127,7 +127,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const textareaHeight = 65;
     textareaHeightAdjustment(textareaHeight, document.getElementsByTagName("textarea"))
     // ICD11settings
-    const mySettings = { apiServerUrl: "https://icd11restapi-developer-test.azurewebsites.net", popupMode: false}
+    const mySettings = { apiServerUrl: "https://icd11restapi-developer-test.azurewebsites.net", popupMode: false, searchByCodeOrURI: true}
     // ICD11 callbacks
     const myCallbacks = {
         selectedEntityFunction: (selectedEntity) => {
