@@ -166,17 +166,20 @@ class PatientService
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-            return $query->where('first_name', 'LIKE', $searchTerm )
-                        ->orWhere('middle_name', 'LIKE', $searchTerm )
-                        ->orWhere('last_name', 'LIKE', $searchTerm )
-                        ->orWhere('card_no', 'LIKE', $searchTerm )
-                        ->orWhere('phone', 'LIKE', $searchTerm )
-                        ->orWhere('sex', 'LIKE', $searchTerm)
-                        ->orWhere('date_of_birth', 'LIKE', $searchTerm)
-                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm )
-                        ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', $searchTerm )
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            return $query->where(function (Builder $query) use($searchTerm) {
+                            $query->whereRaw('CONCAT_WS(" ", first_name, middle_name, last_name) LIKE ?', [$searchTerm])
+                                ->orWhereRaw('CONCAT_WS(" ", last_name, middle_name, first_name) LIKE ?', [$searchTerm])
+                                ->orWhereRaw('CONCAT_WS(" ", first_name, last_name, middle_name) LIKE ?', [$searchTerm])
+                                ->orWhereRaw('CONCAT_WS(" ", last_name, first_name, middle_name) LIKE ?', [$searchTerm])
+                                ->orWhere('card_no', 'LIKE', $searchTerm)
+                                ->orWhere('phone', 'LIKE', $searchTerm)
+                                ->orWhere('sex', 'LIKE', $searchTerm)
+                                ->orWhere('date_of_birth', 'LIKE', $searchTerm)
+                                ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm )
+                                ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', $searchTerm );
+                            })
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return $query->orderBy($orderBy, $orderDir)
