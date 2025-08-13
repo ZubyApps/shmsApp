@@ -102,8 +102,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                             </thead>
                                         <tbody>`
                                 prescriptions.forEach(p => {
-                                        console.log(p.approved)
-                                        const flag = p.flag.includes(sponsorCat) && !p.approved ? true : false;
+                                        const flag = p.flag.includes(sponsorCat) && (!p.approved && !p.rejected) ? true : false;
                                         totalBill += NHIS && p.approved ? +p.nhisBill : +p.hmsBill
                                         child += `
                                             <tr>
@@ -267,11 +266,11 @@ const getExpirationStockTable = (tableId, filter) => {
         ]
     });
 
-    expirationStockTable.on('click', 'tr', function (e) {
-        let tr = e.target.closest('tr');
-        let row = expirationStockTable.row(tr);
-        row.row(tr).nodes().to$().toggleClass('d-none');
-    });
+    // expirationStockTable.on('click', 'tr', function (e) {
+    //     let tr = e.target.closest('tr');
+    //     let row = expirationStockTable.row(tr);
+    //     row.row(tr).nodes().to$().toggleClass('d-none');
+    // });
 
     return expirationStockTable
 }
