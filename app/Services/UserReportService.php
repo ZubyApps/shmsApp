@@ -23,6 +23,12 @@ class UserReportService
     {
     }
 
+    function monthYear($date){
+        $whereMonth = 'whereMonth';
+        $whereYear = 'whereYear';
+        return $whereMonth('created_at', $date->month)->$whereYear('created_at', $date->year);
+    }
+
     public function staffActivitiesByDesignation(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'firstname';
@@ -56,14 +62,14 @@ class UserReportService
                         'id'                    => $user->id,
                         'doctor'                => $user->username,
                         'dateOfEmployment'      => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
-                        'visitsInitiated'       => $user->visits()->whereMonth('created_at', $date->month)->count(),
-                        'firstConsultations'    => Visit::where('doctor_id', $user->id)->whereMonth('created_at', $date->month)->count(),
-                        'consultations'         => $user->consultations()->whereMonth('created_at', $date->month)->count(),
-                        'prescriptions'         => $user->prescriptions()->whereMonth('created_at', $date->month)->count(),
-                        'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereMonth('created_at', $date->month)->count(),
-                        'surgeryNotes'          => $user->surgeryNotes()->whereMonth('created_at', $date->month)->count(),
-                        'vitalSigns'            => $user->vitalSigns()->whereMonth('created_at', $date->month)->count(),
-                        'AncVitalSigns'         => $user->ancVitalSigns()->whereMonth('created_at', $date->month)->count(),
+                        'visitsInitiated'       => $user->visits()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'firstConsultations'    => Visit::where('doctor_id', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'consultations'         => $user->consultations()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'prescriptions'         => $user->prescriptions()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'surgeryNotes'          => $user->surgeryNotes()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'vitalSigns'            => $user->vitalSigns()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'AncVitalSigns'         => $user->ancVitalSigns()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
                     ];
             }
 
@@ -87,14 +93,14 @@ class UserReportService
                 'id'                    => $user->id,
                 'doctor'                => $user->username,
                 'dateOfEmployment'      => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
-                'visitsInitiated'       => $user->visits()->whereMonth('created_at', $current->month)->count(),
-                'firstConsultations'    => Visit::where('doctor_id', $user->id)->whereMonth('created_at', $current->month)->count(),
-                'consultations'         => $user->consultations()->whereMonth('created_at', $current->month)->count(),
-                'prescriptions'         => $user->prescriptions()->whereMonth('created_at', $current->month)->count(),
-                'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereMonth('created_at', $current->month)->count(),
-                'surgeryNotes'          => $user->surgeryNotes()->whereMonth('created_at', $current->month)->count(),
-                'vitalSigns'            => $user->vitalSigns()->whereMonth('created_at', $current->month)->count(),
-                'AncVitalSigns'         => $user->ancVitalSigns()->whereMonth('created_at', $current->month)->count(),
+                'visitsInitiated'       => $user->visits()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'firstConsultations'    => Visit::where('doctor_id', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'consultations'         => $user->consultations()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'prescriptions'         => $user->prescriptions()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'surgeryNotes'          => $user->surgeryNotes()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'vitalSigns'            => $user->vitalSigns()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'AncVitalSigns'         => $user->ancVitalSigns()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
             ];
         };
     }
@@ -110,15 +116,15 @@ class UserReportService
                         'id'                    => $user->id,
                         'nurse'                 => $user->username,
                         'dateOfEmployment'      => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
-                        'vitalSigns'            => $user->vitalSigns()->whereMonth('created_at', $date->month)->count(),
-                        'AncVitalSigns'         => $user->ancVitalSigns()->whereMonth('created_at', $date->month)->count(),
-                        'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereMonth('created_at', $date->month)->count(),
-                        'prescriptions'         => $user->prescriptions()->whereMonth('created_at', $date->month)->count(),
-                        'deiveryNotes'          => $user->deliveryNotes()->whereMonth('created_at', $date->month)->count(),
-                        'charted'               => $user->medicationCharts()->whereMonth('created_at', $date->month)->count(),
-                        'served'                => MedicationChart::where('given_by', $user->id)->whereMonth('created_at', $date->month)->count(),
-                        'nursingCharts'         => $user->nursingCharts()->whereMonth('created_at', $date->month)->count(),
-                        'nursesReports'         => $user->nursesReports()->whereMonth('created_at', $date->month)->count(),
+                        'vitalSigns'            => $user->vitalSigns()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'AncVitalSigns'         => $user->ancVitalSigns()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'prescriptions'         => $user->prescriptions()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'deiveryNotes'          => $user->deliveryNotes()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'charted'               => $user->medicationCharts()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'served'                => MedicationChart::where('given_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'nursingCharts'         => $user->nursingCharts()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'nursesReports'         => $user->nursesReports()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
                     ];
             }
 
@@ -143,15 +149,15 @@ class UserReportService
                 'id'                    => $user->id,
                 'nurse'                 => $user->username,
                 'dateOfEmployment'      => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
-                'vitalSigns'            => $user->vitalSigns()->whereMonth('created_at', $current->month)->count(),
-                'AncVitalSigns'         => $user->ancVitalSigns()->whereMonth('created_at', $current->month)->count(),
-                'prescriptions'         => $user?->prescriptions()->whereMonth('created_at', $current->month)->count(),
-                'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereMonth('created_at', $current->month)->count(),
-                'deiveryNotes'          => $user->deliveryNotes()->whereMonth('created_at', $current->month)->count(),
-                'charted'               => $user->medicationCharts()->whereMonth('created_at', $current->month)->count(),
-                'served'                => MedicationChart::where('given_by', $user->id)->whereMonth('created_at', $current->month)->count(),
-                'nursingCharts'         => $user->nursingCharts()->whereMonth('created_at', $current->month)->count(),
-                'nursesReports'         => $user->nursesReports()->whereMonth('created_at', $current->month)->count(),
+                'vitalSigns'            => $user->vitalSigns()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'AncVitalSigns'         => $user->ancVitalSigns()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'prescriptions'         => $user?->prescriptions()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'discountinued'         => Prescription::where('discontinued_by', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'deiveryNotes'          => $user->deliveryNotes()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'charted'               => $user->medicationCharts()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'served'                => MedicationChart::where('given_by', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'nursingCharts'         => $user->nursingCharts()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'nursesReports'         => $user->nursesReports()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
             ];
         };
     }
@@ -167,7 +173,7 @@ class UserReportService
                         'id'                => $user->id,
                         'labTech'           => $user->username,
                         'dateOfEmployment'  => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
-                        'results'           => Prescription::where('result_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'results'           => Prescription::where('result_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
                     ];
             }
 
@@ -184,7 +190,7 @@ class UserReportService
                 'id'                    => $user->id,
                 'labTech'               => $user->username,
                 'dateOfEmployment'      => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
-                'results'               => Prescription::where('result_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'results'               => Prescription::where('result_by', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
             ];
         };
     }
@@ -200,8 +206,8 @@ class UserReportService
                         'id'                => $user->id,
                         'pharmacyTech'      => $user->username,
                         'dateOfEmployment'  => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
-                        'rxBilled'          => Prescription::where('hms_bill_by', $user->id)->whereMonth('created_at', $date->month)->count(),
-                        'rxDispensed'       => Prescription::where('dispensed_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'rxBilled'          => Prescription::where('hms_bill_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'rxDispensed'       => Prescription::where('dispensed_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
                     ];
             }
 
@@ -219,8 +225,8 @@ class UserReportService
                 'id'               => $user->id,
                 'pharmacyTech'     => $user->username,
                 'dateOfEmployment' => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
-                'rxBilled'         => Prescription::where('hms_bill_by', $user->id)->whereMonth('created_at', $current->month)->count(),
-                'rxDispensed'      => Prescription::where('dispensed_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'rxBilled'         => Prescription::where('hms_bill_by', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'rxDispensed'      => Prescription::where('dispensed_by', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
             ];
         };
     }
@@ -236,16 +242,16 @@ class UserReportService
                         'id'                => $user->id,
                         'hmoOfficer'        => $user->username,
                         'dateOfEmployment'  => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
-                        'patients'          => $user->patients()->whereMonth('created_at', $date->month)->count(),
-                        'visitsInitiated'   => $user->visits()->whereMonth('created_at', $date->month)->count(),
-                        'verified'          => Visit::where('verified_by', $user->id)->whereMonth('created_at', $date->month)->count(),
-                        'treated'           => Visit::where('viewed_by', $user->id)->whereMonth('created_at', $date->month)->count(),
-                        'closedAndOpened'   => Visit::where('closed_opened_by', $user->id)->whereMonth('created_at', $date->month)->count(),
-                        'billsProcessed'    => Visit::where('hmo_done_by', $user->id)->whereMonth('created_at', $date->month)->count(),
-                        'rxHmoBilled'       => Prescription::where('hmo_bill_by', $user->id)->whereMonth('created_at', $date->month)->count(),
-                        'rxApproved'        => Prescription::where('approved_by', $user->id)->whereMonth('created_at', $date->month)->count(),
-                        'rxRejected'        => Prescription::where('rejected_by', $user->id)->whereMonth('created_at', $date->month)->count(),
-                        'rxPaid'            => Prescription::where('paid_by', $user->id)->whereMonth('created_at', $date->month)->count(),
+                        'patients'          => $user->patients()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'visitsInitiated'   => $user->visits()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'verified'          => Visit::where('verified_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'treated'           => Visit::where('viewed_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'closedAndOpened'   => Visit::where('closed_opened_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'billsProcessed'    => Visit::where('hmo_done_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'rxHmoBilled'       => Prescription::where('hmo_bill_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'rxApproved'        => Prescription::where('approved_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'rxRejected'        => Prescription::where('rejected_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'rxPaid'            => Prescription::where('paid_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
                     ];
             }
 
@@ -271,16 +277,16 @@ class UserReportService
                 'id'                => $user->id,
                 'hmoOfficer'        => $user->username,
                 'dateOfEmployment'  => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
-                'patients'          => $user->patients()->whereMonth('created_at', $current->month)->count(),
-                'verified'          => Visit::where('verified_by', $user->id)->whereMonth('created_at', $current->month)->count(),
-                'visitsInitiated'   => $user->visits()->whereMonth('created_at', $current->month)->count(),
-                'treated'           => Visit::where('viewed_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'patients'          => $user->patients()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'verified'          => Visit::where('verified_by', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'visitsInitiated'   => $user->visits()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'treated'           => Visit::where('viewed_by', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
                 'closedAndOpened'   => Visit::where('closed_opened_by', $user->id)->whereMonth('created_at', $current->month)->count(),
-                'billsProcessed'    => Visit::where('hmo_done_by', $user->id)->whereMonth('created_at', $current->month)->count(),
-                'rxHmoBilled'       => Prescription::where('hmo_bill_by', $user->id)->whereMonth('created_at', $current->month)->count(),
-                'rxApproved'        => Prescription::where('approved_by', $user->id)->whereMonth('created_at', $current->month)->count(),
-                'rxRejected'        => Prescription::where('rejected_by', $user->id)->whereMonth('created_at', $current->month)->count(),
-                'rxPaid'            => Prescription::where('paid_by', $user->id)->whereMonth('created_at', $current->month)->count(),
+                'billsProcessed'    => Visit::where('hmo_done_by', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'rxHmoBilled'       => Prescription::where('hmo_bill_by', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'rxApproved'        => Prescription::where('approved_by', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'rxRejected'        => Prescription::where('rejected_by', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'rxPaid'            => Prescription::where('paid_by', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
             ];
         };
     }
@@ -296,12 +302,12 @@ class UserReportService
                         'id'                => $user->id,
                         'billOfficer'       => $user->username,
                         'dateOfEmployment'  => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
-                        'patients'          => $user->patients()->whereMonth('created_at', $date->month)->count(),
-                        'visitsInitiated'   => $user->visits()->whereMonth('created_at', $date->month)->count(),
-                        'closedAndOpened'   => Visit::where('closed_opened_by', $user->id)->whereMonth('created_at', $date->month)->count(),
-                        'thirdPartyServices' => $user->thirdPartyServies()->whereMonth('created_at', $date->month)->count(),
-                        'payments'          => $user->payments()->whereMonth('created_at', $date->month)->count(),
-                        'paymentsTotal'     => $user->payments()->whereMonth('created_at', $date->month)->sum('amount_paid'),
+                        'patients'          => $user->patients()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'visitsInitiated'   => $user->visits()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'closedAndOpened'   => Visit::where('closed_opened_by', $user->id)->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'thirdPartyServices' => $user->thirdPartyServies()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'payments'          => $user->payments()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count(),
+                        'paymentsTotal'     => $user->payments()->whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->sum('amount_paid'),
                     ];
             }
 
@@ -323,12 +329,12 @@ class UserReportService
                 'id'                => $user->id,
                 'billOfficer'        => $user->username,
                 'dateOfEmployment'  => (new Carbon($user->date_of_employment))->format('d/M/y g:ia'),
-                'patients'          => $user->patients()->whereMonth('created_at', $current->month)->count(),
-                'visitsInitiated'   => $user->visits()->whereMonth('created_at', $current->month)->count(),
-                'closedAndOpened'   => Visit::where('closed_opened_by', $user->id)->whereMonth('created_at', $current->month)->count(),
-                'thirdPartyServices' => $user->thirdPartyServies()->whereMonth('created_at', $current->month)->count(),
-                'payments'          => $user->payments()->whereMonth('created_at', $current->month)->count(),
-                'paymentsTotal'     => $user->payments()->whereMonth('created_at', $current->month)->sum('amount_paid'),
+                'patients'          => $user->patients()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'visitsInitiated'   => $user->visits()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'closedAndOpened'   => Visit::where('closed_opened_by', $user->id)->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'thirdPartyServices' => $user->thirdPartyServies()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'payments'          => $user->payments()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->count(),
+                'paymentsTotal'     => $user->payments()->whereMonth('created_at', $current->month)->whereYear('created_at', $current->year)->sum('amount_paid'),
             ];
         };
     }

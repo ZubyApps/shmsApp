@@ -33,7 +33,7 @@ class MedicationChartService
         $hours    = strtolower($data->intervals) == 'hours';
         $interval = $hours ? CarbonInterval::minutes($data->frequency) : CarbonInterval::hours($data->frequency);
         $start = new CarbonImmutable($data->date, $tz);
-        $end   = $hours ? $start->addHours($data->value) : $start->addDays($data->value);
+        $end   = $hours ? $start->addHours($data->intervalsValue) : $start->addDays($data->intervalsValue);
         $dates = new CarbonPeriod($start, $interval, $end, CarbonPeriod::EXCLUDE_END_DATE);
 
         if (count($dates) > 120) {

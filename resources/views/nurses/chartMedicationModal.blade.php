@@ -12,27 +12,27 @@
                             <div class="row">
                                 <x-form-div>
                                     <x-input-span>Patient</x-input-span>
-                                    <x-form-input name="patient" value="" id="patient" readonly/>
+                                    <x-form-input name="patient" id="patient" readonly/>
                                 </x-form-div>
                                 <x-form-div>
                                     <x-input-span>Sponsor</x-input-span>
-                                    <x-form-input name="sponsorName" value="" id="sponsorName" readonly/>
+                                    <x-form-input name="sponsorName"  id="sponsorName" readonly/>
                                 </x-form-div>
                                 <x-form-div>
                                     <x-input-span>Treatment</x-input-span>
-                                    <x-form-input type="text" name="treatment" value="" id="treatment" readonly/>
+                                    <x-form-input type="text" name="treatment" id="treatment" readonly/>
                                 </x-form-div>
                                 <x-form-div>
                                     <x-input-span>Prescription</x-input-span>
-                                    <x-form-input name="prescription" value="" id="prescription" readonly/>
+                                    <x-form-input name="prescription" id="prescription" readonly/>
                                 </x-form-div>
                                 <x-form-div>
                                     <x-input-span>Prescribed By</x-input-span>
-                                    <x-form-input type="text" name="prescribedBy" value="" id="prescribedBy" readonly/>
+                                    <x-form-input type="text" name="prescribedBy" id="prescribedBy" readonly/>
                                 </x-form-div>
                                 <x-form-div>
                                     <x-input-span>Prescribed</x-input-span>
-                                    <x-form-input type="datetime-local" name="prescribed" value="" id="prescribed" readonly/>
+                                    <x-form-input type="datetime-local" name="prescribed" id="prescribed" readonly/>
                                 </x-form-div>
                             </div>
                         </div>
@@ -57,13 +57,13 @@
                                     <x-input-span>Dose<x-required-span /></x-input-span>
                                     <x-form-input name="dose" type="number" id="dose" placeholder="eg. 200"/>
                                     <x-input-span>Unit<x-required-span /></x-input-span>
-                                    <x-select-unit aria-label="unit" name="unit" id="unit"></x-select-unit>
+                                    <x-select-unit name="unit" aria-label="unit" id="unit"></x-select-unit>
                                 </x-form-div>
                                 <x-form-div class="col-xl-4">
                                     <x-input-span>Freq<x-required-span /></x-input-span>
                                     <x-select-frequency aria-label="frequency" name="frequency" id="frequency"></x-select-frequency>
                                     <x-select-intervals aria-label="intervals" name="intervals" id="intervals"></x-select-intervals>
-                                    <x-form-input type="number" name="value" id="value" value="1" />
+                                    <x-form-input name="intervalsValue" type="number" id="intervalsValue" value="1" />
                                 </x-form-div>
                                 <x-form-div class="col-xl-4">
                                     <x-input-span>Set Time</x-input-span>
