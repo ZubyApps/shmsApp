@@ -24,17 +24,9 @@ class AppointmentsForSms
             return;
         }
 
-        // foreach($appointments as $appointment) {
-        //     if ($appointment->patient->sms){
-        //         SendAppointmentReminder::dispatch($appointment);
-        //         info('appointments in', ['patient' => $appointment->patient->first_name, 'doctor' => $appointment->doctor->username, 'sms' => $appointment->patient->sms]);
-        //     }
-        // }
-
         $appointments->each(function ($appointment) {
             if ($appointment->patient->sms) {
                 SendAppointmentReminder::dispatch($appointment);
-                info('appointments in', ['patient' => $appointment->patient->first_name, 'doctor' => $appointment->doctor->username, 'sms' => $appointment->patient->sms]);
             }
         });
 

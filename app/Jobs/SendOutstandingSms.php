@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Models\Reminder;
 use App\Services\ChurchPlusSmsService;
-use App\Services\HelperService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -29,12 +28,12 @@ class SendOutstandingSms implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(ChurchPlusSmsService $churchPlusSmsService, HelperService $helperService): void
+    public function handle(ChurchPlusSmsService $churchPlusSmsService): void
     {
-        $gateway = $helperService->nccTextTime() ? 1 : 1;
+        $gateway = 1;
 
-        $churchPlusSmsService->sendSms($this->message, $this->recipient, 'SandraHosp', $gateway);
+        $response = $churchPlusSmsService->sendSms($this->message, $this->recipient, 'SandraHosp', $gateway);
 
-        info('outstanding bill', ['sent to' => $this->reminder->visit->patient->first_name]);
+        $response == false ? '' : info('outstanding bill', ['sent to' => $this->reminder->visit->patient->first_name]);
     }
 }

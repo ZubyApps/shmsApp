@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Models\Prescription;
 use App\Services\ChurchPlusSmsService;
-use App\Services\HelperService;
 use Carbon\CarbonImmutable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -30,7 +29,7 @@ class SendTestResultDone implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(ChurchPlusSmsService $churchPlusSmsService, HelperService $helperService): void
+    public function handle(ChurchPlusSmsService $churchPlusSmsService): void
     {
         $visit = $this->prescription->visit;
 
@@ -47,12 +46,13 @@ class SendTestResultDone implements ShouldQueue
             info('Investigation not sent', ['recently sent (less than 30min ago)' => $firstName]);
             return;
         }
-        $gateway = $helperService->nccTextTime() ? 1 : 1;
 
-        $churchPlusSmsService
+        $gateway = 1;
+
+        $response = $churchPlusSmsService
         ->sendSms('Dear ' .$firstName. ' ' . $totalInvestigationsDone . ' out of ' . $totalInvestigationsC . ' of your test result(s) are ready. This notification is courtesy of our Hospital Management System. To opt out, visit reception', $this->prescription->visit->patient->phone, 'SandraHosp', $gateway);
 
-        info('Investigation', ['sent to' => $firstName, 'gateway' => $gateway]);
+        $response == false ? '' : info('Investigation', ['sent to' => $firstName, 'gateway' => $gateway]);
     }
 
     private function recentlySent($prescriptions)

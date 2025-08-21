@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Models\Patient;
 use Illuminate\Bus\Queueable;
-use App\Services\HelperService;
 use App\Services\ChurchPlusSmsService;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -29,17 +28,17 @@ class SendCardNumber implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(ChurchPlusSmsService $churchPlusSmsService, HelperService $helperService): void
+    public function handle(ChurchPlusSmsService $churchPlusSmsService): void
     {
         $firstName = $this->patient->first_name;
         $cardNumber = $this->patient->card_no;
         $phoneNumber = $this->patient->phone;
-        $gateway = $helperService->nccTextTime() ? 1 : 1;
+        $gateway = 1;
+        
+        $message = 'Dear ' . $firstName . ', welcome to Sandra Hospital, your Hospital Card Number is (' . $cardNumber . ') courtesy of our Hospital Management System';
+        
+        $response = $churchPlusSmsService->sendSms($message, $phoneNumber, 'SandraHosp', $gateway);
 
-        info('card number', ['sent to' => $firstName]);
-
-        $message = 'Dear ' . $firstName . ', welcome to Sandra Hospital, your Hospital Card Number is [' . $cardNumber . '] courtesy of our Hospital Management System';
-
-        $churchPlusSmsService->sendSms($message, $phoneNumber, 'SandraHosp', $gateway);
+        $response == false ? '' : info('card number', ['sent to' => $firstName]);
     }
 }

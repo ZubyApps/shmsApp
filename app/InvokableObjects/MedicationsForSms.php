@@ -35,11 +35,6 @@ class MedicationsForSms
             return;
         }
 
-        // foreach($medications as $medication) {
-        //     if ($medication->visit->patient->sms){
-        //         SendMedicationReminder::dispatch($medication)->delay(5);
-        //     }
-        // }
         $medications->each(function ($medication) {
             if ($medication->visit->patient->sms) {
                 SendMedicationReminder::dispatch($medication)->delay(5);

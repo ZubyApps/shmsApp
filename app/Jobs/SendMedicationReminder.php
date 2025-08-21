@@ -4,8 +4,6 @@ namespace App\Jobs;
 
 use App\Models\MedicationChart;
 use App\Services\ChurchPlusSmsService;
-use App\Services\HelperService;
-use App\Services\MedicationChartService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -31,16 +29,15 @@ class SendMedicationReminder implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(ChurchPlusSmsService $churchPlusSmsService, HelperService $helperService): void
-    {
-        $gateway = $helperService->nccTextTime() ? 1 : 1;
+    public function handle(ChurchPlusSmsService $churchPlusSmsService): void
+    {     
+        $gateway = 1;
 
         $firstName = $this->medicationChart->visit->patient->first_name;
         
-        
-        $churchPlusSmsService
+        $response = $churchPlusSmsService
         ->sendSms('Dear ' .$firstName. ', pls be reminded of your medication by '. (new Carbon($this->medicationChart->scheduled_time))->format('g:iA') . ' today. Courtesy: Sandra Hospital Management System', $this->medicationChart->visit->patient->phone, 'SandraHosp', $gateway);
         
-        info('medications', ['sent to' => $firstName]);
+        $response == false ? '' : info('medications', ['sent to' => $firstName]);
     }
 }

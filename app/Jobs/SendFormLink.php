@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
-use App\Services\HelperService;
 use App\DataObjects\FormLinkParams;
 use App\Services\ChurchPlusSmsService;
 use Illuminate\Queue\SerializesModels;
@@ -29,14 +28,14 @@ class SendFormLink implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(ChurchPlusSmsService $churchPlusSmsService, HelperService $helperService): void
+    public function handle(ChurchPlusSmsService $churchPlusSmsService): void
     {
         $recipientPhone = $this->params->phone;
-        $gateway = $helperService->nccTextTime() ? 1 : 1;
+        $gateway = 1;
 
         $message = 'Sandra Hospital Patient Registration Form link ' . $this->link . '. This link expires in 5 minutes';
-        $churchPlusSmsService->sendSms($message, $recipientPhone, 'SandraH', $gateway);
+        $response = $churchPlusSmsService->sendSms($message, $recipientPhone, 'SandraH', $gateway);
 
-        info('Link sent', ['recipient' => $recipientPhone, 'message' => $message]);
+        $response == false ? '' : info('Link sent', ['recipient' => $recipientPhone, 'message' => $message]);
     }
 }

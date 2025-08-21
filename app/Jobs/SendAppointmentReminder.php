@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Models\Appointment;
 use App\Services\ChurchPlusSmsService;
-use App\Services\HelperService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -30,19 +29,19 @@ class SendAppointmentReminder implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(ChurchPlusSmsService $churchPlusSmsService, HelperService $helperService): void
+    public function handle(ChurchPlusSmsService $churchPlusSmsService): void
     {
         $patientFirstName = $this->appointment->patient->first_name;
         $doctorUsername = $this->appointment->doctor->username;
         $appointmentTime = (new Carbon($this->appointment->date))->format('g:iA');
-        $gateway = $helperService->nccTextTime() ? 1 : 1;
-
-        info('appointments', ['patient' => $patientFirstName, 'doctor' => $doctorUsername]);
+        $gateway = 1;
 
         $messageForDoctor = 'Dear ' . $doctorUsername . ', your appointment with ' . $patientFirstName . ' is today by ' . $appointmentTime . '. Courtesy- Sandra Hospital Management System';
         $messageForPatient = 'Dear ' . $patientFirstName . ', your appointment with ' . $doctorUsername . ' is today by ' . $appointmentTime . '. Courtesy- Sandra Hospital Management System';
+        
+        $response = $churchPlusSmsService->sendSms($messageForDoctor, $this->appointment->doctor->phone_number, 'SandraHosp', $gateway);
+        $response = $churchPlusSmsService->sendSms($messageForPatient, $this->appointment->patient->phone, 'SandraHosp', $gateway);
 
-        $churchPlusSmsService->sendSms($messageForDoctor, $this->appointment->doctor->phone_number, 'SandraHosp', $gateway);
-        $churchPlusSmsService->sendSms($messageForPatient, $this->appointment->patient->phone, 'SandraHosp', $gateway);
+        $response == false ? '' : info('appointment sms sent for - ', ['patient' => $patientFirstName, 'doctor' => $doctorUsername]);
     }
 }
