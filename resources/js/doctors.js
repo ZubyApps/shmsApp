@@ -1318,20 +1318,30 @@ window.addEventListener('DOMContentLoaded', function () {
             }
     
             if (deleteConsultationBtn) {
+                const parentElement = deleteConsultationBtn.parentElement
                 deleteConsultationBtn.setAttribute('disabled', 'disabled')
+                clearValidationErrors(parentElement)
                 if (confirm('If you delete this consultation you cannot get it back! Are you sure you want to delete?')) {
                     const id = deleteConsultationBtn.getAttribute('data-id')
                     const anc = deleteConsultationBtn.getAttribute('data-visittype') == 'ANC'
                     
                     http.delete(`/consultation/${id}`)
                         .then((response) => {
+                            if (response.status == 222){
+                                const message = {"deleteCon": ["Pls delete all prescriptions connected to this consultation first"]}
+                                handleValidationErrors(message, parentElement, false)
+                                deleteConsultationBtn.classList.remove('btn-outline-primary')
+                                deleteConsultationBtn.classList.add('btn-danger')
+                                return
+                            }
+
                             if (response.status >= 200 || response.status <= 300){   
                                 anc ? ancConsultationReviewModal.hide() : consultationReviewModal.hide()
                             }
                             deleteConsultationBtn.removeAttribute('disabled')
                         })
                         .catch((error) => {
-                            alert(error)
+                            console.log(error)
                             deleteConsultationBtn.removeAttribute('disabled')
                         })
                 }

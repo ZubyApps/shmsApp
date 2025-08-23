@@ -26,6 +26,7 @@ class StorePaymentRequest extends FormRequest
             'payMethod'    => ['required'],
             'visitId'      => ['nullable', 'integer'],
             'patientId'    => ['nullable', 'integer'],
+            'comment'      => ['nullable', 'max:255'],
         ];
     }
 }

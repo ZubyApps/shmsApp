@@ -867,8 +867,8 @@ class HmoService
 
                 $query = $this->sponsor::with([
                     'reminders' => function($query) use($data){
-                        $query->whereMonth('month_sent_for', $data->startDate->month)
-                        ->whereYear('month_sent_for', $data->startDate->year);
+                        $query->whereMonth('month_sent_for', $data->startDate?->month)
+                        ->whereYear('month_sent_for', $data->startDate?->year);
                     },
                 ])
                 ->withCount([
@@ -1170,8 +1170,6 @@ class HmoService
 
             if ($data->date){
                 $date = new Carbon($data->date);
-                info($date->month);
-                info('this month details');
 
                 return $query->whereMonth('created_at', $date->month)
                         ->whereYear('created_at', $date->year)

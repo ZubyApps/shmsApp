@@ -72,7 +72,6 @@ class VisitController extends Controller
     {
         if (Cache::get("lastWeek")){
             $averageWaitingTime = Cache::getMultiple(["lastWeek", "thisWeek", "lastMonth", "thisMonth"]);
-            info('cached average');
             return response()->json(
                 [
                     "lastWeek" => $averageWaitingTime["lastWeek"], 
@@ -88,7 +87,7 @@ class VisitController extends Controller
         $thisWeek   = $this->visitService->averageWaitingTime($day, 'startOfWeek', 'endOfWeek');
         $lastMonth  = $this->visitService->averageWaitingTime($day->subMonth(), 'startOfMonth', 'endOfMonth');
         $thisMonth  = $this->visitService->averageWaitingTime($day, 'startOfMonth', 'endOfMonth');
-        info('new average');
+
         Cache::putMany(["lastWeek" => $lastWeek, "thisWeek" => $thisWeek, "lastMonth" => $lastMonth, "thisMonth" => $thisMonth], now()->addHours(2));
 
         return response()->json(["lastWeek" => $lastWeek, "thisWeek" => $thisWeek, "lastMonth" => $lastMonth, "thisMonth" => $thisMonth]);

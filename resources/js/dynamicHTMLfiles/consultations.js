@@ -19,10 +19,13 @@ const regularReviewDetails = (iteration, numberConverter, count, length, line, v
                                 ${length == iteration && viewer == 'doctor' ? 
                                 `<div class="d-flex justify-content-end my-2">                                  
                                     ${closed || isHistory ? '' : 
-                                        `<button type="button" id="deleteReviewConsultationBtn" data-id="${line.id}" data-visittype="${line.visitType}" class="btn btn-outline-primary">
-                                        <i class="bi bi-trash"></i>
-                                            Delete
-                                        </button>`
+                                        `<div class="col-xl-4 text-end">
+                                            <button type="button" name="deleteCon" id="deleteReviewConsultationBtn" data-id="${line.id}" data-visittype="${line.visitType}" class="btn btn-outline-primary">
+                                            <i class="bi bi-trash"></i>
+                                                Delete
+                                            </button>
+                                        </div>
+                                        `
                                     }   
                                 </div>` : ''}
                             </div>

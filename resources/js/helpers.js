@@ -118,10 +118,10 @@ function dispatchEvent(tag, event) {
     }
 }
 
-function handleValidationErrors(errors, domElement) {
+function handleValidationErrors(errors, domElement, locate = true) {
     let elementId = []
     let element;
-
+    
     for (const name in errors) {
         if (name.split('.')[0] == 'value'){
             element = domElement.querySelector(`[name="${ name.split('.')[1] }"]`)
@@ -140,7 +140,7 @@ function handleValidationErrors(errors, domElement) {
 
         element.parentNode.append(errorDiv)
     }
-    location.href = '#'+elementId[0]
+    locate ? location.href = '#'+elementId[0] : ''
     window.history.replaceState({}, document.title, "/" + document.title.toLowerCase() )
 }
 

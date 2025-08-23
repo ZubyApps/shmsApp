@@ -34,8 +34,8 @@ class SendFormLink implements ShouldQueue
         $gateway = 1;
 
         $message = 'Sandra Hospital Patient Registration Form link ' . $this->link . '. This link expires in 5 minutes';
-        $response = $churchPlusSmsService->sendSms($message, $recipientPhone, 'SandraH', $gateway);
+        $response = $churchPlusSmsService->sendSms($message, $recipientPhone, 'SandraHosp', $gateway);
 
-        $response == false ? '' : info('Link sent', ['recipient' => $recipientPhone, 'message' => $message]);
+        $response == false ? '' : info('Link sent', ['recipient' => $recipientPhone]);
     }
 }

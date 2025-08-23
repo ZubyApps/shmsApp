@@ -195,7 +195,7 @@ class PatientController extends Controller
 
         $listTransformer = $this->patientService->listTransformer();
 
-        return array_map($listTransformer, (array)$patients->getIterator());
+        return array_map($listTransformer, (array)$patients?->getIterator());
 
     }
 
