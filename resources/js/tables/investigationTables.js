@@ -67,13 +67,12 @@ const getInpatientsInvestigationsTable = (tableId, notLab, button, span) => {
                         allCount.push(data.collected)         
                     },
         drawCallback: function (settings) {
-            console.log(sampleCollectedCount.length)
             if (sampleCollectedCount.length){
                 span.innerHTML = sampleCollectedCount.length + '/' + allCount.length
                 sampleCollectedCount = []
                 allCount = []
             } else {
-                span.innerHTML = allCount.length
+                span.innerHTML = allCount.length ?? ''
                 allCount = []
                 button.classList.add('btn-primary')
                 button.classList.remove('colour-change')

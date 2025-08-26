@@ -88,9 +88,11 @@ window.addEventListener('DOMContentLoaded', function () {
         outPatientsView.checkVisibility() ? outPatientsVisitsTable.draw(false) : '';
         ancPatientsView.checkVisibility() ? ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : '' : ''
         inPatientsView.checkVisibility() ? inPatientsVisitTable ? inPatientsVisitTable.draw(false) : '' : ''
+        inpatientsInvestigationsTable.draw();
+        outpatientInvestigationTable.draw();
     }, 100)
 
-    outPatientsTab.addEventListener('click', function() {outPatientsVisitsTable.draw()})
+    outPatientsTab.addEventListener('click', function() {outPatientsVisitsTable.draw(); inpatientsInvestigationsTable.draw();})
 
     inPatientsTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#inPatientsVisitTable' )){
@@ -98,6 +100,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             inPatientsVisitTable = getPatientsVisitsByFilterTable('#inPatientsVisitTable', 'Inpatient')
         }
+        inpatientsInvestigationsTable.draw();
     })
 
     ancPatientsTab.addEventListener('click', function () {
@@ -106,6 +109,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             ancPatientsVisitTable = getPatientsVisitsByFilterTable('#ancPatientsVisitTable', 'ANC')
         }
+        inpatientsInvestigationsTable.draw();
     })
 
     bulkRequestsTab.addEventListener('click', function () {
@@ -114,6 +118,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             bulkRequestsTable = getBulkRequestTable('bulkRequestsTable', 'lab')
         }
+        inpatientsInvestigationsTable.draw();
     })
 
     document.querySelectorAll('#offcanvasInvestigations, #offcanvasOutpatientsInvestigations').forEach(canvas => {
@@ -126,6 +131,7 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#offcanvasInvestigations, #offcanvasOutpatientsInvestigations').forEach(canvas => {
         canvas.addEventListener('hide.bs.offcanvas', function () {
             refreshMainTables()
+            inpatientsInvestigationsTable.draw();
         })
     })
 
