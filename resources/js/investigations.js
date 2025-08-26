@@ -34,6 +34,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const bulkRequestBtn            = document.querySelector('#newBulkRequestBtn')
     const requestBulkBtn            = bulkRequestModal._element.querySelector('#requestBulkBtn')
     const downloadResultBtn         = labResultModal._element.querySelector('#downloadResultBtn')
+    const inpatientsInvestigationBtn = document.querySelector('#inpatientsInvestigationBtn')
+    const outpatientsInvestigationBtn = document.querySelector('#outpatientsInvestigationBtn')
     const resultDate                = labResultModal._element.querySelector('#resultDate')
     const addressDiv                = labResultModal._element.querySelector('.addressDiv')
 
@@ -58,20 +60,20 @@ window.addEventListener('DOMContentLoaded', function () {
 
     let inPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable
 
-    const inpatientsInvestigationsTable = getInpatientsInvestigationsTable('inpatientInvestigationsTable')
+    const inpatientsInvestigationsTable = getInpatientsInvestigationsTable('inpatientInvestigationsTable', false, inpatientsInvestigationBtn, inpatientsInvestigationCount)
     const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable')
 
     const outPatientsVisitsTable = getPatientsVisitsByFilterTable('#outPatientsVisitTable', 'Outpatient')
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #inpatientInvestigationsTable, #outpatientInvestigationsTable, #investigationsTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
 
-    inpatientsInvestigationsTable.on('draw.init', function() {
-        const count = inpatientsInvestigationsTable.rows().count()
-        if (count > 0 ){
-            inpatientsInvestigationCount.innerHTML = count
-        } else {
-            inpatientsInvestigationCount.innerHTML = ''
-        }
-    })
+    // inpatientsInvestigationsTable.on('draw.init', function() {
+    //     const count = inpatientsInvestigationsTable.rows().count()
+    //     if (count > 0 ){
+    //         inpatientsInvestigationCount.innerHTML = count
+    //     } else {
+    //         inpatientsInvestigationCount.innerHTML = ''
+    //     }
+    // })
 
     outpatientInvestigationTable.on('draw.init', function() {
         const count = outpatientInvestigationTable.rows().count()
@@ -215,8 +217,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('#inpatientInvestigationsTable, #outpatientInvestigationsTable').forEach(table => {
         table.addEventListener('click', (event) => {
-            const addResultBtn      = event.target.closest('#addResultBtn')
-            const removeResultBtn   = event.target.closest('#removeTestBtn')
+            const addResultBtn        = event.target.closest('#addResultBtn')
+            const removeResultBtn     = event.target.closest('#removeTestBtn')
+            const sampleCollectedBtn  = event.target.closest('#sampleCollectedBtn')
     
             if (addResultBtn) {
                 createResultBtn.setAttribute('data-id', addResultBtn.getAttribute('data-id'))
@@ -236,6 +239,30 @@ window.addEventListener('DOMContentLoaded', function () {
                 removeTestModal._element.querySelector('#diagnosis').value = removeResultBtn.getAttribute('data-diagnosis')
                 removeTestModal._element.querySelector('#investigation').value = removeResultBtn.getAttribute('data-investigation')
                 removeTestModal.show()
+            }
+
+            if (sampleCollectedBtn){
+                const state = +sampleCollectedBtn.getAttribute('data-sampleCollected')
+                
+                if (confirm(`Are you sure you want to mark sample as ${state ? "'Not Collected?'" : "'Collected?'"}`)) {
+                    const prescriptionId = sampleCollectedBtn.getAttribute('data-id')
+                    // const treatmentTableId = discontinueBtn.getAttribute('data-table')
+                    http.patch(`/prescription/${prescriptionId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            // if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {
+                            //     $('#' + treatmentTableId).dataTable().fnDraw(false)
+                            // }
+                            inpatientsInvestigationsTable.draw()
+                        }
+                    })
+                    .catch((error) => {
+                        // if (error.response.status === 403){
+                        //     alert(error.response.data.message); 
+                        // }
+                        console.log(error)
+                    })
+                }
             }
         })
     })

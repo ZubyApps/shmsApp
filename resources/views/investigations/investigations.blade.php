@@ -74,7 +74,7 @@
         </div>
 
         <div class="text-start mb-4">
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasInvestigations" aria-controls="offcanvasInvestigations">
+            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="inpatientsInvestigationBtn" data-bs-target="#offcanvasInvestigations" aria-controls="offcanvasInvestigations">
                 <i class="bi bi-list-check"></i>
                 Inpatient's Investigation Table <span class="badge text-bg-danger" id="inpatientsInvestigationCount"></span>
             </button>

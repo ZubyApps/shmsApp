@@ -187,8 +187,9 @@ class InvestigationService
                         ->orWhereRelation('resource', 'sub_category', 'LIKE', $searchTerm);
                         })
                     ->whereRelation('visit', 'consulted', '!=', null)
-                    ->where('discontinued', false)
+                    // ->where('discontinued', false)
                     ->where('result_date', null)
+                    // ->where('dispense_comment', null)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -201,7 +202,8 @@ class InvestigationService
                         ->orWhereRelation('consultation', 'admission_status', '=', 'Observation');
                     })
                     ->where('result_date', null)
-                    ->where('discontinued', false)
+                    // ->where('discontinued', false)
+                    ->where('dispense_comment', null)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -234,7 +236,8 @@ class InvestigationService
                             ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('resource', 'sub_category', 'LIKE', $searchTerm);
                             })
-                        ->where('discontinued', false)
+                        // ->where('discontinued', false)
+                        ->where('dispense_comment', null)
                         ->whereRelation('visit', 'consulted', '!=', null)
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -254,7 +257,8 @@ class InvestigationService
                     ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
                     ->whereRelation('visit', 'consulted', '!=', null)
                     ->whereRelation('consultation', 'admission_status', '=', 'Outpatient')
-                    ->where('discontinued', false)
+                    // ->where('discontinued', false)
+                    ->where('dispense_comment', null)
                     ->where('result_date', null)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -281,6 +285,8 @@ class InvestigationService
                 'rejected'          => $prescription->rejected,
                 'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
                 'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->category_name == 'NHIS',
+                'collected'         => $prescription->discontinued ? true : false,
+                'collectedBy'       => $prescription->discontinuedBy?->username,
             ];
          };
     }
@@ -347,7 +353,7 @@ class InvestigationService
     public function removetTestFromList($data, Prescription $prescription, User $user): Prescription
     {
         $prescription->update([
-            'discontinued'      => true,
+            // 'discontinued'      => true,
             'discontinued_by'   => $user->id,
             'dispense_comment'  => $data->removalReason,
             ]);

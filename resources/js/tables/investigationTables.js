@@ -43,7 +43,9 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
     return allPatientsTable
 }
 
-const getInpatientsInvestigationsTable = (tableId, notLab) => {
+const getInpatientsInvestigationsTable = (tableId, notLab, button, span) => {
+    let sampleCollectedCount = []
+    let allCount = []
     const investigationsTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  '/investigations/load/inpatients',
@@ -53,6 +55,29 @@ const getInpatientsInvestigationsTable = (tableId, notLab) => {
         lengthMenu:[25, 50, 100, 200],
         language: {
             emptyTable: 'No lab investigation requested'
+        },
+        rowCallback: (row, data) => {
+                        console.log(data.collected)
+                        if (!data.collected){
+                            row.classList.add('table-warning')
+                            button.classList.remove('btn-primary')
+                            button.classList.add('colour-change')
+                            sampleCollectedCount.push(data.collected)
+                        }
+                        allCount.push(data.collected)         
+                    },
+        drawCallback: function (settings) {
+            console.log(sampleCollectedCount.length)
+            if (sampleCollectedCount.length){
+                span.innerHTML = sampleCollectedCount.length + '/' + allCount.length
+                sampleCollectedCount = []
+                allCount = []
+            } else {
+                span.innerHTML = allCount.length
+                allCount = []
+                button.classList.add('btn-primary')
+                button.classList.remove('colour-change')
+            }
         },
         columns: [
             {data: "requested"},
@@ -70,7 +95,10 @@ const getInpatientsInvestigationsTable = (tableId, notLab) => {
                 sortable: false,
                 data: row =>  `
                         <div class="d-flex flex- ${notLab ? 'd-none' : ''}">
-                            <button class=" btn btn-primary addResultBtn tooltip-test" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                            <button class=" btn btn-${row.collected ? 'primary' : 'warning'} sampleCollectedBtn tooltip-test" id="sampleCollectedBtn" title="Sample collected ${row.collected ? row.collectedBy : '?'}" data-id="${ row.id}" data-sampleCollected="${ row.collected}">
+                                <i class="bi bi-check"></i>
+                            </button>
+                            <button class=" btn btn-primary addResultBtn tooltip-test ms-1" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                                 <i class="bi bi-plus-square"></i>
                             </button>
                             <button class="btn btn-primary removeTestBtn tooltip-test ms-1" id="removeTestBtn" title="remove test" data-id="${row.id}" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
