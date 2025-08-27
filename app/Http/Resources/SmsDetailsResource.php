@@ -21,7 +21,7 @@ class SmsDetailsResource extends JsonResource
         return [
             'id'            => $this->id,
             'phone'         => $this->visit->patient->phone,
-            'smsDetails'   => 'Dear ' . $this->visit->patient->first_name . ', please clear your hospital bill (N' .number_format($outstanding). ') incurred on ' . (new Carbon($this->visit->created_at))->format('d/m/Y') . '. Kindly send to Monie Point Nzube Okoye 5496896686 or visit the hospital',
+            'smsDetails'   => 'Dear ' . $this->visit->patient->first_name . ', please kindly clear your hospital bill (N' .number_format($outstanding). ') incurred on ' . (new Carbon($this->visit->created_at))->format('d/m/Y') . '. Kindly send to Monie Point Nzube Okoye 5496896686 or visit the hospital',
         ];
     }
 }
