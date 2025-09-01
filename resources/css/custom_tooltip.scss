@@ -1,0 +1,56 @@
+// Import Bootstrap variables (if not already included)
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+// Custom tooltip for .tooltip-test
+.tooltip-test {
+  position: relative;
+  cursor: pointer;
+
+  // Tooltip content
+  &::after {
+    content: attr(title);
+    display: none;
+    position: absolute;
+    top: calc(-1 * #{$tooltip-max-width} - #{$tooltip-arrow-height});
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: #{$zindex-tooltip};
+    max-width: #{$tooltip-max-width};
+    padding: #{$tooltip-padding-y} #{$tooltip-padding-x};
+    color: #{$tooltip-color};
+    background-color: #{$tooltip-bg};
+    @include border-radius(#{$tooltip-border-radius});
+    font-size: #{$tooltip-font-size};
+    text-align: center;
+    white-space: normal;
+    // word-wrap: break-word;
+  }
+
+//   // Arrow (mimicking .tooltip-arrow)
+//   &::before {
+//     content: "";
+//     display: none;
+//     position: absolute;
+//     bottom: calc(-1 * #{$tooltip-arrow-height});
+//     left: 50%;
+//     transform: translateX(-50%);
+//     border: solid transparent;
+//     border-width: #{$tooltip-arrow-height} calc(#{$tooltip-arrow-width} * 0.5) 0;
+//     border-top-color: #{$tooltip-bg};
+//     z-index: #{$zindex-tooltip};
+//   }
+
+//   // Show tooltip on hover (desktop)
+//   &:hover::after,
+//   &:hover::before {
+//     display: block;
+//   }
+
+  // Show tooltip on active (mobile tap)
+  @media (max-width: 768px) {
+    &:active::after {
+      display: block;
+    }
+  }
+}
