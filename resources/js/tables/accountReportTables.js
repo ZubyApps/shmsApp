@@ -115,9 +115,9 @@ const getByPayMethodsTable = (tableId, payMethodId, modal, startDate, endDate, d
     })
 
     modal._element.addEventListener('hidden.bs.modal', function () {
-        modal._element.querySelector('#payMethodMonth').value = ''
-        modal._element.querySelector('#from').value = ''
-        modal._element.querySelector('#to').value = ''
+        modal._element.querySelector('#payMethodMonth') ? modal._element.querySelector('#payMethodMonth').value = '' : ''
+        modal._element.querySelector('#from') ? modal._element.querySelector('#from').value = '' : ''
+        modal._element.querySelector('#to') ? modal._element.querySelector('#to').value = '' : ''
         byPayMethodTable.destroy()
     })
 

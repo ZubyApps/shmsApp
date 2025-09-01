@@ -19,6 +19,7 @@
 @include('billing.registerBillReminderModal', ['title' => "Set Bill Reminder", 'id' => 'registerBillReminderModal'])
 @include('extras.smsTemplateModal', ['title' => 'Send SMS',  'dept' => 'billing', 'id' => 'smsTemplateModal'])
 @include('hmo.confirmPaymentModal', ['title' => 'Save Payment', 'id' => 'confirmPaymentModal', 'identity' => 'Patient' ])
+@include('reports.modals.byPayMethodModal', ['title' => 'Payments By Pay Method', 'id' => 'byPayMethodModal', 'isManagement' => false])
 
     <div class="container mt-5 bg-white">
 

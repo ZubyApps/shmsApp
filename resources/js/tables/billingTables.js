@@ -618,7 +618,9 @@ const getBalancingTable = (tableId, accessor, date) => {
         lengthChange: false,
         columns: [
             {data: "date"},
-            {data: row => account.format(row.totalCash)},
+            // {data: row => account.format(row.totalCash)},
+            {data: row => `<span class="btn text-decoration-underline showCashPaymentsBtn" title="show cash payments" data-id="${row.id}">${account.format(row.totalCash)}</span>`},
+            // {data: row => `<span class="btn text-decoration-underline showExpensesBtn" title="show expenses" data-id="${row.id}">${account.format(row.totalExpense)}</span>`},
             {data: row => account.format(row.totalExpense)},
             {data: row => account.format(row.totalCash - row.totalExpense)},
         ]

@@ -14,17 +14,24 @@
                                     <x-input-span>PayMethod</x-input-span>
                                     <x-form-input name="paymethod" value="" id="paymethod" readonly/>
                                 </x-form-div>
-                                <x-form-div class="col-xl-6">
-                                    <x-input-span>Dates</x-input-span>
-                                    <x-input-span class="">From</x-input-span>
-                                    <x-form-input type="date" name="from" id="from" readonly/>
-                                    <x-input-span class="">To</x-input-span>
-                                    <x-form-input type="date" name="to" id="to" readonly/>
-                                </x-form-div>
-                                <x-form-div class="col-xl-6">
-                                    <x-input-span class="">Month/Year</x-input-span>
-                                    <x-form-input type="month" name="payMethodMonth" id="payMethodMonth" />
-                                </x-form-div>
+                                @if ($isManagement)
+                                    <x-form-div class="col-xl-6">
+                                        <x-input-span>Dates</x-input-span>
+                                        <x-input-span class="">From</x-input-span>
+                                        <x-form-input type="date" name="from" id="from" readonly/>
+                                        <x-input-span class="">To</x-input-span>
+                                        <x-form-input type="date" name="to" id="to" readonly/>
+                                    </x-form-div>
+                                    <x-form-div class="col-xl-6">
+                                        <x-input-span class="">Month/Year</x-input-span>
+                                        <x-form-input type="month" name="payMethodMonth" id="payMethodMonth" readonly/>
+                                    </x-form-div>
+                                @else
+                                    <x-form-div class="col-xl-6">
+                                        <x-input-span>Date</x-input-span>
+                                        <x-form-input type="date" name="showBalanceDate" id="showBalanceDate" readonly/>
+                                    </x-form-div>
+                                @endif
                             </div>
                         </div>
                         <div class="mb-2 form-control">

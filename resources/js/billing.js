@@ -7,6 +7,7 @@ import { getOutpatientsInvestigationTable } from "./tables/investigationTables";
 import html2pdf  from "html2pdf.js"
 import { getShiftReportTable } from "./tables/pharmacyTables";
 import { getMedicalReportTable, getProceduresListTable } from "./tables/doctorstables";
+import { getByPayMethodsTable } from "./tables/accountReportTables";
 $.fn.dataTable.ext.errMode = 'throw';
 
 
@@ -27,6 +28,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const registerBillReminderModal     = new Modal(document.getElementById('registerBillReminderModal'))
     const smsTemplateModal              = new Modal(document.getElementById('smsTemplateModal'))
     const confirmPaymentModal           = new Modal(document.getElementById('confirmPaymentModal'))
+    const byPayMethodModal              = new Modal(document.getElementById('byPayMethodModal'))
 
     const balancingDateDiv              = document.querySelector('.balancingDateDiv')
     const billRemindersDatesDiv         = document.querySelector('.billRemindersDatesDiv')
@@ -74,7 +76,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const shiftBadgeSpan                = document.querySelector('#shiftBadgeSpan')
 
 
-    let inPatientsVisitTable, ancPatientsVisitTable, billingTable, paymentTable, openVisitsTable, expensesTable, balancingTable, medicalReportTable, billRemindersTable
+    let inPatientsVisitTable, ancPatientsVisitTable, billingTable, paymentTable, openVisitsTable, expensesTable, balancingTable, medicalReportTable, billRemindersTable, byPayMethodTable
 
     const outPatientsVisitTable = getPatientsVisitsByFilterTable('#outPatientsVisitTable', 'Outpatient', 'consulted')
     const waitingTable = getWaitingTable('#waitingTable')
@@ -1126,6 +1128,29 @@ window.addEventListener('DOMContentLoaded', function () {
             console.log(error.response.data.message)
         })
     })
+
+    document.querySelector('#balancingTable').addEventListener('click', function (event) {
+            const showCashPaymentsBtn    = event.target.closest('.showCashPaymentsBtn')
+            const balanceDate            = balancingDateDiv.querySelector('#balanceDate').value
+            const today                  = new Date().toISOString().slice(0,10)
+    
+            if (showCashPaymentsBtn){
+                showCashPaymentsBtn.setAttribute('disabled', true)
+                const id = showCashPaymentsBtn.getAttribute('data-id')
+                byPayMethodModal._element.querySelector('#paymethod').value = 'Cash'
+    
+                if (balanceDate){
+                    byPayMethodModal._element.querySelector('#showBalanceDate').value = balanceDate
+                    byPayMethodTable = getByPayMethodsTable('byPayMethodTable', id, byPayMethodModal, null, null, balanceDate)
+                    byPayMethodModal.show()
+                    return
+                }
+    
+                byPayMethodModal._element.querySelector('#showBalanceDate').value = today
+                byPayMethodTable = getByPayMethodsTable('byPayMethodTable', id, byPayMethodModal)
+                byPayMethodModal.show()
+            }
+        })
 })
 
 const smsMessenger = (selectElement) => {
