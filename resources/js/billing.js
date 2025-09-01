@@ -382,7 +382,8 @@ window.addEventListener('DOMContentLoaded', function () {
             const sponsorOutstandingsBtn    = event.target.closest('.sponsorOutstandingsBtn')
             const cardNoOutstandingsBtn     = event.target.closest('.cardNoOutstandingsBtn')
             const thirdPartyServiceBtn      = event.target.closest('.thirdPartyServiceBtn')
-            const registerBillReminderBtn   = event.target.closest('.registerBillReminderBtn')  
+            const registerBillReminderBtn   = event.target.closest('.registerBillReminderBtn')
+            const changeDischargeBillSpan    = event.target.closest('.changeDischargeBillSpan')
 
             if (payBtn) {
                 payBtn.setAttribute('disabled', 'disabled')
@@ -477,6 +478,30 @@ window.addEventListener('DOMContentLoaded', function () {
                 saveBillReminderBtn.setAttribute('data-id', registerBillReminderBtn.getAttribute('data-id'))
                 registerBillReminderModal.show()
             }
+            if (changeDischargeBillSpan){
+                const prescriptionId    = changeDischargeBillSpan.getAttribute('data-id')
+                const div               = changeDischargeBillSpan.parentElement
+                const billQtyInput      = div.querySelector('.billInput')
+
+                changeDischargeBillSpan.classList.add('d-none')
+                billQtyInput.classList.remove('d-none')
+
+                resetFocusEndofLine(billQtyInput)
+            
+                billQtyInput.addEventListener('blur', function () {
+                    http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value}, {'html' : div})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            billingTable ? billingTable.draw() : ''
+                            paymentTable ? paymentTable.draw() : ''
+                        }
+                    })
+                    .catch((error) => {
+                            billingTable ? billingTable.draw() : ''
+                            console.log(error)
+                    })
+                })                
+            }
     })
 
     saveBillReminderBtn.addEventListener('click', function () {
@@ -544,6 +569,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelector('#paymentTable').addEventListener('click', function (event) {
         const deleteBtn = event.target.closest('.deleteBtn')
+        const softDeleteBtn = event.target.closest('.softDeleteBtn')
 
         if (deleteBtn){
             const id = deleteBtn.getAttribute('data-id')
@@ -572,6 +598,38 @@ window.addEventListener('DOMContentLoaded', function () {
                     })
             }
             
+        }
+
+        if (softDeleteBtn){
+            const id = softDeleteBtn.getAttribute('data-id')
+            const tableId = softDeleteBtn.getAttribute('data-table')
+            const deleteReason = prompt("What's the reason for removing this payment?", '')
+            if (deleteReason === null) {
+                return
+            }
+            if (deleteReason.trim() === ''){
+                alert('You must provide a reason for removing this payment!')
+                return
+            }
+            http.delete(`/billing/payment/delete/${id}`, {params: {deleteReason}})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            if ($.fn.DataTable.isDataTable('#'+tableId)){
+                            $('#'+tableId).dataTable().fnDraw()
+                            }
+                            if ($.fn.DataTable.isDataTable('#billingTable')){
+                            $('#billingTable').dataTable().fnDraw()
+                            }
+                        }
+                        softDeleteBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        if (error.response.status === 433){
+                            alert(error.response.data.message); 
+                        }
+                        softDeleteBtn.removeAttribute('disabled')
+                    })
         }
     })
 

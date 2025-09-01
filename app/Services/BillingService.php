@@ -216,7 +216,12 @@ class BillingService
                             $query->with([
                                 'thirdPartyServices.thirdParty',
                                 'user',
-                                'resource.unitDescription',
+                                'resource' => function ($query) {
+                                    $query->with([
+                                        'markedFor',
+                                        'unitDescription'
+                                    ]);
+                                },
                                 'visit',
                                 'approvedBy',
                                 'rejectedBy',
@@ -287,7 +292,8 @@ class BillingService
                     'paid1'              => $prescription->paid,
                     'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->category_name == 'NHIS',
                     'isInvestigation'   => $prescription->resource->category == 'Investigations',
-                    'thirdParty'        => $prescription->thirdPartyServices->sortDesc()->first()?->thirdParty->short_name ?? ''
+                    'thirdParty'        => $prescription->thirdPartyServices->sortDesc()->first()?->thirdParty->short_name ?? '',
+                    'isDischarge'       => $prescription->resource->markedFor?->name === 'discharge',
                 ]),
                 'flagSponsor'       => $visit->sponsor->flag,
                 'flagPatient'       => $visit->patient->flag,
@@ -511,9 +517,9 @@ class BillingService
 
     }
 
-    public function processPaymentDestroy(Payment $payment)
+    public function processPaymentDestroy(Payment $payment, bool $softDelete, $data)
     {
-        return $this->paymentService->destroyPayment($payment);
+        return $this->paymentService->destroyPayment($payment, $softDelete, $data);
     }
 
     public function getVisitsWithOutstandingBills(DataTableQueryParams $params, $data)

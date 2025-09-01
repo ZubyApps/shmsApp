@@ -182,15 +182,21 @@ Class PaymentService
         }, $totalPayments);
     }
 
-    public function destroyPayment(Payment $payment)
+    public function destroyPayment(Payment $payment, bool $softDelete, $data)
     {
-        return DB::transaction(function () use($payment) {
+        return DB::transaction(function () use($payment, $softDelete, $data) {
 
+            //delete payments not associated with a patient or visit
             if (!$payment->patient_id || !$payment->visit_id ){
                 return $payment->destroy($payment->id);
             }
             
-            $deleted = $payment->destroy($payment->id);
+            //custom soft delete mechanism for non admins
+            if ($softDelete){
+                $response = $payment->update(['amount_paid' => 0, 'comment' => $data->user()->username . ' removed N'. $payment->amount_paid. ' - ' .$data->deleteReason]);
+            } else {
+                $response = $payment->destroy($payment->id); //actual delete for admins
+            }
 
             $totalPayments  = $payment->visit->totalPayments();
             $visit          = $payment->visit;
@@ -209,7 +215,7 @@ Class PaymentService
                 $this->prescriptionsPaymentSeive($totalPayments, $prescriptions);
             }
 
-            return $deleted;
+            return $response;
         });
     
     }

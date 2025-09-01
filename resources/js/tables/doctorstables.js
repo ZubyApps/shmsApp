@@ -257,7 +257,7 @@ const getWaitingTable = (tableId) => {
                         `
             },
             {data: row => function () {
-                const show = row.vitalSigns > 0 || row.ancVitalSigns > 0 || row.prescriptions > 0 || row.payments > 0 ? false : true
+                const show =  row.prescriptions > 0 || row.payments > 0 ? false : true
                 if (row.doctor === ''){
                     return `
                         <div class="d-flex flex-">

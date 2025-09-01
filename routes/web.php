@@ -298,7 +298,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('pharmacy')->group(function () {
             Route::get('', [PharmacyController::class, 'index'])->name('Pharmacy');
             Route::get('/load/consulted', [PharmacyController::class, 'loadVisitsByFilterPharmacy']);
-            Route::patch('/bill/{prescription}', [PharmacyController::class, 'billPrescription']);
+            Route::patch('/bill/{prescription}', [PharmacyController::class, 'billPrescription'])->withoutMiddleware('pharmacy');
             Route::patch('/dispense/{prescription}', [PharmacyController::class, 'dispensePrescription']);
             Route::patch('/hold/{prescription}', [PharmacyController::class, 'holdPrescription']);
             Route::patch('/dispense/comment/{prescription}', [PharmacyController::class, 'dispenseComment']);

@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\DischargeBillRequest;
-use App\Http\Requests\DiscountRequest;
-use App\Http\Requests\StorePaymentRequest;
-use App\Models\Payment;
+use Carbon\Carbon;
 use App\Models\Visit;
+use App\Models\Payment;
+use Illuminate\Http\Request;
+use App\Services\UserService;
 use App\Services\BillingService;
-use App\Services\DatatablesService;
 use App\Services\ExpenseService;
 use App\Services\PaymentService;
-use App\Services\UserService;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
+use App\Services\DatatablesService;
+use App\Http\Requests\DiscountRequest;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StorePaymentRequest;
+use App\Http\Requests\DischargeBillRequest;
 
 class BillingController extends Controller
 {
@@ -102,10 +103,22 @@ class BillingController extends Controller
 
     public function destroy(Request $request, Payment $payment)
     {
-        if ($request->user()->designation?->access_level < 4) {
-            return response()->json(['message' => 'You are not authorized'], 403);
+        $softDelete = $request->user()->designation?->access_level < 5;
+
+        if ($softDelete) {
+            $validator = Validator::make($request->all(), [
+                'deleteReason' => ['required', 'max:200'],
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'The reason is too long! Please shorten it and try again.',
+                    'errors' => $validator->errors(),
+                ], 433); // Custom status code
+            }
         }
-        return $this->billingService->processPaymentDestroy($payment);
+
+        return $this->billingService->processPaymentDestroy($payment, $softDelete, $request);
     }
 
     public function loadVisitsWithOutstandingBills(Request $request)

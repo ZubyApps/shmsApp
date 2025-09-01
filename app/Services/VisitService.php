@@ -381,6 +381,17 @@ class VisitService
     public function delete($visit)
     {
         return DB::transaction(function() use($visit){
+            if ($visit->vitalSigns()->exists()){
+                $visit->vitalSigns()->delete();
+            }
+
+            if ($visit->antenatalRegisteration) {
+            if ($visit->antenatalRegisteration->ancVitalSigns()->exists()) {
+                $visit->antenatalRegisteration->ancVitalSigns()->delete();
+            }
+            $visit->antenatalRegisteration()->delete(); // Delete the AntenatalRegisteration
+        }
+
             $visit->patient()->update(['is_active' => false]);
             $visit->destroy($visit->id);
         });

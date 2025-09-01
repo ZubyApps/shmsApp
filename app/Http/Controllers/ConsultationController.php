@@ -71,10 +71,12 @@ class ConsultationController extends Controller
     public function destroy(Consultation $consultation)
     {
        return DB::transaction(function () use ($consultation) {
-                    if ($consultation->prescriptions->count() > 0){
-                        return response()->json(['message' => 'Delete prescriptions first'], 222);
+                    if ($consultation->prescriptions()->exists()){
+                        return response()->json(['message' => 'Pls delete all prescriptions/tests connected to this consultation first'], 222);
                     }
+
                     $consultation->visit->consultations->count() < 2 ? $consultation->visit->update(['consulted' => null]) : '' ;
+                    
                     $consultation->destroy($consultation->id);
                 }, 2);
 

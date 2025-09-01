@@ -40,7 +40,7 @@ const getWaitingTable = (tableId) => {
                         `   
             },
             {data: row => () => {
-                const show = row.vitalSigns > 0 || row.ancVitalSigns > 0 || row.prescriptions > 0 || row.payments > 0 ? false : true
+                const show = row.prescriptions > 0 || row.payments > 0 ? false : true
                     return  `
                     <div class="dropdown ms-1">
                         <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="remove" data-bs-toggle="dropdown" href="" >

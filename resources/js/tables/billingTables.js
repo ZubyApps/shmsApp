@@ -41,7 +41,7 @@ const getWaitingTable = (tableId) => {
                         `   
             },
             {data: row => () => {
-                const show = row.vitalSigns > 0 || row.ancVitalSigns > 0 || row.prescriptions > 0 || row.payments > 0 ? false : true
+                const show = row.prescriptions > 0 || row.payments > 0 ? false : true
                 return  `
                     <div class="dropdown ms-1">
                         <a class="btn btn-outline-primary tooltip-test text-decoration-none" title="remove" data-bs-toggle="dropdown" href="" >
@@ -244,7 +244,12 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                                 </td>
                                                 ${credit || NHIS ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>` : ''}                
                                                 <td class="">${account.format(p.unitPrice)}</td>
-                                                <td class="">${p.quantity}</td>
+                                                <td class="">
+                                                    <div class="d-flex">
+                                                        <span class="${p.isDischarge ? 'changeDischargeBillSpan fw-bold text-primary' : ''} tooltip-test" title="${p.isDischarge ? 'Change Discharge Bill' : ''}" data-id="${p.prescriptionId}">${p.quantity}</span>
+                                                        <input class="ms-1 form-control billInput d-none" id="billInput" style="width:6rem;" value="${p.quantity ?? ''}">
+                                                    </div>
+                                                </td>
                                                 <td class="${p.quantity ? 'text-secondary' : 'colour-change2 fw-bold'}">${p.description}</td>                
                                                 <td>${account.format(p.hmsBill)}</td>
                                             </tr>
@@ -456,13 +461,19 @@ const getPaymentTableByVisit = (tableId, visitId, modal) => {
                     if (row.user){
                         return `
                         <div class="d-flex flex-">
-                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
+                            <button type="button" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
                                 <i class="bi bi-trash3-fill"></i>
                             </button>
                         </div>
                         `  
                     }
-                    return ''
+                    return `
+                        <div class="d-flex flex-">
+                            <button type="button" class="ms-1 btn btn-outline-primary softDeleteBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </div>
+                    `
                 }      
             },
         ]

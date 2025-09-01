@@ -1328,7 +1328,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.delete(`/consultation/${id}`)
                         .then((response) => {
                             if (response.status == 222){
-                                const message = {"deleteCon": ["Pls delete all prescriptions connected to this consultation first"]}
+                                const message = {"deleteCon": [response?.data?.message]}
                                 handleValidationErrors(message, parentElement, false)
                                 deleteConsultationBtn.classList.remove('btn-outline-primary')
                                 deleteConsultationBtn.classList.add('btn-danger')
