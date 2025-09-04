@@ -120,10 +120,30 @@ class PatientService
 
     public function updateKnownClinicalInfo(Request $data, Patient $patient, User $user): Patient
     {
-        $knownConditions = $patient->known_conditions ? $patient->known_conditions.', '.$data->knownConditions : $data->knownConditions;
-        $data->bloodGroup ? $patient->update(["blood_group" => $data->bloodGroup]) : '';
-        $data->genotype ? $patient->update(["genotype" => $data->genotype]): '';
-        $data->knownConditions ? $patient->update(["known_conditions" => $knownConditions]) : '';
+         // Prepare updates array
+        $updates = [];
+
+        // Update blood group if provided and not empty
+        if ($data->filled('bloodGroup')) {
+            $updates['blood_group'] = $data->bloodGroup;
+        }
+
+        // Update genotype if provided and not empty
+        if ($data->filled('genotype')) {
+            $updates['genotype'] = $data->genotype;
+        }
+
+        // Handle known conditions: append if present, start fresh if none exist, skip if empty
+        if ($data->filled('knownConditions')) {
+            $updates['known_conditions'] = $patient->known_conditions 
+                ? $patient->known_conditions . ', ' . $user->username . ' - ' . $data->knownConditions
+                : $user->username . ' - ' . $data->knownConditions;
+        }
+
+        // Perform single update if there are changes
+        if (!empty($updates)) {
+            $patient->update($updates);
+        }
         
         return $patient;
     }
