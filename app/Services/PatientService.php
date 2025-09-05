@@ -178,7 +178,7 @@ class PatientService
         return response()->json(['message' => 'Form link prepared and queued successfully'], 200);
     }
 
-    public function getPaginatedPatients(DataTableQueryParams $params)
+    public function getPaginatedPatients(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
@@ -200,6 +200,12 @@ class PatientService
                             })
                             ->orderBy($orderBy, $orderDir)
                             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
+
+        if ($data->filterBy == 'flaggedPatients'){
+            return $query->where('flag', true)
+            ->orderBy($orderBy, $orderDir)
+            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         return $query->orderBy($orderBy, $orderDir)

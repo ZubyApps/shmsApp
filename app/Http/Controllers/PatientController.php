@@ -55,7 +55,7 @@ class PatientController extends Controller
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $patients = $this->patientService->getPaginatedPatients($params);
+        $patients = $this->patientService->getPaginatedPatients($params, $request);
        
         $loadTransformer = $this->patientService->getLoadTransformer();
 

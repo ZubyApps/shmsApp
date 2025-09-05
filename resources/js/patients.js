@@ -40,6 +40,7 @@ window.addEventListener('DOMContentLoaded', function(){
     const sendLinkBtn                       = document.querySelector('#sendLinkBtn')
     const saveAppointmentBtn                = document.querySelector('#saveAppointmentBtn')
     const saveSellingPriceBtn               = sponsorTariffModal._element.querySelector('#saveSellPriceBtn')
+    const filterPatientsSelect              = document.querySelector('#filterPatientsSelect')
     // const updateVisits                      = document.getElementById('updateVisits')
     
     const newPatientSponsorInputEl          = document.querySelector('#newPatientSponsor')
@@ -59,9 +60,9 @@ window.addEventListener('DOMContentLoaded', function(){
     const prePatientsTab                    = document.querySelector('#nav-prePatients-tab')
     const appointmentsTab                   = document.querySelector('#nav-appointments-tab')
 
-    let sponsorsTable, visitsTable, newRegPatientsTable, sexAggregateTable, patientsBySponsorTable, visitsSummaryTable, prePatientsTable, appointmentsTable
+    let allPatientsTable, sponsorsTable, visitsTable, newRegPatientsTable, sexAggregateTable, patientsBySponsorTable, visitsSummaryTable, prePatientsTable, appointmentsTable
 
-    const allPatientsTable = getAllPatientsTable('#allPatientsTable')
+    allPatientsTable = getAllPatientsTable('#allPatientsTable')
     $('#allPatientsTable, #sponsorsTable, #visitsTable, #newRegPatientsTable, #sexAggregateTable, #patientsBySponsorTable, #visitsSummaryTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
     newSponsorBtn.addEventListener('click', function() {
         newSponsorModal.show()
@@ -620,7 +621,10 @@ window.addEventListener('DOMContentLoaded', function(){
         })
     })
 
-    
+    filterPatientsSelect.addEventListener('change', function (){
+        allPatientsTable.destroy();
+        allPatientsTable = getAllPatientsTable('#allPatientsTable', filterPatientsSelect.value);
+    })
 
     document.querySelectorAll('#treatmentDetailsModal, #ancTreatmentDetailsModal').forEach(modal => {
         modal.addEventListener('hide.bs.modal', function(event) {

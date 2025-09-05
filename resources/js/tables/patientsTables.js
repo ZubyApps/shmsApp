@@ -156,10 +156,12 @@ const getSponsorsTable = (tableId) => {
     return sponsorsTable
 }
 
-const getAllPatientsTable = (tableId) => {
+const getAllPatientsTable = (tableId, filter) => {
     const allPatientsTable = new DataTable(tableId, {
         serverSide: true,
-        ajax:  '/patients/load',
+        ajax:  {url: '/patients/load', data: {
+            'filterBy' : filter
+        }},
         orderMulti: true,
         lengthMenu:[50, 100, 150, 200, 300],
         search:true,

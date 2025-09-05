@@ -56,6 +56,13 @@
                         Update Visits
                     </button> --}}
                 </div>
+                <x-form-div class="col-md-6 pt-2">
+                    <x-input-span id="filterPatientsLabel">Filter Patients<x-required-span /></x-input-span>
+                    <select class="form-select form-select-md" name="filterPatientsSelect" id="filterPatientsSelect">
+                        <option value="allPatients">All Patients </option>
+                        <option value="flaggedPatients">Flagged Patients</option>
+                    </select>
+                </x-form-div>
                 <div class="py-2">
                     <table id="allPatientsTable" class="table table-hover table-sm">
                         <thead>

@@ -15,7 +15,7 @@ class AppointmentsForSms
    {
        DB::transaction(function () {   
         
-        $time1 = (new CarbonImmutable())->addHours(4);
+        $time1 = (new CarbonImmutable())->addHours(2);
         $time2 = $time1->subSeconds(59);
 
         $appointments = Appointment::whereBetween('date', [$time2, $time1])->get();
