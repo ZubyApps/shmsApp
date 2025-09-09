@@ -108,7 +108,7 @@ Route::middleware('auth')->group(function () {
         Route::prefix('resourcecategory')->group(function (){
             Route::post('', [ResourceCategoryController::class, 'store']);
             Route::get('/load', [ResourceCategoryController::class, 'load']);
-            Route::get('/list_subcategories/{resourceCategory}', [ResourceCategoryController::class, 'list']);
+            Route::get('/list_subcategories/{resourceCategory}', [ResourceCategoryController::class, 'list'])->withoutMiddleware('strict');
             Route::get('/{resourceCategory}', [ResourceCategoryController::class, 'edit']);
             Route::delete('/{resourceCategory}', [ResourceCategoryController::class, 'destroy']);
             Route::post('/{resourceCategory}', [ResourceCategoryController::class, 'update']);
