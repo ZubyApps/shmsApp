@@ -104,15 +104,17 @@ Class ShiftPerformanceService
 
     public function shiftsPrescriptions($shiftPerformance)
     {
-        $timingSwaper           = $this->helperService->prescriptionTimeSwapper();
-        $column                 = $this->setColumn($timingSwaper);
+        // $timingSwaper           = $this->helperService->prescriptionTimeSwapper();
+        // $column                 = $this->setColumn($timingSwaper);
         $shiftEnd               = new Carbon($shiftPerformance->shift_end);
         $shiftEndTimer          = $shiftEnd->subMinutes(20);
         return $this->prescription
                     ->with(['visit.patient', 'medicationCharts', 'nursingCharts', 'resource'])
+                    ->whereRelation('visit', 'doctor_done_by')
                     ->where('discontinued', false)
                     ->where('held', null)
-                    ->whereBetween($column, [$shiftPerformance->shift_start, $shiftEndTimer])
+                    ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
+                    ->whereBetween('hms_bill_date', [$shiftPerformance->shift_start, $shiftEndTimer])
                     ->get();
     }
 
@@ -135,6 +137,7 @@ Class ShiftPerformanceService
             ->with(['vitalSigns'])
             ->whereBetween('created_at', [$shiftPerformance->shift_start, $shiftEndTimer])
             ->where('closed', false)
+            ->where('doctor_done_by', null)
             ->where('visit_type', '!=', 'ANC')
             ->get();
     }
