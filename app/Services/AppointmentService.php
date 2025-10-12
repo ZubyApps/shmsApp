@@ -67,7 +67,7 @@ class AppointmentService
     public function getLoadTransformer(): callable
     {
        return  function (Appointment $appointment) {
-            $latestVisit = $appointment->patient->latestVisit;
+            $latestVisit = $appointment->patient?->latestVisit;
             return [
                 'id'                => $appointment->id,
                 'createdAt'         => (new Carbon($appointment?->created_at))->format('d/m/Y'),

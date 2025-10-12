@@ -48,7 +48,7 @@ class ResourceSupplierService
 
         if (! empty($params->searchTerm)) {
             return $this->resourceSupplier
-                        ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->where('company', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }

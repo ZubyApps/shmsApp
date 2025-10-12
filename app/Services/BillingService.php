@@ -238,7 +238,8 @@ class BillingService
         return  function (Visit $visit) {
 
         $prescriptions  = $visit->prescriptions;
-        $totalNhisBills = $this->totalNhisBills($prescriptions);
+        $totalHmsBills   = $prescriptions->sum('hms_bill');
+        $totalNhisBills = $prescriptions->sum('nhis_bill');
         $determinePayV  = $this->determinePayV($visit);
         $determinePayP  = $this->determinePayP($visit->patient);
         $allDiscountsP  = $this->allDiscountsP($visit->patient);
@@ -258,12 +259,12 @@ class BillingService
                 'came'                  => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'discount'              => $visit->discount ?? '',
                 'discountBy'            => $visit->discountBy?->username ?? '',
-                'subTotal'              => $prescriptions->sum('hms_bill'),//totalHmsBills() ?? 0,
+                'subTotal'              => $totalHmsBills,//totalHmsBills() ?? 0,
                 'nhisSubTotal'          => $totalNhisBills,//($visit->totalNhisBills()) ?? 0,
                 'nhisNetTotal'          => ($totalNhisBills - $visit->discount)  ?? 0,
-                'netTotal'              => $visit->prescriptions->sum('hms_bill') - $visit->discount,//->totalHmsBills() - $visit->discount,
+                'netTotal'              => $totalHmsBills - $visit->discount,//->totalHmsBills() - $visit->discount,
                 'totalPaid'             => $determinePayV ?? 0,
-                'balance'               => $prescriptions->sum('hms_bill') - $visit->discount - $determinePayV ?? 0,
+                'balance'               => $totalHmsBills - $visit->discount - $determinePayV ?? 0,
                 'nhisBalance'           => $this->sponsorsAllowed($visit->sponsor, ['NHIS']) ? (($totalNhisBills - $visit->discount)) - $determinePayV ?? 0 : 'N/A',
                 // 'outstandingPatientBalance'  => $visit->patient->allHmsBills() - $visit->patient->allDiscounts() - $this->determinePayP($visit->patient),
                 'outstandingPatientBalance'  => $this->allHmsOrNhisBills($visit->patient) - $allDiscountsP - $determinePayP,
@@ -289,7 +290,7 @@ class BillingService
                     'hmoNote'           => $prescription->hmo_note ?? '',
                     'statusBy'          => $prescription->approvedBy?->username ?? $prescription->rejectedBy?->username ?? '',
                     'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
-                    'paid1'              => $prescription->paid,
+                    'paid1'             => $prescription->paid,
                     'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->category_name == 'NHIS',
                     'isInvestigation'   => $prescription->resource->category == 'Investigations',
                     'thirdParty'        => $prescription->thirdPartyServices->sortDesc()->first()?->thirdParty->short_name ?? '',
@@ -343,13 +344,14 @@ class BillingService
 
     public function determinePayV($visit)
     {
-        // return $visit->totalPaidPrescriptions() > $visit->totalPayments() ? $visit->totalPaidPrescriptions() : $visit->totalPayments();
-        return $this->totalPaidPrescriptionsV($visit) > $this->totalPaymentsV($visit->payments) ? $this->totalPaidPrescriptionsV($visit) : $this->totalPaymentsV($visit->payments);
+        return $visit->totalPaidPrescriptions() > $visit->totalPayments() ? $visit->totalPaidPrescriptions() : $visit->totalPayments();
+        // return $this->totalPaidPrescriptionsV($visit) > $this->totalPaymentsV($visit->payments) ? $this->totalPaidPrescriptionsV($visit) : $this->totalPaymentsV($visit->payments);
         // return $visit->totalPayments();
     }
 
     public function determinePayS($sponsor)
     {
+        // return $this->allPaidPrescriptions($sponsor) > $this->allPayments($sponsor) ? $this->allPaidPrescriptions($sponsor) : $this->allPayments($sponsor);
         return $this->allPaidPrescriptions($sponsor) > $this->allPayments($sponsor) ? $this->allPaidPrescriptions($sponsor) : $this->allPayments($sponsor);
         // return $sponsor->allPayments();
     }
@@ -556,7 +558,7 @@ class BillingService
         
         if ($data->cardNo){
             if (! empty($params->searchTerm)) {
-            return $query->whereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($data->cardNo, '%_') . '%' )
+            return $query->whereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($data->cardNo, '%_') . '%' )  
                         ->where(function (Builder $query) use ($params){
                             $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -567,12 +569,12 @@ class BillingService
         }
 
             return $query->whereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($data->cardNo, '%_') . '%' )
-                    ->whereColumn($column, '>', 'total_paid')
+                    ->whereColumn($column, '!=', 'total_paid')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
         return $query->where('patient_id', $data->patientId)
-                    ->whereColumn($column, '>', 'total_paid')
+                    ->whereColumn($column, '!=', 'total_paid')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
@@ -583,14 +585,15 @@ class BillingService
         $orderDir   =  'desc';
 
         return DB::table('prescriptions')
-                        ->selectRaw('SUM(prescriptions.hms_bill) as totalBill, SUM(prescriptions.paid) as totalPaid, resources.'.$data->type.' as service, COUNT(resources.category) as types, SUM(prescriptions.qty_billed) as quantity, visits.discount as discount')
+                        ->selectRaw('SUM(prescriptions.hms_bill) as totalBill, SUM(prescriptions.nhis_bill) as totalNhisBill, SUM(prescriptions.paid) as totalPaid, resources.'.$data->type.' as service, COUNT(resources.category) as types, SUM(prescriptions.qty_billed) as quantity, visits.discount as discount, sponsors.category_name as sponsorCat')
                         ->leftJoin('resources', 'prescriptions.resource_id', '=', 'resources.id')
                         ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
+                        ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                         ->where('visit_id', $data->visitId)
-                        ->groupBy('service', 'discount')
+                        ->groupBy('service', 'discount', 'sponsorCat')
                         ->orderBy('service')
                         ->get()
-                        ->toArray();   
+                        ->toArray();    
     }
 
     public function saveDischargeBill(Request $request, User $user)

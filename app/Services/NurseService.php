@@ -68,7 +68,8 @@ class NurseService
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
             if ($data->filterBy == 'ANC'){
-                return $query->whereNotNull('consulted')
+                return $query
+                    // ->whereNotNull('consulted')
                     ->where('visit_type', '=', 'ANC')
                     ->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)

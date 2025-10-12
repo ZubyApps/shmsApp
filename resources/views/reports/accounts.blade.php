@@ -412,7 +412,7 @@
                         <thead>
                             <tr>
                                 <th>Month</th>
-                                {{-- <th>Total Bill</th> --}}
+                                <th>Total Bill</th>
                                 <th>Total From Cash</th>
                                 <th>Total From HMOs</th>
                                 <th>Total Expense</th>
@@ -425,6 +425,7 @@
                         <tfoot>
                             <tr class="text-primary">
                                 <td class="fw-bold">Total</td>
+                                <td class="fw-bold "></td>
                                 <td class="fw-bold "></td>
                                 <td class="fw-bold "></td>
                                 <td class="fw-bold "></td>

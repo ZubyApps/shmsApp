@@ -251,7 +251,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                                     </div>
                                                 </td>
                                                 <td class="${p.quantity ? 'text-secondary' : 'colour-change2 fw-bold'}">${p.description}</td>                
-                                                <td>${account.format(p.hmsBill)}</td>
+                                                <td>${account.format(NHIS ? p.nhisBill : p.hmsBill)}</td>
                                             </tr>
                                             `
                                     })
@@ -262,31 +262,18 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             <td></td>
                                             <td></td>
                                             <td></td>
-                                            ${credit || NHIS ? `<td></td>` : ''}
+                                            ${credit || NHIS ? '<td></td>' : ''}
                                             <td></td>
                                             <td></td>
-                                            <td class="text-secondary fw-semibold">Sub total</td>
-                                            <td class="text-secondary">${account.format(data.subTotal)}</td>
+                                            <td class="text-secondary fw-semibold">${NHIS ? 'NHIS Sub total (10%)' : 'Sub total'}</td>
+                                            <td class="text-secondary">${account.format(NHIS ? data.nhisSubTotal : data.subTotal)}</td>
                                         </tr>
-                                        ${NHIS ?
-                                         `  <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td class="text-secondary fw-semibold">NHIS Sub total (10%)</td>
-                                                <td class="text-secondary">${account.format(data.nhisSubTotal)}</td>
-                                            </tr>` :
-                                         ''}
                                         <tr>
                                             <td></td>
                                             <td></td>
                                             <td></td>
+                                            ${credit || NHIS ? '<td></td>' : ''}
                                             <td></td>
-                                            ${credit || NHIS ? `<td></td>` : ''}
                                             <td class="p-1">
                                             ${billing ? 
                                                 `
@@ -304,33 +291,20 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             <td></td>
                                             <td></td>
                                             <td></td>
+                                            ${credit || NHIS ? '<td></td>' : ''}
                                             <td></td>
                                             <td></td>
-                                            ${credit || NHIS ? `<td></td>` : ''}
                                             <td></td>
-                                            <td class="text-secondary fw-bold">Net total</td>
-                                            <td class="text-secondary fw-bold">${account.format(data.netTotal)}</td>
+                                            <td class="text-secondary fw-bold">${NHIS ? 'NHIS Net total (10%)' : 'Net total'}</td>
+                                            <td class="text-secondary fw-bold">${account.format(NHIS ? data.nhisNetTotal : data.netTotal)}</td>
                                         </tr>
-                                        ${NHIS ?
-                                         `  <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td class="text-secondary">NHIS Net total (10%)</td>
-                                                <td class="text-secondary">${account.format(data.nhisNetTotal)}</td>
-                                            </tr>` :
-                                         ''}
                                         <tr>
                                         <tr>
                                             <td></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
-                                            ${credit || NHIS ? `<td></td>` : ''}
+                                            ${credit || NHIS ? '<td></td>' : ''}
                                             <td></td>
                                             <td></td>
                                             <td class="text-secondary">Paid</td>
@@ -340,8 +314,8 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             <td></td>
                                             <td></td>
                                             <td></td>
+                                            ${credit || NHIS ? '<td></td>' : ''}
                                             <td></td>
-                                            ${credit || NHIS ? `<td></td>` : ''}
                                             <td class="${notBilled ? 'colour-change2 fw-bold' : ''}">${notBilled ? 'Incomplete Billing' : ''}</td>
                                             <td></td>
                                             <td class="text-${balance > 0 ? 'danger' : balance == 0 ? 'secondary' : 'success'} fw-bold">Balance</td>
@@ -521,13 +495,13 @@ const getPatientsBill = (tableId, visitId, modal, type) => {
                 data: "quantity"
             },
             {
-                data: row => account.format(row.totalBill)
+                data: row => account.format(row.sponsorCat == 'NHIS' ? row.totalNhisBill : row.totalBill)
             },
             {
                 data: row => account.format(row.totalPaid)
             },
             {
-                data: row => account.format(row.totalBill - row.totalPaid)
+                data: row => account.format((row.sponsorCat == 'NHIS' ? row.totalNhisBill : row.totalBill) - row.totalPaid)
             },
         ]
     });

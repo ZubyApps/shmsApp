@@ -150,8 +150,8 @@ class HmoService
         }
 
         if ($data->filterBy == 'Outpatient'){
-            return $query->where('closed', false)
-            ->where('hmo_done_by', null)
+            return $query->where('hmo_done_by', null)
+            // ->where('closed', false)
             ->where('admission_status', '=', 'Outpatient')
             ->where('visit_type', '!=', 'ANC')
             ->where(function (Builder $query) {
@@ -165,7 +165,7 @@ class HmoService
 
         if ($data->filterBy == 'Inpatient'){
             return $query->where('hmo_done_by', null)
-                    ->where('closed', false)
+                    // ->where('closed', false)
                     ->where(function (Builder $query) {
                         $query->where('admission_status', '=', 'Inpatient')
                         ->orWhere('admission_status', '=', 'Observation');
@@ -180,7 +180,7 @@ class HmoService
         }
         if ($data->filterBy == 'ANC'){
             return $query->where('hmo_done_by', null)
-                    ->where('closed', false)
+                    // ->where('closed', false)
                     ->where('visit_type', '=', 'ANC')
                     ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', 'HMO')
@@ -192,7 +192,7 @@ class HmoService
         }
 
         return $query->where('hmo_done_by', null)
-                    ->where('closed', false)
+                    // ->where('closed', false)
                         ->where(function (Builder $query) {
                             $query->whereRelation('sponsor', 'category_name', 'HMO')
                             ->orWhereRelation('sponsor', 'category_name', 'NHIS')
@@ -361,14 +361,17 @@ class HmoService
             $isNhis = $visit->sponsor->category_name == 'NHIS';
 
             if ($isNhis){
+                $resourceCat = $prescription->resource->category;
+                $isNhisBillable = $resourceCat == 'Medications' || $resourceCat == 'Consumables' ;
+                $prescription->update(['nhis_bill' => $isNhisBillable ? ($prescription->hms_bill/10) : 0]);
                 $this->paymentService->prescriptionsPaymentSeiveNhis($visit->totalPayments(), $visit->prescriptions);
+                $visit->update(['total_nhis_bill' => $visit->totalNhisBills()]);
             } else {
                 $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit->prescriptions);
+                $visit->update(['total_hms_bill'    => $prescription->visit->totalHmsBills()]);
             }
 
-            return $visit->update([
-                'total_nhis_bill'   => $visit->sponsor->category_name == 'NHIS' ? $visit->totalNhisBills() : 0
-            ]);
+            return $prescription;
         });
     }
 
@@ -391,15 +394,15 @@ class HmoService
             $isNhis = $visit->sponsor->category_name == 'NHIS';
 
             if ($isNhis){
+                $prescription->update(['nhis_bill' => $prescription->hms_bill]);
                 $this->paymentService->prescriptionsPaymentSeiveNhis($visit->totalPayments(), $visit->prescriptions);
+                $visit->update(['total_nhis_bill'   => $prescription->visit->totalNhisBills()]);
             } else {
                 $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit->prescriptions);
+                $visit->update(['total_hms_bill'    => $prescription->visit->totalHmsBills()]);
             }
 
-            return $visit->update([
-                'total_hms_bill'    => $prescription->visit->totalHmsBills(),
-                'total_nhis_bill'   => $prescription->visit->sponsor->category_name == 'NHIS' ? $prescription->visit->totalNhisBills() : 0,
-            ]);
+            return $prescription;
         });
 
     }
@@ -413,7 +416,6 @@ class HmoService
                 'hmo_note'          => null,
                 'approved_by'       => null,
                 'rejected'          => false,
-                'hmo_note'          => null,
                 'rejected_by'       => null,
             ]);
 
@@ -422,15 +424,15 @@ class HmoService
             $isNhis = $visit->sponsor->category_name == 'NHIS';
 
             if ($isNhis){
+                $prescription->update(['nhis_bill' => $prescription->hms_bill]);
                 $this->paymentService->prescriptionsPaymentSeiveNhis($visit->totalPayments(), $visit->prescriptions);
+                $visit->update(['total_nhis_bill'   => $prescription->visit->totalNhisBills()]);
             } else {
                 $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit->prescriptions);
+                $visit->update(['total_hms_bill'    => $prescription->visit->totalHmsBills()]);
             }
     
-            return $visit->update([
-                'total_hms_bill'    => $prescription->visit->totalHmsBills(),
-                'total_nhis_bill'   => $prescription->visit->sponsor->category_name == 'NHIS' ? $prescription->visit->totalNhisBills() : 0,
-            ]);
+            return $prescription;
         });
 
     }

@@ -509,30 +509,32 @@ class ReportController extends Controller
         $chart = $request->input('chart');
         $params = $chart ? null : $this->datatablesService->getDataTableQueryParameters($request);
         
+        $forExtractionsOfBills   = $this->prescriptionService->totalYearlyIncomeFromPrescription($request);
         $totalCashPatients = $this->prescriptionService->totalYearlyIncomeFromPrescriptionCash($request);
         // $totalCashPatients = $this->paymentService->totalYearlyIncomeFromCashPatients($request);
         $totalHmoPatients = $this->hmoService->totalYearlyIncomeFromHmoPatients($request);
         $totalExpenses  = $this->expenseService->totalYearlyExpense($request);
-        $incomeArray = [...$totalCashPatients, ...$totalHmoPatients, ...$totalExpenses];
+        $incomeArray = [...$totalCashPatients, ...$totalHmoPatients, ...$totalExpenses, ...$forExtractionsOfBills];
 
         $months = [
-            ['cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'January', 'm' => 1],
-            ['cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'February', 'm' => 2],
-            ['cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'March', 'm' => 3],
-            ['cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'April', 'm' => 4],
-            ['cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'May', 'm' => 5],
-            ['cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'June', 'm' => 6],
-            ['cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'July', 'm' => 7],
-            ['cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'August', 'm' => 8],
-            ['cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'September', 'm' => 9],
-            ['cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'October', 'm' => 10],
-            ['cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'November', 'm' => 11],
-            ['cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'December', 'm' => 12],
+            ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'January', 'm' => 1],
+            ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'February', 'm' => 2],
+            ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'March', 'm' => 3],
+            ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'April', 'm' => 4],
+            ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'May', 'm' => 5],
+            ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'June', 'm' => 6],
+            ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'July', 'm' => 7],
+            ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'August', 'm' => 8],
+            ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'September', 'm' => 9],
+            ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'October', 'm' => 10],
+            ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'November', 'm' => 11],
+            ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'December', 'm' => 12],
         ];
 
         foreach($incomeArray as $income){
             foreach($months as $key => $month){
                 if ($month['m'] === $income->month){
+                    $income?->bill ?? '' ? $months[$key]['bill'] = $income?->bill : '' ;
                     $income?->cashPaid ?? '' ? $months[$key]['cashPaid'] = $income?->cashPaid : '' ;
                     $income?->paidHmo ?? '' ? $months[$key]['paidHmo'] = $income?->paidHmo : '' ;
                    
@@ -560,7 +562,6 @@ class ReportController extends Controller
         $totalBill = $this->prescriptionService->totalYearlyIncomeFromPrescription($request);
         $totalHmoPatients = $this->paymentService->totalYearlyIncomeFromCashPatients($request);
         $totalExpenses  = $this->expenseService->totalYearlyExpense($request);
-        // var_dump($totalBill);
         $incomeArray = [...$totalBill, ...$totalHmoPatients, ...$totalExpenses];
         $months = [
             ['bill' => 0, 'cashPaid' => 0, 'expense' => 0, 'month_name' => 'January', 'm' => 1],

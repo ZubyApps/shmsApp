@@ -163,6 +163,21 @@
                             </tr>
                         </thead>
                         <tbody></tbody>
+                        <tfoot class="fw-bolder">
+                            <tr>
+                                <td class="text-center">Total</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>

@@ -59,7 +59,11 @@ class Resource extends Model
 
     public function nameWithIndicators()
     {
-        return $this->name.$this->expiryDateChecker($this->expiry_date).$this->stockLevelChecker($this);
+         if ($this->category == 'Medications' || $this->category == 'Consumables'){
+            return $this->name.$this->expiryDateChecker($this->expiry_date).$this->stockLevelChecker($this);
+        }
+
+        return $this->name;
     }
 
     public function expiryDateChecker($expiryDate)

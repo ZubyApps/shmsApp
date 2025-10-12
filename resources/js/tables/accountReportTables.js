@@ -636,9 +636,11 @@ const getYearlyIncomeAndExpenseTable2 = (tableId, year, chart) => {
                 $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
                 $( api.column(3).footer() ).html(account.format(api.column( 3, {page:'current'} ).data().sum()));
                 $( api.column(4).footer() ).html(account.format(api.column( 4, {page:'current'} ).data().sum()));
+                $( api.column(5).footer() ).html(account.format(api.column( 5, {page:'current'} ).data().sum()));
         },
         columns: [
             {data: "month_name"},
+            {data: row => account.format(row.bill)},
             {data: row => account.format(+row.cashPaid)},
             {data: row => account.format(+row.paidHmo)},
             {data: row => account.format(+row.expense)},

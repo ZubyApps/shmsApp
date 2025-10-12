@@ -213,19 +213,23 @@ class PharmacyService
 
             $isNhis = $visit->sponsor->category_name == 'NHIS';
 
-            $isNhis ? $prescription->update(['nhis_bill' => $nhisBill($bill)]) : '';
-
-            $prescription->visit->update([
-                'total_hms_bill'    => $visit->totalHmsBills(),
-                'total_nhis_bill'   => $isNhis ? $visit->totalNhisBills() : 0,
-                'total_capitation'  => $isNhis ? $visit->totalPrescriptionCapitations() : 0
-            ]);
+            // $isNhis ? $prescription->update(['nhis_bill' => $isNhisBillable ? $nhisBill($bill) : '0']) : '';
  
             if ($isNhis){
+                $resourceCat = $prescription->resource->category;
+                $isNhisBillable = $resourceCat == 'Medications' || $resourceCat == 'Consumables' ;
+                $prescription->update(['nhis_bill' => $isNhisBillable ? $nhisBill($bill) : '0']);
                 $this->paymentService->prescriptionsPaymentSeiveNhis($visit->totalPayments(), $visit->prescriptions);
+                return $prescription->visit->update([
+                    'total_nhis_bill'   => $visit->totalNhisBills(),
+                    'total_capitation'  => $visit->totalPrescriptionCapitations()
+                ]);
             } else {
                 $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit->prescriptions);
+                return $prescription->visit->update(['total_hms_bill'    => $visit->totalHmsBills()]);
             }
+
+            
         });
     }
 

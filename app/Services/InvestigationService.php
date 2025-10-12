@@ -295,8 +295,7 @@ class InvestigationService
     public function createLabResultRecord(Request $data, Prescription $prescription, User $user): Prescription
     {
         return DB::transaction(function () use($data, $prescription, $user) {
-            $resource = $prescription->resource;
-    
+
             $prescription->update([
                 'test_sample'    => $data->sample,
                 'result'         => $data->result,
@@ -304,11 +303,8 @@ class InvestigationService
                 'result_by'      => $user->id,
                 'discontinued'      => false,
                 'dispense_comment'  => null,
+                'qty_dispensed'     => 1
                 ]);
-            
-            $resource->update([
-                'stock_level' => $resource->stock_level - 1
-            ]);
     
             if ($prescription->visit->patient->sms){
                 SendTestResultDone::dispatch($prescription)->delay(5);
@@ -333,8 +329,6 @@ class InvestigationService
 
     public function removeLabResultRecord(Prescription $prescription): Prescription
     {
-        $resource = $prescription->resource;
-
         $prescription->update([
             'test_sample'       => null,
             'result'            => null,
@@ -342,10 +336,7 @@ class InvestigationService
             'result_by'         => null,
             'discontinued'      => false,
             'dispense_comment'  => null,
-            ]);
-
-            $resource->update([
-                'stock_level' => $resource->stock_level + 1
+            'qty_dispensed'     => 0
             ]);
 
         return  $prescription;

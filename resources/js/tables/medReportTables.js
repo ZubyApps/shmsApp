@@ -247,6 +247,12 @@ const getAllPrescriptionsTable = (tableId, startDate, endDate, date) => {
             {extend: 'print', className: 'btn-primary', footer: true},
              ],
         lengthMenu:[50, 100, 200, 300, 500],
+        drawCallback: function () {
+                    var api = this.api()
+                    
+                        $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
+                        $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
+                },
         columns: [
             {data: "date"},
             {data: "patient"},

@@ -33,7 +33,7 @@ class PrescriptionService
     {
         return DB::transaction(function () use($data, $resource, $user) {
             $bill = 0;
-            $nhisBill = fn($value)=>$value/10;
+            // $nhisBill = fn($value)=>$value/10;
             $resourceSubCat = $resource->sub_category;
 
             $visit = Visit::findOrFail($data->visitId);
@@ -46,17 +46,17 @@ class PrescriptionService
             $prescription = $user->prescriptions()->create([
                 'resource_id'       => $resource->id,
                 'prescription'      => $this->arrangePrescription($data),
-                'consultation_id'   => $data->conId,
+                'consultation_id'   => $data->conId == 'null' ? null :  $data->conId,
                 'visit_id'          => $data->visitId,
                 'qty_billed'        => $this->determineBillQuantity($resource, $data),
-                'qty_dispensed'     => $this->determineDispense($resource, $data),
+                // 'qty_dispensed'     => $this->determineDispense($resource, $data),
                 'hms_bill'          => $bill,
                 'hms_bill_date'     => $data->quantity ? new Carbon() : null,
                 'hms_bill_by'       => $data->quantity ? $user->id : null,
                 'chartable'         => $resourceSubCat == 'Injectable' ? true : $data->chartable ?? false,
                 'note'              => $data->note,
                 'route'             => $data->route,
-                'doctor_on_call'    => $data->doc
+                // 'doctor_on_call'    => $data->doc
             ]);
 
             if ($resourceSubCat == 'Procedure' || $resourceSubCat == 'Operation'){
@@ -65,16 +65,10 @@ class PrescriptionService
 
             $isNhis = $sponsor->category_name == 'NHIS';
 
-            if ($isNhis && $bill > 0){
-                $prescription->update(['nhis_bill' => $nhisBill($bill)]);
-            } 
-
             $totalPayments = $visit->totalPayments();
 
             $visit->update([
                 'total_hms_bill'    => $visit->totalHmsBills(),
-                'total_nhis_bill'   => $isNhis ? $visit->totalNhisBills() : 0,
-                'total_capitation'  => $isNhis ? $visit->totalPrescriptionCapitations() : 0,
                 'total_paid'        => $totalPayments,
                 'pharmacy_done_by'  => $resource->category == 'Medications' || $resource->category == 'Consumables' ? null : $visit->pharmacy_done_by,
                 'nurse_done_by'     => $resourceSubCat == 'Injectable' || $resource->category == 'Consumables' ? null : $visit->nurse_done_by,
@@ -82,6 +76,8 @@ class PrescriptionService
             ]);
 
             if ($isNhis){
+                $prescription->update(['nhis_bill' => $bill]);
+                $visit->update(['total_nhis_bill'   => $visit->totalNhisBills(), 'total_capitation'  => $visit->totalPrescriptionCapitations()]);
                 $this->paymentService->prescriptionsPaymentSeiveNhis($totalPayments, $visit->prescriptions);
                 $this->capitationPaymentService->seiveCapitationPayment($visit->sponsor, new Carbon($prescription->created_at));
             } else {
@@ -99,15 +95,15 @@ class PrescriptionService
         return $data->dose ? $data->dose.$data->unit.' '.$data->frequency.' for '.$data->days.'day(s)' : null;
     }
 
-    public function determineDispense(Resource $resource, $data)
-    {
-        if ($resource->category == 'Medications' || $resource->category == 'Consumables' || $resource->category == 'Investigations'){
-            return 0;
-        }
-        $resource->stock_level = $resource->stock_level - $data->quantity; 
-        $resource->save();
-        return $data->quantity;
-    }
+    // public function determineDispense(Resource $resource, $data)
+    // {
+    //     if ($resource->category == 'Medications' || $resource->category == 'Consumables' || $resource->category == 'Investigations'){
+    //         return 0;
+    //     }
+    //     $resource->stock_level = $resource->stock_level - $data->quantity; 
+    //     $resource->save();
+    //     return $data->quantity;
+    // }
 
     public function determineBillQuantity(Resource $resource, $data)
     {
@@ -155,10 +151,12 @@ class PrescriptionService
                 'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                 'resource'          => $prescription->resource->name,
                 'category'          => $prescription->resource->category,
+                'sponsorCat'        => $prescription->visit->sponsor->category_name,
                 'stock'             => $prescription->resource->stock_level,
                 'prescription'      => $prescription->prescription,
                 'quantity'          => $prescription->qty_billed < 1 ? '' : $prescription->qty_billed,
                 'hmsBill'           => $prescription->hms_bill ?? '',
+                'nhisBill'          => $prescription->nhis_bill ?? '',
                 'by'                => $prescription->user->username,
                 'chartable'         => $prescription->chartable ? 'Yes' : 'No',
                 'note'              => $prescription->note,

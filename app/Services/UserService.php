@@ -10,6 +10,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserService
 {
@@ -103,11 +104,14 @@ class UserService
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-            return $query->where('firstname', 'LIKE', $searchTerm )
-                        ->orWhere('middlename', 'LIKE', $searchTerm )
-                        ->orWhere('lastname', 'LIKE', $searchTerm )
-                        ->orWhere('phone_number', 'LIKE', $searchTerm )
-                        ->whereRelation('designation', 'access_level', '<', 5)
+            return $query->where(function(Builder $query) use($searchTerm) {
+                    $query->where('firstname', 'LIKE', $searchTerm )
+                                ->orWhere('middlename', 'LIKE', $searchTerm )
+                                ->orWhere('lastname', 'LIKE', $searchTerm )
+                                ->orWhere('username', 'LIKE', $searchTerm )
+                                ->orWhere('phone_number', 'LIKE', $searchTerm )
+                                ->orWhereRelation('designation', 'designation', 'LIKE', $searchTerm);
+                            })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
@@ -183,12 +187,16 @@ class UserService
         $orderDir   =  'desc';
 
         if (! empty($params->searchTerm)) {
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
             return $this->user
-                        ->where('is_active', true)
-                        ->where('firstname', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('middlename', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('lastname', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->whereRelation('designation', 'access_level', '<', 6)
+                        ->where(function(Builder $query) use($searchTerm) {
+                            $query->where('is_active', true)
+                            ->where('firstname', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
+                            ->orWhere('middlename', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
+                            ->orWhere('lastname', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
+                            ->orWhere('username', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
+                            ->orWhereRelation('designation', 'designation', 'LIKE', $searchTerm);
+                        })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }

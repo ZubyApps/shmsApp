@@ -427,7 +427,7 @@ const getPrescriptionTableByConsultation = (tableId, conId, visitId, modal) => {
                     return row.quantity
                 }
             },
-            {data: row => account.format(row.hmsBill)},
+            {data: row => account.format(row.sponsorCat == 'NHIS' ? row.nhisBill : row.hmsBill)},
             {data: "note"},
             {data: "chartable"},
             {data: "by"},
