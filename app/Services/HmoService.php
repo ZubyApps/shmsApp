@@ -362,9 +362,13 @@ class HmoService
 
             if ($isNhis){
                 $resourceCat = $prescription->resource->category;
+
                 $isNhisBillable = $resourceCat == 'Medications' || $resourceCat == 'Consumables' ;
-                $prescription->update(['nhis_bill' => $isNhisBillable ? ($prescription->hms_bill/10) : 0]);
+
+                $prescription->update(['nhis_bill' => $isNhisBillable ? ($prescription->hms_bill ? $prescription->hms_bill/10 : 0) : 0]);
+
                 $this->paymentService->prescriptionsPaymentSeiveNhis($visit->totalPayments(), $visit->prescriptions);
+                
                 $visit->update(['total_nhis_bill' => $visit->totalNhisBills()]);
             } else {
                 $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit->prescriptions);
