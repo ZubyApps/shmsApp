@@ -234,7 +234,7 @@ const getWaitingTable = (tableId) => {
             {data: "age"},
             {data: row => `<div><span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor}</span></div>${row.visitType == 'ANC' ? visitType(row, null, 50) : ''}`},
             {data: row => `<span class="tooltip-test" title="initiated by ${row.initiatedBy}">${row.came}</span>`},
-            // {data: "waitingFor"},
+            {data: "waitingFor"},
             {data: row => function () {
                 if (row.vitalSigns > 0 || row.ancVitalSigns > 0){
                     return `
