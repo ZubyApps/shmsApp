@@ -216,21 +216,28 @@ class PharmacyService
             // $isNhis ? $prescription->update(['nhis_bill' => $isNhisBillable ? $nhisBill($bill) : '0']) : '';
  
             if ($isNhis){
+
                 $resourceCat = $prescription->resource->category;
 
                 $isNhisBillable = $resourceCat == 'Medications' || $resourceCat == 'Consumables' ;
-                
-                $prescription->update(['nhis_bill' => $isNhisBillable ? ($prescription->approved ? $nhisBill($bill) : $bill) : 0]);
+
+                $approved = $prescription->approved;
+
+                $prescription->update(['nhis_bill' => $isNhisBillable ? ( $approved ? $nhisBill($bill) : $bill) : ($approved ? 0 : $bill)]);
 
                 $this->paymentService->prescriptionsPaymentSeiveNhis($visit->totalPayments(), $visit->prescriptions);
-                
+
                 return $prescription->visit->update([
                     'total_nhis_bill'   => $visit->totalNhisBills(),
                     'total_capitation'  => $visit->totalPrescriptionCapitations()
                 ]);
+
             } else {
+
                 $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit->prescriptions);
+
                 return $prescription->visit->update(['total_hms_bill'    => $visit->totalHmsBills()]);
+                
             }
 
             
