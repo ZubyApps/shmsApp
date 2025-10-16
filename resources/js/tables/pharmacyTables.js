@@ -19,7 +19,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
         {data: row =>  `
                     <div class="d-flex flex-">
                         <button class=" btn btn-${row.countPrescribed > row.countBilled ? 'primary' : 'outline-primary'} billingDispenseBtn tooltip-test" title="Billing/Dispense" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${ row.sponsorCategory }">
-                        ${row.countPrescribed} - ${row.countBilled} - ${row.countDispensed}
+                        ${row.countPrescribed} - ${row.countBilled} - ${row.countDispensed}${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
                         </button>
                     </div>`                
         },

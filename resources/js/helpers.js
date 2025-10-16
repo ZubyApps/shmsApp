@@ -471,7 +471,7 @@ const admissionStatusX = (row) => {
 
 const prescriptionOnLatestConsultation = (row) => {
     return `
-                <button class="btn p-0" id="${row.closed ? '' : 'updateResourceListBtn'}" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">${row.diagnosis}</button>
+                <button class="btn p-0" id="${row.closed ? '' : 'updateResourceListBtn'}" data-id="${ row.id }" data-conid="${ row.conId }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">${row.diagnosis}${row.closed ? '<i class="bi bi-lock-fill" title="closed"></i>': ''}</button>
             `
 }
 
