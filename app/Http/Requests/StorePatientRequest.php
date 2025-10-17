@@ -30,7 +30,7 @@ class StorePatientRequest extends FormRequest
             "address"           => ['required', 'max:500'],
             "bloodGroup"        => ['nullable'],
             "cardNumber"        => ['required', 'unique:'.Patient::class.',card_no', 'min:9'],
-            "dateOfBirth"       => ['required', 'before_or_equal:'.Carbon::today()],
+            "dateOfBirth"       => ['required', 'before_or_equal:'.Carbon::today()->now()],
             "email"             => ['nullable'],
             "ethnicGroup"       => ['nullable'],
             "firstName"         => ['required'],

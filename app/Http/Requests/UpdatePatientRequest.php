@@ -29,7 +29,7 @@ class UpdatePatientRequest extends FormRequest
                 "sponsorCategory"   => ['required'],
                 "address"           => ['nullable', 'max:500'],
                 "bloodGroup"        => ['nullable'],
-                "dateOfBirth"       => ['required', 'before_or_equal:'.Carbon::today()],
+                "dateOfBirth"       => ['required', 'before_or_equal:'.Carbon::today()->now()],
                 "ethnicGroup"       => ['nullable'],
                 "firstName"         => ['required'],
                 "genotype"          => ['nullable'],
