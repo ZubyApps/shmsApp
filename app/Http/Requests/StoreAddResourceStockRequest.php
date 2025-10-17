@@ -30,6 +30,7 @@ class StoreAddResourceStockRequest extends FormRequest
             'finalQuantity' => ['required', 'integer'],
             'finalStock'    => ['required', 'integer'],
             'sellingPrice'  => ['required', 'numeric'],
+            'purchasePrice' => ['required', 'numeric'],
             'unitPurchase'  => ['required', 'string'],
             'quantity'      => ['required', 'integer'],
             'comment'       => ['required_unless:difference,0'],
