@@ -50,7 +50,7 @@ class SendTestResultDone implements ShouldQueue
         $gateway = 1;
 
         $response = $churchPlusSmsService
-        ->sendSms('Dear ' .$firstName. ' ' . $totalInvestigationsDone . ' out of ' . $totalInvestigationsC . ' of your test result(s) are ready. This notification is courtesy of our Hospital Management System. To opt out, visit reception', $this->prescription->visit->patient->phone, 'SandraHosp', $gateway);
+        ->sendSms('Dear ' .$firstName. ' ' . $totalInvestigationsDone . ' out of ' . $totalInvestigationsC . ' of your test result(s) are ready. This notification is courtesy of Sandra Hospital Management System. To opt out, visit reception', $this->prescription->visit->patient->phone, 'SandraHosp', $gateway);
 
         $response == false ? '' : info('Investigation', ['sent to' => $firstName, 'gateway' => $gateway]);
     }
