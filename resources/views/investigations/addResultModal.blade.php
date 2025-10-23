@@ -43,6 +43,7 @@
                                     <option value="Semen">Semen</option>
                                     <option value="Tissue">Tissue</option>
                                     <option value="Hair">Hair</option>
+                                    <option value="Body">Body</option>
                                     <option value="Other">Other</option>
                                 </select>
                             </x-form-div>
