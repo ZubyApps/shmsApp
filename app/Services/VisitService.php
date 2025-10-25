@@ -303,12 +303,26 @@ class VisitService
 
                     $prescriptions  = $visit->prescriptions;
                     $totalPayments  = $visit->totalPayments();
+                    $sponsorCatName = $visit->sponsor->category_name;
             
-                    if ($visit->sponsor->category_name == 'NHIS'){
+                    if ($sponsorCatName == 'NHIS'){
                         foreach($prescriptions as $prescription){
                             $prescription->update(['nhis_bill' => $prescription->approved ? $prescription->hms_bill/10 : $prescription->hms_bill]);
                         }
                         $this->paymentService->prescriptionsPaymentSeiveNhis($totalPayments, $prescriptions);
+                    } else if ($sponsorCatName == 'Individual' || $sponsorCatName == 'Family') {
+                        foreach($prescriptions as $prescription){
+                            $prescription->update(
+                                [
+                                    'nhis_bill' => 0, 
+                                    'approved' => false, 
+                                    'approved_by' => null,
+                                    'rejected' => false, 
+                                    'rejected_by' => null
+                                ]
+                            );
+                        }
+                        $this->paymentService->prescriptionsPaymentSeive($totalPayments, $prescriptions);
                     } else {
                         foreach($prescriptions as $prescription){
                             $prescription->update(['nhis_bill' => 0]);
