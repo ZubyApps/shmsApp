@@ -56,7 +56,7 @@ class PrescriptionService
                 'chartable'         => $resourceSubCat == 'Injectable' ? true : $data->chartable ?? false,
                 'note'              => $data->note,
                 'route'             => $data->route,
-                // 'doctor_on_call'    => $data->doc
+                'doctor_on_call'    => $data->doc
             ]);
 
             if ($resourceSubCat == 'Procedure' || $resourceSubCat == 'Operation'){
