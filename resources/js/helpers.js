@@ -993,8 +993,9 @@ const preSearch = (table, tableId, value, type) => {
         const selectedOption = datalistEl.querySelector(`option[value="${this.value}"]`);
         if (selectedOption) {
             const value = selectedOption.getAttribute('data-cardNo') ?? this.value;
+            const patientId = selectedOption.getAttribute('data-id') ? 'pId-' + selectedOption.getAttribute('data-id') : null;
             this.value = value;
-            table.search(value).draw();
+            table.search(patientId ?? value).draw();
         }
     });
 
@@ -1010,6 +1011,7 @@ function displayPatients(datalistEl, data) {
             const option = document.createElement("option");
             option.setAttribute('value', fullId);
             option.setAttribute('data-cardNo', patient.cardNo);
+            option.setAttribute('data-id', patient.id);
             datalistEl.appendChild(option);
         }
     });

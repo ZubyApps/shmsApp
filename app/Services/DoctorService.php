@@ -57,7 +57,12 @@ class DoctorService
 
     private function applySearch(Builder $query, string $searchTerm): Builder
     {
-        $searchTerm = '%' . addcslashes($searchTerm, '%_') . '%';
+        $searchTerm = trim($searchTerm);
+
+        if (explode('-', $searchTerm)[0] == 'pId'){
+            return  $query->where('patient_id', explode('-', $searchTerm)[1]);
+        }
+        $searchTerm = '%' . addcslashes(trim($searchTerm), '%_') . '%';
         return $query->where(function (Builder $query) use ($searchTerm) {
             $query->where('created_at', 'LIKE', $searchTerm)
                 ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)

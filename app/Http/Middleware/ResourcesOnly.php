@@ -17,7 +17,7 @@ class ResourcesOnly
     {
         $user = $request->user();
         $designation = $user->designation->access_level;
-        info('', ['designation' => $designation]);
+        
         if ($user && ($user->designation->designation === 'Pharmacy Tech' && $designation > 3) || $user->designation->access_level > 4){
             return $next($request);
         }

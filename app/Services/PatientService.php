@@ -186,20 +186,20 @@ class PatientService
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-            return $query->where(function (Builder $query) use($searchTerm) {
-                            $query->whereRaw('CONCAT_WS(" ", first_name, middle_name, last_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", first_name, last_name, middle_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", last_name, middle_name, first_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", last_name, first_name, middle_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", middle_name, first_name, last_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", middle_name, last_name, first_name) LIKE ?', [$searchTerm])
-                                ->orWhere('card_no', 'LIKE', $searchTerm)
-                                ->orWhere('phone', 'LIKE', $searchTerm)
-                                ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm )
-                                ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', $searchTerm );
-                            })
-                            ->orderBy($orderBy, $orderDir)
-                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            // return $query->where(function (Builder $query) use($searchTerm) {
+            //             $query->whereRaw('CONCAT_WS(" ", first_name, middle_name, last_name) LIKE ?', [$searchTerm])
+            //                 ->orWhereRaw('CONCAT_WS(" ", first_name, last_name, middle_name) LIKE ?', [$searchTerm])
+            //                 ->orWhereRaw('CONCAT_WS(" ", last_name, middle_name, first_name) LIKE ?', [$searchTerm])
+            //                 ->orWhereRaw('CONCAT_WS(" ", last_name, first_name, middle_name) LIKE ?', [$searchTerm])
+            //                 ->orWhereRaw('CONCAT_WS(" ", middle_name, first_name, last_name) LIKE ?', [$searchTerm])
+            //                 ->orWhereRaw('CONCAT_WS(" ", middle_name, last_name, first_name) LIKE ?', [$searchTerm])
+            //                 ->orWhere('card_no', 'LIKE', $searchTerm)
+            //                 ->orWhere('phone', 'LIKE', $searchTerm)
+            //                 ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm )
+            //                 ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', $searchTerm );
+            //             })
+            //             ->orderBy($orderBy, $orderDir)
+            //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
             // $search   = trim($params->searchTerm);
             // $likeTerm = '%' . addcslashes($search, '%_') . '%';
@@ -238,6 +238,23 @@ class PatientService
             //     'page',
             //     ceil(($params->start + $params->length) / $params->length)
             // );
+            $query = $this->patient->newQuery();
+
+            if ($data->type === 'ANC') {
+                $query->whereRelation('visits', 'visit_type', 'ANC');
+            }
+            $query = $this->scopeSearchByName($query, $searchTerm);
+            $query->orWhere('card_no', 'LIKE', $searchTerm)
+                ->orWhere('phone', 'LIKE', $searchTerm);
+            // return $query
+            //         ->orderBy($orderBy, $orderDir)
+            //         ->paginate(
+            //             $params->length,
+            //             ['*'],
+            //            '',
+            //            ceil(($params->start + $params->length) / $params->length)
+            //         );
+
         }
 
         if ($data->filterBy == 'flaggedPatients'){
@@ -439,35 +456,36 @@ class PatientService
     {
         if (! empty($data->fullId)){
             $searchTerm = '%' . addcslashes($data->fullId, '%_') . '%';
-            if ($data->type == 'ANC'){
-                return $this->patient
-                        ->whereRelation('visits', 'visit_type', 'ANC')
-                        ->where(function (Builder $query) use($searchTerm) {
-                            $query->whereRaw('CONCAT_WS(" ", first_name, middle_name, last_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", first_name, last_name, middle_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", last_name, middle_name, first_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", last_name, first_name, middle_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", middle_name, first_name, last_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", middle_name, last_name, first_name) LIKE ?', [$searchTerm])
-                                ->orWhere('card_no', 'LIKE', $searchTerm)
-                                ->orWhere('phone', 'LIKE', $searchTerm);
-                        })
-                        ->orderBy('created_at', 'asc')
-                        ->get(['first_name', 'middle_name', 'last_name', 'card_no', 'sponsor_id', 'phone']);
-            }
-            return $this->patient
-                        ->where(function (Builder $query) use($searchTerm) {
-                            $query->whereRaw('CONCAT_WS(" ", first_name, middle_name, last_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", first_name, last_name, middle_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", last_name, middle_name, first_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", last_name, first_name, middle_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", middle_name, first_name, last_name) LIKE ?', [$searchTerm])
-                                ->orWhereRaw('CONCAT_WS(" ", middle_name, last_name, first_name) LIKE ?', [$searchTerm]);
-                        })
-                        ->orWhere('card_no', 'LIKE', $searchTerm )
-                        ->orWhere('phone', 'LIKE', $searchTerm )
-                        ->orderBy('created_at', 'asc')
-                        ->get(['first_name', 'middle_name', 'last_name', 'card_no', 'sponsor_id', 'phone']);
+
+            // if ($data->type == 'ANC'){
+            //     return $this->patient
+            //             ->whereRelation('visits', 'visit_type', 'ANC')
+            //             ->where(function (Builder $query) use($searchTerm) {
+            //                 $query->whereRaw('CONCAT_WS(" ", first_name, middle_name, last_name) LIKE ?', [$searchTerm])
+            //                     ->orWhereRaw('CONCAT_WS(" ", first_name, last_name, middle_name) LIKE ?', [$searchTerm])
+            //                     ->orWhereRaw('CONCAT_WS(" ", last_name, middle_name, first_name) LIKE ?', [$searchTerm])
+            //                     ->orWhereRaw('CONCAT_WS(" ", last_name, first_name, middle_name) LIKE ?', [$searchTerm])
+            //                     ->orWhereRaw('CONCAT_WS(" ", middle_name, first_name, last_name) LIKE ?', [$searchTerm])
+            //                     ->orWhereRaw('CONCAT_WS(" ", middle_name, last_name, first_name) LIKE ?', [$searchTerm])
+            //                     ->orWhere('card_no', 'LIKE', $searchTerm)
+            //                     ->orWhere('phone', 'LIKE', $searchTerm);
+            //             })
+            //             ->orderBy('created_at', 'asc')
+            //             ->get(['first_name', 'middle_name', 'last_name', 'card_no', 'sponsor_id', 'phone']);
+            // }
+            // return $this->patient
+            //             ->where(function (Builder $query) use($searchTerm) {
+            //                 $query->whereRaw('CONCAT_WS(" ", first_name, middle_name, last_name) LIKE ?', [$searchTerm])
+            //                     ->orWhereRaw('CONCAT_WS(" ", first_name, last_name, middle_name) LIKE ?', [$searchTerm])
+            //                     ->orWhereRaw('CONCAT_WS(" ", last_name, middle_name, first_name) LIKE ?', [$searchTerm])
+            //                     ->orWhereRaw('CONCAT_WS(" ", last_name, first_name, middle_name) LIKE ?', [$searchTerm])
+            //                     ->orWhereRaw('CONCAT_WS(" ", middle_name, first_name, last_name) LIKE ?', [$searchTerm])
+            //                     ->orWhereRaw('CONCAT_WS(" ", middle_name, last_name, first_name) LIKE ?', [$searchTerm]);
+            //             })
+            //             ->orWhere('card_no', 'LIKE', $searchTerm )
+            //             ->orWhere('phone', 'LIKE', $searchTerm )
+            //             ->orderBy('created_at', 'asc')
+            //             ->get(['first_name', 'middle_name', 'last_name', 'card_no', 'sponsor_id', 'phone']);
 
             // $search    = trim($data->fullId);
             // $likeTerm  = '%' . addcslashes($search, '%_') . '%';
@@ -503,7 +521,23 @@ class PatientService
             //         'first_name', 'middle_name', 'last_name',
             //         'card_no', 'sponsor_id', 'phone'
             //     ]);
-        }      
+
+            $query = $this->patient->newQuery();
+
+            if ($data->type === 'ANC') {
+                $query->whereRelation('visits', 'visit_type', 'ANC');
+            }
+            $query = $this->scopeSearchByName($query, $searchTerm);
+            $query->orWhere('card_no', 'LIKE', $searchTerm)
+                ->orWhere('phone', 'LIKE', $searchTerm);
+
+            return $query
+                    ->orderBy('created_at', 'asc')
+                    ->get([
+                       'first_name', 'middle_name', 'last_name',
+                       'card_no', 'sponsor_id', 'phone', 'id'
+                   ]);
+;        }      
     }
 
     public function listTransformer()
@@ -512,33 +546,27 @@ class PatientService
             return [
                 'fullId'    => $patient->patientId() .' ('. $patient->phone. ') ('. $patient->sponsor->name. ')',
                 'cardNo'    => $patient->card_no,
+                'id'        => $patient->id,
             ];
         };
     }
 
-    public function populateVisitTypes()
+    public function scopeSearchByName($query, $search)
     {
-        DB::beginTransaction();
-        try {
-            // Update visits for ANC patients
-            DB::table('visits')
-                ->join('patients', 'visits.patient_id', '=', 'patients.id')
-                ->where('patients.patient_type', 'ANC')
-                ->update(['visits.visit_type' => 'ANC']);
-
-            // Update visits for non-ANC patients
-            DB::table('visits')
-                ->join('patients', 'visits.patient_id', '=', 'patients.id')
-                ->where('patients.patient_type', '!=', 'ANC')
-                ->update(['visits.visit_type' => 'Regular']);
-
-            DB::commit();
-            info('Visit types updated successfully');
-            return response()->json(['message' => 'Visit types updated successfully'], 200);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            info('Error updating visit types: ' . $e->getMessage());
-            return response()->json(['message' => 'Error updating visit types'], 500);
+        $terms = array_filter(explode(' ', trim($search)));
+        
+        if (empty($terms)) {
+            return $query;
         }
-    }
+        
+        return $query->where(function($q) use ($terms) {
+            foreach ($terms as $term) {
+                $q->where(function($subQuery) use ($term) {
+                    $subQuery->where('first_name', 'LIKE', $term)
+                            ->orWhere('middle_name', 'LIKE', $term)
+                            ->orWhere('last_name', 'LIKE', $term);
+                });
+            }
+        });
+}
 }

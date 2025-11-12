@@ -66,11 +66,23 @@ class NurseService
 
 
         if (! empty($params->searchTerm)) {
-            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            $searchTermRaw = trim($params->searchTerm);
+            $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
+
+            $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
             if ($data->filterBy == 'ANC'){
+                $query->where('visit_type', '=', 'ANC');
+
+                if ($patientId){ 
+                    return $query->where('patient_id', $patientId)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                }
+                
                 return $query
                     // ->whereNotNull('consulted')
-                    ->where('visit_type', '=', 'ANC')
+                    // ->where('visit_type', '=', 'ANC')
                     ->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
@@ -87,6 +99,13 @@ class NurseService
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
+
+            if ($patientId){ 
+                return $query->where('patient_id', $patientId)
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
             return $query->whereNotNull('consulted')
                     ->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)

@@ -222,9 +222,9 @@ const getApprovalListTable = (tableId, sponsor) => {
             {
                 sortable: false,
                 data: row =>  () => {
-                    if (row.approved || row.rejected){
+                    // if (row.approved || row.rejected){
                         return `
-                        <div class="dropdown">
+                        <div class="dropdown ${row.approved || row.rejected ? '' : 'd-none'} resetDiv">
                             <a class="btn text-black tooltip-test text-decoration-none approvedBy" title="User" data-bs-toggle="dropdown">
                                 ${row.approvedBy || row.rejectedBy} <i class="bi bi-chevron-double-down"> </i>
                             </a>
@@ -236,19 +236,28 @@ const getApprovalListTable = (tableId, sponsor) => {
                                 </li>
                             </ul>
                         </div>
+                        <div class="d-flex ${row.approved || row.rejected ? 'd-none' : ''} approveRejectDiv">
+                            <button class="ms-1 btn btn-outline-primary approveBtn tooltip-test" title="approve" data-id="${row.id}">
+                                    <i class="bi bi-check-circle"></i>
+                            </button>
+                            <button class="ms-1 btn btn-outline-danger rejectBtn tooltip-test" title="reject" data-id="${ row.id}">
+                                    <i class="bi bi-x-circle"></i>
+                            </button>
+                            <input class="ms-1 form-control noteInput d-none" id="noteInput">
+                        </div>
                         `
-                    }
-                    return `
-                    <div class="d-flex">
-                        <button type="submit" class="ms-1 btn btn-outline-primary approveBtn tooltip-test" title="approve" data-id="${row.id}">
-                                <i class="bi bi-check-circle"></i>
-                        </button>
-                        <button type="submit" class="ms-1 btn btn-outline-danger rejectBtn tooltip-test" title="reject" data-id="${ row.id}">
-                                <i class="bi bi-x-circle"></i>
-                        </button>
-                        <input class="ms-1 form-control noteInput d-none" id="noteInput">
-                    </div>
-                    `    
+                    // }
+                    // return `
+                    // <div class="d-flex">
+                    //     <button type="submit" class="ms-1 btn btn-outline-primary approveBtn tooltip-test" title="approve" data-id="${row.id}">
+                    //             <i class="bi bi-check-circle"></i>
+                    //     </button>
+                    //     <button type="submit" class="ms-1 btn btn-outline-danger rejectBtn tooltip-test" title="reject" data-id="${ row.id}">
+                    //             <i class="bi bi-x-circle"></i>
+                    //     </button>
+                    //     <input class="ms-1 form-control noteInput d-none" id="noteInput">
+                    // </div>
+                    // `    
                 }
             },
         ]

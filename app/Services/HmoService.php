@@ -41,7 +41,17 @@ class HmoService
         ]);
 
         if (! empty($params->searchTerm)) {
-            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            $searchTermRaw = trim($params->searchTerm);
+            $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
+
+            $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+            
+            if ($patientId){ 
+                return $query->where('patient_id', $patientId)
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+            
             return $query->where(function (Builder $query) use($searchTerm) {
                             $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
@@ -132,7 +142,17 @@ class HmoService
         ->whereNotNull('consulted');
 
         if (! empty($params->searchTerm)) {
-            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            $searchTermRaw = trim($params->searchTerm);
+            $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
+
+            $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+            if ($patientId){ 
+                return $query->where('patient_id', $patientId)
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            }
+
             return $query->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
@@ -262,6 +282,19 @@ class HmoService
 
             if (! empty($params->searchTerm)) {
                 $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+
+                $searchTermRaw = trim($params->searchTerm);
+
+                $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
+
+                $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+                if ($patientId){ 
+                    return $query->whereRelation('visit', 'patient_id', $patientId)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                }
+
                 return $query->where(function (Builder $query) use($data) {
                         $query->whereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? '' : 'HMO'))
                         ->orWhereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? 'NHIS' : ''))
@@ -522,8 +555,21 @@ class HmoService
         ->whereNotNull('consulted');
 
         if (! empty($params->searchTerm)) {
-            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+
+            $searchTermRaw = trim($params->searchTerm);
+            $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
+
+            $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
             if ($data->startDate && $data->endDate){
+
+                if ($patientId){ 
+                    return $query->where('patient_id', $patientId)
+                    ->whereNotNull('hmo_done_by')
+                    ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                }
+
                 return $query->WhereNotNull('hmo_done_by')
                         ->where(function (Builder $query) use($searchTerm) {
                             $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
@@ -541,6 +587,14 @@ class HmoService
 
             if ($data->date){
                 $date = new Carbon($data->date);
+                if ($patientId){ 
+                    return $query->where('patient_id', $patientId)
+                        ->whereNotNull('hmo_done_by')
+                        ->whereMonth('created_at', $date->month)
+                        ->whereYear('created_at', $date->year)
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                }
 
                 return $query->WhereNotNull('hmo_done_by')
                         ->where(function (Builder $query) use($searchTerm) {
@@ -557,7 +611,13 @@ class HmoService
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
-            return $query->WhereNotNull('hmo_done_by')
+            if ($patientId){ 
+                    return $query->where('patient_id', $patientId)
+                        ->whereNotNull('hmo_done_by')
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                }
+            return $query->whereNotNull('hmo_done_by')
                         ->where(function (Builder $query) use($searchTerm) {
                             $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
@@ -683,6 +743,7 @@ class HmoService
         $current    = Carbon::now();
 
         if (! empty($params->searchTerm)) {
+            
             return DB::table('visits')
                     ->selectRaw('SUM(visits.total_hms_bill) as totalHmsBill, SUM(visits.total_hmo_bill) as totalHmoBill, SUM(visits.total_paid) as totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, sponsors.name as sponsor, sponsors.id as id, sponsors.category_name as category, COUNT(DISTINCT visits.id) as visitsCount, MONTHNAME(visits.created_at) as monthName, SUM(CASE WHEN visits.hmo_done_by IS NOT NULL THEN 1 ELSE 0 END) AS billsSent, DATE_FORMAT(visits.created_at, "%m") as month, YEAR(visits.created_at) as year, EXTRACT(YEAR_MONTH FROM visits.created_at) as yearMonth')
                     ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
@@ -821,15 +882,18 @@ class HmoService
         $month      = $getDate->month;
         $current    = CarbonImmutable::now();
 
-        $visitConstraintsWithoutDate = function (Builder $query) use ($getDate) {
-            $query->whereMonth('created_at', $getDate->month)
-                  ->whereYear('created_at', $getDate->year)
-                  ->whereNotNull('consulted')
-                  ->whereNotNull('hmo_done_by');
+        $visitConstraintsWithoutDate = function (Builder $query) use ($getDate, $data) {
+            if ($data->endDate){
+                $query->WhereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
+            } else {
+                $query->whereMonth('created_at', $getDate->month)->whereYear('created_at', $getDate->year);
+            }
+
+            $query->whereNotNull('consulted')->whereNotNull('hmo_done_by');
         };
         
         if (! empty($params->searchTerm)) {
-            
+
             $query = $this->sponsor::with([
                 'reminders' => function($query) use($getDate){
                     $query->whereMonth('month_sent_for', $getDate->month)

@@ -250,10 +250,17 @@ window.addEventListener('DOMContentLoaded', function () {
         refreshHomeTables()
     })
 
-    document.querySelectorAll('#hmoApprovalListOffcanvas, #nhisApprovalListOffcanvas, #waitingListOffcanvas2, #dueRemindersListOffcanvas, #proceduresListOffcanvas').forEach(table => {
+    document.querySelectorAll('#waitingListOffcanvas2, #dueRemindersListOffcanvas, #proceduresListOffcanvas').forEach(table => {
         table.addEventListener('hide.bs.offcanvas', function() {
             refreshMainTables();
             refreshHomeTables();
+        })
+    })
+
+    document.querySelectorAll('#hmoApprovalListOffcanvas, #nhisApprovalListOffcanvas').forEach(table => {
+        table.addEventListener('hide.bs.offcanvas', function() {
+            hmoApprovalListTable.draw()
+            nhisApprovalListTable.draw()
         })
     })
     
@@ -453,32 +460,40 @@ window.addEventListener('DOMContentLoaded', function () {
             const approvedByBtn     = this.querySelector('.approvedBy')
             const approvalFieldset  = this.id == 'hmoApprovalListTable' ? document.querySelector('#hmoApprovalFieldset') :  document.querySelector('#nhisApprovalFieldset')
             const table             = this.id == 'hmoApprovalListTable' ? hmoApprovalListTable : nhisApprovalListTable
+            const resetDiv          = event.target.closest('.resetDiv')
+            const approveRejectDiv  = event.target.closest('.approveRejectDiv')
         
             if (approveBtn) {
                 const prescriptionId = approveBtn.getAttribute('data-id')
+                const parentDivState = approveBtn.parentElement.innerHTML
                 approveBtn.classList.add('d-none')
-                approveBtn.parentElement.querySelector('.rejectBtn').classList.add('d-none')
-                const noteInput = approveBtn.parentElement.querySelector('.noteInput')
+                const parentDiv = approveBtn.parentElement
+                parentDiv.querySelector('.rejectBtn').classList.add('d-none')
+                const noteInput = parentDiv.querySelector('.noteInput')
                 noteInput.classList.remove('d-none')
                 noteInput.focus()
                 noteInput.addEventListener('blur', function() {
-                    approvalFieldset.setAttribute('disabled', 'disabled')
+                    // approvalFieldset.setAttribute('disabled', 'disabled')
                     http.patch(`/hmo/approve/${prescriptionId}`, {note: noteInput.value})
                     .then((response) => {
                         if (response.status == 200) {
-                            table.draw(false)
-                            table.on('draw', removeDisabled(approvalFieldset))                        
+                            parentDiv.innerHTML = 'approved'
+                            // table.draw(false)
+                            // table.on('draw', removeDisabled(approvalFieldset))                        
                         }
                         if (response.status == 222){
-                            alert(response.data)
-                            table.draw(false)
-                            table.on('draw', removeDisabled(approvalFieldset))   
+                            parentDiv.innerHTML = response.data
+                            // errorTimeStateMgt(parentDiv, parentDivState, response.data, )
+                            // alert(response.data)
+                            // table.draw(false)
+                            // table.on('draw', removeDisabled(approvalFieldset))   
                         }
                     })
                         .catch((error) => {
-                            table.draw(false)
+                            errorTimeStateMgt(parentDiv, parentDivState, 'failed!...', 1000)
                             console.log(error.response.data)
-                            table.on('draw', removeDisabled(approvalFieldset))
+                            // table.draw(false)
+                            // table.on('draw', removeDisabled(approvalFieldset))
                             
                         })
                     })          
@@ -486,30 +501,43 @@ window.addEventListener('DOMContentLoaded', function () {
         
                 if (rejectBtn) {
                     const prescriptionId = rejectBtn.getAttribute('data-id')
+                    const parentDivState = rejectBtn.parentElement.innerHTML
                     rejectBtn.classList.add('d-none')
-                    rejectBtn.parentElement.querySelector('.approveBtn').classList.add('d-none')
-                    const noteInput = rejectBtn.parentElement.querySelector('.noteInput')
+                    const parentDiv = rejectBtn.parentElement
+                    parentDiv.querySelector('.approveBtn').classList.add('d-none')
+                    const noteInput = parentDiv.querySelector('.noteInput')
                     noteInput.classList.remove('d-none')
                     noteInput.focus()
                     noteInput.addEventListener('blur', function() {
-                        approvalFieldset.setAttribute('disabled', 'disabled')
+                        // approvalFieldset.setAttribute('disabled', 'disabled')
                         if (noteInput.value) {
                             http.patch(`/hmo/reject/${prescriptionId}`, {note: noteInput.value})
                             .then((response) => {
-                                if (response.status >= 200 || response.status <= 300) {
-                                    table.draw(false)
-                                    table.on('draw', removeDisabled(approvalFieldset))
+                                if (response.status >= 200) {
+                                    // table.draw(false)
+                                    // table.on('draw', removeDisabled(approvalFieldset))
+                                    parentDiv.innerHTML = 'rejected'
+                                }
+                                if (response.status == 222){
+                                    parentDiv.innerHTML = response.data
+                                    // errorTimeStateMgt(parentDiv, parentDivState, response.data, )
+                                    // alert(response.data)
+                                    // table.draw(false)
+                                    // table.on('draw', removeDisabled(approvalFieldset))   
                                 }
                             })
                             .catch((error) => {
+                                errorTimeStateMgt(parentDiv, parentDivState, 'failed!...', 1000)
                                 console.log(error)
-                                rejectBtn.removeAttribute('disabled')
-                                table.draw(false)
-                                table.on('draw', removeDisabled(approvalFieldset))
+                                // rejectBtn.removeAttribute('disabled')
+                                // table.draw(false)
+                                // table.on('draw', removeDisabled(approvalFieldset))
                             })
                         } else{
-                            table.draw(false)
-                            table.on('draw', removeDisabled(approvalFieldset))
+                            // table.draw(false)
+                            // table.on('draw', removeDisabled(approvalFieldset))
+                            errorTimeStateMgt(parentDiv, parentDivState, 'type something!...', 1000)
+                            // parentDiv.innerHTML = parentDivState
                         }
                     })
                 }
@@ -517,18 +545,23 @@ window.addEventListener('DOMContentLoaded', function () {
                 if (resetBtn){
                     const prescriptionId = resetBtn.getAttribute('data-id')
                     approvedByBtn.innerHTML = 'Wait...'
+                    const approveRejectDiv  = resetDiv.parentElement.querySelector('.approveRejectDiv')
                     http.patch(`/hmo/reset/${prescriptionId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
-                            table.draw(false)
-                            table.on('draw', removeDisabled(approvalFieldset))
+                            resetDiv.classList.add('d-none')
+                            approveRejectDiv.classList.remove('d-none')
+                            // console.log(approveRejectDiv)
+                            // table.draw(false)
+                            // table.on('draw', removeDisabled(approvalFieldset))
                         }
                     })
                     .catch((error) => {
                         console.log(error)
-                        resetBtn.removeAttribute('disabled')
-                        table.draw(false)
-                        table.on('draw', removeDisabled(approvalFieldset))
+                        resetDiv.classList.add('d-none')
+                        approveRejectDiv.classList.remove('d-none')
+                        // table.draw(false)
+                        // table.on('draw', removeDisabled(approvalFieldset))
                     })
                 }
             })
@@ -995,7 +1028,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     getMedicationsByFilter(treatmentTableId, conId, treatmentDetailsModal._element)
                     getOtherPrescriptionsByFilter(otherPrescriptionsTableId, conId, treatmentDetailsModal._element, null, null)
                 }
-                setTimeout(goto, 300)
+                let goToTimer = setTimeout(goto, 300)
             }
     
             if (downloadResultBtn) {
@@ -1237,4 +1270,11 @@ function openHmoModals(modal, button, { id, visitId, ancRegId, visitType, ...dat
     }
 
     modal._element.querySelector('#addVitalsignsBtn').setAttribute('data-id', visitId)
+}
+
+const errorTimeStateMgt = (currentEl, precervedEl, message, timer) => {
+    currentEl.innerHTML = message
+    return  setTimeout(() => {
+                currentEl.innerHTML = precervedEl
+            }, timer)
 }

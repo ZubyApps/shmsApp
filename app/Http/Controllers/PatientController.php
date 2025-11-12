@@ -199,8 +199,8 @@ class PatientController extends Controller
 
     }
 
-    public function updatePatientsVisitTypes(Request $request)
-    {
-        return $this->patientService->populateVisitTypes($request);
-    }
+    // public function updatePatientsVisitTypes(Request $request)
+    // {
+    //     return $this->patientService->populateVisitTypes($request);
+    // }
 }
