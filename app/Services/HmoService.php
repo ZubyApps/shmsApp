@@ -535,11 +535,11 @@ class HmoService
 
             if ($isNhis){
                 $prescription->update(['nhis_bill' => $prescription->hms_bill]);
-                $this->paymentService->prescriptionsPaymentSeiveNhis($visit->totalPayments(), $visit->prescriptions);
+                $this->paymentService->prescriptionsPaymentSeiveNhis($visit->totalPayments(), $visit?->prescriptions);
                 $visit->update(['total_nhis_bill'   => $prescription->visit->totalNhisBills()]);
             } else {
-                $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit->prescriptions);
-                $visit->update(['total_hms_bill'    => $prescription->visit->totalHmsBills()]);
+                $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit?->prescriptions);
+                $visit->update(['total_hms_bill'    => $prescription?->visit->totalHmsBills()]);
             }
     
             return $prescription;
