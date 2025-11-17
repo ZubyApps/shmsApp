@@ -994,8 +994,8 @@ const preSearch = (table, tableId, value, type) => {
         if (selectedOption) {
             const value = selectedOption.getAttribute('data-cardNo') ?? this.value;
             const patientId = selectedOption.getAttribute('data-id') ? 'pId-' + selectedOption.getAttribute('data-id') : null;
-            this.value = value;
             table.search(patientId ?? value).draw();
+            this.value = value;
         }
     });
 

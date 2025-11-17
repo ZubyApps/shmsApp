@@ -360,6 +360,7 @@ Route::middleware('auth')->group(function () {
             Route::patch('/approve/{prescription}', [HmoController::class, 'approveItem']);
             Route::patch('/reject/{prescription}', [HmoController::class, 'rejectItem']);
             Route::patch('/reset/{prescription}', [HmoController::class, 'resetItem']);
+            Route::patch('/pending/{prescription}', [HmoController::class, 'pending']);
             Route::get('/visit/prescriptions', [HmoController::class, 'loadVisitPrescriptions']);
             Route::patch('/bill/{prescription}', [HmoController::class, 'saveHmoBill']);
             Route::patch('/treat/{visit}', [HmoController::class, 'treatVisit']);

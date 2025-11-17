@@ -317,6 +317,11 @@ class HmoService
 
                 if ($patientId){ 
                     return $query->whereRelation('visit', 'patient_id', $patientId)
+                        ->where(function (Builder $query) use($data) {
+                            $query->whereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? '' : 'HMO'))
+                            ->orWhereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? 'NHIS' : ''))
+                            ->orWhereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? '' : 'Retainership'));
+                    })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
                 }
@@ -474,6 +479,38 @@ class HmoService
                 $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit->prescriptions);
                 $visit->update(['total_hms_bill'    => $prescription->visit->totalHmsBills()]);
             }
+
+            return $prescription;
+        });
+
+    }
+
+    public function pending($data, Prescription $prescription, User $user)
+    {
+        if ($prescription->approved == true || $prescription->rejected == true){
+            return response('Already treated by ' . $prescription->rejectedBy?->username ??  $prescription->approvedBy?->username, 222);
+        }
+
+        return DB::transaction(function () use($data, $prescription, $user) {
+
+            $prescription->update([
+                'hmo_note'          => $data->note,
+                'rejected_by'       => $user->id,
+                'approved_by'       => $user->id,
+            ]);
+
+            $visit  = $prescription->visit;
+
+            // $isNhis = $visit->sponsor->category_name == 'NHIS';
+
+            // if ($isNhis){
+            //     $prescription->update(['nhis_bill' => $prescription->hms_bill]);
+            //     $this->paymentService->prescriptionsPaymentSeiveNhis($visit->totalPayments(), $visit->prescriptions);
+            //     $visit->update(['total_nhis_bill'   => $prescription->visit->totalNhisBills()]);
+            // } else {
+            //     $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit->prescriptions);
+            //     $visit->update(['total_hms_bill'    => $prescription->visit->totalHmsBills()]);
+            // }
 
             return $prescription;
         });

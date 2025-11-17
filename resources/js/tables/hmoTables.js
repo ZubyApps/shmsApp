@@ -240,6 +240,9 @@ const getApprovalListTable = (tableId, sponsor) => {
                             <button class="ms-1 btn btn-outline-primary approveBtn tooltip-test" title="approve" data-id="${row.id}">
                                     <i class="bi bi-check-circle"></i>
                             </button>
+                            <button class="ms-1 btn btn-outline-warning pendingBtn tooltip-test ${(!row.approved || !row.rejected) && (row.approvedBy || row.rejectedBy)  ? 'colour-change' : ''}" title="${(!row.approved || !row.rejected) && (row.approvedBy || row.rejectedBy) ? 'pending by ' + (row.approvedBy || row.rejectedBy) : ''  }" data-id="${row.id}">
+                                    <i class="bi bi-hourglass-split"></i>
+                            </button>
                             <button class="ms-1 btn btn-outline-danger rejectBtn tooltip-test" title="reject" data-id="${ row.id}">
                                     <i class="bi bi-x-circle"></i>
                             </button>

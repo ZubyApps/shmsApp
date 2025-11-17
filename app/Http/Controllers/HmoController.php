@@ -83,6 +83,11 @@ class HmoController extends Controller
        return $this->hmoService->reset($prescription);
     }
 
+    public function pending(Request $request, Prescription $prescription)
+    {
+       return $this->hmoService->pending($request, $prescription, $request->user());
+    }
+
     public function loadVisitPrescriptions(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
