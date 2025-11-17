@@ -479,7 +479,6 @@ function createCervicalDescentChart() {
     });
 
     function updateCervicalDescentData(data) {
-        console.log('updateCervicalDescentData called with:', data); // Debug
         // if (!data.length) {
         //     console.log('No data, skipping update');
         //     return;
@@ -499,7 +498,6 @@ function createCervicalDescentChart() {
         relevantData.forEach(item => {
             const date = new Date(item.recordedAtRaw);
             if (isNaN(date)) {
-                console.warn(`Invalid recordedAtRaw: ${item.recordedAtRaw}`);
                 return;
             }
             if (item.parameterType === 'cervical_dilation' && item.value && item.value.cm != null) {
@@ -511,7 +509,6 @@ function createCervicalDescentChart() {
 
         dilationData.sort((a, b) => a.x - b.x);
         descentData.sort((a, b) => a.x - b.x);
-        console.log('dilationData:', dilationData, 'descentData:', descentData); // Debug
         // Clone data to ensure reactivity
         CervicalDescentChart.data.datasets[0].data = [...dilationData];
         CervicalDescentChart.data.datasets[1].data = [...descentData];
@@ -523,7 +520,6 @@ function createCervicalDescentChart() {
         CervicalDescentChart.options.plugins.annotation.annotations.alertLine.xMax = new Date(minDate.getTime() + 4 * 60 * 60 * 1000);
         CervicalDescentChart.options.plugins.annotation.annotations.actionLine.xMin = new Date(minDate.getTime() + 4 * 60 * 60 * 1000);
         CervicalDescentChart.options.plugins.annotation.annotations.actionLine.xMax = new Date(minDate.getTime() + 8 * 60 * 60 * 1000);
-        console.log('Updating chart with minDate:', minDate, 'maxDate:', maxDate); // Debug
         CervicalDescentChart?.update('active'); // Force full redraw
     }
 
@@ -805,7 +801,6 @@ function createFetalHeartRateChart() {
         relevantData.forEach(item => {
             const date = new Date(item.recordedAtRaw);
             if (isNaN(date)) {
-                console.warn(`Invalid recordedAtRaw: ${item.recordedAtRaw}`);
                 return;
             }
             if (item.parameterType === 'fetal_heart_rate' && item.value && item.value.bpm != null) {
@@ -1709,18 +1704,13 @@ function createContractionsChart() {
         relevantData.forEach(item => {
             const date = new Date(item.recordedAtRaw);
             if (isNaN(date)) {
-                console.warn(`Invalid recordedAtRaw: ${item.recordedAtRaw}`);
                 return;
             }
             if (item.value && typeof item.value === 'object' && 'count_per_10min' in item.value && item.value.count_per_10min != null) {
                 const count = parseInt(item.value.count_per_10min);
                 if (!isNaN(count)) {
                     contractionData.push({ x: date, y: count });
-                } else {
-                    console.warn(`Invalid count value: ${item.value.count_per_10min}`);
                 }
-            } else {
-                console.warn(`Missing or invalid value for item:`, JSON.stringify(item, null, 2));
             }
         });
 
@@ -2102,7 +2092,6 @@ function createContractionsChart() {
         relevantData.forEach(item => {
             const date = new Date(item.recordedAtRaw);
             if (isNaN(date)) {
-                console.warn(`Invalid recordedAtRaw: ${item.recordedAtRaw}`);
                 return;
             }
             if (item.parameterType === 'uterine_contractions' && item.value && item.value.count_per_10min != null) {
@@ -2122,11 +2111,7 @@ function createContractionsChart() {
                         strength
                     });
                     backgroundColors.push(color);
-                } else {
-                    console.warn(`Invalid count_per_10min value: ${item.value.count_per_10min}`);
-                }
-            } else {
-                console.warn(`Missing or invalid value for item:`, JSON.stringify(item, null, 2));
+                } 
             }
         });
 
@@ -2295,7 +2280,6 @@ function createContractionsChart() {
 function createObservationsChart() {
     const observationsChart = modal._element.querySelector('#observationsChart');
     if (!observationsChart) {
-        console.error('Observations canvas #observationsChart not found');
         return null;
     }
 
@@ -2380,7 +2364,6 @@ function createObservationsChart() {
     function updateObservationsData(data) {
         // console.log('updateObservationsData called with:', JSON.stringify(data, null, 2));
         if (!observationsChart || !observationsChart.isConnected) {
-            console.warn('Observations canvas is detached or null, skipping update');
             return;
         }
         // if (!data || !Array.isArray(data) || !data.length) {
@@ -2402,7 +2385,6 @@ function createObservationsChart() {
         relevantData.forEach(item => {
             const date = new Date(item.recordedAtRaw);
             if (isNaN(date)) {
-                console.warn(`Invalid recordedAtRaw: ${item.recordedAtRaw}`);
                 return;
             }
             if (item.value && item.parameterType) {
@@ -2421,8 +2403,6 @@ function createObservationsChart() {
                     parameterType: item.parameterType,
                     value: item.value
                 });
-            } else {
-                console.warn(`Missing or invalid value for item:`, JSON.stringify(item, null, 2));
             }
         });
 

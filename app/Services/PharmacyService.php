@@ -75,9 +75,19 @@ class PharmacyService
                 return $query->where('visit_type', 'ANC')
                     ->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhere(function($q) use ($searchTerm) {
+                            $terms = array_filter(explode(' ', trim($searchTerm)));
+                            foreach ($terms as $term) {
+                                $q->where(function($subQuery) use ($term) {
+                                    $subQuery->whereRelation('first_name', 'LIKE', $term)
+                                            ->orWhereRelation('middle_name', 'LIKE', $term)
+                                            ->orWhereRelation('last_name', 'LIKE', $term);
+                                });
+                            }
+                        })
+                        // ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
                         ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
                         ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
@@ -91,9 +101,19 @@ class PharmacyService
 
             return $query->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                         ->orWhere(function($q) use ($searchTerm) {
+                            $terms = array_filter(explode(' ', trim($searchTerm)));
+                            foreach ($terms as $term) {
+                                $q->where(function($subQuery) use ($term) {
+                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
+                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
+                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
+                                });
+                            }
+                        })
+                        // ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
                         ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
                         ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
@@ -244,57 +264,141 @@ class PharmacyService
         });
     }
 
+    // public function dispense(Request $data, Prescription $prescription, User $user)
+    // {
+    //     return DB::transaction(function () use($data, $prescription, $user) {
+    //         $resource       = $prescription->resource;
+    //         $qtyDispensed   = $prescription->qty_dispensed;
+
+    //         if ($data->quantity){
+    //             if ($qtyDispensed){
+    //                 $resource->stock_level = $resource->stock_level + $qtyDispensed;
+    //                 $resource->save();
+    //             }
+                
+    //             $resource->stock_level = $resource->stock_level - $data->quantity;
+    //             $resource->save();
+
+    //         } elseif (!$data->quantity) {
+    //             if ($qtyDispensed){
+    //                 $resource->stock_level = $resource->stock_level + $qtyDispensed;
+    //                 $resource->save();
+    //             }
+    //         }
+
+    //         $prescription->update([
+    //             'qty_dispensed'     => $data->quantity ?? 0,
+    //             'dispense_date'     => new Carbon(),
+    //             'dispensed_by'      => $user->id
+    //         ]);
+
+    //         $visit          = $prescription->visit;
+
+    //         // $vPrescriptions = $visit->prescriptions()//Prescription::where('visit_id', $visit->id)
+    //         //                     ->where(function (Builder $query) {
+    //         //                         $query->whereRelation('resource', 'category', '=', 'Medications')
+    //         //                         ->orWhereRelation('resource', 'category', '=', 'Consumables');
+    //         //                     })
+    //         //                     ->get();
+
+    //         // $qtyBilled      = $vPrescriptions->sum('qty_billed');
+    //         // $qtyDispensed   = $vPrescriptions->sum('qty_dispensed');
+
+    //         $prescriptions = $prescription->visit->prescriptions()
+    //                             ->whereRelation('resource', 'category', 'Medications')
+    //                             ->orWhereRelation('resource', 'category', 'Consumables')
+    //                             ->selectRaw('COALESCE(SUM(qty_billed), 0) as billed')
+    //                             ->selectRaw('COALESCE(SUM(qty_dispensed), 0) as dispensed')
+    //                             ->first();
+
+    //         [$qtyBilled, $qtyDispensed] = [$prescriptions->billed, $prescriptions->dispensed];
+
+    //         if ($qtyBilled == $qtyDispensed){
+    //             $visit->update([
+    //                 'pharmacy_done_by' => $user->id
+    //             ]);
+    //         }  else {
+    //             $visit->update([
+    //                 'pharmacy_done_by' => null
+    //             ]);
+    //         }
+
+    //         return $prescription;
+    //     });
+    // }
+
+
+
     public function dispense(Request $data, Prescription $prescription, User $user)
     {
-        return DB::transaction(function () use($data, $prescription, $user) {
-            $resource       = $prescription->resource;
-            $qtyDispensed   = $prescription->qty_dispensed;
+        return DB::transaction(function () use ($data, $prescription, $user) {
+            // -----------------------------------------------------------------
+            // 1. Load the resource with a row-level lock → no race conditions
+            // -----------------------------------------------------------------
+            $resource = $prescription->resource()->lockForUpdate()->first();
 
-            if ($data->quantity){
-                if ($qtyDispensed){
-                    $resource->stock_level = $resource->stock_level + $qtyDispensed;
-                    $resource->save();
-                }
-                
-                $resource->stock_level = $resource->stock_level - $data->quantity;
-                $resource->save();
+            // -----------------------------------------------------------------
+            // 2. Normalise the two quantities (old & new)
+            // -----------------------------------------------------------------
+            $oldQty   = $prescription->qty_dispensed ?? 0;   // previously dispensed
+            $newQty   = $data->quantity ?? 0;               // what we want to dispense now
 
-            } elseif (!$data->quantity) {
-                if ($qtyDispensed){
-                    $resource->stock_level = $resource->stock_level + $qtyDispensed;
-                    $resource->save();
-                }
-            }
+            // -----------------------------------------------------------------
+            // 3. Compute the new stock level in ONE step
+            // -----------------------------------------------------------------
+            $newStock = $resource->stock_level + $oldQty - $newQty;
 
+            // Prevent negative stock (optional but strongly recommended)
+            // if ($newStock < 0) {
+            //     throw new \Exception("Insufficient stock for {$resource->name}");
+            // }
+
+            // -----------------------------------------------------------------
+            // 4. Persist the stock change in ONE query
+            // -----------------------------------------------------------------
+            $resource->update(['stock_level' => $newStock]);
+
+            // -----------------------------------------------------------------
+            // 5. Update the prescription itself
+            // -----------------------------------------------------------------
             $prescription->update([
-                'qty_dispensed'     => $data->quantity ?? 0,
-                'dispense_date'     => new Carbon(),
-                'dispensed_by'      => $user->id
+                'qty_dispensed' => $newQty,
+                'dispense_date' => Carbon::now(),
+                'dispensed_by'  => $user->id,
             ]);
 
-            $visit          = $prescription->visit;
+            // -----------------------------------------------------------------
+            // 6. Re-calculate totals for the whole visit (single query)
+            // -----------------------------------------------------------------
+            $totals = $prescription->visit->prescriptions()
+                ->where(function (Builder $query) {
+                        $query->whereRelation('resource', 'category', '=', 'Medications')
+                            ->orWhereRelation('resource', 'category', '=', 'Consumables');
+                    })
+                ->selectRaw('COALESCE(SUM(qty_billed), 0)    AS total_billed')
+                ->selectRaw('COALESCE(SUM(qty_dispensed), 0) AS total_dispensed')
+                ->first();
 
-            $vPrescriptions = Prescription::where('visit_id', $visit->id)
-                                ->where(function (Builder $query) {
-                                    $query->whereRelation('resource', 'category', '=', 'Medications')
-                                    ->orWhereRelation('resource', 'category', '=', 'Consumables');
-                                })
-                                ->get();
+            // -----------------------------------------------------------------
+            // 7. Mark the pharmacy step as done / undone
+            // -----------------------------------------------------------------
+            // info('qtys', ['billed' => $totals->total_billed, 'dispensed' => $totals->total_dispensed]);
+            $visit = $prescription->visit;
+            $visit->update([
+                'pharmacy_done_by' => $totals->total_billed == $totals->total_dispensed
+                    ? $user->id
+                    : null,
+            ]);
 
-            $qtyBilled      = $vPrescriptions->sum('qty_billed');
-            $qtyDispensed   = $vPrescriptions->sum('qty_dispensed');
-
-            if ($qtyBilled == $qtyDispensed){
-                $visit->update([
-                    'pharmacy_done_by' => $user->id
-                ]);
-            }  else {
-                $visit->update([
-                    'pharmacy_done_by' => null
-                ]);
-            }
-
-            return $prescription;
+            // -----------------------------------------------------------------
+            // 8. Return the freshly-updated prescription
+            // -----------------------------------------------------------------
+            $prescription->setRelation('resource', (object) [
+                'id'          => $resource->id,
+                'stock_level' => $resource->stock_level, // fresh value after update
+            ]);
+            
+            return $prescription->only(['qty_dispensed']) + ['resource' => $prescription->resource];
         });
     }
 

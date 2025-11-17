@@ -261,25 +261,28 @@ window.addEventListener('DOMContentLoaded', function () {
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
                                 if (visitPrescriptionsTable){
-                                    visitPrescriptionsTable.draw();
+                                    visitPrescriptionsTable.draw(false);
                                     visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                                    billingTable ? billingTable.draw() : ''
+                                } else {
+                                    emergencyTable.draw(false)
                                 }
-                                billingTable ? billingTable.draw() : ''
-                                emergencyTable.draw(false)
                             }
                         })
                         .catch((error) => {
-                            console.log(error)
-                            if (error.response.status == 422){
+                            if (error?.response?.status == 422){
                                 removeDisabled(billingDispenseFieldset)
                                 console.log(error)
                             } else{
                                 console.log(error)
-                                visitPrescriptionsTable.draw()
-                                visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                                // visitPrescriptionsTable.draw()
+                                billQtySpan.classList.remove('d-none')
+                                billQtyInput.classList.add('d-none')
+                                removeDisabled(billingDispenseFieldset)
+                                // visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
                             }
                         })
-                    })
+                    }, { once: true })
                 }                
             }
     
@@ -303,31 +306,42 @@ window.addEventListener('DOMContentLoaded', function () {
                             resetFocusEndofLine(dispenseQtyInput)
                             return
                         }
-                        billingDispenseFieldset.setAttribute('disabled', 'disabled')
+                        // billingDispenseFieldset.setAttribute('disabled', 'disabled')
                         http.patch(`/pharmacy/dispense/${prescriptionId}`, {quantity: dispenseQtyInput.value}, {'html' : div})
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
                                 if (visitPrescriptionsTable){
-                                    visitPrescriptionsTable.draw()
-                                    visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                                    // visitPrescriptionsTable.draw()
+                                    // visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                                    const resourceSpan  = dispenseQtySpan.parentElement.parentElement.parentElement.previousElementSibling?.querySelector('.resourceSpan');
+                                    const stockeUpdater = frontEndStockUpdater(resourceSpan.innerHTML)
+                                    const updateStockText = stockeUpdater.rebuildStockText(response.data.resource.stock_level)
+                                    resourceSpan.innerHTML = updateStockText
                                 } 
-                                emergencyTable.draw(false)
+                                dispenseQtySpan.classList.remove('d-none')
+                                dispenseQtyInput.classList.add('d-none')
+                                dispenseQtySpan.innerHTML = 'Dispensed: ' + response.data.qty_dispensed
+                                // emergencyTable.draw(false)
                             }
                         })
                         .catch((error) => {
                             console.log(error)
                             if (error.response.status == 422){
-                                removeDisabled(billingDispenseFieldset)
+                                dispenseQtySpan.classList.remove('d-none')
+                                dispenseQtyInput.classList.add('d-none')
+                                // removeDisabled(billingDispenseFieldset)
                                 console.log(error)
                             } else{
                                 console.log(error)
-                                visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
-                                visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                                emergencyTable.draw(false)
+                                // visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
+                                // visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                                // emergencyTable.draw(false)
+                                dispenseQtySpan.classList.remove('d-none')
+                                dispenseQtyInput.classList.add('d-none')
                             }
                         })
                     }               
-                })
+                }, { once: true });
             }
 
             if (holdSpan){
@@ -343,10 +357,11 @@ window.addEventListener('DOMContentLoaded', function () {
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                             if (visitPrescriptionsTable){
-                                visitPrescriptionsTable.draw()
+                                visitPrescriptionsTable.draw(false)
                                 visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                            } 
-                            emergencyTable.draw(false)
+                            } else {
+                                emergencyTable.draw(false)
+                            }
                         }
                     })
                     .catch((error) => {
@@ -356,9 +371,9 @@ window.addEventListener('DOMContentLoaded', function () {
                             console.log(error)
                         } else{
                             console.log(error)
-                            visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
+                            visitPrescriptionsTable ? visitPrescriptionsTable.draw(false) : emergencyTable.draw(false)
                             visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                            emergencyTable.draw(false)
+                            
                         }
                     })               
                 })
@@ -864,4 +879,33 @@ function displayTheatreMatch(selectEl, data){
         option.innerHTML = line.name + ` - (${line.stock} left)`
         !selectEl.options.namedItem(line.name) ? selectEl.appendChild(option) : ''
     })
+}
+
+const frontEndStockUpdater = (stockString) => {
+
+    //split the stock
+    let splitString = stockString.split(' : ')
+
+     // extract the value
+    return {
+        stockValue () {
+            return +splitString[1].split(' : ')[0];
+        },
+
+        rebuildStockText (stock) {
+
+            let splitString2 = splitString[1].split(' ')
+
+            splitString2[0] = stock 
+
+            let join2 = splitString2.join(' ')
+
+            splitString[1] = join2
+
+            return splitString.join( ' : ');
+        }
+    }
+
+    
+        
 }

@@ -39,7 +39,7 @@
                                     <option value="">Select Option</option>
                                     <option value="Verified">Verified</option>
                                     <option value="Pending">Pending</option>
-                                    <option value="Exponged">Exponged</option>
+                                    <option value="Expunged">Expunged</option>
                                 </select>
                             </x-form-div>
                             <x-form-div class="col-xl-6">

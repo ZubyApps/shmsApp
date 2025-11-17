@@ -76,6 +76,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const savePaymentBtn                    = confirmPaymentModal._element.querySelector('#savePaymentBtn')
     const proceduresListBtn                 = document.querySelector('#proceduresListBtn')
     const proceduresListCount               = document.querySelector('#proceduresListCount')
+    let verifcationTableBtn                 = ''
 
     const filterListOption                  = document.querySelector('#filterList')
     const datesDiv                          = document.querySelector('.datesDiv')
@@ -655,6 +656,7 @@ window.addEventListener('DOMContentLoaded', function () {
             verifyModal._element.querySelector('#phoneNumber').value = verifyPatientBtn.getAttribute('data-phone')
             verifyModal._element.querySelector('#status').value = verifyPatientBtn.getAttribute('data-status')
             verifyModal._element.querySelector('#codeText').value = verifyPatientBtn.getAttribute('data-codeText')
+            verifcationTableBtn = verifyPatientBtn
             verifyModal.show()
         }
 
@@ -678,7 +680,7 @@ window.addEventListener('DOMContentLoaded', function () {
         http.post(`/hmo/verify/${visitId}`,  { ...data }, { "html": codeTextDiv })
         .then((response) => {
             if (response.status >= 200 || response.status <= 300) {
-
+                verifcationTableBtn ? verifcationTableBtn.innerHTML = response.data?.verification_status : ''
                 clearDivValues(codeTextDiv)
                 clearValidationErrors(codeTextDiv)
 
@@ -809,7 +811,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelector('#visitPrescriptionsTable').addEventListener('click', function (event) {
         const hmoBillSpan       = event.target.closest('.hmoBillSpan')
-        const makeBillFieldset  = document.querySelector('#makeBillFieldset')
+        // const makeBillFieldset  = document.querySelector('#makeBillFieldset')
         const unmarkSent        = event.target.closest('.unmarkSent')
         if (hmoBillSpan){
             const prescriptionId    = hmoBillSpan.getAttribute('data-id')
@@ -819,18 +821,23 @@ window.addEventListener('DOMContentLoaded', function () {
             resetFocusEndofLine(hmoBillInput)
             
             hmoBillInput.addEventListener('blur', function () {
-                makeBillFieldset.setAttribute('disabled', 'disabled')
+                // makeBillFieldset.setAttribute('disabled', 'disabled')
                 http.patch(`/hmo/bill/${prescriptionId}`, {bill: hmoBillInput.value})
                 .then((response) => {
                     if (response.status >= 200 || response.status <= 300) {
-                        visitPrescriptionsTable ?  visitPrescriptionsTable.draw(false) : ''
-                        visitPrescriptionsTable.on('draw', removeDisabled(makeBillFieldset))
+                        hmoBillSpan.innerHTML = response.data.hmo_bill
+                        hmoBillSpan.classList.remove('d-none')
+                        hmoBillInput.classList.add('d-none')
+                        // visitPrescriptionsTable ?  visitPrescriptionsTable.draw(false) : ''
+                        // visitPrescriptionsTable.on('draw', removeDisabled(makeBillFieldset))
                     }
                 })
                 .catch((error) => {
+                    hmoBillSpan.classList.remove('d-none')
+                    hmoBillInput.classList.add('d-none')
                     console.log(error)
-                    visitPrescriptionsTable ?  visitPrescriptionsTable.draw(false) : ''
-                    visitPrescriptionsTable.on('draw', removeDisabled(makeBillFieldset))
+                    // visitPrescriptionsTable ?  visitPrescriptionsTable.draw(false) : ''
+                    // visitPrescriptionsTable.on('draw', removeDisabled(makeBillFieldset))
                 })                
             })
         }
@@ -857,17 +864,22 @@ window.addEventListener('DOMContentLoaded', function () {
                 resetFocusEndofLine(payInput)
                 
                 payInput.addEventListener('blur', function () {
-                    reconciliationFieldset.setAttribute('disabled', 'disabled')
+                    // reconciliationFieldset.setAttribute('disabled', 'disabled')
                     http.patch(`/hmo/pay/${prescriptionId}`, {amountPaid: payInput.value})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
-                            reconciliationTable ?  reconciliationTable.draw(false) : ''
-                            reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
+                            payBtnSpan.innerHTML = response.data.paid
+                            payBtnSpan.classList.remove('d-none')
+                            payInput.classList.add('d-none')
+                            // reconciliationTable ?  reconciliationTable.draw(false) : ''
+                            // reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
                         }
                     })
                     .catch((error) => {
-                        reconciliationTable ?  reconciliationTable.draw(false) : ''
-                        reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
+                        // reconciliationTable ?  reconciliationTable.draw(false) : ''
+                        // reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
+                        payBtnSpan.classList.remove('d-none')
+                        payInput.classList.add('d-none')
                         console.log(error)
                     })                
                 })
@@ -886,17 +898,27 @@ window.addEventListener('DOMContentLoaded', function () {
                 resetFocusEndofLine(addAmount)
 
                 addAmount.addEventListener('blur', function () {
-                    reconciliationFieldset.setAttribute('disabled', 'disabled')
+                    // reconciliationFieldset.setAttribute('disabled', 'disabled')
                     http.patch(`/hmo/pay/${prescriptionId}`, {amountPaid: +payInput.value + +addAmount.value})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
-                            reconciliationTable ?  reconciliationTable.draw(false) : ''
-                            reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
+                            payBtnSpan.innerHTML = response.data.paid
+                            payInput.classList.add('d-none')
+                            payInput.removeAttribute('readonly', true)
+                            addAmount.classList.add('d-none')
+                            payBtnSpan.classList.remove('d-none')
+                            // reconciliationTable ?  reconciliationTable.draw(false) : ''
+                            // reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
                         }
                     })
                     .catch((error) => {
-                        reconciliationTable ?  reconciliationTable.draw(false) : ''
-                        reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
+                        // reconciliationTable ?  reconciliationTable.draw(false) : ''
+                        // reconciliationTable.on('draw', removeDisabled(reconciliationFieldset))
+                        alert('Payment failed!')
+                        payInput.classList.add('d-none')
+                        payInput.removeAttribute('readonly', true)
+                        addAmount.classList.add('d-none')
+                        payBtnSpan.classList.remove('d-none')
                         console.log(error)
                     })                
                 })
@@ -990,10 +1012,10 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    verifyModal._element.addEventListener('hide.bs.modal', function () {
-        refreshApprovalTables();
-        refreshMainTables();
-    })
+    // verifyModal._element.addEventListener('hide.bs.modal', function () {
+    //     refreshApprovalTables();
+    //     refreshMainTables();
+    // })
 
     waitingListCanvas._element.addEventListener('hide.bs.offcanvas', function () {
         refreshApprovalTables()

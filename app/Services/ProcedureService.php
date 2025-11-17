@@ -69,9 +69,19 @@ class ProcedureService
 
             return $query->whereRelation('prescription.resource', 'name', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
                         ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
-                        ->orWhereRelation('prescription.visit.patient', 'first_name', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
-                        ->orWhereRelation('prescription.visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
-                        ->orWhereRelation('prescription.visit.patient', 'last_name', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
+                        ->orWhere(function($q) use ($searchTerm) {
+                            $terms = array_filter(explode(' ', trim($searchTerm)));
+                            foreach ($terms as $term) {
+                                $q->where(function($subQuery) use ($term) {
+                                    $subQuery->whereRelation('prescription.visit.patient', 'first_name', 'LIKE', $term)
+                                            ->orWhereRelation('prescription.visit.patient', 'middle_name', 'LIKE', $term)
+                                            ->orWhereRelation('prescription.visit.patient', 'last_name', 'LIKE', $term);
+                                });
+                            }
+                        })
+                        // ->orWhereRelation('prescription.visit.patient', 'first_name', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
+                        // ->orWhereRelation('prescription.visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
+                        // ->orWhereRelation('prescription.visit.patient', 'last_name', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
                         ->orWhereRelation('prescription.visit.patient', 'card_no', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));

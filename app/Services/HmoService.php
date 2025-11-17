@@ -45,7 +45,7 @@ class HmoService
             $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
 
             $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
-            
+
             if ($patientId){ 
                 return $query->where('patient_id', $patientId)
                 ->orderBy($orderBy, $orderDir)
@@ -53,9 +53,20 @@ class HmoService
             }
             
             return $query->where(function (Builder $query) use($searchTerm) {
-                            $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                        $query->where('created_at', 'LIKE', $searchTerm)
+                        ->orWhere(function($q) use ($searchTerm) {
+                            $terms = array_filter(explode(' ', trim($searchTerm)));
+                            foreach ($terms as $term) {
+                                $q->where(function($subQuery) use ($term) {
+                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
+                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
+                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
+                                });
+                            }
+                        })
+                            // ->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                            // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                            // ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
                             ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm);
                         })
@@ -64,9 +75,12 @@ class HmoService
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $query
-                    ->where('verified_at', null)
-                    ->where(function (Builder $query) use($params) {
+        return $query->where(function (Builder $query) {
+                        $query->where('verified_at', null)
+                        ->orWhere('verification_status', '!=', 'Verified');
+
+                    })
+                    ->where(function (Builder $query) {
                         $query->whereRelation('sponsor', 'category_name', '=', 'HMO')
                         ->orWhereRelation('sponsor', 'category_name', '=', 'NHIS')
                         ->orWhereRelation('sponsor', 'category_name', '=', 'Retainership');
@@ -98,22 +112,24 @@ class HmoService
                 'phone'             => $visit->patient->phone,
                 'status'            => $visit->verification_status ?? '',
                 '30dayCount'        => $visit->patient->visits->where('consulted', '>', (new Carbon())->subDays(30))->count().' visit(s)',
-                'visitType'         => $visit->visit_type
+                'visitType'         => $visit->visit_type,
+                'verifiedBy'        => $visit->verifiedBy?->username,
+                'verifiedAt'        => $visit->verified_at ? (new Carbon($visit->verified_at))->format('d/m/y g:ia') : '',
             ];
          };
     }
 
-    public function verify(Request $request, Visit $visit): Visit
+    public function verify(Request $request, Visit $visit)
     {
        
             $visit->update([
                 'verification_status'   => $request->status,
                 'verification_code'     => $request->codeText,
-                'verified_at'           => $request->status === 'Verified' || $request->status === 'Exponged' ? new Carbon() : null,
+                'verified_at'           => $request->status ? new Carbon() : null,
                 'verified_by'           => $request->user()->id,
             ]);
 
-            return $visit;
+            return $visit->only(['verification_status']);
     }
 
     public function getPaginatedAllConsultedHmoVisits(DataTableQueryParams $params, $data)
@@ -155,9 +171,19 @@ class HmoService
 
             return $query->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhere(function($q) use ($searchTerm) {
+                            $terms = array_filter(explode(' ', trim($searchTerm)));
+                            foreach ($terms as $term) {
+                                $q->where(function($subQuery) use ($term) {
+                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
+                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
+                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
+                                });
+                            }
+                        })
+                        // ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
                         ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
                         ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
@@ -302,9 +328,19 @@ class HmoService
                     })
                     ->where(function (Builder $query) use($searchTerm) {
                         $query->whereRelation('visit.sponsor', 'name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhere(function($q) use ($searchTerm) {
+                            $terms = array_filter(explode(' ', trim($searchTerm)));
+                            foreach ($terms as $term) {
+                                $q->where(function($subQuery) use ($term) {
+                                    $subQuery->whereRelation('visit.patient', 'first_name', 'LIKE', $term)
+                                            ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $term)
+                                            ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $term);
+                                });
+                            }
+                        })
                         ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm)
                         ->orWhereRelation('resource', 'name', 'LIKE', $searchTerm)
                         ->orWhereRelation('resource.resourceSubCategory', 'name', 'LIKE', $searchTerm)
@@ -497,8 +533,8 @@ class HmoService
                                 $query->whereRelation('consultation', 'icd11_diagnosis', 'LIKE', '%' . $searchTerm)
                                 ->orWhereRelation('user', 'username', 'LIKE', '%' . $searchTerm)
                                 ->orWhereRelation('resource', 'name', 'LIKE', '%' . $searchTerm)
-                                ->orWhereRelation('resource.resourceSubCategory', 'name', 'LIKE', '%' . $searchTerm)
-                                ->orWhereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'LIKE', '%' . $searchTerm);
+                                ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . $searchTerm)
+                                ->orWhereRelation('resource', 'category', 'LIKE', '%' . $searchTerm);
                             })
                             ->orderBy($orderBy, $orderDir)
                             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));

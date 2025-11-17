@@ -79,15 +79,25 @@ class NurseService
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
                 }
-                
+
                 return $query
                     // ->whereNotNull('consulted')
                     // ->where('visit_type', '=', 'ANC')
                     ->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhere(function($q) use ($searchTerm) {
+                            $terms = array_filter(explode(' ', trim($searchTerm)));
+                            foreach ($terms as $term) {
+                                $q->where(function($subQuery) use ($term) {
+                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
+                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
+                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
+                                });
+                            }
+                        })
+                        // ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
                         ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
                         ->orWhereRelation('consultations', 'provisional_diagnosis', 'LIKE', $searchTerm)
@@ -109,9 +119,19 @@ class NurseService
             return $query->whereNotNull('consulted')
                     ->where(function (Builder $query) use($searchTerm) {
                         $query->where('created_at', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhere(function($q) use ($searchTerm) {
+                            $terms = array_filter(explode(' ', trim($searchTerm)));
+                            foreach ($terms as $term) {
+                                $q->where(function($subQuery) use ($term) {
+                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
+                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
+                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
+                                });
+                            }
+                        })
+                        // ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
                         ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
                         ->orWhereRelation('consultations', 'provisional_diagnosis', 'LIKE', $searchTerm)

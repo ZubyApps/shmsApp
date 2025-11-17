@@ -8,5 +8,5 @@ enum VerificationStatus: string
 {
     case Verified  = 'Verified';
     case Pending   = 'Penidng';
-    case Exponged  = 'Exponged';
+    case Expunged  = 'Expunged';
 }

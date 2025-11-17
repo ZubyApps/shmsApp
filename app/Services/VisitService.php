@@ -369,7 +369,7 @@ class VisitService
                 'closed_opened_by'  => $user->id
             ]);
 
-            $noOpenVisit = $visit->patient->visits()->where('closed', false)->count() < 2;
+            $noOpenVisit = $visit->patient->visits()->where('closed', false)->count() < 1;
 
             if ($visit->visit_type == 'Regular' || $noOpenVisit){
                 $visit->patient()->update(['is_active' => false]);

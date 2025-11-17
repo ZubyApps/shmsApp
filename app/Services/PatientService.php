@@ -568,5 +568,5 @@ class PatientService
                 });
             }
         });
-}
+    }
 }

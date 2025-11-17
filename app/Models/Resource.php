@@ -80,14 +80,14 @@ class Resource extends Model
     public function stockLevelChecker($resource)
     {
         if ($resource->stock_level < $resource->reorder_level){
-            return ' - '.$resource->stock_level.' '.$resource->unitDescription?->short_name.' left'.' - reorder';
+            return ' : '.$resource->stock_level.' '.$resource->unitDescription?->short_name.' left'.' - reorder';
         }
 
         if ($resource->stock_level < 1){
             return '- Not in stock';
         }
 
-        return ' - '.$resource->stock_level.' '.$resource->unitDescription?->short_name.' left';
+        return ' : '.$resource->stock_level.' '.$resource->unitDescription?->short_name.' left';
     }
 
     public function sponsors()
