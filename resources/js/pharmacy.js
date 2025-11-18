@@ -1,5 +1,5 @@
 
-import {Modal } from "bootstrap";
+import {Modal, Offcanvas } from "bootstrap";
 import {getOrdinal, loadingSpinners, removeDisabled, resetFocusEndofLine, getDatalistOptionId, clearValidationErrors, handleValidationErrors, clearDivValues, getDivData, displayItemsList, openModals, getDatalistOptionStock, clearSelectList} from "./helpers"
 import { getBulkRequestTable, getExpirationStockTable , getPatientsVisitByFilterTable, getPrescriptionsByConsultation, getShiftReportTable } from "./tables/pharmacyTables";
 import http from "./http";
@@ -17,17 +17,18 @@ window.addEventListener('DOMContentLoaded', function () {
     const ancTreatmentDetailsModal      = new Modal(document.getElementById('ancTreatmentDetailsModal'))
     const billingDispenseModal          = new Modal(document.getElementById('billingDispenseModal'))
     const bulkRequestModal              = new Modal(document.getElementById('bulkRequestModal'))
-    const theatreStockModal            = new Modal(document.getElementById('theatreStockModal'))
-    const theatreRequestModal          = new Modal(document.getElementById('theatreRequestModal'))
+    const theatreStockModal             = new Modal(document.getElementById('theatreStockModal'))
+    const theatreRequestModal           = new Modal(document.getElementById('theatreRequestModal'))
     const newShiftReportTemplateModal   = new Modal(document.getElementById('newShiftReportTemplateModal'))
     const editShiftReportTemplateModal  = new Modal(document.getElementById('editShiftReportTemplateModal'))
     const viewShiftReportTemplateModal  = new Modal(document.getElementById('viewShiftReportTemplateModal'))
+    // const emergencyListOffcanvas        = new Offcanvas(document.getElementById('emergencyListOffcanvas'))
 
     const bulkRequestBtn        = document.querySelector('#newBulkRequestBtn')
     const requestBulkBtn        = bulkRequestModal._element.querySelector('#requestBulkBtn')
-    const requestTheatreBtn    = theatreRequestModal._element.querySelector('#requestBulkBtn')
-    const theatreRequestBtn    = document.querySelector('#newTheatreRequestBtn')
-    const resolveTheatreBtn    = theatreStockModal._element.querySelector('#resolveTheatreBtn')
+    const requestTheatreBtn     = theatreRequestModal._element.querySelector('#requestBulkBtn')
+    const theatreRequestBtn     = document.querySelector('#newTheatreRequestBtn')
+    const resolveTheatreBtn     = theatreStockModal._element.querySelector('#resolveTheatreBtn')
     const markDoneBtn           = billingDispenseModal._element.querySelector('#markDoneBtn')
     const emergencyListBtn      = document.querySelector('#emergencyListBtn')
     const shiftReportBtn        = document.querySelector('#shiftReportBtn')
@@ -35,8 +36,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const createShiftReportBtn  = newShiftReportTemplateModal._element.querySelector('#createShiftReportBtn')
     const saveShiftReportBtn    = editShiftReportTemplateModal._element.querySelector('#saveShiftReportBtn')
 
-    const regularTreatmentDiv       = treatmentDetailsModal._element.querySelector('#treatmentDiv')
-    const ancTreatmentDiv           = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
+    const regularTreatmentDiv   = treatmentDetailsModal._element.querySelector('#treatmentDiv')
+    const ancTreatmentDiv       = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
 
     // const filterListOption          = document.querySelector('#filterList')
 
@@ -235,6 +236,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const holdSpan                  = event.target.closest('.holdSpan')
             const dispenseCommentSpan       = event.target.closest('.dispenseCommentSpan')
             const billingDispenseFieldset   = document.querySelector('#billingDispenseFieldset')
+            const isBillingDispenseTable    = table.id = 'visitPrescriptionsTable'
     
             if (billQtySpan){
                 const prescriptionId    = billQtySpan.getAttribute('data-id')
@@ -260,12 +262,12 @@ window.addEventListener('DOMContentLoaded', function () {
                         http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value}, {'html' : div})
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
-                                if (visitPrescriptionsTable){
+                                if (isBillingDispenseTable){
                                     visitPrescriptionsTable.draw(false);
-                                    visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                                    billingTable ? billingTable.draw() : ''
+                                    visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset));
+                                    billingTable.draw();
                                 } else {
-                                    emergencyTable.draw(false)
+                                    emergencyTable.draw(false);
                                 }
                             }
                         })
@@ -310,18 +312,20 @@ window.addEventListener('DOMContentLoaded', function () {
                         http.patch(`/pharmacy/dispense/${prescriptionId}`, {quantity: dispenseQtyInput.value}, {'html' : div})
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
-                                if (visitPrescriptionsTable){
-                                    // visitPrescriptionsTable.draw()
-                                    // visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                                    const resourceSpan  = dispenseQtySpan.parentElement.parentElement.parentElement.previousElementSibling?.querySelector('.resourceSpan');
+                                if (isBillingDispenseTable){
+                                    const billingDiv    = dispenseQtySpan.parentElement.parentElement.parentElement.previousElementSibling;
+                                    const resourceSpan  = billingDiv?.querySelector('.resourceSpan');
+                                    const billControlBtn  = billingDiv?.querySelector('.billControlBtn');
                                     const stockeUpdater = frontEndStockUpdater(resourceSpan.innerHTML)
                                     const updateStockText = stockeUpdater.rebuildStockText(response.data.resource.stock_level)
                                     resourceSpan.innerHTML = updateStockText
-                                } 
-                                dispenseQtySpan.classList.remove('d-none')
-                                dispenseQtyInput.classList.add('d-none')
-                                dispenseQtySpan.innerHTML = 'Dispensed: ' + response.data.qty_dispensed
-                                // emergencyTable.draw(false)
+                                    billControlBtn.classList.add('billQtySpan')
+                                    dispenseQtySpan.classList.remove('d-none')
+                                    dispenseQtyInput.classList.add('d-none')
+                                    dispenseQtySpan.innerHTML = 'Dispensed: ' + response.data.qty_dispensed
+                                } else {
+                                    emergencyTable.draw()
+                                }
                             }
                         })
                         .catch((error) => {
@@ -333,9 +337,6 @@ window.addEventListener('DOMContentLoaded', function () {
                                 console.log(error)
                             } else{
                                 console.log(error)
-                                // visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
-                                // visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                                // emergencyTable.draw(false)
                                 dispenseQtySpan.classList.remove('d-none')
                                 dispenseQtyInput.classList.add('d-none')
                             }
@@ -356,11 +357,9 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.patch(`/pharmacy/hold/${prescriptionId}`, {reason: holdSpanSelect.value}, {'html' : div})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
-                            if (visitPrescriptionsTable){
+                            if (isBillingDispenseTable){
                                 visitPrescriptionsTable.draw(false)
                                 visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
-                            } else {
-                                emergencyTable.draw(false)
                             }
                         }
                     })
@@ -371,7 +370,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             console.log(error)
                         } else{
                             console.log(error)
-                            visitPrescriptionsTable ? visitPrescriptionsTable.draw(false) : emergencyTable.draw(false)
+                            isBillingDispenseTable ? visitPrescriptionsTable.draw(false) : emergencyTable.draw(false)
                             visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
                             
                         }
@@ -391,14 +390,14 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.patch(`/pharmacy/dispense/comment/${prescriptionId}`, {comment: dispenseCommentInput.value})
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
-                            visitPrescriptionsTable ? visitPrescriptionsTable.draw(false) : ''
-                            visitPrescriptionsTable ? visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset)) : ''
+                            isBillingDispenseTable ? visitPrescriptionsTable.draw(false) : ''
+                            isBillingDispenseTable ? visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset)) : ''
                         }
                     })
                     .catch((error) => {
                         console.log(error)
-                        visitPrescriptionsTable ? visitPrescriptionsTable.draw(false) : ''
-                        visitPrescriptionsTable ? visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset)) : ''
+                        isBillingDispenseTable ? visitPrescriptionsTable.draw(false) : ''
+                        isBillingDispenseTable ? visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset)) : ''
                     })
                            
                 })
@@ -857,6 +856,10 @@ window.addEventListener('DOMContentLoaded', function () {
         clearSelectList(theatreStockModal._element)
 
     })
+    
+    // emergencyListOffcanvas._element.addEventListener('hide.bs.offcanvas', function () {
+    //         emergencyTable.draw()
+    // })
 })
 
 function openPharmacyModals(modal, button, { id, visitId, ancRegId, visitType, ...data }) {
