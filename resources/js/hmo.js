@@ -860,9 +860,11 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     document.querySelector('#visitPrescriptionsTable').addEventListener('click', function (event) {
-        const hmoBillSpan       = event.target.closest('.hmoBillSpan')
+        const hmoBillSpan      = event.target.closest('.hmoBillSpan')
         // const makeBillFieldset  = document.querySelector('#makeBillFieldset')
-        const unmarkSent        = event.target.closest('.unmarkSent')
+        const unmarkSent       = event.target.closest('.unmarkSent')
+        const refreshBtn       = event.target.closest('.refreshBtn')
+
         if (hmoBillSpan){
             const prescriptionId    = hmoBillSpan.getAttribute('data-id')
             const hmoBillInput      = hmoBillSpan.parentElement.querySelector('.hmoBillInput')
@@ -894,6 +896,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (unmarkSent){
             alert('Please unmark as sent before you can make changes')
+        }
+
+        if(refreshBtn){
+            visitPrescriptionsTable ? visitPrescriptionsTable.draw(false) : ''
         }
     })
 

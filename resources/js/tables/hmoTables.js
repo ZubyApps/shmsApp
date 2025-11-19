@@ -295,6 +295,7 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
                 
                 $( 'tr:eq(1) td:eq(7)', api.table().footer() ).html(account.format(api.data()[0].paidHms));
                 $( 'tr:eq(1) td:eq(8)', api.table().footer() ).html(account.format(api.data()[0].paidHms));
+                $( 'tr:eq(1) td:eq(9)', api.table().footer() ).html(`<button class="btn btn-primary refreshBtn"><i class="bi bi-arrow-repeat"></i></button>`);
                 
                 $( 'tr:eq(2) td:eq(7)', api.table().footer() ).html(account.format((api.column( 7, {page:'current'} ).data().sum() - api.data()[0].paidHms)));
                 $( 'tr:eq(2) td:eq(8)', api.table().footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum() - api.data()[0].paidHms));
