@@ -10,6 +10,8 @@ use App\Models\LabourRecord;
 use Illuminate\Http\Request;
 use App\DataObjects\DataTableQueryParams;
 
+use function Laravel\Prompts\info;
+
 Class LabourRecordService
 {
     public function __construct(private readonly LabourRecord $labourRecord)
@@ -205,6 +207,7 @@ Class LabourRecordService
     
     public function deleteSummary(LabourRecord $labourRecord): LabourRecord
     {
+        info('ran');
         $labourRecord->update([
             // Labor interventions
             'sol_amniotomy' => false,

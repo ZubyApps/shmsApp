@@ -313,16 +313,17 @@ window.addEventListener('DOMContentLoaded', function () {
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
                                 if (isBillingDispenseTable){
-                                    const billingDiv    = dispenseQtySpan.parentElement.parentElement.parentElement.previousElementSibling;
-                                    const resourceSpan  = billingDiv?.querySelector('.resourceSpan');
-                                    const billControlBtn  = billingDiv?.querySelector('.billControlBtn');
-                                    const stockeUpdater = frontEndStockUpdater(resourceSpan.innerHTML)
-                                    const updateStockText = stockeUpdater.rebuildStockText(response.data.resource.stock_level)
-                                    resourceSpan.innerHTML = updateStockText
-                                    billControlBtn.classList.add('billQtySpan')
-                                    dispenseQtySpan.classList.remove('d-none')
-                                    dispenseQtyInput.classList.add('d-none')
-                                    dispenseQtySpan.innerHTML = 'Dispensed: ' + response.data.qty_dispensed
+                                    // const billingDiv    = dispenseQtySpan.parentElement.parentElement.parentElement.previousElementSibling;
+                                    // const resourceSpan  = billingDiv?.querySelector('.resourceSpan');
+                                    // const billControlBtn  = billingDiv?.querySelector('.billControlBtn');
+                                    // const stockeUpdater = frontEndStockUpdater(resourceSpan.innerHTML)
+                                    // const updateStockText = stockeUpdater.rebuildStockText(response.data.resource.stock_level)
+                                    // resourceSpan.innerHTML = updateStockText
+                                    // billControlBtn.classList.add('billQtySpan')
+                                    // dispenseQtySpan.classList.remove('d-none')
+                                    // dispenseQtyInput.classList.add('d-none')
+                                    // dispenseQtySpan.innerHTML = 'Dispensed: ' + response.data.qty_dispensed
+                                    visitPrescriptionsTable.draw()
                                 } else {
                                     emergencyTable.draw()
                                 }

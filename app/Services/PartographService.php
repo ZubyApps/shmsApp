@@ -58,8 +58,6 @@ Class PartographService
         $orderBy    = 'recorded_at';
         $orderDir   =  'asc';
 
-        info('id', [$data->labourRecordId]);
-
         return $this->partograph::with(['labourRecord', 'user',])
                     ->where('labour_record_id', $data->labourRecordId)
                     ->orderBy($orderBy, $orderDir)

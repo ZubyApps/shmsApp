@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, prescriptionStatusContorller, preSearch, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, visitType, wardState } from "../helpers";
+import { admissionStatus, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, labourRecordDelay, prescriptionStatusContorller, preSearch, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, visitType, wardState } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     const waitingTable = new DataTable(tableId, {
@@ -1101,7 +1101,7 @@ const getPartographTable = (tableId, labourRecordId, modal, parameterType, labou
     });
 
     modal._element.addEventListener('hidden.bs.modal', function () {
-        labourInProgressDebounced(0)
+        labourInProgressDebounced(labourRecordDelay)
         accordionCollapseList.forEach((item) => {
             item.hide()
         })

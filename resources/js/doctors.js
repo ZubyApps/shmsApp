@@ -1,7 +1,7 @@
 import { Modal, Toast, Offcanvas, Collapse } from "bootstrap"
 import * as ECT from "@whoicd/icd11ect"
 import "@whoicd/icd11ect/style.css"
-import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal, populateAncReviewDiv, resetFocusEndofLine, populateAppointmentModal, displayWardList, clearSelectList, debounce, populateModal, getLabourInProgressDetails, dynamicDebounce, populateLabourModals, exclusiveCheckboxer, savePatographValues, setAttributesId} from "./helpers"
+import { clearDivValues, getOrdinal, getDivData, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, clearValidationErrors, doctorsModalClosingTasks, bmiCalculator, lmpCalculator, openModals, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, displayConsultations, displayVisits, closeReviewButtons, openMedicalReportModal, displayMedicalReportModal, handleValidationErrors, clearItemsList, populateWardAndBedModal, populateAncReviewDiv, resetFocusEndofLine, populateAppointmentModal, displayWardList, clearSelectList, debounce, populateModal, getLabourInProgressDetails, dynamicDebounce, populateLabourModals, exclusiveCheckboxer, savePatographValues, setAttributesId, labourRecordDelay} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
 import http from "./http";
 import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsultation, getLabTableByConsultation, getMedicationsByFilter, getInpatientsVisitTable, getOutpatientsVisitTable, getAncPatientsVisitTable, getSurgeryNoteTable, getOtherPrescriptionsByFilter, getMedicalReportTable, getPatientsFileTable, getProceduresListTable} from "./tables/doctorstables"
@@ -148,7 +148,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const labourInProgressDebounced = dynamicDebounce(labourInProgress);
 
-    labourInProgressDebounced(0)
+    labourInProgressDebounced(labourRecordDelay)
     
     let outPatientsVisitTable = getOutpatientsVisitTable('#outPatientsVisitTable', 'My Patients')
     const waitingTable = getWaitingTable('#waitingTable')
@@ -188,7 +188,7 @@ window.addEventListener('DOMContentLoaded', function () {
         inPatientsView.checkVisibility() ? inPatientsVisitTable ? inPatientsVisitTable.draw(false) : '' : ''
     }, 100)
 
-    outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw(false); labourInProgressDebounced(0)})
+    outPatientsTab.addEventListener('click', function() {outPatientsVisitTable.draw(false); labourInProgressDebounced(labourRecordDelay)})
 
     ancPatientsTab.addEventListener('click', function () {
         if ($.fn.DataTable.isDataTable( '#ancPatientsVisitTable' )){
@@ -196,7 +196,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             ancPatientsVisitTable = getAncPatientsVisitTable('#ancPatientsVisitTable', 'My Patients')
         }
-        labourInProgressDebounced(0)
+        labourInProgressDebounced(labourRecordDelay)
     })
 
     inPatientsTab.addEventListener('click', function () {
@@ -205,7 +205,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             inPatientsVisitTable = getInpatientsVisitTable('#inPatientsVisitTable', 'My Patients')
         }
-        labourInProgressDebounced(0)
+        labourInProgressDebounced(labourRecordDelay)
     })
 
     proceduresTab.addEventListener('click', function () {

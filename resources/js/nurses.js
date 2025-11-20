@@ -1,5 +1,5 @@
 import { Offcanvas, Modal, Toast, Dropdown, Collapse } from "bootstrap";
-import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, populateWardAndBedModal, clearItemsList, getSelectedResourceValues, getDatalistOptionStock, getShiftPerformance, displayWardList, clearSelectList, debounce, dynamicDebounce, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, resetFocusEndofLine, getLabourInProgressDetails } from "./helpers"
+import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, populateWardAndBedModal, clearItemsList, getSelectedResourceValues, getDatalistOptionStock, getShiftPerformance, displayWardList, clearSelectList, debounce, dynamicDebounce, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, resetFocusEndofLine, getLabourInProgressDetails, labourRecordDelay } from "./helpers"
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
@@ -149,7 +149,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const labourInProgressDebounced = dynamicDebounce(labourInProgress);
 
     shiftPerformanceDebounced(0)
-    labourInProgressDebounced(0)
+    labourInProgressDebounced(labourRecordDelay)
 
     const refreshMainTables = debounce(() => {
         inPatientsView.checkVisibility() ? inPatientsVisitTable.draw(false) : ''
@@ -178,7 +178,7 @@ window.addEventListener('DOMContentLoaded', function () {
     inPatientsTab.addEventListener('click', function() {
         inPatientsVisitTable.draw();
         shiftPerformanceDebounced(10000);
-        labourInProgressDebounced(10000);
+        labourInProgressDebounced(labourRecordDelay);
     });
 
     outPatientsTab.addEventListener('click', function () {
@@ -188,7 +188,7 @@ window.addEventListener('DOMContentLoaded', function () {
             outPatientsVisitTable = getPatientsVisitsByFilterTable('#outPatientsVisitTable', 'Outpatient')
         }
         shiftPerformanceDebounced(10000);
-        labourInProgressDebounced(10000);
+        labourInProgressDebounced(labourRecordDelay);
     })
 
     ancPatientsTab.addEventListener('click', function () {
@@ -198,7 +198,7 @@ window.addEventListener('DOMContentLoaded', function () {
             ancPatientsVisitTable = getPatientsVisitsByFilterTable('#ancPatientsVisitTable', 'ANC')
         }
         shiftPerformanceDebounced(10000);
-        labourInProgressDebounced(10000);
+        labourInProgressDebounced(labourRecordDelay);
     })
 
     bulkRequestsTab.addEventListener('click', function () {
@@ -207,7 +207,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             bulkRequestsTable = getBulkRequestTable('bulkRequestsTable', 'nurses')
         }
-        shiftPerformanceDebounced(10000);
+        // shiftPerformanceDebounced(10000);
     })
 
     theatreRequestTab.addEventListener('click', function () {
@@ -216,8 +216,8 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             theatreRequestsTable = getBulkRequestTable('theatreRequestsTable', 'theatre')
         }
-        shiftPerformanceDebounced(10000);
-        labourInProgressDebounced(10000);
+        // shiftPerformanceDebounced(10000);
+        // labourInProgressDebounced(10000);
     })
 
     emergencyTab.addEventListener('click', function () {
@@ -266,7 +266,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     waitingListCanvas._element.addEventListener('hide.bs.offcanvas', function () {
         shiftPerformanceDebounced(5000)
-        labourInProgressDebounced(5000);
+        labourInProgressDebounced(labourRecordDelay);
     })
 
     document.querySelectorAll('#shiftPerformanceDiv, #labourInProgressDiv').forEach(element => {
@@ -325,7 +325,7 @@ window.addEventListener('DOMContentLoaded', function () {
             outPatientsView.checkVisibility() ? outPatientsVisitTable.draw() : '';
             ancPatientsView.checkVisibility() ? ancPatientsVisitTable.draw() : '';
             shiftPerformanceDebounced(10000);
-            labourInProgressDebounced(10000);
+            labourInProgressDebounced(labourRecordDelay);
         })
     })
 
@@ -855,7 +855,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 modal.id == 'vitalsignsModal' ? waitingCanvas ? waitingTable.draw(false) : '' : '';
                 refreshMainTables()
                 shiftPerformanceDebounced(1000);
-                labourInProgressDebounced(10000);
+                labourInProgressDebounced(labourRecordDelay);
             }
             modal.id == 'wardAndBedModal' ? clearSelectList(modal) : ''
         })
@@ -1626,7 +1626,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 newLabourRecordModal.hide()
                 clearDivValues(newLabourRecordModal._element)
                 labourRecordTable ? labourRecordTable.draw(false) : ''
-                labourInProgressDebounced(0);
+                labourInProgressDebounced(labourRecordDelay);
             }
             createLabourRecordBtn.removeAttribute('disabled')
         })
@@ -1664,7 +1664,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                 saveLabourSummaryModal.hide()
                 labourRecordTable ? labourRecordTable.draw(false) : ''
-                labourInProgressDebounced(0);
+                labourInProgressDebounced(labourRecordDelay);
             }
             saveLabourSummaryBtn.removeAttribute('disabled')
         })
