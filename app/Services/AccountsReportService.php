@@ -19,12 +19,7 @@ use Illuminate\Support\Facades\DB;
 class AccountsReportService
 {
     public function __construct(
-        private readonly PayMethod $payMethod, 
         private readonly Payment $payment, 
-        private readonly HelperService $helperService,
-        private readonly Prescription $prescription,
-        private readonly ExpenseService $expenseService,
-        private readonly PrescriptionService $prescriptionService,
         private readonly ThirdPartyService $thirdPartyService,
         private readonly Visit $visit,
         private readonly PayPercentageService $payPercentageService
@@ -32,7 +27,7 @@ class AccountsReportService
     {
     }
 
-    public function getPayMethodsSummary(DataTableQueryParams $params, $data)
+    public function getPayMethodsIncomeSummary(DataTableQueryParams $params, $data)
     {
         $current = new CarbonImmutable();
 
@@ -68,6 +63,46 @@ class AccountsReportService
             ->whereYear('payments.created_at', $current->year)
             ->groupBy('pMethod', 'id')
             ->orderBy('paymentCount', 'desc')
+            ->get()
+            ->toArray();
+    }
+
+    public function getPayMethodsExpenseSummary(DataTableQueryParams $params, $data)
+    {
+        $current = new CarbonImmutable();
+
+        if ($data->startDate && $data->endDate){
+        return DB::table('pay_methods')
+            ->selectRaw('COUNT(expenses.id) as expenseCount, pay_methods.name AS pMethod, pay_methods.id AS id, SUM(expenses.amount) as amount')
+            ->leftJoin('expenses', 'pay_methods.id', '=', 'expenses.pay_method_id')
+            ->whereBetween('expenses.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+            ->groupBy('pMethod', 'id')
+            ->orderBy('expenseCount', 'desc')
+            ->get()
+            ->toArray();
+        }
+
+        if($data->date){
+            $date = new Carbon($data->date);
+
+            return DB::table('pay_methods')
+            ->selectRaw('COUNT(expenses.id) as expenseCount, pay_methods.name AS pMethod, pay_methods.id AS id, SUM(expenses.amount) as amount')
+            ->leftJoin('expenses', 'pay_methods.id', '=', 'expenses.pay_method_id')
+            ->whereMonth('expenses.created_at', $date->month)
+            ->whereYear('expenses.created_at', $date->year)
+            ->groupBy('pMethod', 'id')
+            ->orderBy('expenseCount', 'desc')
+            ->get()
+            ->toArray();
+        }
+
+        return DB::table('pay_methods')
+            ->selectRaw('COUNT(DISTINCT(expenses.id)) as expenseCount, pay_methods.name AS pMethod, pay_methods.id AS id, SUM(expenses.amount) as amount')
+            ->leftJoin('expenses', 'pay_methods.id', '=', 'expenses.pay_method_id')
+            ->whereMonth('expenses.created_at', $current->month)
+            ->whereYear('expenses.created_at', $current->year)
+            ->groupBy('pMethod', 'id')
+            ->orderBy('expenseCount', 'desc')
             ->get()
             ->toArray();
     }

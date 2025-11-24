@@ -340,15 +340,29 @@ class ReportController extends Controller
         return view('reports.accounts', [
             'users'         => $this->userService->listStaff(special_note:'Management'),
             'categories'    => $this->expenseCategoryController->showAll('id', 'name'),
-            'payMethods'    => $this->payMethodService->list(true),
+            'payMethods'    => $this->payMethodService->list(all: true, collection: true),
         ]);
     }
 
-    public function loadPayMethodsSummary(Request $request)
+    public function loadPayMethodsIncomeSummary(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
 
-        $payMethods = $this->accountsReportService->getPaymethodsSummary($params, $request);
+        $payMethods = $this->accountsReportService->getPaymethodsIncomeSummary($params, $request);
+        
+        return response()->json([
+            'data' => $payMethods,
+            'draw' => $params->draw,
+            'recordsTotal' => count($payMethods),
+            'recordsFiltered' => count($payMethods)
+        ]);
+    }
+
+    public function loadPayMethodsExpenseSummary(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+
+        $payMethods = $this->accountsReportService->getPaymethodsExpenseSummary($params, $request);
         
         return response()->json([
             'data' => $payMethods,

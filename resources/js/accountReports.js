@@ -1,7 +1,7 @@
 import {Modal } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
-import { getPayMethodsSummmaryTable, getCapitationPaymentsTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getByPayMethodsTable, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable, getTPSSummaryTable, getTPSByThirdPartyTable, getYearlyIncomeAndExpenseTable2, getYearlyIncomeAndExpenseTable3 } from "./tables/accountReportTables";
+import { getPayMethodsIncomeSummmaryTable, getCapitationPaymentsTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getByPayMethodsTable, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable, getTPSSummaryTable, getTPSByThirdPartyTable, getYearlyIncomeAndExpenseTable2, getYearlyIncomeAndExpenseTable3, getPayMethodsExpenseSummmaryTable,  } from "./tables/accountReportTables";
 import { getExpensesTable } from "./tables/billingTables";
 import { clearDivValues, getDivData, openModals, resetFocusEndofLine } from "./helpers";
 import { getYearlySummaryChart, getYearlySummaryChart2, getYearlySummaryChart3 } from "./charts/vitalsignsCharts";
@@ -14,8 +14,10 @@ window.addEventListener('DOMContentLoaded', function () {
     const visitsBySponsorModal       = new Modal(document.getElementById('visitsBySponsorModal'))
     const TPSByThirdPartyModal       = new Modal(document.getElementById('TPSByThirdPartyModal'))
     const payDirectModal             = new Modal(document.getElementById('payDirectModal'))
+    const expensesByPayMethodModal   = new Modal(document.getElementById('expensesByPayMethodModal'))
 
-    const payMethodDiv               = document.querySelector('.payMethodDiv')
+    const payMethodIncomeDiv         = document.querySelector('.payMethodIncomeDiv')
+    const payMethodExpenseDiv        = document.querySelector('.payMethodExpenseDiv')
     const capitationDatesDiv         = document.querySelector('.capitationDatesDiv')
     const TPSSummaryDatesDiv         = document.querySelector('.TPSSummaryDatesDiv')
     const expenseSummaryDatesDiv     = document.querySelector('.expenseSummaryDatesDiv')
@@ -28,7 +30,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const yearlySummaryChart2        = document.querySelector('#yearlySummaryChart2')
     const yearlySummaryChart3        = document.querySelector('#yearlySummaryChart3')
 
-    const payMethodSummaryTab       = document.querySelector('#nav-payMethodSummary-tab')
+    const payMethodIncomeSummaryTab       = document.querySelector('#nav-payMethodIncomeSummary-tab')
+    const payMethodExpenseSummaryTab      = document.querySelector('#nav-payMethodExpenseSummary-tab')
     const capitationPaymentsTab     = document.querySelector('#nav-capitationPayments-tab')
     const TPSSummaryTab             = document.querySelector('#nav-TPSSummary-tab')
     const expensesTab               = document.querySelector('#nav-expenses-tab')
@@ -39,8 +42,11 @@ window.addEventListener('DOMContentLoaded', function () {
     const yearlyIncomeAndExpense2    = document.querySelector('#nav-yearlyIncomeAndExpense2-tab')
     const yearlyIncomeAndExpense3    = document.querySelector('#nav-yearlyIncomeAndExpense3-tab')
 
-    const searchPayMethodByDatesBtn  = document.querySelector('.searchPayMethodByDatesBtn')
-    const searchPayMethodByMonthBtn  = document.querySelector('.searchPayMethodByMonthBtn')
+    const searchPayMethodIncomeByDatesBtn  = document.querySelector('.searchPayMethodIncomeByDatesBtn')
+    const searchPayMethodIncomeByMonthBtn  = document.querySelector('.searchPayMethodIncomeByMonthBtn')
+
+    const searchPayMethodExpenseByDatesBtn  = document.querySelector('.searchPayMethodExpenseByDatesBtn')
+    const searchPayMethodExpenseByMonthBtn  = document.querySelector('.searchPayMethodExpenseByMonthBtn')
 
     const searchByCapitationDatesBtn = document.querySelector('.searchByCapitationDatesBtn')
     const searchByCapitationMonthBtn = document.querySelector('.searchByCapitationMonthBtn')
@@ -71,13 +77,22 @@ window.addEventListener('DOMContentLoaded', function () {
     const updateExpenseBtn              = updateExpenseModal._element.querySelector('#updateExpenseBtn')
     const savePaymentBtn                = payDirectModal._element.querySelector('#savePaymentBtn')
 
-    let payMethodsSummmaryTable, capitationPaymentsTable, TPSSummaryTable, TPSByThirdPartyTable, visitSummaryTable1, visitSummaryTable2, expensesTable, expenseSummaryTable, byPayMethodTable, byExpenseCategoryTable, visitsBySponsorTable, yearlyIncomeAndExpenseTable, yearlyIncomeAndExpenseTable2, yearlyIncomeAndExpenseTable3, yearlyIncomeAndExpenseChart, yearlyIncomeAndExpenseChart2, yearlyIncomeAndExpenseChart3
+    let payMethodsIncomeSummmaryTable, capitationPaymentsTable, TPSSummaryTable, TPSByThirdPartyTable, visitSummaryTable1, visitSummaryTable2, expensesTable, expenseSummaryTable, byPayMethodTable, byExpenseCategoryTable, visitsBySponsorTable, yearlyIncomeAndExpenseTable, yearlyIncomeAndExpenseTable2, yearlyIncomeAndExpenseTable3, yearlyIncomeAndExpenseChart, yearlyIncomeAndExpenseChart2, yearlyIncomeAndExpenseChart3, payMethodsExpenseSummmaryTable, expensesByPayMethodTable
 
-    payMethodsSummmaryTable = getPayMethodsSummmaryTable('payMethodSummaryTable')
-    payMethodDiv.querySelector('#payMethodMonth').value == '' ? payMethodDiv.querySelector('#payMethodMonth').value = new Date().toISOString().slice(0,7) : ''
+    payMethodsIncomeSummmaryTable = getPayMethodsIncomeSummmaryTable('payMethodIncomeSummaryTable')
+    payMethodIncomeDiv.querySelector('#payMethodMonth').value == '' ? payMethodIncomeDiv.querySelector('#payMethodMonth').value = new Date().toISOString().slice(0,7) : ''
 
-    payMethodSummaryTab.addEventListener('click', function() {
-        payMethodsSummmaryTable.draw()
+    payMethodIncomeSummaryTab.addEventListener('click', function() {
+        payMethodsIncomeSummmaryTable.draw()
+    })
+
+    payMethodExpenseSummaryTab.addEventListener('click', function() {
+        payMethodExpenseDiv.querySelector('#payMethodMonth').value == '' ? payMethodExpenseDiv.querySelector('#payMethodMonth').value = new Date().toISOString().slice(0,7) : ''
+        if ($.fn.DataTable.isDataTable( '#payMethodsExpenseSummaryTable' )){
+            $('#payMethodsExpenseSummaryTable').dataTable().fnDraw()
+        } else {
+            payMethodsExpenseSummmaryTable = getPayMethodsExpenseSummmaryTable('payMethodsExpenseSummaryTable')
+        }
     })
 
     capitationPaymentsTab.addEventListener('click', function() {
@@ -178,20 +193,36 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
 
-    searchPayMethodByDatesBtn.addEventListener('click', function () {
-        payMethodDiv.querySelector('#payMethodMonth').value = ''
-        if ($.fn.DataTable.isDataTable( '#payMethodSummaryTable' )){
-            $('#payMethodSummaryTable').dataTable().fnDestroy()
+    searchPayMethodIncomeByDatesBtn.addEventListener('click', function () {
+        payMethodIncomeDiv.querySelector('#payMethodMonth').value = ''
+        if ($.fn.DataTable.isDataTable( '#payMethodIncomeSummaryTable' )){
+            $('#payMethodIncomeSummaryTable').dataTable().fnDestroy()
         }
-        payMethodsSummmaryTable = getPayMethodsSummmaryTable('payMethodSummaryTable', payMethodDiv.querySelector('#startDate').value, payMethodDiv.querySelector('#endDate').value)
+        payMethodsIncomeSummmaryTable = getPayMethodsIncomeSummmaryTable('payMethodIncomeSummaryTable', payMethodIncomeDiv.querySelector('#startDate').value, payMethodIncomeDiv.querySelector('#endDate').value)
     })
 
-    searchPayMethodByMonthBtn.addEventListener('click', function () {
-        payMethodDiv.querySelector('#startDate').value = ''; payMethodDiv.querySelector('#endDate').value = ''
-        if ($.fn.DataTable.isDataTable( '#payMethodSummaryTable' )){
-            $('#payMethodSummaryTable').dataTable().fnDestroy()
+    searchPayMethodIncomeByMonthBtn.addEventListener('click', function () {
+        payMethodIncomeDiv.querySelector('#startDate').value = ''; payMethodIncomeDiv.querySelector('#endDate').value = ''
+        if ($.fn.DataTable.isDataTable( '#payMethodIncomeSummaryTable' )){
+            $('#payMethodIncomeSummaryTable').dataTable().fnDestroy()
         }
-        payMethodsSummmaryTable = getPayMethodsSummmaryTable('payMethodSummaryTable', null, null, payMethodDiv.querySelector('#payMethodMonth').value)
+        payMethodsIncomeSummmaryTable = getPayMethodsIncomeSummmaryTable('payMethodIncomeSummaryTable', null, null, payMethodIncomeDiv.querySelector('#payMethodMonth').value)
+    })
+
+    searchPayMethodExpenseByDatesBtn.addEventListener('click', function () {
+        payMethodExpenseDiv.querySelector('#payMethodMonth').value = ''
+        if ($.fn.DataTable.isDataTable( '#payMethodsExpenseSummaryTable' )){
+            $('#payMethodsExpenseSummaryTable').dataTable().fnDestroy()
+        }
+        payMethodsExpenseSummmaryTable = getPayMethodsExpenseSummmaryTable('payMethodsExpenseSummaryTable', payMethodExpenseDiv.querySelector('#startDate').value, payMethodExpenseDiv.querySelector('#endDate').value)
+    })
+
+    searchPayMethodExpenseByMonthBtn.addEventListener('click', function () {
+        payMethodExpenseDiv.querySelector('#startDate').value = ''; payMethodExpenseDiv.querySelector('#endDate').value = ''
+        if ($.fn.DataTable.isDataTable( '#payMethodsExpenseSummaryTable' )){
+            $('#payMethodsExpenseSummaryTable').dataTable().fnDestroy()
+        }
+        payMethodsExpenseSummmaryTable = getPayMethodsExpenseSummmaryTable('payMethodsExpenseSummaryTable', null, null, payMethodExpenseDiv.querySelector('#payMethodMonth').value)
     })
 
     searchByCapitationDatesBtn.addEventListener('click', function () {
@@ -354,11 +385,11 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelector('#payMethodSummaryTable').addEventListener('click', function (event) {
+    document.querySelector('#payMethodIncomeSummaryTable').addEventListener('click', function (event) {
         const showPaymentsBtn    = event.target.closest('.showPaymentsBtn')
-        const payMethodfrom      = payMethodDiv.querySelector('#startDate').value
-        const payMethodTo        = payMethodDiv.querySelector('#endDate').value
-        const payMethodDate      = payMethodDiv.querySelector('#payMethodMonth').value
+        const payMethodfrom      = payMethodIncomeDiv.querySelector('#startDate').value
+        const payMethodTo        = payMethodIncomeDiv.querySelector('#endDate').value
+        const payMethodDate      = payMethodIncomeDiv.querySelector('#payMethodMonth').value
 
         if (showPaymentsBtn){
             showPaymentsBtn.setAttribute('disabled', true)
@@ -412,6 +443,41 @@ window.addEventListener('DOMContentLoaded', function () {
             
         }
 
+    })
+
+    document.querySelector('#payMethodsExpenseSummaryTable').addEventListener('click', function (event) {
+        const showExpensesBtn    = event.target.closest('.showExpensesBtn')
+        const payMethodfrom      = payMethodExpenseDiv.querySelector('#startDate').value
+        const payMethodTo        = payMethodExpenseDiv.querySelector('#endDate').value
+        const payMethodDate      = payMethodExpenseDiv.querySelector('#payMethodMonth').value
+
+        if (showExpensesBtn){
+            showExpensesBtn.setAttribute('disabled', true)
+            const payMethodId = showExpensesBtn.getAttribute('data-id')
+            expensesByPayMethodModal._element.querySelector('#paymethod').value = showExpensesBtn.getAttribute('data-paymethod')
+
+            if (payMethodDate){
+                expensesByPayMethodModal._element.querySelector('#payMethodMonth').value = payMethodDate
+                expensesByPayMethodModal._element.querySelector('#from').value = ''
+                expensesByPayMethodModal._element.querySelector('#to').value = ''
+                expensesByPayMethodTable = getExpensesTable('#expensesByPayMethodTable', 'byPayMethod', null, expensesByPayMethodModal, null, null, payMethodDate, payMethodId)
+                expensesByPayMethodModal.show()
+                return
+            }
+
+            if(payMethodfrom && payMethodTo){
+                expensesByPayMethodModal._element.querySelector('#from').value = payMethodfrom
+                expensesByPayMethodModal._element.querySelector('#to').value = payMethodTo
+                expensesByPayMethodModal._element.querySelector('#payMethodMonth').value = ''
+                expensesByPayMethodTable = getExpensesTable('#expensesByPayMethodTable', 'byPayMethod', null, expensesByPayMethodModal, payMethodfrom, payMethodTo, null, payMethodId)
+                expensesByPayMethodModal.show()
+                return
+            }
+
+            expensesByPayMethodModal._element.querySelector('#payMethodMonth').value = new Date().toISOString().slice(0,7)
+            expensesByPayMethodTable = getExpensesTable('#expensesByPayMethodTable', 'byPayMethod', null, expensesByPayMethodModal, null, null, null, payMethodId)
+            expensesByPayMethodModal.show()
+        }
     })
 
     document.querySelector('#TPSSummaryTable').addEventListener('click', function (event) {
@@ -744,6 +810,6 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     byPayMethodModal._element.addEventListener('hidden.bs.modal', function () {
-        payMethodsSummmaryTable ? payMethodsSummmaryTable.draw() : ''
+        payMethodsIncomeSummmaryTable ? payMethodsIncomeSummmaryTable.draw() : ''
     })
 })

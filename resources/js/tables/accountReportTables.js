@@ -12,10 +12,10 @@ $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
 const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 const sponsors = ['NHIS', 'HMO']
 
-const getPayMethodsSummmaryTable = (tableId, startDate, endDate, date) => {
+const getPayMethodsIncomeSummmaryTable = (tableId, startDate, endDate, date) => {
     const summaryTable = new DataTable(`#${tableId}`, {
         serverSide: true,
-        ajax:  {url: '/reports/accounts/paymethodsummary', data: {
+        ajax:  {url: '/reports/accounts/paymethodincomesummary', data: {
             'startDate' : startDate, 
             'endDate'   : endDate,
             'date'      : date,
@@ -45,6 +45,41 @@ const getPayMethodsSummmaryTable = (tableId, startDate, endDate, date) => {
         ]
     })
 
+    return summaryTable
+}
+
+const getPayMethodsExpenseSummmaryTable = (tableId, startDate, endDate, date) => {
+    const summaryTable = new DataTable(`#${tableId}`, {
+        serverSide: true,
+        ajax:  {url: '/reports/accounts/paymethodexpensesummary', data: {
+            'startDate' : startDate, 
+            'endDate'   : endDate,
+            'date'      : date,
+            }
+        },
+        orderMulti: true,
+        search:true,
+        searchDelay: 500,
+        dom: 'lfrtip<"my-5 text-center "B>',
+        buttons: [
+            {extend: 'copy', className: 'btn-primary', footer: true},
+            {extend: 'csv', className: 'btn-primary', footer: true},
+            {extend: 'excel', className: 'btn-primary', footer: true},
+            {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
+            {extend: 'print', className: 'btn-primary', footer: true},
+             ],
+        lengthMenu:[20, 40, 80, 120, 200],
+        drawCallback: function (settings) {
+            var api = this.api()
+            $( api.column(1).footer() ).html(account.format(api.column( 1, {page:'current'} ).data().sum()));
+            $( api.column(2).footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
+        },
+        columns: [
+            {data: row => `<span class="btn text-decoration-underline showExpensesBtn tooltip-test" title="show expenses" data-id="${row.id}" data-paymethod="${row.pMethod}">${row.pMethod}</span>`},
+            {data: "expenseCount"},
+            {data: row => account.format(row.amount)},
+        ]
+    })
     return summaryTable
 }
 
@@ -691,4 +726,4 @@ const getYearlyIncomeAndExpenseTable3 = (tableId, year, chart) => {
     return yearlyIncomeAndExpenseTable2
 }
 
-export {getPayMethodsSummmaryTable, getCapitationPaymentsTable, getTPSSummaryTable, getByPayMethodsTable, getTPSByThirdPartyTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable, getYearlyIncomeAndExpenseTable2, getYearlyIncomeAndExpenseTable3}
+export {getPayMethodsIncomeSummmaryTable, getCapitationPaymentsTable, getTPSSummaryTable, getByPayMethodsTable, getTPSByThirdPartyTable, getExpenseSummaryTable, getVisitSummaryTable1, getVisitSummaryTable2, getVisitsBySponsorTable, getYearlyIncomeAndExpenseTable, getYearlyIncomeAndExpenseTable2, getYearlyIncomeAndExpenseTable3, getPayMethodsExpenseSummmaryTable}

@@ -6,13 +6,11 @@ use App\Models\Expense;
 use App\Http\Requests\StoreExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
 use App\Http\Resources\ExpenseResource;
-use App\Services\DatatablesService;
 use App\Services\ExpenseService;
 
 class ExpenseController extends Controller
 {
     public function __construct(
-        private readonly DatatablesService $datatablesService, 
         private readonly ExpenseService $expenseService)
     {
         

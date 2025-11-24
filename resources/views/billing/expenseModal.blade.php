@@ -39,6 +39,15 @@
                                 @endforeach
                             </select>
                         </x-form-div>
+                        <x-form-div class="col-xl-12">
+                            <x-input-span>PayMethod<x-required-span /></x-input-span>
+                            <select class="form-select form-select-md" id="payMethod" name="payMethod">
+                                <option value="">Select Category</option>   
+                                @foreach ($payMethods as $payMethod )
+                                    <option value="{{ $payMethod->id}}" name="{{ $payMethod->name }}">{{ $payMethod->name }}</option>
+                                @endforeach
+                            </select>
+                        </x-form-div>
                         <x-form-div  class="col-xl-12">
                             <x-input-span>Comment </x-input-span>
                             <x-form-input type="text" name="comment" id="comment"/>

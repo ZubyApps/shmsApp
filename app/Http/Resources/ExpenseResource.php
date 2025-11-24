@@ -21,7 +21,8 @@ class ExpenseResource extends JsonResource
             'amount'            => $this->amount,
             'givenTo'           => $this->given_to,
             'approvedBy'        => $this->approved_by,
-            'comment'           => $this->comment
+            'comment'           => $this->comment,
+            'payMethod'         => $this->pay_method_id,
         ];
     }
 }

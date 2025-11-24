@@ -338,6 +338,7 @@
                                     <th>Given to</th>
                                     <th>Given By</th>
                                     <th>Approved By</th>
+                                    <th>Paymethod</th>
                                     <th>Comment</th>
                                     <th>Actions</th>
                                 </tr>
@@ -347,6 +348,7 @@
                                 <tr class="">
                                     <td class="fw-semibold"></td>
                                     <td class="fw-semibold">Total</td>
+                                    <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>
                                     <td class="fw-semibold"></td>

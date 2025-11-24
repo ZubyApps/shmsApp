@@ -277,11 +277,11 @@ window.addEventListener('DOMContentLoaded', function () {
                                 console.log(error)
                             } else{
                                 console.log(error)
-                                // visitPrescriptionsTable.draw()
-                                billQtySpan.classList.remove('d-none')
-                                billQtyInput.classList.add('d-none')
+                                visitPrescriptionsTable.draw()
+                                // billQtySpan.classList.remove('d-none')
+                                // billQtyInput.classList.add('d-none')
                                 removeDisabled(billingDispenseFieldset)
-                                // visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                                visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
                             }
                         })
                     }, { once: true })

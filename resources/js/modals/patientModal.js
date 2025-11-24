@@ -1,6 +1,5 @@
-import { Modal } from "bootstrap"
 import { MaskInput } from "maska"
-import { getDivData, clearDivValues, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, handleValidationErrors } from "../helpers"
+import { clearValidationErrors, getSelctedText, displayList, handleValidationErrors } from "../helpers"
 import http from "../http"
 
 

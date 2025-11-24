@@ -72,13 +72,26 @@ class PayMethodService
          };
     }
 
-    public function list($all = false)
+    public function list(?bool $all = false, ?bool $collection = false)
     {   
-        // var_dump($all) ;
-        if ($all){
-            // var_dump('all ran');
-            return $this->payMethod->orderBy('name')->get(['id', 'name']);//->toArray();
+        if ($collection){
+
+            if ($all){
+                return $this->payMethod->orderBy('name')->get(['id', 'name']);
+            }
+
+            return $this->payMethod->orderBy('name')->where('visible', true)->get(['id', 'name']);
         }
         return $this->payMethod->orderBy('name')->where('visible', true)->get(['id', 'name'])->toArray();
     }
+
+    // public function list($all = false)
+    // {   
+    //     // var_dump($all) ;
+    //     if ($all){
+    //         // var_dump('all ran');
+    //         return $this->payMethod->orderBy('name')->get(['id', 'name']);//->toArray();
+    //     }
+    //     return $this->payMethod->orderBy('name')->where('visible', true)->get(['id', 'name'])->toArray();
+    // }
 }

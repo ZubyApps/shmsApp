@@ -11,15 +11,19 @@
 @include('billing.expenseModal', ['title' => "New Expense", 'isUpdate' => false, 'isManagement' => true, 'id' => 'newExpenseModal'])
 @include('billing.expenseModal', ['title' => "Update Expense", 'isUpdate' => true, 'isManagement' => true, 'id' => 'updateExpenseModal'])
 @include('reports.modals.payDirectModal', ['title' => "New Direct Payment", 'isUpdate' => false, 'isManagement' => true, 'id' => 'payDirectModal'])
+@include('reports.modals.expensesByPayMethodModal', ['title' => 'Expense By This Pay Method', 'id' => 'expensesByPayMethodModal', 'isManagement' => true])
 
 <div class="container mt-5">
     @include('reports.reportGrid')
     <div>
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <button class="nav-link active"  id="nav-payMethodSummary-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-payMethodSummary" type="button" role="tab" aria-controls="nav-payMethodSummary"
-                    aria-selected="true">Pay Methods Summary</button>
+                <button class="nav-link active"  id="nav-payMethodIncomeSummary-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-payMethodIncomeSummary" type="button" role="tab" aria-controls="nav-payMethodIncomeSummary"
+                    aria-selected="true">Pay Methods Income Summary</button>
+                <button class="nav-link"  id="nav-payMethodExpenseSummary-tab" data-bs-toggle="tab"
+                    data-bs-target="#nav-payMethodExpenseSummary" type="button" role="tab" aria-controls="nav-payMethodExpenseSummary"
+                    aria-selected="true">Pay Methods Expense Summary</button>
                 <button class="nav-link"  id="nav-capitationPayments-tab" data-bs-toggle="tab"
                     data-bs-target="#nav-capitationPayments" type="button" role="tab" aria-controls="nav-capitationPayments"
                     aria-selected="true">Capitation Payments</button>
@@ -50,7 +54,7 @@
         </nav>
         <div class="tab-content" id="nav-tabContent">
             <!-- Pay methods summary table -->
-            <div class="tab-pane fade show active" id="nav-payMethodSummary" role="tabpanel" aria-labelledby="nav-payMethodSummary-tab" tabindex="0">
+            <div class="tab-pane fade show active" id="nav-payMethodIncomeSummary" role="tabpanel" aria-labelledby="nav-payMethodIncomeSummary-tab" tabindex="0">
                 <div class="py-2">
                     <div class="text-start py-2">
                         <button type="button" id="payDirectBtn" class="btn btn-primary">
@@ -58,23 +62,57 @@
                             Pay Direct
                         </button>
                     </div>
-                    <h5 class="card-title py-4">Pay Methods Summary</h5>
-                    <x-form-div class="col-xl-8 py-3 payMethodDiv">
+                    <h5 class="card-title py-4">Pay Methods Income Summary</h5>
+                    <x-form-div class="col-xl-8 py-3 payMethodIncomeDiv">
                         <x-input-span class="">Start</x-input-span>
                         <x-form-input type="date" name="startDate" id="startDate" />
                         <x-input-span class="">End</x-input-span>
                         <x-form-input type="date" name="endDate" id="endDate" />
-                        <button class="input-group-text searchPayMethodByDatesBtn">Search</button>
+                        <button class="input-group-text searchPayMethodIncomeByDatesBtn">Search</button>
                         <x-input-span class="">OR</x-input-span>
                         <x-input-span class="">Month/Year</x-input-span>
                         <x-form-input type="month" name="payMethodMonth" id="payMethodMonth" />
-                        <button class="input-group-text searchPayMethodByMonthBtn">Search</button>
+                        <button class="input-group-text searchPayMethodIncomeByMonthBtn">Search</button>
                     </x-form-div>
-                    <table  id="payMethodSummaryTable" class="table table-hover table-sm">
+                    <table  id="payMethodIncomeSummaryTable" class="table table-hover table-sm">
                         <thead>
                             <tr>
                                 <th>Pay Method</th>
                                 <th>Payments</th>
+                                <th>Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot class="fw-bolder">
+                            <tr>
+                                <td class="text-center">Total</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <!-- Pay methods expense summary table -->
+            <div class="tab-pane fade" id="nav-payMethodExpenseSummary" role="tabpanel" aria-labelledby="nav-payMethodExpenseSummary-tab" tabindex="0">
+                <div class="py-2">
+                    <h5 class="card-title py-4">Pay Methods Expense Summary</h5>
+                    <x-form-div class="col-xl-8 py-3 payMethodExpenseDiv">
+                        <x-input-span class="">Start</x-input-span>
+                        <x-form-input type="date" name="startDate" id="startDate" />
+                        <x-input-span class="">End</x-input-span>
+                        <x-form-input type="date" name="endDate" id="endDate" />
+                        <button class="input-group-text searchPayMethodExpenseByDatesBtn">Search</button>
+                        <x-input-span class="">OR</x-input-span>
+                        <x-input-span class="">Month/Year</x-input-span>
+                        <x-form-input type="month" name="payMethodMonth" id="payMethodMonth" />
+                        <button class="input-group-text searchPayMethodExpenseByMonthBtn">Search</button>
+                    </x-form-div>
+                    <table  id="payMethodsExpenseSummaryTable" class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>Pay Method</th>
+                                <th>Expenses</th>
                                 <th>Total Amount</th>
                             </tr>
                         </thead>
@@ -191,6 +229,7 @@
                             <th>Given to</th>
                             <th>Given By</th>
                             <th>Approved By</th>
+                            <th>Paymethod</th>
                             <th>Comment</th>
                             <th>Actions</th>
                         </tr>
@@ -200,6 +239,7 @@
                         <tr class="">
                             <td class="fw-semibold"></td>
                             <td class="fw-semibold">Total</td>
+                            <td class="fw-semibold"></td>
                             <td class="fw-semibold"></td>
                             <td class="fw-semibold"></td>
                             <td class="fw-semibold"></td>

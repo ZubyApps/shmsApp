@@ -67,10 +67,6 @@ Route::get('/', function () {
     return view('home');
 })->middleware(['auth', 'verified'])->name('Home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {    
     Route::middleware('strict')->group(function () {
         Route::prefix('admin')->group(function () {
@@ -236,7 +232,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/resources/bycategoryresource', [ReportController::class, 'loadByCategoryResource']);
             Route::get('/resources/expiratonstock', [ReportController::class, 'loadByExpirationOrStock']);
             Route::get('/accounts', [ReportController::class, 'indexAccounts'])->name('Account Reports');
-            Route::get('/accounts/paymethodsummary', [ReportController::class, 'loadPayMethodsSummary']);
+            Route::get('/accounts/paymethodincomesummary', [ReportController::class, 'loadPayMethodsIncomeSummary']);
+            Route::get('/accounts/paymethodexpensesummary', [ReportController::class, 'loadPayMethodsExpenseSummary']);
             Route::get('/accounts/capitation', [ReportController::class, 'loadCapitationPayments']);
             Route::get('/accounts/tpsssummary', [ReportController::class, 'loadTPSSummary']);
             Route::get('/accounts/tpsbythirdparty', [ReportController::class, 'loadTPSByThirdParty']);

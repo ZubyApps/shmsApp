@@ -10,6 +10,7 @@ use App\Services\UserService;
 use App\Services\BillingService;
 use App\Services\ExpenseService;
 use App\Services\PaymentService;
+use App\Services\PayMethodService;
 use App\Services\DatatablesService;
 use App\Http\Requests\DiscountRequest;
 use Illuminate\Support\Facades\Validator;
@@ -27,6 +28,7 @@ class BillingController extends Controller
         private readonly UserService $userService,
         private readonly ThirdPartyController $thirdPartyController,
         private readonly MarkedForController $markedForController,
+        private readonly PayMethodService $payMethodService
         )
     {
         
@@ -39,6 +41,7 @@ class BillingController extends Controller
             'categories'    => $this->expenseCategoryController->showAll('id', 'name'),
             'thirdParties'  => $this->thirdPartyController->showAll('id', 'short_name'),
             'markedFors'    => $this->markedForController->showAll('id', 'name'),
+            'payMethods'    => $this->payMethodService->list(collection: true),
         ]);
     }
 

@@ -513,12 +513,13 @@ const getPatientsBill = (tableId, visitId, modal, type) => {
     return billTable
 }
 
-const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate, endDate, date) => {
+const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate, endDate, date, payMethodId) => {
     const expenseTable =  new DataTable(tableId, {
         serverSide: true,
         ajax: {url: '/billing/load/expenses', data: {
             'accessor': accessor,
             'expenseCategoryId' : expenseCategoryId,
+            'payMethodId'       : payMethodId,
             'startDate'         : startDate, 
             'endDate'           : endDate,
             'date'              : date,
@@ -551,6 +552,7 @@ const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate
             {data: "givenTo"},
             {data: "givenBy"},
             {data: "approvedBy"},
+            {data: "payMethod"},
             {data: "comment"},
             {
                 sortable: false,
@@ -570,7 +572,7 @@ const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate
         ]
     });
 
-    if (accessor == 'byExpenseCategory'){
+    if (accessor == 'byExpenseCategory' || accessor == 'byPayMethod'){
         modal._element.addEventListener('hidden.bs.modal', function () {
             expenseTable.destroy()
         })
