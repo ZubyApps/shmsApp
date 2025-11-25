@@ -700,7 +700,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                 updateExpenseModal.hide()
                 clearValidationErrors(updateExpenseModal._element)
-                expensesTable ? expensesTable.draw() : ''
+                expensesTable ? expensesTable.draw(false) : ''
             }
             updateExpenseBtn.removeAttribute('disabled')
         })

@@ -670,8 +670,8 @@ window.addEventListener('DOMContentLoaded', function () {
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 updateExpenseModal.hide()
-                expensesTable ? expensesTable.draw() : ''
-                byExpenseCategoryTable ? byExpenseCategoryTable.draw() : ''
+                expensesTable ? expensesTable.draw(false) : ''
+                byExpenseCategoryTable ? byExpenseCategoryTable.draw(false) : ''
             }
             updateExpenseBtn.removeAttribute('disabled')
         })
