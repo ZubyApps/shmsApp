@@ -375,7 +375,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                 payDirectModal.hide()
                     clearDivValues(payDirectModal._element)
-                    payMethodsSummmaryTable ? payMethodsSummmaryTable.draw() : ''
+                    payMethodsIncomeSummmaryTable ? payMethodsIncomeSummmaryTable.draw() : ''
                 }
                 savePaymentBtn.removeAttribute('disabled')
         })

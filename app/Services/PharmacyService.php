@@ -72,22 +72,19 @@ class PharmacyService
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
 
             if ($data->filterBy == 'ANC'){
-                return $query->where('visit_type', 'ANC')
-                    ->where(function (Builder $query) use($searchTerm) {
-                        $query->where('created_at', 'LIKE', $searchTerm)
-                        ->orWhere(function($q) use ($searchTerm) {
+                $query->where(function (Builder $query) use($searchTerm) {
+                    $query->where('visit_type', 'ANC')
+                    ->orWhere('created_at', 'LIKE', $searchTerm)
+                    ->orWhere(function($q) use ($searchTerm) {
                             $terms = array_filter(explode(' ', trim($searchTerm)));
                             foreach ($terms as $term) {
                                 $q->where(function($subQuery) use ($term) {
-                                    $subQuery->whereRelation('first_name', 'LIKE', $term)
-                                            ->orWhereRelation('middle_name', 'LIKE', $term)
-                                            ->orWhereRelation('last_name', 'LIKE', $term);
+                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
+                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
+                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
                                 });
                             }
                         })
-                        // ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
                         ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
                         ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
@@ -111,9 +108,6 @@ class PharmacyService
                                 });
                             }
                         })
-                        // ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
                         ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
                         ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
@@ -382,7 +376,6 @@ class PharmacyService
             // -----------------------------------------------------------------
             // 7. Mark the pharmacy step as done / undone
             // -----------------------------------------------------------------
-            // info('qtys', ['billed' => $totals->total_billed, 'dispensed' => $totals->total_dispensed]);
             $visit = $prescription->visit;
             $visit->update([
                 'pharmacy_done_by' => $totals->total_billed == $totals->total_dispensed

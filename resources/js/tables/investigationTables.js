@@ -1,5 +1,5 @@
 import DataTable from 'datatables.net-bs5';
-import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
+import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
 
 const getPatientsVisitsByFilterTable = (tableId, filter) => {
     const preparedColumns = [
@@ -38,7 +38,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
         columns: preparedColumns
     });
 
-    allPatientsTable.on('draw.init', searchMin(allPatientsTable, tableId, 2))
+    allPatientsTable.on('draw.init', searchDecider(allPatientsTable, tableId, 2))
 
     return allPatientsTable
 }
