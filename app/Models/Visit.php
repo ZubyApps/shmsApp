@@ -184,42 +184,50 @@ class Visit extends Model
 
     public function totalHmsBills()
     {
-        $totalBill = 0;
-         foreach($this->prescriptions as $prescription){
-            $totalBill += $prescription->hms_bill;
-         }
+        return $this->prescriptions()->sum('hms_bill') ?? 0;
+        // $totalBill = 0;
+        //  foreach($this->prescriptions as $prescription){
+        //     $totalBill += $prescription->hms_bill;
+        //  }
 
-         return $totalBill;
+        //  return $totalBill;
     }
 
     public function totalHmsOrNhisBills()
     {
-        $totalBill = 0;
-         foreach($this->prescriptions as $prescription){
-            $totalBill += ($this->sponsor->category_name == 'NHIS' ?  $prescription->nhis_bill : $prescription->hms_bill);
-         }
+        if ($this->sponsor?->category_name === 'NHIS') {
+        return $this->prescriptions()->sum('nhis_bill') ?? 0;
+        }
 
-         return $totalBill;
+        return $this->prescriptions()->sum('hms_bill') ?? 0;
+        // $totalBill = 0;
+        //  foreach($this->prescriptions as $prescription){
+        //     $totalBill += ($this->sponsor->category_name == 'NHIS' ?  $prescription->nhis_bill : $prescription->hms_bill);
+        //  }
+
+        //  return $totalBill;
     }
 
     public function totalHmoBills()
     {
-        $totalHmoBill = 0;
-         foreach($this->prescriptions as $prescription){
-            $totalHmoBill += $prescription->hmo_bill;
-         }
+        return $this->prescriptions()->sum('hmo_bill') ?? 0;
+        // $totalHmoBill = 0;
+        //  foreach($this->prescriptions as $prescription){
+        //     $totalHmoBill += $prescription->hmo_bill;
+        //  }
 
-         return $totalHmoBill;
+        //  return $totalHmoBill;
     }
 
     public function totalNhisBills()
     {
-        $totalNhisBill = 0;
-         foreach($this->prescriptions as $prescription){
-            $totalNhisBill += $prescription->nhis_bill;
-         }
+        return $this->prescriptions()->sum('nhis_bill') ?? 0;
+        // $totalNhisBill = 0;
+        //  foreach($this->prescriptions as $prescription){
+        //     $totalNhisBill += $prescription->nhis_bill;
+        //  }
 
-         return $totalNhisBill;
+        //  return $totalNhisBill;
     }
 
     public function totalApprovedBills()
@@ -234,22 +242,23 @@ class Visit extends Model
 
     public function totalPayments()
     {
-        $totalPayment = 0;
-        foreach($this->payments as $payment){
-            $totalPayment += $payment->amount_paid;
-        }
+        return $this->payments()->sum('amount_paid') ?? 0;
+        // $totalPayment = 0;
+        // foreach($this->payments as $payment){
+        //     $totalPayment += $payment->amount_paid;
+        // }
         
-        return $totalPayment;
+        // return $totalPayment;
     }
 
     public function totalPaidPrescriptions()
     {
-        $totalPaidPrescriptions = 0;
-        foreach($this->prescriptions as $prescription){
-            $totalPaidPrescriptions += $prescription->paid;
-        }
+        // $totalPaidPrescriptions = 0;
+        // foreach($this->prescriptions as $prescription){
+        //     $totalPaidPrescriptions += $prescription->paid;
+        // }
         
-        return $totalPaidPrescriptions;
+        // return $totalPaidPrescriptions;
     }
 
     public function totalPrescriptionCapitations()

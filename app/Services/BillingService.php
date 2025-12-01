@@ -394,20 +394,20 @@ class BillingService
     {
         $allPayments = 0;
         foreach($model->visits as $visit){
-            $allPayments += $this->totalPaidPrescriptionsV($visit);
+            $allPayments += $visit->totalPaidPrescriptions();
         }
 
         return $allPayments;
     }
-    public function totalPaidPrescriptionsV($visit)
-    {
-        $totalPayments = 0;
-        foreach($visit->prescriptions as $prescription){
-            $totalPayments += $prescription->paid;
-        }
+    // public function totalPaidPrescriptionsV($visit)
+    // {
+    //     $totalPayments = 0;
+    //     foreach($visit->prescriptions as $prescription){
+    //         $totalPayments += $prescription->paid;
+    //     }
         
-        return $totalPayments;
-    }
+    //     return $totalPayments;
+    // }
 
     public function totalPaymentsV($payments)
     {

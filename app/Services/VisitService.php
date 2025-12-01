@@ -519,8 +519,8 @@ class VisitService
                             $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', $searchTerm);
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
+                            // ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', $searchTerm);
                         })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -530,8 +530,8 @@ class VisitService
                             $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', $searchTerm);
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
+                            // ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', $searchTerm);
                         })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -541,8 +541,8 @@ class VisitService
                             $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', $searchTerm);
+                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
+                            // ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', $searchTerm);
                         })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
