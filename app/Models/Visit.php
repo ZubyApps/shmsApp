@@ -253,6 +253,7 @@ class Visit extends Model
 
     public function totalPaidPrescriptions()
     {
+        return $this->prescriptions()->sum('paid') ?? 0;
         // $totalPaidPrescriptions = 0;
         // foreach($this->prescriptions as $prescription){
         //     $totalPaidPrescriptions += $prescription->paid;
