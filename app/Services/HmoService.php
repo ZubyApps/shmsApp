@@ -66,7 +66,7 @@ class HmoService
                         })
                             // ->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
                             // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                            // ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                            ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
                             ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm);
                         })
@@ -183,12 +183,12 @@ class HmoService
                         })
                         // ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
                         // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
-                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
+                        // ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm);
+                        // ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
                     })
                     
                     ->orderBy($orderBy, $orderDir)
@@ -347,11 +347,12 @@ class HmoService
                             }
                         })
                         ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm)
-                        ->orWhereRelation('resource', 'name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('resource.resourceSubCategory', 'name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('approvedBy', 'username', 'LIKE', $searchTerm)
-                        ->orWhereRelation('rejectedBy', 'username', 'LIKE', $searchTerm);
+                        ->orWhereRelation('visit.patient', 'phone', 'LIKE', $searchTerm);
+                        // ->orWhereRelation('resource', 'name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('resource.resourceSubCategory', 'name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('resource.resourceSubCategory.resourceCategory', 'name', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('approvedBy', 'username', 'LIKE', $searchTerm)
+                        // ->orWhereRelation('rejectedBy', 'username', 'LIKE', $searchTerm);
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -649,8 +650,8 @@ class HmoService
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                            ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
+                            ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm);
+                            // ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
                             // ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', $searchTerm);
                         })
                         ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
@@ -675,8 +676,8 @@ class HmoService
                             ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                            ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
+                            ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm);
+                            // ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
                             // ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', $searchTerm);
                         })
                         ->whereMonth('created_at', $date->month)
@@ -697,7 +698,7 @@ class HmoService
                             ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
                             ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm)
+                            // ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
                             ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', $searchTerm);
                         })
                         ->orderBy($orderBy, $orderDir)

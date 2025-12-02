@@ -77,13 +77,13 @@ class DoctorService
                         })
                 // ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
                 // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                // ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
-                ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
-                ->orWhereRelation('consultations', 'provisional_diagnosis', 'LIKE', $searchTerm)
-                ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
-                ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-                ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
+                ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
+                ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
+                // ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
+                // ->orWhereRelation('consultations', 'provisional_diagnosis', 'LIKE', $searchTerm)
+                // ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
+                // ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+                // ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
         });
     }
 
