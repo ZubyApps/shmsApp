@@ -145,9 +145,9 @@ const getSponsorsTable = (tableId) => {
             row.child.hide();
         }
         else {
-            if (data.showHmo) {
+            if (data?.showHmo) {
                 categoryArray.includes(data.category) ? row.child(format(data)).show() : '';
-            } else if (data.showAll) {
+            } else if (data?.showAll) {
                 row.child(format(data)).show();
             }
         }
@@ -163,7 +163,7 @@ const getAllPatientsTable = (tableId, filter) => {
             'filterBy' : filter
         }},
         orderMulti: true,
-        lengthMenu:[50, 100, 150, 200, 300],
+        lengthMenu:[20, 40, 60, 80, 100],
         search:true,
         language: {
             searchPlaceholder: searchPlaceholderText
@@ -417,7 +417,7 @@ const getVisitsTable = (tableId, startDate, endDate, filterListBy) => {
         orderMulti: true,
         search:true,
         searchDelay: 500,
-        lengthMenu:[50, 100, 150, 200, 250],
+        lengthMenu:[20, 40, 60, 80, 100],
         dom: 'l<"my-1 text-center "B>frtip',
         buttons: [
             {
@@ -475,7 +475,7 @@ const getPrePatientsTable = (tableId) => {
         serverSide: true,
         ajax:  '/patients/prepatients/load',
         orderMulti: true,
-        lengthMenu:[50, 100, 150, 200, 300],
+        lengthMenu:[10, 20, 50, 80, 100],
         search:true,
         searchDelay: 500,
         dom: 'lfrtip<"my-5 text-center "B>',

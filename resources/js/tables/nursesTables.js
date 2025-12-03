@@ -9,6 +9,7 @@ const getWaitingTable = (tableId) => {
         orderMulti: true,
         search:true,
         searchDelay: 500,
+        lengthMenu:[25, 50, 75, 100],
         language: {
             emptyTable: 'No patient is waiting',
             searchPlaceholder: searchPlaceholderText
