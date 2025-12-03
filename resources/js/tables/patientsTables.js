@@ -8,6 +8,8 @@ DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
 pdfMake.vfs = pdfFonts;
 $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
+const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'});
+
 
 const getSponsorsTable = (tableId) => {
     const sponsorsTable = new DataTable(`#${tableId}`, {
@@ -70,7 +72,6 @@ const getSponsorsTable = (tableId) => {
 
     function format(data) {
         let count = 1
-        // console.log(data.id)
         const resources = data?.resources
         if (resources?.length > 0) {
             let child = `
@@ -100,7 +101,7 @@ const getSponsorsTable = (tableId) => {
                                 <tr>
                                     <td>${thisCount}</td>
                                     <td>${r.name}</td>
-                                    <td>${r.sellingPrice}</td>
+                                    <td>${account.format(r.sellingPrice)}</td>
                                     <td>${r.category}</td>
                                     <td>${r.subCategory}</td>
                                     <td>${r.unit}</td>
