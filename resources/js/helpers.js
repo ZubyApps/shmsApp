@@ -5,7 +5,6 @@ import { isNumber } from 'chart.js/helpers';
 import { elements } from 'chart.js';
 import { httpRequest } from './httpHelpers';
 import { getPartographCharts } from './charts/partographCharts';
-const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
 function clearDivValues(div) {
     const tagName = div.querySelectorAll('input, select, textarea')
@@ -683,7 +682,7 @@ const displayItemsList2 = (datalistEl, data, optionName) => {
     data.forEach(line => {
         const option = document.createElement("OPTION")
         option.setAttribute('id', optionName)
-        option.setAttribute('value', line.name + ' ' + account(line.price))
+        option.setAttribute('value', line.name + ' ' + line.price)
         option.setAttribute('data-id', line.id)
         option.setAttribute('name', line.name)
         option.setAttribute('data-cat', line.category)
