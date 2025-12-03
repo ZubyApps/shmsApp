@@ -1,10 +1,9 @@
 import $ from 'jquery';
 import http from "./http";
 import { getAncPatientsVisitTable, getInpatientsVisitTable, getOutpatientsVisitTable } from './tables/doctorstables';
-import { isNumber } from 'chart.js/helpers';
-import { elements } from 'chart.js';
 import { httpRequest } from './httpHelpers';
 import { getPartographCharts } from './charts/partographCharts';
+const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'});
 
 function clearDivValues(div) {
     const tagName = div.querySelectorAll('input, select, textarea')
@@ -680,15 +679,17 @@ const displayItemsList = (datalistEl, data, optionName) => {
 
 const displayItemsList2 = (datalistEl, data, optionName) => {
     data.forEach(line => {
+        const addedName = line.name + ' - ' + account.format(line.price);
         const option = document.createElement("OPTION")
         option.setAttribute('id', optionName)
-        option.setAttribute('value', line.name + ' ' + line.price)
+        option.setAttribute('value', addedName)
         option.setAttribute('data-id', line.id)
-        option.setAttribute('name', line.name)
+        option.setAttribute('name', addedName)
+        option.setAttribute('data-plainname', line.name)
         option.setAttribute('data-cat', line.category)
         option.setAttribute('data-stock', +line.stock)
 
-        !datalistEl.options.namedItem(line.name) ? datalistEl.appendChild(option) : ''
+        !datalistEl.options.namedItem(addedName) ? datalistEl.appendChild(option) : ''
     })
 }
 

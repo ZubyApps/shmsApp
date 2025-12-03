@@ -1,5 +1,5 @@
 import { Modal } from "bootstrap"
-import { getDivData, clearDivValues, clearValidationErrors, displayList, openModals, getPatientSponsorDatalistOptionId, getOrdinal, displayItemsList, getDatalistOptionId } from "./helpers"
+import { getDivData, clearDivValues, clearValidationErrors, displayList, openModals, getPatientSponsorDatalistOptionId, getOrdinal, getDatalistOptionId, displayItemsList2 } from "./helpers"
 import http from "./http"
 import $ from 'jquery';
 import { getAgeAggregateTable, getAllPatientsTable, getNewRegisteredPatientsTable, getPatientsBySponsorTable, getPrePatientsTable, getSexAggregateTable, getSponsorsTable, getVisitsSummaryTable, getVisitsTable } from "./tables/patientsTables";
@@ -224,8 +224,15 @@ window.addEventListener('DOMContentLoaded', function(){
             }
             if (resourceInput.value.length > 2) {
                 http.get(`/resources/list2`, {params: {resource: resourceInput.value}}).then((response) => {
-                    displayItemsList(datalistEl, response.data, 'itemOption')
+                    displayItemsList2(datalistEl, response.data, 'itemOption')
                 })
+            }
+
+            const selectedOption = datalistEl.options.namedItem(resourceInput.value)
+
+            if (selectedOption) {
+                resourceInput.value = selectedOption.getAttribute('data-plainname')
+                selectedOption.setAttribute('name', selectedOption.getAttribute('data-plainname'))
             }
     })
 
