@@ -683,7 +683,7 @@ const displayItemsList2 = (datalistEl, data, optionName) => {
     data.forEach(line => {
         const option = document.createElement("OPTION")
         option.setAttribute('id', optionName)
-        option.setAttribute('value', line.name + ' ' + line.price)
+        option.setAttribute('value', line.name + ' ' + account(line.price))
         option.setAttribute('data-id', line.id)
         option.setAttribute('name', line.name)
         option.setAttribute('data-cat', line.category)
