@@ -5,6 +5,7 @@ import { isNumber } from 'chart.js/helpers';
 import { elements } from 'chart.js';
 import { httpRequest } from './httpHelpers';
 import { getPartographCharts } from './charts/partographCharts';
+const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
 function clearDivValues(div) {
     const tagName = div.querySelectorAll('input, select, textarea')
@@ -678,6 +679,20 @@ const displayItemsList = (datalistEl, data, optionName) => {
     })
 }
 
+const displayItemsList2 = (datalistEl, data, optionName) => {
+    data.forEach(line => {
+        const option = document.createElement("OPTION")
+        option.setAttribute('id', optionName)
+        option.setAttribute('value', line.name + ' ' + line.price)
+        option.setAttribute('data-id', line.id)
+        option.setAttribute('name', line.name)
+        option.setAttribute('data-cat', line.category)
+        option.setAttribute('data-stock', +line.stock)
+
+        !datalistEl.options.namedItem(line.name) ? datalistEl.appendChild(option) : ''
+    })
+}
+
 function getSelectedResourceValues(modal, inputEl, datalistEl) {  
     const selectedOption = datalistEl.options.namedItem(inputEl.value)
         if (selectedOption) {
@@ -1280,4 +1295,4 @@ const getTimeToNextObservation = (timeForObservation) => {
 
 const labourRecordDelay = 60000
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider, dynamicDebounce, visitType, populateModal, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, getPartographDivData, getLabourInProgressDetails, getTimeToNextObservation, labourRecordDelay}
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider, dynamicDebounce, visitType, populateModal, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, getPartographDivData, getLabourInProgressDetails, getTimeToNextObservation, labourRecordDelay, displayItemsList2}

@@ -215,7 +215,8 @@ class ResourceService
                 'name'                  => $resource->name,
                 'category'              => $resource->category,
                 'subCategory'           => $resource->sub_category,
-                'flag'                  => $resource->flag
+                'flag'                  => $resource->flag,
+                'price'                 => $resource->selling_price
             ];
         };   
     }
