@@ -298,7 +298,7 @@ class ReminderService
             }
     
             return $reminder->update([
-                'confirmed_paid'        => $data->confirmedPayDate ? new Carbon($data->confirmedPaidDate) : null,
+                'confirmed_paid'        => $data->confirmedPayDate ? new Carbon($data->confirmedPayDate) : null,
                 'amount_confirmed'      => $data->amountConfirmed ? $data->amountConfirmed : null,
                 'confirmed_paid_by'     => $data->confirmedPayDate ? $user->id : null,
                 'remind'                => $data->confirmedPayDate ? false : $reminder->remind

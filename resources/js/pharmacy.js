@@ -278,13 +278,10 @@ window.addEventListener('DOMContentLoaded', function () {
                             } else{
                                 console.log(error)
                                 visitPrescriptionsTable.draw()
-                                // billQtySpan.classList.remove('d-none')
-                                // billQtyInput.classList.add('d-none')
-                                removeDisabled(billingDispenseFieldset)
                                 visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
                             }
                         })
-                    }, { once: true })
+                    })
                 }                
             }
     
@@ -308,42 +305,33 @@ window.addEventListener('DOMContentLoaded', function () {
                             resetFocusEndofLine(dispenseQtyInput)
                             return
                         }
-                        // billingDispenseFieldset.setAttribute('disabled', 'disabled')
+                        billingDispenseFieldset.setAttribute('disabled', 'disabled')
                         http.patch(`/pharmacy/dispense/${prescriptionId}`, {quantity: dispenseQtyInput.value}, {'html' : div})
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
                                 if (isBillingDispenseTable){
-                                    // const billingDiv    = dispenseQtySpan.parentElement.parentElement.parentElement.previousElementSibling;
-                                    // const resourceSpan  = billingDiv?.querySelector('.resourceSpan');
-                                    // const billControlBtn  = billingDiv?.querySelector('.billControlBtn');
-                                    // const stockeUpdater = frontEndStockUpdater(resourceSpan.innerHTML)
-                                    // const updateStockText = stockeUpdater.rebuildStockText(response.data.resource.stock_level)
-                                    // resourceSpan.innerHTML = updateStockText
-                                    // billControlBtn.classList.add('billQtySpan')
-                                    // dispenseQtySpan.classList.remove('d-none')
-                                    // dispenseQtyInput.classList.add('d-none')
-                                    // dispenseQtySpan.innerHTML = 'Dispensed: ' + response.data.qty_dispensed
-                                    visitPrescriptionsTable.draw()
-                                } else {
-                                    emergencyTable.draw()
+                                    if (visitPrescriptionsTable){
+                                        visitPrescriptionsTable.draw()
+                                        visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                                } 
+                                emergencyTable.draw(false)
                                 }
                             }
                         })
                         .catch((error) => {
                             console.log(error)
                             if (error.response.status == 422){
-                                dispenseQtySpan.classList.remove('d-none')
-                                dispenseQtyInput.classList.add('d-none')
-                                // removeDisabled(billingDispenseFieldset)
+                                removeDisabled(billingDispenseFieldset)
                                 console.log(error)
                             } else{
                                 console.log(error)
-                                dispenseQtySpan.classList.remove('d-none')
-                                dispenseQtyInput.classList.add('d-none')
+                                visitPrescriptionsTable ? visitPrescriptionsTable.draw() : ''
+                                visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset))
+                                emergencyTable.draw(false)
                             }
                         })
                     }               
-                }, { once: true });
+                });
             }
 
             if (holdSpan){
