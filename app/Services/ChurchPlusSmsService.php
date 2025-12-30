@@ -20,12 +20,12 @@ class ChurchPlusSmsService
     public function sendSms($message, $recipients, $subject, $gateway) 
     {
         if (!$this->helperService->nccTextTime()){ 
-            info('Not sent', ['reason' => "it's not NCC text time"]);
+            // info('Not sent', ['reason' => "it's not NCC text time"]);
             return false;
         }
         
         if ($recipients == '00000000000'){
-            info('Not sent', ['reason' => 'no phone number for recipient']);
+            // info('Not sent', ['reason' => 'no phone number for recipient']);
             return false;
         }
 

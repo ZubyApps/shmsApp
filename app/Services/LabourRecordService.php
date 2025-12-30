@@ -207,7 +207,6 @@ Class LabourRecordService
     
     public function deleteSummary(LabourRecord $labourRecord): LabourRecord
     {
-        info('ran');
         $labourRecord->update([
             // Labor interventions
             'sol_amniotomy' => false,

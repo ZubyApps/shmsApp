@@ -39,9 +39,9 @@ class SendAppointmentReminder implements ShouldQueue
         $messageForDoctor = 'Dear ' . $doctorUsername . ', your appointment with ' . $patientFirstName . ' is today by ' . $appointmentTime . '. Courtesy- Sandra Hospital Management System';
         $messageForPatient = 'Dear ' . $patientFirstName . ', your appointment with ' . $doctorUsername . ' is today by ' . $appointmentTime . '. Courtesy- Sandra Hospital Management System';
         
-        $response = $churchPlusSmsService->sendSms($messageForDoctor, $this->appointment->doctor->phone_number, 'SandraHosp', $gateway);
-        $response = $churchPlusSmsService->sendSms($messageForPatient, $this->appointment->patient->phone, 'SandraHosp', $gateway);
+        $churchPlusSmsService->sendSms($messageForDoctor, $this->appointment->doctor->phone_number, 'SandraHosp', $gateway);
+        $churchPlusSmsService->sendSms($messageForPatient, $this->appointment->patient->phone, 'SandraHosp', $gateway);
 
-        $response == false ? '' : info('appointment sms sent for - ', ['patient' => $patientFirstName, 'doctor' => $doctorUsername]);
+        // $response == false ? '' : info('appointment sms sent for - ', ['patient' => $patientFirstName, 'doctor' => $doctorUsername]);
     }
 }

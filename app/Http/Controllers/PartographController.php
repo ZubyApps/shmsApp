@@ -23,7 +23,6 @@ class PartographController extends Controller
      */
     public function store(StorePartographRequest $request)
     {
-        // info(date('d-m-Y H:i:s'), [$request->recordedAt]);
         $partograph = $this->partographService->create($request, $request->user());
         
         return $partograph;

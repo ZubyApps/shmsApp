@@ -35,9 +35,9 @@ class SendMedicationReminder implements ShouldQueue
 
         $firstName = $this->medicationChart->visit->patient->first_name;
         
-        $response = $churchPlusSmsService
+        $churchPlusSmsService
         ->sendSms('Dear ' .$firstName. ', pls be reminded of your medication by '. (new Carbon($this->medicationChart->scheduled_time))->format('g:iA') . ' today. Courtesy: Sandra Hospital Management System', $this->medicationChart->visit->patient->phone, 'SandraHosp', $gateway);
         
-        $response == false ? '' : info('medications', ['sent to' => $firstName]);
+        // $response == false ? '' : info('medications', ['sent to' => $firstName]);
     }
 }

@@ -13,23 +13,6 @@ class ShiftReportTable
 {
    public function __invoke()
    {
-    //   DB::transaction(function () {   
-        
-    //      $date = (new Carbon())->subMonths(2);
- 
-    //      $shiftReports = ShiftReport::where('created_at', '<', $date.' 00:00:00')->get();
-         
-    //      if ($shiftReports->isEmpty()){
-    //          return;
-    //      }
- 
-    //      foreach($shiftReports as $report) {
-    //          $report->destroy($report->id);
-    //      }
-         
-    //      Log::info('Shift report table cleaned');
-    //    }, 2);
-
     DB::transaction(function () {
         $date = (new Carbon())->subMonths(2)->startOfDay();
 

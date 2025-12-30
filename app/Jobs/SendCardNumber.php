@@ -37,8 +37,8 @@ class SendCardNumber implements ShouldQueue
         
         $message = 'Dear ' . $firstName . ', welcome to Sandra Hospital, your Hospital Card Number is (' . $cardNumber . ') courtesy: Sandra Hospital Management System';
         
-        $response = $churchPlusSmsService->sendSms($message, $phoneNumber, 'SandraHosp', $gateway);
+        $churchPlusSmsService->sendSms($message, $phoneNumber, 'SandraHosp', $gateway);
 
-        $response == false ? '' : info('card number', ['sent to' => $firstName]);
+        // $response == false ? '' : info('card number', ['sent to' => $firstName]);
     }
 }

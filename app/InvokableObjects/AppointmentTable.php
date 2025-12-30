@@ -13,23 +13,6 @@ class AppointmentTable
 {
    public function __invoke()
    {
-    //   DB::transaction(function () {   
-        
-    //      $date = (new Carbon())->endOfDay();
- 
-    //      $appointments = Appointment::where('date', '<', $date)->get();
-         
-    //      if ($appointments->isEmpty()){
-    //          return;
-    //      }
- 
-    //      foreach($appointments as $appointment) {
-    //          $appointment->destroy($appointment->id);
-    //      }
-         
-    //      Log::info('Appointment table cleaned');
-    //    }, 2);
-
     DB::transaction(function () {
         $date = (new Carbon())->endOfDay();
 

@@ -43,16 +43,16 @@ class SendTestResultDone implements ShouldQueue
         $totalInvestigationsDone = $totalInvestigations->where('result', '!=', null)->count();
 
         if ($this->recentlySent($totalInvestigations) > 1) {
-            info('Investigation not sent', ['recently sent (less than 30min ago)' => $firstName]);
+            // info('Investigation not sent', ['recently sent (less than 30min ago)' => $firstName]);
             return;
         }
 
         $gateway = 1;
 
-        $response = $churchPlusSmsService
+        $churchPlusSmsService
         ->sendSms('Dear ' .$firstName. ' ' . $totalInvestigationsDone . ' out of ' . $totalInvestigationsC . ' of your test result(s) are ready. This notification is courtesy of Sandra Hospital Management System. To opt out, visit reception', $this->prescription->visit->patient->phone, 'SandraHosp', $gateway);
 
-        $response == false ? '' : info('Investigation', ['sent to' => $firstName, 'gateway' => $gateway]);
+        // $response == false ? '' : info('Investigation', ['sent to' => $firstName, 'gateway' => $gateway]);
     }
 
     private function recentlySent($prescriptions)

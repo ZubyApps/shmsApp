@@ -32,8 +32,8 @@ class SendOutstandingSms implements ShouldQueue
     {
         $gateway = 1;
 
-        $response = $churchPlusSmsService->sendSms($this->message, $this->recipient, 'SandraHosp', $gateway);
+        $churchPlusSmsService->sendSms($this->message, $this->recipient, 'SandraHosp', $gateway);
 
-        $response == false ? '' : info('outstanding bill', ['sent to' => $this->reminder->visit->patient->first_name]);
+        // $response == false ? '' : info('outstanding bill', ['sent to' => $this->reminder->visit->patient->first_name]);
     }
 }
