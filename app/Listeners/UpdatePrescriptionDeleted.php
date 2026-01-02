@@ -71,7 +71,7 @@ class UpdatePrescriptionDeleted
             : 0;
             
         $totalCapitationSql = $isNhis 
-            ? "(SELECT COALESCE(SUM(capitation_fee), 0) FROM prescriptions WHERE visit_id = {$visitId})"
+            ? "(SELECT COALESCE(SUM(capitation), 0) FROM prescriptions WHERE visit_id = {$visitId})"
             : 0;
 
         DB::table('visits')
@@ -82,7 +82,6 @@ class UpdatePrescriptionDeleted
                 'total_capitation'=> DB::raw($totalCapitationSql), // NEW
                 'total_paid'      => DB::raw($totalPaidSourceSql),
             ]);
-        info('prescription update ran');
     }
 
     private function updateWalkInOrMortuaryTotals(WalkIn|MortuaryService $model, float $totalPayments): void
