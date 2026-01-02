@@ -283,7 +283,7 @@ class PharmacyService
         $orderDir   =  'desc';
 
         $prescriptions = function ($query) {
-                        $query->select('id', 'visit_id', 'consultation_id', 'created_at', 'resource_id', 'user_id', 'hms_bill_by', 'dispensed_by', 'approved_by', 'rejected_by', 'prescription', 'hms_bill', 'nhis_bill', 'hms_bill_date', 'approved', 'rejected', 'hmo_note', 'qty_dispensed', 'dispense_date', 'held', 'dispense_comment', 'note', 'qty_billed')
+                        $query->select('id', 'visit_id', 'consultation_id', 'created_at', 'resource_id', 'user_id', 'hms_bill_by', 'dispensed_by', 'approved_by', 'rejected_by', 'prescription', 'hms_bill', 'nhis_bill', 'hms_bill_date', 'approved', 'rejected', 'hmo_note', 'qty_dispensed', 'dispense_date', 'held', 'dispense_comment', 'note', 'qty_billed', 'paid')
                         ->where(function(Builder $query) {
                             $query->whereRelation('resource', 'category', 'Medications')
                                 ->orWhereRelation('resource', 'category', 'Consumables');

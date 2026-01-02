@@ -133,7 +133,9 @@ class NurseService
                             }
                         })
                         ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
+                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
+                        ->orWhereRelation('consultations', 'provisional_diagnosis', 'LIKE', $searchTerm);
                     })
                     
                     ->orderBy($orderBy, $orderDir)
