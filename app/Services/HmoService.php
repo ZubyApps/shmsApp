@@ -309,7 +309,14 @@ class HmoService
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
         $query      = $this->prescription
-            ->select('id', 'visit_id', 'resource_id', 'user_id', 'consultation_id', 'prescription', 'qty_billed', 'note', 'hms_bill', 'hms_bill_date', 'hmo_bill', 'approved', 'rejected', 'qty_dispensed', 'hmo_bill_by', 'approved_by', 'rejected_by', 'created_at')->with([
+            ->select('id', 'visit_id', 'resource_id', 'user_id', 'consultation_id', 'prescription', 'qty_billed', 'note', 'hms_bill', 'hms_bill_date', 'hmo_bill', 'approved', 'rejected', 'qty_dispensed', 'hmo_bill_by', 'approved_by', 'rejected_by', 'created_at')
+            ->addSelect(['totalQtyResourceBilled' => function ($query) {
+                $query->selectRaw('sum(qty_billed)')
+                    ->from('prescriptions as p2')
+                    ->whereColumn('p2.resource_id', 'prescriptions.resource_id')
+                    ->whereColumn('p2.visit_id', 'prescriptions.visit_id');
+            }])
+            ->with([
                 'visit' => function ($query) {
                     $query->select('id', 'sponsor_id', 'patient_id', 'total_paid')
                     ->with([
@@ -327,7 +334,8 @@ class HmoService
                 'rejectedBy:id,username',
                 'user:id,username',
         ])
-        ->withSum('visitResourcePrescription as totalQtyResourceBilled', 'qty_billed');
+        // ->withSum('visitResourcePrescription as totalQtyResourceBilled', 'qty_billed')
+        ;
 
             if (! empty($params->searchTerm)) {
 

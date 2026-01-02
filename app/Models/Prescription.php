@@ -252,10 +252,9 @@ class Prescription extends Model
                     ->get();
     }
 
-    public function visitResourcePrescription(): HasMany
-    {
-        
-        return $this->hasMany(Prescription::class, 'resource_id', 'resource_id')
-            ->whereColumn('visit_id', 'prescriptions.visit_id');
-    }
+    // public function visitResourcePrescription(): HasMany
+    // {
+    //     return $this->hasMany(Prescription::class, 'resource_id', 'resource_id')
+    //         ->whereColumn('visit_id', 'prescriptions.visit_id');
+    // }
 }
