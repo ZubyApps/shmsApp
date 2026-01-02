@@ -7,6 +7,7 @@ namespace App\Services;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\UnitDescription;
 use App\Models\AddResourceStock;
 use Illuminate\Support\Facades\DB;
 use App\DataObjects\DataTableQueryParams;
@@ -35,7 +36,8 @@ class AddResourceStockService
                 'final_quantity'       => $data->finalQuantity,
                 'final_stock'          => $data->finalStock,
                 'comment'              => $data->comment,
-                'unit_purchase'        => $data->unitPurchase,
+                // 'unit_purchase'        => $data->unitPurchase,
+                'unit_purchase'        => UnitDescription::findOrFail($data->unitPurchase)->short_name,
                 'unit_description_id'  => $data->unitPurchase,
                 'purchase_price'       => $data->purchasePrice,
                 'selling_price'        => $data->sellingPrice,
@@ -45,6 +47,7 @@ class AddResourceStockService
 
             // 3. Prepare Resource update (DRY approach)
             $resourceUpdate = [
+                'unit_description'    => UnitDescription::findOrFail($data->unitPurchase)->short_name,
                 'unit_description_id' => $data->unitPurchase,
                 'purchase_price'      => $data->purchasePrice,
                 'selling_price'       => $data->sellingPrice,

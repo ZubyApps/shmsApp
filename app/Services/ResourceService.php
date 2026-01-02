@@ -7,6 +7,7 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Resource;
 use App\Models\ResourceSubCategory;
+use App\Models\UnitDescription;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,6 +33,7 @@ class ResourceService
             'selling_price'             => $data->sellingPrice,
             'reorder_level'             => $data->reOrder,
             'location'                  => $data->location,
+            'unit_description'          => UnitDescription::findOrFail($data->unitDescription)->short_name,
             'unit_description_id'       => $data->unitDescription,
             'expiry_date'               => $data->expiryDate ? (new Carbon($data->expiryDate))->lastOfMonth() : null,
         ]);
@@ -51,6 +53,7 @@ class ResourceService
             'selling_price'             => $data->sellingPrice,
             'reorder_level'             => $data->reOrder,
             'location'                  => $data->location,
+            'unit_description'          => UnitDescription::findOrFail($data->unitDescription)->short_name,
             'unit_description_id'       => $data->unitDescription,
             'expiry_date'               => $data->expiryDate ? (new Carbon($data->expiryDate))->lastOfMonth() : null,
         ]);

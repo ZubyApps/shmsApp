@@ -276,7 +276,6 @@ class VisitService
 
         
         return $query->where('closed', false)
-                    ->where('visit_type', '!=', 'ANC')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
