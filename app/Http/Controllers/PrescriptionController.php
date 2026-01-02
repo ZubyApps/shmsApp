@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ConfirmPrescriptionRequest;
 use App\Http\Requests\DiscontinuePrescriptionRequest;
 use App\Models\Prescription;
 use App\Http\Requests\StorePrescriptionRequest;
@@ -82,9 +81,9 @@ class PrescriptionController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }
 
-    public function confirmPrescription(ConfirmPrescriptionRequest $request, Prescription $prescription)
+    public function confirmPrescription(Prescription $prescription)
     {
-        return $this->prescriptionService->confirm($request, $prescription);
+        return $this->prescriptionService->confirm($prescription);
     }
 
     public function discontinuePrescription(DiscontinuePrescriptionRequest $request, Prescription $prescription)

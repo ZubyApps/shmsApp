@@ -40,15 +40,19 @@ class ExpenseCategoryService
         $orderBy    = 'created_at';
         $orderDir   = 'desc';
 
+        $query = $this->expenseCategory->select('id', 'name', 'description', 'created_at', 'user_id')
+                    ->with([
+                        'user:id,username',
+                    ])
+                    ->withExists(['expenses as hasExpenses']);
+
         if (! empty($params->searchTerm)) {
-            return $this->expenseCategory
-                        ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->expenseCategory
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
         
@@ -63,7 +67,7 @@ class ExpenseCategoryService
                 'description'   => $expenseCategory->description,
                 'createdBy'     => $expenseCategory->user->username,
                 'createdAt'     => (new Carbon($expenseCategory->created_at))->format('d/m/Y gi:a'),
-                'count'         => $expenseCategory->expenses()->count(),
+                'count'         => $expenseCategory->hasExpenses
             ];
          };
     }

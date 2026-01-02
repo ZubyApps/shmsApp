@@ -62,21 +62,22 @@ class ResourceService
     {
         $orderBy    = 'name';
         $orderDir   =  'asc';
-        $query = $this->resource::with([
-            'markedFor',
-            'resourceSubCategory.resourceCategory',
-            'medicationCategory',
-            'unitDescription',
-            'user',
-            'prescriptions',
-            'bulkRequests',
-            'addResources'
-        ]);
+        $query = $this->resource->select('id', 'marked_for_id', 'medication_category_id', 'unit_description_id', 'user_id', 'marked_for', 'name', 'flag', 'purchase_price', 'selling_price', 'reorder_level', 'stock_level', 'location', 'is_active', 'expiry_date', 'created_at', 'category', 'sub_category')
+                    ->with([
+                        'markedFor:id,name',
+                        'medicationCategory:id,name',
+                        'unitDescription:id,short_name',
+                        'user:id,username',
+                    ])
+                    ->withExists([
+                        'prescriptions as hasPrescriptions',
+                        'bulkRequests as hasBulkRequests',
+                        'addResources as hasAddResources'
+                    ]);
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-            return $this->resource
-                        ->where('name', 'LIKE', $searchTerm)
+            return $query->where('name', 'LIKE', $searchTerm)
                         ->orWhere('sub_category', 'LIKE', $searchTerm)
                         ->orWhere('category', 'LIKE', $searchTerm)
                         ->orWhereRelation('medicationCategory', 'name', 'LIKE', $searchTerm)
@@ -98,8 +99,8 @@ class ResourceService
                 'name'              => $resource->name,
                 'flag'              => $resource->flag,
                 'markedFor'         => $resource->markedFor?->name,
-                'category'          => $resource->resourceSubCategory->resourceCategory->name,
-                'subCategory'       => $resource->resourceSubCategory->name,
+                'category'          => $resource->category,
+                'subCategory'       => $resource->sub_category,
                 'medicationCategory'=> $resource->medicationCategory?->name,
                 'unit'              => $resource->unitDescription?->short_name,
                 'purchasePrice'     => $resource->purchase_price,
@@ -112,7 +113,7 @@ class ResourceService
                 'expired'           => $resource->expiry_date ? $this->dataDifferenceInDays($resource->expiry_date) : 'N/A',
                 'createdBy'         => $resource->user->username,
                 'createdAt'         => $resource->created_at->format('d/m/y'),
-                'count'             => $resource->prescriptions->count() + $resource->bulkRequests->count() + $resource->addResources->count(),
+                'count'             => $resource->hasPrescriptions ?? $resource->hasBulkRequests ?? $resource->hasAddResources,
             ];
          };
     }
@@ -139,7 +140,7 @@ class ResourceService
     public function getFormattedList($data)
     {
         if (! empty($data->resource)){
-            return $this->resource
+            return $this->resource->select('id', 'name', 'expiry_date', 'sub_category', 'category', 'flag', 'stock_level')
                         ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
                         ->where('is_active', true)
                         // ->whereNot('flag','LIKE', '%' . addcslashes($data->sponsorCat, '%_') . '%' )
@@ -151,7 +152,7 @@ class ResourceService
     public function getFormattedList2($data)
     {
         if (! empty($data->resource)){
-            return $this->resource
+            return $this->resource->select('id', 'name', 'expiry_date', 'sub_category', 'category', 'flag', 'stock_level', 'selling_price')
                         ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
                         // ->where('is_active', true)
                         // ->whereNot('flag','LIKE', '%' . addcslashes($data->sponsorCat, '%_') . '%' )
@@ -163,7 +164,7 @@ class ResourceService
     public function getBulkList($data)
     {
         if (! empty($data->resource)){
-            return $this->resource
+            return $this->resource->select('id', 'name', 'expiry_date', 'sub_category', 'category', 'flag', 'stock_level')
                             ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
                             ->where(function (Builder $query) use($data) {
                                 $query->where('category', 'Consumables')
@@ -175,9 +176,9 @@ class ResourceService
         }    
     }
 
-    public function getTheatreMarch($data)
+    public function getTheatreMatch($data)
     {
-        return $this->resource
+        return $this->resource->select('id', 'name', 'expiry_date', 'sub_category', 'category', 'flag', 'stock_level')
                         ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
                         ->where(function (Builder $query) use($data) {
                             $query->whereDoesntHave('markedFor')
@@ -191,11 +192,12 @@ class ResourceService
     public function getEmergencyList($data)
     {
         if (! empty($data->resource)){
-            return $this->resource
+            return $this->resource->select('id', 'name', 'expiry_date', 'sub_category', 'category', 'flag', 'stock_level')
                         ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
                         ->where(function(Builder $query) {
                             $query->where('category', 'Medications')
                             ->orWhere('category', 'Consumables')
+                            ->orWhere('category', 'Investigations')
                             ->orWhere('category', 'Medical Services');
                         })
                         ->where('is_active', true)
@@ -206,9 +208,38 @@ class ResourceService
            
     }
 
+    public function getRequestsList($data)
+    {
+        if (! empty($data->resource)){
+            return $this->resource->select('id', 'name', 'expiry_date', 'sub_category', 'category', 'flag', 'stock_level')
+                            ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
+                            ->where(function (Builder $query) use($data) {
+                                $query->where('category', 'Investigations');
+                            })
+                            ->where('is_active', true)
+                            ->orderBy('name', 'asc')
+                            ->get();
+        }    
+    }
+
+    public function getHospitalServicesList($data)
+    {
+        if (! empty($data->resource)){
+            return $this->resource->select('id', 'name', 'expiry_date', 'sub_category', 'category', 'flag', 'stock_level')
+                            ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
+                            ->where(function (Builder $query) use($data) {
+                                $query->where('category', 'Hospital Services');
+                            })
+                            ->where('is_active', true)
+                            ->orderBy('name', 'asc')
+                            ->get();
+        }    
+    }
+
     public function listTransformer()
     {
         return function (Resource $resource){
+
             return [
                 'id'                    => $resource->id,
                 'nameWithIndicators'    => $resource->nameWithIndicators(),

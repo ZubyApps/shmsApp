@@ -190,7 +190,7 @@ const getAllPatientsTable = (tableId, filter) => {
             {
                 sortable: false,
                 data: row => function () {
-                    if (row.count < 1) {
+                    if (!row.hasVisits) {
                         return `
                         <div class="d-flex flex-">
                             <div>

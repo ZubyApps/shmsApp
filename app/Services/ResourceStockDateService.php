@@ -41,16 +41,15 @@ class ResourceStockDateService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-
+        $query      = $this->resourceStockDate->select('id', 'user_id', 'date', 'description', 'participants', 'reset', 'created_at')
+                            ->with(['user:id,username']);
         if (! empty($params->searchTerm)) {
-            return $this->resourceStockDate
-                        ->where('date', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->where('date', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->resourceStockDate
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        

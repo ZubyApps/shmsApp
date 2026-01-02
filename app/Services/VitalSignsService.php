@@ -51,17 +51,15 @@ class VitalSignsService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
-        $query      = $this->vitalSigns::with(['user', 'visit.patient']);
+        $query      = $this->vitalSigns::with(['user:id,username', 'visit:id,visit_type'])->where('visit_id', $data->visitId);
 
         if (! empty($params->searchTerm)) {
-            return $query->Where('visit_id', $data->visitId)
-                        ->WhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->WhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $query->Where('visit_id', $data->visitId)
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        
@@ -69,7 +67,7 @@ class VitalSignsService
 
     public function getVitalSignsChartData($data)
     {
-        return $this->vitalSigns
+        return $this->vitalSigns::with(['user:id,username', 'visit:id,visit_type'])
                     ->Where('visit_id', $data->visitId)
                     ->orderBy('created_at', 'asc')
                     ->get();

@@ -111,6 +111,7 @@
                                 <th>Med Charted</th>
                                 <th>Med Served</th>
                                 <th>Other Charts</th>
+                                <th>Other Done</th>
                                 <th>Reports</th>
                             </tr>
                         </thead>
@@ -118,6 +119,8 @@
                         <tfoot class="fw-bolder">
                             <tr>
                                 <td class="text-center">Total</td>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>

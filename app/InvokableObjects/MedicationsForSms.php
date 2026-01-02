@@ -8,18 +8,20 @@ use App\Jobs\SendMedicationReminder;
 use App\Models\MedicationChart;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 
 class MedicationsForSms
 {
     public function __invoke()
    {
-       DB::transaction(function () {   
-        
         $time1 = (new CarbonImmutable())->addHour();
         $time2 = $time1->subSeconds(59);
 
-        $medications = MedicationChart::where(function(Builder $query) {
+        $medications = MedicationChart::select('id', 'visit_id', 'scheduled_time')->with([
+            'visit' => function($query){
+                $query->select('id', 'patient_id')
+                ->with(['patient:id,sms,first_name,phone']);
+            }
+        ])->where(function(Builder $query) {
                         $query->whereRelation('visit', 'admission_status', '=', 'Outpatient')
                             ->orWhere(function(Builder $query) {
                                 $query->whereRelation('visit', 'admission_status', '=', 'Inpatient')
@@ -37,9 +39,12 @@ class MedicationsForSms
 
         $medications->each(function ($medication) {
             if ($medication->visit->patient->sms) {
-                SendMedicationReminder::dispatch($medication)->delay(5);
+                SendMedicationReminder::dispatch(
+                    $medication->visit->patient->first_name,
+                    $medication->visit->patient->phone,
+                    $medication->scheduled_time
+                )->delay(5);
             }
         });
-      }, 2);
    }
 }

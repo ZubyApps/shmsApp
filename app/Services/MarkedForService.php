@@ -40,15 +40,21 @@ class MarkedForService
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
 
+        $query = $this->markedFor->select('id', 'name', 'description', 'created_at', 'user_id')
+                    ->with([
+                        'user:id,username',
+                    ])
+                    ->withExists(['resources as hasResources']);
+
         if (! empty($params->searchTerm)) {
-            return $this->markedFor
+            return $query
                         ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('description', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->markedFor
+        return $query
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
@@ -64,7 +70,7 @@ class MarkedForService
                 'description'       => $markedFor->description,
                 'createdBy'         => $markedFor->user->username,
                 'createdAt'         => (new Carbon($markedFor->created_at))->format('d/m/Y'),
-                'count'             => $markedFor->resources()->count()
+                'count'             => $markedFor->hasResources
             ];
          };
     }

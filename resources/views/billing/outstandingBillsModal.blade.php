@@ -8,18 +8,6 @@
                 </div>
                 <div class="modal-body">
                     <div class="">
-                        {{-- <div class="mb-2 form-control">
-                            <div class="row">
-                                <x-form-div class="col-xl-6">
-                                    <x-input-span>Patient</x-input-span>
-                                    <x-form-input name="patient" value="" id="patient" readonly/>
-                                </x-form-div>
-                                <x-form-div class="col-xl-6">
-                                    <x-input-span>Sponsor</x-input-span>
-                                    <x-form-input name="sponsor" value="" id="sponsor" readonly/>
-                                </x-form-div>
-                            </div>
-                        </div> --}}
                         <div class="mb-2 form-control">
                             <x-form-span>Visits with Outstanding Bills</x-form-span>
                             <div class="row overflow-auto my-3">

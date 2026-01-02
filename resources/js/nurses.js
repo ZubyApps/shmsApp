@@ -1,5 +1,5 @@
 import { Offcanvas, Modal, Toast, Dropdown, Collapse } from "bootstrap";
-import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, populateWardAndBedModal, clearItemsList, getSelectedResourceValues, getDatalistOptionStock, getShiftPerformance, displayWardList, clearSelectList, debounce, dynamicDebounce, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, resetFocusEndofLine, getLabourInProgressDetails, labourRecordDelay } from "./helpers"
+import { clearDivValues, clearValidationErrors, getOrdinal, loadingSpinners, getDivData, bmiCalculator, openModals, lmpCalculator, populatePatientSponsor, populateVitalsignsModal, populateDischargeModal, lmpCurrentCalculator, displayItemsList, getDatalistOptionId, handleValidationErrors, displayVisits, populateWardAndBedModal, clearItemsList, getSelectedResourceValues, getDatalistOptionStock, getShiftPerformance, displayWardList, clearSelectList, debounce, dynamicDebounce, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, resetFocusEndofLine, getLabourInProgressDetails, labourRecordDelay, ucFirst } from "./helpers"
 import $ from 'jquery';
 import http from "./http";
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations"
@@ -968,12 +968,16 @@ window.addEventListener('DOMContentLoaded', function () {
             const reportServiceBtn = event.target.closest('#reportServiceBtn')
             
             if (giveMedicationBtn) {
+                const prescription = giveMedicationBtn.getAttribute('data-prescription')
+                const parsedPrescription = prescriptionParser(prescription)
                 saveGivenMedicationBtn.setAttribute('data-id', giveMedicationBtn.getAttribute('data-id'))
                 saveGivenMedicationBtn.setAttribute('data-table', giveMedicationBtn.getAttribute('data-table'))
                 giveMedicationModal._element.querySelector('#patient').value = giveMedicationBtn.getAttribute('data-patient')
                 giveMedicationModal._element.querySelector('#treatment').value = giveMedicationBtn.getAttribute('data-treatment')
-                giveMedicationModal._element.querySelector('#prescription').value = giveMedicationBtn.getAttribute('data-prescription')
+                giveMedicationModal._element.querySelector('#prescription').value = prescription;
                 giveMedicationModal._element.querySelector('#dose').value = giveMedicationBtn.getAttribute('data-dose')
+                giveMedicationModal._element.querySelector('#doseGiven').value = parsedPrescription?.dose.number
+                giveMedicationModal._element.querySelector('#unit').value = parsedPrescription?.dose.unit
                 giveMedicationModal.show()
             }
     
@@ -1152,12 +1156,24 @@ window.addEventListener('DOMContentLoaded', function () {
                 const tableId = chartMedicationBtn.getAttribute('data-table')
                 const conId = chartMedicationBtn.getAttribute('data-consultation')
                 const visitId = chartMedicationBtn.getAttribute('data-visit')
+
+                const prescription = chartMedicationBtn.getAttribute('data-prescription')
+
                 chartMedicationModal._element.querySelector('#patient').value = chartMedicationBtn.getAttribute('data-patient')
                 chartMedicationModal._element.querySelector('#sponsorName').value = chartMedicationBtn.getAttribute('data-sponsor')
                 chartMedicationModal._element.querySelector('#treatment').value = chartMedicationBtn.getAttribute('data-resource')
-                chartMedicationModal._element.querySelector('#prescription').value = chartMedicationBtn.getAttribute('data-prescription')
                 chartMedicationModal._element.querySelector('#prescribedBy').value = chartMedicationBtn.getAttribute('data-prescribedBy')
                 chartMedicationModal._element.querySelector('#prescribed').value = chartMedicationBtn.getAttribute('data-prescribed')
+
+                chartMedicationModal._element.querySelector('#prescription').value = prescription
+                const parsedPrescription = prescriptionParser(prescription)
+                console.log(parsedPrescription)
+                chartMedicationModal._element.querySelector('#dose').value = parsedPrescription?.dose.number
+                chartMedicationModal._element.querySelector('#unit').value = parsedPrescription?.dose.unit
+                chartMedicationModal._element.querySelector('#frequency').value = parsedPrescription?.frequency.number
+                chartMedicationModal._element.querySelector('#intervals').value = ucFirst(parsedPrescription?.duration.unit)
+                chartMedicationModal._element.querySelector('#intervalsValue').value = parsedPrescription?.duration.number
+
                 saveMedicationChartBtn.setAttribute('data-id', prescriptionId)
                 saveMedicationChartBtn.setAttribute('data-table', tableId)
                 saveMedicationChartBtn.setAttribute('data-consultation', conId)
@@ -1190,12 +1206,18 @@ window.addEventListener('DOMContentLoaded', function () {
             }
     
             if (giveMedicationBtn) {
+                const prescription = giveMedicationBtn.getAttribute('data-prescription')
+                const parsedPrescription = prescriptionParser(prescription)
                 saveGivenMedicationBtn.setAttribute('data-id', giveMedicationBtn.getAttribute('data-id'))
                 saveGivenMedicationBtn.setAttribute('data-table', giveMedicationBtn.getAttribute('data-table'))
                 giveMedicationModal._element.querySelector('#patient').value = giveMedicationBtn.getAttribute('data-patient')
                 giveMedicationModal._element.querySelector('#treatment').value = giveMedicationBtn.getAttribute('data-treatment')
-                giveMedicationModal._element.querySelector('#prescription').value = giveMedicationBtn.getAttribute('data-prescription')
+                giveMedicationModal._element.querySelector('#prescription').value = prescription
+                
                 giveMedicationModal._element.querySelector('#dose').value = giveMedicationBtn.getAttribute('data-dose')
+                giveMedicationModal._element.querySelector('#doseGiven').value = parsedPrescription?.dose.number
+                giveMedicationModal._element.querySelector('#unit').value = parsedPrescription?.dose.unit
+
                 giveMedicationModal.show()
             }
 
@@ -1973,4 +1995,66 @@ function displayResourceList(datalistEl, data) {
 
         !datalistEl.options.namedItem(line.name) ? datalistEl.appendChild(option) : ''
     })
+}
+
+function prescriptionParser(prescription) {
+  // Map frequency terms to hours for calculations
+  const frequencyToHours = {
+    stat: 24,    // Integer for stat
+    Daily: 24.0, // Float for Daily
+    BD: 12,
+    TDS: 8,
+    QDS: 6,
+    Weekly: 168,
+    Monthly: 672
+  };
+
+  // Dose units (escaped parentheses for ml(s), etc.)
+  const doseUnits = 'mg|g|mcg|ml\\(s\\)|drops|mega|IU|kg|ltr\\(s\\)|tab\\(s\\)|cap\\(s\\)';
+  // Frequency terms
+  const frequencyTerms = 'stat|Daily|BD|TDS|QDS|Weekly|Monthly';
+  // Duration units
+  const durationUnits = 'day\\(s\\)|days';
+  // Full regex
+  const regex = new RegExp(
+    `(\\d*\\.?\\d*\\s*(?:${doseUnits}))\\s+(\\d+(?:hrly)|${frequencyTerms})\\s+for\\s+(\\d+)(${durationUnits})`
+  );
+
+  const match = prescription.match(regex);
+  if (match) {
+    const [_, dose, frequency, durationNumber, durationUnit] = match;
+    // Split dose into number and unit
+    const doseMatch = dose.match(/(\d*\.?\d*)\s*([a-zA-Z()]+)/);
+    if (doseMatch) {
+      // Determine frequency number and unit
+      let frequencyNumber, frequencyUnit;
+      if (frequency.match(/hrly/)) {
+        const frequencyMatch = frequency.match(/(\d+)(hrly)/);
+        frequencyNumber = frequencyMatch[1]; // e.g., "12"
+        frequencyUnit = frequencyMatch[2];  // e.g., "hrly"
+      } else {
+        frequencyNumber = frequencyToHours[frequency] || 0; // Map to hours (e.g., 24 for stat, 24.0 for Daily)
+        if (frequency === 'Daily') {
+          frequencyNumber = frequencyNumber.toFixed(1); // Convert 24.0 to "24.0"
+        }
+        frequencyUnit = frequency; // e.g., "Daily"
+      }
+
+      return {
+        dose: {
+          number: doseMatch[1], // e.g., "500" or "1.5"
+          unit: doseMatch[2]    // e.g., "ml(s)" or "g"
+        },
+        frequency: {
+          number: frequencyNumber, // e.g., "12" or 24 (stat) or 24.0 (Daily)
+          unit: frequencyUnit      // e.g., "hrly" or "Daily"
+        },
+        duration: {
+          number: durationNumber,  // e.g., "1" or "30"
+          unit: durationUnit       // e.g., "day(s)" or "days"
+        }
+      };
+    }
+  }
+  return null; // Return null for invalid input
 }

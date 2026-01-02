@@ -35,6 +35,8 @@ export default defineConfig({
                 'resources/js/usersReports.js',
                 'resources/js/thirdPartyServices.js',
                 'resources/js/patientForm.js',
+                'resources/js/walkIns.js',
+                'resources/js/mortuaryService.js',
             ],
             refresh: true,
         }),

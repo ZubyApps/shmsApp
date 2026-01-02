@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Prescription extends Model
 {
@@ -78,6 +79,11 @@ class Prescription extends Model
         return $this->belongsTo(User::class, 'held_by');
     }
 
+    public function sampleCollectedBy()
+    {
+        return $this->belongsTo(User::class, 'sample_collected_by');
+    }
+
     public function payment()
     {
         return $this->belongsTo(Payment::class);
@@ -101,6 +107,16 @@ class Prescription extends Model
     public function procedure() 
     {
         return $this->hasOne(Procedure::class);
+    }
+
+    public function walkIn()
+    {
+        return $this->belongsTo(WalkIn::class);
+    }
+
+    public function mortuaryService()
+    {
+        return $this->belongsTo(MortuaryService::class);
     }
 
     public function forPharmacy(int $conId)
@@ -234,5 +250,12 @@ class Prescription extends Model
                     // ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
                     ->whereBetween('hms_bill_date', [$shift->shift_start, $shiftEndTimer])
                     ->get();
+    }
+
+    public function visitResourcePrescription(): HasMany
+    {
+        
+        return $this->hasMany(Prescription::class, 'resource_id', 'resource_id')
+            ->whereColumn('visit_id', 'prescriptions.visit_id');
     }
 }

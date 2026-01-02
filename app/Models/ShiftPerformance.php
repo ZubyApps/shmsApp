@@ -12,6 +12,9 @@ class ShiftPerformance extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'staff' => 'array'
+        'shift_start' => 'datetime',
+        'shift_end'   => 'datetime',
+        'staff'       => 'array',
+        'performance' => 'float',
     ];
 }

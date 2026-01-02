@@ -51,7 +51,10 @@ Class MedicalReportService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query      = $this->medicalReport::with(['user', 'visit'])
+        $query      = $this->medicalReport->select('id', 'user_id', 'visit_id', 'doctor', 'designation', 'type', 'requested_by', 'recepients_address')->with([
+                        'user:id,username', 
+                        'visit:id,closed'
+                        ])
                         ->where('visit_id', $data->visitId);
 
         if (! empty($params->searchTerm)) {
@@ -61,8 +64,7 @@ Class MedicalReportService
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $query->where('visit_id', $data->visitId)
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        

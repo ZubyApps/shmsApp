@@ -613,7 +613,6 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                 newMedicationCategoryModal.hide()
                     clearDivValues(newMedicationCategoryModal._element)
-                    medicationCategoryTable ? medicationCategoryTable.draw() : ''
                 }
                 createMedicationCategoryBtn.removeAttribute('disabled')
         })
@@ -802,7 +801,6 @@ window.addEventListener('DOMContentLoaded', function () {
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
                 editMarkedForModal.hide()
-                markedForTable ? markedForTable.draw() : ''
             }
             saveMarkedForBtn.removeAttribute('disabled')
         })

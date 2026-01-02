@@ -40,16 +40,16 @@ class AncVitalSignsService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
-        
+        $query      = $this->ancVitalSigns::with('antenatalRegisteration.visit:id,visit_type', 'user:id,username');
         if (! empty($params->searchTerm)) {
-            return $this->ancVitalSigns
+            return $query
                         ->Where('antenatal_registeration_id', $data->ancRegId)
                         ->WhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->ancVitalSigns
+        return $query
                     ->Where('antenatal_registeration_id', $data->ancRegId)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));

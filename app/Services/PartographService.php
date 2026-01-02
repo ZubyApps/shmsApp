@@ -46,7 +46,12 @@ Class PartographService
         $orderBy    = 'recorded_at';
         $orderDir   =  'asc';
 
-        return $this->partograph
+        return $this->partograph->select('id', 'labour_record_id', 'user_id', 'updated_by', 'recorded_at', 'parameter_type', 'value', 'created_at', 'updated_at')
+                ->with([
+                        'user:id,username',
+                        'labourRecord:id',
+                        'updatedBy:id,username'
+                    ])
                     ->where('labour_record_id', $data->labourRecordId)
                     ->where('parameter_type', $data->parameterType)
                     ->orderBy($orderBy, $orderDir)
@@ -58,7 +63,12 @@ Class PartographService
         $orderBy    = 'recorded_at';
         $orderDir   =  'asc';
 
-        return $this->partograph::with(['labourRecord', 'user',])
+        return $this->partograph->select('id', 'labour_record_id', 'user_id', 'updated_by', 'recorded_at', 'parameter_type', 'value', 'created_at', 'updated_at')
+                        ->with([
+                                'user:id,username',
+                                'labourRecord:id',
+                                'updatedBy:id,username'
+                            ])
                     ->where('labour_record_id', $data->labourRecordId)
                     ->orderBy($orderBy, $orderDir)
                     ->get();

@@ -45,16 +45,17 @@ class ResourceSupplierService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query      = $this->resourceSupplier->select('id', 'user_id', 'company', 'person', 'phone', 'email', 'address', 'created_at')
+                        ->with(['user:id,username'])
+                        ->withExists(['resources as hasResources']);
 
         if (! empty($params->searchTerm)) {
-            return $this->resourceSupplier
-                        ->where('company', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->where('company', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->resourceSupplier
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        

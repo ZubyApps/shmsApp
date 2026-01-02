@@ -57,7 +57,6 @@ const getInpatientsInvestigationsTable = (tableId, notLab, button, span) => {
             emptyTable: 'No lab investigation requested'
         },
         rowCallback: (row, data) => {
-                        console.log(data.collected)
                         if (!data.collected){
                             row.classList.add('table-warning')
                             button.classList.remove('btn-primary')
@@ -94,7 +93,7 @@ const getInpatientsInvestigationsTable = (tableId, notLab, button, span) => {
                 sortable: false,
                 data: row =>  `
                         <div class="d-flex flex- ${notLab ? 'd-none' : ''}">
-                            <button class=" btn btn-${row.collected ? 'primary' : 'warning'} sampleCollectedBtn tooltip-test" id="sampleCollectedBtn" title="Sample collected ${row.collected ? row.collectedBy : '?'}" data-id="${ row.id}" data-sampleCollected="${ row.collected}">
+                            <button class=" btn btn-${row.collected ? 'primary' : 'warning'} ${row.collected ? 'unMarkSampleCollectedBtn' : 'markSampleCollectedBtn'} tooltip-test" title="Sample collected ${row.collected ? 'by ' + row.collectedBy + ' at ' + row.collected : '?'}" data-id="${ row.id}" data-sampleCollected="${ row.collected}">
                                 <i class="bi bi-check"></i>
                             </button>
                             <button class=" btn btn-primary addResultBtn tooltip-test ms-1" id="addResultBtn" title="add result" data-investigation="${row.resource}" data-table="${tableId}" title="add result" data-id="${ row.id}" data-diagnosis="${ row.diagnosis}" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">

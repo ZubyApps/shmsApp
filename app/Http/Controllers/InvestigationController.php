@@ -78,12 +78,22 @@ class InvestigationController extends Controller
         return $this->investigationService->removetTestFromList($request, $prescription, $request->user());
     }
 
+    public function markSampleCollection(Request $request, Prescription $prescription)
+    {
+        return $this->investigationService->markSampleCollection($prescription, $request->user());
+    }
+
+    public function unMarkSampleCollection(Request $request, Prescription $prescription)
+    {
+        return $this->investigationService->unMarkSampleCollection($prescription, $request->user());
+    }
+
     public function edit(Prescription $prescription)
     {
         return new InvestigationResultResource($prescription);
     }
 
-    public function getAllTestsAndResults(Request $request, Prescription $prescription)
+    public function getAllTestsAndResults(Prescription $prescription)
     {
         $prescriptions = $this->investigationService->getAllPatientsVisitsTests($prescription->visit);
 

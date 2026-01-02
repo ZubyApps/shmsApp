@@ -8,6 +8,7 @@
 @include('billing.dischargeBillModal', ['title' => 'Add Discharge Bill', 'id' => 'dischargeBillModal'])
 @include('billing.outstandingBillsModal', ['title' => "Patient's Outstanding Bills", 'isUpdate' => false, 'id' => 'outstandingBillsModal'])
 @include('billing.billModal', ['title' => "", 'isSummary' => true, 'id' => 'billModal'])
+@include('billing.posBillModal', ['title' => "", 'isPos' => true, 'isWalkIn' => false, 'id' => 'posBillModal'])
 @include('billing.expenseModal', ['title' => "New Expense", 'isUpdate' => false, 'isManagement' => false, 'id' => 'newExpenseModal'])
 @include('billing.expenseModal', ['title' => "Update Expense", 'isUpdate' => true, 'isManagement' => false, 'id' => 'updateExpenseModal'])
 @include('billing.thirdPartyServiceModal', ['title' => "Initiate Third Party Service", 'id' => 'thirdPartyServiceModal'])
@@ -231,6 +232,9 @@
 
                     <button class="nav-link" id="nav-balancing-tab" data-bs-toggle="tab" data-bs-target="#nav-balancing-view"
                         type="button" role="tab" aria-controls="nav-balancing" aria-selected="false">Balancing</button>
+
+                    <button class="nav-link" id="nav-balancingByMonth-tab" data-bs-toggle="tab" data-bs-target="#nav-balancingByMonth-view"
+                        type="button" role="tab" aria-controls="nav-balancingByMonth" aria-selected="false">Balancing By Month</button>
                     
                     <button class="nav-link" id="nav-billReminders-tab" data-bs-toggle="tab" data-bs-target="#nav-billReminders-view"
                         type="button" role="tab" aria-controls="nav-billReminders" aria-selected="false">Bill Reminders</button>
@@ -371,6 +375,28 @@
                             <button class="input-group-text searchBalanceByDateBtn">Search</button>
                         </x-form-div>
                         <table id="balancingTable" class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Total Cash</th>
+                                    <th>Total Expense</th>
+                                    <th>Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- BalancingByMonth table -->
+                <div class="tab-pane fade" id="nav-balancingByMonth-view" role="tabpanel" aria-labelledby="nav-balancingByMonth-tab"
+                    tabindex="0">
+                    <div class="py-4 ">
+                        <x-form-div class="col-xl-4 py-3 balancingMonthDateDiv">
+                            <x-input-span class="">Pick Month</x-input-span>
+                            <x-form-input type="month" name="balanceMonth" id="balanceMonth" />
+                            <button class="input-group-text searchBalanceByMonthBtn">Search</button>
+                        </x-form-div>
+                        <table id="balancingMonthTable" class="table table-sm">
                             <thead>
                                 <tr>
                                     <th>Date</th>

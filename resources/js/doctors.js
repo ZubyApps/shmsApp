@@ -1035,25 +1035,25 @@ window.addEventListener('DOMContentLoaded', function () {
 
             if (changeBillSpan){
                 const prescriptionId    = changeBillSpan.getAttribute('data-id')
-                const stock             = +changeBillSpan.getAttribute('data-stock')
+                // const stock             = +changeBillSpan.getAttribute('data-stock')
                 const div               = changeBillSpan.parentElement
                 const billQtyInput      = div.querySelector('.billInput')
 
-                if (!stock){
-                    alert('Resource is out of stock, please add to stock before billing')
-                } else {
+                // if (!stock){
+                //     alert('Resource is out of stock, please add to stock before billing')
+                // } else {
                     changeBillSpan.classList.add('d-none')
                     billQtyInput.classList.remove('d-none')
     
                     resetFocusEndofLine(billQtyInput)
                 
                     billQtyInput.addEventListener('blur', function () {
-                        if(stock - billQtyInput.value < 0) {
-                            alert('This quantity is more than the available stock, please add to stock or reduce the quantity before billing')
-                            resetFocusEndofLine(billQtyInput)
-                            return
-                        }
-                        http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value}, {'html' : div})
+                        // if(stock - billQtyInput.value < 0) {
+                        //     alert('This quantity is more than the available stock, please add to stock or reduce the quantity before billing')
+                        //     resetFocusEndofLine(billQtyInput)
+                        //     return
+                        // }
+                        http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value, notPharmacy: true}, {'html' : div})
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
                                 if ($.fn.DataTable.isDataTable('#'+table.id)){
@@ -1074,7 +1074,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                 console.log(error)
                         })
                     })
-                }                
+                // }                
             }
         })
     })

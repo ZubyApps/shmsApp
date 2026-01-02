@@ -23,7 +23,6 @@ use Illuminate\Http\Request;
 class ReportController extends Controller
 {
     public function __construct(
-        private readonly SponsorCategoryController $sponsorCategoryController, 
         private readonly DatatablesService $datatablesService, 
         private readonly PatientReportService $PatientReportService,
         private readonly MedReportService $medReportService,
@@ -40,7 +39,7 @@ class ReportController extends Controller
         private readonly UserReportService $userReportService,
         private readonly PaymentService $paymentService,
         private readonly HmoService $hmoService,
-        private readonly PayMethodService $payMethodService
+        private readonly PayMethodService $payMethodService,
         )
     {
         
@@ -150,9 +149,9 @@ class ReportController extends Controller
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
     
-        $patients = $this->medReportService->getPatientsByResource($params, $request);
+        $patients = $this->prescriptionService->getByResource($params, $request);
 
-        $loadTransformer = $this->medReportService->getByResourceTransformer();
+        $loadTransformer = $this->prescriptionService->getByResourceTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
@@ -234,17 +233,6 @@ class ReportController extends Controller
         $patients = $this->pharmacyReportService->getPharmacySummary($params, $request);
 
         $loadTransformer = $this->pharmacyReportService->getPharmacyTransformer();
-
-        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
-    }
-
-    public function loadByResourcePharmacy(Request $request)
-    {
-        $params = $this->datatablesService->getDataTableQueryParameters($request);
-    
-        $patients = $this->pharmacyReportService->getPatientsByResource($params, $request);
-
-        $loadTransformer = $this->pharmacyReportService->getByResourceTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
@@ -442,7 +430,7 @@ class ReportController extends Controller
     public function loadPaymentsByPayMethod(Request $request)
     {
         $params = $this->datatablesService->getDataTableQueryParameters($request);
-    
+
         $patients = $this->accountsReportService->getPaymentsByPayMethod($params, $request);
 
         $loadTransformer = $this->accountsReportService->getPaymentsByPayMethodTransformer();
@@ -576,6 +564,7 @@ class ReportController extends Controller
         $totalBill = $this->prescriptionService->totalYearlyIncomeFromPrescription($request);
         $totalHmoPatients = $this->paymentService->totalYearlyIncomeFromCashPatients($request);
         $totalExpenses  = $this->expenseService->totalYearlyExpense($request);
+        // var_dump($totalBill);
         $incomeArray = [...$totalBill, ...$totalHmoPatients, ...$totalExpenses];
         $months = [
             ['bill' => 0, 'cashPaid' => 0, 'expense' => 0, 'month_name' => 'January', 'm' => 1],

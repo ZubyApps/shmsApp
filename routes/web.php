@@ -1,56 +1,58 @@
 <?php
 
-use App\Http\Controllers\AddResourceStockController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HmoController;
+use App\Http\Controllers\WardController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AncVitalSignsController;
-use App\Http\Controllers\AntenatalRegisterationController;
-use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\NurseController;
+use App\Http\Controllers\VisitController;
+use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\WalkInController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\PatientController;
+use App\Http\Controllers\SponsorController;
+use App\Http\Controllers\PharmacyController;
+use App\Http\Controllers\ReminderController;
+use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\MarkedForController;
+use App\Http\Controllers\PayMethodController;
+use App\Http\Controllers\ProcedureController;
+use App\Http\Controllers\PartographController;
+use App\Http\Controllers\ThirdPartyController;
+use App\Http\Controllers\VitalSignsController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BulkRequestController;
-use App\Http\Controllers\CapitationPaymentController;
+use App\Http\Controllers\ShiftReportController;
+use App\Http\Controllers\SurgeryNoteController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DeliveryNoteController;
-use App\Http\Controllers\DoctorController;
-use App\Http\Controllers\ExpenseCategoryController;
-use App\Http\Controllers\ExpenseController;
-use App\Http\Controllers\HmoController;
-use App\Http\Controllers\InvestigationController;
 use App\Http\Controllers\LabourRecordController;
-use App\Http\Controllers\MarkedForController;
-use App\Http\Controllers\MedicalReportController;
-use App\Http\Controllers\MedicationCategoryController;
-use App\Http\Controllers\MedicationChartController;
-use App\Http\Controllers\NurseController;
 use App\Http\Controllers\NursesReportController;
 use App\Http\Controllers\NursingChartController;
-use App\Http\Controllers\PartographController;
-use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientsFileController;
-use App\Http\Controllers\PayMethodController;
-use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\PrescriptionController;
-use App\Http\Controllers\ProcedureController;
-use App\Http\Controllers\ReminderController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\ResourceCategoryController;
-use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\AncVitalSignsController;
+use App\Http\Controllers\InvestigationController;
+use App\Http\Controllers\MedicalReportController;
+use App\Http\Controllers\ExpenseCategoryController;
+use App\Http\Controllers\MedicationChartController;
+use App\Http\Controllers\MortuaryServiceController;
 use App\Http\Controllers\ResourceSponsorController;
-use App\Http\Controllers\ResourceStockDateController;
-use App\Http\Controllers\ResourceSubCategoryController;
+use App\Http\Controllers\SponsorCategoryController;
+use App\Http\Controllers\UnitDescriptionController;
+use App\Http\Controllers\AddResourceStockController;
+use App\Http\Controllers\ResourceCategoryController;
 use App\Http\Controllers\ResourceSupplierController;
 use App\Http\Controllers\ShiftPerformanceController;
-use App\Http\Controllers\ShiftReportController;
-use App\Http\Controllers\SponsorCategoryController;
-use App\Http\Controllers\SponsorController;
-use App\Http\Controllers\SurgeryNoteController;
-use App\Http\Controllers\ThirdPartyController;
+use App\Http\Controllers\CapitationPaymentController;
+use App\Http\Controllers\ResourceStockDateController;
 use App\Http\Controllers\ThirdPartyServiceController;
-use App\Http\Controllers\UnitDescriptionController;
-use App\Http\Controllers\VisitController;
-use App\Http\Controllers\VitalSignsController;
-use App\Http\Controllers\WardController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MedicationCategoryController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\ResourceSubCategoryController;
+use App\Http\Controllers\AntenatalRegisterationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -287,6 +289,8 @@ Route::middleware('auth')->group(function () {
             Route::patch('/create/{prescription}', [InvestigationController::class, 'createLabResult']);
             Route::patch('/update/{prescription}', [InvestigationController::class, 'updateLabResult']);
             Route::patch('/removalreason/{prescription}', [InvestigationController::class, 'removeLabTest']);
+            Route::patch('/marksamplecollection/{prescription}', [InvestigationController::class, 'markSampleCollection']);
+            Route::patch('/unmarksamplecollection/{prescription}', [InvestigationController::class, 'unMarkSampleCollection']);
             Route::get('/printall/{prescription}', [InvestigationController::class, 'getAllTestsAndResults']);
         });
     });
@@ -416,6 +420,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/load/summary/visits', [PatientController::class, 'loadVisitSummaryBySponsor']);
             Route::get('/load/bysponsor', [PatientController::class, 'loadPatientsBySponsor']);
             Route::get('/load/visits', [PatientController::class, 'loadVisit']);
+            Route::get('/load/linktovisits', [PatientController::class, 'loadLinkTovisits']);
             Route::get('/list', [PatientController::class, 'listPatients']);
             Route::get('/updatevisits', [PatientController::class, 'updatePatientsVisitTypes']);
             Route::get('/{patient}', [PatientController::class, 'edit']);
@@ -683,6 +688,31 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{partograph}', [PartographController::class, 'destroy']);
         Route::get('/{partograph}', [PartographController::class, 'edit']);
         Route::get('/summary/{partograph}', [PartographController::class, 'editLabourSummary']);
+    });
+
+    Route::prefix('walkins')->group(function () {
+        Route::get('', [WalkInController::class, 'index'])->name('WalkIns');
+        Route::post('', [WalkInController::class, 'store']);
+        Route::get('/load', [WalkInController::class, 'loadWalkinTable']);
+        Route::get('/summary', [WalkInController::class, 'loadBillSummary']);
+        Route::get('/list/requests', [WalkInController::class, 'listRequests']);
+        Route::post('/link/{walkIn}/{visit}', [WalkInController::class, 'linkToVisit']);
+        Route::post('/unlink/{walkIn}', [WalkInController::class, 'unLinkVisit']);
+        Route::patch('/{walkIn}', [WalkInController::class, 'update']);
+        Route::delete('/{walkIn}', [WalkInController::class, 'destroy']);
+        Route::get('/{walkIn}', [WalkInController::class, 'edit']);
+        Route::get('/printall/{prescription}', [WalkInController::class, 'getAllTestsAndResults']);
+    });
+
+    Route::prefix('mortuaryservices')->group(function () {
+        Route::get('', [MortuaryServiceController::class, 'index'])->name('Mortuary Services');
+        Route::post('', [MortuaryServiceController::class, 'store']);
+        Route::get('/load', [MortuaryServiceController::class, 'loadMortuaryTable']);
+        Route::get('/list/requests', [MortuaryServiceController::class, 'listRequests']);
+        Route::patch('/{mortuaryService}', [MortuaryServiceController::class, 'update']);
+        Route::delete('/{mortuaryService}', [MortuaryServiceController::class, 'destroy']);
+        Route::get('/{mortuaryService}', [MortuaryServiceController::class, 'edit']);
+        Route::patch('/filldate/{mortuaryService}', [MortuaryServiceController::class, 'fillDate']); 
     });
 });
 

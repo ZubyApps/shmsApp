@@ -2,10 +2,23 @@
 
 namespace App\Providers;
 
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
-use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use App\Events\CapitationPaymentCreated;
+use App\Events\PaymentCreated;
+use App\Events\PaymentDestroyed;
+use App\Events\PrescriptionBilled;
+use App\Events\PrescriptionCreated;
+use App\Events\PrescriptionTreated;
+use App\Listeners\UpdateCapitationPayment;
+use App\Listeners\UpdateCapitationPaymentCreated;
+use App\Listeners\UpdateHmoTreated;
+use App\Listeners\UpdateVisitBilling;
 use Illuminate\Support\Facades\Event;
+use App\Listeners\UpdateWalkInBilling;
+use App\Listeners\UpdateMortuaryBilling;
+use App\Listeners\UpdatePaymentCreated;
+use App\Listeners\UpdatePaymentDestroyed;
+use App\Listeners\UpdatePrescriptionBilled;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -15,9 +28,31 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-        Registered::class => [
-            SendEmailVerificationNotification::class,
+            PrescriptionCreated::class => [
+            UpdateVisitBilling::class,
+            UpdateWalkInBilling::class,
+            UpdateMortuaryBilling::class,
         ],
+
+        PrescriptionTreated::class => [
+            UpdateHmoTreated::class
+        ],
+
+        PrescriptionBilled::class => [
+            UpdatePrescriptionBilled::class
+        ],
+
+        PaymentCreated::class => [
+            UpdatePaymentCreated::class,
+        ],
+
+        PaymentDestroyed::class => [
+            UpdatePaymentDestroyed::class
+        ],
+
+        CapitationPaymentCreated::class => [
+            UpdateCapitationPaymentCreated::class
+        ]
     ];
 
     /**

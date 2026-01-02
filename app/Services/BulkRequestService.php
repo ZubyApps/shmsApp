@@ -33,11 +33,6 @@ class BulkRequestService
                 'selling_price'     => $resource->selling_price * $data->quantity,
             ]);
 
-            // if ($bulkRequest) {
-            //     $resource->stock_level = $resource->stock_level - $data->quantity;
-            //     $resource->save();
-            // }
-
             return $bulkRequest;
         });
     }
@@ -168,7 +163,7 @@ class BulkRequestService
                 'dispensedBy'       => $bulkRequest->dispensedBy?->username,
                 'dispensed'         => $bulkRequest->dispensed ? (new Carbon($bulkRequest->dispensed))->format('d/m/y g:ia'): $bulkRequest->dispensed,
                 'stock'             => $bulkRequest->resource->stock_level,
-                'access'            => request()->user()->designation->access_level > 4
+                'access'            => request()->user()->designation->access_level > 3
             ];
          };
     }
@@ -187,39 +182,26 @@ class BulkRequestService
             $resource = $bulkRequest->resource;
             $qtyDispensed = $bulkRequest->qty_dispensed;
 
-            // if ($data->qty){
-            //     if ($qtyDispensed){
-            //         $resource->stock_level = $resource->stock_level + $qtyDispensed;
-            //         $resource->save();
-            //     }
+            if ($data->qty){
+                if ($qtyDispensed){
+                    $resource->stock_level = $resource->stock_level + $qtyDispensed;
+                    $resource->save();
+                }
                 
-            //     $resource->stock_level = $resource->stock_level - (int)$data->qty;
-            //     $resource->save();
+                $resource->stock_level = $resource->stock_level - (int)$data->qty;
+                $resource->save();
 
-            // } elseif (!$data->qty) {
-            //     if ($qtyDispensed){
-            //         $resource->stock_level = $resource->stock_level + $qtyDispensed;
-            //         $resource->save();
-            //     }
-            // }
-
-                // 1. Lock the resource row to prevent race conditions
-            $resource = $bulkRequest->resource()->lockForUpdate()->first();
-
-            // 2. Normalize quantities
-            $oldQty = $qtyDispensed ?? 0;
-            $newQty = (int) ($data->qty ?? 0);
-
-        // 3. Compute new stock level: reverse old + deduct new
-            $newStock = $resource->stock_level + $oldQty - $newQty;
-
-             // 5. Update stock in ONE query
-            $resource->update(['stock_level' => $newStock]);
+            } elseif (!$data->qty) {
+                if ($qtyDispensed){
+                    $resource->stock_level = $resource->stock_level + $qtyDispensed;
+                    $resource->save();
+                }
+            }
 
             return $bulkRequest->update([
-                'qty_dispensed'     => $newQty ?? 0,
-                'dispensed'         => $newQty ? new Carbon() : null,
-                'dispensed_by'      => $newQty ? $user->id : null,
+                'qty_dispensed'     => $data->qty ?? 0,
+                'dispensed'         => $data->qty ? new Carbon() : null,
+                'dispensed_by'      => $data->qty ? $user->id : null,
             ]);
         });
     }

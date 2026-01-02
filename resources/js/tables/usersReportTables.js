@@ -93,6 +93,8 @@ const getNursesActivityTable = (tableId, designation, startDate, endDate, date) 
             $( api.column(7).footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
             $( api.column(8).footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum()));
             $( api.column(9).footer() ).html(account.format(api.column( 9, {page:'current'} ).data().sum()));
+            $( api.column(10).footer() ).html(account.format(api.column( 10, {page:'current'} ).data().sum()));
+            $( api.column(11).footer() ).html(account.format(api.column( 11, {page:'current'} ).data().sum()));
 
         },
         columns: [
@@ -106,6 +108,7 @@ const getNursesActivityTable = (tableId, designation, startDate, endDate, date) 
             {data: "charted"},
             {data: "served"},
             {data: "nursingCharts"},
+            {data: "done"},
             {data: "nursesReports"},
         ]
     })

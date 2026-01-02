@@ -165,11 +165,11 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
                                 Details
                             </a>
                             <a class="dropdown-item patientBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-hmodoneby="${ row.hmoDoneBy }" data-age="${ row.age }" data-sex="${ row.sex }" data-staffId="${ row.staffId }" data-phone="${ row.phone }">
-                                ${row.hmoDoneBy ? 'Bill sent <i class="bi bi-check-circle-fill tooltip-test text-primary" title="sent"></i>' : 'Make bill'}
+                                ${row.hmoDoneBy ? `Bill sent <i class="bi bi-check-circle-fill tooltip-test text-primary" title="sent"></i> ${row.sentOn}`  : 'Make bill'}
                             </a>
                             <a class="dropdown-item btn btn-outline-primary medicalReportBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-age="${ row.age }" data-sex="${ row.sex }">Report/Refer/Result</a>
-                            <a class="dropdown-item closeVisitBtn btn tooltip-test" title="${row.closed ? 'closed': 'close'}"  data-id="${ row.id }">
-                            ${row.closed ? '': 'Close'}
+                            <a class="dropdown-item ${row.closed ? 'openVisitBtn' : 'closeVisitBtn'} btn tooltip-test" title="${row.closed ? 'open?': 'close?'}"  data-id="${ row.id }" id="${row.closed ? 'openVisitBtn' : 'closeVisitBtn'}">
+                            ${row.closed ? 'Open? <i class="bi bi-unlock-fill"></i>': 'Close? <i class="bi bi-lock-fill"></i>'}
                             </a>
                         </li>
                     </ul>
@@ -203,6 +203,7 @@ const getApprovalListTable = (tableId, sponsor) => {
         },
         columns: [
             {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
+            {data: "age"},
             {data: row => `<span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor}</span>`},
             {data: "doctor"},
             {data: "prescribed"},
@@ -378,6 +379,7 @@ const getSentBillsTable = (tableId, startDate, endDate, date, filterByOpen) => {
             {data: "doctor"},
             {data: "diagnosis"},
             {data: "sentBy"},
+            {data: "sentOn"},
             {data: "totalHmsBill"},
             {data: "totalHmoBill"},
             {
@@ -387,9 +389,9 @@ const getSentBillsTable = (tableId, startDate, endDate, date, filterByOpen) => {
                     <button class="ms-1 btn btn-outline-primary patientBillBtn tooltip-test" title="See bill" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
                         <i class="bi bi-eye-fill"></i>
                     </button>   
-                    <button class="ms-1 btn btn-outline-primary closeVisitBtn tooltip-test" title="${row.closed ? 'closed': 'close'}" data-id="${ row.id }">
+                    <button class="ms-1 btn btn-outline-primary closeVisitBtn tooltip-test" title="${row.closed ? 'closed': 'close'}" data-id="${ row.id }" id="${row.closed ? 'openVisitBtn' : 'closeVisitBtn'}">
                     ${row.closed ? '<i class="bi bi-lock-fill"></i>': 'Close'}
-                    </button>   
+                    </button>  
                 </div>
                 `
             },

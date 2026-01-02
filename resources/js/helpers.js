@@ -891,7 +891,9 @@ const deferredCondition = (data) => {return data && data?.split(' ')[0] !== 'Def
 
 const flagIndicator = (flag) => {return flag ? 'fw-bold colour-change3' : ''}
 
-const flagPatientReason = (row) => {return row.flagPatient ? row.flagReason : ''}
+// const flagPatientReason = (row) => {return row.flagPatient ? row.flagReason : ''}
+
+const flagPatientReason = (row) => {return row.flagPatient ? row.flaggedBy ? (row.flagReason +' - '+ row.flaggedBy+ ' at '+ row.flaggedAt) : row.flagReason : ''}
 
 const flagSponsorReason = (flagSponsor) => {return flagSponsor ? 'Defaulted payment' : ''}
 
@@ -1295,4 +1297,9 @@ const getTimeToNextObservation = (timeForObservation) => {
 
 const labourRecordDelay = 60000
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider, dynamicDebounce, visitType, populateModal, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, getPartographDivData, getLabourInProgressDetails, getTimeToNextObservation, labourRecordDelay, displayItemsList2}
+function ucFirst(str) {
+  if (typeof str !== 'string' || str.length === 0) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider, dynamicDebounce, visitType, populateModal, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, getPartographDivData, getLabourInProgressDetails, getTimeToNextObservation, labourRecordDelay, displayItemsList2, ucFirst}

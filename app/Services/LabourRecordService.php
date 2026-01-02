@@ -9,8 +9,7 @@ use App\Models\User;
 use App\Models\LabourRecord;
 use Illuminate\Http\Request;
 use App\DataObjects\DataTableQueryParams;
-
-use function Laravel\Prompts\info;
+use Illuminate\Database\Eloquent\Builder;
 
 Class LabourRecordService
 {
@@ -272,12 +271,33 @@ Class LabourRecordService
         return $labourRecord;
     }
 
+    private function baseQuery(): Builder
+    {
+        return $this->labourRecord->select('id', 'visit_id', 'user_id', 'summarized_by', 'onset', 'onset_hours', 'contractions_began', 'cervical_dilation', 'created_at', )
+                    ->with([
+                        'visit' => function ($query) {
+                            $query->select('id', 'patient_id', 'sponsor_id')
+                            ->with([
+                                'patient:id,first_name,middle_name,last_name,card_no,date_of_birth',
+                                'sponsor:id,name,category_name'
+                            ]);
+                        }, 
+                        'user:id,username', 
+                        'summarizedBy:id,username', 
+                    ])
+                    ->withMax([
+                            'partographs as lastCervicalCheck' => function ($query) {
+                                $query->where('parameter_type', 'cervical_dilation');
+                            }
+                        ], 'recorded_at');
+    }
+
     public function getLabourRecords(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
 
-        return $this->labourRecord::with(['visit.patient', 'visit.sponsor', 'user', 'partographs'])
+        return $this->baseQuery()
                     ->where('visit_id', $data->visitId)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -286,6 +306,7 @@ Class LabourRecordService
     public function getLabourRecordTransformer(): callable
     {
        return  function (LabourRecord $labourRecord) {
+        $lastRecordedAt = $labourRecord->lastCervicalCheck;
             return [
                 'id'                => $labourRecord->id,
                 'date'              => $labourRecord->created_at->format('d/m/y g:ia'),
@@ -299,37 +320,21 @@ Class LabourRecordService
                 'sponsorName'       => $labourRecord->visit->sponsor->name,
                 'sponsorCategory'   => $labourRecord->visit->sponsor->category_name,
                 'summarizedBy'      => $labourRecord->summarizedBy?->username,
-                'nextCervixCheck'   => $labourRecord->partographs->where('parameter_type', 'cervical_dilation')->sortByDesc('recorded_at')->first()?->recorded_at ? 
-                                        (new Carbon($labourRecord->partographs->where('parameter_type', 'cervical_dilation')->sortByDesc('recorded_at')->first()?->recorded_at))->addHours(4)->format('Y-m-d\TH:i:s') : '',
-                
+                'nextCervixCheck'   => $lastRecordedAt 
+                                        ? (new Carbon($lastRecordedAt))
+                                            ->addHours(4)
+                                            ->format('Y-m-d\TH:i:s') 
+                                        : '',
             ];
          };
     }
 
     public function inProgress()
     {
-        return $this->labourRecord
+        return $this->baseQuery()
                     ->where('summarized_by', null)
                     ->where('created_at', '>=', Carbon::now()->subDays(7))
                     ->orderBy('created_at', 'desc')
                     ->get();
     }
-
-    // public function getLabourInProgressTransformer(): callable
-    // {
-    //    return  function (LabourRecord $labourRecord) {
-    //         return [
-    //             'id'                => $labourRecord->id,
-    //             'date'              => $labourRecord->created_at->format('d/m/y g:ia'),
-    //             'onset'             => $labourRecord->onset ? $labourRecord->onset->format('d/m/y g:ia') : '',
-    //             'onsetHours'        => $labourRecord->onset_hours ? $labourRecord->onset_hours . 'hr(s)' : '',
-    //             'membranesRuptured' => $labourRecord->m_ruptured_at ?  $labourRecord->m_ruptured_at->format('d/m/y g:ia') : '',
-    //             'contractionsBegan' => $labourRecord->contractions_began ? $labourRecord->contractions_began->format('d/m/y g:ia') : '',
-    //             'examiner'          => $labourRecord->user->username,
-    //             'patient'           => $labourRecord->visit->patient->patientId(),
-    //             'sponsorName'       => $labourRecord->visit->sponsor->name,
-    //             'sponsorCategory'   => $labourRecord->visit->sponsor->category_name,
-    //         ];
-    //      };
-    // }
 }

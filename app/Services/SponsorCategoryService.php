@@ -51,16 +51,15 @@ class SponsorCategoryService
     {
         $orderBy  =  'created_at';
         $orderDir =  'desc';
-
+        $query    = $this->sponsorCategory->select('id', 'name', 'description', 'consultation_fee', 'pay_class', 'approval', 'bill_matrix', 'balance_required', 'created_at')
+                        ->withExists(['sponsors as hasSponsor']);
         if (! empty($params->searchTerm)) {
-            return $this->sponsorCategory
-                        ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->sponsorCategory
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        
@@ -79,8 +78,7 @@ class SponsorCategoryService
                 'billMatrix'        => $sponsorCategory->bill_matrix,
                 'balanceRequired'   => $sponsorCategory->balance_required === 0 ? 'false' : 'true',
                 'createdAt'         => (new Carbon($sponsorCategory->created_at))->format('d/m/Y'),
-                'count'             => $sponsorCategory->sponsors()->count(),
-                'visits'            => $sponsorCategory->through('sponsors')->has('visits')->count()
+                'count'             => $sponsorCategory->hasSponsor,
             ];
          };
     }

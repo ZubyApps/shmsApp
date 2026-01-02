@@ -115,18 +115,16 @@ Class SurgeryNoteService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-
+        $query      = $this->surgeryNote->select('id', 'user_id', 'visit_id', 'date', 'type_of_operation', 'type_of_aneasthesia', 'surgeon', 'surgeons_notes', 'post_op_notes')
+                        ->with(['user:id,username', 'visit:id,closed'])
+                        ->where('visit_id', $data->visitId);
         if (! empty($params->searchTerm)) {
-            return $this->surgeryNote
-                        ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->where('visit_id', $data->visitId)
+            return $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->surgeryNote
-                    ->where('visit_id', $data->visitId)
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        

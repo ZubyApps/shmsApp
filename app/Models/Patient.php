@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Patient extends Model
 {
@@ -17,6 +18,11 @@ class Patient extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function flaggedBy()
+    {
+        return $this->belongsTo(User::class, 'flagged_by');
     }
 
     public function sponsor()
@@ -81,81 +87,45 @@ class Patient extends Model
 
     public function allHmsBills()
     {
-        $allHmsBills = 0;
-        foreach($this->visits as $visit){
-            $allHmsBills += $visit->totalHmsBills();
-        }
-
-        return $allHmsBills;
+        return Prescription::whereHas('visit', fn($q) => $q->where('patient_id', $this->id))->sum('hms_bill') ?? 0;
     }
 
     public function allHmsOrNhisBills()
     {
-        $allHmsBills = 0;
-        foreach($this->visits as $visit){
-            $allHmsBills += $visit->totalHmsOrNhisBills();
-        }
-
-        return $allHmsBills;
+        return Prescription::join('visits', 'prescriptions.visit_id', '=', 'visits.id')
+        ->join('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+        ->where('visits.patient_id', $this->id)
+        ->sum(DB::raw("CASE WHEN sponsors.category_name = 'NHIS' THEN prescriptions.nhis_bill ELSE prescriptions.hms_bill END"))
+        ?? 0;
     }
 
     public function allHmoBills()
     {
-        $allHmoBills = 0;
-        foreach($this->visits as $visit){
-            $allHmoBills += $visit->totalHmoBills();
-        }
-
-        return $allHmoBills;
+        return Prescription::whereHas('visit', fn($q) => $q->where('patient_id', $this->id))->sum('hmo_bill') ?? 0;
     }
 
     public function allNhisBills()
     {
-        $allNhisBills = 0;
-        foreach($this->visits as $visit){
-            $allNhisBills += $visit->totalNhisBills();
-        }
-
-        return $allNhisBills;
+        return Prescription::whereHas('visit', fn($q) => $q->where('patient_id', $this->id))->sum('nhis_bill') ?? 0;
     }
 
     public function allPayments()
     {
-        $allPayments = 0;
-        foreach($this->visits as $visit){
-            $allPayments += $visit->totalPayments();
-        }
-
-        return $allPayments;
+        return Payment::whereHas('visit', fn($q) => $q->where('patient_id', $this->id))->sum('amount_paid') ?? 0;
     }
 
     public function allPaidPrescriptions()
     {
-        $allPayments = 0;
-        foreach($this->visits as $visit){
-            $allPayments += $visit->totalPaidPrescriptions();
-        }
-
-        return $allPayments;
+        return Prescription::whereHas('visit', fn($q) => $q->where('patient_id', $this->id))->sum('paid') ?? 0;
     }
 
     public function allPaid()
     {
-        $allPaid = 0;
-        foreach($this->visits as $visit){
-            $allPaid += $visit->total_paid;
-        }
-
-        return $allPaid;
+        return Visit::where('patient_id', $this->id)->sum('total_paid') ?? 0;
     }
 
     public function allDiscounts()
     {
-        $allDiscounts = 0;
-        foreach($this->visits as $visit){
-            $allDiscounts += $visit->discount;
-        }
-
-        return $allDiscounts;
+        return Visit::where('patient_id', $this->id)->sum('discount') ?? 0;
     }
 }

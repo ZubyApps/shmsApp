@@ -43,11 +43,11 @@ Class ShiftReportService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query = $this->shiftReport::with([
-            'user',
-            'viewedBy',
-            'viewedBy1',
-            'viewedBy2',
+        $query = $this->shiftReport->select('id', 'user_id', 'created_at', 'viewed_by', 'viewed_by_1', 'viewed_by_2', 'shift', 'report', 'viewed_shift', 'viewed_shift_1', 'viewed_shift_2', 'notify', 'viewed_at', 'viewed_at_1', 'viewed_at_2')->with([
+            'user:id,username',
+            'viewedBy:id,username',
+            'viewedBy1:id,username',
+            'viewedBy2:id,username',
         ]);
 
         if (! empty($params->searchTerm)) {

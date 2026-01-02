@@ -172,7 +172,7 @@ class Visit extends Model
         return $this->hasMany(Appointment::class);
     }
 
-    public function ward(): HasOne
+    public function wards(): HasOne
     {
         return $this->hasOne(Ward::class);
     }
@@ -182,15 +182,19 @@ class Visit extends Model
         return $this->hasMany(LabourRecord::class);
     }
 
+    public function oldestVitalSign(): HasOne
+    {
+        return $this->hasOne(vitalSigns::class)->oldestOfMany();
+    }
+
+    public function latestConsultation()
+    {
+        return $this->hasOne(Consultation::class)->latestOfMany('created_at');
+    }
+
     public function totalHmsBills()
     {
         return $this->prescriptions()->sum('hms_bill') ?? 0;
-        // $totalBill = 0;
-        //  foreach($this->prescriptions as $prescription){
-        //     $totalBill += $prescription->hms_bill;
-        //  }
-
-        //  return $totalBill;
     }
 
     public function totalHmsOrNhisBills()
@@ -200,89 +204,57 @@ class Visit extends Model
         }
 
         return $this->prescriptions()->sum('hms_bill') ?? 0;
-        // $totalBill = 0;
-        //  foreach($this->prescriptions as $prescription){
-        //     $totalBill += ($this->sponsor->category_name == 'NHIS' ?  $prescription->nhis_bill : $prescription->hms_bill);
-        //  }
-
-        //  return $totalBill;
     }
 
     public function totalHmoBills()
     {
         return $this->prescriptions()->sum('hmo_bill') ?? 0;
-        // $totalHmoBill = 0;
-        //  foreach($this->prescriptions as $prescription){
-        //     $totalHmoBill += $prescription->hmo_bill;
-        //  }
-
-        //  return $totalHmoBill;
     }
 
     public function totalNhisBills()
     {
         return $this->prescriptions()->sum('nhis_bill') ?? 0;
-        // $totalNhisBill = 0;
-        //  foreach($this->prescriptions as $prescription){
-        //     $totalNhisBill += $prescription->nhis_bill;
-        //  }
-
-        //  return $totalNhisBill;
     }
 
     public function totalApprovedBills()
     {
-        $totalApprovedBill = 0;
-         foreach($this->prescriptions as $prescription){
-            $totalApprovedBill += $prescription->approved || $prescription->paid >= $prescription->hms_bill ? $prescription->hms_bill : 0;
-         }
-
-         return $totalApprovedBill;
+        return $this->prescriptions()
+        ->where(function ($q) {
+            $q->where('approved', true)
+              ->orWhereRaw('paid >= hms_bill');
+        })
+        ->sum('hms_bill') ?? 0;
     }
 
     public function totalPayments()
     {
         return $this->payments()->sum('amount_paid') ?? 0;
-        // $totalPayment = 0;
-        // foreach($this->payments as $payment){
-        //     $totalPayment += $payment->amount_paid;
-        // }
-        
-        // return $totalPayment;
     }
 
     public function totalPaidPrescriptions()
     {
         return $this->prescriptions()->sum('paid') ?? 0;
-        // $totalPaidPrescriptions = 0;
-        // foreach($this->prescriptions as $prescription){
-        //     $totalPaidPrescriptions += $prescription->paid;
-        // }
-        
-        // return $totalPaidPrescriptions;
     }
 
     public function totalPrescriptionCapitations()
     {
-        $totalPayments = 0;
-        foreach($this->prescriptions as $prescription){
-            $totalPayments += $prescription->capitation;
-        }
-        
-        return $totalPayments;
+        return $this->prescriptions()->sum('capitation') ?? 0;
     }
 
-    public function oldestVitalSign(): HasOne
+    public function refreshTotals()
     {
-        return $this->hasOne(vitalSigns::class)->oldestOfMany();
-    }
+        $sums = $this->prescriptions()
+            ->selectRaw('
+                COALESCE(SUM(paid), 0) as totalPaid, 
+                COALESCE(SUM(hms_bill), 0) as totalHmsBill, 
+                COALESCE(SUM(nhis_bill), 0) as totalNhisBill
+            ')
+            ->first();
 
-    public function prescriptionsCharted($chartTable, $comparism = '=')
-    {
-        return $this->prescriptions()->where('chartable', true)
-                    ->where('discontinued', false)
-                    ->whereDoesntHave($chartTable)
-                    ->whereRelation('resource', 'sub_category', $comparism ,'Injectable')
-                    ->count();
+        return $this->update([
+            'total_paid'      => $sums->totalPaid,
+            'total_hms_bill'  => $sums->totalHmsBill,
+            'total_nhis_bill' => $sums->totalNhisBill,
+        ]);
     }
 }

@@ -225,7 +225,8 @@ window.addEventListener('DOMContentLoaded', function () {
         table.addEventListener('click', (event) => {
             const addResultBtn        = event.target.closest('#addResultBtn')
             const removeResultBtn     = event.target.closest('#removeTestBtn')
-            const sampleCollectedBtn  = event.target.closest('#sampleCollectedBtn')
+            const markSampleCollectedBtn  = event.target.closest('.markSampleCollectedBtn')
+            const unMarkSampleCollectedBtn  = event.target.closest('.unMarkSampleCollectedBtn')
     
             if (addResultBtn) {
                 createResultBtn.setAttribute('data-id', addResultBtn.getAttribute('data-id'))
@@ -247,13 +248,37 @@ window.addEventListener('DOMContentLoaded', function () {
                 removeTestModal.show()
             }
 
-            if (sampleCollectedBtn){
-                const state = +sampleCollectedBtn.getAttribute('data-sampleCollected')
+            if (markSampleCollectedBtn){
+                const state = +markSampleCollectedBtn.getAttribute('data-sampleCollected')
                 
                 if (confirm(`Are you sure you want to mark sample as ${state ? "'Not Collected?'" : "'Collected?'"}`)) {
-                    const prescriptionId = sampleCollectedBtn.getAttribute('data-id')
+                    const prescriptionId = markSampleCollectedBtn.getAttribute('data-id')
                     // const treatmentTableId = discontinueBtn.getAttribute('data-table')
-                    http.patch(`/prescription/${prescriptionId}`)
+                    http.patch(`/investigations/marksamplecollection/${prescriptionId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            // if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {
+                            //     $('#' + treatmentTableId).dataTable().fnDraw(false)
+                            // }
+                            inpatientsInvestigationsTable.draw()
+                        }
+                    })
+                    .catch((error) => {
+                        // if (error.response.status === 403){
+                        //     alert(error.response.data.message); 
+                        // }
+                        console.log(error)
+                    })
+                }
+            }
+
+            if (unMarkSampleCollectedBtn){
+                const state = +unMarkSampleCollectedBtn.getAttribute('data-sampleCollected')
+                
+                if (confirm(`Are you sure you want to mark sample as ${state ? "'Not Collected?'" : "'Collected?'"}`)) {
+                    const prescriptionId = unMarkSampleCollectedBtn.getAttribute('data-id')
+                    // const treatmentTableId = discontinueBtn.getAttribute('data-table')
+                    http.patch(`/investigations/unmarksamplecollection/${prescriptionId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
                             // if ($.fn.DataTable.isDataTable('#' + treatmentTableId)) {

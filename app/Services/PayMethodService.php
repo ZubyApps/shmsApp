@@ -42,16 +42,17 @@ class PayMethodService
     {
         $orderBy    = 'name';
         $orderDir   =  'asc';
+        $query      = $this->payMethod->select('id', 'user_id', 'name', 'description', 'visible', 'created_at')
+                        ->with(['user:id,username'])
+                        ->withExists(['payments as hasPayments']);
 
         if (! empty($params->searchTerm)) {
-            return $this->payMethod
-                        ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->payMethod
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        
@@ -67,7 +68,7 @@ class PayMethodService
                 'visible'           => $payMethod->visible,
                 'createdBy'         => $payMethod->user->username,
                 'createdAt'         => (new Carbon($payMethod->created_at))->format('d/m/y g:ia'),
-                'count'             => $payMethod->payments()->count(),
+                'count'             => $payMethod->hasPayments, //payments()->count(),
             ];
          };
     }
@@ -84,14 +85,4 @@ class PayMethodService
         }
         return $this->payMethod->orderBy('name')->where('visible', true)->get(['id', 'name'])->toArray();
     }
-
-    // public function list($all = false)
-    // {   
-    //     // var_dump($all) ;
-    //     if ($all){
-    //         // var_dump('all ran');
-    //         return $this->payMethod->orderBy('name')->get(['id', 'name']);//->toArray();
-    //     }
-    //     return $this->payMethod->orderBy('name')->where('visible', true)->get(['id', 'name'])->toArray();
-    // }
 }

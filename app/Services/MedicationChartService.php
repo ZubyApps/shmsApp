@@ -4,17 +4,19 @@ declare(strict_types = 1);
 
 namespace App\Services;
 
-use App\DataObjects\DataTableQueryParams;
-use App\Models\MedicationChart;
+use Exception;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Ward;
-use Carbon\Carbon;
-use Carbon\CarbonImmutable;
-use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
-use Illuminate\Database\Eloquent\Builder;
+use Carbon\CarbonInterval;
+use Carbon\CarbonImmutable;
+use App\Models\Prescription;
 use Illuminate\Http\Request;
+use App\Models\MedicationChart;
 use Illuminate\Support\Facades\DB;
+use App\DataObjects\DataTableQueryParams;
+use Illuminate\Database\Eloquent\Builder;
 
 class MedicationChartService
 {
@@ -27,46 +29,109 @@ class MedicationChartService
     {
     }
 
+    // public function create(Request $data, User $user)
+    // {
+    //     $tz = 'Africa/Lagos';
+    //     $hours    = strtolower($data->intervals) == 'hours';
+    //     $interval = $hours ? CarbonInterval::minutes($data->frequency) : CarbonInterval::hours($data->frequency);
+    //     $start = new CarbonImmutable($data->date, $tz);
+    //     $end   = $hours ? $start->addHours($data->intervalsValue) : $start->addDays($data->intervalsValue);
+    //     $dates = new CarbonPeriod($start, $interval, $end, CarbonPeriod::EXCLUDE_END_DATE);
+
+    //     if (count($dates) > 120) {
+    //         return response()->json(
+    //             ['errors' => [
+    //                 'frequency' => ['This frequency may be too high'],
+    //                 'intervals' => ['or the hours/days are too many']
+    //         ]], 422);
+    //     }
+
+    //     return DB::transaction(function () use($data, $user, $dates, $tz) {
+    //         $iteration = 0;
+
+    //         foreach ($dates as $date) {
+    //             $iteration++;
+    //             $charts = $user->medicationCharts()->create([
+    //                 'prescription_id'   => $data->prescriptionId,
+    //                 'consultation_id'   => $data->conId,
+    //                 'visit_id'          => $data->visitId,
+    //                 'dose_prescribed'   => $data->dose.$data->unit,
+    //                 'scheduled_time'    => new Carbon($date, $tz),
+    //                 'dose_count'        => $iteration
+    //             ]);
+    //         }
+
+    //         if ($data->date){
+    //             $date = (new CarbonImmutable($data->date, $tz));
+    //             $date < Carbon::now($tz) ? $reason = 'Charted backward' : $reason = 'Charted Forward';
+    //             $data->merge(['reason' => $reason]);
+    //             $this->prescriptionService->hold($data, $charts->prescription, $user);
+    //         }
+
+    //         return $charts;
+    //     });
+    // }
+
     public function create(Request $data, User $user)
     {
-        $tz = 'Africa/Lagos';
-        $hours    = strtolower($data->intervals) == 'hours';
-        $interval = $hours ? CarbonInterval::minutes($data->frequency) : CarbonInterval::hours($data->frequency);
+        $tz       = 'Africa/Lagos';
+        $isHours  = strtolower($data->intervals) == 'hour(s)';
+        $interval = $isHours ? CarbonInterval::minutes($data->frequency) : CarbonInterval::hours($data->frequency);
+        
         $start = new CarbonImmutable($data->date, $tz);
-        $end   = $hours ? $start->addHours($data->intervalsValue) : $start->addDays($data->intervalsValue);
+        $end   = $isHours ? $start->addHours($data->intervalsValue) : $start->addDays($data->intervalsValue);
         $dates = new CarbonPeriod($start, $interval, $end, CarbonPeriod::EXCLUDE_END_DATE);
 
         if (count($dates) > 120) {
-            return response()->json(
-                ['errors' => [
-                    'frequency' => ['This frequency may be too high'],
-                    'intervals' => ['or the hours/days are too many']
+            return response()->json(['errors' => [
+                'frequency' => ['This frequency may be too high'],
+                'intervals' => ['or the hours/days are too many']
             ]], 422);
         }
 
-        return DB::transaction(function () use($data, $user, $dates, $tz) {
-            $iteration = 0;
+        return DB::transaction(function () use ($data, $user, $dates, $tz) {
+            $batch      = [];
+            $now        = now($tz); // For timestamps
+            $dose       = $data->dose . $data->unit;
+            $iteration  = 0;
 
+            // 1. Prepare the data array (No DB hits here)
             foreach ($dates as $date) {
                 $iteration++;
-                $charts = $user->medicationCharts()->create([
-                    'prescription_id'   => $data->prescriptionId,
-                    'consultation_id'   => $data->conId,
-                    'visit_id'          => $data->visitId,
-                    'dose_prescribed'   => $data->dose.$data->unit,
-                    'scheduled_time'    => new Carbon($date, $tz),
-                    'dose_count'        => $iteration
-                ]);
+                $batch[] = [
+                    'user_id'         => $user->id,
+                    'prescription_id' => $data->prescriptionId,
+                    'consultation_id' => $data->conId,
+                    'visit_id'        => $data->visitId,
+                    'dose_prescribed' => $dose,
+                    'scheduled_time'  => $date->toDateTimeString(),
+                    'dose_count'      => $iteration,
+                    'created_at'       => $now,
+                    'updated_at'       => $now,
+                ];
             }
 
-            if ($data->date){
-                $date = (new CarbonImmutable($data->date, $tz));
-                $date < Carbon::now($tz) ? $reason = 'Charted backward' : $reason = 'Charted Forward';
+            // 2. Perform ONE Bulk Insert (Massively faster)
+            if (empty($batch)) {
+               throw new Exception("No dates generated for charting.");
+            }
+            
+            $inserted = MedicationChart::insert($batch);
+
+            // 3. Handle Prescription Status
+            if ( $inserted && $data->date) {
+                $startDate = new CarbonImmutable($data->date, $tz);
+                $reason    = $startDate->isPast() ? 'Charted backward' : 'Charted Forward';
+                
                 $data->merge(['reason' => $reason]);
-                $this->prescriptionService->hold($data, $charts->prescription, $user);
+                
+                // Optimization: Use the ID directly to avoid fetching the Prescription model if not needed
+                $prescription = Prescription::find($data->prescriptionId);
+                $this->prescriptionService->hold($data, $prescription, $user);
             }
 
-            return $charts;
+            // Return the last state or a success indicator
+            return response()->json(['message' => 'Medication charted successfully'], 201);
         });
     }
 
@@ -124,8 +189,8 @@ class MedicationChartService
     {
         $orderBy    = 'scheduled_time';
         $orderDir   =  'asc';
-        $query = $this->medicationChart::with([
-            'user', 
+        $query = $this->medicationChart->select('id', 'user_id', 'dose_prescribed', 'scheduled_time', 'created_at', 'status')->with([
+            'user:id,username', 
         ]);
 
         if (! empty($params->searchTerm)) {
@@ -158,11 +223,25 @@ class MedicationChartService
         $orderBy    = 'scheduled_time';
         $orderDir   =  'asc';
         $query = $this->medicationChart::with([
-            'user',
-            'prescription.resource',
-            'visit.patient',
-            'givenBy',
-            'prescription.medicationCharts',
+            'user:id,username',
+            'prescription' => function ($query) {
+                $query->select('id', 'prescription', 'discontinued', 'resource_id')
+                ->with([
+                    'resource:id,name',
+                ])
+                ->withCount('medicationCharts as medicationChartsCount');
+            },
+            'visit' => function($query) {
+                $query->select('id', 'ward', 'bed_no', 'patient_id', 'ward_id')
+                ->with([
+                    'patient' => function($query){
+                                    $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
+                                    ->with(['flaggedBy:id,username']);
+                                },
+                    'wards:id,visit_id,short_name,bed_number'
+                ]);
+            },
+            'givenBy:id,username',
         ]);
 
         if (! empty($params->searchTerm)) {
@@ -199,14 +278,13 @@ class MedicationChartService
     public function upcomingMedicationsTransformer(): callable
     {
        return  function (MedicationChart $medicationChart) {
-        $ward = $this->ward->where('id', $medicationChart->visit->ward)->first();
             return [
                 'id'                => $medicationChart->id,
                 'patient'           => $medicationChart->visit->patient->patientId(),
                 'status'            => $medicationChart->visit->admission_status,
-                'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
-                'wardId'            => $visit->ward ?? '',
-                'wardPresent'       => $ward?->visit_id == $medicationChart->visit->id,
+                'ward'              => $medicationChart->visit->ward ? $this->helperService->displayWard($medicationChart->visit) : '',
+                'wardId'            => $visit->ward_id ?? '',
+                'wardPresent'       => $medicationChart->visit->wards?->visit_id == $medicationChart->visit->id,
                 'treatment'         => $medicationChart->prescription->resource->name ?? '',
                 'prescription'      => $medicationChart->prescription->prescription ?? '',
                 'dose'              => $medicationChart->dose_prescribed ?? '',
@@ -214,7 +292,7 @@ class MedicationChartService
                 'date'              => (new Carbon($medicationChart->scheduled_time))->format('jS/M/y'),
                 'time'              => (new Carbon($medicationChart->scheduled_time))->format('g:iA'),
                 'doseCount'         => $medicationChart->dose_count,
-                'count'             => $medicationChart->prescription->medicationCharts->count(),//::where('prescription_id', $medicationChart->prescription->id)->count(),
+                'count'             => $medicationChart->prescription->medicationChartsCount,
                 'discontinued'      => $medicationChart->prescription->discontinued,
                 'rawDateTime'       => $medicationChart->scheduled_time,
                 'timeGiven'         => $medicationChart->time_given ? (new Carbon($medicationChart->time_given))->format('jS/M/y g:iA') : '',
@@ -222,6 +300,8 @@ class MedicationChartService
                 'givenBy'           => $medicationChart->givenBy?->username ?? '',
                 'flagPatient'       => $medicationChart->visit->patient->flag,
                 'flagReason'        => $medicationChart->visit->patient?->flag_reason,
+                'flaggedBy'         => $medicationChart->visit->patient->flaggedBy?->username,
+                'flaggedAt'         => $medicationChart->visit->patient->flagged_at ? (new Carbon($medicationChart->visit->patient->flagged_at))->format('d/m/y g:ia') : '',
             ];
          };
     }

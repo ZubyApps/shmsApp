@@ -9,7 +9,6 @@ use App\Jobs\SendTestResultDone;
 use App\Models\Prescription;
 use App\Models\User;
 use App\Models\Visit;
-use App\Models\Ward;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -22,7 +21,6 @@ class InvestigationService
         private readonly Prescription $prescription,
         private readonly PayPercentageService $payPercentageService,
         private readonly HelperService $helperService,
-        private readonly Ward $ward,
         )
     {
         
@@ -32,14 +30,17 @@ class InvestigationService
     {
         $orderBy    = 'consulted';
         $orderDir   =  'desc';
-        $query = $this->visit::with([
-            'sponsor', 
-            'consultations', 
-            'patient', 
-            'prescriptions', 
-            'doctor', 
-            'closedOpenedBy',
-            'payments'
+        $query = $this->visit
+            ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'ward', 'bed_no', 'ward_id')->with([
+                'sponsor:id,name,category_name,flag', 
+                'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment', 
+                'patient' => function($query){
+                    $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
+                    ->with(['flaggedBy:id,username']);
+                },
+                'doctor:id,username', 
+                'closedOpenedBy:id,username',
+                'wards:id,visit_id,short_name,bed_number'
         ])
         ->withCount([
             'prescriptions as labPrescribed' => function (Builder $query) {
@@ -73,10 +74,6 @@ class InvestigationService
                             }
                         })
                         ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
-                        // ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
                     })
                     
                     ->orderBy($orderBy, $orderDir)
@@ -95,14 +92,7 @@ class InvestigationService
                                 });
                             }
                         })
-                        // ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
                         ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
-                        // ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
                     });
                     
             return $this->helperService->paginateQuery($query, $params);
@@ -132,8 +122,8 @@ class InvestigationService
         return $query->where('closed', false)
                     ->whereHas('prescriptions', function(Builder $query){
                         $query->where('result', '=', null)
-                        // ->where('discontinued', false)
                         ->where('dispense_comment', null)
+                        // ->where('discontinued', false)
                         ->whereRelation('resource', 'category', '=', 'Investigations')
                         ->whereRelation('resource', 'sub_category', '!=', 'Imaging');
                     });
@@ -142,21 +132,19 @@ class InvestigationService
     public function getConsultedVisitsLabTransformer(): callable
     {
        return  function (Visit $visit) {
-        $latestConsultation = $visit->consultations->sortDesc()->first();
-        $ward = $this->ward->where('id', $visit->ward)->first();
             return [
                 'id'                => $visit->id,
                 'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
                 'doctor'            => $visit->doctor->username,
-                'diagnosis'         => $latestConsultation?->icd11_diagnosis ?? 
-                                       $latestConsultation?->provisional_diagnosis ?? 
-                                       $latestConsultation?->assessment,
+                'diagnosis'         => $visit->latestConsultation?->icd11_diagnosis ?? 
+                                       $visit->latestConsultation?->provisional_diagnosis ?? 
+                                       $visit->latestConsultation?->assessment,
                 'sponsor'           => $visit->sponsor->name,
                 'admissionStatus'   => $visit->admission_status,
-                'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
-                'wardId'            => $visit->ward ?? '',
-                'wardPresent'       => $ward?->visit_id == $visit->id,
+                'ward'              => $visit->ward ? $this->helperService->displayWard($visit) : '',
+                'wardId'            => $visit->ward_id ?? '',
+                'wardPresent'       => $visit->wards?->visit_id == $visit->id,
                 'visitType'         => $visit->visit_type,
                 'labPrescribed'     => $visit->labPrescribed,
                 'labDone'           => $visit->labDone,
@@ -172,6 +160,8 @@ class InvestigationService
                 'flagSponsor'       => $visit->sponsor->flag,
                 'flagPatient'       => $visit->patient->flag,
                 'flagReason'        => $visit->patient?->flag_reason,
+                'flaggedBy'         => $visit->patient->flaggedBy?->username,
+                'flaggedAt'         => $visit->patient->flagged_at ? (new Carbon($visit->patient->flagged_at))->format('d/m/y g:ia') : '',
             ];
          };
     }
@@ -180,17 +170,24 @@ class InvestigationService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query = $this->prescription::with([
-            'resource', 
-            'user', 
-            'visit' => function ($query) {
-                $query->with([
-                    'sponsor.sponsorCategory',
-                    'patient'
-                ]);
-            },
-            'consultation',
-        ]);
+        $query = $this->prescription->select('id', 'resource_id', 'user_id', 'visit_id', 'consultation_id', 'created_at', 'result_date', 'approved', 'rejected', 'paid', 'discontinued', 'hms_bill', 'nhis_bill', 'discontinued_by', 'sample_collected_at', 'sample_collected_by')
+                        ->with([
+                            'resource:id,name,category', 
+                            'user:id,username', 
+                            'visit' => function ($query) {
+                                $query->select('id', 'sponsor_id', 'patient_id')
+                                    ->with([
+                                    'sponsor' => function ($query){
+                                        $query->select('id', 'name', 'category_name', 'sponsor_category_id')
+                                            ->with(['sponsorCategory:id,pay_class']);
+                                    },
+                                    'patient:id,first_name,middle_name,last_name,card_no'
+                                ]);
+                            },
+                            'consultation:id,icd11_diagnosis,provisional_diagnosis,assessment',
+                            'discontinuedBy:id,username',
+                            'sampleCollectedBy:id,username'
+                        ]);
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
@@ -200,9 +197,8 @@ class InvestigationService
                         $query->whereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
                         ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
                         ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm)
-                        ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('resource', 'sub_category', 'LIKE', $searchTerm);
+                        ->orWhereRelation('visit.patient', 'Phone', 'LIKE', $searchTerm)
+                        ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm);
                         })
                     ->whereRelation('visit', 'consulted', '!=', null)
                     // ->where('discontinued', false)
@@ -230,17 +226,23 @@ class InvestigationService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query = $this->prescription::with([
-            'resource', 
-            'user', 
-            'consultation',
-            'visit' => function ($query) {
-                $query->with([
-                    'sponsor.sponsorCategory',
-                    'patient'
-                ]);
-            }
-        ]);
+        $query      = $this->prescription->select('id', 'resource_id', 'user_id', 'visit_id', 'consultation_id', 'created_at', 'result_date', 'approved', 'rejected', 'paid', 'discontinued', 'hms_bill', 'nhis_bill', 'discontinued_by')
+                            ->with([
+                                'resource:id,name,category', 
+                                'user:id,username', 
+                                'visit' => function ($query) {
+                                    $query->select('id', 'sponsor_id', 'patient_id')
+                                        ->with([
+                                        'sponsor' => function ($query){
+                                            $query->select('id', 'name', 'category_name', 'sponsor_category_id')
+                                                ->with(['sponsorCategory:id,pay_class']);
+                                        },
+                                        'patient:id,first_name,middle_name,last_name,card_no'
+                                    ]);
+                                },
+                                'consultation:id,icd11_diagnosis,provisional_diagnosis,assessment',
+                                'discontinuedBy:id,username',
+                            ]);
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
@@ -250,9 +252,8 @@ class InvestigationService
                             $query->whereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm)
-                            ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('resource', 'sub_category', 'LIKE', $searchTerm);
+                            ->orWhereRelation('visit.patient', 'phone', 'LIKE', $searchTerm)
+                            ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm);
                             })
                         // ->where('discontinued', false)
                         ->where('dispense_comment', null)
@@ -285,6 +286,7 @@ class InvestigationService
     public function getLabTransformer(): callable
     {
        return  function (Prescription $prescription) {
+        info($prescription);
             return [
                 'id'                => $prescription->id,
                 'requested'         => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
@@ -302,9 +304,9 @@ class InvestigationService
                 'approved'          => $prescription->approved,
                 'rejected'          => $prescription->rejected,
                 'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
-                'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->hms_bill/10 && $prescription->visit->sponsor->category_name == 'NHIS',
-                'collected'         => $prescription->discontinued ? true : false,
-                'collectedBy'       => $prescription->discontinuedBy?->username,
+                'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->category_name == 'NHIS',
+                'collected'         => $prescription->sample_collected_at ? (new Carbon($prescription->sample_collected_at))->format('d/m/y g:ia') : null,
+                'collectedBy'       => $prescription->sampleCollectedBy?->username,
             ];
          };
     }
@@ -312,7 +314,7 @@ class InvestigationService
     public function createLabResultRecord(Request $data, Prescription $prescription, User $user): Prescription
     {
         return DB::transaction(function () use($data, $prescription, $user) {
-
+    
             $prescription->update([
                 'test_sample'    => $data->sample,
                 'result'         => $data->result,
@@ -323,7 +325,7 @@ class InvestigationService
                 'qty_dispensed'     => 1
                 ]);
     
-            if ($prescription->visit->patient->sms){
+            if ($prescription?->visit?->patient->sms){
                 SendTestResultDone::dispatch($prescription)->delay(5);
             }
     
@@ -337,6 +339,8 @@ class InvestigationService
         $prescription->update([
                 'test_sample'       => $data->sample,
                 'result'            => $data->result,
+                'result_date'       => Carbon::now(),
+                'result_by'         => $user->id,
                 'discontinued'      => false,
                 'dispense_comment'  => null,
             ]);
@@ -353,7 +357,7 @@ class InvestigationService
             'result_by'         => null,
             'discontinued'      => false,
             'dispense_comment'  => null,
-            'qty_dispensed'     => 0
+            'qty_dispensed'     => 1
             ]);
 
         return  $prescription;
@@ -368,6 +372,22 @@ class InvestigationService
             ]);
 
         return  $prescription;
+    }
+
+    public function markSampleCollection(Prescription $prescription, User $user)
+    {
+        return $prescription->update([
+            'sample_collected_at'   => Carbon::now(),
+            'sample_collected_by'   => $user->id
+        ]);
+    }
+
+    public function unMarkSampleCollection(Prescription $prescription, User $user)
+    {
+        return $prescription->update([
+            'sample_collected_at'   => null,
+            'sample_collected_by'   => $user->id
+        ]);
     }
 
     public function getAllPatientsVisitsTests(Visit $visit)

@@ -40,16 +40,16 @@ class MedicationCategoryService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query      = $this->medicationCategory->select('id', 'name', 'description', 'user_id', 'created_at')
+                        ->withExists(['resources as hasResources']);;
 
         if (! empty($params->searchTerm)) {
-            return $this->medicationCategory
-                        ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->medicationCategory
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));       
     }
 
@@ -62,7 +62,7 @@ class MedicationCategoryService
                 'description'       => $medicationCategory->description,
                 'createdBy'         => $medicationCategory->user->username,
                 'createdAt'         => (new Carbon($medicationCategory->created_at))->format('d/m/y g:ia'),
-                'count'             => $medicationCategory?->resources()->count(),
+                'count'             => $medicationCategory->hasResources,
             ];
          };
     }

@@ -46,18 +46,21 @@ class PatientsFileService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query      = $this->patientsFile->select('id', 'visit_id', 'third_party_id', 'user_id', 'created_at', 'comment', 'filename')
+                        ->with([
+                            'user:id,username',
+                            'visit:id,closed',
+                            'thirdParty:id,short_name'
+                        ])
+                        ->where('visit_id', $data->visitId);
 
         if (! empty($params->searchTerm)) {
-            return $this->patientsFile
-                        ->where('visit_id', $data->visitId)
-                        ->where('filename', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->where('filename', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->patientsFile
-                    ->where('visit_id', $data->visitId)
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        

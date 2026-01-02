@@ -52,7 +52,7 @@ class AdminController extends Controller
         $otherSettings[0] = ["name" => "Pre Search", "value" => Cache::get("preSearch") ?? "Not Set", "desc" => "Change search behavior to prefetch the patient before searching for patients visit details"];
         $otherSettings[1] = ["name" => "Nursing Performance Benchmark", "value" => Cache::get("nursingBenchmark", 100), "desc" => "Set the benchmark for calculating the nursing performance"];
         $otherSettings[2] = ["name" => "Fever Benchmark", "value" => Cache::get("feverBenchmark", 37.2), "desc" => "Set the benchmark for marking fever"];
-        $otherSettings[3] = ["name" => "Patients Module Access", "value" => Cache::get("patientModuleAccess", 'Not Set'), "desc" => "Who has access to patients module?"];
+        
         return response()->json([
             'data' => $otherSettings,
             'draw' => $params->draw,

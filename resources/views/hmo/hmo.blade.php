@@ -77,6 +77,7 @@
                             <thead>
                                 <tr>
                                     <th>Patient</th>
+                                    <th>Age</th>
                                     <th>Sponsor</th>
                                     <th>Dr</th>
                                     <th>Prescribed</th>
@@ -112,6 +113,7 @@
                             <thead>
                                 <tr>
                                     <th>Patient</th>
+                                    <th>Age</th>
                                     <th>Sponsor</th>
                                     <th>Dr</th>
                                     <th>Prescribed</th>
@@ -322,6 +324,7 @@
                                     <th>Doctor</th>
                                     <th>Diagnosis</th>
                                     <th>Sent By</th>
+                                    <th>Sent On</th>
                                     <th>Total HmsBill</th>
                                     <th>Total HmoBill</th>
                                     <th><span class="removeFilter">Details/</span><span class="filterByOpen">State</span></th>
@@ -331,6 +334,7 @@
                             </tbody>
                             <tfoot>
                                 <tr class="">
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>

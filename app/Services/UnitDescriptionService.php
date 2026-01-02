@@ -42,17 +42,18 @@ class UnitDescriptionService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query      = $this->unitDescription->select('id', 'user_id', 'short_name', 'long_name', 'description', 'created_at')
+                        ->with(['user:id,username'])
+                        ->withExists('resources as hasResources');
 
         if (! empty($params->searchTerm)) {
-            return $this->unitDescription
-                        ->where('short_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->where('short_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('long_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->unitDescription
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        
@@ -68,7 +69,7 @@ class UnitDescriptionService
                 'description'       => $unitDescription->description,
                 'createdBy'         => $unitDescription->user->username,
                 'createdAt'         => (new Carbon($unitDescription->created_at))->format('d/m/Y'),
-                'count'             => $unitDescription->resources()->count()
+                'count'             => $unitDescription->hasResources,//resources()->count()
             ];
          };
     }

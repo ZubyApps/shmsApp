@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use Carbon\Carbon;
-use App\Models\Ward;
 use Carbon\CarbonImmutable;
 use App\DataObjects\DataTableQueryParams;
 use Illuminate\Database\Eloquent\Builder;
@@ -39,9 +38,9 @@ class HelperService
         return Carbon::now()->between($start, $end);
     }
 
-    public function displayWard(Ward $ward)
+    public function displayWard($visit)
     {
-        return $ward->short_name . '-Bed' . $ward->bed_number;
+        return $visit?->ward . '-Bed' . $visit?->bed_no;
     }
 
     public function paginateQuery(Builder $query, DataTableQueryParams $params, string $orderBy = 'consulted', string $orderDir = 'desc')
@@ -49,11 +48,4 @@ class HelperService
         return $query->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start) / $params->length));
     }
-
-    // public function prescriptionTimeSwapper()
-    // {
-    //     $start = new CarbonImmutable('19:30:00');
-    //     $end = $start->addHours(12)->addMinutes(30);
-    //     return Carbon::now()->between($start, $end);
-    // }
 }

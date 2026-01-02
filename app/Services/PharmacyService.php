@@ -5,12 +5,12 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
+use App\Events\PrescriptionBilled;
 use App\Models\Consultation;
 use App\Models\Prescription;
 use App\Models\Resource;
 use App\Models\User;
 use App\Models\Visit;
-use App\Models\Ward;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -21,12 +21,9 @@ class PharmacyService
     public function __construct(
         private readonly Visit $visit, 
         private readonly Resource $resource,
-        private readonly Prescription $prescription,
         private readonly Consultation $consultation,
-        private readonly PaymentService $paymentService,
         private readonly PayPercentageService $payPercentageService,
         private readonly HelperService $helperService,
-        private readonly Ward $ward,
         )
     {
         
@@ -36,15 +33,18 @@ class PharmacyService
     {
         $orderBy    = 'consulted';
         $orderDir   =  'desc';
-        $query = $this->visit::with([
-            'sponsor', 
-            'consultations', 
-            'patient',  
-            'prescriptions', 
-            'antenatalRegisteration', 
-            'doctor', 
-            'closedOpenedBy',
-            'payments'
+        $query = $this->visit
+            ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'ward', 'bed_no', 'ward_id')->with([
+                'sponsor:id,name,category_name,flag', 
+                'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment', 
+                'patient' => function($query){
+                    $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
+                    ->with(['flaggedBy:id,username']);
+                },  
+                'antenatalRegisteration:id', 
+                'doctor:id,username', 
+                'closedOpenedBy:id,username',
+                'wards:id,visit_id,short_name,bed_number'
         ])
         ->withCount([
             'prescriptions as countPrescribed' => function (Builder $query) {
@@ -65,99 +65,68 @@ class PharmacyService
                         })
                 ->where('qty_dispensed', '!=', 0);
             },
-        ])
-        ->whereNotNull('consulted');
+        ]);
+
+        function applySearch(Builder $query, string $searchTerm){
+             $searchTerm = '%' . addcslashes($searchTerm, '%_') . '%';
+            return $query->where(function (Builder $query) use($searchTerm) {
+                        $query->where('created_at', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
+                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
+                    });
+        }
+
+        $prescriptionsConstraints = function(Builder $query){
+                                        $query->where(function (Builder $query) {
+                                            $query->whereRelation('resource', 'category', '=', 'Medications')
+                                            ->orWhereRelation('resource', 'category', '=', 'Consumables');
+                        
+                                    });
+        };
+
+
 
         if (! empty($params->searchTerm)) {
-            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-
             if ($data->filterBy == 'ANC'){
-                $query->where(function (Builder $query) use($searchTerm) {
-                    $query->where('visit_type', 'ANC')
-                    ->orWhere('created_at', 'LIKE', $searchTerm)
-                    ->orWhere(function($q) use ($searchTerm) {
-                            $terms = array_filter(explode(' ', trim($searchTerm)));
-                            foreach ($terms as $term) {
-                                $q->where(function($subQuery) use ($term) {
-                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
-                                });
-                            }
-                        })
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
-                        // ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
-                    })
-                    
+                $query = applySearch($query, $params->searchTerm);
+                return $query->where('visit_type', 'ANC')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
-            return $query->where(function (Builder $query) use($searchTerm) {
-                        $query->where('created_at', 'LIKE', $searchTerm)
-                         ->orWhere(function($q) use ($searchTerm) {
-                            $terms = array_filter(explode(' ', trim($searchTerm)));
-                            foreach ($terms as $term) {
-                                $q->where(function($subQuery) use ($term) {
-                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
-                                });
-                            }
-                        })
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
-                        // ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-                        // ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
-                    })
-                    
-                    ->orderBy($orderBy, $orderDir)
+            $query = applySearch($query, $params->searchTerm);
+            return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         if ($data->filterBy == 'Outpatient'){
             return $query->where('pharmacy_done_by', null)
-            ->where(function (Builder $query) {
-                $query->whereHas('prescriptions', function(Builder $query){
-                    $query->where(function (Builder $query) {
-                        $query->whereRelation('resource', 'category', '=', 'Medications')
-                        ->orWhereRelation('resource', 'category', '=', 'Consumables');
-    
-                    });
-                });
-            })
-            ->where('admission_status', '=', 'Outpatient')
-            ->where('visit_type', '!=', 'ANC')
-            ->orderBy($orderBy, $orderDir)
-            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                    ->whereNotNull('consulted')
+                    ->whereHas('prescriptions', $prescriptionsConstraints)
+                    ->where('admission_status', '=', 'Outpatient')
+                    ->where('visit_type', '!=', 'ANC')
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         if ($data->filterBy == 'Inpatient'){
             return $query->where('pharmacy_done_by', null)
+                    ->whereNotNull('consulted')
                     ->where('admission_status', '!=', 'Outpatient')
-                    ->whereHas('prescriptions', function(Builder $query){
-                        $query->where(function (Builder $query) {
-                            $query->whereRelation('resource', 'category', '=', 'Medications')
-                            ->orWhereRelation('resource', 'category', '=', 'Consumables');  
-                        });
-                    })
-                    ->where('admission_status', '!=', 'Outpatient')
+                    ->whereHas('prescriptions', $prescriptionsConstraints)
                     ->where('visit_type', '!=', 'ANC')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
         if ($data->filterBy == 'ANC'){
             return $query->where('pharmacy_done_by', null)
-                    ->whereHas('prescriptions', function(Builder $query){
-                        $query->where(function (Builder $query) {
-                            $query->whereRelation('resource', 'category', '=', 'Medications')
-                            ->orWhereRelation('resource', 'category', '=', 'Consumables');     
-                        });
-                    })
+                    ->whereHas('prescriptions', $prescriptionsConstraints)
                     ->where('visit_type', 'ANC')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -171,21 +140,20 @@ class PharmacyService
     public function getPharmacyVisitsTransformer(): callable
     {
         return  function (Visit $visit) {
-            $latestConsultation = $visit->consultations->sortDesc()->first();
-            $ward = $this->ward->where('id', $visit->ward)->first();
             return [
                 'id'                => $visit->id,
-                'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
+                'came'              => $visit->consulted ? (new Carbon($visit->consulted))->format('d/m/y g:ia') : 'Not Seen Dr',
                 'patient'           => $visit->patient->patientId(),
-                'doctor'            => $visit->doctor->username,
+                'doctor'            => $visit->doctor?->username,
+                'conId'             => $visit->latestConsultation?->id,
                 'ancRegId'          => $visit->antenatalRegisteration?->id,
-                'diagnosis'         => $latestConsultation?->icd11_diagnosis ?? $latestConsultation?->provisional_diagnosis ?? $latestConsultation?->assessment,
+                'diagnosis'         => $visit->latestConsultation?->icd11_diagnosis ?? $visit->latestConsultation?->provisional_diagnosis ?? $visit->latestConsultation?->assessment,
                 'sponsor'           => $visit->sponsor->name,
                 'admissionStatus'   => $visit->admission_status,
-                'ward'              => $ward ? $this->helperService->displayWard($ward) : '',
-                'wardId'            => $visit->ward ?? '',
-                'wardPresent'       => $ward?->visit_id == $visit->id,
-                'visitType'       => $visit->visit_type,
+                'ward'              => $visit->ward ? $this->helperService->displayWard($visit) : '',
+                'wardId'            => $visit->ward_id ?? '',
+                'wardPresent'       => $visit->wards?->visit_id == $visit->id,
+                'visitType'         => $visit->visit_type,
                 'countPrescribed'   => $visit->countPrescribed,
                 'countBilled'       => $visit->countBilled,
                 'countDispensed'    => $visit->countDispensed,
@@ -195,203 +163,110 @@ class PharmacyService
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
                 'discharged'        => $visit->discharge_reason,
                 'doctorDoneAt'      => $visit->doctor_done_at ? (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') : '',
+                'doctorDone'        => $visit->doctorDoneBy->username ?? '',
                 'reason'            => $visit->discharge_reason,
                 'closed'            => $visit->closed,
                 'closedBy'          => $visit->closedOpenedBy?->username,
                 'flagSponsor'       => $visit->sponsor->flag,
                 'flagPatient'       => $visit->patient->flag,
                 'flagReason'        => $visit->patient?->flag_reason,
+                'flaggedBy'         => $visit->patient->flaggedBy?->username,
+                'flaggedAt'         => $visit->patient->flagged_at ? (new Carbon($visit->patient->flagged_at))->format('d/m/y g:ia') : '',
             ];
          };
     }
 
     public function bill(Request $data, Prescription $prescription, User $user)
     {
-        return DB::transaction(function () use($data, $prescription, $user) {
-            $visit    = $prescription->visit;
-            $bill     = 0;
-            $sponsor = $visit?->sponsor;
+        $visit    = $visit = $prescription->visit()->with('sponsor')->first();
+        $sponsor = $visit?->sponsor;
+        $isNhis = $sponsor->category_name == 'NHIS';
 
-            $nhisBill = fn($value)=>$value/10;
+        $nhisBill = fn($value)=>$value/10;
+        $bill     = 0;
+        if ($data->quantity){
+            $bill = $prescription->resource->getSellingPriceForSponsor($sponsor) * $data->quantity;
+        }
 
-            if ($data->quantity){
-                $bill = $prescription->resource->getSellingPriceForSponsor($sponsor) * $data->quantity;
-            }
-
-            $prescription->update([
+        return DB::transaction(function () use($data, $prescription, $user, $visit, $bill, $isNhis, $nhisBill) {
+              
+            $prescriptionUpdates = [
                 'qty_billed'        => $data->quantity ?? 0,
                 'hms_bill'          => $bill,
                 'hms_bill_date'     => $bill ? new Carbon() : null,
                 'hms_bill_by'       => $bill ? $user->id : null,
-            ]);
+            ];
 
-            $isNhis = $visit->sponsor->category_name == 'NHIS';
-
-            // $isNhis ? $prescription->update(['nhis_bill' => $isNhisBillable ? $nhisBill($bill) : '0']) : '';
- 
-            if ($isNhis){
-
+           if ($isNhis){
                 $resourceCat = $prescription->resource->category;
 
                 $isNhisBillable = $resourceCat == 'Medications' || $resourceCat == 'Consumables' ;
 
                 $approved = $prescription->approved;
-
-                $prescription->update(['nhis_bill' => $isNhisBillable ? ( $approved ? $nhisBill($bill) : $bill) : ($approved ? 0 : $bill)]);
-
-                $this->paymentService->prescriptionsPaymentSeiveNhis($visit->totalPayments(), $visit->prescriptions);
-
-                return $prescription->visit->update([
-                    'total_nhis_bill'   => $visit->totalNhisBills(),
-                    'total_capitation'  => $visit->totalPrescriptionCapitations()
-                ]);
-
-            } else {
-
-                $this->paymentService->prescriptionsPaymentSeive($visit->totalPayments(), $visit->prescriptions);
-
-                return $prescription->visit->update(['total_hms_bill'    => $visit->totalHmsBills()]);
-                
+                // Apply bill adjustment immediately before the main update
+                $prescriptionUpdates['nhis_bill'] = $isNhisBillable ? ( $approved ? $nhisBill($bill) : $bill) : ($approved ? 0 : $bill);
             }
 
+            // 3. Perform Single Prescription Update (1 Query)
+            $prescription->update($prescriptionUpdates);
+
+            PrescriptionBilled::dispatch($visit, $isNhis);
             
+            return $prescription;
         });
     }
 
-    // public function dispense(Request $data, Prescription $prescription, User $user)
-    // {
-    //     return DB::transaction(function () use($data, $prescription, $user) {
-    //         $resource       = $prescription->resource;
-    //         $qtyDispensed   = $prescription->qty_dispensed;
-
-    //         if ($data->quantity){
-    //             if ($qtyDispensed){
-    //                 $resource->stock_level = $resource->stock_level + $qtyDispensed;
-    //                 $resource->save();
-    //             }
-                
-    //             $resource->stock_level = $resource->stock_level - $data->quantity;
-    //             $resource->save();
-
-    //         } elseif (!$data->quantity) {
-    //             if ($qtyDispensed){
-    //                 $resource->stock_level = $resource->stock_level + $qtyDispensed;
-    //                 $resource->save();
-    //             }
-    //         }
-
-    //         $prescription->update([
-    //             'qty_dispensed'     => $data->quantity ?? 0,
-    //             'dispense_date'     => new Carbon(),
-    //             'dispensed_by'      => $user->id
-    //         ]);
-
-    //         $visit          = $prescription->visit;
-
-    //         // $vPrescriptions = $visit->prescriptions()//Prescription::where('visit_id', $visit->id)
-    //         //                     ->where(function (Builder $query) {
-    //         //                         $query->whereRelation('resource', 'category', '=', 'Medications')
-    //         //                         ->orWhereRelation('resource', 'category', '=', 'Consumables');
-    //         //                     })
-    //         //                     ->get();
-
-    //         // $qtyBilled      = $vPrescriptions->sum('qty_billed');
-    //         // $qtyDispensed   = $vPrescriptions->sum('qty_dispensed');
-
-    //         $prescriptions = $prescription->visit->prescriptions()
-    //                             ->whereRelation('resource', 'category', 'Medications')
-    //                             ->orWhereRelation('resource', 'category', 'Consumables')
-    //                             ->selectRaw('COALESCE(SUM(qty_billed), 0) as billed')
-    //                             ->selectRaw('COALESCE(SUM(qty_dispensed), 0) as dispensed')
-    //                             ->first();
-
-    //         [$qtyBilled, $qtyDispensed] = [$prescriptions->billed, $prescriptions->dispensed];
-
-    //         if ($qtyBilled == $qtyDispensed){
-    //             $visit->update([
-    //                 'pharmacy_done_by' => $user->id
-    //             ]);
-    //         }  else {
-    //             $visit->update([
-    //                 'pharmacy_done_by' => null
-    //             ]);
-    //         }
-
-    //         return $prescription;
-    //     });
-    // }
-
-
-
     public function dispense(Request $data, Prescription $prescription, User $user)
     {
-        return DB::transaction(function () use ($data, $prescription, $user) {
-            // -----------------------------------------------------------------
-            // 1. Load the resource with a row-level lock → no race conditions
-            // -----------------------------------------------------------------
-            $resource = $prescription->resource()->lockForUpdate()->first();
+        return DB::transaction(function () use($data, $prescription, $user) {
+            $resource       = $prescription->resource;
+            $qtyDispensed   = $prescription->qty_dispensed;
 
-            // -----------------------------------------------------------------
-            // 2. Normalise the two quantities (old & new)
-            // -----------------------------------------------------------------
-            $oldQty   = $prescription->qty_dispensed ?? 0;   // previously dispensed
-            $newQty   = $data->quantity ?? 0;               // what we want to dispense now
+            if ($data->quantity){
+                if ($qtyDispensed){
+                    $resource->stock_level = $resource->stock_level + $qtyDispensed;
+                    $resource->save();
+                }
+                
+                $resource->stock_level = $resource->stock_level - $data->quantity;
+                $resource->save();
 
-            // -----------------------------------------------------------------
-            // 3. Compute the new stock level in ONE step
-            // -----------------------------------------------------------------
-            $newStock = $resource->stock_level + $oldQty - $newQty;
+            } elseif (!$data->quantity) {
+                if ($qtyDispensed){
+                    $resource->stock_level = $resource->stock_level + $qtyDispensed;
+                    $resource->save();
+                }
+            }
 
-            // Prevent negative stock (optional but strongly recommended)
-            // if ($newStock < 0) {
-            //     throw new \Exception("Insufficient stock for {$resource->name}");
-            // }
-
-            // -----------------------------------------------------------------
-            // 4. Persist the stock change in ONE query
-            // -----------------------------------------------------------------
-            $resource->update(['stock_level' => $newStock]);
-
-            // -----------------------------------------------------------------
-            // 5. Update the prescription itself
-            // -----------------------------------------------------------------
             $prescription->update([
-                'qty_dispensed' => $newQty,
-                'dispense_date' => Carbon::now(),
-                'dispensed_by'  => $user->id,
+                'qty_dispensed'     => $data->quantity ?? 0,
+                'dispense_date'     => new Carbon(),
+                'dispensed_by'      => $user->id
             ]);
 
-            // -----------------------------------------------------------------
-            // 6. Re-calculate totals for the whole visit (single query)
-            // -----------------------------------------------------------------
-            $totals = $prescription->visit->prescriptions()
-                ->where(function (Builder $query) {
-                        $query->whereRelation('resource', 'category', '=', 'Medications')
-                            ->orWhereRelation('resource', 'category', '=', 'Consumables');
-                    })
-                ->selectRaw('COALESCE(SUM(qty_billed), 0)    AS total_billed')
-                ->selectRaw('COALESCE(SUM(qty_dispensed), 0) AS total_dispensed')
-                ->first();
+            $visit          = $prescription->visit;
 
-            // -----------------------------------------------------------------
-            // 7. Mark the pharmacy step as done / undone
-            // -----------------------------------------------------------------
-            $visit = $prescription->visit;
-            $visit->update([
-                'pharmacy_done_by' => $totals->total_billed == $totals->total_dispensed
-                    ? $user->id
-                    : null,
-            ]);
+            $vPrescriptions = Prescription::where('visit_id', $visit->id)
+                                ->where(function (Builder $query) {
+                                    $query->whereRelation('resource', 'category', '=', 'Medications')
+                                    ->orWhereRelation('resource', 'category', '=', 'Consumables');
+                                })
+                                ->get();
 
-            // -----------------------------------------------------------------
-            // 8. Return the freshly-updated prescription
-            // -----------------------------------------------------------------
-            $prescription->setRelation('resource', (object) [
-                'id'          => $resource->id,
-                'stock_level' => $resource->stock_level, // fresh value after update
-            ]);
-            
-            return $prescription->only(['qty_dispensed']) + ['resource' => $prescription->resource];
+            $qtyBilled      = $vPrescriptions->sum('qty_billed');
+            $qtyDispensed   = $vPrescriptions->sum('qty_dispensed');
+
+            if ($qtyBilled == $qtyDispensed){
+                $visit->update([
+                    'pharmacy_done_by' => $user->id
+                ]);
+            }  else {
+                $visit->update([
+                    'pharmacy_done_by' => null
+                ]);
+            }
+
+            return $prescription;
         });
     }
 
@@ -406,39 +281,49 @@ class PharmacyService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query = $this->consultation::with([
-            'visit.sponsor.sponsorCategory', 
-            'user', 
-            'prescriptions' => function ($query) {
-                $query->where(function(Builder $query) {
-                    $query->whereRelation('resource', 'category', 'Medications')
-                          ->orWhereRelation('resource', 'category', 'Consumables');
-                })
-                ->with([
-                    'resource.unitDescription',
-                    'hmsBillBy',
-                    'dispensedBy',
-                    'approvedBy',
-                    'rejectedBy',
-                    'user',
-                    'visit.sponsor',
-                ])
-                ->orderBy('created_at', 'desc');
-            } 
-        ]);
 
-            if (! empty($params->searchTerm)) {
-                return $query->where('visit_id', $data->visitId)
-                            ->where(function (Builder $query) use($params) {
-                                $query->where('icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
-                                ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('prescriptions.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                            })
-                            ->orderBy($orderBy, $orderDir)
-                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
+        $prescriptions = function ($query) {
+                        $query->select('id', 'visit_id', 'consultation_id', 'created_at', 'resource_id', 'user_id', 'hms_bill_by', 'dispensed_by', 'approved_by', 'rejected_by', 'prescription', 'hms_bill', 'nhis_bill', 'hms_bill_date', 'approved', 'rejected', 'hmo_note', 'qty_dispensed', 'dispense_date', 'held', 'dispense_comment', 'note', 'qty_billed')
+                        ->where(function(Builder $query) {
+                            $query->whereRelation('resource', 'category', 'Medications')
+                                ->orWhereRelation('resource', 'category', 'Consumables');
+                        })
+                        ->with([
+                            'resource:id,name,expiry_date,stock_level,category,unit_description,reorder_level,flag',
+                            'hmsBillBy:id,username',
+                            'dispensedBy:id,username',
+                            'approvedBy:id,username',
+                            'rejectedBy:id,username',
+                            'user:id,username',
+                        ])
+                        ->orderBy('created_at', 'desc');
+                    };
+
+            $query = $this->consultation->select('id', 'user_id', 'visit_id', 'icd11_diagnosis', 'provisional_diagnosis', 'assessment', 'created_at')
+            ->with([
+                'visit' => function ($query){
+                        $query->select('id', 'sponsor_id', 'closed')->with([
+                            'sponsor' => function ($query){
+                            $query->select('id', 'name', 'category_name', 'sponsor_category_id')
+                            ->with(['sponsorCategory:id,pay_class']);
+                        },
+                    ]);
+                }, 
+                'user:id,username', 
+                'prescriptions' => $prescriptions 
+            ]);
+
+        if (! empty($params->searchTerm)) {
+            return $query->where('visit_id', $data->visitId)
+                        ->where(function (Builder $query) use($params) {
+                            $query->where('icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
+                            ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                            ->orWhereRelation('prescriptions.resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                        })
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        }
 
         return $query->where('visit_id', $data->visitId)
                 ->orderBy($orderBy, $orderDir)
@@ -470,7 +355,7 @@ class PharmacyService
                     'category'          => $prescription->resource->category,
                     'prescription'      => $prescription->prescription ?? '',
                     'qtyBilled'         => $prescription->qty_billed,
-                    'unit'              => $prescription->resource->unitDescription?->short_name,
+                    'unit'              => $prescription->resource->unit_description,
                     'hmsBill'           => $prescription->hms_bill ?? '',
                     'nhisBill'          => $prescription->nhis_bill ?? '',
                     'hmsBillBy'         => $prescription->hmsBillBy->username ?? '',
@@ -495,21 +380,33 @@ class PharmacyService
             ];
          };
     }
-
     public function getExpirationStock(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'expiry_date';
         $orderDir   =  'asc';
-        $query      = $this->resource::with([
-            'prescriptions',
-        ]);
+        $query      = $this->resource->select('id', 'unit_description_id', 'name', 'category', 'stock_level', 'reorder_level', 'selling_price', 'location', 'expiry_date')
+                        ->with([
+                            'unitDescription:id,short_name',
+                        ])
+                        ->withCount([
+                            'prescriptions as prescriptionFrequency' => function($query){
+                                $query->where('created_at', '>', (new Carbon())->subDays(30));
+                            },
+                            'prescriptions as dispenseFrequency' => function($query){
+                                $query->where('dispense_date', '>', (new Carbon())->subDays(30));
+                            }
+                        ]);
 
-        if (! empty($params->searchTerm)) {
+        function categoryContraint($query){
             return $query->where(function (Builder $query) {
                             $query->where('category', 'Medications')
                             ->orWhere('category', 'Consumables')->whereNot('sub_category', 'Lab');
-                        })
-                        ->where(function (Builder $query) use($params) {
+                        });
+        }
+
+        if (! empty($params->searchTerm)) {
+            $query = categoryContraint($query);
+            return $query->where(function (Builder $query) use($params) {
                             $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhere('sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
                             ->orWhere('category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
@@ -519,11 +416,8 @@ class PharmacyService
         }
 
         if ($data->filterBy === 'expiration'){
+            $query = categoryContraint($query);
             return $query->where('is_active', true)
-                    ->where(function (Builder $query) {
-                        $query->where('category', 'Medications')
-                        ->orWhere('category', 'Consumables')->whereNot('sub_category', 'Lab');
-                    })
                     ->where('stock_level', '>', 0)
                     ->where('expiry_date', '<', (new Carbon())->addMonths(6))
                     ->orderBy($orderBy, $orderDir)
@@ -534,7 +428,8 @@ class PharmacyService
             return $query->where('is_active', true)
                     ->where(function (Builder $query) {
                         $query->where('category', 'Medications')
-                        ->orWhere('category', 'Consumables')->whereNot('sub_category', 'Lab');
+                        ->orWhere('category', 'Consumables')
+                        ->whereNot('sub_category', 'Lab');
                     })
                     ->whereColumn('stock_level', '<','reorder_level')
                     ->orderBy($orderBy, $orderDir)
@@ -555,8 +450,8 @@ class PharmacyService
                 'sellingPrice'          => $resource->selling_price,
                 'location'              => $resource->location,
                 'expiring'              => $resource->expiry_date ? $this->helperService->twoPartDiffInTimeToCome($resource->expiry_date) : '',
-                'prescriptionFrequency' => $resource->prescriptions->where('created_at', '>', (new Carbon())->subDays(30))->count(),
-                'dispenseFrequency'     => $resource->prescriptions->where('dispense_date', '>', (new Carbon())->subDays(30))->count(),
+                'prescriptionFrequency' => $resource->prescriptionFrequency,
+                'dispenseFrequency'     => $resource->dispenseFrequency,
                 'flag'                  => $resource->expiry_date ? $this->helperService->flagExpired($resource->expiry_date) : '',
                 'quantity'              => '',
             ];

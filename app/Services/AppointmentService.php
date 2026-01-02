@@ -32,11 +32,20 @@ class AppointmentService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
-        $query = $this->appointment::with([
-            'patient.sponsor', 
-            'user', 
-            'doctor', 
-            'patient.latestVisit.consultations',
+        $query = $this->appointment->select('id', 'patient_id', 'user_id', 'doctor_id', 'date', 'created_at')->with([
+            'patient' => function ($query){
+                $query->select('id', 'sponsor_id', 'first_name', 'middle_name', 'last_name', 'card_no', 'phone', 'flag', 'flag_reason', 'flagged_by', 'flagged_at')
+                    ->with([
+                        'flaggedBy:id,username',
+                        'sponsor:id,name,category_name,flag',
+                        'latestVisit' => function ($query) {
+                            $query->select('id', 'visits.patient_id', 'created_at')
+                            ->with(['latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment']);
+                        }
+                    ]);
+            }, 
+            'user:id,username', 
+            'doctor:id,username',
         ]);
 
         if (! empty($params->searchTerm)) {
@@ -75,7 +84,7 @@ class AppointmentService
                 'phone'             => $appointment->patient->phone,
                 'sponsor'           => $appointment->patient->sponsor->name . ' - ' . $appointment->patient->sponsor->category_name,
                 'lastVisitDate'     => (new Carbon($latestVisit?->created_at))->format('d/m/Y g:ia'),
-                'lastDiagnosis'     => $latestVisit?->consultations->sortDesc()->first()?->provisional_diagnosis,
+                'lastDiagnosis'     => $latestVisit->latestConsultation?->icd11_diagnosis ?? $latestVisit->latestConsultation?->provisional_diagnosis ?? $latestVisit->latestConsultation?->assessment,
                 'doctor'            => $appointment->doctor->username,
                 'date'              => (new Carbon($appointment->date))->format('d/m/Y g:ia'),
                 'createdBy'         => $appointment->user->username,
@@ -83,6 +92,8 @@ class AppointmentService
                 'flagSponsor'       => $appointment->patient->sponsor->flag,
                 'flagPatient'       => $appointment->patient->flag,
                 'flagReason'        => $appointment->patient->flag_reason,
+                'flaggedBy'         => $appointment->patient->flaggedBy?->username,
+                'flaggedAt'         => $appointment->patient->flagged_at ? (new Carbon($appointment->patient->flagged_at))->format('d/m/y g:ia') : '',
             ];
          };
     }

@@ -61,17 +61,17 @@ Class DeliveryNoteService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query      = $this->deliveryNote->select('id', 'user_id', 'visit_id', 'date', 'time_of_admission', 'time_of_delivery', 'mode_of_delivery', 'sex', 'ebl', 'note')
+                        ->with('user:id,username', 'visit:id,closed');
 
         if (! empty($params->searchTerm)) {
-            return $this->deliveryNote
-                        ->where('visit_id', $data->visitId)
+            return $query->where('visit_id', $data->visitId)
                         ->where('mode_of_delivery', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->deliveryNote
-                    ->where('visit_id', $data->visitId)
+        return $query->where('visit_id', $data->visitId)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
@@ -83,9 +83,9 @@ Class DeliveryNoteService
        return  function (DeliveryNote $deliveryNote) {
             return [
                 'id'                => $deliveryNote->id,
-                'date'              => (new Carbon($deliveryNote->date))->format('d/m/y'),
-                'timeAdmitted'      => (new Carbon($deliveryNote->time_of_admission))->format('d/m/y g:ia'),
-                'timeDelivered'     => (new Carbon($deliveryNote->time_of_delivery))->format('d/m/y g:ia'),
+                'date'              => $deliveryNote->date ? (new Carbon($deliveryNote->date))->format('d/m/y') : '',
+                'timeAdmitted'      => $deliveryNote->time_of_admission ? (new Carbon($deliveryNote->time_of_admission))->format('d/m/y g:ia') : '',
+                'timeDelivered'     => $deliveryNote->time_of_delivery ? (new Carbon($deliveryNote->time_of_delivery))->format('d/m/y g:ia') : '',
                 'modeOfDelivery'    => $deliveryNote->mode_of_delivery,
                 'sex'               => $deliveryNote->sex,
                 'ebl'               => $deliveryNote->ebl,

@@ -10,7 +10,6 @@ Class PayPercentageService
 {
     public function __construct()
     {
-        
     }
 
     public function individual_Family(Visit $visit): int|float|null

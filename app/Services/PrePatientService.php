@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
-use App\Models\Patient;
 use App\Models\PatientPreForm;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -14,7 +13,6 @@ use Illuminate\Support\Facades\DB;
 class PrePatientService
 {
     public function __construct(
-        private readonly Patient $patient, 
         private readonly HelperService $helperService, 
         private readonly PatientPreForm $patientPreForm
         )
@@ -62,7 +60,11 @@ class PrePatientService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query      = $this->patientPreForm::with(['sponsor', 'sponsor.sponsorCategory', 'user']);
+        $query      = $this->patientPreForm->select('id', 'sponsor_id', 'user_id', 'card_no', 'first_name', 'middle_name', 'last_name', 'phone', 'sex', 'created_at')
+                        ->with([
+                            'sponsor:id,name,category_name,flag', 
+                            'user:id,username'
+                        ]);
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
@@ -71,8 +73,6 @@ class PrePatientService
                         ->orWhere('last_name', 'LIKE', $searchTerm)
                         ->orWhere('card_no', 'LIKE', $searchTerm)
                         ->orWhere('phone', 'LIKE', $searchTerm)
-                        ->orWhere('sex', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhere('date_of_birth', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
                         ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', $searchTerm)
                         ->orderBy($orderBy, $orderDir)
@@ -96,13 +96,10 @@ class PrePatientService
                 'sex'               => $patientPreForm->sex,
                 'age'               => $this->helperService->twoPartDiffInTimePast($patientPreForm->date_of_birth),
                 'sponsor'           => $patientPreForm->sponsor->name,
-                'category'          => $patientPreForm->sponsor->sponsorCategory->name,
+                'category'          => $patientPreForm->sponsor->category_name,
                 'flagSponsor'       => $patientPreForm->sponsor->flag,
-                'flagPatient'       => $patientPreForm->flag,
-                'flagReason'        => $patientPreForm->flag_reason,
                 'createdAt'         => (new Carbon($patientPreForm->created_at))->format('d/m/Y'),
                 'createdBy'         => $patientPreForm->user->username,
-                'active'            => $patientPreForm->is_active,
             ];
          };
     }

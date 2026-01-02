@@ -17,7 +17,7 @@ class ConsultationReviewResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $ward = Ward::find($this->ward);
+        // $ward = Ward::find($this->ward);
         return [
             "id"                            => $this->id,
             "visitId"                       => $this->visit_id,
@@ -35,7 +35,7 @@ class ConsultationReviewResource extends JsonResource
             "selectedDiagnosis"             => $this->icd11_diagnosis ?? '',
             "provisionalDiagnosis"          => $this->provisional_diagnosis ?? '',
             "status"                        => $this->admission_status ?? '',
-            "ward"                          => $ward ? (new HelperService())->displayWard($ward) : '',
+            "ward"                          => $this->ward ? $this->ward . ' - Bed' . $this->bed_no : '',//$ward ? (new HelperService())->displayWard($ward) : '',
             "lmp"                           => $this->lmp ? Carbon::parse($this->lmp)->format('d/M/Y') : '',
             "edd"                           => $this->edd ? Carbon::parse($this->edd)->format('d/M/Y') : '',
             "ega"                           => $this->ega ?? '',

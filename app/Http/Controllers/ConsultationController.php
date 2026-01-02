@@ -48,16 +48,16 @@ class ConsultationController extends Controller
         return $consultation->load('visit');
     }
 
-    public function loadConsultations(Request $request, Visit $visit)
+    public function loadConsultations(Visit $visit)
     {
-        $consultations = $this->consultationService->getConsultations($request, $visit);
+        $consultations = $this->consultationService->getConsultations($visit);
 
         return ["consultations" => new ConsultationReviewCollection($consultations), "bio" => new PatientBioResource($visit), "latestLmp" => new LatestLmpResource($visit)];
     }
 
-    public function loadVisitsAndConsultations(Request $request, Patient $patient)
+    public function loadVisitsAndConsultations(Patient $patient)
     {
-        $visits = $this->consultationService->getVisitsAndConsultations($request, $patient);
+        $visits = $this->consultationService->getVisitsAndConsultations($patient);
         
         return ["visits" => new VisitCollection($visits), "bio" => new PatientHistoryBioResource($patient)];
 
@@ -70,11 +70,11 @@ class ConsultationController extends Controller
     
     public function destroy(Consultation $consultation)
     {
+        if ($consultation->prescriptions()->exists()){
+            return response()->json(['message' => 'Pls delete all prescriptions/tests connected to this consultation first'], 222);
+        }
+        
        return DB::transaction(function () use ($consultation) {
-                    if ($consultation->prescriptions()->exists()){
-                        return response()->json(['message' => 'Pls delete all prescriptions/tests connected to this consultation first'], 222);
-                    }
-
                     $consultation->visit->consultations->count() < 2 ? $consultation->visit->update(['consulted' => null]) : '' ;
                     
                     $consultation->destroy($consultation->id);

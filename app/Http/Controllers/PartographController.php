@@ -48,13 +48,6 @@ class PartographController extends Controller
 
         return response()->json($outGoing);
     }
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Partograph $partograph)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.

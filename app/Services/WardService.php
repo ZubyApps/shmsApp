@@ -54,17 +54,18 @@ class WardService
     {
         $orderBy    = 'long_name';
         $orderDir   =  'asc';
+        $query      = $this->ward->select('id', 'user_id', 'visit_id', 'short_name', 'long_name', 'bill', 'bed_number', 'description', 'bill', 'flag', 'flag_reason', 'created_at')
+                        ->with(['user:id,username'])
+                        ->withExists('visit as hasVisits');
 
         if (! empty($params->searchTerm)) {
-            return $this->ward
-                        ->where('short_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->where('short_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('long_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->ward
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        
@@ -85,14 +86,18 @@ class WardService
                 'createdBy'         => $ward->user->username,
                 'createdAt'         => (new Carbon($ward->created_at))->format('d/m/Y'),
                 'occupied'          => $ward->visit_id ? 'Yes' : 'No',
-                'count'             => $ward->visit()->count()
+                'count'             => $ward->hasVisits,//visit()->count()
             ];
          };
     }
 
     public function getFormattedList($data)
     {
-            return $this->ward
+            return $this->ward->select('id', 'visit_id', 'long_name', 'short_name', 'bed_number', 'flag', 'flag_reason')
+                        ->with(['visit' => function($query){
+                            $query->select('id', 'patient_id')
+                                ->with(['patient:id,first_name,middle_name,last_name,card_no']);
+                        }])
                         ->orderBy('long_name', 'asc')
                         ->get();
            

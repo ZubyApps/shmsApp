@@ -31,6 +31,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const byPayMethodModal              = new Modal(document.getElementById('byPayMethodModal'))
 
     const balancingDateDiv              = document.querySelector('.balancingDateDiv')
+    const balancingMonthDateDiv         = document.querySelector('.balancingMonthDateDiv')
     const billRemindersDatesDiv         = document.querySelector('.billRemindersDatesDiv')
 
     const waitingBtn                    = document.querySelector('#waitingBtn')
@@ -39,6 +40,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveExpenseBtn                = newExpenseModal._element.querySelector('#saveExpenseBtn')
     const updateExpenseBtn              = updateExpenseModal._element.querySelector('#updateExpenseBtn')
     const searchBalanceByDateBtn        = balancingDateDiv.querySelector('.searchBalanceByDateBtn')
+    const searchBalanceByMonthBtn       = balancingMonthDateDiv.querySelector('.searchBalanceByMonthBtn')
     const saveThirPartyServiceBtn       = thirdPartyServiceModal._element.querySelector('#saveThirPartyServiceBtn')
     const dischargeBillBtn              = billingModal._element.querySelector('#dischargeBillBtn')
     const addBillBtn                    = dischargeBillModal._element.querySelector('#addBillBtn')
@@ -63,6 +65,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const openVisitsTab                 = document.querySelector('#nav-openVisits-tab')
     const expensesTab                   = document.querySelector('#nav-expenses-tab')
     const balancingTab                  = document.querySelector('#nav-balancing-tab')
+    const balancingByMonthTab           = document.querySelector('#nav-balancingByMonth-tab')
     const billRemindersTab              = document.querySelector('#nav-billReminders-tab')
     const [outPatientsView, inPatientsView, ancPatientsView] = [document.querySelector('#nav-outPatients-view'), document.querySelector('#nav-inPatients-view'), document.querySelector('#nav-ancPatients-view')]
 
@@ -76,7 +79,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const shiftBadgeSpan                = document.querySelector('#shiftBadgeSpan')
 
 
-    let inPatientsVisitTable, ancPatientsVisitTable, billingTable, paymentTable, openVisitsTable, expensesTable, balancingTable, medicalReportTable, billRemindersTable, byPayMethodTable
+    let inPatientsVisitTable, ancPatientsVisitTable, billingTable, paymentTable, openVisitsTable, expensesTable, balancingTable, medicalReportTable, billRemindersTable, byPayMethodTable, balancingMonthTable
 
     const outPatientsVisitTable = getPatientsVisitsByFilterTable('#outPatientsVisitTable', 'Outpatient', 'consulted')
     const waitingTable = getWaitingTable('#waitingTable')
@@ -168,6 +171,14 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    balancingByMonthTab.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#balancingMonthTable' )){
+            $('#balancingMonthTable').dataTable().fnDraw()
+        } else {
+            balancingMonthTable = getBalancingTable('balancingMonthTable', 'ByMonth')
+        }
+    })
+
     billRemindersTab.addEventListener('click', function () {
         billRemindersDatesDiv.querySelector('#monthYear').value == '' ? billRemindersDatesDiv.querySelector('#monthYear').value = new Date().toISOString().slice(0,7) : ''
         let date = new Date().toISOString().split('T')[0]
@@ -186,6 +197,13 @@ window.addEventListener('DOMContentLoaded', function () {
             $('#balancingTable').dataTable().fnDestroy()
         }
         balancingTable = getBalancingTable('balancingTable', null, balancingDateDiv.querySelector('#balanceDate').value)
+    })
+
+    searchBalanceByMonthBtn.addEventListener('click', function () {
+        if ($.fn.DataTable.isDataTable( '#balancingMonthTable' )){
+            $('#balancingMonthTable').dataTable().fnDestroy()
+        }
+        balancingMonthTable = getBalancingTable('balancingMonthTable', 'byMonth', balancingMonthDateDiv.querySelector('#balanceMonth').value)
     })
 
     searchBillRemindersWithDatesBtn.addEventListener('click', function () {
@@ -263,7 +281,8 @@ window.addEventListener('DOMContentLoaded', function () {
             const billingDetailsBtn = event.target.closest('.consultationDetailsBtn')
             const patientsBillBtn   = event.target.closest('.patientsBillBtn')
             const medicalReportBtn  = event.target.closest('.medicalReportBtn')
-            const closeVisitBtn     = event.target.closest('.closeVisitBtn')
+            // const closeVisitBtn     = event.target.closest('.closeVisitBtn')
+            const toggleVisitBtn    = event.target.closest('#closeVisitBtn, #openVisitBtn')
             
             if (billingDetailsBtn){
                 const [visitId, conId] = [billingDetailsBtn.getAttribute('data-id'),  billingDetailsBtn.getAttribute('data-conid')]
@@ -293,10 +312,32 @@ window.addEventListener('DOMContentLoaded', function () {
                 medicalReportListModal.show()
             }
 
-            if (closeVisitBtn){
-                if (confirm('Are you sure you want to close this Visit?')) {
-                    const visitId = closeVisitBtn.getAttribute('data-id')
-                    http.patch(`/visits/close/${visitId}`)
+            // if (closeVisitBtn){
+            //     if (confirm('Are you sure you want to close this Visit?')) {
+            //         const visitId = closeVisitBtn.getAttribute('data-id')
+            //         http.patch(`/visits/close/${visitId}`)
+            //         .then((response) => {
+            //             if (response.status >= 200 || response.status <= 300){
+            //                 waitingTable.draw()
+            //                 outPatientsVisitTable.draw(false)
+            //                 inPatientsVisitTable ? inPatientsVisitTable.draw(false) : ''
+            //                 ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : ''
+            //                 openVisitsTable ? openVisitsTable.draw(false) : ''
+            //             }
+            //         })
+            //         .catch((error) => {
+            //             if (error.response.status === 403){
+            //                 alert(error.response.data.message) 
+            //             }
+            //             console.log(error)
+            //         })
+            //     }
+            // }
+
+            if (toggleVisitBtn){
+                const [visitId, string]  = [toggleVisitBtn.getAttribute('data-id'), toggleVisitBtn.id == 'closeVisitBtn' ? 'close' : 'open']
+                if (confirm(`Are you sure you want to ${string} the Visit?`)) {
+                    http.patch(`/visits/${string}/${visitId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
                             waitingTable.draw()
@@ -640,7 +681,7 @@ window.addEventListener('DOMContentLoaded', function () {
         http.post('/expenses', {...getDivData(newExpenseModal._element)}, {"html": newExpenseModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
-                newExpenseModal.hide()
+                    newExpenseModal.hide()
                     clearDivValues(newExpenseModal._element)
                     clearValidationErrors(newExpenseModal._element)
                     expensesTable ? expensesTable.draw() : ''
@@ -1129,28 +1170,49 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelector('#balancingTable').addEventListener('click', function (event) {
-            const showCashPaymentsBtn    = event.target.closest('.showCashPaymentsBtn')
-            const balanceDate            = balancingDateDiv.querySelector('#balanceDate').value
-            const today                  = new Date().toISOString().slice(0,10)
-    
-            if (showCashPaymentsBtn){
-                showCashPaymentsBtn.setAttribute('disabled', true)
-                const id = showCashPaymentsBtn.getAttribute('data-id')
-                byPayMethodModal._element.querySelector('#paymethod').value = 'Cash'
-    
-                if (balanceDate){
-                    byPayMethodModal._element.querySelector('#showBalanceDate').value = balanceDate
-                    byPayMethodTable = getByPayMethodsTable('byPayMethodTable', id, byPayMethodModal, null, null, balanceDate)
+    document.querySelectorAll('#balancingTable, #balancingMonthTable').forEach(table => (
+        table.addEventListener('click', function (event) {
+                const showCashPaymentsBtn    = event.target.closest('.showCashPaymentsBtn')
+                const balanceDate            = balancingDateDiv.querySelector('#balanceDate').value 
+                const balanceMonth           = balancingMonthDateDiv.querySelector('#balanceMonth').value
+                const date                   = new Date()
+                const today                  = date.toISOString().slice(0,10)
+                const month                  = date.getMonth()+1
+                const year                   = date.getFullYear()
+                const tableId                = table.id
+                let billing                  = true
+
+                if (showCashPaymentsBtn){
+                    showCashPaymentsBtn.setAttribute('disabled', true)
+                    const id = showCashPaymentsBtn.getAttribute('data-id')
+                    byPayMethodModal._element.querySelector('#paymethod').value = 'Cash'
+
+                    if (balanceDate || balanceMonth){
+                        if (tableId == 'balancingMonthTable'){
+
+                            byPayMethodModal._element.querySelector('#showBalanceDate').setAttribute('type', 'month')
+                            byPayMethodModal._element.querySelector('#showBalanceDate').value = balanceMonth
+                            byPayMethodTable = getByPayMethodsTable('byPayMethodTable', id, byPayMethodModal, null, null, balanceMonth, null, billing)
+                        } else {
+                            byPayMethodModal._element.querySelector('#showBalanceDate').setAttribute('type', 'date')
+                            byPayMethodModal._element.querySelector('#showBalanceDate').value = balanceDate
+                            byPayMethodTable = getByPayMethodsTable('byPayMethodTable', id, byPayMethodModal, null, null, balanceDate,  'byDate', billing)
+                        }
+                        byPayMethodModal.show()
+                        return
+                    }
+                    if (tableId == 'balancingMonthTable'){
+                        byPayMethodModal._element.querySelector('#showBalanceDate').setAttribute('type', 'month')
+                        byPayMethodModal._element.querySelector('#showBalanceDate').value = year + '-' + month
+                    } else {
+                        byPayMethodModal._element.querySelector('#showBalanceDate').setAttribute('type', 'date')
+                        byPayMethodModal._element.querySelector('#showBalanceDate').value = today
+                    }
+                    byPayMethodTable = getByPayMethodsTable('byPayMethodTable', id, byPayMethodModal, null, null, null, tableId == 'balancingMonthTable' ? null : 'byDate', billing)
                     byPayMethodModal.show()
-                    return
                 }
-    
-                byPayMethodModal._element.querySelector('#showBalanceDate').value = today
-                byPayMethodTable = getByPayMethodsTable('byPayMethodTable', id, byPayMethodModal)
-                byPayMethodModal.show()
-            }
-        })
+            })
+    ))
 })
 
 const smsMessenger = (selectElement) => {

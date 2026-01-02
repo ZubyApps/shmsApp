@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Resource extends Model
 {
@@ -98,6 +99,11 @@ class Resource extends Model
                     ->withTimestamps();
     }
 
+    public function resourceSponsors()
+    {
+        return $this->hasMany(ResourceSponsor::class, 'resource_id');
+    }
+
     public function getSellingPriceForSponsor(?Sponsor $sponsor = null): int
     {
         if ($sponsor) {
@@ -111,5 +117,13 @@ class Resource extends Model
         }
 
         return $this->selling_price ?? 0;
+    }
+
+    public function scopeHospitalAndOthersCategories(Builder $query): Builder
+    {
+        return $query->where(function (Builder $query) {
+                    $query->where('category', 'Hospital Services')
+                        ->orWhere('category', 'Other Services');
+                });
     }
 }

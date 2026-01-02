@@ -144,7 +144,7 @@ Class AntenatalRegisterationService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-
+        $query      = $this->antenatalRegisteration::with('user.username');
         if (! empty($params->searchTerm)) {
             return $this->antenatalRegisteration
                         ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
@@ -165,9 +165,9 @@ Class AntenatalRegisterationService
        return  function (AntenatalRegisteration $antenatalRegisteration) {
             return [
                 'id'                => $antenatalRegisteration->id,
-                'date'              => (new Carbon($antenatalRegisteration->date))->format('d/m/y'),
-                'timeAdmitted'      => (new Carbon($antenatalRegisteration->time_of_admission))->format('d/m/y g:ia'),
-                'timeDelivered'     => (new Carbon($antenatalRegisteration->time_of_delivery))->format('d/m/y g:ia'),
+                'date'              => $antenatalRegisteration->date ? (new Carbon($antenatalRegisteration->date))->format('d/m/y') : '',
+                'timeAdmitted'      => $antenatalRegisteration->time_of_admission ? (new Carbon($antenatalRegisteration->time_of_admission))->format('d/m/y g:ia') : '',
+                'timeDelivered'     => $antenatalRegisteration->time_of_delivery ? (new Carbon($antenatalRegisteration->time_of_delivery))->format('d/m/y g:ia') : '',
                 'modeOfDelivery'    => $antenatalRegisteration->mode_of_delivery,
                 'ebl'               => $antenatalRegisteration->ebl,
                 'note'              => $antenatalRegisteration->note,

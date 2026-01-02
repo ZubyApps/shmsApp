@@ -353,9 +353,9 @@ const getOtherPrescriptionsByFilterNurses = (tableId, conId, modal, visitId, isH
                 data: row =>
                 `
                 <div class="d-flex flex- ${row.closed || !row.chartable ? 'd-none' : ''}">
-                    ${row.doseComplete ? 'Complete' : row.discontinued ? 'Discontinued' : `
+                    ${row.serviceComplete ? 'Complete' : row.discontinued ? 'Discontinued' : `
                         <button type="button" id="chartPrescriptionBtn" class="btn btn${row.prescriptionCharts.length ? '' : '-outline'}-primary chartPrescriptionBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}", data-resource="${row.resource}" data-prescription="${row.prescription + ' - ' + row.note}" data-prescribedBy="${row.prescribedBy}" data-patient="${row.patient}" data-sponsor="${row.sponsor}" data-prescribed="${row.prescribedFormatted}" data-consultation="${row.conId}" data-visit="${row.visitId}">
-                            ${row.prescriptionCharts.length ? row.doseComplete ? 'Complete' : 'Charted' : 'Create'}
+                            ${row.prescriptionCharts.length ? row.serviceComplete ? 'Complete' : 'Charted' : 'Create'}
                         </button>`
                     }
                 </div>
@@ -789,7 +789,7 @@ const getEmergencyTable = (tableId, viewer) => {
             {data: row => 
                     `
                         <div class="d-flex flex">
-                            <button class=" btn btn${row.medicationCharts.length > 0 ? '-outline-primary viewMedicationBtn' : ''} tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-visitid="${ row.visitId }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }">
+                            <button class=" btn btn${row.medicationCharts ? '-outline-primary viewMedicationBtn' : ''} tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-visitid="${ row.visitId }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }">
                                 ${row.item} ${ row.doseComplete ? '<i class="bi bi-check-circle-fill tooltip-test" title="complete"></i>' : ''}
                             </button>
                         </div>

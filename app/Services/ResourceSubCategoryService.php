@@ -40,17 +40,20 @@ class ResourceSubCategoryService
     {
         $orderBy    = 'name';
         $orderDir   =  'asc';
-
+        $query      = $this->resourceSubCategory->select('id', 'resource_category_id', 'user_id', 'name', 'description', 'created_at')
+                            ->with([
+                                'resourceCategory:id,name',
+                                'user:id,username'
+                            ])
+                            ->withExists(['resources as hasResources']);
         if (! empty($params->searchTerm)) {
-            return $this->resourceSubCategory
-                        ->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('resourceCategory', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->resourceSubCategory
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        
@@ -66,7 +69,7 @@ class ResourceSubCategoryService
                 'category'          => $resourceSubCategory->resourceCategory->name,
                 'createdBy'         => $resourceSubCategory->user->username,
                 'createdAt'         => (new Carbon($resourceSubCategory->created_at))->format('d/m/y g:ia'),
-                'count'             => $resourceSubCategory->resources()->count(),
+                'count'             => $resourceSubCategory->hasResources,//resources()->count(),
             ];
          };
     }

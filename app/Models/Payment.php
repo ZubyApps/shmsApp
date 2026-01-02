@@ -35,4 +35,14 @@ class Payment extends Model
     {
         return $this->hasMany(Prescription::class);
     }
+
+    public function walkIn() 
+    {
+        return $this->belongsTo(WalkIn::class);
+    }
+
+    public function mortuaryService() 
+    {
+        return $this->belongsTo(MortuaryService::class);
+    }
 }

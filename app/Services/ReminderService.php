@@ -47,14 +47,19 @@ class ReminderService
         $orderDir   =  'desc';
         $nullClause = $dept == 'HMO' ? 'whereNull' : 'whereNotNull';
         $dateColumn = $dept == 'HMO' ? 'month_sent_for' : 'set_from';
-        $query      = $this->reminder::with([
-            'firstReminderBy',
-            'secondReminderBy',
-            'finalReminderBy',
-            'confirmedPaidBy',
-            'user',
-            'visit.patient',
-            'sponsor'
+        $query      = $this->reminder->select('id', 'sponsor_id', 'visit_id', 'user_id', 'amount_confirmed', 'confirmed_paid', 'first_reminder', 'second_reminder', 'final_reminder', 'month_sent_for', 'max_days', 'set_from', 'remind', 'comment', 'created_at', 'first_reminder_by', 'second_reminder_by', 'final_reminder_by', 'confirmed_paid_by')->with([
+            'firstReminderBy:id,username',
+            'secondReminderBy:id,username',
+            'finalReminderBy:id,username',
+            'confirmedPaidBy:id,username',
+            'user:id,username',
+            'visit' => function ($query) {
+                    $query->select('id', 'patient_id')
+                    ->with([
+                        'patient:id,first_name,middle_name,last_name,card_no', 
+                    ]);
+                },
+            'sponsor:id,name'
         ])
         ->$nullClause('visit_id');
 
@@ -173,14 +178,20 @@ class ReminderService
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
         $nullClause = $dept == 'HMO' ? 'whereNull' : 'whereNotNull';
-        $query      = $this->reminder::with([
-            'firstReminderBy',
-            'secondReminderBy',
-            'finalReminderBy',
-            'confirmedPaidBy',
-            'user',
-            'visit.patient',
-            'sponsor'
+        $query      = $this->reminder->select('id', 'sponsor_id', 'visit_id', 'user_id', 'first_reminder_by', 'second_reminder_by', 'final_reminder_by', 'confirmed_paid_by', 'amount_confirmed', 'confirmed_paid', 'first_reminder', 'second_reminder', 'final_reminder', 'month_sent_for', 'max_days', 'set_from', 'remind', 'comment', 'created_at')->with([
+            'firstReminderBy:id,username',
+            'secondReminderBy:id,username',
+            'finalReminderBy:id,username',
+            'confirmedPaidBy:id,username',
+            'user:id,username',
+            'visit' => function ($query) {
+                    $query->select('id', 'patient_id')
+                    ->with([
+                        'patient:id,first_name,middle_name,last_name,card_no,phone', 
+                        // 'payments'
+                    ]);
+                },
+            'sponsor:id,name'
         ])
         ->$nullClause('visit_id');
 
@@ -296,7 +307,6 @@ class ReminderService
             }else{
                 $data->confirmedPayDate ? $reminder->sponsor->update(['flag' => false]) : '';
             }
-    
             return $reminder->update([
                 'confirmed_paid'        => $data->confirmedPayDate ? new Carbon($data->confirmedPayDate) : null,
                 'amount_confirmed'      => $data->amountConfirmed ? $data->amountConfirmed : null,

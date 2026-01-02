@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\MedicationChart;
 use App\Services\ChurchPlusSmsService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -21,7 +20,11 @@ class SendMedicationReminder implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private readonly MedicationChart $medicationChart)
+    public function __construct(
+        private string $firstName, 
+        private string $phone, 
+        private string $scheduledTime
+    )
     {
         //
     }
@@ -33,11 +36,12 @@ class SendMedicationReminder implements ShouldQueue
     {     
         $gateway = 1;
 
-        $firstName = $this->medicationChart->visit->patient->first_name;
+        $time = (new Carbon($this->scheduledTime))->format('g:iA');
         
-        $churchPlusSmsService
-        ->sendSms('Dear ' .$firstName. ', pls be reminded of your medication by '. (new Carbon($this->medicationChart->scheduled_time))->format('g:iA') . ' today. Courtesy: Sandra Hospital Management System', $this->medicationChart->visit->patient->phone, 'SandraHosp', $gateway);
+        $response = $churchPlusSmsService
         
-        // $response == false ? '' : info('medications', ['sent to' => $firstName]);
+        ->sendSms('Dear ' .$this->firstName. ', pls be reminded of your medication by '. $time . ' today. Courtesy: Ufor Hospital Management System', $this->phone, 'UforHosp', $gateway);
+        
+        $response == false ? '' : info('medications', ['sent to' => $this->firstName]);
     }
 }

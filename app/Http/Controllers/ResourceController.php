@@ -84,7 +84,7 @@ class ResourceController extends Controller
 
     public function theatreMatch(Request $request)
     {
-        $resources = $this->resourceService->getTheatreMarch($request);
+        $resources = $this->resourceService->getTheatreMatch($request);
 
         if ($resources->isEmpty()){
             $resource = ucwords($request->resource);

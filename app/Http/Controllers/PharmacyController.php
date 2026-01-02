@@ -48,6 +48,10 @@ class PharmacyController extends Controller
 
     public function billPrescription(Request $request, Prescription $prescription)
     {
+        if ($request->notPharmacy){
+           return $this->pharmacyService->bill($request, $prescription, $request->user());
+        }
+        
         $request->validate([
             'quantity' => ['nullable', 'integer', 'lte:'.$prescription->resource->stock_level]
         ]);

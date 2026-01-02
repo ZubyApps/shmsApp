@@ -179,6 +179,17 @@ class PatientController extends Controller
         return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
     }
 
+    public function loadLinkTovisits(Request $request)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+    
+        $patients = $this->visitService->getLinkTovisits($params);
+
+        $loadTransformer = $this->visitService->getLinkToVisitsTransfromer();
+
+        return $this->datatablesService->datatableResponse($loadTransformer, $patients, $params);
+    }
+
     public function destroy(Patient $patient)
     {
         return $patient->destroy($patient->id);

@@ -83,7 +83,7 @@ const getPayMethodsExpenseSummmaryTable = (tableId, startDate, endDate, date) =>
     return summaryTable
 }
 
-const getByPayMethodsTable = (tableId, payMethodId, modal, startDate, endDate, date) => {
+const getByPayMethodsTable = (tableId, payMethodId, modal, startDate, endDate, date, byDate, billing) => {
     const byPayMethodTable = new DataTable(`#${tableId}`, {
         serverSide: true,
         ajax:  {url: `/reports/accounts/bypaymethod`, data: {
@@ -91,6 +91,8 @@ const getByPayMethodsTable = (tableId, payMethodId, modal, startDate, endDate, d
             'startDate' : startDate, 
             'endDate'   : endDate,
             'date'      : date,
+            'byDate'    : byDate,
+            'billing'   : billing
         }},
         orderMulti: true,
         search:true,

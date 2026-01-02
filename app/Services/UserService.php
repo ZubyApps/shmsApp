@@ -39,6 +39,7 @@ class UserService
             'next_of_kin_phone'     => $data->nextOfKinPhone,
             'date_of_employment'    => $data->dateOfEmployment,
             'date_of_exit'          => $data->dateOfExit,
+            'staff_id'              => $data->staffId,
             'password'              => Hash::make($data->password),
             'created_by'            => $user->username,
         ]);
@@ -66,6 +67,7 @@ class UserService
              'date_of_employment'    => $data->dateOfEmployment1,
              'date_of_exit'          => $data->dateOfExit1,
              'special_note'          => $data->specialNote1,
+             'staff_id'              => $data->staffId1,
              'password'              => Hash::make($data->password),
              'created_by'            => $updater->username,
              ]);
@@ -89,6 +91,7 @@ class UserService
                 'date_of_employment'    => $data->dateOfEmployment1,
                 'date_of_exit'          => $data->dateOfExit1,
                 'special_note'          => $data->specialNote1,
+                'staff_id'              => $data->staffId1,
                 'created_by'            => $updater->username,
                 ]);
         }
@@ -100,7 +103,9 @@ class UserService
     {
         $orderBy    = 'firstname';
         $orderDir   =  'desc';
-        $query = $this->user::with(['designation']);
+        $query = $this->user->select('id', 'firstname', 'middlename', 'lastname', 'date_of_employment', 'login', 'logout', 'highest_qualification', 'username', 'date_of_exit', 'phone_number', 'created_at')
+                    ->with(['designation:id,user_id,designation,access_level'])
+                    ->withExists('designation as hasDesignation');
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
@@ -112,11 +117,13 @@ class UserService
                                 ->orWhere('phone_number', 'LIKE', $searchTerm )
                                 ->orWhereRelation('designation', 'designation', 'LIKE', $searchTerm);
                             })
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $query->orderBy($orderBy, $orderDir)
+        return $query
+                    // ->whereRelation('designation', 'access_level', '<', 6)
+                    ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        
@@ -137,8 +144,9 @@ class UserService
                 'username'          => $user->username,
                 'dateOfExit'        => $user->date_of_exit,
                 'phone'             => $user->phone_number,
+                'staffId'           => $user->staff_id,
                 'createdAt'         => (new Carbon($user->created_at))->format('d/m/Y'), 
-                'hasDesignation'    => $user->designation != null, 
+                'hasDesignation'    => $user->hasDesignation, 
                 'guard'             => $user->designation?->access_level > 5, 
                 'superUser'         => auth()->user()->designation?->access_level > 5, 
             ];
@@ -185,25 +193,26 @@ class UserService
     {
         $orderBy    = 'firstname';
         $orderDir   =  'desc';
+        $query      = $this->user->select('id', 'firstname', 'middlename', 'lastname', 'login', 'phone_number')
+                        ->with(['designation:id,user_id,designation'])
+                        ->where('is_active', true)
+                        ->whereRelation('designation', 'access_level', '<', 6);
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-            return $this->user
-                        ->where(function(Builder $query) use($searchTerm) {
-                            $query->where('is_active', true)
-                            ->where('firstname', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
+            return $query->where(function(Builder $query) use($searchTerm) {
+                            $query->where('firstname', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
                             ->orWhere('middlename', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
                             ->orWhere('lastname', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
                             ->orWhere('username', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
                             ->orWhereRelation('designation', 'designation', 'LIKE', $searchTerm);
                         })
+                        
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->user
-                    ->where('is_active', true)
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        

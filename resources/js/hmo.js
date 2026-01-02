@@ -271,7 +271,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 const patientBillBtn            = event.target.closest('.patientBillBtn')
                 const investigationsBtn         = event.target.closest('.investigationsBtn')
                 const treatVisitBtn             = event.target.closest('.treatVisitBtn')
-                const closeVisitBtn             = event.target.closest('.closeVisitBtn')
+                // const closeVisitBtn             = event.target.closest('.closeVisitBtn')
+                const toggleVisitBtn            = event.target.closest('#closeVisitBtn, #openVisitBtn')
                 const medicalReportBtn          = event.target.closest('.medicalReportBtn')
                 const filterByOpen              = event.target.closest('.filterByOpen')
                 const removeFilter              = event.target.closest('.removeFilter')
@@ -371,10 +372,30 @@ window.addEventListener('DOMContentLoaded', function () {
                     }
                 }
                 
-                if (closeVisitBtn){
-                    if (confirm('Are you sure you want to close this Visit?')) {
-                        const visitId = closeVisitBtn.getAttribute('data-id')
-                        http.patch(`/visits/close/${visitId}`)
+                // if (closeVisitBtn){
+                //     if (confirm('Are you sure you want to close this Visit?')) {
+                //         const visitId = closeVisitBtn.getAttribute('data-id')
+                //         http.patch(`/visits/close/${visitId}`)
+                //         .then((response) => {
+                //             if (response.status >= 200 || response.status <= 300){
+                //                 refreshMainTables();
+                //                 refreshApprovalTables();
+                //             }
+                //         })
+                //         .catch((error) => {
+                //             if (error.response.status === 403){
+                //                 alert(error.response.data.message) 
+                //             }
+                //             console.log(error)
+                //         })
+                //     }
+                // }
+
+                if (toggleVisitBtn){
+                    const [visitId, string]  = [toggleVisitBtn.getAttribute('data-id'), toggleVisitBtn.id == 'closeVisitBtn' ? 'close' : 'open']
+                    if (confirm(`Are you sure you want to ${string} the Visit?`)) {
+                        // const visitId = closeVisitBtn.getAttribute('data-id')
+                        http.patch(`/visits/${string}/${visitId}`)
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300){
                                 refreshMainTables();
@@ -484,7 +505,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                 // table.draw(false)
                                 // table.on('draw', removeDisabled(approvalFieldset))                        
                             }
-                            if (response.status == 222){
+                            if (response.status == 409){
                                 parentDiv.innerHTML = response.data
                                 // errorTimeStateMgt(parentDiv, parentDivState, response.data, )
                                 // alert(response.data)
@@ -523,7 +544,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                     // table.on('draw', removeDisabled(approvalFieldset))
                                     parentDiv.innerHTML = 'rejected'
                                 }
-                                if (response.status == 222){
+                                if (response.status == 409){
                                     parentDiv.innerHTML = response.data
                                     // errorTimeStateMgt(parentDiv, parentDivState, response.data, )
                                     // alert(response.data)
@@ -590,7 +611,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                     // table.on('draw', removeDisabled(approvalFieldset))
                                     parentDiv.innerHTML = 'pending'
                                 }
-                                if (response.status == 222){
+                                if (response.status == 409){
                                     parentDiv.innerHTML = response.data
                                     // errorTimeStateMgt(parentDiv, parentDivState, response.data, )
                                     // alert(response.data)

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class Sponsor extends Model
 {
@@ -49,72 +50,37 @@ class Sponsor extends Model
 
     public function allHmsBills()
     {
-        $allHmsBills = 0;
-        foreach($this->visits as $visit){
-            $allHmsBills += $visit->totalHmsBills();
-        }
-
-        return $allHmsBills;
+        return Visit::where('sponsor_id', $this->id)->sum('total_hms_bill') ?? 0;
     }
 
     public function allHmoBills()
     {
-        $allHmoBills = 0;
-        foreach($this->visits as $visit){
-            $allHmoBills += $visit->totalHmoBills();
-        }
-
-        return $allHmoBills;
+        return Prescription::whereHas('visit', fn($q) => $q->where('sponsor_id', $this->id))->sum('hmo_bill') ?? 0;
     }
 
     public function allNhisBills()
     {
-        $allNhisBills = 0;
-        foreach($this->visits as $visit){
-            $allNhisBills += $visit->totalNhisBills();
-        }
-
-        return $allNhisBills;
+        return Visit::where('sponsor_id', $this->id)->sum('total_nhis_bill') ?? 0;
     }
 
     public function allPayments()
     {
-        $allPayments = 0;
-        foreach($this->visits as $visit){
-            $allPayments += $visit->totalPayments();
-        }
-
-        return $allPayments;
+        return Visit::where('sponsor_id', $this->id)->sum('total_paid') ?? 0;
     }
 
     public function allPaidPrescriptions()
     {
-        $allPayments = 0;
-        foreach($this->visits as $visit){
-            $allPayments += $visit->totalPaidPrescriptions();
-        }
-
-        return $allPayments;
+        return Prescription::whereHas('visit', fn($q) => $q->where('sponsor_id', $this->id))->sum('paid') ?? 0;
     }
 
     public function allPaid()
     {
-        $allPaid = 0;
-        foreach($this->visits as $visit){
-            $allPaid += $visit->total_paid;
-        }
-
-        return $allPaid;
+        return Visit::where('sponsor_id', $this->id)->sum('total_paid') ?? 0;
     }
 
     public function allDiscounts()
     {
-        $allDiscounts = 0;
-        foreach($this->visits as $visit){
-            $allDiscounts += $visit->discount;
-        }
-
-        return $allDiscounts;
+        return Visit::where('sponsor_id', $this->id)->sum('discount') ?? 0;
     }
 
     public function resources()
@@ -123,5 +89,19 @@ class Sponsor extends Model
                     ->using(ResourceSponsor::class)
                     ->withPivot('selling_price', 'user_id')
                     ->withTimestamps();
+    }
+
+    public function resourceSponsors()
+    {
+        return $this->hasMany(ResourceSponsor::class, 'sponsor_id');
+    }
+
+    public function scopeHmoDeptCategories(Builder $query): Builder
+    {
+        return $query->where(function (Builder $q) {
+            $q->where('category_name', 'HMO')
+              ->orWhere('category_name', 'NHIS')
+              ->orWhere('category_name', 'Retainership');
+        });
     }
 }

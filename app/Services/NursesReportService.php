@@ -46,17 +46,19 @@ Class NursesReportService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-
+        $query      = $this->nursesReport->select('id', 'user_id', 'visit_id', 'created_at', 'shift', 'report',)
+                        ->with([
+                            'visit:id,closed',
+                            'user:id,username'
+                        ]);
         if (! empty($params->searchTerm)) {
-            return $this->nursesReport
-                        ->where('visit_id', $data->visitId)
+            return $query->where('visit_id', $data->visitId)
                         ->whereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->nursesReport
-                    ->where('visit_id', $data->visitId)
+        return $query->where('visit_id', $data->visitId)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 

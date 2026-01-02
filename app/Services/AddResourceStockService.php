@@ -4,11 +4,12 @@ declare(strict_types = 1);
 
 namespace App\Services;
 
-use App\DataObjects\DataTableQueryParams;
-use App\Models\AddResourceStock;
-use App\Models\User;
 use Carbon\Carbon;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\AddResourceStock;
+use Illuminate\Support\Facades\DB;
+use App\DataObjects\DataTableQueryParams;
 
 class AddResourceStockService
 {
@@ -18,58 +19,71 @@ class AddResourceStockService
 
     public function create(Request $data, User $user): AddResourceStock
     {
-        $addedStock = $user->addResources()->create([
-            'resource_id'           => $data->resourceId,
-            'hms_stock'             => $data->hmsStock,
-            'actual_stock'          => $data->actualStock,
-            'difference'            => $data->difference,
-            'quantity'              => $data->quantity,
-            'final_quantity'        => $data->finalQuantity,
-            'final_stock'           => $data->finalStock,
-            'comment'               => $data->comment,
-            'unit_purchase'         => $data->unitPurchase,
-            'unit_description_id'   => $data->unitPurchase,
-            'purchase_price'        => $data->purchasePrice,
-            'selling_price'         => $data->sellingPrice,
-            'expiry_date'           => $data->expiryDate ? (new Carbon($data->expiryDate))->lastOfMonth() : null,
-            'resource_supplier_id'  => $data->resourceSupplierId,
-        ]);
+        return DB::transaction(function () use ($data, $user) {
+            // 1. Prepare Expiry Date once
+            $expiryDate = $data->expiryDate 
+                ? Carbon::parse($data->expiryDate)->lastOfMonth() 
+                : null;
 
-        if ($data->expiryDate){
-            $addedStock->resource()->update([
-                    'stock_level'           => $addedStock->resource->stock_level + $data->finalQuantity,
-                    'unit_description_id'   => $data->unitPurchase, 
-                    'purchase_price'        => $data->purchasePrice, 
-                    'selling_price'         => $data->sellingPrice, 
-                    'expiry_date'           => (new Carbon($data->expiryDate))->lastOfMonth(), 
-                ]);
-                return $addedStock;
+            // 2. Create the Stock Entry
+            $addedStock = $user->addResources()->create([
+                'resource_id'          => $data->resourceId,
+                'hms_stock'            => $data->hmsStock,
+                'actual_stock'         => $data->actualStock,
+                'difference'           => $data->difference,
+                'quantity'             => $data->quantity,
+                'final_quantity'       => $data->finalQuantity,
+                'final_stock'          => $data->finalStock,
+                'comment'              => $data->comment,
+                'unit_purchase'        => $data->unitPurchase,
+                'unit_description_id'  => $data->unitPurchase,
+                'purchase_price'       => $data->purchasePrice,
+                'selling_price'        => $data->sellingPrice,
+                'expiry_date'          => $expiryDate,
+                'resource_supplier_id' => $data->resourceSupplierId,
+            ]);
+
+            // 3. Prepare Resource update (DRY approach)
+            $resourceUpdate = [
+                'unit_description_id' => $data->unitPurchase,
+                'purchase_price'      => $data->purchasePrice,
+                'selling_price'       => $data->sellingPrice,
+                // Atomic increment prevents math errors if two people save at once
+                'stock_level'         => DB::raw("stock_level + " . (float)$data->finalQuantity),
+            ];
+
+            if ($expiryDate) {
+                $resourceUpdate['expiry_date'] = $expiryDate;
             }
-        
-        $addedStock->resource()->update([
-            'stock_level'       => $addedStock->resource->stock_level + $data->finalQuantity,
-            'unit_description_id'  => $data->unitPurchase, 
-            'purchase_price'    => $data->purchasePrice, 
-            'selling_price'     => $data->sellingPrice, 
-        ]);
-        return $addedStock;
+
+            // 4. Update Resource in one go
+            $addedStock->resource()->update($resourceUpdate);
+
+            return $addedStock;
+        });
     }
 
     public function getPaginatedAddResourceStocks(DataTableQueryParams $params)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query      =  $this->addResourceStock
+                        ->select('id', 'user_id', 'resource_id', 'resource_supplier_id', 'hms_stock', 'actual_stock', 'difference', 'quantity', 'final_quantity', 'final_stock', 'comment', 'purchase_price', 'selling_price', 'expiry_date', 'created_at')
+                            ->with([
+                                'user:id,username',
+                                'resourceSupplier:id,company',
+                                'resource:id,name'
+                            ]);
 
+                            
         if (! empty($params->searchTerm)) {
-            return $this->addResourceStock
-                        ->where('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->where('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->addResourceStock
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        

@@ -25,6 +25,7 @@ class ConsultationService
 
     public function create(Request $data, User $user): Consultation
     {
+
         return DB::transaction(function () use ($data, $user) {
 
             $consultation = $user->consultations()->create([
@@ -39,7 +40,6 @@ class ConsultationService
                 "icd11_diagnosis"           => $data->selectedDiagnosis,
                 "provisional_diagnosis"     => $data->provisionalDiagnosis,
                 "admission_status"          => $data->admit,
-                "ward"                      => $data->ward,
                 "lmp"                       => $data->lmp,
                 "edd"                       => $data->edd,
                 "ega"                       => $data->ega,
@@ -58,20 +58,7 @@ class ConsultationService
 
             $visit = $consultation->visit;
 
-            $this->determineWard($visit, $data);
-
-            if ($visit->consulted){
-                $visit->update([
-                    'admission_status'  => $data->admit,
-                    'ward'              => $data->ward ?? $visit->ward,
-                ]);
-            } else {
-                $visit->update([
-                    'consulted'         => new Carbon(),
-                    'admission_status'  => $data->admit,
-                    'ward'              => $data->ward,
-                ]);
-            }
+            $this->determineWard($visit, $consultation, $data);
      
         return $consultation;
         });
@@ -92,7 +79,6 @@ class ConsultationService
                 "icd11_diagnosis"           => $data->selectedDiagnosis,
                 "provisional_diagnosis"     => $data->provisionalDiagnosis,
                 "admission_status"          => $data->admit,
-                "ward"                      => $data->ward,
                 "lmp"                       => $data->lmp,
                 "edd"                       => $data->edd,
                 "ega"                       => $data->ega,
@@ -107,25 +93,11 @@ class ConsultationService
                 "ho_fundus"                 => $data->heightOfFundus,
                 "roppt_brim"                => $data->relationOfPresentingPartToBrim,
                 "specialist_consultation"   => $data->specialConsultation,
-                "user_id"                   => $user->id
             ]);
 
             $visit = $consultation->visit;
 
-            $this->determineWard($visit, $data);
-
-            if ($visit->consulted){
-                $visit->update([
-                    'admission_status'  => $data->admit,
-                    'ward'              => $data->ward ?? $visit->ward,
-                ]);
-            } else {
-                $visit()->update([
-                    'consulted'         => new Carbon(),
-                    'admission_status'  => $data->admit,
-                    'ward'              => $data->ward,
-                ]);
-            }
+            $this->determineWard($visit, $consultation, $data, $user);
 
             return $consultation;
         });
@@ -135,42 +107,15 @@ class ConsultationService
     {
         return DB::transaction(function () use ($data, $consultation, $user) {
 
-            $visit      = $consultation->visit;
+            $visit = $consultation->visit;
 
-            if ($data->admit == 'Outpatient'){
-                $consultation->update([
-                    "admission_status"          => $data->admit,
-                    "updated_by"                => $user->id
-                ]);
-
-                $this->determineWard($visit, $data);
-
-                return $visit->update([
-                    'admission_status'  => $data->admit,
-                ]);
-
-            } else {
-
-                $this->determineWard($visit, $data);
-
-                $consultation->update([
-                    "admission_status"          => $data->admit,
-                    "ward"                      => $data->ward,
-                    "updated_by"                => $user->id
-                ]);
-
-                return $visit->update([
-                    'admission_status'  => $data->admit,
-                    'ward'              => $data->ward,
-                ]);
-            }
-
+            return $this->determineWard($visit, $consultation, $data, $user);
         });
     }
 
-    public function getConsultations(Request $request, Visit $visit)
+    public function getConsultations(Visit $visit)
     {
-        return DB::transaction(function () use ($request, $visit) {
+        return DB::transaction(function () use ($visit) {
 
             return $this->consultation
                         ->where('visit_id', $visit->id)
@@ -179,7 +124,7 @@ class ConsultationService
         });
     }
 
-    public function getVisitsAndConsultations(Request $request, Patient $patient)
+    public function getVisitsAndConsultations(Patient $patient)
     {
         return $this->visit
                     ->where('patient_id', $patient->id)
@@ -187,16 +132,41 @@ class ConsultationService
                     ->get();
     }
 
-    public function determineWard($visit, $data)
+    public function determineWard($visit, $consultation, $data, ?User $user = null)
     {
         $wardModel = fn($wardId)=>$this->ward::find($wardId);
 
-        if ($ward = $wardModel($visit->ward)){
+        if ($ward = $wardModel($visit->ward_id)){
             $ward->visit_id == $visit->id ? $ward->update(['visit_id' => null]) : '';
         }
 
         if ($ward = $wardModel($data->ward)){
             $ward->update(['visit_id' => $visit->id]);
         }
+
+
+        $consultationsUpdate = [
+            "admission_status"  => $data->admit,
+            'ward'              => $ward->short_name ?? $visit->ward,
+            "bed_no"            => $ward->bed_number ?? $visit->bed_no,
+            "updated_by"        => $user?->id
+        ];
+
+        //update consultation
+        $consultation->update($consultationsUpdate);
+
+        $visitsUpdate = [
+            'admission_status'  => $data->admit,
+            'ward'              => $ward->short_name ?? $visit->ward,
+            "bed_no"            => $ward->bed_number ?? $visit->bed_no,
+            "ward_id"           => $ward->id ?? $visit->ward_id,
+        ];
+
+        if (!$visit->consulted) {
+            $visitsUpdate['consulted'] = new Carbon();
+        }
+
+        //update visit
+        return $visit->update($visitsUpdate);        
     }
 }

@@ -26,15 +26,19 @@ class StorePrescriptionRequest extends FormRequest
     {
         return [
             'resource'      => ['required', 'integer', 'exists:'.Resource::class.',id'],
-            'visitId'       => ['required', 'integer', 'exists:'.Visit::class.',id'],
+            // 'visitId'       => ['required', 'integer', 'exists:'.Visit::class.',id'],
+            'visitId'       => ['required_without_all:walkInId,mortuaryServiceId', 'integer', 'exists:'.Visit::class.',id'],
             'dose'          => ['required_if:resourceCategory,Medications', 'nullable', 'numeric', 'min:0.00001'],
             'days'          => ['required_if:resourceCategory,Medications', 'nullable', 'integer', 'min:1'],
             'unit'          => ['required_if:resourceCategory,Medications'],
             'frequency'     => ['required_if:resourceCategory,Medications'],
             'quantity'      => ['required_unless:resourceCategory,Medications', 'nullable', 'integer', 'min:1'],
             'note'          => ['required_if:chartable,true'],
-            'doc'           => ['required_without:conId'],
-            'conId'         => ['required_without:doc', 'nullable', 'integer', 'exists:'.Consultation::class.',id'],
+            // 'doc'           => ['required_without:conId'],
+            // 'conId'         => ['required_without:doc', 'nullable', 'integer', 'exists:'.Consultation::class.',id'],
+            'conId'         => ['required_without_all:visitId,mortuaryServiceId,walkInId', 'nullable', 'integer', 'exists:'.Consultation::class.',id'],
+            'walkInId'               => ['required_without_all:visitId,mortuaryServiceId'],
+            'mortuaryServiceId'      => ['required_without_all:visitId,walkInId'],
         ];
     }
 }

@@ -47,17 +47,18 @@ class ThirdPartyServices
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+        $query      = $this->thirdParty->select('id', 'user_id', 'full_name', 'short_name', 'address', 'phone', 'email', 'created_at', 'delisted', 'comment')
+                        ->with(['user:id,username'])
+                        ->withExists('thirdPartyServies as hasThirdPartyServies');
 
         if (! empty($params->searchTerm)) {
-            return $this->thirdParty
-                        ->where('full_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->where('full_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orWhere('short_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
-        return $this->thirdParty
-                    ->orderBy($orderBy, $orderDir)
+        return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
 
        
@@ -77,7 +78,7 @@ class ThirdPartyServices
                 'createdBy'         => $thirdParty->user->username,
                 'createdAt'         => (new Carbon($thirdParty->created_at))->format('d/m/Y'),
                 'delisted'          => $thirdParty->delisted,
-                'count'             => $thirdParty->thirdPartyServies->count()
+                'count'             => $thirdParty->hasThirdPartyServies,//->count()
             ];
          };
     }

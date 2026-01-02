@@ -41,17 +41,26 @@ class ProcedureService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query = $this->procedure::with([
+        $query = $this->procedure->select('id', 'user_id', 'date_booked_by', 'booked_date', 'created_at', 'status', 'comment', 'prescription_id', 'created_at')
+                ->with([
             'prescription' => function($query) {
                 $query->select('id', 'approved', 'rejected', 'nhis_bill', 'paid', 'visit_id', 'resource_id')
                 ->with([
-                    'visit.sponsor.sponsorCategory',
-                    'visit.patient',
-                    'resource'
+                    'visit' => function($query) {
+                        $query->select('id', 'patient_id', 'sponsor_id')
+                        ->with([
+                            'patient:id,first_name,middle_name,last_name,card_no,phone',
+                            'sponsor' => function ($query) {
+                                $query->select('id', 'name', 'category_name', 'sponsor_category_id')
+                                ->with(['sponsorCategory:id,pay_class']);
+                            }
+                        ]);
+                    },
+                    'resource:id,name'
                 ]);
             },
-            'user',
-            'dateBookedBy',
+            'user:id,username',
+            'dateBookedBy:id,username',
         ]);
 
         if (! empty($params->searchTerm)) {
@@ -78,10 +87,7 @@ class ProcedureService
                                             ->orWhereRelation('prescription.visit.patient', 'last_name', 'LIKE', $term);
                                 });
                             }
-                        })
-                        // ->orWhereRelation('prescription.visit.patient', 'first_name', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
-                        // ->orWhereRelation('prescription.visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
-                        // ->orWhereRelation('prescription.visit.patient', 'last_name', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
+                        }) 
                         ->orWhereRelation('prescription.visit.patient', 'card_no', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));

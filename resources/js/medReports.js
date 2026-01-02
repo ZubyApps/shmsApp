@@ -46,7 +46,10 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     dischargeSummaryTab.addEventListener('click', function() {
-        dischargeSummaryDatesDiv.querySelector('#dischargeSummaryMonth').value == '' ? dischargeSummaryDatesDiv.querySelector('#dischargeSummaryMonth').value = new Date().toISOString().slice(0,7) : ''
+        dischargeSummaryDatesDiv.querySelector('#dischargeSummaryMonth').value == '' ?
+        dischargeSummaryDatesDiv.querySelector('#dischargeSummaryMonth').value = new Date().toISOString().slice(0,7) : '';
+        dischargeSummaryDatesDiv.querySelector('#startDate').value = ''; dischargeSummaryDatesDiv.querySelector('#endDate').value = ''
+        
         if ($.fn.DataTable.isDataTable( '#dischargeSummaryTable' )){
             $('#dischargeSummaryTable').dataTable().fnDraw()
         } else {

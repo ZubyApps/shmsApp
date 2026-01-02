@@ -514,22 +514,24 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
     });
 
     function formatChild(data) {
-                if (data.result || data.removalReason) {
+                if (data.result || data.removalReason || data.collected) {
                     return `   
                                 <table class="table align-middle table-sm">
                                             <thead >
                                                 <tr class="fw-semibold fs-italics">
                                                     <td> </td>
-                                                    <td class="text-secondary">Sample</td>
+                                                    <td class="text-secondary">Collected By</td>
+                                                    <td class="text-secondary">Sample Type</td>
                                                     <td class="text-secondary">Result</td>
                                                     <td class="text-secondary">Entered By</td>
-                                                    <td class="text-secondary">DateTime</td>
+                                                    <td class="text-secondary">Result At</td>
                                                     <td class="text-secondary">Comments</td>
                                                 </tr>
                                             </thead>
                                         <tbody>
                                              <tr>
                                                 <td> </td>
+                                                <td class="text-secondary">${data.collected ? data.collectedBy + ' at ' + data.collected : ''}</td>
                                                 <td class="text-secondary">${data.sample ?? ''}</td>
                                                 <td class="text-secondary">
                                                     <p>${data.result ?? ''}</p>
@@ -697,7 +699,7 @@ const getOtherPrescriptionsByFilter = (tableId, conId, modal, visitId) => {
         },
         columns: [
             {data: row => `<i role="button" class="text-primary fs-5 bi bi-prescription2"></i>`},
-            {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) } ${(row.chartable ? `<span class="text-secondary">(${row.givenCount + '/' + row.doseCount})</span>` : '')}</span>`},
+            {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) } ${(row.chartable ? `<span class="text-secondary">(${row.doneCount + '/' + row.scheduleCount})</span>` : '')}</span>`},
             {data: row => prescriptionStatusContorller(row, tableId)},
             {data: "route"},
             {data: "qtyBilled"},
@@ -712,7 +714,7 @@ const getOtherPrescriptionsByFilter = (tableId, conId, modal, visitId) => {
                 return row.qtyDispensed ? '<i class=" text-primary bi bi-check-circle-fill"></i>' : '-'
             }},
             {data: row => () => {
-                return row.doseComplete ? 'Complete' : row.discontinued ? 'Discontinued' : row.prescriptionCharts.length ? 'Charted' : row.chartable ? 'Uncharted' : 'N/A'}
+                return row.serviceComplete ? 'Complete' : row.discontinued ? 'Discontinued' : row.prescriptionCharts.length ? 'Charted' : row.chartable ? 'Uncharted' : 'N/A'}
             } 
         ]
     });

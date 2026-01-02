@@ -125,7 +125,7 @@ const getResourceCategoryTable = () => {
             // {
             //     sortable: false,
             //     data: row => () => {
-            //         if (row.count < 1) {
+            //         if (!row.count) {
             //              return `
             //                 <div class="d-flex flex-">
             //                     <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
@@ -171,7 +171,7 @@ const getPayMethodTable = () => {
             {
                 sortable: false,
                 data: row => () => {
-                    if (row.count < 1) {
+                    if (!row.count) {
                          return `
                             <div class="d-flex flex-">
                                 <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
@@ -216,7 +216,7 @@ const getExpenseCategoryTable = (table) => {
             {
                 sortable: false,
                 data: row => () => {
-                    if (row.count < 1) {
+                    if (!row.count) {
                          return `
                             <div class="d-flex flex-">
                                 <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
@@ -261,7 +261,7 @@ const getMedicationCategoryTable = (table) => {
             {
                 sortable: false,
                 data: row => () => {
-                    if (row.count < 1) {
+                    if (!row.count) {
                          return `
                             <div class="d-flex flex-">
                                 <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
@@ -309,7 +309,7 @@ const getUnitDescriptionTable = (table) => {
             {
                 sortable: false,
                 data: row => () => {
-                    if (row.count < 1) {
+                    if (!row.count) {
                          return `
                             <div class="d-flex flex-">
                                 <button class="ms-1 btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
@@ -354,7 +354,7 @@ const getMarkedForTable = (table) => {
             {
                 sortable: false,
                 data: row => () => {
-                    if (row.count < 1) {
+                    if (!row.count) {
                          return `
                             <div class="d-flex flex-">
                                 <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">

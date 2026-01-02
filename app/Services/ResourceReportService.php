@@ -7,7 +7,6 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\Prescription;
 use App\Models\Resource;
-use App\Models\ResourceCategory;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,7 +16,6 @@ class ResourceReportService
 {
     public function __construct(
         private readonly Resource $resource, 
-        private readonly ResourceCategory $resourceCategory, 
         private readonly HelperService $helperService,
         private readonly Prescription $prescription,
         )
@@ -86,108 +84,99 @@ class ResourceReportService
             ->toArray();
     }
 
-    public function getUsedResourcesTransformer(): callable
-    {
-       return  function (ResourceCategory $resourceCategory) {
-            return [
-                'id'                => $resourceCategory->id,
-                'category'          => $resourceCategory->name,
-                'subCategoryCount'  => $resourceCategory->resourceSubCategories->count(),
-                'prescriptions'     => $resourceCategory->resourceSubCategories->resources->prescriptions->count(),
-                'hmsBill'           => $resourceCategory->resourceSubCategories->resources->resources->prescriptions->sum('hms_bill'),
-                'paid'              => $resourceCategory->resourceSubCategories->resources->resourceSubCategories->prescriptions->sum('paid'),
-            ];
-         };
-    }
+    // public function getUsedResourcesTransformer(): callable
+    // {
+    //    return  function (ResourceCategory $resourceCategory) {
+    //         return [
+    //             'id'                => $resourceCategory->id,
+    //             'category'          => $resourceCategory->name,
+    //             'subCategoryCount'  => $resourceCategory->resourceSubCategories->count(),
+    //             'prescriptions'     => $resourceCategory->resourceSubCategories->resources->prescriptions->count(),
+    //             'hmsBill'           => $resourceCategory->resourceSubCategories->resources->resources->prescriptions->sum('hms_bill'),
+    //             'paid'              => $resourceCategory->resourceSubCategories->resources->resourceSubCategories->prescriptions->sum('paid'),
+    //         ];
+    //      };
+    // }
 
     public function getPrescriptionsByResourceCategory(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
         $current    = CarbonImmutable::now();
+        $query      = $this->prescription->select('id', 'consultation_id', 'visit_id', 'walk_in_id', 'resource_id', 'created_at', 'hms_bill', 'hmo_bill', 'paid', 'qty_billed', 'qty_dispensed', 'capitation')
+                        ->with(
+                            [
+                                'visit' => function ($query) {
+                                    $query->select('id', 'patient_id', 'sponsor_id')
+                                    ->with([
+                                        'patient:id,first_name,middle_name,last_name,card_no,sex,date_of_birth',
+                                        'sponsor:id,name,category_name'
+
+                                    ]);
+                                },
+                                'consultation' => function ($query) {
+                                    $query->select('id', 'icd11_diagnosis', 'provisional_diagnosis', 'assessment', 'user_id')
+                                    ->with(['user:id,username']);
+                                },
+                                'walkIn:id,first_name,middle_name,last_name,sex,date_of_birth',
+                                'resource:id,name,sub_category'
+                            ]
+                        )
+                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'id', '=', $data->resourceCategoryId);
+
+        function applySearch(Builder $query, string $searchTerm){
+            $searchTerm = '%' . addcslashes($searchTerm, '%_') . '%';
+            return $query->where(function (Builder $query) use($searchTerm) {
+                    $query->whereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm )
+                    ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm )
+                    ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm )
+                    ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm )
+                    ->orWhereRelation('visit.sponsor', 'name', 'LIKE', $searchTerm )
+                    ->orWhereRelation('visit.sponsor', 'category_name', 'LIKE', $searchTerm );
+                });
+        }
 
         if (! empty($params->searchTerm)) {
             if ($data->startDate && $data->endDate){
-                return $this->prescription
-                            ->whereRelation('resource.resourceSubCategory.resourceCategory', 'id', '=', $data->resourceCategoryId)
-                            ->where(function (Builder $query) use($params) {
-                                $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                            })
-                            ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                            ->orderBy($orderBy, $orderDir)
-                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                $query = applySearch($query, $params->searchTerm);
+                $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
             if ($data->date){
                 $date = new Carbon($data->date);
 
-                return $this->prescription
-                            ->whereRelation('resource.resourceSubCategory.resourceCategory', 'id', '=', $data->resourceCategoryId)
-                            ->where(function (Builder $query) use($params) {
-                                $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                            })
-                            ->whereMonth('created_at', $date->month)
-                            ->whereYear('created_at', $date->year)
-                            ->orderBy($orderBy, $orderDir)
-                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                $query =  applySearch($query, $params->searchTerm);
+                return $query->whereMonth('created_at', $date->month)
+                        ->whereYear('created_at', $date->year)
+                        ->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
             }
 
-            return $this->prescription
-                            ->whereRelation('resource.resourceSubCategory.resourceCategory', 'id', '=', $data->resourceCategoryId)
-                            ->where(function (Builder $query) use($params) {
-                                $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                            })
-                            ->whereMonth('created_at', $current->month)
-                            ->whereYear('created_at', $current->year)
-                            ->orderBy($orderBy, $orderDir)
-                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            $query = applySearch($query, $params->searchTerm);
+            return $query->whereMonth('created_at', $current->month)
+                    ->whereYear('created_at', $current->year)
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         if ($data->startDate && $data->endDate){
-            return $this->prescription
-                ->whereRelation('resource.resourceSubCategory.resourceCategory', 'id', '=', $data->resourceCategoryId)
-                ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                ->orderBy($orderBy, $orderDir)
-                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            return $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         if ($data->date){
             $date = new Carbon($data->date);
-
-            return $this->prescription
-                        ->whereRelation('resource.resourceSubCategory.resourceCategory', 'id', '=', $data->resourceCategoryId)
-                        ->where(function (Builder $query) use($params) {
-                            $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                        })
-                        ->whereMonth('created_at', $date->month)
-                        ->whereYear('created_at', $date->year)
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            $query->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         
-        return $this->prescription
-                ->whereRelation('resource.resourceSubCategory.resourceCategory', 'id', '=', $data->resourceCategoryId)
+        return $query
                 ->whereMonth('created_at', $current->month)
                 ->whereYear('created_at', $current->year)
                 ->orderBy($orderBy, $orderDir)
@@ -200,16 +189,18 @@ class ResourceReportService
 
             $pVisit = $prescription->visit;
             $pConsultation = $prescription->consultation;
+            $pWalkIn        = $prescription?->walkIn;
+            $dateOfBirth    = $pVisit?->patient->date_of_birth ?? $pWalkIn?->date_of_birth;
 
             return [
                     'id'                => $prescription->id,
                     'date'              => (new Carbon($prescription->created_at))->format('d/M/y g:ia'),
                     'patient'           => $pVisit->patient->patientId(),
-                    'sex'               => $prescription->visit->patient->sex,
-                    'age'               => $this->helperService->twoPartDiffInTimePast($pVisit->patient->date_of_birth),
+                    'sex'               => $pVisit->patient->sex ?? $pWalkIn?->sex,
+                    'age'               => $dateOfBirth ? $this->helperService->twoPartDiffInTimePast($dateOfBirth) : '',
                     'sponsor'           => $pVisit->sponsor->name,
                     'category'          => $pVisit->sponsor->category_name,
-                    'diagnosis'         => $pConsultation?->icd11_diagnosis ?? $pConsultation?->provisional_diagnosis,
+                    'diagnosis'         => $pConsultation?->icd11_diagnosis ?? $pConsultation?->provisional_diagnosis ?? $pConsultation?->assessment,
                     'doctor'            => $pConsultation?->user->username,
                     'resource'          => $prescription->resource->name,
                     'resourceSubcategory' => $prescription->resource->sub_category,
@@ -224,10 +215,17 @@ class ResourceReportService
     {
         $orderBy    = 'expiry_date';
         $orderDir   =  'asc';
-
+        $query      = $this->resource->select('id', 'name', 'stock_level', 'reorder_level', 'unit_description', 'purchase_price', 'selling_price', 'expiry_date')
+                        ->withCount([
+                            'prescriptions as prescriptionFrequency' => function($query){
+                            $query->where('created_at', '>', (new Carbon())->subDays(30));
+                            },
+                            'prescriptions as dispenseFrequency' => function($query){
+                            $query->where('dispense_date', '>', (new Carbon())->subDays(30));
+                            },
+                        ]);
         if (! empty($params->searchTerm)) {
-            return $this->resource
-                        ->where(function (Builder $query) use($params) {
+            return $query->where(function (Builder $query) use($params) {
                             $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhere('sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%')
                             ->orWhere('category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
@@ -237,15 +235,13 @@ class ResourceReportService
         }
 
         if ($data->filterBy === 'expiration'){
-            return $this->resource
-                    ->where('expiry_date', '<', (new Carbon())->addMonths(6))
+            return $query->where('expiry_date', '<', (new Carbon())->addMonths(6))
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
 
         if ($data->filterBy === 'stockLevel'){
-            return $this->resource
-                    ->whereColumn('stock_level', '<=','reorder_level')
+            return $query->whereColumn('stock_level', '<=','reorder_level')
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }

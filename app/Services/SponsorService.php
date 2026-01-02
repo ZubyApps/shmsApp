@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
-use App\Models\Resource;
+use App\Models\ResourceSponsor;
 use App\Models\Sponsor;
 use App\Models\SponsorCategory;
 use App\Models\User;
@@ -55,7 +55,19 @@ class SponsorService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query      = $this->sponsor::with(['sponsorCategory', 'patients', 'resources.unitDescription', 'user']);
+        $query      = $this->sponsor->select('id', 'sponsor_category_id', 'user_id', 'name', 'phone', 'email', 'registration_bill', 'max_pay_days', 'created_at')
+                        ->with([
+                            'sponsorCategory:id,name,approval',
+                            'resourceSponsors' => function ($query){
+                                $query->select('id', 'user_id', 'sponsor_id', 'resource_id', 'selling_price')
+                                    ->with([
+                                        'resource:id,name,category,sub_category,unit_description',
+                                        'createdByUser:id,username'
+                                    ]);
+                            },
+                            'user:id,username'
+                        ])
+                        ->withExists(['patients as hasPatients']);
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
@@ -86,17 +98,17 @@ class SponsorService
                 'flag'              => $sponsor->flag,
                 'createdBy'         => $sponsor->user->username,
                 'createdAt'         => (new Carbon($sponsor->created_at))->format('d/m/Y'),
-                'count'             => $sponsor->patients->count(),
+                'count'             => $sponsor->hasPatients,
                 'showHmo'           => auth()->user()->designation->designation === 'HMO Officer',
                 'showAll'           => auth()->user()->designation->access_level > 4,
-                'resources'         => $sponsor->resources->map(fn(Resource $resource)=> [
-                    'id'            => $resource->id,
-                    'name'          => $resource->name,
-                    'sellingPrice'  => $resource->pivot->selling_price,
-                    'category'      => $resource->category,
-                    'subCategory'   => $resource->sub_category,
-                    'unit'          => $resource->unitDescription->short_name,
-                    'createdBy'     => $resource->pivot->createdByUser?->username,
+                'resources'         => $sponsor->resourceSponsors->map(fn(ResourceSponsor $pivot)=> [
+                    'id'            => $pivot->resource->id,
+                    'name'          => $pivot->resource->name,
+                    'sellingPrice'  => $pivot->selling_price,
+                    'category'      => $pivot->resource->category,
+                    'subCategory'   => $pivot->resource->sub_category,
+                    'unit'          => $pivot->resource->unit_description,
+                    'createdBy'     => $pivot->createdByUser?->username,
                 ])
             ];
          };

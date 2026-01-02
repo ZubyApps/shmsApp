@@ -30,6 +30,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('visits', function (Blueprint $table) {
+            $table->dropForeign(['lab_done_by']);
+            $table->dropForeign(['waiting_for']);
             $table->dropColumn(['lab_done_by', 'waiting_for', 'doctor_done_at', 'nurse_done_at', 'reviewed', 'resolved']);
         });
     }
