@@ -673,7 +673,7 @@ class VisitService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query      = $this->visit->select('id', 'patient_id', 'sponsor_id', 'doctor_id', 'consulted', 'admission_status', 'closed', 'visit_type' )->with([
+        $query      = $this->visit->select('id', 'patient_id', 'sponsor_id', 'doctor_id', 'consulted', 'admission_status', 'closed', 'visit_type', 'discount')->with([
             'sponsor:id,name,category_name', 
             'patient' => function($query){
                             $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')

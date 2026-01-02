@@ -229,7 +229,7 @@ class AccountsReportService
                                 'user:id,username',
                                 'consultation:id,icd11_diagnosis,provisional_diagnosis,assessment',
                                 'visit' => function($query){
-                                    $query->select('id', 'patient_id', 'sponsor_id', 'admission_status', 'discharge_reason')
+                                    $query->select('id', 'patient_id', 'sponsor_id', 'admission_status', 'discharge_reason', 'discount')
                                     ->with([
                                         'patient:id,first_name,middle_name,last_name,card_no',
                                         'sponsor' => function($query){

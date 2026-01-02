@@ -38,7 +38,7 @@ class BillingService
     {
         $orderBy    = 'consulted';
         $orderDir   =  'desc';
-        $query = $this->visit->select('id', 'sponsor_id', 'patient_id', 'doctor_id', 'closed_opened_by', 'admission_status', 'ward', 'bed_no', 'ward_id', 'visit_type', 'discharge_reason', 'doctor_done_at', 'closed', 'closed_opened_by', 'consulted', 'created_at')
+        $query = $this->visit->select('id', 'sponsor_id', 'patient_id', 'doctor_id', 'closed_opened_by', 'admission_status', 'ward', 'bed_no', 'ward_id', 'visit_type', 'discharge_reason', 'doctor_done_at', 'closed', 'closed_opened_by', 'consulted', 'created_at', 'discount')
                     ->with([
                         'sponsor:id,name,category_name,flag', 
                         'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',

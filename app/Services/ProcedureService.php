@@ -47,7 +47,7 @@ class ProcedureService
                 $query->select('id', 'approved', 'rejected', 'nhis_bill', 'paid', 'visit_id', 'resource_id')
                 ->with([
                     'visit' => function($query) {
-                        $query->select('id', 'patient_id', 'sponsor_id')
+                        $query->select('id', 'patient_id', 'sponsor_id', 'discount')
                         ->with([
                             'patient:id,first_name,middle_name,last_name,card_no,phone',
                             'sponsor' => function ($query) {

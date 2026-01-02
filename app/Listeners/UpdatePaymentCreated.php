@@ -112,7 +112,7 @@ class UpdatePaymentCreated
     {
         // 1. Determine Context
         $isNhis = $visit->sponsor->category_name === 'NHIS';
-
+        // info('payment created');
         // 2. Recalculate Total Payments (Must be done after payment creation)
         $totalPayments = $visit->totalPayments();
 
@@ -141,6 +141,7 @@ class UpdatePaymentCreated
                 
                 'total_nhis_bill' => DB::raw($totalNhisBillSql),
             ]);
+            info('payment created');
     }
 
     private function handleWalkInOrMortuaryUpdate(WalkIn|MortuaryService $model): void

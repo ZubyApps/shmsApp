@@ -31,7 +31,7 @@ class InvestigationService
         $orderBy    = 'consulted';
         $orderDir   =  'desc';
         $query = $this->visit
-            ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'ward', 'bed_no', 'ward_id')->with([
+            ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'ward', 'bed_no', 'ward_id', 'discount')->with([
                 'sponsor:id,name,category_name,flag', 
                 'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment', 
                 'patient' => function($query){
@@ -286,7 +286,6 @@ class InvestigationService
     public function getLabTransformer(): callable
     {
        return  function (Prescription $prescription) {
-        info($prescription);
             return [
                 'id'                => $prescription->id,
                 'requested'         => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),

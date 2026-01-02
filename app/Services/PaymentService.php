@@ -182,7 +182,6 @@ Class PaymentService
     });
 
     // --- STEP 3: DISPATCH EVENT (After Transaction Commit) ---
-    
     // Dispatch the event with the newly created payment and the related model.
     if ($relatedModel) {
         PaymentCreated::dispatch($payment, $relatedModel);

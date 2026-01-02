@@ -145,7 +145,7 @@ class HmoService
         $orderBy    = 'consulted';
         $orderDir   =  'desc';
         $query = $this->visit
-        ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'viewed_at', 'viewed_by', 'hmo_done_at', 'hmo_done_by')->with([
+        ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'viewed_at', 'viewed_by', 'hmo_done_at', 'hmo_done_by', 'discount')->with([
             'sponsor:id,name,category_name,flag', 
             'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
             'patient' => function($query) {
@@ -1745,7 +1745,6 @@ class HmoService
 
         return function (Sponsor $sponsor) use ($monthYear) {
             $capitation = $sponsor->capitationPayments->first();
-            info($sponsor);
             return [
                 'id'                  => $sponsor->id,
                 'sponsor'             => $sponsor->name,

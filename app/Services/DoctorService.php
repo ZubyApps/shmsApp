@@ -23,7 +23,7 @@ class DoctorService
     private function baseQuery(): Builder
     {
         return $this->visit
-        ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'ward', 'bed_no', 'ward_id', 'waiting_for')->with([
+        ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'ward', 'bed_no', 'ward_id', 'waiting_for', 'discount')->with([
             'sponsor:id,name,category_name,flag',
             'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment' => with(['updatedBy' => function ($query) {
                 $query->select('id', 'username');

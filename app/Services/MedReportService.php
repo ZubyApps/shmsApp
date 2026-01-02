@@ -298,7 +298,7 @@ class MedReportService
         
         $data->filterBy = $data->filterBy == "null" ? null : $data->filterBy;
 
-        $query  =   $this->visit->select('id', 'patient_id', 'sponsor_id', 'doctor_id', 'consulted', 'admission_status', 'discharge_reason', 'total_hms_bill', 'total_paid')
+        $query  =   $this->visit->select('id', 'patient_id', 'sponsor_id', 'doctor_id', 'consulted', 'admission_status', 'discharge_reason', 'total_hms_bill', 'total_paid', 'discount')
                         ->with([
                             'patient:id,first_name,middle_name,last_name,card_no,sex,date_of_birth,phone',
                             'doctor:id,username',
