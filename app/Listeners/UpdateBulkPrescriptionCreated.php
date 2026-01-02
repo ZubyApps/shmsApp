@@ -24,7 +24,7 @@ class UpdateBulkPrescriptionCreated
     public function handle(BulkPrescriptionsCreated $event): void
     {
             /** @var Visit $visit */
-        $visit = $event->visit->with('sponsor:id,category_name');
+        $visit = $event->visit->load('sponsor:id,category_name');
         
         $isNhis = $visit->sponsor->category_name === 'NHIS';
         $totalPayments = $visit->totalPayments();
