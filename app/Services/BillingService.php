@@ -414,7 +414,7 @@ class BillingService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query      = $this->payment->select('id', 'pay_method_id', 'user_id', 'amount_paid', 'comment')
+        $query      = $this->payment->select('id', 'pay_method_id', 'user_id', 'amount_paid', 'comment', 'created_at')
                             ->with(['payMethod:id,name', 'user:id,username'])
                             ->where('visit_id', $data->visitId);
 
