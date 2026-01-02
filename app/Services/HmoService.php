@@ -149,7 +149,7 @@ class HmoService
             'sponsor:id,name,category_name,flag', 
             'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
             'patient' => function($query) {
-                $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
+                $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no', 'sex', 'staff_id', 'phone')
                 ->with(['flaggedBy:id,username'])
                 ->withCount([
                     'visits as visitsCount' => function (Builder $query) {
