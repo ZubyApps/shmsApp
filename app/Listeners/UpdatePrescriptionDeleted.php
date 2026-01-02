@@ -82,6 +82,7 @@ class UpdatePrescriptionDeleted
                 'total_capitation'=> DB::raw($totalCapitationSql), // NEW
                 'total_paid'      => DB::raw($totalPaidSourceSql),
             ]);
+        info('prescription update ran');
     }
 
     private function updateWalkInOrMortuaryTotals(WalkIn|MortuaryService $model, float $totalPayments): void
