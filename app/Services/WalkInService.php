@@ -127,10 +127,10 @@ class WalkInService
                 'phone'             => $walkIn->phone,
                 'createdAt'         => (new Carbon($walkIn->created_at))->format('d/m/Y'),
                 'createdBy'         => $walkIn->user->username,
-                'presCount'         => $walkIn->hasPrescriptions,//prescriptions->count(),
-                'payCount'          => $walkIn->hasPayments,//prescriptions->count(),
-                'billSum'           => $walkIn->billSum,//prescriptions->sum('hms_bill'),
-                'paidSum'           => $walkIn->paidSum,//prescriptions->sum('paid'),
+                'presCount'         => $walkIn->hasPrescriptions,
+                'payCount'          => $walkIn->hasPayments,
+                'billSum'           => $walkIn->billSum,
+                'paidSum'           => $walkIn->paidSum,
                 'isLinked'          => $walkIn->hasLinkedPrescriptions,
 
                 'prescriptions'     => $walkIn->prescriptions->map(fn(Prescription $prescription) => [
