@@ -151,9 +151,9 @@ class WalkInService
                     'amount'        => $payment->amount_paid,
                     'payMethod'     => $payment->payMethod->name,
                     'comment'       => $payment->comment,
-                    'user'          => $logginUser->designation->access_level > 3
+                    'user'          => $logginUser->designation->access_level > 4
                 ]),
-                'payableUser'       => $logginUser->designation->access_level > 3 || $logginUser->designation->designation === 'Bill Officer',
+                'payableUser'       => $logginUser->designation->access_level > 4 || $logginUser->designation->designation === 'Bill Officer',
                 'staff'             => $logginUser->username
             ];
          };
