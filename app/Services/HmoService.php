@@ -742,7 +742,7 @@ class HmoService
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
         $current    = Carbon::now();
-        $query = $this->visit->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'total_hms_bill', 'visit_type', 'total_hmo_bill', 'closed', 'closed_opened_by', 'hmo_done_by', 'hmo_done_at')->with([
+        $query = $this->visit->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'total_hms_bill', 'visit_type', 'total_hmo_bill', 'closed', 'closed_opened_by', 'hmo_done_by', 'hmo_done_at', 'discount')->with([
             'sponsor:id,name,category_name,flag', 
             'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
             'patient' => function($query){

@@ -31,26 +31,28 @@ class SendTestResultDone implements ShouldQueue
      */
     public function handle(ChurchPlusSmsService $churchPlusSmsService): void
     {
-        $visit = $this->prescription->visit;
+        $visit = $this->prescription?->visit;
+        $walkIn = $this->prescription?->walkIn;
 
-        $firstName = $visit->patient->first_name;
-
-        $totalInvestigations = $visit->prescriptions()->whereRelation('resource', 'category', 'Investigations')
+        $firstName = $visit->patient?->first_name ?? $walkIn->first_name;
+        $phone = $visit?->patient?->phone ?? $walkIn?->phone;
+        $model = $visit ?? $walkIn; 
+        $totalInvestigations = $model->prescriptions()->whereRelation('resource', 'category', 'Investigations')
                                     ->whereRelation('resource', 'sub_category', '!=', 'Imaging');
 
-        $totalInvestigationsC = $totalInvestigations->count();
+        $totalInvestigationsC = (clone $totalInvestigations)->count();
 
-        $totalInvestigationsDone = $totalInvestigations->where('result', '!=', null)->count();
+        $totalInvestigationsDone = (clone $totalInvestigations)->where('result', '!=', null)->count();
 
-        if ($this->recentlySent($totalInvestigations) > 1) {
+        if ($this->recentlySent(clone $totalInvestigations) > 1) {
             // info('Investigation not sent', ['recently sent (less than 30min ago)' => $firstName]);
             return;
         }
 
         $gateway = 1;
-
+        
         $churchPlusSmsService
-        ->sendSms('Dear ' .$firstName. ' ' . $totalInvestigationsDone . ' out of ' . $totalInvestigationsC . ' of your test result(s) are ready. This notification is courtesy of Sandra Hospital Management System. To opt out, visit reception', $this->prescription->visit->patient->phone, 'SandraHosp', $gateway);
+        ->sendSms('Dear ' .$firstName. ' ' . $totalInvestigationsDone . ' out of ' . $totalInvestigationsC . ' of your test result(s) are ready. This notification is courtesy of Sandra Hospital Management System. To opt out, visit reception', $phone, 'SandraHosp', $gateway);
 
         // $response == false ? '' : info('Investigation', ['sent to' => $firstName, 'gateway' => $gateway]);
     }

@@ -51,7 +51,7 @@ Class MedicalReportService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query      = $this->medicalReport->select('id', 'user_id', 'visit_id', 'doctor', 'designation', 'type', 'requested_by', 'recepients_address')->with([
+        $query      = $this->medicalReport->select('id', 'user_id', 'visit_id', 'doctor', 'designation', 'type', 'requested_by', 'recipients_address')->with([
                         'user:id,username', 
                         'visit:id,closed'
                         ])

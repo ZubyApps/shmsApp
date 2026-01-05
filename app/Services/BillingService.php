@@ -469,7 +469,7 @@ class BillingService
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
         $column = $data->sponsorCat == 'NHIS' ? 'total_nhis_bill' : 'total_hms_bill';
-        $query = $this->visit->select('id', 'sponsor_id', 'patient_id', 'doctor_id', 'closed_opened_by', 'admission_status', 'ward', 'ward', 'visit_type', 'discharge_reason', 'doctor_done_at', 'closed', 'closed_opened_by')
+        $query = $this->visit->select('id', 'sponsor_id', 'patient_id', 'doctor_id', 'closed_opened_by', 'admission_status', 'ward', 'ward', 'visit_type', 'discharge_reason', 'doctor_done_at', 'closed', 'closed_opened_by', 'discount')
                     ->with([
                         'sponsor:id,name,category_name,flag', 
                         'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
