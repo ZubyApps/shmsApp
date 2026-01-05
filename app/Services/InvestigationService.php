@@ -324,7 +324,7 @@ class InvestigationService
                 'qty_dispensed'     => 1
                 ]);
     
-            if ($prescription?->visit?->patient->sms || $prescription->walkIn){
+            if ($prescription?->visit?->patient->sms || $prescription?->walkIn){
                 SendTestResultDone::dispatch($prescription)->delay(5);
             }
     

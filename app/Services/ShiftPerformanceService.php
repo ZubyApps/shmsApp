@@ -116,7 +116,7 @@ class ShiftPerformanceService
         $shiftEndTimer = (new Carbon($shift->shift_end))->subMinutes(10);
 
         return $this->visit->select('id', 'consulted', 'patient_id')
-            ->with(['vitalSigns:id', 'patient:id,first_name,card_no'])
+            ->with(['vitalSigns:id,visit_id', 'patient:id,first_name,card_no'])
             ->whereBetween('created_at', [$shift->shift_start, $shiftEndTimer])
             ->where('closed', false)
             ->whereNull('doctor_done_by')
@@ -221,6 +221,7 @@ class ShiftPerformanceService
         if ($visits->isEmpty()) return null;
 
         $completed = $visits->filter(fn($v) => $v->vitalSigns->isNotEmpty());
+        
         $failed = $visits->diff($completed)->map(function ($v) {
             $status = $v->consulted ? '(Consulted)' : '(Waiting list)';
             return "{$v->patient->card_no} {$v->patient->first_name} $status";
