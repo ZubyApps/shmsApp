@@ -85,6 +85,11 @@ class Patient extends Model
         return $this->fullName().', '.$this->age().', '.$this->sex;
     }
 
+    public function canSms()
+    {
+        return $this->sms && ($this->phone !== '00000000000');
+    }
+
     public function allHmsBills()
     {
         return Prescription::whereHas('visit', fn($q) => $q->where('patient_id', $this->id))->sum('hms_bill') ?? 0;

@@ -6,6 +6,7 @@ namespace App\InvokableObjects;
 
 use App\Jobs\SendAppointmentReminder;
 use App\Models\Appointment;
+use App\Services\HelperService;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 
@@ -24,8 +25,10 @@ class AppointmentsForSms
             return;
         }
 
-        $appointments->each(function ($appointment) {
-            if ($appointment->patient->sms) {
+        $isTextTime = (new HelperService)->nccTextTime();
+
+        $appointments->each(function ($appointment) use ($isTextTime) {
+            if ($appointment?->patient?->canSms() && $isTextTime) {
                 SendAppointmentReminder::dispatch($appointment);
             }
         });

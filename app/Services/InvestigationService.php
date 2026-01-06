@@ -323,9 +323,11 @@ class InvestigationService
                 'dispense_comment'  => null,
                 'qty_dispensed'     => 1
                 ]);
-    
-            if ($prescription?->visit?->patient->sms || $prescription?->walkIn){
-                SendTestResultDone::dispatch($prescription)->delay(5);
+
+            if ($this->helperService->nccTextTime()){
+                if ($prescription?->visit?->patient?->canSms() || $prescription?->walkIn){
+                    SendTestResultDone::dispatch($prescription)->delay(5);
+                }
             }
     
             return $prescription;

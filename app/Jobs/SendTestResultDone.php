@@ -17,6 +17,7 @@ class SendTestResultDone implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 12;
+    public $tries   = 3;
 
     /**
      * Create a new job instance.
@@ -40,14 +41,13 @@ class SendTestResultDone implements ShouldQueue
         $totalInvestigations = $model->prescriptions()->whereRelation('resource', 'category', 'Investigations')
                                     ->whereRelation('resource', 'sub_category', '!=', 'Imaging');
 
+        if ($this->recentlySent(clone $totalInvestigations) > 1) {
+            return;
+        }
+
         $totalInvestigationsC = (clone $totalInvestigations)->count();
 
         $totalInvestigationsDone = (clone $totalInvestigations)->where('result', '!=', null)->count();
-
-        if ($this->recentlySent(clone $totalInvestigations) > 1) {
-            // info('Investigation not sent', ['recently sent (less than 30min ago)' => $firstName]);
-            return;
-        }
 
         $gateway = 1;
         

@@ -16,6 +16,7 @@ class SendCardNumber implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 12;
+    public $tries   = 3;
     
     /**
      * Create a new job instance.

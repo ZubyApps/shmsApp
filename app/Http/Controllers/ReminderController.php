@@ -137,8 +137,11 @@ class ReminderController extends Controller
             $this->reminderService->finalReminder($request, $reminder, $request->user());
         }
         
-        SendOutstandingSms::dispatch($reminder, $request->smsDetails, $request->phone);
-        return response()->json(['message' => 'SMS queued successfully'], 200);
+        if ($this->helperService->nccTextTime()){
+            SendOutstandingSms::dispatch($reminder, $request->smsDetails, $request->phone);
+            return response()->json(['message' => 'SMS queued successfully'], 200);
+        }
+
     }
 
     public function destroy(Reminder $reminder)

@@ -4,19 +4,20 @@ declare(strict_types = 1);
 
 namespace App\Services;
 
-use App\DataObjects\DataTableQueryParams;
-use App\DataObjects\FormLinkParams;
-use App\Jobs\SendCardNumber;
-use App\Jobs\SendFormLink;
-use App\Models\Patient;
-use App\Models\PatientPreForm;
-use App\Models\User;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Patient;
+use App\Jobs\SendFormLink;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Builder;
+use App\Jobs\SendCardNumber;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\PatientPreForm;
+use App\Services\HelperService;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use App\DataObjects\FormLinkParams;
+use App\DataObjects\DataTableQueryParams;
+use Illuminate\Database\Eloquent\Builder;
 
 class PatientService
 {
@@ -68,7 +69,7 @@ class PatientService
                 $this->deletePrePatient((int)$data->prePatient);
             }
 
-            if ($patient->sms){
+            if ((new HelperService)->nccTextTime() && $patient->canSms()){
                 SendCardNumber::dispatch($patient)->delay(5);
             }
 
@@ -177,7 +178,10 @@ class PatientService
 
         $link = route('patientForm', ['patientPreForm' => $patientForm->id]);
 
-        SendFormLink::dispatch($link, $formLinkParams);
+        if ((new HelperService)->nccTextTime()){
+            SendFormLink::dispatch($link, $formLinkParams);
+        }
+
         return response()->json(['message' => 'Form link prepared and queued successfully'], 200);
     }
 

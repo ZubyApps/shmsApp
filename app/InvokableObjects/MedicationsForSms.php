@@ -4,9 +4,10 @@ declare(strict_types = 1);
 
 namespace App\InvokableObjects;
 
-use App\Jobs\SendMedicationReminder;
-use App\Models\MedicationChart;
 use Carbon\CarbonImmutable;
+use App\Models\MedicationChart;
+use App\Services\HelperService;
+use App\Jobs\SendMedicationReminder;
 use Illuminate\Database\Eloquent\Builder;
 
 class MedicationsForSms
@@ -37,8 +38,10 @@ class MedicationsForSms
             return;
         }
 
-        $medications->each(function ($medication) {
-            if ($medication->visit->patient->sms) {
+        $isTextTime = (new HelperService)->nccTextTime();
+
+        $medications->each(function ($medication) use ($isTextTime) {
+            if ($medication?->visit?->patient?->canSms() && $isTextTime) {
                 SendMedicationReminder::dispatch(
                     $medication->visit->patient->first_name,
                     $medication->visit->patient->phone,
