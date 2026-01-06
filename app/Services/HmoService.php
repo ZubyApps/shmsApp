@@ -36,7 +36,7 @@ class HmoService
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
         $query = $this->visit
-            ->select('id', 'patient_id', 'sponsor_id', 'consulted', 'verification_status', 'verification_code', 'visit_type', 'closed_opened_by', 'doctor_id')->with([
+            ->select('id', 'patient_id', 'sponsor_id', 'consulted', 'verification_status', 'verification_code', 'visit_type', 'closed_opened_by', 'doctor_id', 'verified_at', 'verified_by')->with([
                 'sponsor:id,name,category_name,flag', 
                 'patient' => function($query) {
                     $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no', 'phone', 'sex', 'staff_id')
@@ -48,7 +48,8 @@ class HmoService
                     ]);
                 },  
                 'doctor:id,username', 
-                'closedOpenedBy:id,username'
+                'closedOpenedBy:id,username',
+                'verifiedBy:id,username'
         ]);
 
         if (! empty($params->searchTerm)) {
@@ -122,7 +123,9 @@ class HmoService
                 'phone'             => $visit->patient->phone,
                 'status'            => $visit->verification_status ?? '',
                 '30dayCount'        => $visit->patient->visitsCount.' visit(s)',
-                'visitType'         => $visit->visit_type
+                'visitType'         => $visit->visit_type,
+                'verifiedBy'        => $visit->verifiedBy?->username,
+                'verifiedAt'        => $visit->verified_at ? (new Carbon($visit->verified_at))->format('d/m/y g:ia') : '',
             ];
          };
     }
