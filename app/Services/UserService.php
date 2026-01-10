@@ -39,7 +39,6 @@ class UserService
             'next_of_kin_phone'     => $data->nextOfKinPhone,
             'date_of_employment'    => $data->dateOfEmployment,
             'date_of_exit'          => $data->dateOfExit,
-            'staff_id'              => $data->staffId,
             'password'              => Hash::make($data->password),
             'created_by'            => $user->username,
         ]);
