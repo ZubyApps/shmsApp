@@ -16,7 +16,8 @@ class SendMedicationReminder implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 12;
-    public $tries   = 3;
+    public $tries   = 5;
+    public $backoff = [10, 30, 60, 120, 300];
     
     /**
      * Create a new job instance.
@@ -41,7 +42,7 @@ class SendMedicationReminder implements ShouldQueue
         
         $response = $churchPlusSmsService
         
-        ->sendSms('Dear ' .$this->firstName. ', pls be reminded of your medication by '. $time . ' today. Courtesy: Ufor Hospital Management System', $this->phone, 'UforHosp', $gateway);
+        ->sendSms('Dear ' .$this->firstName. ', pls be reminded of your medication by '. $time . ' today. Courtesy: Sandra Hospital Management System', $this->phone, 'UforHosp', $gateway);
         
         $response == false ? '' : info('medications', ['sent to' => $this->firstName]);
     }
