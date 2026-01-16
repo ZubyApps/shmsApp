@@ -2,7 +2,7 @@ import { Offcanvas, Modal, Toast } from "bootstrap";
 import http from "./http";
 import $ from 'jquery';
 import { clearDivValues, getDivData, clearValidationErrors, resetFocusEndofLine, openModals, displayMedicalReportModal, removeDisabled, debounce} from "./helpers"
-import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable, getBalancingTable, getDueCashRemindersTable, getBillReminderTable } from "./tables/billingTables";
+import { getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable, getBalancingTable, getDueCashRemindersTable, getBillReminderTable, getPatientsBillPos } from "./tables/billingTables";
 import { getOutpatientsInvestigationTable } from "./tables/investigationTables";
 import html2pdf  from "html2pdf.js"
 import { getShiftReportTable } from "./tables/pharmacyTables";
@@ -17,6 +17,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const dischargeBillModal            = new Modal(document.getElementById('dischargeBillModal'))
     const outstandingBillsModal         = new Modal(document.getElementById('outstandingBillsModal'))
     const billModal                     = new Modal(document.getElementById('billModal'))
+    const posBillModal                  = new Modal(document.getElementById('posBillModal'))
     const newExpenseModal               = new Modal(document.getElementById('newExpenseModal'))
     const updateExpenseModal            = new Modal(document.getElementById('updateExpenseModal'))
     const thirdPartyServiceModal        = new Modal(document.getElementById('thirdPartyServiceModal'))
@@ -74,7 +75,9 @@ window.addEventListener('DOMContentLoaded', function () {
     const patientsInfo                  = viewMedicalReportModal._element.querySelector('#patientsInfo')
 
     const changeBillSpan                = billModal._element.querySelector('.changeBill')
+    const changePosBillSpan             = posBillModal._element.querySelector('.changePosBill')
     const downloadBillSummaryBtn        = billModal._element.querySelector('#downloadBillSummaryBtn')
+    const downloadPosBillSummaryBtn     = posBillModal._element.querySelector('#downloadPosBillSummaryBtn')
     const billSummaryBody               = billModal._element.querySelector('.billSummaryBody')
     const shiftBadgeSpan                = document.querySelector('#shiftBadgeSpan')
 
@@ -283,6 +286,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const medicalReportBtn  = event.target.closest('.medicalReportBtn')
             // const closeVisitBtn     = event.target.closest('.closeVisitBtn')
             const toggleVisitBtn    = event.target.closest('#closeVisitBtn, #openVisitBtn')
+            const posPatientsBillBtn= event.target.closest('.posPatientsBillBtn')
             
             if (billingDetailsBtn){
                 const [visitId, conId] = [billingDetailsBtn.getAttribute('data-id'),  billingDetailsBtn.getAttribute('data-conid')]
@@ -300,6 +304,18 @@ window.addEventListener('DOMContentLoaded', function () {
                 changeBillSpan.setAttribute('data-visitid', visitId)
                 getPatientsBill('billTable', visitId, billModal._element, 'category')
                 billModal.show()
+            }
+
+            if (posPatientsBillBtn){
+                posBillModal.show()
+                setTimeout(()=>{
+                const visitId   = posPatientsBillBtn.getAttribute('data-id')
+                posBillModal._element.querySelector('.patient').innerHTML      = posPatientsBillBtn.getAttribute('data-patient')
+                posBillModal._element.querySelector('.billingStaff').innerHTML = posPatientsBillBtn.getAttribute('data-staff')
+                changePosBillSpan.setAttribute('data-visitid', visitId)
+                getPatientsBillPos('posBillTable', visitId, posBillModal._element, 'category', true)
+                }
+                , 2000)
             }
 
             if (medicalReportBtn){
@@ -406,6 +422,22 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
             changeBillSpan.innerHTML = 'Summary'
             getPatientsBill('billTable', visitId, billModal._element, 'category')
+        }
+    })
+
+    changePosBillSpan.addEventListener('click', function () {
+        const visitId = changePosBillSpan.getAttribute('data-visitid')
+
+        if ($.fn.DataTable.isDataTable('#posBillTable')) {
+            $('#posBillTable').dataTable().fnDestroy()
+        }
+
+        if (changePosBillSpan.innerHTML == 'Summary'){
+            changePosBillSpan.innerHTML = 'Details'
+            getPatientsBillPos('posBillTable', visitId, posBillModal._element, 'sub_category', true)
+        } else {
+            changePosBillSpan.innerHTML = 'Summary'
+            getPatientsBillPos('posBillTable', visitId, posBillModal._element, 'category', true)
         }
     })
 
@@ -521,30 +553,31 @@ window.addEventListener('DOMContentLoaded', function () {
                 saveBillReminderBtn.setAttribute('data-id', registerBillReminderBtn.getAttribute('data-id'))
                 registerBillReminderModal.show()
             }
-            if (changeDischargeBillSpan){
-                const prescriptionId    = changeDischargeBillSpan.getAttribute('data-id')
-                const div               = changeDischargeBillSpan.parentElement
-                const billQtyInput      = div.querySelector('.billInput')
-
-                changeDischargeBillSpan.classList.add('d-none')
-                billQtyInput.classList.remove('d-none')
-
-                resetFocusEndofLine(billQtyInput)
             
-                billQtyInput.addEventListener('blur', function () {
-                    http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value}, {'html' : div})
-                    .then((response) => {
-                        if (response.status >= 200 || response.status <= 300) {
-                            billingTable ? billingTable.draw() : ''
-                            paymentTable ? paymentTable.draw() : ''
-                        }
-                    })
-                    .catch((error) => {
-                            billingTable ? billingTable.draw() : ''
-                            console.log(error)
-                    })
-                })                
-            }
+            // if (changeDischargeBillSpan){
+            //     const prescriptionId    = changeDischargeBillSpan.getAttribute('data-id')
+            //     const div               = changeDischargeBillSpan.parentElement
+            //     const billQtyInput      = div.querySelector('.billInput')
+
+            //     changeDischargeBillSpan.classList.add('d-none')
+            //     billQtyInput.classList.remove('d-none')
+
+            //     resetFocusEndofLine(billQtyInput)
+            
+            //     billQtyInput.addEventListener('blur', function () {
+            //         http.patch(`/pharmacy/bill/${prescriptionId}`, {quantity: billQtyInput.value}, {'html' : div})
+            //         .then((response) => {
+            //             if (response.status >= 200 || response.status <= 300) {
+            //                 billingTable ? billingTable.draw() : ''
+            //                 paymentTable ? paymentTable.draw() : ''
+            //             }
+            //         })
+            //         .catch((error) => {
+            //                 billingTable ? billingTable.draw() : ''
+            //                 console.log(error)
+            //         })
+            //     })                
+            // }
     })
 
     saveBillReminderBtn.addEventListener('click', function () {
@@ -769,7 +802,7 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     smsTemplateModal._element.addEventListener('hide.bs.modal', function () {
-            dueCashRemindersTable.draw()
+            dueCashRemindersTable.draw(false)
         })
 
     outstandingBillsModal._element.addEventListener('hide.bs.modal', function () {
@@ -789,6 +822,19 @@ window.addEventListener('DOMContentLoaded', function () {
         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
         html2pdf().set(opt).from(billSummaryBody).save()
+    })
+
+    downloadPosBillSummaryBtn.addEventListener('click', function () {
+        const patient = posBillSummaryBody.querySelector('.patient').innerHTML
+
+        var opt = {
+        margin:       0.3,
+        filename:     patient + "'s Bill Posformat.pdf",
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 3 , height: null},
+        jsPDF:        { unit: 'mm', format: [70, 160], orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(posBillSummaryBody).save()
     })
 
     createShiftReportBtn.addEventListener('click', function() {
@@ -904,7 +950,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.patch(`/reminders/deletefirst/${billReminderId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
-                            billRemindersTable ? billRemindersTable.draw() : ''
+                            billRemindersTable ? billRemindersTable.draw(false) : ''
                         }
                         deleteFirstReminderBtn.removeAttribute('disabled')
                     })
@@ -921,7 +967,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.patch(`/reminders/deletesecond/${billReminderId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
-                            billRemindersTable ? billRemindersTable.draw() : ''
+                            billRemindersTable ? billRemindersTable.draw(false) : ''
                         }
                         deleteSecondReminderBtn.removeAttribute('disabled')
                     })
@@ -938,7 +984,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.patch(`/reminders/deletefinal/${billReminderId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
-                            billRemindersTable ? billRemindersTable.draw() : ''
+                            billRemindersTable ? billRemindersTable.draw(false) : ''
                         }
                         deleteFinalReminderBtn.removeAttribute('disabled')
                     })
@@ -955,7 +1001,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.patch(`/reminders/deletepaid/${billReminderId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
-                            billRemindersTable ? billRemindersTable.draw() : ''
+                            billRemindersTable ? billRemindersTable.draw(false) : ''
                         }
                         deletePaidBtn.removeAttribute('disabled')
                     })
@@ -973,7 +1019,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 http.delete(`/reminders/${billReminderId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300){
-                            billRemindersTable ? billRemindersTable.draw() : ''
+                            billRemindersTable ? billRemindersTable.draw(false) : ''
                         }
                         deleteBillReminderBtn.removeAttribute('disabled')
                     })
@@ -1015,12 +1061,12 @@ window.addEventListener('DOMContentLoaded', function () {
                         http.patch(`/reminders/firstreminder/${reminderId}`, {reminder: firstReminderSelect.value})
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
-                                dueCashRemindersTable.draw()
+                                dueCashRemindersTable.draw(false)
                                 dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset)) 
                             }
                         })
                         .catch((error) => {
-                            dueCashRemindersTable.draw()
+                            dueCashRemindersTable.draw(false)
                             dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
                             console.log(error)
                         })               
@@ -1050,12 +1096,12 @@ window.addEventListener('DOMContentLoaded', function () {
                         http.patch(`/reminders/secondreminder/${reminderId}`, {reminder: secondReminderSelect.value})
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
-                                    dueCashRemindersTable.draw()
+                                    dueCashRemindersTable.draw(false)
                                     dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset)) 
                             }
                         })
                         .catch((error) => {
-                            dueCashRemindersTable.draw()
+                            dueCashRemindersTable.draw(false)
                             dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
                             console.log(error)
                         })               
@@ -1084,12 +1130,12 @@ window.addEventListener('DOMContentLoaded', function () {
                         http.patch(`/reminders/finalreminder/${reminderId}`, {reminder: finalReminderSelect.value})
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
-                                    dueCashRemindersTable.draw()
+                                    dueCashRemindersTable.draw(false)
                                     dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
                             }
                         })
                         .catch((error) => {
-                            dueCashRemindersTable.draw()
+                            dueCashRemindersTable.draw(false)
                             dueCashRemindersTable.on('draw', removeDisabled(dueRemindersFieldset))
                             console.log(error)
                         })               
@@ -1144,7 +1190,7 @@ window.addEventListener('DOMContentLoaded', function () {
     confirmPaymentModal._element.addEventListener('hide.bs.modal', function(event) {
         clearValidationErrors(confirmPaymentModal._element)
         clearDivValues(confirmPaymentModal._element)
-        dueCashRemindersTable.draw()
+        dueCashRemindersTable.draw(false)
     })
 
     sendSmsBtn.addEventListener('click', function () {

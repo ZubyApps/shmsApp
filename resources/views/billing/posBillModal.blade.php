@@ -9,7 +9,7 @@
                 <div class="modal-body posBillSummaryBody">
                     <header class="d-flex flex-wrap justify-content-between align-items-top mb-0">
                         <div class="text-left p-0">
-                            <p class="fw-bold {{ $isPos ? 'small' : ''}}">Ufor Hospital Ughelli</p>
+                            <p class="fw-bold {{ $isPos ? 'small' : ''}}">Sandra Hospital Mkd</p>
                             <p class="small">{{ date('g:ia F j, Y') }}</p>
                         </div>
                     </header>

@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import {admissionStatusX, deferredCondition, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, preSearch, searchDecider, searchMin, searchPlaceholderText, selectReminderOptions, sponsorAndPayPercent, visitType, wardState } from "../helpers";
+import {admissionStatusX, closedOpened, deferredCondition, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, preSearch, searchDecider, searchMin, searchPlaceholderText, selectReminderOptions, sponsorAndPayPercent, visitType, wardState } from "../helpers";
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -90,7 +90,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, s
             sortable: false,
             data: row => `
             <div class="dropdown">
-                <a class="btn btn-outline-primary tooltip-test text-decoration-none ${row.closed ? 'px-1': ''}" title="${row.closed ? 'record closed by ' + row.closedBy: ''}" data-bs-toggle="dropdown">
+                <a class="btn btn-outline-primary tooltip-test text-decoration-none ${row.closed ? 'px-1': ''}" title="${closedOpened(row.closed, row.closedOpenedBy, row.closedOpenedAt)}" data-bs-toggle="dropdown">
                     More${row.closed ? '<i class="bi bi-lock-fill"></i>': ''}
                 </a>
                     <ul class="dropdown-menu">
@@ -100,6 +100,9 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, s
                         </a>
                         <a class="dropdown-item patientsBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-staff="${ row.staff }">
                             Bill Summary
+                        </a>
+                        <a class="dropdown-item posPatientsBillBtn btn tooltip-test" title="patient's bill"  data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-staff="${ row.staff }">
+                            Bill Summary POS
                         </a>
                         <a class="dropdown-item btn btn-outline-primary medicalReportBtn" data-id="${ row.id }" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}" data-age="${ row.age }" data-sex="${ row.sex }">Report/Refer/Result</a>
                         <a class="dropdown-item ${row.closed ? 'openVisitBtn' : 'closeVisitBtn'} btn tooltip-test" title="${row.closed ? 'open?': 'close?'}"  data-id="${ row.id }" id="${row.closed ? 'openVisitBtn' : 'closeVisitBtn'}">
@@ -246,7 +249,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                                 <td class="">${account.format(p.unitPrice)}</td>
                                                 <td class="">
                                                     <div class="d-flex">
-                                                        <span class="${p.isDischarge ? 'changeDischargeBillSpan fw-bold text-primary' : ''} tooltip-test" title="${p.isDischarge ? 'Change Discharge Bill' : ''}" data-id="${p.prescriptionId}">${p.quantity}</span>
+                                                        <span class="tooltip-test" title="" data-id="${p.prescriptionId}">${p.quantity}</span>
                                                         <input class="ms-1 form-control billInput d-none" id="billInput" style="width:6rem;" value="${p.quantity ?? ''}">
                                                     </div>
                                                 </td>
@@ -513,6 +516,65 @@ const getPatientsBill = (tableId, visitId, modal, type) => {
     return billTable
 }
 
+const getPatientsBillPos = (tableId, visitId, modal, type) => {
+    const posBillTable =  new DataTable('#'+tableId, {
+        serverSide: true,
+        ajax:  {url: '/billing/summary', data: {
+            'visitId': visitId,
+            'type': type,
+        }},
+        orderMulti: false,
+        search: false,
+        searching: false,
+        lengthChange: false,
+        paging: false,
+        info: false,
+        scrollX: false,
+        language: {
+            emptyTable: 'No bill'
+        },
+        drawCallback: function (settings) {
+            var api = this.api()
+
+                const discount = api.data()[0].discount
+                const totalPaid = api.data().reduce((sum, item) => sum + Number(item.totalPaid), 0)
+                $( 'tr:eq(0) td:eq(2)', api.table().footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum()));
+                $( 'tr:eq(1) td:eq(2)', api.table().footer() ).html(account.format(discount));
+                $( 'tr:eq(2) td:eq(2)', api.table().footer() ).html(account.format(totalPaid));
+                $( 'tr:eq(3) td:eq(2)', api.table().footer() ).html(account.format(api.column( 2, {page:'current'} ).data().sum() - discount - totalPaid));
+                
+                $('#'+tableId+' th, #'+tableId + ' td').css({
+                    'font-size': '12px', // Set font size for thermal printing
+                    'line-height': '1.1',
+                    'word-wrap': 'break-word',
+                    'white-space': 'normal',
+                });
+        },
+        columnDefs: [
+                    { width: '30%', targets: 0 }, // Item column: Wider for wrapping
+                    { width: '10%', targets: 1 }, // Qty: Narrow
+                    { width: '20%', targets: 2 }, // Price: Narrow
+                ],
+        columns: [
+            {
+                data: "service"
+            },
+            {
+                data: "quantity"
+            },
+            {
+                data: row => account.format(row.sponsorCat == 'NHIS' ? row.totalNhisBill : row.totalBill)
+            },
+        ]
+    });
+
+    modal.addEventListener('hidden.bs.modal', function () {
+        posBillTable.destroy()
+    })
+    
+    return posBillTable
+}
+
 const getExpensesTable = (tableId, accessor, expenseCategoryId, modal, startDate, endDate, date, payMethodId) => {
     const expenseTable =  new DataTable(tableId, {
         serverSide: true,
@@ -752,4 +814,4 @@ const getDueCashRemindersTable = (tableId) => {
     return dueHmoRemindersTable
 }
 
-export {getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable, getBalancingTable, getBillReminderTable, getDueCashRemindersTable}
+export {getWaitingTable, getPatientsVisitsByFilterTable, getbillingTableByVisit, getPaymentTableByVisit, getPatientsBill, getExpensesTable, getBalancingTable, getBillReminderTable, getDueCashRemindersTable, getPatientsBillPos}

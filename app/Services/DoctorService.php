@@ -23,7 +23,7 @@ class DoctorService
     private function baseQuery(): Builder
     {
         return $this->visit
-        ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'ward', 'bed_no', 'ward_id', 'waiting_for', 'discount')->with([
+        ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'doctor_done_by', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'closed_opened_at', 'ward', 'bed_no', 'ward_id', 'waiting_for', 'discount', 'doctor_done_at')->with([
             'sponsor:id,name,category_name,flag',
             'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment' => with(['updatedBy' => function ($query) {
                 $query->select('id', 'username');
@@ -236,6 +236,7 @@ class DoctorService
                 'ancCount'          => $visit->visit_type == 'ANC' ? $visit->consultationsCount : '',
                 'closed'            => $visit->closed,
                 'closedBy'          => $visit->closedOpenedBy?->username,
+                'closedAt'          => $visit->closed_opened_at ? (new Carbon($visit->closed_opened_at))->format('d/m/y g:ia') : '',
             ];
         };
     }

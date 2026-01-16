@@ -38,7 +38,7 @@ class BillingService
     {
         $orderBy    = 'consulted';
         $orderDir   =  'desc';
-        $query = $this->visit->select('id', 'sponsor_id', 'patient_id', 'doctor_id', 'closed_opened_by', 'admission_status', 'ward', 'bed_no', 'ward_id', 'visit_type', 'discharge_reason', 'doctor_done_at', 'closed', 'closed_opened_by', 'consulted', 'created_at', 'discount')
+        $query = $this->visit->select('id', 'sponsor_id', 'patient_id', 'doctor_id', 'closed_opened_by', 'doctor_done_by', 'closed_opened_at', 'admission_status', 'ward', 'bed_no', 'ward_id', 'visit_type', 'discharge_reason', 'doctor_done_at', 'closed', 'closed_opened_by', 'closed_opened_at', 'consulted', 'created_at', 'discount')
                     ->with([
                         'sponsor:id,name,category_name,flag', 
                         'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
@@ -48,7 +48,8 @@ class BillingService
                                 },
                         'doctor:id,username', 
                         'closedOpenedBy:id,username',
-                        'wards:id,visit_id,short_name,bed_number'
+                        'wards:id,visit_id,short_name,bed_number',
+                        'doctorDoneBy:id,username',
                     ]);
 
         if (! empty($params->searchTerm)) {
@@ -214,10 +215,12 @@ class BillingService
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),
                 'discharged'        => $visit->discharge_reason,
                 'reason'            => $visit->discharge_reason,
+                'doctorDone'        => $visit->doctorDoneBy->username ?? '',
                 'doctorDoneAt'      => $visit->doctor_done_at ? (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') : '',
                 'staff'             => auth()->user()->username,
                 'closed'            => $visit->closed,
-                'closedBy'          => $visit->closedOpenedBy?->username
+                'closedOpenedBy'    => $visit->closedOpenedBy?->username,
+                'closedOpenedAt'    => $visit->closed_opened_at ? (new Carbon($visit->closed_opened_at))->format('d/m/y g:ia') : '',
             ];
          };
     }
@@ -469,7 +472,7 @@ class BillingService
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
         $column = $data->sponsorCat == 'NHIS' ? 'total_nhis_bill' : 'total_hms_bill';
-        $query = $this->visit->select('id', 'sponsor_id', 'patient_id', 'doctor_id', 'closed_opened_by', 'admission_status', 'ward', 'ward', 'visit_type', 'discharge_reason', 'doctor_done_at', 'closed', 'closed_opened_by', 'discount')
+        $query = $this->visit->select('id', 'sponsor_id', 'patient_id', 'doctor_id', 'admission_status', 'ward', 'ward', 'visit_type', 'discharge_reason', 'doctor_done_at', 'closed', 'closed_opened_by', 'closed_opened_at', 'discount')
                     ->with([
                         'sponsor:id,name,category_name,flag', 
                         'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
@@ -524,19 +527,16 @@ class BillingService
 
     public function getPatientBillSummaryTable($data)
     {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
-
         return DB::table('prescriptions')
-                        ->selectRaw('SUM(prescriptions.hms_bill) as totalBill, SUM(prescriptions.nhis_bill) as totalNhisBill, SUM(prescriptions.paid) as totalPaid, resources.'.$data->type.' as service, COUNT(resources.category) as types, SUM(prescriptions.qty_billed) as quantity, visits.discount as discount, sponsors.category_name as sponsorCat')
-                        ->leftJoin('resources', 'prescriptions.resource_id', '=', 'resources.id')
-                        ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
-                        ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-                        ->where('visit_id', $data->visitId)
-                        ->groupBy('service', 'discount', 'sponsorCat')
-                        ->orderBy('service')
-                        ->get()
-                        ->toArray();   
+                    ->selectRaw('SUM(prescriptions.hms_bill) as totalBill, SUM(prescriptions.nhis_bill) as totalNhisBill, SUM(prescriptions.paid) as totalPaid, resources.'.$data->type.' as service, COUNT(resources.category) as types, SUM(prescriptions.qty_billed) as quantity, visits.discount as discount, sponsors.category_name as sponsorCat')
+                    ->leftJoin('resources', 'prescriptions.resource_id', '=', 'resources.id')
+                    ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
+                    ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                    ->where('visit_id', $data->visitId)
+                    ->groupBy('service', 'discount', 'sponsorCat')
+                    ->orderBy('service')
+                    ->get()
+                    ->toArray();   
     }
 
     public function saveDischargeBill(Request $request, User $user)

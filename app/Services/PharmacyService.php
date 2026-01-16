@@ -34,7 +34,7 @@ class PharmacyService
         $orderBy    = 'consulted';
         $orderDir   =  'desc';
         $query = $this->visit
-            ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'ward', 'bed_no', 'ward_id', 'discount')->with([
+            ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'doctor_done_by', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'closed_opened_at', 'ward', 'bed_no', 'ward_id', 'discount', 'doctor_done_at')->with([
                 'sponsor:id,name,category_name,flag', 
                 'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment', 
                 'patient' => function($query){

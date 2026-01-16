@@ -336,9 +336,7 @@ class HmoService
                 'approvedBy:id,username',
                 'rejectedBy:id,username',
                 'user:id,username',
-        ])
-        // ->withSum('visitResourcePrescription as totalQtyResourceBilled', 'qty_billed')
-        ;
+        ]);
 
             if (! empty($params->searchTerm)) {
 
@@ -409,10 +407,11 @@ class HmoService
 
             return [
                 'id'                => $prescription->id,
-                'patient'           => $prescription->visit?->patient->patientId(),
-                'age'               => $prescription->visit?->patient->age(),
-                'sponsor'           => $prescription->visit?->sponsor->name,
-                'sponsorCategory'   => $sponsorCategory,
+                'patient'           => $prescription->visit?->patient?->patientId(),
+                'age'               => $prescription->visit?->patient?->age(),
+                'sponsor'           => $prescription->visit?->sponsor?->name,
+                'sponsorCategory'   => $prescription->visit?->sponsor?->category_name,
+                'sponsorCategoryClass'   => $prescription->visit?->sponsor?->sponsorCategory?->pay_class,
                 'doctor'            => $prescription->user->username,
                 'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                 'diagnosis'         => $prescription->consultation?->icd11_diagnosis ?? 
@@ -429,7 +428,7 @@ class HmoService
                 'hmsBillDate'       => $prescription->hms_bill_date ? (new Carbon($prescription->hms_bill_date))->format('d/m/y g:ia') : '',
                 'hmoBill'           => $prescription->hmo_bill ?? '',
                 'hmoBillBy'         => $prescription->hmoBillBy?->username,
-                'paidHms'           => $prescription->visit->total_paid ?? '',
+                'paid'              => $prescription->paid ?? '',
                 'approved'          => $prescription->approved,
                 'approvedBy'        => $prescription->approvedBy?->username,
                 'rejected'          => $prescription->rejected,
@@ -683,13 +682,24 @@ class HmoService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query      = $this->prescription->select('id', 'resource_id', 'user_id', 'consultation_id', 'prescription', 'qty_billed', 'note', 'hms_bill', 'hmo_bill', 'approved', 'rejected', 'hmo_bill_by', 'approved_by', 'rejected_by', 'created_at')->with([ 
+        $query      = $this->prescription->select('id', 'visit_id', 'resource_id', 'user_id', 'consultation_id', 'prescription', 'qty_billed', 'note', 'hms_bill', 'hmo_bill', 'approved', 'rejected', 'hmo_bill_by', 'approved_by', 'rejected_by', 'created_at', 'paid')->with([ 
             'resource:id,flag,name',
             'consultation:id,icd11_diagnosis,provisional_diagnosis,assessment',
             'hmoBillBy:id,username',
             'approvedBy:id,username',
             'rejectedBy:id,username',
             'user:id,username',
+            'visit' => function ($query) {
+                $query->select('id', 'sponsor_id')
+                ->with([
+                    'sponsor'  => function ($query) {
+                                        $query->select('id', 'category_name', 'sponsor_category_id' )
+                                        ->with([
+                                            'sponsorCategory:id,pay_class',
+                                        ]);
+                                    },
+                                ]);
+            }
         ]);        
 
             if (! empty($params->searchTerm)) {

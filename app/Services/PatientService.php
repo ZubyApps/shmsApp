@@ -154,6 +154,10 @@ class PatientService
 
     public function sendFormLink($data, User $user)
     {
+        if (!(new HelperService)->nccTextTime()){
+            return response()->json(['message' => 'Form link not sent'], 400);
+        }
+
         $formLinkParams  = new FormLinkParams(
             config('app.url').'/form', 
             (int)$data->sponsorCategory, 
@@ -178,10 +182,7 @@ class PatientService
 
         $link = route('patientForm', ['patientPreForm' => $patientForm->id]);
 
-        if ((new HelperService)->nccTextTime()){
-            SendFormLink::dispatch($link, $formLinkParams);
-        }
-
+        SendFormLink::dispatch($link, $formLinkParams);
         return response()->json(['message' => 'Form link prepared and queued successfully'], 200);
     }
 

@@ -288,28 +288,33 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
         },
         drawCallback: function (settings) {
             var api = this.api()                
-                $( 'tr:eq(0) td:eq(7)', api.table().footer() ).html(account.format(api.column( 7, {page:'current'} ).data().sum()));
-                $( 'tr:eq(0) td:eq(8)', api.table().footer() ).html(account.format(api.column(8, {page:'current'} ).data().sum()));
+                const sumCol7 = api.column(7, { page: 'current' }).data().sum();
+                const sumCol8 = api.column(8, { page: 'current' }).data().sum();
+                const sumPaidHms = api.data({ page: 'current' }).pluck('paid').sum();
+
+                $( 'tr:eq(0) td:eq(7)', api.table().footer() ).html(account.format(sumCol7));
+                $( 'tr:eq(0) td:eq(8)', api.table().footer() ).html(account.format(sumCol8));
                 
-                const value = (account.format(api.column( 8, {page:'current'} ).data().sum() - (api.column( 7, {page:'current'} ).data().sum())))
+                const value = (sumCol8 - sumCol7)
                 $( 'tr:eq(0) td:eq(9)', api.table().footer() ).html(`<span class="text-${value < 0 ? 'danger': value == 0 ? 'primary': 'success'}">Diff: ${value}</span>`);
-                
-                $( 'tr:eq(1) td:eq(7)', api.table().footer() ).html(account.format(api.data()[0].paidHms));
-                $( 'tr:eq(1) td:eq(8)', api.table().footer() ).html(account.format(api.data()[0].paidHms));
+                console.log(api.data({ page: 'current' }).pluck('paidHms').sum())
+                $( 'tr:eq(1) td:eq(7)', api.table().footer() ).html(account.format(sumPaidHms));
+                $( 'tr:eq(1) td:eq(8)', api.table().footer() ).html(account.format(sumPaidHms));
                 $( 'tr:eq(1) td:eq(9)', api.table().footer() ).html(`<button class="btn btn-primary refreshBtn"><i class="bi bi-arrow-repeat"></i></button>`);
                 
-                $( 'tr:eq(2) td:eq(7)', api.table().footer() ).html(account.format((api.column( 7, {page:'current'} ).data().sum() - api.data()[0].paidHms)));
-                $( 'tr:eq(2) td:eq(8)', api.table().footer() ).html(account.format(api.column( 8, {page:'current'} ).data().sum() - api.data()[0].paidHms));
+                $( 'tr:eq(2) td:eq(7)', api.table().footer() ).html(account.format((sumCol7 - sumPaidHms)));
+                $( 'tr:eq(2) td:eq(8)', api.table().footer() ).html(account.format(sumCol8 - sumPaidHms));
 
         },
         columns: [
             {data: "doctor"},
             {data: "prescribed"},
-            {data: row => () => {
-                return row.approved ? row.resource + `<i class="ms-1 text-primary bi bi-check-circle-fill"></i>` : 
-                       row.rejected ? row.resource + `<i class="ms-1 text-danger bi bi-x-circle-fill"></i>` :
-                       row.resource
-            } },
+            {data: row => function () {
+                            const credit = row?.sponsorCategoryClass == 'Credit'
+                            const NHIS = row.sponsorCategory == 'NHIS'
+                            return `<span class="text-${row.rejected ? 'danger' : 'primary'} fw-semibold">${row.resource +' '+ displayPaystatus(row, credit, NHIS)}</span>`
+                            }
+                        },
             {data: "diagnosis"},
             {data: "prescription"},
             {data: "note"},

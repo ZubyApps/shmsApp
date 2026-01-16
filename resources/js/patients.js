@@ -443,6 +443,9 @@ window.addEventListener('DOMContentLoaded', function(){
                 alert('Link sent')
                 newPatientModal.hide()
             }
+            if (response.status == 400){
+                alert('Linke NOT sent');
+            }
         })
         .catch((error) => {
             sendLinkBtn.removeAttribute('disabled')
