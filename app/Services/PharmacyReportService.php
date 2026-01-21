@@ -75,10 +75,10 @@ class PharmacyReportService
                 'id'                => $resource->id,
                 'name'              => $resource->name,
                 'subCategory'       => $resource->sub_category,
-                'prescriptions'     => $resource->prescriptions->count(),
-                'qtyBilled'         => $resource->prescriptions->sum('qty_billed'),
-                'qtyDispensed'      => $resource->prescriptions->sum('qty_dispensed'),
-                'bulkDispensed'     => $resource->bulkRequests->sum('qty_dispensed'),
+                'prescriptions'     => $resource->prescriptionsCount,//prescriptions->count(),
+                'qtyBilled'         => $resource->qtyBilled,//prescriptions->sum('qty_billed'),
+                'qtyDispensed'      => $resource->qtyDispensed,//prescriptions->sum('qty_dispensed'),
+                'bulkDispensed'     => $resource->sumBulkDispensed,//bulkRequests->sum('qty_dispensed'),
             ];
          };
     }

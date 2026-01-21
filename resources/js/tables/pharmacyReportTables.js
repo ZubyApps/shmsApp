@@ -46,7 +46,7 @@ const getPharmacySummaryTable = (tableId, startDate, endDate, date) => {
             {data: "qtyBilled"},
             {data: "qtyDispensed"},
             {data: "bulkDispensed"},
-            {data: row => row.qtyDispensed + row.bulkDispensed},
+            {data: row => +row.qtyDispensed + +row.bulkDispensed},
         ]
     })
 
