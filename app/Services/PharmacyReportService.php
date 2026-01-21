@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace App\Services;
 
 use App\DataObjects\DataTableQueryParams;
-use App\Models\Prescription;
 use App\Models\Resource;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
@@ -15,8 +14,6 @@ class PharmacyReportService
 {
     public function __construct(
         private readonly Resource $resource, 
-        private readonly HelperService $helperService,
-        private readonly Prescription $prescription,
         )
     {
     }
