@@ -296,9 +296,9 @@ class InvestigationService
                 'doctor'            => $prescription->user->username,
                 'patient'           => $prescription->visit->patient->patientId(),
                 'sponsor'           => $prescription->visit->sponsor->name,
-                'diagnosis'         => $prescription->consultation->icd11_diagnosis ??
-                                       $prescription->consultation->provisional_diagnosis ??
-                                       $prescription->consultation->assessment,
+                'diagnosis'         => $prescription?->consultation?->icd11_diagnosis ??
+                                       $prescription?->consultation?->provisional_diagnosis ??
+                                       $prescription?->consultation?->assessment,
                 'resource'          => $prescription->resource->name,
                 'result'            => $prescription->result_date,
                 'sponsorCategory'       => $prescription->visit->sponsor->category_name,

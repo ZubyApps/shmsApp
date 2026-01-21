@@ -104,7 +104,7 @@ class WalkInService
                             ->orWhere('phone', 'LIKE', $searchTerm)
                             ->orWhere('sex', 'LIKE', $searchTerm)
                             ->orWhere('date_of_birth', 'LIKE', $searchTerm)
-                            ->orWhereRelation('user', 'name', 'LIKE', $searchTerm );
+                            ->orWhereRelation('user', 'username', 'LIKE', $searchTerm );
                         })
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));

@@ -66,7 +66,7 @@ class UserService
              'date_of_employment'    => $data->dateOfEmployment1,
              'date_of_exit'          => $data->dateOfExit1,
              'special_note'          => $data->specialNote1,
-             'staff_id'              => $data->staffId1,
+            //  'staff_id'              => $data->staffId1,
              'password'              => Hash::make($data->password),
              'created_by'            => $updater->username,
              ]);
@@ -90,7 +90,7 @@ class UserService
                 'date_of_employment'    => $data->dateOfEmployment1,
                 'date_of_exit'          => $data->dateOfExit1,
                 'special_note'          => $data->specialNote1,
-                'staff_id'              => $data->staffId1,
+                // 'staff_id'              => $data->staffId1,
                 'created_by'            => $updater->username,
                 ]);
         }
