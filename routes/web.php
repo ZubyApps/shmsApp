@@ -223,7 +223,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/investigations/byresource', [ReportController::class, 'loadByResource']);
             Route::get('/pharmacy', [ReportController::class, 'indexPharmacy'])->name('Pharmacy Reports');
             Route::get('/pharmacy/summary', [ReportController::class, 'loadPharmacySummary']);
-            Route::get('/pharmacy/byresource', [ReportController::class, 'loadByResourcePharmacy']);
+            // Route::get('/pharmacy/byresource', [ReportController::class, 'loadByResourcePharmacy']);
+            Route::get('/pharmacy/byresource', [ReportController::class, 'loadByResource']);
             Route::get('/pharmacy/missing', [ReportController::class, 'loadMissingPharmacySummary']);
             Route::get('/hospitalandothers', [ReportController::class, 'indexHospitalAndOthers'])->name('Hospital Services Reports');
             Route::get('/hospitalandothers/summary', [ReportController::class, 'loadHospitalAndOthersSummary']);
