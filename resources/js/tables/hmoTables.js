@@ -295,9 +295,9 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
                 $( 'tr:eq(0) td:eq(7)', api.table().footer() ).html(account.format(sumCol7));
                 $( 'tr:eq(0) td:eq(8)', api.table().footer() ).html(account.format(sumCol8));
                 
-                const value = (sumCol8 - sumCol7)
+                const value = account.format(sumCol8 - sumCol7)
                 $( 'tr:eq(0) td:eq(9)', api.table().footer() ).html(`<span class="text-${value < 0 ? 'danger': value == 0 ? 'primary': 'success'}">Diff: ${value}</span>`);
-                console.log(api.data({ page: 'current' }).pluck('paidHms').sum())
+
                 $( 'tr:eq(1) td:eq(7)', api.table().footer() ).html(account.format(sumPaidHms));
                 $( 'tr:eq(1) td:eq(8)', api.table().footer() ).html(account.format(sumPaidHms));
                 $( 'tr:eq(1) td:eq(9)', api.table().footer() ).html(`<button class="btn btn-primary refreshBtn"><i class="bi bi-arrow-repeat"></i></button>`);
