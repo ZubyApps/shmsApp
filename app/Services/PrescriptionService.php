@@ -398,7 +398,7 @@ class PrescriptionService
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
         $query      = $this->prescription
-                        ->select('id', 'resource_id', 'visit_id', 'consultation_id', 'user_id', 'paid', 'created_at', 'test_sample', 'result', 'approved', 'rejected', 'result_date', 'dispense_comment', 'result_by', 'discontinued_by', 'sample_collected_at', 'sample_collected_by')->with([
+                        ->select('id', 'resource_id', 'visit_id', 'consultation_id', 'user_id', 'paid', 'created_at', 'test_sample', 'result', 'approved', 'rejected', 'result_date', 'dispense_comment', 'result_by', 'discontinued_by', 'sample_collected_at', 'sample_collected_by', 'hms_bill')->with([
                             'resource:id,name,sub_category,category', 
                             'user:id,username', 
                             'thirdPartyServices' => function ($query) {
