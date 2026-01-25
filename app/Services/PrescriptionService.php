@@ -441,7 +441,6 @@ class PrescriptionService
                 'approved'          => $prescription->approved,
                 'rejected'          => $prescription->rejected,
                 'paidCheck'         => $prescription->paid,
-                'hmsBill'           => $prescription->hms_bill ?? '',
                 'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
                 'paidNhis'          => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->category_name == 'NHIS',
                 'diagnosis'         => $prescription->consultation?->icd11_diagnosis ??
