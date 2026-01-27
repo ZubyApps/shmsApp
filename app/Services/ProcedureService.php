@@ -41,7 +41,7 @@ class ProcedureService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query = $this->procedure->select('id', 'user_id', 'date_booked_by', 'booked_date', 'created_at', 'status', 'comment', 'prescription_id', 'created_at')
+        $query = $this->procedure->select('id', 'user_id', 'date_booked_by', 'booked_date', 'created_at', 'status', 'comment', 'prescription_id', 'created_at', 'status_updated_by')
                 ->with([
             'prescription' => function($query) {
                 $query->select('id', 'approved', 'rejected', 'nhis_bill', 'paid', 'visit_id', 'resource_id')
