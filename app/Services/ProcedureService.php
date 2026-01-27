@@ -61,6 +61,7 @@ class ProcedureService
             },
             'user:id,username',
             'dateBookedBy:id,username',
+            'statusUpdatedBy:id,username',
         ]);
 
         if (! empty($params->searchTerm)) {
