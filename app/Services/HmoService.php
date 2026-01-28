@@ -285,7 +285,7 @@ class HmoService
                 'flagReason'        => $visit->patient?->flag_reason,
                 'flaggedBy'         => $visit->patient->flaggedBy?->username,
                 'flaggedAt'         => $visit->patient->flagged_at ? (new Carbon($visit->patient->flagged_at))->format('d/m/y g:ia') : '',
-                'admissionStatus'   => $visit->latestConsultation?->admission_status,
+                'admissionStatus'   => $visit->admission_status,//latestConsultation?->admission_status,
                 'visitType'         => $visit->visit_type,
                 'labPrescribed'     => $visit->labPrescribed,
                 'labDone'           => $visit->labDone,
