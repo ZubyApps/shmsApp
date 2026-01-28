@@ -13,10 +13,10 @@
     <option value="Ebonyi">Ebonyi</option>
     <option value="Edo">Edo</option>
     <option value="Ekiti">Ekiti</option>
-    <option value="Ekiti">Enugu</option>
-    <option value="Ekiti">FCT</option>
+    <option value="Enugu">Enugu</option>
+    <option value="FCT">FCT</option>
     <option value="Gombe">Gombe</option>
-    <option value="Gombe">Imo</option>
+    <option value="Imo">Imo</option>
     <option value="Jigawa">Jigawa</option>
     <option value="Kaduna">Kaduna</option>
     <option value="Kano">Kano</option>
