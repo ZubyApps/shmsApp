@@ -211,7 +211,7 @@ class VisitService
                         'consultation_id'   => null,
                         'visit_id'          => $visit->id,
                         'qty_billed'        => 1,
-                        'qty_dispensed'     => 1,
+                        // 'qty_dispensed'     => 1,
                         'hms_bill'          => $resource->selling_price,
                         'hms_bill_date'     => new Carbon(),
                         'hms_bill_by'       => $user->id,

@@ -33,7 +33,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'password' => 'hashed',
-        'date_of_employment' => 'datetime',
     ];
 
     public function sponsorCategories(): HasMany

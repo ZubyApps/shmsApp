@@ -100,7 +100,7 @@ class UserService
 
     public function getAllstaffList(DataTableQueryParams $params)
     {
-        $orderBy    = 'firstname';
+        $orderBy    = 'date_of_employment';
         $orderDir   =  'desc';
         $query = $this->user->select('id', 'firstname', 'middlename', 'lastname', 'date_of_employment', 'login', 'logout', 'highest_qualification', 'username', 'date_of_exit', 'phone_number', 'created_at')
                     ->with(['designation:id,user_id,designation,access_level'])
