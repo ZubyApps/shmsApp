@@ -44,7 +44,7 @@
                                         aria-label="cardNumber" aria-describedby="basic-addon1" :isUpdate="$isUpdate"/>
                                     <x-form-input type="text" class="{{ $isUpdate ? 'd-none' : '' }} ancCardNumber" data-maska="ANC##/####" 
                                         aria-label="cardNumber" aria-describedby="basic-addon1" :isUpdate="$isUpdate" />
-                                    <input type="text" aria-label="cardNumber" aria-describedby="basic-addon1" class="form-control" {!! $isUpdate ? 'name="cardNumber" disabled'  : 'hidden' !!}>
+                                    <input type="text" aria-label="cardNumber" aria-describedby="basic-addon1" class="form-control" {!! $isUpdate ? (Auth::user()?->designation->access_level > 4 ? 'name="cardNumber"' : 'name="cardNumber" disabled')  : 'hidden' !!}>
                                 </x-form-div>
 
                                 <x-form-div class="registrationBillDiv d-none">
