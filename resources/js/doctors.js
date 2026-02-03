@@ -8,7 +8,7 @@ import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsu
 import { getAncVitalsignsChart, getVitalsignsChartByVisit } from "./charts/vitalsignsCharts"
 import $ from 'jquery';
 import { getbillingTableByVisit } from "./tables/billingTables"
-import { getAncVitalSignsTable, getDeliveryNoteTable, getEmergencyTable, getLabourRecordTable, getNurseMedicationsByFilter, getPartographTable } from "./tables/nursesTables"
+import { getAncVitalSignsTable, getDeliveryNoteTable, getEmergencyTable, getLabourRecordTable, getNurseMedicationsByFilter, getOtherPrescriptionsByFilterNurses, getPartographTable } from "./tables/nursesTables"
 import { visitDetails } from "./dynamicHTMLfiles/visits"
 import html2pdf  from "html2pdf.js"
 import { getAppointmentsTable } from "./tables/appointmentsTables"
@@ -35,6 +35,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const addResultModal                    = new Modal(document.getElementById('addResultModal'))
     const updateResultModal                 = new Modal(document.getElementById('updateResultModal'))
     const medicationPrescriptionsModal      = new Modal(document.getElementById('medicationPrescriptionsModal'))
+    const otherPrescriptionsModal           = new Modal(document.getElementById('otherPrescriptionsModal'))
     const investigationsModal               = new Modal(document.getElementById('investigationsModal'))
     const investigationAndManagementModal   = new Modal(document.getElementById('investigationAndManagementModal'))
     const dischargeModal                    = new Modal(document.getElementById('dischargeModal'))
@@ -259,6 +260,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const dischargedBtn         = event.target.closest('.dischargedBtn')
             const historyBtn            = event.target.closest('.historyBtn')
             const viewMedicationBtn     = event.target.closest('.viewMedicationBtn')
+            const viewOtherPrescriptionsBtn = event.target.closest('.viewOtherPrescriptionsBtn')
             const toggleVisitBtn        = event.target.closest('#closeVisitBtn, #openVisitBtn')
             const medicalReportBtn      = event.target.closest('.medicalReportBtn')
             const updateResourceListBtn = event.target.closest('#updateResourceListBtn');  const wardBedBtn = event.target.closest('.wardBedBtn')
@@ -428,6 +430,17 @@ window.addEventListener('DOMContentLoaded', function () {
                 medicationPrescriptionsModal.show()
                 viewMedicationBtn.removeAttribute('disabled')
             }
+
+            if (viewOtherPrescriptionsBtn){
+                    viewOtherPrescriptionsBtn.setAttribute('disabled', 'disabled')
+                    const tableId = otherPrescriptionsModal._element.querySelector('.otherPrescriptionsTable').id
+                    const visitId = viewOtherPrescriptionsBtn.getAttribute('data-id')
+                    populatePatientSponsor(otherPrescriptionsModal, viewOtherPrescriptionsBtn)
+                    getOtherPrescriptionsByFilterNurses(tableId, null, otherPrescriptionsModal._element, visitId)
+        
+                    otherPrescriptionsModal.show()
+                    viewOtherPrescriptionsBtn.removeAttribute('disabled')
+                }
 
             if (investigationsBtn) {
                 investigationsBtn.setAttribute('disabled', 'disabled')

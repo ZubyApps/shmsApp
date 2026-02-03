@@ -59,12 +59,30 @@ class DoctorService
                     ->whereDoesntHave('medicationCharts')
                     ->whereRelation('resource', 'sub_category', '=', 'Injectable');
             },
+            'prescriptions as otherChartables' => function (Builder $query) {
+            $query->where('chartable', true)
+                ->where('discontinued', false)
+                ->whereDoesntHave('nursingCharts')
+                ->whereRelation('resource', 'sub_category', '!=', 'Injectable');
+            },
+            'prescriptions as otherPrescriptions' => function (Builder $query) {
+            $query->where('chartable', false)
+            ->where('chartable', false)
+            ->where(function(Builder $query) {
+                $query->whereRelation('resource', 'category', 'Medications')
+                        ->orWhereRelation('resource', 'category', 'Consumables');
+                });
+            },
             'medicationCharts as doseCount',
             'medicationCharts as givenCount' => function (Builder $query) {
                 $query->whereNotNull('dose_given');
             },
-             'vitalSigns as vitalSignsCount',
-             'consultations as consultationsCount'
+            'nursingCharts as scheduleCount',
+            'nursingCharts as doneCount' => function (Builder $query) {
+                $query->whereNotNull('time_done');
+            },
+            'vitalSigns as vitalSignsCount',
+            'consultations as consultationsCount'
         ])
         ->whereNotNull('consulted');
     }
@@ -224,6 +242,10 @@ class DoctorService
                 'chartableMedications'  => $visit->prescriptionsCharted,
                 'doseCount'         => $visit->doseCount,
                 'givenCount'        => $visit->givenCount,
+                'otherChartables'       => $visit->otherChartables,
+                'otherPrescriptions'    => $visit->otherPrescriptions,
+                'scheduleCount'     => $visit->scheduleCount,
+                'doneCount'         => $visit->doneCount,
                 'payPercent'        => $this->payPercentageService->individual_Family($visit),
                 'payPercentNhis'    => $this->payPercentageService->nhis($visit),
                 'payPercentHmo'     => $this->payPercentageService->hmo_Retainership($visit),

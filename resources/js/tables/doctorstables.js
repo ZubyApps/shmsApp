@@ -40,6 +40,16 @@ const getOutpatientsVisitTable = (tableId, filter) => {
                     </div>`
                 }
             },
+            {data: row => function () {
+                const chartables = row.otherChartables
+                        return `
+                        <div class="d-flex flex" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-patientid="${ row.patientId }" data-ancregid="${ row.ancRegId }" data-sponsorcat="${row.sponsorCategory}">
+                                <button class=" btn btn${chartables < 1 ? row.scheduleCount ? '-outline-primary px-1' : '-outline-primary' : '-primary px-1'} viewOtherPrescriptionsBtn tooltip-test" title="other medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${row.sponsor}" data-sponsorcat="${row.sponsorCategory}">
+                                    ${(chartables < 1 ? '' : chartables + ' | ') + ' ' + (row.scheduleCount ? (row.doneCount + '/' + row.scheduleCount) + ' | ' : '' )+ ' ' + row.otherPrescriptions}
+                                </button>
+                        </div>`
+                }
+            },
             {data: row =>  `
                         <div class="d-flex justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn px-1 tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
@@ -97,6 +107,16 @@ const getInpatientsVisitTable = (tableId, filter) => {
                             ${(chartables < 1 ? '' : chartables) + ' ' + row.givenCount + '/' + row.doseCount}
                         </button>
                     </div>`
+                }
+            },
+            {data: row => function () {
+                const chartables = row.otherChartables
+                        return `
+                        <div class="d-flex flex" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-patientid="${ row.patientId }" data-ancregid="${ row.ancRegId }" data-sponsorcat="${row.sponsorCategory}">
+                                <button class=" btn btn${chartables < 1 ? row.scheduleCount ? '-outline-primary px-1' : '-outline-primary' : '-primary px-1'} viewOtherPrescriptionsBtn tooltip-test" title="other medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${row.sponsor}" data-sponsorcat="${row.sponsorCategory}">
+                                    ${(chartables < 1 ? '' : chartables + ' | ') + ' ' + (row.scheduleCount ? (row.doneCount + '/' + row.scheduleCount) + ' | ' : '' )+ ' ' + row.otherPrescriptions}
+                                </button>
+                        </div>`
                 }
             },
             {data: row =>  `
@@ -158,6 +178,16 @@ const getAncPatientsVisitTable = (tableId, filter) => {
                             ${(chartables < 1 ? '' : chartables) + ' ' + row.givenCount + '/' + row.doseCount}
                         </button>
                     </div>`
+                }
+            },
+            {data: row => function () {
+                const chartables = row.otherChartables
+                        return `
+                        <div class="d-flex flex" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor }" data-patientid="${ row.patientId }" data-ancregid="${ row.ancRegId }" data-sponsorcat="${row.sponsorCategory}">
+                                <button class=" btn btn${chartables < 1 ? row.scheduleCount ? '-outline-primary px-1' : '-outline-primary' : '-primary px-1'} viewOtherPrescriptionsBtn tooltip-test" title="other medications(s)" data-id="${ row.id }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${row.sponsor}" data-sponsorcat="${row.sponsorCategory}">
+                                    ${(chartables < 1 ? '' : chartables + ' | ') + ' ' + (row.scheduleCount ? (row.doneCount + '/' + row.scheduleCount) + ' | ' : '' )+ ' ' + row.otherPrescriptions}
+                                </button>
+                        </div>`
                 }
             },
             {data: row =>  `
@@ -392,6 +422,7 @@ const getVitalSignsTableByVisit = (tableId, visitId, modal, viewer) => {
 
 const getPrescriptionTableByConsultation = (tableId, conId, visitId, modal) => {
     const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
+    const catgories = ['Medications', 'Consumables']
     const prescriptionTable = new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/prescription/load/initial', data: {
@@ -415,7 +446,6 @@ const getPrescriptionTableByConsultation = (tableId, conId, visitId, modal) => {
             {data: "route"},
             {
                 data: row =>  () => {
-                    const catgories = ['Medications', 'Consumables']
                     if (!catgories.includes(row.category)){
                         return `
                         <div class="d-flex">
@@ -434,10 +464,18 @@ const getPrescriptionTableByConsultation = (tableId, conId, visitId, modal) => {
             {
                 sortable: false,
                 data: row =>  `
-                <div class="d-flex flex- ${visitId && !conId || row.thirdParty || row.procedure ? 'd-none': ''}">
-                    <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}" data-conid="${conId}">
+                <div class="d-flex flex- ${visitId && !conId ? 'd-none': ''}">
+                ${
+                    row.dispensed && row.charted ? 'Dispensed & Charted' :
+                    row.dispensed && catgories.includes(row.category) ? 'Dispensed' :
+                    row.dispensed && row.category == 'Investigations' ? 'Result Added' :
+                    row.charted ? 'Charted' :
+                    row.procedure ? 'Booked':
+                    row.thirdParty ? `<div class="text-primary fw-semibold">${row.thirdParty}</div>` :
+                    `<button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}" data-conid="${conId}">
                         <i class="bi bi-trash3-fill"></i>
-                    </button>
+                    </button>`
+                }
                 </div>
                 `      
             },

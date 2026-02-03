@@ -16,6 +16,7 @@
 @include('vitalsigns.vitalsignsModal', ['title' => 'Vital Signs', 'isDoctor' => true, 'id' => 'vitalsignsModal'])
 @include('vitalsigns.ancVitalsignsModal', ['title' => 'Anc Vital Signs', 'isDoctor' => true, 'id' => 'ancVitalsignsModal', ])
 @include('nurses.prescriptionsModal', ['title' => 'Medications for this Visit', 'isMedications' => true, 'isDoctor' => true, 'id' => 'medicationPrescriptionsModal'])
+@include('nurses.prescriptionsModal', ['title' => 'Other prescriptions for this Visit', 'isMedications' => false, 'isDoctor' => false, 'id' => 'otherPrescriptionsModal'])
 @include('investigations.investigationsModal', ['title' => 'Investigations', 'isDoctor' => true, 'id' => 'investigationsModal'])
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
 @include('investigations.addResultModal', ['title' => 'Update Result', 'isUpdate' => true, 'id' => 'updateResultModal'])
@@ -243,6 +244,7 @@
                                     <th>Sponsor</th>
                                     <th>Last 30days</th>
                                     <th>Rx Count</th>
+                                    <th>Other Rx</th>
                                     <th>Lab Count</th>
                                     <th>Vitals</th>
                                     <th>Status</th>
@@ -274,6 +276,7 @@
                                     <th>Sponsor</th>
                                     <th>Last 30days</th>
                                     <th>Rx Count</th>
+                                    <th>Other Rx</th>
                                     <th>Lab Count</th>
                                     <th>Vitals</th>
                                     <th>Status</th>
@@ -306,6 +309,7 @@
                                     <th>Sponsor</th>
                                     <th>ANC</th>
                                     <th>Rx Count</th>
+                                    <th>Other Rx</th>
                                     <th>Lab Count</th>
                                     <th>Vitals</th>
                                     <th>Status</th>

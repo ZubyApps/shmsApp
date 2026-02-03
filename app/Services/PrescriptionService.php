@@ -344,7 +344,11 @@ class PrescriptionService
                 ->with(['thirdParty:id,short_name']);
             }, 
         ])
-        ->withCount('procedure as procedureCount');
+        ->withExists([
+            'procedure as hasProcedure',
+            'medicationCharts as hasMedChart',
+            'nursingCharts as hasNurseChart'
+            ]);
 
         if (! empty($params->searchTerm)) {
             return $query->where('visit_id', $data->visitId)
@@ -381,14 +385,15 @@ class PrescriptionService
                 'stock'             => $prescription->resource->stock_level,
                 'prescription'      => $prescription->prescription,
                 'quantity'          => $prescription->qty_billed < 1 ? '' : $prescription->qty_billed,
-                'quantityD'         => $prescription->qty_dispensed,
                 'hmsBill'           => $prescription->hms_bill ?? '',
                 'by'                => $prescription->user->username,
                 'chartable'         => $prescription->chartable ? 'Yes' : 'No',
                 'note'              => $prescription->note,
                 'route'             => $prescription->route,
                 'thirdParty'        => $prescription->thirdPartyServices->sortDesc()->first()?->thirdParty->short_name ?? '',
-                'procedure'         => $prescription->procedureCount,
+                'dispensed'         => $prescription->qty_dispensed > 0,
+                'procedure'         => $prescription->hasProcedure,
+                'charted'           => $prescription->hasMedChart || $prescription->hasNurseChart,
             ];
          };
     }
