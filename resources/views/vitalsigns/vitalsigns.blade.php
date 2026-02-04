@@ -25,7 +25,7 @@
         <x-form-input type="text" name="weight" id="weight" class="weight" data-id="{{ $sf }}"/>
     </x-form-div>
     <x-form-div>
-        <x-input-span id="heightLabel">Height/Length</x-input-span>
+        <x-input-span id="heightLabel">Height/Length(cm)</x-input-span>
         <x-form-input type="text" name="height" id="height" class="height" data-id="{{ $sf }}"/>
     </x-form-div>
     <x-form-div>
