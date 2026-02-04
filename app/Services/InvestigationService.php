@@ -361,7 +361,7 @@ class InvestigationService
             'result_by'         => null,
             'discontinued'      => false,
             'dispense_comment'  => null,
-            'qty_dispensed'     => 1
+            'qty_dispensed'     => 0
             ]);
 
         return  $prescription;
