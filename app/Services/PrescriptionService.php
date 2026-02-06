@@ -1055,8 +1055,8 @@ class PrescriptionService
     {
         return  function (Prescription $prescription) {
 
-            $pVisit         = $prescription->visit;
-            $pConsultation  = $prescription->consultation;
+            $pVisit         = $prescription?->visit;
+            $pConsultation  = $prescription?->consultation;
             $pWalkIn        = $prescription?->walkIn;
             $dateOfBirth    = $pVisit?->patient->date_of_birth ?? $pWalkIn?->date_of_birth;
 
@@ -1064,9 +1064,9 @@ class PrescriptionService
                     'id'                => $prescription->id,
                     'date'              => (new Carbon($prescription->created_at))->format('d/M/y g:ia'),
                     'patient'           => $pVisit?->patient->patientId() ?? $prescription?->walkIn?->fullName(),
-                    'sex'               => $pVisit->patient->sex ?? $pWalkIn?->sex,
+                    'sex'               => $pVisit?->patient->sex ?? $pWalkIn?->sex,
                     'age'               => $dateOfBirth ? $this->helperService->twoPartDiffInTimePast($dateOfBirth) : '',
-                    'sponsor'           => $pVisit->sponsor->name,
+                    'sponsor'           => $pVisit?->sponsor->name,
                     'category'          => $pVisit?->sponsor->category_name  ?? "WalkIn",
                     'diagnosis'         => $pConsultation?->icd11_diagnosis ?? $pConsultation?->provisional_diagnosis ?? $pConsultation?->assessment,
                     'doctor'            => $pConsultation?->user?->username,
