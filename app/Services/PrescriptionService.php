@@ -1063,7 +1063,7 @@ class PrescriptionService
             return [
                     'id'                => $prescription->id,
                     'date'              => (new Carbon($prescription->created_at))->format('d/M/y g:ia'),
-                    'patient'           => $pVisit->patient->patientId(),
+                    'patient'           => $pVisit->patient->patientId() ?? $prescription->walkIn?->fullName(),
                     'sex'               => $pVisit->patient->sex ?? $pWalkIn?->sex,
                     'age'               => $dateOfBirth ? $this->helperService->twoPartDiffInTimePast($dateOfBirth) : '',
                     'sponsor'           => $pVisit->sponsor->name,

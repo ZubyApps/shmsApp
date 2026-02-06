@@ -253,7 +253,6 @@ const getAllPatientsTable = (tableId, filter) => {
 }
 
 const getNewRegisteredPatientsTable = (tableId, date) => {
-    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
     const newRegisteredPatientsTable = new DataTable(`#${tableId}`, {
         serverSide: true,
@@ -279,7 +278,6 @@ const getNewRegisteredPatientsTable = (tableId, date) => {
 }
 
 const getSexAggregateTable = (tableId) => {
-    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
     const sexAggregateTable = new DataTable(`#${tableId}`, {
         serverSide: true,
@@ -301,7 +299,6 @@ const getSexAggregateTable = (tableId) => {
     return sexAggregateTable
 }
 const getAgeAggregateTable = (tableId) => {
-    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
     const ageAggregateTable = new DataTable(`#${tableId}`, {
         serverSide: true,
@@ -340,7 +337,6 @@ const getAgeAggregateTable = (tableId) => {
 }
 
 const getVisitsSummaryTable = (tableId, date) => {
-    const account = new Intl.NumberFormat('en-US', {currencySign: 'accounting'})
 
     const visitsSummaryTable = new DataTable(`#${tableId}`, {
         serverSide: true,
