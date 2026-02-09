@@ -386,10 +386,11 @@
                                 <th>Date</th>
                                 <th>Patient</th>
                                 <th>Sponsor</th>
+                                <th>Status</th>
                                 <th>Medication/Item</th>
                                 <th>Prescription</th>
                                 <th>Qty</th>
-                                <th>Prescribed By</th>
+                                <th>By</th>
                                 <th>Note</th>
                                 <th>DOC</th>
                                 <th>Chart</th>

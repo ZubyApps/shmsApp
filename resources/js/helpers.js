@@ -403,9 +403,14 @@ const sponsorAndPayPercent = (row) => {
         payPercent = row.payPercent
     }
     return payPercent !== null ? 
-            `<div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px">
-            <div class="progress-bar text-dark fs-6 px-1 overflow-visible bg-${payPercent <= 50 ? 'danger' : payPercent >= 50 && payPercent < 90 ? 'warning' : payPercent >= 90 && payPercent < 100 ? 'primary-subtle' : 'primary'}" style="width: ${payPercent}%";>${`<span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor+'-'+ row.sponsorCategory +' '+payPercent+'%'}</span>`} </div> 
-            </div> ${row.visitType == 'ANC' ? visitType(row) : ''}` : `<div><span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor+'-'+ row.sponsorCategory} </span></div>${row.visitType == 'ANC' ? visitType(row) : ''}`
+        `<div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"     style="height: 40px">
+                <div class="progress-bar text-dark fs-6 px-1 overflow-visible bg-${payPercent <= 50 ?
+                    'danger' : payPercent >= 50 && payPercent < 90 ?
+                    'warning' : payPercent >= 90 && payPercent < 100 ?
+                    'primary-subtle' : 'primary'}" style="width: ${payPercent}%";>
+                    ${`<span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor+'-'+ row.sponsorCategory +' '+payPercent+'%'}</span>`} 
+                </div> 
+        </div> ${row.visitType == 'ANC' ? visitType(row) : ''}` : `<div><span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor+'-'+ row.sponsorCategory} </span></div>${row.visitType == 'ANC' ? visitType(row) : ''}`
 }
 
 const visitType = (row, start = 0, opacity = 75) => {
@@ -414,7 +419,7 @@ const visitType = (row, start = 0, opacity = 75) => {
 
 const displayPaystatus = (row, credit, NHIS) => {
     if (credit || NHIS){
-        return  `<i class="bi ${+row.approved ? 'bi-check-circle-fill text-primary' : row.rejected ? 'bi-x-circle-fill text-danger' : 'bi-dash-circle-fill text-secondary'} tooltip-test" title=${row.approved ? 'approved' : row.rejected ? 'rejected' : 'not-processed'}></i> ${row.paid || row.paidNhis ? '<i class="bi bi-p-circle-fill text-primary tooltip-test" title="paid"></i>': ''}  ${row.thirdParty ? `<small>(${row.thirdParty})</small>` : ''}` 
+        return  `<i class="bi ${+row.approved ? 'bi-check-circle-fill text-primary' : row.rejected ? 'bi-x-circle-fill text-danger' : 'bi-dash-circle-fill text-secondary'} tooltip-test" title=${row.approved ? 'approved' : row.rejected ? 'rejected' : 'not-processed'}></i> ${row.paid || row.paidNhis ? '<i class="bi bi-p-circle-fill text-primary" title="paid"></i>': ''}  ${row.thirdParty ? `<small>(${row.thirdParty})</small>` : ''}` 
     } else {
         return  row.paid ? `<i class="bi bi-p-circle-fill tooltip-test text-primary" title="paid"></i> ${row.thirdParty  ? `<small>(${row.thirdParty})</small>` : ''}` : `<i class="bi bi-dash-circle-fill text-secondary tooltip-test" title="not-processed"></i> ${row.thirdParty ? `</small>(${row.thirdParty})</small>` : ''}`
     }

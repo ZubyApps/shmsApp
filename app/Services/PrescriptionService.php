@@ -656,12 +656,21 @@ class PrescriptionService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query = $this->prescription->select('id', 'visit_id', 'resource_id', 'user_id', 'chartable','prescription','qty_billed', 'note', 'qty_dispensed', 'created_at', 'doctor_on_call', 'held_by')->with([
+        $query = $this->prescription->select('id', 'visit_id', 'resource_id', 'user_id', 'chartable','prescription','qty_billed', 'note', 'qty_dispensed', 'created_at', 'doctor_on_call', 'held_by', 'approved', 'rejected', 'paid', 'hms_bill', 'nhis_bill')->with([
             'resource:id,name,stock_level,unit_description', 
             'user:id,username', 
             'visit' => function($query) {
                 $query->select('id' ,'closed', 'admission_status', 'sponsor_id', 'patient_id')
-                ->with(['sponsor:id,name,category_name', 'patient:id,first_name,middle_name,last_name,card_no']);
+                ->with(
+                    [
+                        'sponsor'  => function ($query) {
+                                    $query->select('id', 'name', 'category_name', 'flag', 'sponsor_category_id' )
+                                    ->with([
+                                        'sponsorCategory:id,pay_class',
+                                    ]);
+                                }, 
+                        'patient:id,first_name,middle_name,last_name,card_no'
+                        ]);
             },
             'heldBy:id,username',
             'doctorOnCall:id,username'     
@@ -720,10 +729,10 @@ class PrescriptionService
                 'sponsor'           => $prescription->visit->sponsor->name,
                 'closed'            => $prescription->visit->closed,
                 'sponsorCategory'   => $prescription->visit->sponsor->category_name,
+                'sponsorCategoryClass' => $prescription->visit?->sponsor?->sponsorCategory?->pay_class,
                 'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                 'item'              => $prescription->resource->name,
                 'prescription'      => $prescription->prescription,
-                // 'quantity'          => $prescription->qty_billed,
                 'prescribedBy'      => $prescription->user->username,
                 'doc'               => $prescription->doctorOnCall?->username,
                 'note'              => $prescription->note,
@@ -738,6 +747,11 @@ class PrescriptionService
                 'qtyDispensed'          => $prescription->qty_dispensed,
                 'stock'                 => $prescription->resource->stock_level,
                 'unit'                  => $prescription->resource->unit_description,
+                'approved'              => $prescription->approved,
+                'rejected'              => $prescription->rejected,
+                'paid'                  => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
+                'paid1'                 => $prescription->paid,
+                'paidNhis'              => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->category_name == 'NHIS',
             ];
          };
     }

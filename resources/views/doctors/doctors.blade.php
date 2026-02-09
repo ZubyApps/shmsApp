@@ -98,6 +98,7 @@
                                 <th>Date</th>
                                 <th>Patient</th>
                                 <th>Sponsor</th>
+                                <th>Status</th>
                                 <th>Medication/Item</th>
                                 <th>Prescription</th>
                                 <th>Qty</th>

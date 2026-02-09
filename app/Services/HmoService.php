@@ -323,7 +323,12 @@ class HmoService
                 'visit' => function ($query) {
                     $query->select('id', 'sponsor_id', 'patient_id', 'total_paid')
                     ->with([
-                        'sponsor:id,name,category_name,flag', 
+                        'sponsor'  => function ($query) {
+                                        $query->select('id', 'name', 'category_name', 'flag', 'sponsor_category_id' )
+                                        ->with([
+                                            'sponsorCategory:id,pay_class',
+                                        ]);
+                                    },
                         'patient' => function($query){
                             $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
                             ->with(['flaggedBy:id,username']);

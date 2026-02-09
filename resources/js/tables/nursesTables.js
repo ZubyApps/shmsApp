@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, labourRecordDelay, prescriptionStatusContorller, preSearch, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, visitType, wardState } from "../helpers";
+import { admissionStatus, admissionStatusX, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, labourRecordDelay, prescriptionStatusContorller, preSearch, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, visitType, wardState } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     const waitingTable = new DataTable(tableId, {
@@ -786,14 +786,18 @@ const getEmergencyTable = (tableId, viewer) => {
             {data: "prescribed"},
             {data: "patient"},
             {data: "sponsor"},
-            {data: row => 
-                    `
+            {data: row => admissionStatusX(row)},
+            {data: row => () => {
+                const credit = row?.sponsorCategoryClass == 'Credit'
+                const NHIS = row?.sponsorCategory == 'NHIS'
+                   return `
                         <div class="d-flex flex">
-                            <button class=" btn btn${row.medicationCharts ? '-outline-primary viewMedicationBtn' : ''} tooltip-test" title="charted medications(s)" data-id="${ row.id }" data-visitid="${ row.visitId }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }">
+                            <button class=" btn btn${row.medicationCharts ? '-outline-primary viewMedicationBtn' : ''} tooltip-test me-1" title="charted medications(s)" data-id="${ row.id }" data-visitid="${ row.visitId }" data-patient="${ row.patient }" data-age="${row.age}" data-sponsor="${ row.sponsor + ' - ' + row.sponsorCategory }">
                                 ${row.item} ${ row.doseComplete ? '<i class="bi bi-check-circle-fill tooltip-test" title="complete"></i>' : ''}
-                            </button>
+                            </button> ${displayPaystatus(row, credit, NHIS)}
                         </div>
                     `
+            }
             },
             {data: "prescription"},
             {data: row => `<div class="d-flex text-secondary">
