@@ -498,7 +498,11 @@ class HmoService
 
         $isNhis = $visit->sponsor->category_name == 'NHIS';
 
-        return DB::transaction(function () use($data, $prescription, $user, $visit, $isNhis) {
+        $resourceCat = $prescription->resource->category;
+
+        $isNhisBillable = $resourceCat == 'Medications' || $resourceCat == 'Consumables' ;
+
+        return DB::transaction(function () use($data, $prescription, $user, $visit, $isNhis, $isNhisBillable) {
 
             // 1. Prepare Prescription Update Data
             $prescriptionUpdates = [
@@ -510,7 +514,8 @@ class HmoService
 
             if ($isNhis){
                 // Apply bill adjustment immediately before the main update
-                $prescriptionUpdates['nhis_bill'] = $prescription->hms_bill / 10;
+                // $prescriptionUpdates['nhis_bill'] = $prescription->hms_bill / 10;
+                $prescriptionUpdates['nhis_bill'] = $isNhisBillable ? ($prescription->hms_bill ? $prescription->hms_bill/10 : 0) : 0;
             }
             
             // 3. Perform Single Prescription Update (1 Query)
@@ -688,7 +693,7 @@ class HmoService
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
         $query      = $this->prescription->select('id', 'visit_id', 'resource_id', 'user_id', 'consultation_id', 'prescription', 'qty_billed', 'note', 'hms_bill', 'hmo_bill', 'approved', 'rejected', 'hmo_bill_by', 'approved_by', 'rejected_by', 'created_at', 'paid')->with([ 
-            'resource:id,flag,name',
+            'resource:id,flag,name,selling_price',
             'consultation:id,icd11_diagnosis,provisional_diagnosis,assessment',
             'hmoBillBy:id,username',
             'approvedBy:id,username',

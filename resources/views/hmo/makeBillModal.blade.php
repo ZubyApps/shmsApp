@@ -50,6 +50,7 @@
                                                 <th>Prescription</th>
                                                 <th>Note</th>
                                                 <th>Qty</th>
+                                                <th>Unit Price</th>
                                                 <th class="text-center">HMS Bill</th>
                                                 <th class="text-center">HMO Bill</th>
                                                 <th>Bill By</th>

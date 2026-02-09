@@ -319,6 +319,7 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
             {data: "prescription"},
             {data: "note"},
             {data: "quantity"},
+            {data: "resourcePrice"},
             {data: "hmsBill",
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
