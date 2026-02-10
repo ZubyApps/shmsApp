@@ -430,6 +430,7 @@ class HmoService
                 'totalQuantity'     => $prescription->totalQtyResourceBilled,//resource->prescriptions->where('visit_id', $prescription->visit->id)->sum('qty_billed'),
                 'note'              => $prescription->note,
                 'hmsBill'           => $prescription->hms_bill ?? '',
+                'nhisBill'          => $prescription->nhis_bill ?? '',
                 'hmsBillDate'       => $prescription->hms_bill_date ? (new Carbon($prescription->hms_bill_date))->format('d/m/y g:ia') : '',
                 'hmoBill'           => $prescription->hmo_bill ?? '',
                 'hmoBillBy'         => $prescription->hmoBillBy?->username,
@@ -692,7 +693,7 @@ class HmoService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query      = $this->prescription->select('id', 'visit_id', 'resource_id', 'user_id', 'consultation_id', 'prescription', 'qty_billed', 'note', 'hms_bill', 'hmo_bill', 'approved', 'rejected', 'hmo_bill_by', 'approved_by', 'rejected_by', 'created_at', 'paid')->with([ 
+        $query      = $this->prescription->select('id', 'visit_id', 'resource_id', 'user_id', 'consultation_id', 'prescription', 'qty_billed', 'note', 'hms_bill', 'hmo_bill', 'approved', 'rejected', 'hmo_bill_by', 'approved_by', 'rejected_by', 'created_at', 'paid', 'nhis_bill')->with([ 
             'resource:id,flag,name,selling_price',
             'consultation:id,icd11_diagnosis,provisional_diagnosis,assessment',
             'hmoBillBy:id,username',

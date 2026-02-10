@@ -52,6 +52,7 @@
                                                 <th>Qty</th>
                                                 <th>Unit Price</th>
                                                 <th class="text-center">HMS Bill</th>
+                                                <th class="text-center">NHIS Bill</th>
                                                 <th class="text-center">HMO Bill</th>
                                                 <th>Bill By</th>
                                             </tr>
@@ -65,7 +66,9 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
+                                                <td></td>
                                                 <td class="">Total</td>
+                                                <td class="text-primary text-center"></td>
                                                 <td class="text-primary text-center"></td>
                                                 <td class="text-primary text-center"></td>
                                                 <td></td>
@@ -77,7 +80,9 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
+                                                <td></td>
                                                 <td class="">Paid HMS</td>
+                                                <td class="text-success text-center"></td>
                                                 <td class="text-success text-center"></td>
                                                 <td class="text-success  text-center"></td>
                                                 <td></td>
@@ -89,7 +94,9 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
+                                                <td></td>
                                                 <td class="">Balance</td>
+                                                <td class="text-center"></td>
                                                 <td class="text-center"></td>
                                                 <td class="text-center"></td>
                                                 <td></td>

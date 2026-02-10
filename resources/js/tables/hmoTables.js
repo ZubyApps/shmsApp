@@ -288,23 +288,26 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
         },
         drawCallback: function (settings) {
             var api = this.api()                
-                const sumCol7 = api.column(7, { page: 'current' }).data().sum();
                 const sumCol8 = api.column(8, { page: 'current' }).data().sum();
+                const sumCol9 = api.column(9, { page: 'current' }).data().sum();
+                const sumCol10 = api.column(10, { page: 'current' }).data().sum();
                 const sumPaidHms = api.data({ page: 'current' }).pluck('paid').sum();
 
-                $( 'tr:eq(0) td:eq(7)', api.table().footer() ).html(account.format(sumCol7));
                 $( 'tr:eq(0) td:eq(8)', api.table().footer() ).html(account.format(sumCol8));
+                $( 'tr:eq(0) td:eq(9)', api.table().footer() ).html(account.format(sumCol9));
+                $( 'tr:eq(0) td:eq(10)', api.table().footer() ).html(account.format(sumCol10));
                 
-                const value = account.format(sumCol8 - sumCol7)
-                $( 'tr:eq(0) td:eq(9)', api.table().footer() ).html(`<span class="text-${value < 0 ? 'danger': value == 0 ? 'primary': 'success'}">Diff: ${value}</span>`);
+                const value = account.format(sumCol10 - sumCol8)
+                $( 'tr:eq(0) td:eq(11)', api.table().footer() ).html(`<span class="text-${value < 0 ? 'danger': value == 0 ? 'primary': 'success'}">Diff (HM0-HMS): ${value}</span>`);
 
-                $( 'tr:eq(1) td:eq(7)', api.table().footer() ).html(account.format(sumPaidHms));
                 $( 'tr:eq(1) td:eq(8)', api.table().footer() ).html(account.format(sumPaidHms));
-                $( 'tr:eq(1) td:eq(9)', api.table().footer() ).html(`<button class="btn btn-primary refreshBtn"><i class="bi bi-arrow-repeat"></i></button>`);
-                
-                $( 'tr:eq(2) td:eq(7)', api.table().footer() ).html(account.format((sumCol7 - sumPaidHms)));
-                $( 'tr:eq(2) td:eq(8)', api.table().footer() ).html(account.format(sumCol8 - sumPaidHms));
-
+                $( 'tr:eq(1) td:eq(9)', api.table().footer() ).html(account.format(sumPaidHms));
+                $( 'tr:eq(1) td:eq(10)', api.table().footer() ).html(account.format(sumPaidHms));
+                $( 'tr:eq(1) td:eq(11)', api.table().footer() ).html(`<button class="btn btn-primary refreshBtn"><i class="bi bi-arrow-repeat"></i></button>`);
+  
+                $( 'tr:eq(2) td:eq(8)', api.table().footer() ).html(account.format((sumCol8 - sumPaidHms)));
+                $( 'tr:eq(2) td:eq(9)', api.table().footer() ).html(account.format(sumCol9 - sumPaidHms));
+                $( 'tr:eq(2) td:eq(10)', api.table().footer() ).html(account.format(sumCol10 - sumPaidHms));
         },
         columns: [
             {data: "doctor"},
@@ -321,6 +324,13 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
             {data: "quantity"},
             {data: "resourcePrice"},
             {data: "hmsBill",
+                render: (data, type, row) => {
+                    return ` <div class="d-flex justify-content-center">
+                                <span>${data}</span>
+                            </div>
+                            `}
+            },
+            {data: "nhisBill",
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
                                 <span>${data}</span>
