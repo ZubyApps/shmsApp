@@ -403,7 +403,7 @@ class PrescriptionService
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
         $query      = $this->prescription
-                        ->select('id', 'resource_id', 'visit_id', 'consultation_id', 'user_id', 'paid', 'created_at', 'test_sample', 'result', 'approved', 'rejected', 'result_date', 'dispense_comment', 'result_by', 'discontinued_by', 'sample_collected_at', 'sample_collected_by', 'hms_bill')->with([
+                        ->select('id', 'resource_id', 'visit_id', 'consultation_id', 'user_id', 'paid', 'created_at', 'test_sample', 'result', 'approved', 'rejected', 'result_date', 'dispense_comment', 'result_by', 'discontinued_by', 'sample_collected_at', 'sample_collected_by', 'hms_bill', 'hmo_note', 'approved_by', 'rejected_by')->with([
                             'resource:id,name,sub_category,category', 
                             'user:id,username', 
                             'thirdPartyServices' => function ($query) {
@@ -421,7 +421,9 @@ class PrescriptionService
                             },
                             'consultation:id,icd11_diagnosis,provisional_diagnosis,assessment',
                             'resultBy:id,username',
-                            'sampleCollectedBy:id,username'
+                            'sampleCollectedBy:id,username',
+                            'approvedBy:id,username',
+                            'rejectedBy:id,username',
                         ]);
 
         return $query->where($data->conId ? 'consultation_id': 'visit_id', $data->conId ? $data->conId : $data->visitId)
@@ -461,6 +463,8 @@ class PrescriptionService
                 'removalReason'     => $prescription->dispense_comment ? $prescription->dispense_comment . ' - ' . $prescription->discontinuedBy?->username : '',
                 'collected'         => $prescription->sample_collected_at ? (new Carbon($prescription->sample_collected_at))->format('d/m/y g:ia') : null,
                 'collectedBy'       => $prescription->sampleCollectedBy?->username,
+                'hmoNote'           => $prescription->hmo_note ?? '',
+                'statusBy'          => $prescription->approvedBy?->username ?? $prescription->rejectedBy?->username ?? '',
             ];
          };
     }

@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, getExportOptions, preSearch, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
+import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, getExportOptions, pendingIndicator, preSearch, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
 import jszip, { forEach } from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -112,7 +112,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold">${`<span class="${p.blink ? 'colour-change2' : ''} resourceSpan">${p.item}</span>` +' '+ displayPaystatus(p, credit, NHIS)}</td>                
                                                 <td class="text-secondary">${p.prescription}</td>                
                                                 <td class="text-secondary">${p.note}</td>
-                                                ${credit || NHIS ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>` : ''}
+                                                ${credit || NHIS ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote + pendingIndicator(p): p.statusBy}</td>` : ''}
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
                                                         <span class="${p.qtyDispensed || closed || flag ? '': 'billQtySpan'} btn btn-${p.qtyBilled ? 'white text-secondary' : flag ? 'danger' : 'outline-primary'} tooltip-test" title="${flag ? 'Flagged' : ''}" data-id="${p.id}" data-stock="${p.stock}">${p.qtyBilled ? p.qtyBilled+' '+p.unit : flag ? 'Flagged' : 'Bill'}${closed ? '<i class="bi bi-lock-fill"></i>': ''}</span>

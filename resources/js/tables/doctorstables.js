@@ -7,7 +7,7 @@ DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
 pdfMake.vfs = pdfFonts;
 $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
-import { admissionStatus, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getOrdinal, histroyBtn, prescriptionOnLatestConsultation, prescriptionStatusContorller, preSearch, reviewBtn, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, visitType, wardState } from "../helpers";
+import { admissionStatus, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getOrdinal, histroyBtn, pendingIndicator, prescriptionOnLatestConsultation, prescriptionStatusContorller, preSearch, reviewBtn, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, visitType, wardState } from "../helpers";
 
 const getOutpatientsVisitTable = (tableId, filter) => {
     const outPatientsTable =  new DataTable(tableId, {
@@ -510,6 +510,7 @@ const getLabTableByConsultation = (tableId, modal, viewer, conId, visitId) => {
         columns: [
             {data: "type"},
             {data: row => `<span class="text-${row.rejected ? 'danger' : 'primary'}">${row.resource + ' ' + displayPaystatus(row, (row.payClass == 'Credit'), (row.sponsorCategory == 'NHIS')) }</span>`},
+            {data: row => () => `<div class="text-primary fw-normal fst-italic">${row.hmoNote ? row.statusBy+'-'+row.hmoNote + pendingIndicator(row): row.statusBy}</div>`},
             {data: "dr"},
             {data: "requested"},
             {

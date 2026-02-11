@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import {admissionStatusX, closedOpened, deferredCondition, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, preSearch, searchDecider, searchMin, searchPlaceholderText, selectReminderOptions, sponsorAndPayPercent, visitType, wardState } from "../helpers";
+import {admissionStatusX, closedOpened, deferredCondition, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, pendingIndicator, preSearch, searchDecider, searchMin, searchPlaceholderText, selectReminderOptions, sponsorAndPayPercent, visitType, wardState } from "../helpers";
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -245,7 +245,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                                 <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold tooltip-test ${p.isInvestigation && p.thirdParty == ''  ? 'thirdPartyServiceBtn' : ''}" data-id="${p.prescriptionId}" data-patient="${patient}" data-service="${p.item}" title="${p.thirdParty ? '' : 'initite third party service'}">
                                                     ${p.item +' '+ displayPaystatus(p, credit, NHIS)}
                                                 </td>
-                                                ${credit || NHIS ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote: p.statusBy}</td>` : ''}                
+                                                ${credit || NHIS ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote + pendingIndicator(p): p.statusBy}</td>` : ''}                
                                                 <td class="">${account.format(p.unitPrice)}</td>
                                                 <td class="">
                                                     <div class="d-flex">
