@@ -46,6 +46,7 @@ const investigations = (line) => {
                                 <tr>
                                     <th>Type</th>
                                     <th>Investigation</th>
+                                    <th>HMO Approval</th>
                                     <th>Requested By</th>
                                     <th>Requested</th>
                                     <th>Actions</th>
