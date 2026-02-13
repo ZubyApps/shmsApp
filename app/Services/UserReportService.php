@@ -48,7 +48,7 @@ class UserReportService
                 });
             });
 
-        // DYNAMIC COUNTING: The database only counts what is relevant to the table you are viewing.
+        // DYNAMIC COUNTING: The database only counts what is relevant to the table being viewed.
         $query = match ($data->designation) {
             'Doctor' => $query->withCount([
                 'visits as visits_count'                         => fn($q) => $this->applyDateFilter($q, $data),

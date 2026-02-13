@@ -4,17 +4,19 @@ declare(strict_types = 1);
 
 namespace App\Services;
 
-use Carbon\Carbon;
-use App\Models\Visit;
-use App\Models\Resource;
-use Carbon\CarbonImmutable;
+use App\DataObjects\DataTableQueryParams;
 use App\Models\Consultation;
 use App\Models\DeliveryNote;
 use App\Models\Prescription;
-use Illuminate\Support\Facades\DB;
-use App\DataObjects\DataTableQueryParams;
+use App\Models\Resource;
+use App\Models\Visit;
+use App\Services\HelperService;
+use App\Services\PayPercentageService;
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Facades\DB;
 
 class MedReportService
 {
@@ -61,7 +63,7 @@ class MedReportService
                     ->withSum(['prescriptions as qtyBilled' => $dateConstraint], 'qty_billed');
 
         if (! empty($params->searchTerm)) {
-            return $this->resource
+            return $query
                         ->where(function (Builder $query) use($params) {
                             $query->where('name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
                             ->orWhere('sub_category', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
