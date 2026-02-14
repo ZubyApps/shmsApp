@@ -23,7 +23,7 @@
                     <div class="form-floating mb-3">
                         <input type="password" name="password" class="form-control" id="floatingPassword" autocomplete="password" autofocus required>    
                         <label for="floatingPassword">Password</label>
-                        <i class="bi bi-eye-fill text-primary float-end" id="showPassword" onclick="(function(){this.floatingPassword.type == 'password' ? this.floatingPassword.type = 'text' : this.floatingPassword.type = 'password'})()"></i>
+                        <x-show-password element="floatingPassword" />
                     </div>
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
                     <div class="checkbox mb-3">

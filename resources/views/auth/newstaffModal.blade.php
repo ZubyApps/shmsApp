@@ -134,13 +134,15 @@
                             </x-form-div>
                             <div class="passwordDiv {{ $isUpdate ? 'd-none' : '' }} row p-0 m-0">
                                 <x-form-div>
-                                    <x-input-span>Password<x-required-span /></x-input-span>
-                                    <x-form-input type="password" name="password" autocomplete="new-password"/>
+                                    <x-input-span>Password<x-required-span /> <x-show-password :element="$isUpdate ? 'editPassword' : 'newPassword'" /> </x-input-span>
+                                    
+                                    <x-form-input type="password" name="password" id="{{ $isUpdate ? 'editPassword' : 'newPassword' }}" autocomplete="new-password"/>
+                                    
                                 </x-form-div>
     
                                 <x-form-div>
-                                    <x-input-span>Confirm Password<x-required-span /></x-input-span>
-                                    <x-form-input type="password" name="password_confirmation" />
+                                    <x-input-span>Confirm Password<x-required-span /> <x-show-password :element="$isUpdate ? 'editConfirmPassword' : 'confirmPassword'" /></x-input-span>
+                                    <x-form-input type="password" name="password_confirmation" id="{{ $isUpdate ? 'editConfirmPassword' : 'confirmPassword' }}" />
                                 </x-form-div>
                             </div>
                         </div>
