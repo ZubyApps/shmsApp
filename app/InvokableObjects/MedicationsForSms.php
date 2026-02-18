@@ -14,6 +14,13 @@ class MedicationsForSms
 {
     public function __invoke()
    {
+
+        $isTextTime = (new HelperService)->nccTextTime();
+
+        if (!$isTextTime){
+            return;
+        }
+
         $time1 = (new CarbonImmutable())->addHour();
         $time2 = $time1->subSeconds(59);
 
@@ -40,8 +47,8 @@ class MedicationsForSms
 
         $isTextTime = (new HelperService)->nccTextTime();
 
-        $medications->each(function ($medication) use ($isTextTime) {
-            if ($medication?->visit?->patient?->canSms() && $isTextTime) {
+        $medications->each(function ($medication) {
+            if ($medication?->visit?->patient?->canSms()) {
                 SendMedicationReminder::dispatch(
                     $medication->visit->patient->first_name,
                     $medication->visit->patient->phone,

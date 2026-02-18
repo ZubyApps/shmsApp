@@ -4,10 +4,8 @@ namespace App\Jobs;
 
 use App\Models\Appointment;
 use App\Services\ChurchPlusSmsService;
-use App\Services\HelperService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -24,7 +22,7 @@ class SendAppointmentReminder implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private readonly Appointment $appointment, public HelperService $helperService)
+    public function __construct(private readonly Appointment $appointment)
     {
         //
     }
