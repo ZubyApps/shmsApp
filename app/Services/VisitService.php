@@ -4,32 +4,31 @@ declare(strict_types = 1);
 
 namespace App\Services;
 
-use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Ward;
-use App\Models\Visit;
+use App\DataObjects\DataTableQueryParams;
+use App\DataObjects\SponsorCategoryDto;
 use App\Models\Patient;
-use App\Models\Sponsor;
-use App\Models\Resource;
-use Carbon\CarbonInterval;
-use Carbon\CarbonImmutable;
 use App\Models\Prescription;
+use App\Models\Resource;
+use App\Models\ResourceSubCategory;
+use App\Models\Sponsor;
+use App\Models\User;
+use App\Models\Visit;
+use App\Services\PaymentService;
+use App\Services\PayPercentageService;
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
+use Carbon\CarbonInterval;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\ResourceSubCategory;
-use App\Services\PayPercentageService;
-use App\DataObjects\SponsorCategoryDto;
-use App\DataObjects\DataTableQueryParams;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 
 class VisitService
 {
     public function __construct(
         private readonly Visit $visit, 
         private readonly PaymentService $paymentService, 
-        private readonly Ward $ward,
         private readonly PayPercentageService $payPercentageService,
         )
     {

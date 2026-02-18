@@ -77,7 +77,7 @@
                                 <div class="row">
                                     <x-form-div>
                                         <x-input-span id="dateOfBirthLabel">Date of Birth<x-required-span /></x-input-span>
-                                        <x-form-input type="date" name="dateOfBirth" id="dateOfBirth"/>
+                                        <x-form-input type="datetime-local" name="dateOfBirth" id="dateOfBirth"/>
                                     </x-form-div>
 
                                     <x-form-div>
