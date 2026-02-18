@@ -60,7 +60,7 @@ class PrePatientService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query      = $this->patientPreForm->select('id', 'sponsor_id', 'user_id', 'card_no', 'first_name', 'middle_name', 'last_name', 'phone', 'sex', 'created_at')
+        $query      = $this->patientPreForm->select('id', 'sponsor_id', 'user_id', 'card_no', 'first_name', 'middle_name', 'last_name', 'phone', 'sex', 'created_at', 'date_of_birth')
                         ->with([
                             'sponsor:id,name,category_name,flag', 
                             'user:id,username'
