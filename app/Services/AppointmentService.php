@@ -84,7 +84,7 @@ class AppointmentService
                 'phone'             => $appointment->patient->phone,
                 'sponsor'           => $appointment->patient->sponsor->name . ' - ' . $appointment->patient->sponsor->category_name,
                 'lastVisitDate'     => (new Carbon($latestVisit?->created_at))->format('d/m/Y g:ia'),
-                'lastDiagnosis'     => $latestVisit->latestConsultation?->icd11_diagnosis ?? $latestVisit->latestConsultation?->provisional_diagnosis ?? $latestVisit->latestConsultation?->assessment,
+                'lastDiagnosis'     => $latestVisit?->latestConsultation?->icd11_diagnosis ?? $latestVisit?->latestConsultation?->provisional_diagnosis ?? $latestVisit?->latestConsultation?->assessment,
                 'doctor'            => $appointment->doctor->username,
                 'date'              => (new Carbon($appointment->date))->format('d/m/Y g:ia'),
                 'createdBy'         => $appointment->user->username,
