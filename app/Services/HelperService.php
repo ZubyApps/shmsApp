@@ -48,4 +48,9 @@ class HelperService
         return $query->orderBy($orderBy, $orderDir)
             ->paginate($params->length, '*', '', (($params->length + $params->start) / $params->length));
     }
+
+    public function dateFormater($date)
+    {
+        return $date ? (new Carbon($date))->format('d/m/Y g:ia') : '' ;
+    }
 }

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class UserReportService
 {
-    public function __construct(private readonly User $user) {}
+    public function __construct(private readonly User $user, private readonly HelperService $helperService) {}
 
     /**
      * Centralized logic to handle "This Month", "Date Range", or "Current Month"
@@ -118,7 +118,7 @@ class UserReportService
         return fn(User $user) => [
             'id'                 => $user->id,
             'doctor'             => $user->username,
-            'dateOfEmployment'   => $user->date_of_employment?->format('d/M/y g:ia'),
+            'dateOfEmployment'   => $this->helperService->dateFormater($user->date_of_employment),
             'visitsInitiated'    => $user->visits_count,
             'firstConsultations' => $user->doctor_visits_count,
             'consultations'      => $user->consultations_count,
@@ -136,7 +136,7 @@ class UserReportService
         [
             'id'               => $user->id,
             'nurse'            => $user->username,
-            'dateOfEmployment' => $user->date_of_employment?->format('d/M/y g:ia'),
+            'dateOfEmployment' => $this->helperService->dateFormater($user->date_of_employment),
             'vitalSigns'       => $user->vital_signs_count,
             'AncVitalSigns'    => $user->anc_vitals_count,
             'discountinued'    => $user->discontinued_count,
@@ -155,7 +155,7 @@ class UserReportService
         return fn(User $user) => [
             'id'               => $user->id,
             'labTech'          => $user->username,
-            'dateOfEmployment' => $user->date_of_employment?->format('d/M/y g:ia'),
+            'dateOfEmployment' => $this->helperService->dateFormater($user->date_of_employment),
             'results'          => $user->lab_results_count,
         ];
     }
@@ -165,7 +165,7 @@ class UserReportService
         return fn(User $user) => [
             'id'               => $user->id,
             'pharmacyTech'     => $user->username,
-            'dateOfEmployment' => $user->date_of_employment?->format('d/M/y g:ia'),
+            'dateOfEmployment' => $this->helperService->dateFormater($user->date_of_employment),
             'rxBilled'         => $user->rx_billed_count,
             'rxDispensed'      => $user->rx_dispensed_count,
         ];
@@ -176,7 +176,7 @@ class UserReportService
         return fn(User $user) => [
             'id'               => $user->id,
             'hmoOfficer'       => $user->username,
-            'dateOfEmployment' => $user->date_of_employment?->format('d/M/y g:ia'),
+            'dateOfEmployment' => $this->helperService->dateFormater($user->date_of_employment),
             'patients'         => $user->patients_count,
             'visitsInitiated'  => $user->visits_count,
             'verified'         => $user->verified_count,
@@ -196,7 +196,7 @@ class UserReportService
                 return [
                 'id'                 => $user->id,
                 'billOfficer'        => $user->username,
-                'dateOfEmployment'   => $user->date_of_employment?->format('d/M/y g:ia'),
+                'dateOfEmployment'   => $this->helperService->dateFormater($user->date_of_employment),
                 'patients'           => $user->patients_count,
                 'visitsInitiated'    => $user->visits_count,
                 'closedAndOpened'    => $user->closed_opened_count,
