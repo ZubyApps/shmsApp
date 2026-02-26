@@ -235,7 +235,7 @@ class PrescriptionService
                 'qty_billed'            => $this->determineBillQuantity($resource, $data),
                 'hms_bill'              => $bill,
                 'nhis_bill'             => $isNhis ? $bill : 0.0,
-                'chartable'             => $this->determineChartable($resourceSubCat, $visit, $data->chartable),
+                'chartable'             => $this->determineChartable($resourceSubCat, $data->chartable),
                 'note'                  => $data->note,
                 'route'                 => $data->route,
                 'doctor_on_call'        => $data->doc
@@ -291,9 +291,14 @@ class PrescriptionService
         return $data->quantity ?? 0;
     }
 
-    public function determineChartable($subCategory, $visit, $chartable)
+    // public function determineChartable($subCategory, $visit, $chartable)
+    // {
+    //     return $subCategory == 'Injectable' || ($visit?->admission_status == 'Inpatient' && $subCategory == 'Pill') ? true : $chartable ?? false;
+    // }
+
+    public function determineChartable($subCategory, $chartable)
     {
-        return $subCategory == 'Injectable' || ($visit?->admission_status == 'Inpatient' && $subCategory == 'Pill') ? true : $chartable ?? false;
+        return $subCategory == 'Injectable' ? true : $chartable;
     }
 
     public function createBulkPrescriptions(Collection $resources, Request $request, User $user, Visit $visit): int
