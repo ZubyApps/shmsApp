@@ -282,7 +282,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                                 `
                                                 <div class="">
                                                     <button class="${user ? 'discountBtn' : ''} btn btn-outline-secondary m-0" data-id="${data.id}">Discount</button>
-                                                    <input class="ms-1 form-control discountInput d-none" id="discountInput" type="number" style="width:6rem;" value="${data.discount}">
+                                                    <input class="ms-1 form-control discountInput d-none" id="discountInput" type="number" min="0" style="width:6rem;" value="${data.discount}">
                                                 </div>
                                                 ` : ''}
                                             </td>
@@ -335,7 +335,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             </div>  
                                         </div>
                                         <ul class="list-group list-group-flush">
-                                            <li class="list-group-item border-0"> Amount <input class="ms-1 form-control amountInput" id="amount" name="amount" type="number"></li>
+                                            <li class="list-group-item border-0"> Amount <input class="ms-1 form-control amountInput" id="amount" name="amount" type="number" min="0"></li>
                                             <li class="list-group-item border-0">Pay Method
                                             <select class="form-select form-select-md payMethodInput" name="payMethod" id="payMethod">
                                             ${payMethodOptions}
@@ -373,7 +373,7 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
                                             </div>  
                                         </div>
                                         <ul class="list-group list-group-flush">
-                                            <li class="list-group-item border-0"> Amount <input class="ms-1 form-control amountInput" type="number" id="amount" name="amount"></li>
+                                            <li class="list-group-item border-0"> Amount <input class="ms-1 form-control amountInput" type="number" id="amount" name="amount" min="0"></li>
                                             <li class="list-group-item border-0">Pay Method
                                             <select class="form-select form-select-md payMethodInput" name="payMethod" id="payMethod">
                                             ${payMethodOptions}

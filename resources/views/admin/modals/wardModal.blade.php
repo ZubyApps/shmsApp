@@ -20,7 +20,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="nameLabel">Bed Number</x-input-span>
-                                <x-form-input type="number" class="bedNumber" name="bedNumber" id="bedNumber" value="" />
+                                <x-form-input type="number" class="bedNumber" name="bedNumber" id="bedNumber" min="0" value="" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="descriptionLabel">Description</x-input-span>

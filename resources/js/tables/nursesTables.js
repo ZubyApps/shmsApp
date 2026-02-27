@@ -802,7 +802,7 @@ const getEmergencyTable = (tableId, viewer) => {
             {data: "prescription"},
             {data: row => `<div class="d-flex text-secondary">
                                 <span class="${row.qtyDispensed || +row.closed ? '': 'billQtySpan'} btn btn-${row.qtyBilled ? 'white text-secondary' : 'outline-primary'}" data-id="${row.id}" data-stock="${row.stock}">${row.qtyBilled ? row.qtyBilled+' '+row.unit : 'Bill'}</span>
-                                <input class="ms-1 form-control billQtyInput d-none text-secondary" type="number" style="width:6rem;" id="billQtyInput" value="${row.qtyBilled == 0 ? '' : row.qtyBilled}" name="quantity" id="quantity">
+                                <input class="ms-1 form-control billQtyInput d-none text-secondary" type="number" min="0" style="width:6rem;" id="billQtyInput" value="${row.qtyBilled == 0 ? '' : row.qtyBilled}" name="quantity" id="quantity">
                             </div>`
                         },
             {data: "prescribedBy"},
@@ -828,7 +828,7 @@ const getEmergencyTable = (tableId, viewer) => {
                 </div>
                 <div class="d-flex text-secondary  ${viewer === 'pharmacy' ? '' : 'd-none'}">
                     <span class="${row.qtyBilled ? 'dispenseQtySpan' : ''} btn btn-${row.qtyDispensed ? 'white text-secondary' : 'outline-primary'}" data-id="${row.id}" data-qtybilled="${row.qtyBilled}" data-stock="${row.stock}">${row.qtyDispensed ? 'Dispensed: '+row.qtyDispensed : 'Dispense'}</span>
-                    <input class="ms-1 form-control dispenseQtyInput d-none text-secondary" type="number" style="width:6rem;" value="${row.qtyDispensed == 0 ? '' : row.qtyDispensed}" name="quantity" id="quantity">
+                    <input class="ms-1 form-control dispenseQtyInput d-none text-secondary" type="number" min="0" style="width:6rem;" value="${row.qtyDispensed == 0 ? '' : row.qtyDispensed}" name="quantity" id="quantity">
                 </div>
                 `      
             },

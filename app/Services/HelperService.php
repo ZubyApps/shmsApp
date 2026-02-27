@@ -53,4 +53,28 @@ class HelperService
     {
         return $date ? (new Carbon($date))->format('d/m/Y g:ia') : '' ;
     }
+
+    public function isAirtel($number)
+    {
+        $airtelPrefixes = [
+                            '0802', 
+                            '0808', 
+                            '0812', 
+                            '0701', 
+                            '0708', 
+                            '0901', 
+                            '0902', 
+                            '0904', 
+                            '0907', 
+                            '0911',
+                            '0912'
+                        ];
+        foreach ($airtelPrefixes as $prefix) {
+            if (str_starts_with($number, $prefix)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

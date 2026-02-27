@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Services\ChurchPlusSmsService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -35,14 +34,12 @@ class SendMedicationReminder implements ShouldQueue
      * Execute the job.
      */
     public function handle(ChurchPlusSmsService $churchPlusSmsService): void
-    {     
-        $gateway = 1;
-
+    {
         $time = (new Carbon($this->scheduledTime))->format('g:iA');
         
         $response = $churchPlusSmsService
         
-        ->sendSms('Dear ' .$this->firstName. ', pls be reminded of your medication by '. $time . ' today. Courtesy: Sandra Hospital Management System', $this->phone, 'SandraHosp', $gateway);
+        ->sendSms('Dear ' .$this->firstName. ', pls be reminded of your medication by '. $time . ' today. Courtesy: Sandra Hospital Management System', $this->phone, 'SandraHosp');
         
         $response == false ? '' : info('medications', ['sent to' => $this->firstName]);
     }

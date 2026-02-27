@@ -55,7 +55,7 @@
                                 <x-form-span class="mb-2 fw-semibold">Save the doses and time intervals according to prescription</x-form-span>
                                 <x-form-div class="col-xl-4">
                                     <x-input-span>Dose<x-required-span /></x-input-span>
-                                    <x-form-input name="dose" type="number" id="dose" placeholder="eg. 200"/>
+                                    <x-form-input name="dose" type="number" min="0" id="dose" placeholder="eg. 200"/>
                                     <x-input-span>Unit<x-required-span /></x-input-span>
                                     <x-select-unit name="unit" aria-label="unit" id="unit"></x-select-unit>
                                 </x-form-div>
@@ -63,7 +63,7 @@
                                     <x-input-span>Freq<x-required-span /></x-input-span>
                                     <x-select-frequency aria-label="frequency" name="frequency" id="frequency"></x-select-frequency>
                                     <x-select-intervals aria-label="intervals" name="intervals" id="intervals"></x-select-intervals>
-                                    <x-form-input name="intervalsValue" type="number" id="intervalsValue" value="1" />
+                                    <x-form-input name="intervalsValue" type="number" min="0" id="intervalsValue" value="1" />
                                 </x-form-div>
                                 <x-form-div class="col-xl-4">
                                     <x-input-span>Set Time</x-input-span>

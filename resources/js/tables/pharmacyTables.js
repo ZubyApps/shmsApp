@@ -116,7 +116,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
                                                         <span class="${p.qtyDispensed || closed || flag ? '': 'billQtySpan'} btn btn-${p.qtyBilled ? 'white text-secondary' : flag ? 'danger' : 'outline-primary'} tooltip-test" title="${flag ? 'Flagged' : ''}" data-id="${p.id}" data-stock="${p.stock}">${p.qtyBilled ? p.qtyBilled+' '+p.unit : flag ? 'Flagged' : 'Bill'}${closed ? '<i class="bi bi-lock-fill"></i>': ''}</span>
-                                                        <input class="ms-1 form-control billQtyInput d-none text-secondary" type="number" style="width:6rem;" id="billQtyInput" value="${p.qtyBilled == 0 ? '' : p.qtyBilled}" name="quantity" id="quantity">
+                                                        <input class="ms-1 form-control billQtyInput d-none text-secondary" type="number" min="0" style="width:6rem;" id="billQtyInput" value="${p.qtyBilled == 0 ? '' : p.qtyBilled}" name="quantity" id="quantity">
                                                         <span class="${closed ? '' : 'holdSpan'} btn btn-${p.reason ? 'danger' : 'outline-primary'} ms-1 ${p.qtyBilled ? 'd-none' : ''}" data-id="${p.id}">${p.reason ? p.reason : 'Hold'}</span>
                                                 
                                                         <select class ="form-select form-select-md holdSpanSelect d-none ms-1">
@@ -141,7 +141,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
                                                         <span class="${closed ? '' : p.qtyBilled ? 'dispenseQtySpan' : ''} btn btn-${p.qtyDispensed ? 'white text-secondary' : 'outline-primary'}" data-id="${p.id}" data-qtybilled="${p.qtyBilled}" data-stock="${p.stock}">${p.qtyDispensed ? 'Dispensed: '+p.qtyDispensed : 'Dispense'}${closed ? '<i class="bi bi-lock-fill"></i>': ''}</span>
-                                                        <input class="ms-1 form-control dispenseQtyInput d-none text-secondary" type="number" style="width:6rem;" value="${p.qtyDispensed == 0 ? '' : p.qtyDispensed}" name="quantity" id="quantity">
+                                                        <input class="ms-1 form-control dispenseQtyInput d-none text-secondary" type="number" min="0" style="width:6rem;" value="${p.qtyDispensed == 0 ? '' : p.qtyDispensed}" name="quantity" id="quantity">
                                                     </div>
                                                 </td>
                                                 <td class="text-secondary">By: ${p.dispensedBy}</td>
@@ -306,7 +306,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
                     return ` 
                     <div class="d-flex justify-content-center">
                         <span class="btn ${ row.qtyApproved ? '' : row.marked ? 'theatreQtyBtn' : 'dispenseQtyBtn'}  ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}" data-stock="${row.stock}" data-qty="${row.quantity}" data-item="${row.item}">${data ?? (urlSuffix !== 'pharmacy' ? 'Pending' : 'Dispense')}</span>
-                        <input type="number" class="ms-1 form-control qtyDispensedInput d-none" id="qtyDispensedInput" value="${data ?? ''}">
+                        <input type="number" class="ms-1 form-control qtyDispensedInput d-none" id="qtyDispensedInput" min="0" value="${data ?? ''}">
                     </div>
                 `}
             },
@@ -317,7 +317,7 @@ const getBulkRequestTable = (tableId, urlSuffix) => {
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
                     <span class="${ row.qtyDispensed ? 'approveRequestBtn' : ''} btn ${data ? 'btn-white' : 'btn-outline-primary'}" data-id="${row.id}">${ data ?? (urlSuffix !== 'pharmacy' ? 'Pending' : 'Confirm')}</span>
-                    <input type="number" class="ms-1 form-control qtyApprovedInput d-none" id="qtyApprovedInput" value="${data ?? row.qtyDispensed ?? ''}">
+                    <input type="number" class="ms-1 form-control qtyApprovedInput d-none" id="qtyApprovedInput" min="0" value="${data ?? row.qtyDispensed ?? ''}">
                 </div>
                 `}
             },

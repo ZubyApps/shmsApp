@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 
 class SendFormLink implements ShouldQueue
 {
@@ -33,10 +32,9 @@ class SendFormLink implements ShouldQueue
     public function handle(ChurchPlusSmsService $churchPlusSmsService): void
     {
         $recipientPhone = $this->params->phone;
-        $gateway = 1;
 
         $message = 'Sandra Hospital Patient Registration Form link ' . $this->link . '. This link expires in 5 minutes';
-        $churchPlusSmsService->sendSms($message, $recipientPhone, 'SandraHosp', $gateway);
+        $churchPlusSmsService->sendSms($message, $recipientPhone, 'SandraHosp');
 
         // $response == false ? '' : info('Link sent', ['recipient' => $recipientPhone]);
     }

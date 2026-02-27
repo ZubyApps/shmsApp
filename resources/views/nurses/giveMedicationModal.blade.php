@@ -31,7 +31,7 @@
                     <div class="row">
                         <x-form-div class="col-xl-6">
                             <x-input-span>Dose Given</x-input-span>
-                            <x-form-input type="number" name="doseGiven" id="doseGiven" />
+                            <x-form-input type="number" min="0" name="doseGiven" id="doseGiven" />
                         </x-form-div>
                         <x-form-div class="col-xl-6">
                             <x-input-span>Unit</x-input-span>

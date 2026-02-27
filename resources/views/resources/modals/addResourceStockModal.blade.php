@@ -15,27 +15,27 @@
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="hmsStockLevelLabel">HMS Stocklevel<x-required-span /></x-input-span>
-                                <x-form-input type="number" name="hmsStock" id="hmsStock" readonly/>
+                                <x-form-input type="number" min="0" name="hmsStock" id="hmsStock" readonly/>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="actualStockLevelLabel">Actual Stocklevel<x-required-span /></x-input-span>
-                                <x-form-input type="number" name="actualStock" id="actualStock" />
+                                <x-form-input type="number" min="0" name="actualStock" id="actualStock" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="differenceLabel">Difference<x-required-span /></x-input-span>
-                                <x-form-input type="number" name="difference" id="difference" readonly/>
+                                <x-form-input type="number" min="0" name="difference" id="difference" readonly/>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="newQuantityLabel">New Quantity<x-required-span /></x-input-span>
-                                <x-form-input type="number" name="quantity" id="quantity" />
+                                <x-form-input type="number" min="0" name="quantity" id="quantity" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="finalQuantityLabel">Final Quantity<x-required-span /></x-input-span>
-                                <x-form-input type="number" name="finalQuantity" id="finalQuantity" readonly/>
+                                <x-form-input type="number" min="0" name="finalQuantity" id="finalQuantity" readonly/>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="finalStockLabel">Final Stock<x-required-span /></x-input-span>
-                                <x-form-input type="number" name="finalStock" id="finalStock" readonly/>
+                                <x-form-input type="number" min="0" name="finalStock" id="finalStock" readonly/>
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="commentLabel">Comment<x-required-span /></x-input-span>
@@ -52,11 +52,11 @@
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="purchasePriceLabel">Purchase Unit Price<x-required-span /></x-input-span>
-                                <x-form-input type="number" name="purchasePrice" id="purchasePrice" value="" />
+                                <x-form-input type="number" min="0" name="purchasePrice" id="purchasePrice" value="" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="sellingPriceLabel">Selling Unit Price<x-required-span /></x-input-span>
-                                <x-form-input type="number" name="sellingPrice" value="" />
+                                <x-form-input type="number" min="0" name="sellingPrice" value="" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="expiryDateLabel">Expiry Date</x-input-span>

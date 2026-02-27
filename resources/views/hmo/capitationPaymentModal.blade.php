@@ -25,15 +25,15 @@
                         </x-form-div>
                         <x-form-div class="col-xl-12">
                             <x-input-span>Number of Lives<x-required-span /></x-input-span>
-                            <x-form-input type="number" name="numberOfLives" id="numberOfLives" />
+                            <x-form-input type="number" min="0" name="numberOfLives" id="numberOfLives" />
                         </x-form-div>
                         <x-form-div class="col-xl-12">
                             <x-input-span>Per Life<x-required-span /></x-input-span>
-                            <x-form-input type="number" name="perLife" id="perLife" value="750"/>
+                            <x-form-input type="number" min="0" name="perLife" id="perLife" value="750"/>
                         </x-form-div>
                         <x-form-div class="col-xl-12">
                             <x-input-span>Amount Paid<x-required-span /></x-input-span>
-                            <x-form-input type="number" name="amountPaid" id="amountPaid"/>
+                            <x-form-input type="number" min="0" name="amountPaid" id="amountPaid"/>
                         </x-form-div>
                         <x-form-div  class="col-xl-12">
                             <x-input-span>Bank Paid To</x-input-span>

@@ -52,7 +52,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Max Pay Days</x-input-span>
-                                <x-form-input type="number" name="maxPayDays" />
+                                <x-form-input type="number" min="0" name="maxPayDays" />
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Flag Sponsor</x-input-span>

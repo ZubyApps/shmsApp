@@ -41,7 +41,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>HMO's Tariff</x-input-span>
-                                <x-form-input type="number" name="hmoTariff" value="" />
+                                <x-form-input type="number" min="0" name="hmoTariff" value="" />
                             </x-form-div>
                             {{-- <div class="d-flex justify-content-center mt-2">
                                 <button type="button" id="saveMedicationChartBtn" data-btn="${iteration}"

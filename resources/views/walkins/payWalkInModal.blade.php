@@ -15,7 +15,7 @@
                             </div>  
                         </div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item border-0"> Amount <input class="ms-1 form-control amountInput" type="number" id="amount" name="amount"></li>
+                            <li class="list-group-item border-0"> Amount <input class="ms-1 form-control amountInput" type="number" min="0" id="amount" name="amount"></li>
                             <li class="list-group-item border-0">Pay Method
                             <select class="form-select form-select-md" id="payMethod" name="payMethod">
                                 <option value="">Select Category</option>   

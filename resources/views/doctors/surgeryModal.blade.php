@@ -156,9 +156,9 @@
                                 <x-form-div class="col-xl-6">
                                     <x-input-span>Sex<x-required-span /></x-input-span>
                                     <x-input-span class="">Female</x-input-span>
-                                    <input class="form-control" type="number" name="female" id="female" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
+                                    <input class="form-control" type="number" min="0" name="female" id="female" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                                     <x-input-span class="">Male</x-input-span>
-                                    <input class="form-control" type="number" name="male" id="male" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
+                                    <input class="form-control" type="number" min="0" name="male" id="male" {{ $isView ? 'readonly' : '' }} autocomplete="on"/>
                                 </x-form-div>
                                 <x-form-div class="col-xl-6">
                                     <x-input-span>Apgar Score</x-input-span>

@@ -11,7 +11,7 @@
                     <div class="row">
                         <x-form-div class="col-xl-12">
                             <x-input-span>Amount<x-required-span /></x-input-span>
-                            <x-form-input type="number" name="amount" id="amount"/>
+                            <x-form-input type="number" min="0" name="amount" id="amount"/>
                         </x-form-div> 
                         <x-form-div class="col-xl-12">
                             <x-input-span>Pay Method<x-required-span /></x-input-span>

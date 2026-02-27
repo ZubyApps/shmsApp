@@ -342,7 +342,7 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
                 render: (data, type, row) => {
                     return ` <div class="d-flex justify-content-center">
                     <span class="${row.hmoDoneBy ? 'unmarkSent' : 'hmoBillSpan'} btn btn-white" data-id="${row.id}" data-hmodone"${row.hmoDoneBy}">${row.rejected && !data ? 'Not approved' : data ?? 'Bill'}</span>
-                    <input class="ms-1 form-control hmoBillInput d-none" id="hmoBillInput" type="number" value="${data == 0 ? '' : data}">
+                    <input class="ms-1 form-control hmoBillInput d-none" id="hmoBillInput" type="number" min="0" value="${data == 0 ? '' : data}">
                 </div>
                 `}
             },
@@ -559,7 +559,7 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to, date) =>
             {data : row => 
                 `<div class="d-flex text-secondary">
                     <span class="btn payBulkSpan ${row.sponsorCategory == 'NHIS' ? 'd-none' : ''}" data-id="${row.id}" data-totalhmobill="${row.totalHmoBill}" data-totalpaid="${row.totalPaid}">Pay Bulk</span>
-                    <input class="ms-1 form-control payBulkInput d-none text-secondary" type="number" style="width:6rem;" value="${row.totalPaid == 0 ? '' : row.totalPaid}" name="bulkPayment" id="bulkPayment">
+                    <input class="ms-1 form-control payBulkInput d-none text-secondary" type="number" min="0" style="width:6rem;" value="${row.totalPaid == 0 ? '' : row.totalPaid}" name="bulkPayment" id="bulkPayment">
                 </div>`
             }
         ]
@@ -607,8 +607,8 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to, date) =>
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
                                                         <span class="btn payBtnSpan" data-id="${p.id}">${p.paid ? p.paid : 'Pay'}</span>
-                                                        <input class="ms-1 form-control payInput d-none text-secondary" type="number" style="width:6rem;" value="${p.paid == 0 ? '' : p.paid}" name="amountPaid" id="amountPaid">
-                                                        <span class="ms-1 ${p.paid > 0 ? '' : 'd-none'} btn addSpanBtn text-primary" data-id="${p.id}">Add </span> <input class="ms-1 form-control addAmount d-none" type="number" style="width:6rem;" name="addAmount" id="addAmount">
+                                                        <input class="ms-1 form-control payInput d-none text-secondary" type="number" min="0" style="width:6rem;" value="${p.paid == 0 ? '' : p.paid}" name="amountPaid" id="amountPaid">
+                                                        <span class="ms-1 ${p.paid > 0 ? '' : 'd-none'} btn addSpanBtn text-primary" data-id="${p.id}">Add </span> <input class="ms-1 form-control addAmount d-none" type="number" min="0" style="width:6rem;" name="addAmount" id="addAmount">
                                                     </div>
                                                 </td>
                                             </tr>

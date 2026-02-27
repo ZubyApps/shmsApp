@@ -61,7 +61,7 @@
                                     <x-input-span>Freq<x-required-span /></x-input-span>
                                     <x-select-frequency aria-label="frequency" name="frequency" id="frequency"></x-select-frequency>
                                     <x-select-intervals aria-label="intervals" name="intervals" id="intervals"></x-select-intervals>
-                                    <x-form-input type="number" name="value" id="value" value="1" />
+                                    <x-form-input type="number" min="0" name="value" id="value" value="1" />
                                 </x-form-div>
                                 <x-form-div class="col-xl-4">
                                     <x-input-span>Start from <small> (optional)</small></x-input-span>

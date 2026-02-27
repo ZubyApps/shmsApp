@@ -42,7 +42,7 @@
                                                     <div class="row">
                                                         <x-form-div class="col-xl-4">
                                                             <x-input-span id="cervixDilationLabel">Fetal Heart Rate<x-required-span /></x-input-span>
-                                                            <x-form-input name="bpm" class="value" id="fetal_heart_rate" type="number" />
+                                                            <x-form-input name="bpm" class="value" id="fetal_heart_rate" type="number" min="0"/>
                                                             <x-input-span>bpm</x-input-span>
                                                         </x-form-div>
                                                         <x-form-div class="col-xl-4">
@@ -105,7 +105,7 @@
                                                     <div class="row">
                                                         <x-form-div>
                                                             <x-input-span id="cervixDilationLabel">Cervical  Dilation<x-required-span /></x-input-span>
-                                                            <x-form-input name="cm" class="value" id="cervical_dilation" type="number" />
+                                                            <x-form-input name="cm" class="value" id="cervical_dilation" type="number" min="0" />
                                                             <x-input-span>cm</x-input-span>
                                                         </x-form-div>
                                                         <x-form-div>
@@ -219,11 +219,11 @@
                                                 <div class="row">
                                                     <x-form-div class="col-xl-6">
                                                         <x-input-span id="uterineContractionsCp10minLabel">Counts/10mins<x-required-span /></x-input-span>
-                                                        <x-form-input class="value" name="count_per_10min" id="uterineContractionsCp10min" type="number" />
+                                                        <x-form-input class="value" name="count_per_10min" id="uterineContractionsCp10min" type="number" min="0" />
                                                     </x-form-div>
                                                     <x-form-div class="col-xl-6">
                                                         <x-input-span id="uterineContractionsLsLabel">Lasting<x-required-span /></x-input-span>
-                                                        <x-form-input class="value" name="lasting_seconds" id="uterineContractionsLs" type="number" />
+                                                        <x-form-input class="value" name="lasting_seconds" id="uterineContractionsLs" type="number" min="0"/>
                                                         <x-input-span>seconds</x-input-span>
                                                     </x-form-div>
                                                     <x-form-div class="col-xl-6">
@@ -297,12 +297,12 @@
                                                     <div class="row">
                                                         <x-form-div class="col-xl-4">
                                                             <x-input-span>Systolic<x-required-span /></x-input-span>
-                                                            <x-form-input class="value" name="systolic" id="bloodPressureSystolic" type="number" />
+                                                            <x-form-input class="value" name="systolic" id="bloodPressureSystolic" type="number" min="0" />
                                                             <x-input-span>mmHg</x-input-span>
                                                         </x-form-div>
                                                         <x-form-div class="col-xl-4">
                                                             <x-input-span>Diastolic<x-required-span /></x-input-span>
-                                                            <x-form-input class="value" name="diastolic" id="bloodPressureDiastolic" type="number" />
+                                                            <x-form-input class="value" name="diastolic" id="bloodPressureDiastolic" type="number" min="0" />
                                                             <x-input-span>mmHg</x-input-span>
                                                         </x-form-div>
                                                         <x-form-div class="col-xl-4">
@@ -348,7 +348,7 @@
                                                     <div class="row">
                                                         <x-form-div>
                                                             <x-input-span>Pulse<x-required-span /></x-input-span>
-                                                            <x-form-input class="value" name="bpm" id="pulseBpm" type="number" />
+                                                            <x-form-input class="value" name="bpm" id="pulseBpm" type="number" min="0" />
                                                             <x-input-span>bpm</x-input-span>
                                                         </x-form-div>
                                                         <x-form-div>
@@ -485,7 +485,7 @@
                                                         </x-form-div>
                                                         <x-form-div>
                                                             <x-input-span>Volume</x-input-span>
-                                                            <x-form-input class="value" name="volume" id="urineVolume" type="number" />
+                                                            <x-form-input class="value" name="volume" id="urineVolume" type="number" min="0" />
                                                             <x-input-span>mL</x-input-span>
                                                         </x-form-div>
                                                         <x-form-div>
@@ -686,7 +686,7 @@
                                                     <div class="row">
                                                         <x-form-div>
                                                             <x-input-span>Dosage<x-required-span /></x-input-span>
-                                                            <x-form-input class="value" name="dosage" id="oxytocinDosage" type="number" />
+                                                            <x-form-input class="value" name="dosage" id="oxytocinDosage" type="number" min="0" />
                                                             <x-input-span>units</x-input-span>
                                                         </x-form-div>
                                                         <x-form-div>

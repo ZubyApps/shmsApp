@@ -52,15 +52,15 @@
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="reOrderLabel">Re-order Level<x-required-span /></x-input-span>
-                                <x-form-input type="number" name="reOrder" id="reOrder" />
+                                <x-form-input type="number" min="0" name="reOrder" id="reOrder" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="purchasePriceLabel">Purchase Price<x-required-span /></x-input-span>
-                                <x-form-input type="number" name="purchasePrice" id="purchasePrice" />
+                                <x-form-input type="number" min="0" name="purchasePrice" id="purchasePrice" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="sellingPriceLabel">Selling Price<x-required-span /></x-input-span>
-                                <x-form-input type="number" name="sellingPrice" id="sellingPrice" />
+                                <x-form-input type="number" min="0" name="sellingPrice" id="sellingPrice" />
                             </x-form-div>
                             <x-form-div class="col-xl-12">
                                 <x-input-span id="unitLabel">Unit Description<x-required-span /></x-input-span>

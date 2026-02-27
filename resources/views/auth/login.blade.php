@@ -19,7 +19,7 @@
                             autocomplete="phone" autofocus required>
                         <label for="floatingInput">Phone</label>
                     </div>
-                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                    <x-input-error :messages="$errors->get('phone_number')" class="mt-2" />
                     <div class="form-floating mb-3">
                         <input type="password" name="password" class="form-control" id="floatingPassword" autocomplete="password" autofocus required>    
                         <label for="floatingPassword">Password</label>
@@ -28,7 +28,8 @@
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
                     <div class="checkbox mb-3">
                         <label>
-                            <input type="checkbox" value="remember-me"> Remember me
+                            {{-- <input type="checkbox" name="remember" value="remember-me"> Remember me --}}
+                            <input type="checkbox" name="remember" > Remember me
                         </label>
                     </div>
                     <button class="w-100 btn btn-lg btn-primary text-white" type="submit">Sign in</button>

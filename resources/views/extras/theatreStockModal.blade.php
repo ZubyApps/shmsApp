@@ -18,7 +18,7 @@
                                 </x-form-div>        
                                 <x-form-div class="col-xl-12 qty" id="qty">
                                     <x-input-span id="quantityLabel">Quantity<x-required-span /></x-input-span>
-                                    <x-form-input type="number" name="quantity" id="quantity"
+                                    <x-form-input type="number" min="0" name="quantity" id="quantity"
                                         placeholder="quantity"/>
                                 </x-form-div>
                                 {{-- <x-form-div class="col-xl-12">

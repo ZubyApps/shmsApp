@@ -9,7 +9,6 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 
 class SendCardNumber implements ShouldQueue
 {
@@ -35,11 +34,10 @@ class SendCardNumber implements ShouldQueue
         $firstName = $this->patient->first_name;
         $cardNumber = $this->patient->card_no;
         $phoneNumber = $this->patient->phone;
-        $gateway = 1;
         
         $message = 'Dear ' . $firstName . ', welcome to Sandra Hospital, your Hospital Card Number is (' . $cardNumber . ') courtesy: Sandra Hospital Management System';
         
-        $churchPlusSmsService->sendSms($message, $phoneNumber, 'SandraHosp', $gateway);
+        $churchPlusSmsService->sendSms($message, $phoneNumber, 'SandraHosp');
 
         // $response == false ? '' : info('card number', ['sent to' => $firstName]);
     }

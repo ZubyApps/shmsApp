@@ -6,7 +6,6 @@ use App\Models\Prescription;
 use App\Services\ChurchPlusSmsService;
 use Carbon\CarbonImmutable;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -49,11 +48,9 @@ class SendTestResultDone implements ShouldQueue
         $totalInvestigationsC = (clone $totalInvestigations)->count();
 
         $totalInvestigationsDone = (clone $totalInvestigations)->where('result', '!=', null)->count();
-
-        $gateway = 1;
         
         $churchPlusSmsService
-        ->sendSms('Dear ' .$firstName. ' ' . $totalInvestigationsDone . ' out of ' . $totalInvestigationsC . ' of your test result(s) are ready. This notification is courtesy of Sandra Hospital Management System. To opt out, visit reception', $phone, 'SandraHosp', $gateway);
+        ->sendSms('Dear ' .$firstName. ' ' . $totalInvestigationsDone . ' out of ' . $totalInvestigationsC . ' of your test result(s) are ready. This notification is courtesy of Sandra Hospital Management System. To opt out, visit reception', $phone, 'SandraHosp');
 
         // $response == false ? '' : info('Investigation', ['sent to' => $firstName, 'gateway' => $gateway]);
     }

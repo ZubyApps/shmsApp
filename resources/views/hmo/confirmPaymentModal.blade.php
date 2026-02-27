@@ -25,7 +25,7 @@
                         </x-form-div>
                         <x-form-div class="col-xl-12">
                             <x-input-span>Amount Confirmed<x-required-span /></x-input-span>
-                            <x-form-input type="number" id="amountConfirmed" name="amountConfirmed"/>
+                            <x-form-input type="number" min="0" id="amountConfirmed" name="amountConfirmed"/>
                         </x-form-div>                        
                     </div>
                 </div>

@@ -363,7 +363,7 @@ const InitialRegularConsultation = (iteration, consultationDetails, line) => {
                             <div class="col-xl-4 themed-grid-col col-xl-6">
                                 <div class="input-group mb-1">
                                     <span class="input-group-text" id="quantityLabel"> Quantity</span> 
-                                    <input class="form-control" type="number" name="quantity" id="quantity" placeholder="" autocomplete="">
+                                    <input class="form-control" type="number" min="0" name="quantity" id="quantity" placeholder="" autocomplete="">
                                 </div>
                             </div>
                         </div>

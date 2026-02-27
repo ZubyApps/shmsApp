@@ -39,7 +39,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Depositor's Phone<x-required-span /></x-input-span>
-                                <x-form-input name="depositorPhone" type="number"/>
+                                <x-form-input name="depositorPhone" type="number" min="0"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Depositor's Relationship<x-required-span /></x-input-span>
@@ -55,7 +55,7 @@
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Alternative Collector Phone<x-required-span /></x-input-span>
-                                <x-form-input name="altCollectorPhone" type="number"/>
+                                <x-form-input name="altCollectorPhone" type="number" min="0"/>
                             </x-form-div>
                             <x-form-div class="col-xl-6">
                                 <x-input-span>Alternative Collector Relationship</x-input-span>
