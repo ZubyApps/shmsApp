@@ -298,7 +298,7 @@ class PrescriptionService
 
     public function determineChartable($subCategory, $chartable)
     {
-        return $subCategory == 'Injectable' ? true : $chartable;
+        return $subCategory == 'Injectable' ? true : $chartable ?? false;
     }
 
     public function createBulkPrescriptions(Collection $resources, Request $request, User $user, Visit $visit): int
