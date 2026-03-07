@@ -19,6 +19,10 @@ class ChurchPlusSmsService
 
     public function sendSms($message, $recipients, $subject) 
     {
+        // if ($this->helperService->isAirtel($recipients)) {
+        //     info('its airtel', ['phone => ' => $recipients]);
+        //     return;
+        // }
         // $gateway = $this->helperService->isAirtel($recipients) ? '2' : '1';
         $gateway = 1;
 

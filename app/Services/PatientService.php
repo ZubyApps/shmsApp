@@ -24,6 +24,7 @@ class PatientService
     public function __construct(
         private readonly Patient $patient, 
         private readonly PatientPreForm $patientPreForm,
+        private readonly HelperService $helperService,
         )
     {
     }
@@ -69,7 +70,7 @@ class PatientService
                 $this->deletePrePatient((int)$data->prePatient);
             }
 
-            if ((new HelperService)->nccTextTime() && $patient->canSms()){
+            if ((new HelperService)->nccTextTime() && $patient->canSms() && !$this->helperService->isAirtel($patient?->phone)){
                 SendCardNumber::dispatch($patient)->delay(5);
             }
 
@@ -154,8 +155,8 @@ class PatientService
 
     public function sendFormLink($data, User $user)
     {
-        if (!(new HelperService)->nccTextTime()){
-            return response()->json(['message' => 'Form link not sent'], 400);
+        if (!$this->helperService->nccTextTime() && !$this->helperService->isAirtel($data?->phone)){
+            return response()->json(['message' => 'Form link cannot be sent at this time'], 400);
         }
 
         $formLinkParams  = new FormLinkParams(

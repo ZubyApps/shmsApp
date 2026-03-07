@@ -15,8 +15,10 @@ class MedicationsForSms
     public function __invoke()
    {
 
-        $isTextTime = (new HelperService)->nccTextTime();
-
+       $helperService = new HelperService();
+       
+       $isTextTime  = $helperService->nccTextTime();
+    
         if (!$isTextTime){
             return;
         }
@@ -45,13 +47,13 @@ class MedicationsForSms
             return;
         }
 
-        $isTextTime = (new HelperService)->nccTextTime();
+        $medications->each(function ($medication) use ($helperService) {
+            $patient = $medication?->visit?->patient;
 
-        $medications->each(function ($medication) {
-            if ($medication?->visit?->patient?->canSms()) {
+            if ($patient?->canSms() && !$helperService->isAirtel($patient?->phone)) {
                 SendMedicationReminder::dispatch(
-                    $medication->visit->patient->first_name,
-                    $medication->visit->patient->phone,
+                    $patient?->first_name,
+                    $patient?->phone,
                     $medication->scheduled_time
                 )->delay(5);
             }

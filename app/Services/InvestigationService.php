@@ -327,8 +327,10 @@ class InvestigationService
                 'qty_dispensed'     => 1
                 ]);
 
-            if ($this->helperService->nccTextTime()){
-                if ($prescription?->visit?->patient?->canSms() || $prescription?->walkIn){
+            $patient = $prescription?->visit?->patient;
+
+            if ($this->helperService->nccTextTime() && !$this->helperService->isAirtel($patient?->phone)){
+                if ($patient?->canSms() || $prescription?->walkIn){
                     SendTestResultDone::dispatch($prescription)->delay(5);
                 }
             }

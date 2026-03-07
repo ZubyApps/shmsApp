@@ -14,13 +14,15 @@ class AppointmentsForSms
 {
     public function __invoke()
    {
-       $isTextTime = (new HelperService)->nccTextTime();
-
+       $helperService = new HelperService();
+       
+       $isTextTime  = $helperService->nccTextTime();
+    
        if (!$isTextTime){
            return;
        }
 
-       DB::transaction(function () {   
+       DB::transaction(function () use ($helperService) {   
        
         $time1 = (new CarbonImmutable())->addHours(2);
         $time2 = $time1->subSeconds(59);
@@ -31,8 +33,8 @@ class AppointmentsForSms
             return;
         }
 
-        $appointments->each(function ($appointment) {
-            if ($appointment?->patient?->canSms()) {
+        $appointments->each(function ($appointment) use ($helperService) {
+            if ($appointment?->patient?->canSms() && !$helperService->isAirtel($appointment?->patient->phone)) {
                 SendAppointmentReminder::dispatch($appointment);
             }
         });

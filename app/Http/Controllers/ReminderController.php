@@ -9,7 +9,6 @@ use App\Http\Requests\StoreReminderRequestCash;
 use App\Http\Requests\StoreReminderRequestHmo;
 use App\Http\Resources\SmsDetailsResource;
 use App\Jobs\SendOutstandingSms;
-use App\Notifications\OutstandingNotifier;
 use App\Services\DatatablesService;
 use App\Services\HelperService;
 use App\Services\ReminderService;
@@ -127,6 +126,10 @@ class ReminderController extends Controller
 
     public function sendSms(SendSmsRequest $request, Reminder $reminder)
     {
+        if (!$this->helperService->isAirtel($request->phone)){
+            return;
+        }
+
         if ($request->selectEl == 'firstReminderSelect'){
             $this->reminderService->firstReminder($request, $reminder, $request->user());
         }
