@@ -179,6 +179,10 @@ class PharmacyService
 
     public function bill(Request $data, Prescription $prescription, User $user)
     {
+        if($prescription->qty_dispensed){
+            return;
+        }
+        
         $visit    = $visit = $prescription->visit()->with('sponsor')->first();
         $sponsor = $visit?->sponsor;
         $isNhis = $sponsor->category_name == 'NHIS';
@@ -188,8 +192,6 @@ class PharmacyService
         if ($data->quantity){
             $bill = $prescription->resource->getSellingPriceForSponsor($sponsor) * $data->quantity;
         }
-
-        if ($data->bill)
 
         return DB::transaction(function () use($data, $prescription, $user, $visit, $bill, $isNhis, $nhisBill) {
               
