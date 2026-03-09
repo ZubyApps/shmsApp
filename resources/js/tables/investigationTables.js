@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
 import { admissionStatusX, detailsBtn, displayPaystatus, flagIndicator, flagPatientReason, pendingIndicator, searchMin, searchPlaceholderText, sponsorAndPayPercent, wardState } from "../helpers";
 
