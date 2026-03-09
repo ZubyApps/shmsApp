@@ -236,6 +236,8 @@ window.addEventListener('DOMContentLoaded', function () {
                         console.log(error)
                         sendToListBtn.removeAttribute('disabled')
                     })
+                } else {
+                    sendToListBtn.removeAttribute('disabled')
                 }
                 
             }
