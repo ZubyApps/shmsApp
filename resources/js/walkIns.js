@@ -300,24 +300,24 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
         if (sendToListBtn){
-                        const walkinId = sendToListBtn.getAttribute('data-id')
-                        const patient = sendToListBtn.getAttribute('data-patient')
-                        if (confirm(`Are you ready to send ${patient} to the list?`)){
-                            http.post(`investigationslist`, {walkinId})
-                            .then((response) => {
-                                    if (response.status >= 200 || response.status <= 300) {
-                                        walkInsTable.draw(false)
-                                    }
-                                })
-                            .catch((error) => {
-                                // if (error.response.status === 403){
-                                //     alert(error.response.data.message); 
-                                // }
-                                console.log(error)
-                            })
+            sendToListBtn.setAttribute('disabled', 'disabled')
+            const walkinId = sendToListBtn.getAttribute('data-id')
+            const patient = sendToListBtn.getAttribute('data-patient')
+            if (confirm(`Are you ready to send ${patient} to the list?`)){
+                http.post(`investigationslist`, {walkinId})
+                .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            walkInsTable.draw(false)
                         }
-                        
-                    }
+                        sendToListBtn.removeAttribute('disabled')
+                    })
+                .catch((error) => {
+                    console.log(error)
+                    sendToListBtn.removeAttribute('disabled')
+                })
+            }
+            
+        }
         
     })
 

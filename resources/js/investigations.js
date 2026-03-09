@@ -221,6 +221,7 @@ window.addEventListener('DOMContentLoaded', function () {
             }
 
             if (sendToListBtn){
+                sendToListBtn.setAttribute('disabled', 'disabled')
                 const visitId = sendToListBtn.getAttribute('data-id')
                 const patient = sendToListBtn.getAttribute('data-patient')
                 if (confirm(`Are you ready to send ${patient} to the list?`)){
@@ -229,12 +230,11 @@ window.addEventListener('DOMContentLoaded', function () {
                             if (response.status >= 200 || response.status <= 300) {
                                 refreshMainTables()
                             }
+                            sendToListBtn.removeAttribute('disabled')
                         })
                     .catch((error) => {
-                        // if (error.response.status === 403){
-                        //     alert(error.response.data.message); 
-                        // }
                         console.log(error)
+                        sendToListBtn.removeAttribute('disabled')
                     })
                 }
                 
