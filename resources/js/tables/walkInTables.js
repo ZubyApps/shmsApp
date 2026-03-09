@@ -45,22 +45,8 @@ const getWalkInsTable = (tableId, notLab) => {
             {
                 sortable: false,
                 data: row => function () {
-                    if (row.presCount < 1 || row.payCount < 1) {
-                        return `
-                        <div class="d-flex flex-">
-                            <button class=" btn btn-primary addPrescriptionBtn tooltip-test" title="add request" data-id="${ row.id }">
-                                <i class="bi bi-plus-circle-fill"></i>
-                            </button>
-                            <button class="ms-1 btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                                <i class="bi bi-pencil-fill"></i>
-                            </button>
-                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
-                                <i class="bi bi-trash3-fill"></i>
-                            </button>
-                        </div>
-                    `
-                    } else {
-                        return `
+                    if (row.hasPrescription || row.hasPayment) {
+                       return `
                         <div class="d-flex flex-">
                             <button class=" btn btn-primary addPrescriptionBtn" title="add request" data-id="${ row.id }">
                                 <i class="bi bi-plus-circle-fill"></i>
@@ -70,6 +56,23 @@ const getWalkInsTable = (tableId, notLab) => {
                             </button>
                             <button class="ms-1 btn btn${row.isLinked ? '-secondary unLinkBtn' : '-outline-primary linkBtn'}" title="Click to ${row.isLinked ? 'unlink' : 'link'}" data-id="${ row.id }" data-name="${row.name}" data-phone="${row.phone}">
                                 <i class="bi bi-link-45deg"></i>
+                            </button>
+                            <button class="ms-1 btn btn-${row.isOnList ? 'outline-' : ''}primary sendToListBtn tooltip-test" title="Send To List" data-id="${ row.id }" data-patient="${ row.name }">
+                                <i class="bi bi-arrow-up-right"></i>
+                            </button>
+                        </div>
+                    `
+                    } else {
+                     return `
+                        <div class="d-flex flex-">
+                            <button class=" btn btn-primary addPrescriptionBtn tooltip-test" title="add request" data-id="${ row.id }">
+                                <i class="bi bi-plus-circle-fill"></i>
+                            </button>
+                            <button class="ms-1 btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
+                            <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
+                                <i class="bi bi-trash3-fill"></i>
                             </button>
                         </div>
                     `

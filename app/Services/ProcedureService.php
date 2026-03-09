@@ -8,6 +8,7 @@ use App\DataObjects\DataTableQueryParams;
 use App\Models\Prescription;
 use App\Models\Procedure;
 use App\Models\User;
+use App\Services\PayPercentageService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -22,7 +23,6 @@ class ProcedureService
     {
         return $user->procedures()->create([
             'prescription_id'   => $prescription->id,
-            'user_id'           => $user->id,
         ]);
     }
 
@@ -41,7 +41,7 @@ class ProcedureService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query = $this->procedure->select('id', 'user_id', 'date_booked_by', 'booked_date', 'created_at', 'status', 'comment', 'prescription_id', 'created_at', 'status_updated_by')
+        $query = $this->procedure->select('id', 'user_id', 'date_booked_by', 'booked_date', 'created_at', 'status', 'comment', 'prescription_id', 'status_updated_by')
                 ->with([
             'prescription' => function($query) {
                 $query->select('id', 'approved', 'rejected', 'nhis_bill', 'paid', 'visit_id', 'resource_id')

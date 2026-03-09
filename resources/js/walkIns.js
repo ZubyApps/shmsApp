@@ -63,6 +63,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const deletePaymentBtn = event.target.closest('.deletePaymentBtn')
         const softDeletePaymentBtn = event.target.closest('.softDeletePaymentBtn')
         const posWalkinBillBtn= event.target.closest('.posWalkinBillBtn')
+        const sendToListBtn = event.target.closest('.sendToListBtn')
 
         if (addPrescriptionBtn){
             requestPrescriptionBtn.setAttribute('data-walkinid', addPrescriptionBtn.dataset.id)
@@ -297,6 +298,26 @@ window.addEventListener('DOMContentLoaded', function () {
                     })
             }
         }
+
+        if (sendToListBtn){
+                        const walkinId = sendToListBtn.getAttribute('data-id')
+                        const patient = sendToListBtn.getAttribute('data-patient')
+                        if (confirm(`Are you ready to send ${patient} to the list?`)){
+                            http.post(`investigationslist`, {walkinId})
+                            .then((response) => {
+                                    if (response.status >= 200 || response.status <= 300) {
+                                        walkInsTable.draw(false)
+                                    }
+                                })
+                            .catch((error) => {
+                                // if (error.response.status === 403){
+                                //     alert(error.response.data.message); 
+                                // }
+                                console.log(error)
+                            })
+                        }
+                        
+                    }
         
     })
 

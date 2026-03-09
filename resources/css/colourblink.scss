@@ -62,3 +62,17 @@
     color: #0e0607;
   }
 }
+
+.row-disabled {
+    // pointer-events: none; /* Disables all mouse events (clicks, hover effects) */
+    opacity: 0.5;         /* Fades the row */
+    background-color: #f8f9fa !important; /* Bootstrap-like light background */
+    cursor: not-allowed;
+}
+
+/* Ensure buttons/links inside look disabled if they aren't natively */
+.row-disabled .btn, 
+.row-disabled a {
+    filter: grayscale(100%);
+    opacity: 0.5;
+}

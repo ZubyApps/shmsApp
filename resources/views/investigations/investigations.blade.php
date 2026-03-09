@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="offcanvasOutpatientsInvestigations"
+        <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="offcanvasOutpatientsInvestigations"
             aria-labelledby="offcanvasOutpatientsInvestigationsLabel">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title text-primary" id="offcanvasOutpatientsInvestigations">OutPatient Investigations</h5>
@@ -73,14 +73,50 @@
             </div>
         </div>
 
+        <div class="offcanvas offcanvas-end overflow-auto" data-bs-scroll="true" tabindex="-1" id="offcanvasInvestigationsList"
+            aria-labelledby="offcanvasInvestigationsListLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title text-primary" id="offcanvasInvestigationsListHead">Daily Investigations</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas2-body">
+                <div class="my-2 form-control">
+                    <x-form-div class="col-xl-4 py-2 queueDateDiv">
+                        <x-input-span class="">Date</x-input-span>
+                        <x-form-input type="date" name="queueDate" id="queueDate" />
+                        <button class="input-group-text searchByQueueDateBtn btn btn-primary">Search</button>
+                    </x-form-div>
+                    <div class="row overflow-auto m-1">
+                        <table id="investigationsListTable" class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>S/N</th>
+                                    <th>Patient</th>
+                                    <th>Sponsor</th>
+                                    <th>Entered by</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="text-start mb-4">
             <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="inpatientsInvestigationBtn" data-bs-target="#offcanvasInvestigations" aria-controls="offcanvasInvestigations">
                 <i class="bi bi-list-check"></i>
                 Inpatient's Investigation Table <span class="badge text-bg-danger" id="inpatientsInvestigationCount"></span>
             </button>
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="outpatientsInvestigationBtn" data-bs-target="#offcanvasOutpatientsInvestigations" aria-controls="offcanvasOutpatientsInvestigations">
+            {{-- <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" id="outpatientsInvestigationBtn" data-bs-target="#offcanvasOutpatientsInvestigations" aria-controls="offcanvasOutpatientsInvestigations">
                 <i class="bi bi-list-check"></i>
                 Outpatient's Investigation Table <span class="badge text-bg-danger" id="outpatientsInvestigationCount"></span>
+            </button> --}}
+            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" id="investigationListBtn" data-bs-target="#offcanvasInvestigationsList" aria-controls="offcanvasInvestigationsList">
+                <i class="bi bi-list-check"></i>
+                Daily Investigations List <span class="badge text-bg-danger" id="InvestigationsListCount"></span>
             </button>
         </div>
 

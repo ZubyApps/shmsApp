@@ -3,7 +3,7 @@ import $ from 'jquery';
 import http from "./http";
 import { clearDivValues, getOrdinal, getDivData, textareaHeightAdjustment, loadingSpinners, clearValidationErrors, openModals, populatePatientSponsor, displayItemsList, getDatalistOptionId, handleValidationErrors, getDatalistOptionStock} from "./helpers"
 import { regularReviewDetails, AncPatientReviewDetails } from "./dynamicHTMLfiles/consultations";
-import { getPatientsVisitsByFilterTable, getInpatientsInvestigationsTable, getOutpatientsInvestigationTable } from "./tables/investigationTables";
+import { getPatientsVisitsByFilterTable, getInpatientsInvestigationsTable, getOutpatientsInvestigationTable, getInvestigationsListTable } from "./tables/investigationTables";
 import { getLabTableByConsultation } from "./tables/doctorstables";
 import { getBulkRequestTable } from "./tables/pharmacyTables";
 import html2pdf  from "html2pdf.js"
@@ -53,15 +53,20 @@ window.addEventListener('DOMContentLoaded', function () {
     const testListDiv               = labResultModal._element.querySelector('.testListDiv')
     const multipleTestsListDiv      = labResultModal._element.querySelector('.multipleTestsListDiv')
     const signedByDiv               = labResultModal._element.querySelector('.signedByDiv')
+    const queueDateDiv              = document.querySelector('.queueDateDiv')
 
      // Auto textarea adjustment
      const textareaHeight = 90;
      textareaHeightAdjustment(textareaHeight, document.getElementsByTagName("textarea"))
 
-    let inPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable
+    let inPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable, investigationsListTable
 
     const inpatientsInvestigationsTable = getInpatientsInvestigationsTable('inpatientInvestigationsTable', false, inpatientsInvestigationBtn, inpatientsInvestigationCount)
-    const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable')
+    // const outpatientInvestigationTable = getOutpatientsInvestigationTable('outpatientInvestigationsTable')
+    investigationsListTable  = getInvestigationsListTable('investigationsListTable')
+
+    const todaysDate = new Date().toISOString().slice(0,10)
+    queueDateDiv.querySelector('#queueDate').value = todaysDate
 
     const outPatientsVisitsTable = getPatientsVisitsByFilterTable('#outPatientsVisitTable', 'Outpatient')
     $('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #inpatientInvestigationsTable, #outpatientInvestigationsTable, #investigationsTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
@@ -75,21 +80,22 @@ window.addEventListener('DOMContentLoaded', function () {
     //     }
     // })
 
-    outpatientInvestigationTable.on('draw.init', function() {
-        const count = outpatientInvestigationTable.rows().count()
-        if (count > 0 ){
-            outpatientsInvestigationCount.innerHTML = count
-        } else {
-            outpatientsInvestigationCount.innerHTML = ''
-        }
-    })
+    // outpatientInvestigationTable.on('draw.init', function() {
+    //     const count = outpatientInvestigationTable.rows().count()
+    //     if (count > 0 ){
+    //         outpatientsInvestigationCount.innerHTML = count
+    //     } else {
+    //         outpatientsInvestigationCount.innerHTML = ''
+    //     }
+    // })
 
     const refreshMainTables = debounce(() => {
         outPatientsView.checkVisibility() ? outPatientsVisitsTable.draw(false) : '';
         ancPatientsView.checkVisibility() ? ancPatientsVisitTable ? ancPatientsVisitTable.draw(false) : '' : ''
         inPatientsView.checkVisibility() ? inPatientsVisitTable ? inPatientsVisitTable.draw(false) : '' : ''
         inpatientsInvestigationsTable.draw();
-        outpatientInvestigationTable.draw();
+        // outpatientInvestigationTable.draw();
+        investigationsListTable.draw();
     }, 100)
 
     outPatientsTab.addEventListener('click', function() {outPatientsVisitsTable.draw(); inpatientsInvestigationsTable.draw();})
@@ -121,9 +127,14 @@ window.addEventListener('DOMContentLoaded', function () {
         inpatientsInvestigationsTable.draw();
     })
 
-    document.querySelectorAll('#offcanvasInvestigations, #offcanvasOutpatientsInvestigations').forEach(canvas => {
+    queueDateDiv.querySelector('.searchByQueueDateBtn').addEventListener('click', function(){
+        investigationsListTable.destroy();
+        investigationsListTable  = getInvestigationsListTable('investigationsListTable', queueDateDiv.querySelector('#queueDate').value)
+    })
+
+    document.querySelectorAll('#offcanvasInvestigations, #offcanvasInvestigationsList').forEach(canvas => {
         canvas.addEventListener('show.bs.offcanvas', function () {
-            canvas.id === 'offcanvasInvestigations' ? inpatientsInvestigationsTable.draw() : outpatientInvestigationTable.draw();
+            canvas.id === 'offcanvasInvestigations' ? inpatientsInvestigationsTable.draw() : investigationsListTable.draw();
         })
 
     })
@@ -140,6 +151,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const consultationDetailsBtn = event.target.closest('.consultationDetailsBtn')
             const investigationsBtn = event.target.closest('.investigationsBtn')
             const viewer = 'lab'
+            const sendToListBtn = event.target.closest('.sendToListBtn')
 
             if (consultationDetailsBtn) {
                 consultationDetailsBtn.setAttribute('disabled', 'disabled')
@@ -207,6 +219,26 @@ window.addEventListener('DOMContentLoaded', function () {
                 investigationsModal.show()
                 investigationsBtn.removeAttribute('disabled')
             }
+
+            if (sendToListBtn){
+                const visitId = sendToListBtn.getAttribute('data-id')
+                const patient = sendToListBtn.getAttribute('data-patient')
+                if (confirm(`Are you ready to send ${patient} to the list?`)){
+                    http.post(`investigationslist`, {visitId})
+                    .then((response) => {
+                            if (response.status >= 200 || response.status <= 300) {
+                                refreshMainTables()
+                            }
+                        })
+                    .catch((error) => {
+                        // if (error.response.status === 403){
+                        //     alert(error.response.data.message); 
+                        // }
+                        console.log(error)
+                    })
+                }
+                
+            }
     
         })
     })
@@ -227,7 +259,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const removeResultBtn     = event.target.closest('#removeTestBtn')
             const markSampleCollectedBtn  = event.target.closest('.markSampleCollectedBtn')
             const unMarkSampleCollectedBtn  = event.target.closest('.unMarkSampleCollectedBtn')
-    
+            
             if (addResultBtn) {
                 createResultBtn.setAttribute('data-id', addResultBtn.getAttribute('data-id'))
                 createResultBtn.setAttribute('data-table', addResultBtn.getAttribute('data-table'))
@@ -298,7 +330,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelectorAll('#treatmentDiv, #investigationModalDiv').forEach(div => {
+    document.querySelectorAll('#treatmentDiv, #investigationModalDiv, #investigationsListTable').forEach(div => {
         div.addEventListener('click', function (event) {
             const collapseConsultationBtn  = event.target.closest('.collapseConsultationBtn')
             const addResultBtn             = event.target.closest('#addResultBtn')
@@ -307,6 +339,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const printAllBtn              = event.target.closest('#printAllBtn')
             const deleteResultBtn          = event.target.closest('.deleteResultBtn')
             const viewer = 'lab'
+            const voidEntryBtn           = event.target.closest('.voidEntryBtn')
     
             if (collapseConsultationBtn) {
                 const gotoDiv = document.querySelector(collapseConsultationBtn.getAttribute('data-goto'))
@@ -404,6 +437,27 @@ window.addEventListener('DOMContentLoaded', function () {
                     .catch((error) => {
                         alert(error)
                         deleteResultBtn.removeAttribute('disabled')
+                    })
+                }
+            }
+
+            if (voidEntryBtn){
+                voidEntryBtn.setAttribute('disabled', 'disabled')
+                const listId = voidEntryBtn.getAttribute('data-id');
+                const patient = voidEntryBtn.getAttribute('data-patient')
+                const status = +voidEntryBtn.getAttribute('data-status')
+                const term = status == 3 ? 'unvoid' : 'void'
+                if (confirm(`Are you sure you want to ${term} ${patient}'s entry`)){
+                    http.patch(`/investigationslist/void/${listId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {  
+                            investigationsListTable.draw(false)
+                        }
+                        voidEntryBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        alert(error)
+                        voidEntryBtn.removeAttribute('disabled')
                     })
                 }
             }

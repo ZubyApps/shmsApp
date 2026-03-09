@@ -14,7 +14,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 class WalkInService
 {
@@ -87,6 +86,7 @@ class WalkInService
                     ->withExists([
                         'prescriptions as hasPrescriptions',
                         'payments as hasPayments',
+                        'investigationsList as isOnList',
                         'prescriptions as hasLinkedPrescriptions' => function ($query) {
                                 $query->whereNotNull('visit_id');
                             },
@@ -127,11 +127,12 @@ class WalkInService
                 'phone'             => $walkIn->phone,
                 'createdAt'         => (new Carbon($walkIn->created_at))->format('d/m/Y'),
                 'createdBy'         => $walkIn->user->username,
-                'presCount'         => $walkIn->hasPrescriptions,
-                'payCount'          => $walkIn->hasPayments,
+                'hasPrescription'   => $walkIn->hasPrescriptions,
+                'hasPayment'        => $walkIn->hasPayments,
                 'billSum'           => $walkIn->billSum,
                 'paidSum'           => $walkIn->paidSum,
                 'isLinked'          => $walkIn->hasLinkedPrescriptions,
+                'isOnList'          => $walkIn->isOnList,
 
                 'prescriptions'     => $walkIn->prescriptions->map(fn(Prescription $prescription) => [
                     'id'                => $prescription->id,

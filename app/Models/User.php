@@ -260,6 +260,11 @@ class User extends Authenticatable
         return $this->hasMany(MortuaryService::class);
     }
 
+    public function investigationsLists(): HasMany
+    {
+        return $this->hasMany(InvestigationsList::class);
+    }
+
     // Doctors
     public function doctorVisits(): HasMany { return $this->hasMany(Visit::class, 'doctor_id'); }
     public function discontinuedPrescriptions(): HasMany { return $this->hasMany(Prescription::class, 'discontinued_by'); }

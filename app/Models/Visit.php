@@ -182,6 +182,11 @@ class Visit extends Model
         return $this->hasMany(LabourRecord::class);
     }
 
+    public function investigationsList(): HasMany
+    {
+        return $this->hasMany(InvestigationsList::class);
+    }
+
     public function oldestVitalSign(): HasOne
     {
         return $this->hasOne(vitalSigns::class)->oldestOfMany();

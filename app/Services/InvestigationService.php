@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\PayPercentageService;
 
 class InvestigationService
 {
@@ -31,7 +32,8 @@ class InvestigationService
         $orderBy    = 'consulted';
         $orderDir   =  'desc';
         $query = $this->visit
-            ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'doctor_done_by', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'closed_opened_at', 'ward', 'bed_no', 'ward_id', 'discount', 'doctor_done_at')->with([
+            ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'doctor_done_by', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'closed_opened_at', 'ward', 'bed_no', 'ward_id', 'discount', 'doctor_done_at')
+            ->with([
                 'sponsor:id,name,category_name,flag', 
                 'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment', 
                 'patient' => function($query){
@@ -54,6 +56,7 @@ class InvestigationService
                     ->where('result_date', '!=', null);
             },
         ])
+        ->withExists(['investigationsList as isOnList'])
         ->whereNotNull('consulted');
 
         if (! empty($params->searchTerm)) {
@@ -165,6 +168,7 @@ class InvestigationService
                 'flagReason'        => $visit->patient?->flag_reason,
                 'flaggedBy'         => $visit->patient->flaggedBy?->username,
                 'flaggedAt'         => $visit->patient->flagged_at ? (new Carbon($visit->patient->flagged_at))->format('d/m/y g:ia') : '',
+                'isOnList'          => $visit->isOnList
             ];
          };
     }

@@ -53,6 +53,7 @@ use App\Http\Controllers\MedicationCategoryController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ResourceSubCategoryController;
 use App\Http\Controllers\AntenatalRegisterationController;
+use App\Http\Controllers\InvestigationsListController;
 
 /*
 |--------------------------------------------------------------------------
@@ -714,6 +715,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{mortuaryService}', [MortuaryServiceController::class, 'destroy']);
         Route::get('/{mortuaryService}', [MortuaryServiceController::class, 'edit']);
         Route::patch('/filldate/{mortuaryService}', [MortuaryServiceController::class, 'fillDate']); 
+    });
+
+    Route::prefix('investigationslist')->group(function () {
+        Route::post('', [InvestigationsListController::class, 'store']);
+         Route::get('/load/list', [InvestigationsListController::class, 'loadInvestigationsListTable']);
+         Route::patch('/void/{investigationsList}', [InvestigationsListController::class, 'voidEntry']);
     });
 });
 
