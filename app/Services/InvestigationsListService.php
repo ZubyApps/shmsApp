@@ -146,6 +146,7 @@ class InvestigationsListService
                 'qNumber'           => $investigationsList->queue_number.'.',
                 'queueBy'           => $investigationsList->user->username,
                 'status'            => $investigationsList->status,
+                'createdAt'         => (new Carbon($investigationsList->created_at))->format('d/m/y g:ia'),
                 'patient'           => $visit?->patient->patientId() ?? $walkIn?->fullName(true).'(W)',
                 'admissionStatus'   => $visit?->admission_status,
                 'ward'              => $visit?->ward ? $this->helperService->displayWard($visit) : '',

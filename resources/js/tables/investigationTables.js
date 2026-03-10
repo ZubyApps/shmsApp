@@ -193,6 +193,7 @@ const getInvestigationsListTable = (tableId, date) => {
         },
         columns: [
             {data: "qNumber"},
+            {data: "createdAt"},
             {data: row => `<div class="fw-semibold text-primary voidEntryBtn" data-id="${row.id}" data-patient="${row.patient}" data-status="${row.status}" >${row.patient}</div>`},
             {data: row => `<div class="text-primary-emphasis fw-semibold">${row.sponsor + '-' + row.sponsorCategory}</div>`},
             {data: "queueBy"},
@@ -243,7 +244,7 @@ const getInvestigationsListTable = (tableId, date) => {
                                                                         </a>
                                                                     </li>
                                                                 </ul>
-                                                                <i class="bi bi-check-square-fill ms-1 text-primary ${p.result ? '' : 'd-none'}" title="result added"></i>
+                                                                <i class="bi bi-check-square-fill ms-1 text-primary ${p.result ? '' : 'd-none'}" title="${'result added ' + p.sent}"></i>
                                                             </div>
                                                     `   }</td>
                                                         </tr>   

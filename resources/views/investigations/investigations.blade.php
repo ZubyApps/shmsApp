@@ -86,11 +86,12 @@
                         <x-form-input type="date" name="queueDate" id="queueDate" />
                         <button class="input-group-text searchByQueueDateBtn btn btn-primary">Search</button>
                     </x-form-div>
-                    <div class="row overflow-auto m-1">
+                    <div class="row m-1">
                         <table id="investigationsListTable" class="table table-sm">
                             <thead>
                                 <tr>
                                     <th>S/N</th>
+                                    <th>At</th>
                                     <th>Patient</th>
                                     <th>Sponsor</th>
                                     <th>Entered by</th>
