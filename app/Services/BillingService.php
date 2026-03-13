@@ -4,18 +4,20 @@ declare(strict_types = 1);
 
 namespace App\Services;
 
-use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Visit;
+use App\DataObjects\DataTableQueryParams;
+use App\Events\BulkPrescriptionsCreated;
 use App\Models\Patient;
 use App\Models\Payment;
-use App\Models\Resource;
 use App\Models\Prescription;
+use App\Models\Resource;
+use App\Models\User;
+use App\Models\Visit;
+use App\Services\PaymentService;
+use App\Services\PayPercentageService;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Events\BulkPrescriptionsCreated;
-use App\DataObjects\DataTableQueryParams;
-use Illuminate\Database\Eloquent\Builder;
 
 class BillingService
 {
@@ -472,7 +474,7 @@ class BillingService
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
         $column = $data->sponsorCat == 'NHIS' ? 'total_nhis_bill' : 'total_hms_bill';
-        $query = $this->visit->select('id', 'sponsor_id', 'patient_id', 'doctor_id', 'admission_status', 'ward', 'ward', 'visit_type', 'discharge_reason', 'doctor_done_at', 'closed', 'closed_opened_by', 'closed_opened_at', 'discount')
+        $query = $this->visit->select('id', 'sponsor_id', 'patient_id', 'doctor_id', 'admission_status', 'ward', 'ward', 'visit_type', 'discharge_reason', 'doctor_done_at', 'closed', 'closed_opened_by', 'closed_opened_at', 'discount', 'consulted')
                     ->with([
                         'sponsor:id,name,category_name,flag', 
                         'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
