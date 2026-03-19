@@ -657,6 +657,7 @@ const getYearlyIncomeAndExpenseTable2 = (tableId, year, chart) => {
         searching: false,
         lengthChange: false,
         info: false,
+        paging: false,
         // "sAjaxDataProp": "data.data",
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
@@ -699,6 +700,7 @@ const getYearlyIncomeAndExpenseTable3 = (tableId, year, chart) => {
         searching: false,
         lengthChange: false,
         info: false,
+        paging: false,
         // "sAjaxDataProp": "data.data",
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
