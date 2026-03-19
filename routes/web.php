@@ -423,7 +423,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/load/bysponsor', [PatientController::class, 'loadPatientsBySponsor']);
             Route::get('/load/visits', [PatientController::class, 'loadVisit']);
             Route::get('/load/linktovisits', [PatientController::class, 'loadLinkTovisits']);
-            Route::get('/list', [PatientController::class, 'listPatients']);
+            Route::get('/list', [PatientController::class, 'listPatients'])->withoutMiddleware('patients');
             Route::get('/updatevisits', [PatientController::class, 'updatePatientsVisitTypes']);
             Route::get('/{patient}', [PatientController::class, 'edit']);
             Route::get('/prepatients/{patientPreForm}', [PatientController::class, 'review']);
