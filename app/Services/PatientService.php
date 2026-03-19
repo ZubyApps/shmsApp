@@ -200,23 +200,57 @@ class PatientService
                         ->withExists(['visits as hasVisits']);
 
         if (! empty($params->searchTerm)) {
-            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-            return $query->where(function (Builder $query) use($searchTerm) {
-                        $query->whereRaw('CONCAT_WS(" ", first_name, middle_name, last_name) LIKE ?', [$searchTerm])
-                            ->orWhereRaw('CONCAT_WS(" ", first_name, last_name, middle_name) LIKE ?', [$searchTerm])
-                            ->orWhereRaw('CONCAT_WS(" ", last_name, middle_name, first_name) LIKE ?', [$searchTerm])
-                            ->orWhereRaw('CONCAT_WS(" ", last_name, first_name, middle_name) LIKE ?', [$searchTerm])
-                            ->orWhereRaw('CONCAT_WS(" ", middle_name, first_name, last_name) LIKE ?', [$searchTerm])
-                            ->orWhereRaw('CONCAT_WS(" ", middle_name, last_name, first_name) LIKE ?', [$searchTerm])
-                            ->orWhere('card_no', 'LIKE', $searchTerm)
-                            ->orWhere('phone', 'LIKE', $searchTerm)
-                            ->orWhere('sex', 'LIKE', $searchTerm)
-                            ->orWhere('date_of_birth', 'LIKE', $searchTerm)
-                            ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm )
-                            ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', $searchTerm );
-                        })
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            $searchTermRaw = trim($params->searchTerm);
+            $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+            // return $query->where(function (Builder $query) use($searchTerm) {
+            //             $query->whereRaw('CONCAT_WS(" ", first_name, middle_name, last_name) LIKE ?', [$searchTerm])
+            //                 ->orWhereRaw('CONCAT_WS(" ", first_name, last_name, middle_name) LIKE ?', [$searchTerm])
+            //                 ->orWhereRaw('CONCAT_WS(" ", last_name, middle_name, first_name) LIKE ?', [$searchTerm])
+            //                 ->orWhereRaw('CONCAT_WS(" ", last_name, first_name, middle_name) LIKE ?', [$searchTerm])
+            //                 ->orWhereRaw('CONCAT_WS(" ", middle_name, first_name, last_name) LIKE ?', [$searchTerm])
+            //                 ->orWhereRaw('CONCAT_WS(" ", middle_name, last_name, first_name) LIKE ?', [$searchTerm])
+            //                 ->orWhere('card_no', 'LIKE', $searchTerm)
+            //                 ->orWhere('phone', 'LIKE', $searchTerm)
+            //                 ->orWhere('sex', 'LIKE', $searchTerm)
+            //                 ->orWhere('date_of_birth', 'LIKE', $searchTerm)
+            //                 ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm )
+            //                 ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', $searchTerm );
+            //             }), $sear
+            //             ->orderBy($orderBy, $orderDir)
+            //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            // return $query->where(function (Builder $query) use($searchTerm, $searchTermRaw) {
+            //             $query->searchByName($searchTermRaw)
+            //                 ->orWhere('card_no', 'LIKE', $searchTerm)
+            //                 ->orWhere('phone', 'LIKE', $searchTerm)
+            //                 ->orWhere('sex', 'LIKE', $searchTerm)
+            //                 ->orWhere('date_of_birth', 'LIKE', $searchTerm)
+            //                 ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm )
+            //                 ->orWhereRelation('sponsor.sponsorCategory', 'name', 'LIKE', $searchTerm );
+            //             })
+            //             ->orderBy($orderBy, $orderDir)
+            //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+
+            return $query->where(function (Builder $query) use ($searchTerm, $searchTermRaw) {
+    // 1. Full-Text Name Search first (Most efficient)
+                $query->where('first_name', 'LIKE', $searchTerm)
+                        ->orWhere('middle_name', 'LIKE', $searchTerm)
+                        ->orWhere('last_name', 'LIKE', $searchTerm)
+
+                    // 2. Local Patient Columns
+                    ->orWhere('card_no', 'LIKE', $searchTerm)
+                    ->orWhere('phone', 'LIKE', $searchTerm)
+                    ->orWhere('sex', 'LIKE', $searchTerm)
+                    ->orWhere('date_of_birth', 'LIKE', $searchTerm)
+                    // 3. Nested Relations (Grouped to reduce subqueries)
+                    ->orWhereHas('sponsor', function ($q) use ($searchTerm) {
+                        $q->where('name', 'LIKE', $searchTerm)
+                            ->orWhereHas('sponsorCategory', function ($sub) use ($searchTerm) {
+                                $sub->where('name', 'LIKE', $searchTerm);
+                            });
+                    });
+            })
+            ->orderBy($orderBy, $orderDir)
+            ->paginate($params->length, ['*'], 'page', ($params->length + $params->start) / $params->length);
             
             // $search   = trim($params->searchTerm);
             // $likeTerm = '%' . addcslashes($search, '%_') . '%';

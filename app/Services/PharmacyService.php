@@ -97,8 +97,10 @@ class PharmacyService
 
                 // 2. Patient Block (Uses Full-Text Index + Card No)
                 $query->orWhereHas('patient', function ($q) use ($searchTerm, $searchTermRaw) {
-                    $q->searchByName($searchTermRaw)
-                    ->orWhere('card_no', 'LIKE', $searchTerm);
+                    $q->where('first_name', 'LIKE', $searchTerm)
+                        ->orWhere('middle_name', 'LIKE', $searchTerm)
+                        ->orWhere('last_name', 'LIKE', $searchTerm)
+                        ->orWhere('card_no', 'LIKE', $searchTerm);
                 });
 
                 // 3. Consultations Block

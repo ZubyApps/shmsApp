@@ -251,7 +251,11 @@ class NurseService
             }
 
             // Patient Search
-            $sub->orWhereHas('patient', fn($q) => $q->searchByName($searchTermRaw)->orWhere('card_no', 'LIKE', $searchTerm))
+            $sub->orWhereHas('patient', fn($q) => 
+            $q->where('first_name', 'LIKE', $searchTerm)
+              ->orWhere('middle_name', 'LIKE', $searchTerm)
+              ->orWhere('last_name', 'LIKE', $searchTerm)
+              ->orWhere('card_no', 'LIKE', $searchTerm))
                 ->orWhereHas('consultations', function ($q) use ($searchTerm) {
                     $q->where('icd11_diagnosis', 'LIKE', $searchTerm)
                     ->orWhere('provisional_diagnosis', 'LIKE', $searchTerm)
