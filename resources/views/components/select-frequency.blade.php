@@ -3,6 +3,7 @@
         <optgroup label="Terms" id="terms">
                 <option value="24">stat</option>
                 <option value="24.0">Daily</option>
+                <option value="24.00">PRN</option>
                 <option value="12">BD</option>
                 <option value="8">TDS</option>
                 <option value="6">QDS</option>

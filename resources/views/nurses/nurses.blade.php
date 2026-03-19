@@ -41,7 +41,7 @@
 
 <div class="container mt-5">
     <input type="text" class="d-none" value="{{ $feverBenchMark }}" id="feverBenchMark">
-    <div class="offcanvas offcanvas-top overflow-auto" data-bs-scroll="true" tabindex="-1" id="upcomingMedicationsoffcanvas"
+    <div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="upcomingMedicationsoffcanvas"
         aria-labelledby="upcomingMedicationsoffcanvasLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title text-primary" id="upcomingMedicationsoffcanvasLabel">List of Upcoming Inpatients Medication</h5>
@@ -69,7 +69,7 @@
             </div>
         </div>
     </div>
-    <div class="offcanvas offcanvas-bottom overflow-auto" data-bs-scroll="true" tabindex="-1" id="upcomingNursingChartsoffcanvas"
+    <div class="offcanvas offcanvas-bottom" data-bs-scroll="true" tabindex="-1" id="upcomingNursingChartsoffcanvas"
         aria-labelledby="upcomingNursingChartsoffcanvasLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title text-primary" id="upcomingNursingChartsoffcanvasLabel">List of Upcoming Inpatients Care Schedule</h5>
@@ -96,7 +96,7 @@
             </div>
         </div>
     </div>
-    <div class="offcanvas offcanvas-start overflow-auto" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2"
+    <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="waitingListOffcanvas2"
         aria-labelledby="waitingListOffcanvasLabel" aria-expanded="false">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title text-primary" id="waitingListOffcanvasLabel">List of Waiting Patients</h5>
@@ -138,7 +138,7 @@
             </div>
         </div>
     </div>
-    <div class="offcanvas offcanvas-end overflow-auto" data-bs-scroll="true" tabindex="-1" id="shiftReportOffcanvas"
+    <div class="offcanvas offcanvas-end " data-bs-scroll="true" tabindex="-1" id="shiftReportOffcanvas"
         aria-labelledby="shiftReportOffcanvasLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title text-primary" id="shiftReportOffcanvasLabel">Shift Report</h5>
@@ -166,7 +166,7 @@
             </div>
         </div>
     </div>
-    <div class="offcanvas offcanvas-end overflow-auto" data-bs-scroll="true" tabindex="-1" id="proceduresListOffcanvas"
+    <div class="offcanvas offcanvas-end " data-bs-scroll="true" tabindex="-1" id="proceduresListOffcanvas"
             aria-labelledby="proceduresListOffcanvasLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title text-primary" id="proceduresListOffcanvasLabel">Procedures List</h5>

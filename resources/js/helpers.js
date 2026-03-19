@@ -234,11 +234,11 @@ function doctorsModalClosingTasks(event, modal, textareaHeight){
         event.preventDefault()
         return
     }
+    modal.querySelector('#saveConsultationBtn').removeAttribute('data-conid')
     clearDivValues(modal.querySelector('.investigationAndManagementDiv'))
     clearDivValues(modal.querySelector('#consultationDiv'))
     clearValidationErrors(modal.querySelector('#consultationDiv'))
     modal.querySelector('#updateKnownClinicalInfoBtn').innerHTML = `Update`
-    modal.querySelector('#saveConsultationBtn').removeAttribute('data-conid')
     modal.querySelector('.investigationAndManagementDiv').classList.add('d-none')
     modal.querySelectorAll('.resourceList').forEach(list => clearItemsList(list))
     removeAttributeLoop(querySelectAllTags(modal.querySelector('#consultationDiv'), ['input, select, textarea']), 'disabled')
@@ -1016,7 +1016,7 @@ const preSearch = (table, tableId, value, type) => {
         if (selectedOption) {
             const value = selectedOption.getAttribute('data-cardNo') ?? this.value;
             const patientId = selectedOption.getAttribute('data-id') ? 'pId-' + selectedOption.getAttribute('data-id') : null;
-            table.search(patientId ?? value).draw();
+            table.search(patientId ?? value).draw(false);
             this.value = value;
         }
     });
@@ -1315,4 +1315,70 @@ const pendingIndicator = (row) => {
     return row.hmoNote && (!row.approved && !row.rejected) ? '<div class="colour-change2"> (Pending)</div>' : ''
 }
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider, dynamicDebounce, visitType, populateModal, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, getPartographDivData, getLabourInProgressDetails, getTimeToNextObservation, labourRecordDelay, displayItemsList2, ucFirst, closedOpened, pendingIndicator}
+function prescriptionParser(prescription) {
+  // Map frequency terms to hours for calculations
+  const frequencyToHours = {
+    stat: 24,    // Integer for stat
+    Daily: 24.0, // Float for Daily
+    PRN: 24.00, // Float for Daily
+    BD: 12,
+    TDS: 8,
+    QDS: 6,
+    Weekly: 168,
+    Monthly: 672
+  };
+
+  // Dose units (escaped parentheses for ml(s), etc.)
+  const doseUnits = 'mg|g|mcg|ml\\(s\\)|drops|mega|IU|kg|ltr\\(s\\)|tab\\(s\\)|cap\\(s\\)';
+  // Frequency terms
+  const frequencyTerms = 'stat|Daily|BD|TDS|QDS|Weekly|Monthly|PRN';
+  // Duration units
+  const durationUnits = 'day\\(s\\)|days';
+  // Full regex
+  const regex = new RegExp(
+    `(\\d*\\.?\\d*\\s*(?:${doseUnits}))\\s+(\\d+(?:hrly)|${frequencyTerms})\\s+for\\s+(\\d+)(${durationUnits})`
+  );
+
+  const match = prescription.match(regex);
+  if (match) {
+    const [_, dose, frequency, durationNumber, durationUnit] = match;
+    // Split dose into number and unit
+    const doseMatch = dose.match(/(\d*\.?\d*)\s*([a-zA-Z()]+)/);
+    if (doseMatch) {
+      // Determine frequency number and unit
+      let frequencyNumber, frequencyUnit;
+      if (frequency.match(/hrly/)) {
+        const frequencyMatch = frequency.match(/(\d+)(hrly)/);
+        frequencyNumber = frequencyMatch[1]; // e.g., "12"
+        frequencyUnit = frequencyMatch[2];  // e.g., "hrly"
+      } else {
+        frequencyNumber = frequencyToHours[frequency] || 0; // Map to hours (e.g., 24 for stat, 24.0 for Daily)
+        if (frequency === 'Daily') {
+          frequencyNumber = frequencyNumber.toFixed(1); // Convert 24.0 to "24.0"
+        }
+        if (frequency === 'PRN') {
+          frequencyNumber = frequencyNumber.toFixed(2); // Convert 24.00 to "24.00"
+        }
+        frequencyUnit = frequency; // e.g., "Daily"
+      }
+
+      return {
+        dose: {
+          number: doseMatch[1], // e.g., "500" or "1.5"
+          unit: doseMatch[2]    // e.g., "ml(s)" or "g"
+        },
+        frequency: {
+          number: frequencyNumber, // e.g., "12" or 24 (stat) or 24.0 (Daily)
+          unit: frequencyUnit      // e.g., "hrly" or "Daily"
+        },
+        duration: {
+          number: durationNumber,  // e.g., "1" or "30"
+          unit: durationUnit       // e.g., "day(s)" or "days"
+        }
+      };
+    }
+  }
+  return null; // Return null for invalid input
+}
+
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider, dynamicDebounce, visitType, populateModal, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, getPartographDivData, getLabourInProgressDetails, getTimeToNextObservation, labourRecordDelay, displayItemsList2, ucFirst, closedOpened, pendingIndicator, prescriptionParser}

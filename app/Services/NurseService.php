@@ -7,6 +7,8 @@ namespace App\Services;
 use App\DataObjects\DataTableQueryParams;
 use App\Models\User;
 use App\Models\Visit;
+use App\Services\HelperService;
+use App\Services\PayPercentageService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -21,170 +23,280 @@ class NurseService
         
     }
 
-    public function getpaginatedFilteredNurseVisits(DataTableQueryParams $params, $data)
+    // public function getpaginatedFilteredNurseVisits(DataTableQueryParams $params, $data)
+    // {
+    //     $orderBy    = "consulted";
+    //     $orderDir   =  'desc';
+    //     $query = $this->visit->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'doctor_done_by', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'closed_opened_at', 'ward', 'bed_no', 'ward_id', 'discount', 'doctor_done_at')
+    //     ->with([
+    //         'sponsor:id,name,category_name,flag', 
+    //         'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment,updated_by' 
+    //         => with([
+    //             'updatedBy:id,username' 
+    //         ]), 
+    //         'patient' => function($query){
+    //             $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
+    //             ->with(['flaggedBy:id,username']);
+    //         }, 
+    //         'antenatalRegisteration:id,visit_id', 
+    //         'doctor:id,username', 
+    //         'closedOpenedBy:id,username',
+    //         'doctorDoneBy:id,username',
+    //         'wards:id,visit_id,short_name,bed_number'
+    //     ])
+    //     ->withCount([
+    //         'prescriptions as prescriptionsCharted' => function (Builder $query) {
+    //         $query->where('chartable', true)
+    //             ->where('discontinued', false)
+    //             ->whereDoesntHave('medicationCharts')
+    //             ->whereRelation('resource', 'sub_category', '=', 'Injectable');
+    //         },
+    //         'prescriptions as otherChartables' => function (Builder $query) {
+    //         $query->where('chartable', true)
+    //             ->where('discontinued', false)
+    //             ->whereDoesntHave('nursingCharts')
+    //             ->whereRelation('resource', 'sub_category', '!=', 'Injectable');
+    //         },
+    //         'prescriptions as otherPrescriptions' => function (Builder $query) {
+    //         $query->where('chartable', false)
+    //         ->where('chartable', false)
+    //         ->where(function(Builder $query) {
+    //             $query->whereRelation('resource', 'category', 'Medications')
+    //                     ->orWhereRelation('resource', 'category', 'Consumables');
+    //             });
+    //         },
+    //         'medicationCharts as doseCount',
+    //         'medicationCharts as givenCount' => function (Builder $query) {
+    //             $query->whereNotNull('dose_given');
+    //         },
+    //         'nursingCharts as scheduleCount',
+    //         'nursingCharts as doneCount' => function (Builder $query) {
+    //             $query->whereNotNull('time_done');
+    //         },
+    //         'vitalSigns as vitalSignsCount',
+    //         'consultations as consultationsCount'
+    //     ]);
+
+    //     function applySearch(Builder $query, string $searchTermRaw) {
+    //         $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+    //         return $query->where(function (Builder $query) use ($searchTerm, $searchTermRaw) {
+    //             // 1. Direct Column Check (Visit table)
+    //             if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $searchTermRaw)) {
+    //                     $query->whereBetween('consulted', [$searchTermRaw . ' 00:00:00', $searchTermRaw . ' 23:59:59']);
+    //                 } else {
+    //                     $query->whereRaw('1 = 0'); 
+    //                 }
+
+    //             // 2. Patient Block (Uses Full-Text Index + Card No)
+    //             $query->orWhereHas('patient', function ($q) use ($searchTerm, $searchTermRaw) {
+    //                 $q->searchByName($searchTermRaw)
+    //                 ->orWhere('card_no', 'LIKE', $searchTerm);
+    //             });
+
+    //             // 3. Consultations Block
+    //             $query->orWhereHas('consultations', function ($q) use ($searchTerm) {
+    //                 $q->where('icd11_diagnosis', 'LIKE', $searchTerm)
+    //                 ->orWhere('admission_status', 'LIKE', $searchTerm);
+    //             });
+
+    //             // 4. Sponsor Block
+    //             $query->orWhereHas('sponsor', function ($q) use ($searchTerm) {
+    //                 $q->where('name', 'LIKE', $searchTerm)
+    //                 ->orWhere('category_name', 'LIKE', $searchTerm);
+    //             });
+    //         });
+    //     }
+
+    //     if (!empty($params->searchTerm)) {
+    //         $searchTermRaw = trim($params->searchTerm);
+    //         $isPatientIdSearch = str_starts_with($searchTermRaw, 'pId-');
+    //         $patientId = $isPatientIdSearch ? explode('-', $searchTermRaw)[1] : null;
+
+    //         // 1. The Gatekeeper (ANC vs General)
+    //         if ($data->filterBy === 'ANC') {
+    //             $query->where('visit_type', 'ANC');
+    //         } else {
+    //             $query->whereNotNull('consulted');
+    //         }
+
+    //         // 2. The Integrated Search Block
+    //         $query->where(function (Builder $sub) use ($isPatientIdSearch, $patientId, $query, $searchTermRaw) {
+                
+    //             if ($isPatientIdSearch) {
+    //                 $sub->where('patient_id', $patientId);
+    //             } else {
+    //                 $query = applySearch($query, $searchTermRaw);
+    //             }
+    //         });
+
+    //         return $query->orderBy($orderBy, $orderDir)
+    //             ->paginate($params->length, '*', '', (($params->length + $params->start) / $params->length));
+    //     }
+
+    //     if ($data->filterBy == 'Outpatient'){
+    //         return $query->whereNotNull('consulted')
+    //         ->where('nurse_done_by', null)
+    //         ->where('closed', false)
+    //         ->where(function(Builder $query) {
+    //             $query->whereRelation('prescriptions.resource', 'sub_category', '=', 'Injectable');
+    //         })
+    //         ->where('admission_status', '=', 'Outpatient')
+    //         ->where('visit_type', '!=', 'ANC')
+    //         ->orderBy($orderBy, $orderDir)
+    //         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     if ($data->filterBy == 'Inpatient'){
+    //         $nursesInpatients = $query->whereNotNull('consulted')
+    //                 ->where('nurse_done_by', null)
+    //                 ->where('closed', false)
+    //                 ->where(function(Builder $query) {
+    //                     $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
+    //                         ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services')
+    //                         ->orWhereRelation('prescriptions', 'chartable', '=', '1');
+    //                 })
+    //                 ->where(function (Builder $query) {
+    //                     $query->where('admission_status', '=', 'Inpatient')
+    //                     ->orWhere('admission_status', '=', 'Observation');
+    //                 })
+    //                 ->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //         return $nursesInpatients;
+    //     }
+    //     if ($data->filterBy == 'ANC'){
+    //         return $query->where('nurse_done_by', null)
+    //                 ->where('closed', false)
+    //                 ->where('visit_type', '=', 'ANC')
+    //                 ->orderBy('created_at', $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     return $query->whereNotNull('consulted')
+    //                 ->where('nurse_done_by', null)
+    //                 ->where('closed', false)
+    //                 ->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    // }
+
+    public function getPaginatedFilteredNurseVisits(DataTableQueryParams $params, $data)
     {
-        $orderBy    = "consulted";
-        $orderDir   =  'desc';
-        $query = $this->visit->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'doctor_done_by', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'closed_opened_at', 'ward', 'bed_no', 'ward_id', 'discount', 'doctor_done_at')
-        ->with([
-            'sponsor:id,name,category_name,flag', 
-            'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment,updated_by' 
-            => with([
-                'updatedBy:id,username' 
-            ]), 
-            'patient' => function($query){
-                $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
-                ->with(['flaggedBy:id,username']);
-            }, 
-            'antenatalRegisteration:id,visit_id', 
-            'doctor:id,username', 
-            'closedOpenedBy:id,username',
-            'doctorDoneBy:id,username',
-            'wards:id,visit_id,short_name,bed_number'
-        ])
-        ->withCount([
-            'prescriptions as prescriptionsCharted' => function (Builder $query) {
-            $query->where('chartable', true)
-                ->where('discontinued', false)
-                ->whereDoesntHave('medicationCharts')
-                ->whereRelation('resource', 'sub_category', '=', 'Injectable');
-            },
-            'prescriptions as otherChartables' => function (Builder $query) {
-            $query->where('chartable', true)
-                ->where('discontinued', false)
-                ->whereDoesntHave('nursingCharts')
-                ->whereRelation('resource', 'sub_category', '!=', 'Injectable');
-            },
-            'prescriptions as otherPrescriptions' => function (Builder $query) {
-            $query->where('chartable', false)
-            ->where('chartable', false)
-            ->where(function(Builder $query) {
-                $query->whereRelation('resource', 'category', 'Medications')
-                        ->orWhereRelation('resource', 'category', 'Consumables');
-                });
-            },
-            'medicationCharts as doseCount',
-            'medicationCharts as givenCount' => function (Builder $query) {
-                $query->whereNotNull('dose_given');
-            },
-            'nursingCharts as scheduleCount',
-            'nursingCharts as doneCount' => function (Builder $query) {
-                $query->whereNotNull('time_done');
-            },
-            'vitalSigns as vitalSignsCount',
-            'consultations as consultationsCount'
-        ]);
+        $searchTerm = trim($params->searchTerm ?? '');
+        
+        // 1. Base Query & Relationships
+        $query = $this->visit->newQuery()
+            ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'doctor_done_by', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'closed_opened_at', 'ward', 'bed_no', 'ward_id', 'discount', 'doctor_done_at')
+            ->with([
+                'sponsor:id,name,category_name,flag',
+                'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment,updated_by',
+                'latestConsultation.updatedBy:id,username',
+                'patient' => fn($q) => $q->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')->with('flaggedBy:id,username'),
+                'antenatalRegisteration:id,visit_id',
+                'doctor:id,username',
+                'closedOpenedBy:id,username',
+                'doctorDoneBy:id,username',
+                'wards:id,visit_id,short_name,bed_number'
+            ])
+            ->withCount([
+                'prescriptions as prescriptionsCharted' => fn($q) => $q->where('chartable', true)->where('discontinued', false)->whereDoesntHave('medicationCharts')->whereRelation('resource', 'sub_category', 'Injectable'),
+                'prescriptions as otherChartables' => fn($q) => $q->where('chartable', true)->where('discontinued', false)->whereDoesntHave('nursingCharts')->whereRelation('resource', 'sub_category', '!=', 'Injectable'),
+                'prescriptions as otherPrescriptions' => fn($q) => $q->where('chartable', false)->whereRelation('resource', fn($r) => $r->whereIn('category', ['Medications', 'Consumables'])),
+                'medicationCharts as doseCount',
+                'medicationCharts as givenCount' => fn($q) => $q->whereNotNull('dose_given'),
+                'nursingCharts as scheduleCount',
+                'nursingCharts as doneCount' => fn($q) => $q->whereNotNull('time_done'),
+                'vitalSigns as vitalSignsCount',
+                'consultations as consultationsCount'
+            ]);
 
+        // 2. Handle Search (Priority)
+        if (!empty($searchTerm)) {
+            $this->applyNurseSearch($query, $searchTerm);
+            // Per your request: No 'nurse_done_by' or 'closed' constraints during search
+        } 
+        // 3. Handle Filters (Only if NOT searching)
+        else {
+            $query->where('nurse_done_by', null)->where('closed', false);
+            $this->applyNurseFilters($query, $data->filterBy);
+        }
 
-        if (! empty($params->searchTerm)) {
-            $searchTermRaw = trim($params->searchTerm);
-            $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
+        // 4. Finalize Sorting and Pagination
+        $orderBy = $data->filterBy === 'ANC' ? 'created_at' : 'consulted';
+        
+        return $query->orderBy($orderBy, 'desc')
+            ->paginate(
+                $params->length, 
+                ['*'], 
+                'page', 
+                floor($params->start / $params->length) + 1
+            );
+    }
 
-            $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+    /**
+     * Extracted Search Logic
+     */
+    private function applyNurseSearch(Builder $query, string $searchTermRaw): void
+    {
+        if (str_starts_with($searchTermRaw, 'pId-')) {
+            $query->where('patient_id', explode('-', $searchTermRaw)[1]);
+            return;
+        }
 
-            if ($data->filterBy == 'ANC'){
-                $query->where('visit_type', '=', 'ANC');
+        $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
 
-                if ($patientId){ 
-                    return $query->where('patient_id', $patientId)
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-                }
-
-                return $query
-                    ->where(function (Builder $query) use($searchTerm) {
-                        $query->where('created_at', 'LIKE', $searchTerm)
-                        ->orWhere(function($q) use ($searchTerm) {
-                            $terms = array_filter(explode(' ', trim($searchTerm)));
-                            foreach ($terms as $term) {
-                                $q->where(function($subQuery) use ($term) {
-                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
-                                });
-                            }
-                        })
-                        
-                        ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
-                    })
-                    
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        $query->where(function (Builder $sub) use ($searchTerm, $searchTermRaw) {
+            // Date Search
+            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $searchTermRaw)) {
+                $sub->whereBetween('consulted', [$searchTermRaw . ' 00:00:00', $searchTermRaw . ' 23:59:59']);
             }
 
-            if ($patientId){ 
-                return $query->where('patient_id', $patientId)
-                            ->orderBy($orderBy, $orderDir)
-                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
+            // Patient Search
+            $sub->orWhereHas('patient', fn($q) => $q->searchByName($searchTermRaw)->orWhere('card_no', 'LIKE', $searchTerm))
+                ->orWhereHas('consultations', function ($q) use ($searchTerm) {
+                    $q->where('icd11_diagnosis', 'LIKE', $searchTerm)
+                    ->orWhere('provisional_diagnosis', 'LIKE', $searchTerm)
+                    ->orWhere('admission_status', 'LIKE', $searchTerm);
+                })
+                ->orWhereHas('sponsor', fn($q) => $q->where('name', 'LIKE', $searchTerm)->orWhere('category_name', 'LIKE', $searchTerm));
+        });
+    }
 
-            return $query->whereNotNull('consulted')
-                    ->where(function (Builder $query) use($searchTerm) {
-                        $query->where('created_at', 'LIKE', $searchTerm)
-                        ->orWhere(function($q) use ($searchTerm) {
-                            $terms = array_filter(explode(' ', trim($searchTerm)));
-                            foreach ($terms as $term) {
-                                $q->where(function($subQuery) use ($term) {
-                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
+    /**
+     * Extracted Filter Logic
+     */
+    private function applyNurseFilters(Builder $query, string $filterBy): void
+    {
+        switch ($filterBy) {
+            case 'ANC':
+                $query->where('visit_type', 'ANC');
+                break;
+
+            case 'Outpatient':
+                $query->whereNotNull('consulted')
+                    ->where('admission_status', 'Outpatient')
+                    ->where('visit_type', '!=', 'ANC')
+                    ->whereRelation('prescriptions.resource', 'sub_category', 'Injectable');
+                break;
+
+            case 'Inpatient':
+                $query->whereNotNull('consulted')
+                    ->whereIn('admission_status', ['Inpatient', 'Observation'])
+                    ->where(function (Builder $sub) {
+                        // We check if the visit has ANY relevant prescription 
+                        $sub->whereHas('prescriptions', function (Builder $p) {
+                            $p->where('chartable', true) // Priority check: anything marked chartable
+                                ->orWhereHas('resource', function (Builder $r) {
+                                    // Or any specific categories that require nursing attention
+                                    $r->whereIn('category', ['Medications', 'Medical Services']);
                                 });
-                            }
-                        })
-                        ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
-                        ->orWhereRelation('consultations', 'provisional_diagnosis', 'LIKE', $searchTerm);
-                    })
-                    
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
+                        });
+                    });
+                break;
 
-        if ($data->filterBy == 'Outpatient'){
-            return $query->whereNotNull('consulted')
-            ->where('nurse_done_by', null)
-            ->where('closed', false)
-            ->where(function(Builder $query) {
-                $query->whereRelation('prescriptions.resource', 'sub_category', '=', 'Injectable');
-            })
-            ->where('admission_status', '=', 'Outpatient')
-            ->where('visit_type', '!=', 'ANC')
-            ->orderBy($orderBy, $orderDir)
-            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            default:
+                $query->whereNotNull('consulted');
+                break;
         }
-
-        if ($data->filterBy == 'Inpatient'){
-            $nursesInpatients = $query->whereNotNull('consulted')
-                    ->where('nurse_done_by', null)
-                    ->where('closed', false)
-                    ->where(function(Builder $query) {
-                        $query->whereRelation('prescriptions.resource', 'category', '=', 'Medications')
-                            ->orWhereRelation('prescriptions.resource', 'category', '=', 'Medical Services')
-                            ->orWhereRelation('prescriptions', 'chartable', '=', '1');
-                    })
-                    ->where(function (Builder $query) {
-                        $query->where('admission_status', '=', 'Inpatient')
-                        ->orWhere('admission_status', '=', 'Observation');
-                    })
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            return $nursesInpatients;
-        }
-        if ($data->filterBy == 'ANC'){
-            return $query->where('nurse_done_by', null)
-                    ->where('closed', false)
-                    ->where('visit_type', '=', 'ANC')
-                    ->orderBy('created_at', $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        return $query->whereNotNull('consulted')
-                    ->where('nurse_done_by', null)
-                    ->where('closed', false)
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
     public function getConsultedVisitsNursesTransformer(): callable

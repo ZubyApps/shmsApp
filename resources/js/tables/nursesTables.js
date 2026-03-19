@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, admissionStatusX, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, labourRecordDelay, prescriptionStatusContorller, preSearch, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, visitType, wardState } from "../helpers";
+import { admissionStatus, admissionStatusX, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, labourRecordDelay, prescriptionParser, prescriptionStatusContorller, preSearch, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, visitType, wardState } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     const waitingTable = new DataTable(tableId, {
@@ -210,16 +210,19 @@ const getNurseMedicationsByFilter = (tableId, conId, modal, visitId, isHistory) 
             {data: row =>  row.chartable ? 'Yes' : 'No'},
             {
                 sortable: false,
-                data: row =>
-                `
-                <div class="d-flex flex- ${row.closed || !row.chartable || isHistory ? 'd-none' : ''}">
-                    ${row.doseComplete ? 'Complete' : row.discontinued ? 'Discontinued' : `
-                        <button type="button" id="chartMedicationBtn" class="btn btn${row.medicationCharts.length ? '' : '-outline'}-primary chatMedicationBtn tooltip-test" data-table="${tableId}" title="delete" data-id="${ row.id}" data-resource="${row.resource}" data-prescription="${row.prescription}" data-prescribedBy="${row.prescribedBy}" data-patient="${row.patient}" data-sponsor="${row.sponsor}" data-prescribed="${row.prescribedFormatted}" data-consultation="${row.conId}" data-visit="${row.visitId}">
-                            ${row.medicationCharts.length ? row.doseComplete ? 'Complete' : 'Charted' : 'Create'}
-                        </button>`
-                    }
-                </div>
-                `      
+                data: row => function () {
+                    const isPRN = prescriptionParser(row.prescription)?.frequency.unit == 'PRN';
+                    
+                   return  `
+                    <div class="d-flex flex- ${row.closed || !row.chartable || isHistory ? 'd-none' : ''}">
+                        ${ row.doseComplete && !isPRN ? 'Complete' : row.discontinued ? 'Discontinued' : `
+                            <button type="button" id="chartMedicationBtn" class="btn btn${row.medicationCharts.length ? '' : '-outline'}-${isPRN ? 'warning' : 'primary'} chatMedicationBtn tooltip-test" data-table="${tableId}" title="Chart" data-id="${ row.id}" data-resource="${row.resource}" data-prescription="${row.prescription}" data-prescribedBy="${row.prescribedBy}" data-patient="${row.patient}" data-sponsor="${row.sponsor}" data-prescribed="${row.prescribedFormatted}" data-consultation="${row.conId}" data-visit="${row.visitId}">
+                                ${row.medicationCharts.length ? (isPRN ? 'PRN' : 'Charted') : 'Create'}
+                            </button>`
+                        }
+                    </div>
+                    `      
+                }
             },
         ]
     });
