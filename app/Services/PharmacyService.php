@@ -11,6 +11,7 @@ use App\Models\Prescription;
 use App\Models\Resource;
 use App\Models\User;
 use App\Models\Visit;
+use App\Services\HelperService;
 use App\Services\PayPercentageService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -68,19 +69,50 @@ class PharmacyService
             },
         ]);
 
-        function applySearch(Builder $query, string $searchTerm){
-             $searchTerm = '%' . addcslashes($searchTerm, '%_') . '%';
-            return $query->where(function (Builder $query) use($searchTerm) {
-                        $query->where('created_at', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                        ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
-                        ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
-                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
-                    });
+        // function applySearch(Builder $query, string $searchTerm){
+        //      $searchTerm = '%' . addcslashes($searchTerm, '%_') . '%';
+        //     return $query->where(function (Builder $query) use($searchTerm) {
+        //                 $query->where('created_at', 'LIKE', $searchTerm)
+        //                 ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+        //                 ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+        //                 ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+        //                 ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+        //                 ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
+        //                 ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
+        //                 ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+        //                 ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
+        //             });
+        // }
+
+        function applySearch(Builder $query, string $searchTermRaw) {
+            $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+            return $query->where(function (Builder $query) use ($searchTerm, $searchTermRaw) {
+                // 1. Direct Column Check (Visit table)
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $searchTermRaw)) {
+                        $query->whereBetween('consulted', [$searchTermRaw . ' 00:00:00', $searchTermRaw . ' 23:59:59']);
+                    } else {
+                        $query->whereRaw('1 = 0'); 
+                    }
+
+                // 2. Patient Block (Uses Full-Text Index + Card No)
+                $query->orWhereHas('patient', function ($q) use ($searchTerm, $searchTermRaw) {
+                    $q->searchByName($searchTermRaw)
+                    ->orWhere('card_no', 'LIKE', $searchTerm);
+                });
+
+                // 3. Consultations Block
+                $query->orWhereHas('consultations', function ($q) use ($searchTerm) {
+                    $q->where('icd11_diagnosis', 'LIKE', $searchTerm)
+                    ->orWhere('admission_status', 'LIKE', $searchTerm);
+                });
+
+                // 4. Sponsor Block
+                $query->orWhereHas('sponsor', function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', $searchTerm)
+                    ->orWhere('category_name', 'LIKE', $searchTerm);
+                });
+            });
         }
 
         $prescriptionsConstraints = function(Builder $query){
@@ -93,17 +125,43 @@ class PharmacyService
 
 
 
-        if (! empty($params->searchTerm)) {
-            if ($data->filterBy == 'ANC'){
-                $query = applySearch($query, $params->searchTerm);
-                return $query->where('visit_type', 'ANC')
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        // if (! empty($params->searchTerm)) {
+        //     if ($data->filterBy == 'ANC'){
+        //         $query = applySearch($query, $params->searchTerm);
+        //         return $query->where('visit_type', 'ANC')
+        //             ->orderBy($orderBy, $orderDir)
+        //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        //     }
+
+        //     $query = applySearch($query, $params->searchTerm);
+        //     return $query->orderBy($orderBy, $orderDir)
+        //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        // }
+
+        if (!empty($params->searchTerm)) {
+            $searchTermRaw = trim($params->searchTerm);
+            $isPatientIdSearch = str_starts_with($searchTermRaw, 'pId-');
+            $patientId = $isPatientIdSearch ? explode('-', $searchTermRaw)[1] : null;
+            
+            // Determine the page number for pagination
+            $page = ($params->length + $params->start) / $params->length;
+
+            // Apply the contextual Gatekeeper first
+            if ($data->filterBy === 'ANC') {
+                $query->where('visit_type', 'ANC');
             }
 
-            $query = applySearch($query, $params->searchTerm);
+            $query->where(function (Builder $sub) use ($isPatientIdSearch, $patientId, $query, $searchTermRaw) {
+                
+                if ($isPatientIdSearch) {
+                    $sub->where('patient_id', $patientId);
+                } else {
+                    $query = applySearch($query, $searchTermRaw);
+                }
+            });
+
             return $query->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                        ->paginate($params->length, ['*'], 'page', $page);
         }
 
         if ($data->filterBy == 'Outpatient'){
