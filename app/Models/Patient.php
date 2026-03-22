@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 
 class Patient extends Model
 {
@@ -83,6 +84,30 @@ class Patient extends Model
     public function patientFullInfo()
     {
         return $this->fullName().', '.$this->age().', '.$this->sex;
+    }
+
+    public function scopeSearchByName(Builder $query, $rawSearchTerm): Builder
+    {
+        // 1. Clean and split the search string into individual words
+        $terms = array_filter(explode(' ', trim($rawSearchTerm)));
+
+        if (empty($terms)) {
+            return $query;
+        }
+
+        // 2. Format the terms for Boolean Mode
+        // Example: "John Doe" becomes "+John* +Doe*"
+        $booleanSearch = collect($terms)
+            ->map(fn($term) => "+{$term}*")
+            ->implode(' ');
+        
+        // 3. Execute the Full-Text search
+        // Ensure the column order here matches your migration exactly
+        return $query->whereFullText(
+            ['first_name', 'middle_name', 'last_name'], 
+            $booleanSearch, 
+            ['mode' => 'boolean']
+        );
     }
 
     public function canSms()

@@ -104,19 +104,44 @@ class Resource extends Model
         return $this->hasMany(ResourceSponsor::class, 'resource_id');
     }
 
+    // public function getSellingPriceForSponsor(?Sponsor $sponsor = null): int
+    // {
+    //     if ($sponsor) {
+    //         $sponsorPrice = $this->sponsors()
+    //             ->where('sponsor_id', $sponsor->id)
+    //             ->first()
+    //             ?->pivot
+    //             ?->selling_price;
+
+    //         return $sponsorPrice ?? $this->selling_price ?? 0;
+    //     }
+
+    //     return $this->selling_price ?? 0;
+    // }
+
     public function getSellingPriceForSponsor(?Sponsor $sponsor = null): int
     {
         if ($sponsor) {
+            // First, check if the data is already in memory from eager loading
+            if ($this->relationLoaded('sponsors')) {
+                $sponsorData = $this->sponsors->firstWhere('id', $sponsor->id);
+                if ($sponsorData && $sponsorData->pivot) {
+                    return (int) ($sponsorData->pivot->selling_price ?? $this->selling_price ?? 0);
+                }
+            }
+
+            // If not eager loaded, or not found in collection, do your original DB check
             $sponsorPrice = $this->sponsors()
                 ->where('sponsor_id', $sponsor->id)
                 ->first()
                 ?->pivot
                 ?->selling_price;
 
-            return $sponsorPrice ?? $this->selling_price ?? 0;
+            return (int) ($sponsorPrice ?? $this->selling_price ?? 0);
         }
 
-        return $this->selling_price ?? 0;
+        // No sponsor provided? Return the base resource price
+        return (int) ($this->selling_price ?? 0);
     }
 
     public function scopeHospitalAndOthersCategories(Builder $query): Builder

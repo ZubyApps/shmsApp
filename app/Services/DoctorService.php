@@ -11,6 +11,7 @@ use App\Models\Visit;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use App\Services\PayPercentageService;
 
 class DoctorService
 {    
@@ -104,35 +105,70 @@ class DoctorService
     //     });
     // }
 
+    // private function applySearch(Builder $query, string $searchTerm): Builder
+    // {
+    //     $searchTerm = trim($searchTerm);
+
+    //     if (explode('-', $searchTerm)[0] == 'pId'){
+    //         return  $query->where('patient_id', explode('-', $searchTerm)[1]);
+    //     }
+    //     $searchTerm = '%' . addcslashes(trim($searchTerm), '%_') . '%';
+    //     return $query->where(function (Builder $query) use ($searchTerm) {
+    //         $query->where('created_at', 'LIKE', $searchTerm)
+    //             ->orWhere(function($q) use ($searchTerm) {
+    //                         $terms = array_filter(explode(' ', trim($searchTerm)));
+    //                         foreach ($terms as $term) {
+    //                             $q->where(function($subQuery) use ($term) {
+    //                                 $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
+    //                                         ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
+    //                                         ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
+    //                             });
+    //                         }
+    //                     })
+    //             ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
+    //             ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+    //             ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
+    //             ->orWhereRelation('consultations', 'provisional_diagnosis', 'LIKE', $searchTerm)
+    //             ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
+    //             ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+    //             ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
+    //     });
+    // }
+
     private function applySearch(Builder $query, string $searchTerm): Builder
     {
-        $searchTerm = trim($searchTerm);
+        $searchTermRaw = trim($searchTerm);
 
-        if (explode('-', $searchTerm)[0] == 'pId'){
-            return  $query->where('patient_id', explode('-', $searchTerm)[1]);
+        // 1. Handle specific pId search immediately
+        if (str_starts_with($searchTermRaw, 'pId-')) {
+            return $query->where('patient_id', explode('-', $searchTermRaw)[1]);
         }
-        $searchTerm = '%' . addcslashes(trim($searchTerm), '%_') . '%';
-        return $query->where(function (Builder $query) use ($searchTerm) {
+
+        $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+        return $query->where(function (Builder $query) use ($searchTerm, $searchTermRaw) {
+            // A. Direct Visit Column
             $query->where('created_at', 'LIKE', $searchTerm)
-                ->orWhere(function($q) use ($searchTerm) {
-                            $terms = array_filter(explode(' ', trim($searchTerm)));
-                            foreach ($terms as $term) {
-                                $q->where(function($subQuery) use ($term) {
-                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
-                                });
-                            }
-                        })
-                // ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
-                ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
-                // ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
-                // ->orWhereRelation('consultations', 'provisional_diagnosis', 'LIKE', $searchTerm)
-                // ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
-                // ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-                // ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
+                
+                // B. Patient Group (Single Subquery for Names, Phone, and Card)
+                ->orWhereHas('patient', function ($q) use ($searchTerm, $searchTermRaw) {
+                    $q->searchByName($searchTermRaw) // Our new Full-Text Scope
+                    ->orWhere('phone', 'LIKE', $searchTerm)
+                    ->orWhere('card_no', 'LIKE', $searchTerm);
+                })
+
+                // C. Consultations Group (Single Subquery)
+                ->orWhereHas('consultations', function ($q) use ($searchTerm) {
+                    $q->where('icd11_diagnosis', 'LIKE', $searchTerm)
+                    ->orWhere('provisional_diagnosis', 'LIKE', $searchTerm)
+                    ->orWhere('admission_status', 'LIKE', $searchTerm);
+                })
+
+                // D. Sponsor Group (Single Subquery)
+                ->orWhereHas('sponsor', function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', $searchTerm)
+                    ->orWhere('category_name', 'LIKE', $searchTerm);
+                });
         });
     }
 

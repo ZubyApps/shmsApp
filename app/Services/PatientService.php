@@ -232,9 +232,7 @@ class PatientService
 
             return $query->where(function (Builder $query) use ($searchTerm, $searchTermRaw) {
     // 1. Full-Text Name Search first (Most efficient)
-                $query->where('first_name', 'LIKE', $searchTerm)
-                        ->orWhere('middle_name', 'LIKE', $searchTerm)
-                        ->orWhere('last_name', 'LIKE', $searchTerm)
+                $query->searchByname($searchTermRaw)
 
                     // 2. Local Patient Columns
                     ->orWhere('card_no', 'LIKE', $searchTerm)
@@ -561,7 +559,7 @@ class PatientService
             if ($data->type === 'ANC') {
                 $query->whereRelation('visits', 'visit_type', 'ANC');
             }
-            $query = $this->scopeSearchByName($query, $searchTerm);
+            $query->searchByName($searchTerm);
             $query->orWhere('card_no', 'LIKE', $searchTerm)
                 ->orWhere('phone', 'LIKE', $searchTerm);
 
@@ -585,22 +583,22 @@ class PatientService
         };
     }
 
-    public function scopeSearchByName($query, $search)
-    {
-        $terms = array_filter(explode(' ', trim($search)));
+    // public function scopeSearchByName($query, $search)
+    // {
+    //     $terms = array_filter(explode(' ', trim($search)));
         
-        if (empty($terms)) {
-            return $query;
-        }
+    //     if (empty($terms)) {
+    //         return $query;
+    //     }
         
-        return $query->where(function($q) use ($terms) {
-            foreach ($terms as $term) {
-                $q->where(function($subQuery) use ($term) {
-                    $subQuery->where('first_name', 'LIKE', $term)
-                            ->orWhere('middle_name', 'LIKE', $term)
-                            ->orWhere('last_name', 'LIKE', $term);
-                });
-            }
-        });
-    }
+    //     return $query->where(function($q) use ($terms) {
+    //         foreach ($terms as $term) {
+    //             $q->where(function($subQuery) use ($term) {
+    //                 $subQuery->where('first_name', 'LIKE', $term)
+    //                         ->orWhere('middle_name', 'LIKE', $term)
+    //                         ->orWhere('last_name', 'LIKE', $term);
+    //             });
+    //         }
+    //     });
+    // }
 }

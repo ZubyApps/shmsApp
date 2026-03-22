@@ -11,6 +11,8 @@ use App\Models\Prescription;
 use App\Models\Sponsor;
 use App\Models\User;
 use App\Models\Visit;
+use App\Services\PayPercentageService;
+use App\Services\PaymentService;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
@@ -52,39 +54,74 @@ class HmoService
                 'verifiedBy:id,username'
         ]);
 
-        if (! empty($params->searchTerm)) {
+        // if (! empty($params->searchTerm)) {
+        //     $searchTermRaw = trim($params->searchTerm);
+        //     $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
+
+        //     $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+        //     if ($patientId){ 
+        //         return $query->where('patient_id', $patientId)
+        //         ->orderBy($orderBy, $orderDir)
+        //         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        //     }
+            
+        //     return $query->where(function (Builder $query) use($searchTerm) {
+        //                 $query->where('created_at', 'LIKE', $searchTerm)
+        //                 ->orWhere(function($q) use ($searchTerm) {
+        //                     $terms = array_filter(explode(' ', trim($searchTerm)));
+        //                     foreach ($terms as $term) {
+        //                         $q->where(function($subQuery) use ($term) {
+        //                             $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
+        //                                     ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
+        //                                     ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
+        //                         });
+        //                     }
+        //                 })
+        //                     // ->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+        //                     // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm);
+        //                 })
+        //                 ->orWhere('verification_status', 'LIKE', $searchTerm)
+        //                 ->orderBy($orderBy, $orderDir)
+        //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        // }
+
+        if (!empty($params->searchTerm)) {
             $searchTermRaw = trim($params->searchTerm);
-            $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
+            $page = ($params->length + $params->start) / $params->length;
+
+            // 1. Immediate Patient ID Search
+            if (str_starts_with($searchTermRaw, 'pId-')) {
+                return $query->where('patient_id', explode('-', $searchTermRaw)[1])
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, ['*'], 'page', $page);
+            }
 
             $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
 
-            if ($patientId){ 
-                return $query->where('patient_id', $patientId)
-                ->orderBy($orderBy, $orderDir)
-                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
-            
-            return $query->where(function (Builder $query) use($searchTerm) {
-                        $query->where('created_at', 'LIKE', $searchTerm)
-                        ->orWhere(function($q) use ($searchTerm) {
-                            $terms = array_filter(explode(' ', trim($searchTerm)));
-                            foreach ($terms as $term) {
-                                $q->where(function($subQuery) use ($term) {
-                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
-                                });
-                            }
-                        })
-                            // ->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                            // ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                            ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm);
-                        })
-                        ->orWhere('verification_status', 'LIKE', $searchTerm)
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            // 2. Main Search Group
+            $query->where(function (Builder $sub) use ($searchTerm, $searchTermRaw) {
+                $sub->where('created_at', 'LIKE', $searchTerm)
+                    ->orWhere('verification_status', 'LIKE', $searchTerm)
+                    
+                    // Patient Info Group (Names via Full-Text, Phone/Card via LIKE)
+                    ->orWhereHas('patient', function ($q) use ($searchTerm, $searchTermRaw) {
+                        $q->searchByName($searchTermRaw)
+                        ->orWhere('phone', 'LIKE', $searchTerm)
+                        ->orWhere('card_no', 'LIKE', $searchTerm);
+                    })
+                    
+                    // Sponsor Info Group
+                    ->orWhereHas('sponsor', function ($q) use ($searchTerm) {
+                        $q->where('name', 'LIKE', $searchTerm);
+                    });
+            });
+
+            return $query->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, ['*'], 'page', $page);
         }
 
         return $query
@@ -143,125 +180,200 @@ class HmoService
             return $visit;
     }
 
+    // public function getPaginatedAllConsultedHmoVisits(DataTableQueryParams $params, $data)
+    // {
+    //     $orderBy    = 'consulted';
+    //     $orderDir   =  'desc';
+    //     $query = $this->visit
+    //     ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'viewed_at', 'viewed_by', 'hmo_done_at', 'hmo_done_by', 'discount')->with([
+    //         'sponsor:id,name,category_name,flag', 
+    //         'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
+    //         'patient' => function($query) {
+    //             $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no', 'sex', 'staff_id', 'phone')
+    //             ->with(['flaggedBy:id,username'])
+    //             ->withCount([
+    //                 'visits as visitsCount' => function (Builder $query) {
+    //                 $query->where('consulted', '>', Carbon::now()->subDays(30));
+    //                 },
+    //             ]);
+    //         },
+    //         'antenatalRegisteration:id,visit_id', 
+    //         'doctor:id,username', 
+    //         'closedOpenedBy:id,username',
+    //         'viewedBy:id,username',
+    //         'hmoDoneBy:id,username'
+    //     ])
+    //     ->withCount([
+    //         'prescriptions as labPrescribed' => function (Builder $query) {
+    //         $query->whereRelation('resource', 'category', '=', 'Investigations');
+    //         }, 
+    //         'prescriptions as labDone' => function (Builder $query) {
+    //         $query->whereRelation('resource', 'category', '=', 'Investigations')
+    //             ->where('result_date', '!=', null);
+    //         },
+    //         'consultations as consultationsCount'
+    //     ])
+    //     ->whereNotNull('consulted');
+
+    //     if (!empty($params->searchTerm)) {
+    //         $searchTermRaw = trim($params->searchTerm);
+    //         $page = ($params->length + $params->start) / $params->length;
+
+    //         // 1. Handle pId immediately (Best for performance)
+    //         if (str_starts_with($searchTermRaw, 'pId-')) {
+    //             return $query->where('patient_id', explode('-', $searchTermRaw)[1])
+    //                 ->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, ['*'], 'page', $page);
+    //         }
+
+    //         $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+    //         // 2. Main Grouped Search
+    //         $query->where(function (Builder $sub) use ($searchTerm, $searchTermRaw) {
+    //             $sub->where('created_at', 'LIKE', $searchTerm)
+    //                 // Group Patient logic: One subquery instead of five
+    //                 ->orWhereHas('patient', function ($q) use ($searchTerm, $searchTermRaw) {
+    //                     $q->searchByName($searchTermRaw)
+    //                     ->orWhere('phone', 'LIKE', $searchTerm)
+    //                     ->orWhere('card_no', 'LIKE', $searchTerm);
+    //                 })
+    //                 // Group Sponsor logic
+    //                 ->orWhereHas('sponsor', function ($q) use ($searchTerm) {
+    //                     $q->where('name', 'LIKE', $searchTerm);
+    //                 });
+    //         });
+
+    //         return $query->orderBy($orderBy, $orderDir)
+    //                     ->paginate($params->length, ['*'], 'page', $page);
+    //     }
+
+    //     if ($data->filterBy == 'Outpatient'){
+    //         return $query->where('hmo_done_by', null)
+    //         // ->where('closed', false)
+    //         ->where('admission_status', '=', 'Outpatient')
+    //         ->where('visit_type', '!=', 'ANC')
+    //         ->where(function (Builder $query) {
+    //             $query->whereRelation('sponsor', 'category_name', 'HMO')
+    //             ->orWhereRelation('sponsor', 'category_name', 'NHIS')
+    //             ->orWhereRelation('sponsor', 'category_name', 'Retainership');
+    //         })
+    //         ->orderBy($orderBy, $orderDir)
+    //         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     if ($data->filterBy == 'Inpatient'){
+    //         return $query->where('hmo_done_by', null)
+    //                 // ->where('closed', false)
+    //                 ->where(function (Builder $query) {
+    //                     $query->where('admission_status', '=', 'Inpatient')
+    //                     ->orWhere('admission_status', '=', 'Observation');
+    //                 })
+    //                 ->where(function (Builder $query) {
+    //                     $query->whereRelation('sponsor', 'category_name', 'HMO')
+    //                     ->orWhereRelation('sponsor', 'category_name', 'NHIS')
+    //                     ->orWhereRelation('sponsor', 'category_name', 'Retainership');
+    //                 })
+    //                 ->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+    //     if ($data->filterBy == 'ANC'){
+    //         return $query->where('hmo_done_by', null)
+    //                 // ->where('closed', false)
+    //                 ->where('visit_type', '=', 'ANC')
+    //                 ->where(function (Builder $query) {
+    //                     $query->whereRelation('sponsor', 'category_name', 'HMO')
+    //                     ->orWhereRelation('sponsor', 'category_name', 'NHIS')
+    //                     ->orWhereRelation('sponsor', 'category_name', 'Retainership');
+    //                 })
+    //                 ->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     return $query->where('hmo_done_by', null)
+    //                 // ->where('closed', false)
+    //                     ->where(function (Builder $query) {
+    //                         $query->whereRelation('sponsor', 'category_name', 'HMO')
+    //                         ->orWhereRelation('sponsor', 'category_name', 'NHIS')
+    //                         ->orWhereRelation('sponsor', 'category_name', 'Retainership');
+    //                     })
+    //                 ->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    // }
+
     public function getPaginatedAllConsultedHmoVisits(DataTableQueryParams $params, $data)
     {
-        $orderBy    = 'consulted';
-        $orderDir   =  'desc';
-        $query = $this->visit
-        ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'viewed_at', 'viewed_by', 'hmo_done_at', 'hmo_done_by', 'discount')->with([
-            'sponsor:id,name,category_name,flag', 
-            'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
-            'patient' => function($query) {
-                $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no', 'sex', 'staff_id', 'phone')
-                ->with(['flaggedBy:id,username'])
-                ->withCount([
-                    'visits as visitsCount' => function (Builder $query) {
-                    $query->where('consulted', '>', Carbon::now()->subDays(30));
-                    },
-                ]);
-            },
-            'antenatalRegisteration:id,visit_id', 
-            'doctor:id,username', 
-            'closedOpenedBy:id,username',
-            'viewedBy:id,username',
-            'hmoDoneBy:id,username'
-        ])
-        ->withCount([
-            'prescriptions as labPrescribed' => function (Builder $query) {
-            $query->whereRelation('resource', 'category', '=', 'Investigations');
-            }, 
-            'prescriptions as labDone' => function (Builder $query) {
-            $query->whereRelation('resource', 'category', '=', 'Investigations')
-                ->where('result_date', '!=', null);
-            },
-            'consultations as consultationsCount'
-        ])
-        ->whereNotNull('consulted');
+        $orderBy  = 'consulted';
+        $orderDir = 'desc';
+        $page     = ($params->length + $params->start) / $params->length;
 
-        if (! empty($params->searchTerm)) {
-            $searchTermRaw = trim($params->searchTerm);
-            $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
+        $query = $this->visit->query()
+            ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'viewed_at', 'viewed_by', 'hmo_done_at', 'hmo_done_by', 'discount')
+            ->with([
+                'sponsor:id,name,category_name,flag', 
+                'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
+                'patient' => fn($q) => $q->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no', 'sex', 'staff_id', 'phone')
+                    ->with(['flaggedBy:id,username'])
+                    ->withCount(['visits as visitsCount' => fn($sq) => $sq->where('consulted', '>', now()->subDays(30))]),
+                'antenatalRegisteration:id,visit_id', 
+                'doctor:id,username', 
+                'closedOpenedBy:id,username',
+                'viewedBy:id,username',
+                'hmoDoneBy:id,username'
+            ])
+            ->withCount([
+                'prescriptions as labPrescribed' => fn($q) => $q->whereRelation('resource', 'category', 'Investigations'), 
+                'prescriptions as labDone' => fn($q) => $q->whereRelation('resource', 'category', 'Investigations')->whereNotNull('result_date'),
+                'consultations as consultationsCount'
+            ])
+            ->whereNotNull('consulted');
 
-            $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+        // 1. Search Logic
+        if (!empty($params->searchTerm)) {
+            return $this->applyHmoSearch($query, $params, $orderBy, $orderDir, $page);
+        }
 
-            if ($patientId){ 
-                return $query->where('patient_id', $patientId)
+        // 2. Global Filter: All these visits must be HMO/NHIS/Retainership and not "done"
+        $query->whereNull('hmo_done_by')
+            ->whereHas('sponsor', fn($q) => $q->whereIn('category_name', ['HMO', 'NHIS', 'Retainership']));
+
+        // 3. Specific Sub-Filters (The "Sweet" Part)
+        $query->when($data->filterBy === 'Outpatient', fn($q) => 
+            $q->where('admission_status', 'Outpatient')->where('visit_type', '!=', 'ANC')
+        );
+
+        $query->when($data->filterBy === 'Inpatient', fn($q) => 
+            $q->whereIn('admission_status', ['Inpatient', 'Observation'])
+        );
+
+        $query->when($data->filterBy === 'ANC', fn($q) => 
+            $q->where('visit_type', 'ANC')
+        );
+
+        return $query->orderBy($orderBy, $orderDir)->paginate($params->length, ['*'], 'page', $page);
+    }
+
+    /**
+     * Isolated search logic to keep the main method clean
+     */
+    private function applyHmoSearch($query, $params, $orderBy, $orderDir, $page)
+    {
+        $searchTermRaw = trim($params->searchTerm);
+        
+        if (str_starts_with($searchTermRaw, 'pId-')) {
+            return $query->where('patient_id', explode('-', $searchTermRaw)[1])
                 ->orderBy($orderBy, $orderDir)
-                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
-
-            return $query->where(function (Builder $query) use($searchTerm) {
-                        $query->where('created_at', 'LIKE', $searchTerm)
-                        ->orWhere(function($q) use ($searchTerm) {
-                            $terms = array_filter(explode(' ', trim($searchTerm)));
-                            foreach ($terms as $term) {
-                                $q->where(function($subQuery) use ($term) {
-                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
-                                });
-                            }
-                        })
-                        ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm);
-                    })
-                    
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                ->paginate($params->length, ['*'], 'page', $page);
         }
 
-        if ($data->filterBy == 'Outpatient'){
-            return $query->where('hmo_done_by', null)
-            // ->where('closed', false)
-            ->where('admission_status', '=', 'Outpatient')
-            ->where('visit_type', '!=', 'ANC')
-            ->where(function (Builder $query) {
-                $query->whereRelation('sponsor', 'category_name', 'HMO')
-                ->orWhereRelation('sponsor', 'category_name', 'NHIS')
-                ->orWhereRelation('sponsor', 'category_name', 'Retainership');
-            })
-            ->orderBy($orderBy, $orderDir)
-            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
+        $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
 
-        if ($data->filterBy == 'Inpatient'){
-            return $query->where('hmo_done_by', null)
-                    // ->where('closed', false)
-                    ->where(function (Builder $query) {
-                        $query->where('admission_status', '=', 'Inpatient')
-                        ->orWhere('admission_status', '=', 'Observation');
-                    })
-                    ->where(function (Builder $query) {
-                        $query->whereRelation('sponsor', 'category_name', 'HMO')
-                        ->orWhereRelation('sponsor', 'category_name', 'NHIS')
-                        ->orWhereRelation('sponsor', 'category_name', 'Retainership');
-                    })
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-        if ($data->filterBy == 'ANC'){
-            return $query->where('hmo_done_by', null)
-                    // ->where('closed', false)
-                    ->where('visit_type', '=', 'ANC')
-                    ->where(function (Builder $query) {
-                        $query->whereRelation('sponsor', 'category_name', 'HMO')
-                        ->orWhereRelation('sponsor', 'category_name', 'NHIS')
-                        ->orWhereRelation('sponsor', 'category_name', 'Retainership');
-                    })
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
+        $query->where(function ($sub) use ($searchTerm, $searchTermRaw) {
+            $sub->where('created_at', 'LIKE', $searchTerm)
+                ->orWhereHas('patient', fn($q) => $q->searchByName($searchTermRaw)->orWhere('phone', 'LIKE', $searchTerm)->orWhere('card_no', 'LIKE', $searchTerm))
+                ->orWhereHas('sponsor', fn($q) => $q->where('name', 'LIKE', $searchTerm));
+        });
 
-        return $query->where('hmo_done_by', null)
-                    // ->where('closed', false)
-                        ->where(function (Builder $query) {
-                            $query->whereRelation('sponsor', 'category_name', 'HMO')
-                            ->orWhereRelation('sponsor', 'category_name', 'NHIS')
-                            ->orWhereRelation('sponsor', 'category_name', 'Retainership');
-                        })
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        return $query->orderBy($orderBy, $orderDir)->paginate($params->length, ['*'], 'page', $page);
     }
 
     public function getAllHmoConsultedVisitsTransformer(): callable
@@ -307,101 +419,218 @@ class HmoService
          };
     }
 
-    public function getPaginatedAllPrescriptionsRequest(DataTableQueryParams $params, $data)
+    // public function getPaginatedAllPrescriptionsRequest(DataTableQueryParams $params, $data)
+    // {
+    //     $orderBy    = 'created_at';
+    //     $orderDir   =  'asc';
+    //     $query      = $this->prescription
+    //         ->select('id', 'visit_id', 'resource_id', 'user_id', 'consultation_id', 'prescription', 'qty_billed', 'note', 'hms_bill', 'hms_bill_date', 'hmo_bill', 'approved', 'rejected', 'qty_dispensed', 'hmo_bill_by', 'approved_by', 'rejected_by', 'created_at')
+    //         ->addSelect(['totalQtyResourceBilled' => function ($query) {
+    //             $query->selectRaw('sum(qty_billed)')
+    //                 ->from('prescriptions as p2')
+    //                 ->whereColumn('p2.resource_id', 'prescriptions.resource_id')
+    //                 ->whereColumn('p2.visit_id', 'prescriptions.visit_id');
+    //         }])
+    //         ->with([
+    //             'visit' => function ($query) {
+    //                 $query->select('id', 'sponsor_id', 'patient_id', 'total_paid')
+    //                 ->with([
+    //                     'sponsor'  => function ($query) {
+    //                                     $query->select('id', 'name', 'category_name', 'flag', 'sponsor_category_id' )
+    //                                     ->with([
+    //                                         'sponsorCategory:id,pay_class',
+    //                                     ]);
+    //                                 },
+    //                     'patient' => function($query){
+    //                         $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
+    //                         ->with(['flaggedBy:id,username']);
+    //                     }, 
+    //                 ]);
+    //             },
+    //             'resource:id,flag,name,selling_price',
+    //             'consultation:id,icd11_diagnosis,provisional_diagnosis,assessment',
+    //             'hmoBillBy:id,username',
+    //             'approvedBy:id,username',
+    //             'rejectedBy:id,username',
+    //             'user:id,username',
+    //     ]);
+
+    //         // if (! empty($params->searchTerm)) {
+
+    //         //     $searchTermRaw = trim($params->searchTerm);
+
+    //         //     $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
+
+    //         //     $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+    //         //     if ($patientId){ 
+    //         //         return $query->whereRelation('visit', 'patient_id', $patientId)
+    //         //             ->where(function (Builder $query) use($data) {
+    //         //                 $query->whereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? '' : 'HMO'))
+    //         //                 ->orWhereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? 'NHIS' : ''))
+    //         //                 ->orWhereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? '' : 'Retainership'));
+    //         //         })
+    //         //         ->orderBy($orderBy, $orderDir)
+    //         //         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //         //     }
+
+    //         //     return $query->where(function (Builder $query) use($data) {
+    //         //             $query->whereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? '' : 'HMO'))
+    //         //             ->orWhereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? 'NHIS' : ''))
+    //         //             ->orWhereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? '' : 'Retainership'));
+    //         //         })
+    //         //         ->where(function (Builder $query) use($searchTerm) {
+    //         //             $query->whereRelation('visit.sponsor', 'name', 'LIKE', $searchTerm)
+    //         //             ->orWhere(function($q) use ($searchTerm) {
+    //         //                 $terms = array_filter(explode(' ', trim($searchTerm)));
+    //         //                 foreach ($terms as $term) {
+    //         //                     $q->where(function($subQuery) use ($term) {
+    //         //                         $subQuery->whereRelation('visit.patient', 'first_name', 'LIKE', $term)
+    //         //                                 ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $term)
+    //         //                                 ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $term);
+    //         //                     });
+    //         //                 }
+    //         //             })
+    //         //             ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm)
+    //         //             ->orWhereRelation('visit.patient', 'phone', 'LIKE', $searchTerm);
+    //         //         })
+    //         //         ->orderBy($orderBy, $orderDir)
+    //         //         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //         // }
+
+    //         if (!empty($params->searchTerm)) {
+    //             $searchTermRaw = trim($params->searchTerm);
+    //             $page = ($params->length + $params->start) / $params->length;
+
+    //             // 1. Determine Sponsor Categories once
+    //             $categories = $data->sponsor === 'NHIS' ? ['NHIS'] : ['HMO', 'Retainership'];
+
+    //             // 2. Handle pId search
+    //             if (str_starts_with($searchTermRaw, 'pId-')) {
+    //                 return $query->whereRelation('visit', 'patient_id', explode('-', $searchTermRaw)[1])
+    //                     ->whereHas('visit.sponsor', fn($q) => $q->whereIn('category_name', $categories))
+    //                     ->orderBy($orderBy, $orderDir)
+    //                     ->paginate($params->length, ['*'], 'page', $page);
+    //             }
+
+    //             $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+    //             // 3. Main Search Block
+    //             $query->whereHas('visit.sponsor', fn($q) => $q->whereIn('category_name', $categories))
+    //                 ->where(function (Builder $sub) use ($searchTerm, $searchTermRaw) {
+    //                     // Search Sponsor Name
+    //                     $sub->whereRelation('visit.sponsor', 'name', 'LIKE', $searchTerm)
+    //                     // Grouped Patient Search (Full-Text + Card/Phone)
+    //                     ->orWhereHas('visit.patient', function ($q) use ($searchTerm, $searchTermRaw) {
+    //                         $q->searchByName($searchTermRaw)
+    //                             ->orWhere('card_no', 'LIKE', $searchTerm)
+    //                             ->orWhere('phone', 'LIKE', $searchTerm);
+    //                     });
+    //                 });
+
+    //             return $query->orderBy($orderBy, $orderDir)
+    //                         ->paginate($params->length, ['*'], 'page', $page);
+    //         }
+
+    //         if ($data->sponsor == 'NHIS'){
+    //             return $query->where('approved', false)
+    //                 ->where('rejected', false)
+    //                 ->whereRelation('visit.sponsor', 'category_name', 'NHIS')
+    //                 ->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //         }
+
+    //         return $query->where('approved', false)
+    //                 ->where('rejected', false)
+    //                 ->where(function (Builder $query) {
+    //                     $query->whereRelation('visit.sponsor', 'category_name', 'HMO')
+    //                     ->orWhereRelation('visit.sponsor', 'category_name', 'Retainership');
+    //                 })
+    //                 ->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    // }
+
+     public function getPaginatedAllPrescriptionsRequest(DataTableQueryParams $params, $data)
     {
         $orderBy    = 'created_at';
-        $orderDir   =  'asc';
-        $query      = $this->prescription
-            ->select('id', 'visit_id', 'resource_id', 'user_id', 'consultation_id', 'prescription', 'qty_billed', 'note', 'hms_bill', 'hms_bill_date', 'hmo_bill', 'approved', 'rejected', 'qty_dispensed', 'hmo_bill_by', 'approved_by', 'rejected_by', 'created_at')
-            ->addSelect(['totalQtyResourceBilled' => function ($query) {
-                $query->selectRaw('sum(qty_billed)')
-                    ->from('prescriptions as p2')
-                    ->whereColumn('p2.resource_id', 'prescriptions.resource_id')
-                    ->whereColumn('p2.visit_id', 'prescriptions.visit_id');
-            }])
+        $orderDir   = 'asc';
+        $page       = ($params->length + $params->start) / $params->length;
+        
+        // Determine categories once to keep the query builder clean
+        $categories = $data->sponsor === 'NHIS' ? ['NHIS'] : ['HMO', 'Retainership'];
+
+        $query = $this->prescription->query()
+            ->select([
+                'prescriptions.id', 
+                'prescriptions.visit_id', 
+                'prescriptions.resource_id', 
+                'user_id', 
+                'consultation_id', 
+                'prescription', 
+                'qty_billed', 
+                'note', 
+                'hms_bill', 
+                'hms_bill_date', 
+                'hmo_bill', 
+                'approved', 
+                'rejected', 
+                'qty_dispensed', 
+                'hmo_bill_by', 
+                'approved_by', 
+                'rejected_by', 
+                'created_at',
+                'prt.total_qty_resource_billed' // Calculated value from our View
+            ])
+            ->leftJoin('prescription_resource_totals as prt', function ($join) {
+                $join->on('prescriptions.visit_id', '=', 'prt.visit_id')
+                    ->on('prescriptions.resource_id', '=', 'prt.resource_id');
+            })
             ->with([
-                'visit' => function ($query) {
-                    $query->select('id', 'sponsor_id', 'patient_id', 'total_paid')
+                'visit' => fn($q) => $q->select('id', 'sponsor_id', 'patient_id', 'total_paid')
                     ->with([
-                        'sponsor'  => function ($query) {
-                                        $query->select('id', 'name', 'category_name', 'flag', 'sponsor_category_id' )
-                                        ->with([
-                                            'sponsorCategory:id,pay_class',
-                                        ]);
-                                    },
-                        'patient' => function($query){
-                            $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
-                            ->with(['flaggedBy:id,username']);
-                        }, 
-                    ]);
-                },
+                        'sponsor' => fn($sq) => $sq->select('id', 'name', 'category_name', 'flag', 'sponsor_category_id')
+                            ->with('sponsorCategory:id,pay_class'),
+                        'patient' => fn($pq) => $pq->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
+                            ->with('flaggedBy:id,username'),
+                    ]),
                 'resource:id,flag,name,selling_price',
                 'consultation:id,icd11_diagnosis,provisional_diagnosis,assessment',
                 'hmoBillBy:id,username',
                 'approvedBy:id,username',
                 'rejectedBy:id,username',
                 'user:id,username',
-        ]);
+            ]);
 
-            if (! empty($params->searchTerm)) {
+        // 1. Search Logic
+        if (!empty($params->searchTerm)) {
+            $searchTermRaw = trim($params->searchTerm);
+            $searchTerm    = '%' . addcslashes($searchTermRaw, '%_') . '%';
 
-                $searchTermRaw = trim($params->searchTerm);
+            // Constrain search to the relevant Sponsor categories
+            $query->whereHas('visit.sponsor', fn($q) => $q->whereIn('category_name', $categories));
 
-                $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
-
-                $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
-
-                if ($patientId){ 
-                    return $query->whereRelation('visit', 'patient_id', $patientId)
-                        ->where(function (Builder $query) use($data) {
-                            $query->whereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? '' : 'HMO'))
-                            ->orWhereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? 'NHIS' : ''))
-                            ->orWhereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? '' : 'Retainership'));
-                    })
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-                }
-
-                return $query->where(function (Builder $query) use($data) {
-                        $query->whereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? '' : 'HMO'))
-                        ->orWhereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? 'NHIS' : ''))
-                        ->orWhereRelation('visit.sponsor', 'category_name', ($data->sponsor == 'NHIS' ? '' : 'Retainership'));
-                    })
-                    ->where(function (Builder $query) use($searchTerm) {
-                        $query->whereRelation('visit.sponsor', 'name', 'LIKE', $searchTerm)
-                        ->orWhere(function($q) use ($searchTerm) {
-                            $terms = array_filter(explode(' ', trim($searchTerm)));
-                            foreach ($terms as $term) {
-                                $q->where(function($subQuery) use ($term) {
-                                    $subQuery->whereRelation('visit.patient', 'first_name', 'LIKE', $term)
-                                            ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $term)
-                                            ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $term);
-                                });
-                            }
-                        })
-                        ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm)
-                        ->orWhereRelation('visit.patient', 'phone', 'LIKE', $searchTerm);
-                    })
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            if (str_starts_with($searchTermRaw, 'pId-')) {
+                $query->whereRelation('visit', 'patient_id', explode('-', $searchTermRaw)[1]);
+            } else {
+                $query->where(function ($sub) use ($searchTerm, $searchTermRaw) {
+                    $sub->whereRelation('visit.sponsor', 'name', 'LIKE', $searchTerm)
+                        ->orWhereHas('visit.patient', fn($q) => 
+                            $q->searchByName($searchTermRaw)
+                            ->orWhere('card_no', 'LIKE', $searchTerm)
+                            ->orWhere('phone', 'LIKE', $searchTerm)
+                        );
+                });
             }
+            
+            return $query->orderBy($orderBy, $orderDir)->paginate($params->length, ['*'], 'page', $page);
+        }
 
-            if ($data->sponsor == 'NHIS'){
-                return $query->where('approved', false)
-                    ->where('rejected', false)
-                    ->whereRelation('visit.sponsor', 'category_name', 'NHIS')
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
-
-            return $query->where('approved', false)
-                    ->where('rejected', false)
-                    ->where(function (Builder $query) {
-                        $query->whereRelation('visit.sponsor', 'category_name', 'HMO')
-                        ->orWhereRelation('visit.sponsor', 'category_name', 'Retainership');
-                    })
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        // 2. Default Filtered Logic (Non-Search)
+        return $query->where('approved', false)
+            ->where('rejected', false)
+            ->whereHas('visit.sponsor', fn($q) => $q->whereIn('category_name', $categories))
+            ->orderBy($orderBy, $orderDir)
+            ->paginate($params->length, ['*'], 'page', $page);
     }
 
     public function getAllPrescriptionsTransformer(): callable
@@ -409,7 +638,7 @@ class HmoService
        return  function (Prescription $prescription) {
         $sponsorCategory = $prescription->visit?->sponsor->category_name;
         $flag = $prescription->resource->flag;
-
+        info('p', [$prescription]);
             return [
                 'id'                => $prescription->id,
                 'patient'           => $prescription->visit?->patient?->patientId(),
@@ -427,7 +656,7 @@ class HmoService
                 'resourceFlagged'   => str_contains($flag, $sponsorCategory ?? '') ? true : false,
                 'prescription'      => $prescription->prescription,
                 'quantity'          => $prescription->qty_billed,
-                'totalQuantity'     => $prescription->totalQtyResourceBilled,//resource->prescriptions->where('visit_id', $prescription->visit->id)->sum('qty_billed'),
+                'totalQuantity'     => $prescription->total_qty_resource_billed,//totalQtyResourceBilled,//resource->prescriptions->where('visit_id', $prescription->visit->id)->sum('qty_billed'),
                 'note'              => $prescription->note,
                 'hmsBill'           => $prescription->hms_bill ?? '',
                 'nhisBill'          => $prescription->nhis_bill ?? '',
@@ -713,18 +942,42 @@ class HmoService
             }
         ]);        
 
-            if (! empty($params->searchTerm)) {
-                $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            // if (! empty($params->searchTerm)) {
+            //     $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            //     return $query->where('visit_id', $data->visitId)
+            //                 ->where(function (Builder $query) use($searchTerm) {
+            //                     $query->whereRelation('consultation', 'icd11_diagnosis', 'LIKE', '%' . $searchTerm)
+            //                     ->orWhereRelation('user', 'username', 'LIKE', '%' . $searchTerm)
+            //                     ->orWhereRelation('resource', 'name', 'LIKE', '%' . $searchTerm)
+            //                     ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . $searchTerm)
+            //                     ->orWhereRelation('resource', 'category', 'LIKE', '%' . $searchTerm);
+            //                 })
+            //                 ->orderBy($orderBy, $orderDir)
+            //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            // }
+
+            if (!empty($params->searchTerm)) {
+                $searchTermRaw = trim($params->searchTerm);
+                $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+                $page = ($params->length + $params->start) / $params->length;
+
                 return $query->where('visit_id', $data->visitId)
-                            ->where(function (Builder $query) use($searchTerm) {
-                                $query->whereRelation('consultation', 'icd11_diagnosis', 'LIKE', '%' . $searchTerm)
-                                ->orWhereRelation('user', 'username', 'LIKE', '%' . $searchTerm)
-                                ->orWhereRelation('resource', 'name', 'LIKE', '%' . $searchTerm)
-                                ->orWhereRelation('resource', 'sub_category', 'LIKE', '%' . $searchTerm)
-                                ->orWhereRelation('resource', 'category', 'LIKE', '%' . $searchTerm);
-                            })
-                            ->orderBy($orderBy, $orderDir)
-                            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                    ->where(function (Builder $sub) use ($searchTerm) {
+                        // 1. Consultation Check
+                        $sub->whereRelation('consultation', 'icd11_diagnosis', 'LIKE', $searchTerm)
+                            
+                            // 2. User Check
+                            ->orWhereRelation('user', 'username', 'LIKE', $searchTerm)
+                            
+                            // 3. Grouped Resource Check (One subquery for 3 columns)
+                            ->orWhereHas('resource', function ($q) use ($searchTerm) {
+                                $q->where('name', 'LIKE', $searchTerm)
+                                ->orWhere('sub_category', 'LIKE', $searchTerm)
+                                ->orWhere('category', 'LIKE', $searchTerm);
+                            });
+                    })
+                    ->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, ['*'], 'page', $page);
             }
 
         return $query->where('visit_id', $data->visitId)
@@ -779,76 +1032,115 @@ class HmoService
         ])
         ->whereNotNull('consulted');
 
-        if (! empty($params->searchTerm)) {
+        // if (! empty($params->searchTerm)) {
 
+        //     $searchTermRaw = trim($params->searchTerm);
+        //     $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
+
+        //     $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+        //     if ($data->startDate && $data->endDate){
+
+        //         if ($patientId){ 
+        //             return $query->where('patient_id', $patientId)
+        //             ->whereNotNull('hmo_done_by')
+        //             ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+        //             ->orderBy($orderBy, $orderDir)
+        //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        //         }
+
+        //         return $query->WhereNotNull('hmo_done_by')
+        //                 ->where(function (Builder $query) use($searchTerm) {
+        //                     $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm);
+        //                 })
+        //                 ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+        //                 ->orderBy($orderBy, $orderDir)
+        //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        //     }
+
+        //     if ($data->date){
+        //         $date = new Carbon($data->date);
+        //         if ($patientId){ 
+        //             return $query->where('patient_id', $patientId)
+        //                 ->whereNotNull('hmo_done_by')
+        //                 ->whereMonth('created_at', $date->month)
+        //                 ->whereYear('created_at', $date->year)
+        //                 ->orderBy($orderBy, $orderDir)
+        //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        //         }
+
+        //         return $query->WhereNotNull('hmo_done_by')
+        //                 ->where(function (Builder $query) use($searchTerm) {
+        //                     $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm);
+        //                 })
+        //                 ->whereMonth('created_at', $date->month)
+        //                 ->whereYear('created_at', $date->year)
+        //                 ->orderBy($orderBy, $orderDir)
+        //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        //     }
+        //     if ($patientId){ 
+        //             return $query->where('patient_id', $patientId)
+        //                 ->whereNotNull('hmo_done_by')
+        //                 ->orderBy($orderBy, $orderDir)
+        //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        //         }
+        //     return $query->whereNotNull('hmo_done_by')
+        //                 ->where(function (Builder $query) use($searchTerm) {
+        //                     $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+        //                     ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', $searchTerm);
+        //                 })
+        //                 ->orderBy($orderBy, $orderDir)
+        //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        // }
+
+        if (!empty($params->searchTerm)) {
             $searchTermRaw = trim($params->searchTerm);
-            $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
-
             $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
-            if ($data->startDate && $data->endDate){
+            $page = ($params->length + $params->start) / $params->length;
 
-                if ($patientId){ 
-                    return $query->where('patient_id', $patientId)
-                    ->whereNotNull('hmo_done_by')
-                    ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-                }
+            // 1. Core Gatekeeper: Always require hmo_done_by
+            $query->whereNotNull('hmo_done_by');
 
-                return $query->WhereNotNull('hmo_done_by')
-                        ->where(function (Builder $query) use($searchTerm) {
-                            $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                            ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm);
-                        })
-                        ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            // 2. Optimized Date Logic (using CarbonImmutable)
+            if ($data->startDate && $data->endDate) {
+                $query->whereBetween('created_at', [$data->startDate . ' 00:00:00', $data->endDate . ' 23:59:59']);
+            } elseif ($data->date) {
+                // Cast to Immutable so start/end calls don't overwrite the base object
+                $date = CarbonImmutable::parse($data->date);
+                
+                $query->whereBetween('created_at', [
+                    $date->startOfMonth()->toDateTimeString(), 
+                    $date->endOfMonth()->toDateTimeString()
+                ]);
             }
 
-            if ($data->date){
-                $date = new Carbon($data->date);
-                if ($patientId){ 
-                    return $query->where('patient_id', $patientId)
-                        ->whereNotNull('hmo_done_by')
-                        ->whereMonth('created_at', $date->month)
-                        ->whereYear('created_at', $date->year)
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-                }
-
-                return $query->WhereNotNull('hmo_done_by')
-                        ->where(function (Builder $query) use($searchTerm) {
-                            $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                            ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm);
+            // 3. Search Logic (pId vs General)
+            if (str_starts_with($searchTermRaw, 'pId-')) {
+                $query->where('patient_id', explode('-', $searchTermRaw)[1]);
+            } else {
+                $query->where(function (Builder $sub) use ($searchTerm, $searchTermRaw) {
+                    $sub->whereHas('patient', function ($q) use ($searchTerm, $searchTermRaw) {
+                            $q->searchByName($searchTermRaw) // Full-Text Index
+                            ->orWhere('card_no', 'LIKE', $searchTerm);
                         })
-                        ->whereMonth('created_at', $date->month)
-                        ->whereYear('created_at', $date->year)
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                        ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
+                        ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', $searchTerm);
+                });
             }
-            if ($patientId){ 
-                    return $query->where('patient_id', $patientId)
-                        ->whereNotNull('hmo_done_by')
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-                }
-            return $query->whereNotNull('hmo_done_by')
-                        ->where(function (Builder $query) use($searchTerm) {
-                            $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                            ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('hmoDoneBy', 'username', 'LIKE', $searchTerm);
-                        })
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+
+            return $query->orderBy($orderBy, $orderDir)
+                        ->paginate($params->length, ['*'], 'page', $page);
         }
 
         if ($data->startDate && $data->endDate){

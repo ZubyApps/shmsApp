@@ -11,6 +11,7 @@ use App\Events\PrescriptionDeleted;
 use App\DataObjects\SponsorCategoryDto;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Services\CapitationPaymentService;
+use App\Services\TotalsService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class UpdatePrescriptionDeleted
@@ -20,7 +21,8 @@ class UpdatePrescriptionDeleted
      */
     public function __construct(
         private readonly PaymentService $paymentService,
-        private readonly CapitationPaymentService $capitationPaymentService
+        private readonly CapitationPaymentService $capitationPaymentService,
+        private readonly TotalsService $totalsService
     )
     {
         //
@@ -57,31 +59,32 @@ class UpdatePrescriptionDeleted
     
     // --- PRIVATE UPDATE METHODS (Using single-trip DB::raw) ---
 
-    private function updateVisitTotals(Visit $visit, float $totalPayments, bool $isNhis): void
+    private function updateVisitTotals(Visit $visit): void
     {
-        $visitId = $visit->id;
+        $this->totalsService->syncVisitTotals($visit);
+        // $visitId = $visit->id;
 
-        // SQL segments for conditional logic
-        $totalPaidSourceSql = ($visit->sponsor->category_name === 'HMO') 
-            ? "(SELECT COALESCE(SUM(paid), 0) FROM prescriptions WHERE visit_id = {$visitId})"
-            : $totalPayments; 
+        // // SQL segments for conditional logic
+        // $totalPaidSourceSql = ($visit->sponsor->category_name === 'HMO') 
+        //     ? "(SELECT COALESCE(SUM(paid), 0) FROM prescriptions WHERE visit_id = {$visitId})"
+        //     : $totalPayments; 
 
-        $totalNhisBillSql = $isNhis 
-            ? "(SELECT COALESCE(SUM(nhis_bill), 0) FROM prescriptions WHERE visit_id = {$visitId})" 
-            : 0;
+        // $totalNhisBillSql = $isNhis 
+        //     ? "(SELECT COALESCE(SUM(nhis_bill), 0) FROM prescriptions WHERE visit_id = {$visitId})" 
+        //     : 0;
             
-        $totalCapitationSql = $isNhis 
-            ? "(SELECT COALESCE(SUM(capitation), 0) FROM prescriptions WHERE visit_id = {$visitId})"
-            : 0;
+        // $totalCapitationSql = $isNhis 
+        //     ? "(SELECT COALESCE(SUM(capitation), 0) FROM prescriptions WHERE visit_id = {$visitId})"
+        //     : 0;
 
-        DB::table('visits')
-            ->where('id', $visitId)
-            ->update([
-                'total_hms_bill'  => DB::raw("(SELECT COALESCE(SUM(hms_bill), 0) FROM prescriptions WHERE visit_id = {$visitId})"),
-                'total_nhis_bill' => DB::raw($totalNhisBillSql),
-                'total_capitation'=> DB::raw($totalCapitationSql), // NEW
-                'total_paid'      => DB::raw($totalPaidSourceSql),
-            ]);
+        // DB::table('visits')
+        //     ->where('id', $visitId)
+        //     ->update([
+        //         'total_hms_bill'  => DB::raw("(SELECT COALESCE(SUM(hms_bill), 0) FROM prescriptions WHERE visit_id = {$visitId})"),
+        //         'total_nhis_bill' => DB::raw($totalNhisBillSql),
+        //         'total_capitation'=> DB::raw($totalCapitationSql), // NEW
+        //         'total_paid'      => DB::raw($totalPaidSourceSql),
+        //     ]);
     }
 
     private function updateWalkInOrMortuaryTotals(WalkIn|MortuaryService $model, float $totalPayments): void

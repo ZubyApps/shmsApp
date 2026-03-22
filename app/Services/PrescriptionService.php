@@ -999,79 +999,130 @@ class PrescriptionService
                         ->get();
     }
 
-     public function getByResource(DataTableQueryParams $params, $data)
-    {
-        $orderBy    = 'created_at';
-        $orderDir   =  'asc';
-        $current    = CarbonImmutable::now();
-        $query      = $this->prescription->select('id', 'consultation_id', 'visit_id', 'walk_in_id', 'created_at', 'hms_bill', 'hmo_bill', 'paid', 'qty_billed', 'qty_dispensed')
-                        ->with(
-                            [
-                                'visit' => function ($query) {
-                                    $query->select('id', 'patient_id', 'sponsor_id')
-                                    ->with([
-                                        'patient:id,first_name,middle_name,last_name,card_no,sex,date_of_birth',
-                                        'sponsor:id,name,category_name'
+    // public function getByResource(DataTableQueryParams $params, $data)
+    // {
+    //     $orderBy    = 'created_at';
+    //     $orderDir   =  'asc';
+    //     $current    = CarbonImmutable::now();
+    //     $query      = $this->prescription->select('id', 'consultation_id', 'visit_id', 'walk_in_id', 'created_at', 'hms_bill', 'hmo_bill', 'paid', 'qty_billed', 'qty_dispensed')
+    //                     ->with(
+    //                         [
+    //                             'visit' => function ($query) {
+    //                                 $query->select('id', 'patient_id', 'sponsor_id')
+    //                                 ->with([
+    //                                     'patient:id,first_name,middle_name,last_name,card_no,sex,date_of_birth',
+    //                                     'sponsor:id,name,category_name'
 
-                                    ]);
-                                },
-                                'consultation' => function ($query) {
-                                    $query->select('id', 'icd11_diagnosis', 'provisional_diagnosis', 'assessment', 'user_id')
-                                    ->with(['user:id,username']);
-                                },
-                                'walkIn:id,first_name,middle_name,last_name,sex,date_of_birth',
-                            ]
-                        )
-                        ->whereRelation('resource', 'id', '=', $data->resourceId);
+    //                                 ]);
+    //                             },
+    //                             'consultation' => function ($query) {
+    //                                 $query->select('id', 'icd11_diagnosis', 'provisional_diagnosis', 'assessment', 'user_id')
+    //                                 ->with(['user:id,username']);
+    //                             },
+    //                             'walkIn:id,first_name,middle_name,last_name,sex,date_of_birth',
+    //                         ]
+    //                     )
+    //                     ->whereRelation('resource', 'id', '=', $data->resourceId);
                         
-        function applySearch(Builder $query, string $searchTerm){
-            $searchTerm = '%' . addcslashes($searchTerm, '%_') . '%';
-            return $query->where(function (Builder $query) use($searchTerm) {
-                    $query->whereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm )
-                    ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm )
-                    ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm )
-                    ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm )
-                    ->orWhereRelation('visit.sponsor', 'name', 'LIKE', $searchTerm )
-                    ->orWhereRelation('visit.sponsor', 'category_name', 'LIKE', $searchTerm );
+    //     function applySearch(Builder $query, string $searchTerm){
+    //         $searchTerm = '%' . addcslashes($searchTerm, '%_') . '%';
+    //         return $query->where(function (Builder $query) use($searchTerm) {
+    //                 $query->whereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm )
+    //                 ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm )
+    //                 ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm )
+    //                 ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm )
+    //                 ->orWhereRelation('visit.sponsor', 'name', 'LIKE', $searchTerm )
+    //                 ->orWhereRelation('visit.sponsor', 'category_name', 'LIKE', $searchTerm );
+    //             });
+    //     }
+
+    //     if (! empty($params->searchTerm)) {
+    //         if ($data->startDate && $data->endDate){
+    //             $query = applySearch($query, $params->searchTerm);
+    //             return $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+    //                 ->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //         }
+
+    //         $query = applySearch($query, $params->searchTerm);
+    //         return $query->whereMonth('created_at', $current->month)
+    //                 ->whereYear('created_at', $current->year)
+    //                 ->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     if ($data->startDate && $data->endDate){
+    //         return $query
+    //             ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+    //             ->orderBy($orderBy, $orderDir)
+    //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     if($data->date){
+    //         $date = new Carbon($data->date);
+    //         return $query
+    //             ->whereMonth('created_at', $date->month)
+    //             ->whereYear('created_at', $date->year)
+    //             ->orderBy($orderBy, $orderDir)
+    //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     return $query
+    //             ->whereMonth('created_at', $current->month)
+    //             ->whereYear('created_at', $current->year)
+    //             ->orderBy($orderBy, $orderDir)
+    //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    // }
+
+    public function getByResource(DataTableQueryParams $params, $data)
+    {
+        $orderBy  = 'created_at';
+        $orderDir = 'asc';
+        $page     = ($params->length + $params->start) / $params->length;
+
+        // 1. Initialize Base Query & Eager Loading
+        $query = $this->prescription->select('id', 'consultation_id', 'visit_id', 'walk_in_id', 'created_at', 'hms_bill', 'hmo_bill', 'paid', 'qty_billed', 'qty_dispensed')
+            ->with([
+                'visit:id,patient_id,sponsor_id',
+                'visit.patient:id,first_name,middle_name,last_name,card_no,sex,date_of_birth',
+                'visit.sponsor:id,name,category_name',
+                'consultation:id,icd11_diagnosis,provisional_diagnosis,assessment,user_id',
+                'consultation.user:id,username',
+                'walkIn:id,first_name,middle_name,last_name,sex,date_of_birth',
+            ])
+            ->where('resource_id', $data->resourceId); // Direct ID check is faster than whereRelation
+
+        // 2. Optimized Search Logic
+        if (!empty($params->searchTerm)) {
+            $termRaw = $params->searchTerm;
+            $term = '%' . addcslashes($termRaw, '%_') . '%';
+
+            $query->whereHas('visit', function ($q) use ($term, $termRaw) {
+                $q->whereHas('patient', function ($pq) use ($term, $termRaw) {
+                    $pq->searchByName($termRaw) // Assuming your Full-Text scope
+                    ->orWhere('card_no', 'LIKE', $term);
+                })
+                ->orWhereHas('sponsor', function ($sq) use ($term) {
+                    $sq->where('name', 'LIKE', $term)
+                    ->orWhere('category_name', 'LIKE', $term);
                 });
+            });
         }
 
-        if (! empty($params->searchTerm)) {
-            if ($data->startDate && $data->endDate){
-                $query = applySearch($query, $params->searchTerm);
-                return $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
-
-            $query = applySearch($query, $params->searchTerm);
-            return $query->whereMonth('created_at', $current->month)
-                    ->whereYear('created_at', $current->year)
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        // 3. SARGable Date Range Logic
+        if ($data->startDate && $data->endDate) {
+            $start = $data->startDate . ' 00:00:00';
+            $end   = $data->endDate . ' 23:59:59';
+        } else {
+            $baseDate = $data->date ? CarbonImmutable::parse($data->date) : CarbonImmutable::now();
+            $start    = $baseDate->startOfMonth()->toDateTimeString();
+            $end      = $baseDate->endOfMonth()->toDateTimeString();
         }
 
-        if ($data->startDate && $data->endDate){
-            return $query
-                ->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                ->orderBy($orderBy, $orderDir)
-                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        if($data->date){
-            $date = new Carbon($data->date);
-            return $query
-                ->whereMonth('created_at', $date->month)
-                ->whereYear('created_at', $date->year)
-                ->orderBy($orderBy, $orderDir)
-                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        return $query
-                ->whereMonth('created_at', $current->month)
-                ->whereYear('created_at', $current->year)
-                ->orderBy($orderBy, $orderDir)
-                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        // 4. Final Execution
+        return $query->whereBetween('created_at', [$start, $end])
+            ->orderBy($orderBy, $orderDir)
+            ->paginate($params->length, ['*'], 'page', $page);
     }
 
     public function getByResourceTransformer(): callable

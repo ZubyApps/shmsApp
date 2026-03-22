@@ -64,34 +64,62 @@ class ProcedureService
             'statusUpdatedBy:id,username',
         ]);
 
-        if (! empty($params->searchTerm)) {
+        // if (! empty($params->searchTerm)) {
 
+        //     $searchTermRaw = trim($params->searchTerm);
+        //     $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
+
+        //     $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+        //     if ($patientId){ 
+        //             return $query->whereRelation('prescription.visit', 'patient_id', $patientId)
+        //             ->orderBy($orderBy, $orderDir)
+        //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        //         }
+
+        //     return $query->whereRelation('prescription.resource', 'name', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
+        //                 ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
+        //                 ->orWhere(function($q) use ($searchTerm) {
+        //                     $terms = array_filter(explode(' ', trim($searchTerm)));
+        //                     foreach ($terms as $term) {
+        //                         $q->where(function($subQuery) use ($term) {
+        //                             $subQuery->whereRelation('prescription.visit.patient', 'first_name', 'LIKE', $term)
+        //                                     ->orWhereRelation('prescription.visit.patient', 'middle_name', 'LIKE', $term)
+        //                                     ->orWhereRelation('prescription.visit.patient', 'last_name', 'LIKE', $term);
+        //                         });
+        //                     }
+        //                 }) 
+        //                 ->orWhereRelation('prescription.visit.patient', 'card_no', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
+        //                 ->orderBy($orderBy, $orderDir)
+        //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        // }
+
+        if (!empty($params->searchTerm)) {
             $searchTermRaw = trim($params->searchTerm);
-            $patientId = explode('-', $searchTermRaw)[0] == 'pId' ? explode('-', $searchTermRaw)[1] : null;
+            
+            // Check for Patient ID search
+            if (str_starts_with($searchTermRaw, 'pId-')) {
+                $patientId = explode('-', $searchTermRaw)[1];
+                return $query->whereRelation('prescription.visit', 'patient_id', $patientId)
+                            ->orderBy($orderBy, $orderDir)
+                            ->paginate($params->length, ['*'], 'page', ($params->length + $params->start) / $params->length);
+            }
 
             $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
 
-            if ($patientId){ 
-                    return $query->whereRelation('prescription.visit', 'patient_id', $patientId)
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-                }
-
-            return $query->whereRelation('prescription.resource', 'name', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
-                        ->orWhereRelation('user', 'username', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
-                        ->orWhere(function($q) use ($searchTerm) {
-                            $terms = array_filter(explode(' ', trim($searchTerm)));
-                            foreach ($terms as $term) {
-                                $q->where(function($subQuery) use ($term) {
-                                    $subQuery->whereRelation('prescription.visit.patient', 'first_name', 'LIKE', $term)
-                                            ->orWhereRelation('prescription.visit.patient', 'middle_name', 'LIKE', $term)
-                                            ->orWhereRelation('prescription.visit.patient', 'last_name', 'LIKE', $term);
-                                });
-                            }
-                        }) 
-                        ->orWhereRelation('prescription.visit.patient', 'card_no', 'LIKE', '%' . addcslashes($searchTerm, '%_') . '%' )
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            return $query->where(function (Builder $q) use ($searchTerm, $searchTermRaw) {
+                // A. Search by Resource Name (Prescription)
+                $q->whereRelation('prescription.resource', 'name', 'LIKE', $searchTerm)
+                // B. Search by Username
+                ->orWhereRelation('user', 'username', 'LIKE', $searchTerm)
+                // C. Grouped Patient Search (The Efficient Way)
+                ->orWhereHas('prescription.visit.patient', function ($patientQuery) use ($searchTerm, $searchTermRaw) {
+                    $patientQuery->searchByName($searchTermRaw)
+                                ->orWhere('card_no', 'LIKE', $searchTerm);
+                });
+            })
+            ->orderBy($orderBy, $orderDir)
+            ->paginate($params->length, ['*'], 'page', ($params->length + $params->start) / $params->length);
         }
 
         if ($data->pending){

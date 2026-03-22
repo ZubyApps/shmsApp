@@ -4,7 +4,9 @@ namespace App\Listeners;
 
 use App\DataObjects\SponsorCategoryDto;
 use App\Events\BulkPrescriptionsCreated;
+use App\Models\Visit;
 use App\Services\PaymentService;
+use App\Services\TotalsService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -13,7 +15,7 @@ class UpdateBulkPrescriptionCreated
     /**
      * Create the event listener.
      */
-    public function __construct(private readonly PaymentService $paymentService)
+    public function __construct(private readonly PaymentService $paymentService, private readonly TotalsService $totalsService)
     {
         //
     }
@@ -34,11 +36,6 @@ class UpdateBulkPrescriptionCreated
         // 1. Run Optimized Waterfall Logic
         $this->paymentService->applyPaymentsWaterfall($visit, $totalPayments, $dto);
 
-        $visit->update([
-                'total_hms_bill'    => $visit->totalHmsBills(),
-                'total_paid'        => $visit->totalPayments(),
-                'total_nhis_bill'   => $isNhis ? $visit->totalNhisBills() : 0, 
-                'total_capitation'  => $visit->totalPrescriptionCapitations()
-            ]);
+        $this->totalsService->syncVisitTotals($visit);
     }
 }

@@ -8,6 +8,7 @@ use App\DataObjects\DataTableQueryParams;
 use App\Models\Payment;
 use App\Models\ThirdPartyService;
 use App\Models\Visit;
+use App\Services\PayPercentageService;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -34,13 +35,17 @@ class AccountsReportService
             })
             ->when($data->date, function ($query) use ($data) {
                 $date = new CarbonImmutable($data->date);
-                return $query->whereMonth('payments.created_at', $date->month)
-                            ->whereYear('payments.created_at', $date->year);
+                return $query->whereBetween('payments.created_at', [
+                            $date->startOfMonth()->toDateTimeString(), 
+                            $date->endOfMonth()->toDateTimeString()
+                        ]);
             })
             ->when(!$data->date && (!$data->startDate || !$data->endDate), function ($query) {
                 $current = new CarbonImmutable();
-                return $query->whereMonth('payments.created_at', $current->month)
-                            ->whereYear('payments.created_at', $current->year);
+                return $query->whereBetween('payments.created_at', [
+                            $current->startOfMonth()->toDateTimeString(), 
+                            $current->endOfMonth()->toDateTimeString()
+                        ]);
             })
             ->groupBy('pMethod', 'id')
             ->orderBy('paymentCount', 'desc')
@@ -58,13 +63,17 @@ class AccountsReportService
             })
             ->when($data->date, function ($query) use ($data) {
                 $date = new CarbonImmutable($data->date);
-                return $query->whereMonth('expenses.created_at', $date->month)
-                            ->whereYear('expenses.created_at', $date->year);
+                return $query->whereBetween('expenses.created_at', [
+                            $date->startOfMonth()->toDateTimeString(), 
+                            $date->endOfMonth()->toDateTimeString()
+                        ]);
             })
             ->when(!$data->date && (!$data->startDate || !$data->endDate), function ($query) {
                 $current = new CarbonImmutable();
-                return $query->whereMonth('expenses.created_at', $current->month)
-                            ->whereYear('expenses.created_at', $current->year);
+                return $query->whereBetween('expenses.created_at', [
+                            $current->startOfMonth()->toDateTimeString(), 
+                            $current->endOfMonth()->toDateTimeString()
+                        ]);
             })
             ->groupBy('pMethod', 'id')
             ->orderBy('expenseCount', 'desc')
@@ -89,13 +98,17 @@ class AccountsReportService
             })
             ->when($data->date, function ($query) use ($data) {
                 $date = new CarbonImmutable($data->date);
-                return $query->whereMonth('third_party_services.created_at', $date->month)
-                            ->whereYear('third_party_services.created_at', $date->year);
+                return $query->whereBetween('third_party_services.created_at', [
+                            $date->startOfMonth()->toDateTimeString(), 
+                            $date->endOfMonth()->toDateTimeString()
+                        ]);
             })
             ->when(!$data->date && (!$data->startDate || !$data->endDate), function ($query) {
                 $current = new CarbonImmutable();
-                return $query->whereMonth('third_party_services.created_at', $current->month)
-                            ->whereYear('third_party_services.created_at', $current->year);
+                return $query->whereBetween('third_party_services.created_at', [
+                            $current->startOfMonth()->toDateTimeString(), 
+                            $current->endOfMonth()->toDateTimeString()
+                        ]);
             })
             ->groupBy('thirdParty', 'id', 'thirdPartyL')
             ->orderBy('thirdParty', 'desc')
@@ -115,13 +128,17 @@ class AccountsReportService
             })
             ->when($data->date, function ($query) use ($data) {
                 $date = new CarbonImmutable($data->date);
-                return $query->whereMonth('expenses.created_at', $date->month)
-                            ->whereYear('expenses.created_at', $date->year);
+                return $query->whereBetween('expenses.created_at', [
+                            $date->startOfMonth()->toDateTimeString(), 
+                            $date->endOfMonth()->toDateTimeString()
+                        ]);
             })
             ->when(!$data->date && (!$data->startDate || !$data->endDate), function ($query) {
                 $current = new CarbonImmutable();
-                return $query->whereMonth('expenses.created_at', $current->month)
-                            ->whereYear('expenses.created_at', $current->year);
+                return $query->whereBetween('expenses.created_at', [
+                            $current->startOfMonth()->toDateTimeString(), 
+                            $current->endOfMonth()->toDateTimeString()
+                        ]);
             })
             ->groupBy('eCategory', 'id')
             ->orderBy('eCategory', 'desc')
@@ -148,35 +165,63 @@ class AccountsReportService
                     'walkIn:id,first_name,middle_name,last_name'
                 ])
                 ->whereRelation('payMethod', 'id', '=', $data->payMethodId)
-                ->when($params->searchTerm, function ($query) use ($params) {
-                    return  $query->where(function($query) use ($params){
-                                $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                            ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                            ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                            ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                            ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                            ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                            });
+                // ->when($params->searchTerm, function ($query) use ($params) {
+                //     return  $query->where(function($query) use ($params){
+                //                 $query->whereRelation('visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                //                             ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                //                             ->orWhereRelation('visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                //                             ->orWhereRelation('visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                //                             ->orWhereRelation('visit.patient.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                //                             ->orWhereRelation('visit.patient.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+                //             });
+                // })
+
+                ->when($params->searchTerm, function ($query, $searchTermRaw) {
+                    $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+                    return $query->whereHas('visit.patient', function ($q) use ($searchTerm, $searchTermRaw) {
+                        // 1. Patient Names (Full-Text) + Card No
+                        $q->where(function ($sub) use ($searchTerm, $searchTermRaw) {
+                            $sub->searchByName($searchTermRaw)
+                                ->orWhere('card_no', 'LIKE', $searchTerm);
+                        })
+                        // 2. Sponsor Details (Attached to Patient)
+                        ->orWhereHas('sponsor', function ($sponsorQuery) use ($searchTerm) {
+                            $sponsorQuery->where('name', 'LIKE', $searchTerm)
+                                        ->orWhere('category_name', 'LIKE', $searchTerm);
+                        });
+                    });
                 })
+
                 ->when($data->startDate && $data->endDate, function($query) use ($data){
                     return $query->whereBetween('created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59']);
                 })
                 ->when($data->date, function ($query) use ($data) {
                     $date = new CarbonImmutable($data->date);
 
-                    if ($data->byDate){return $query->whereDate('created_at', $date->format('Y-m-d'));}
+                    if ($data->byDate){return $query->whereBetween('created_at', [
+                                                    $date->startOfDay()->toDateTimeString(),
+                                                    $date->endOfDay()->toDateTimeString()
+                                                ]);}
 
-                    return $query->whereMonth('created_at', $date->month)
-                                ->whereYear('created_at', $date->year);
+                    return $query->whereBetween('created_at', [
+                                $date->startOfMonth()->toDateTimeString(), 
+                                $date->endOfMonth()->toDateTimeString()
+                            ]);
                 })
                 ->when(!$data->date && (!$data->startDate || !$data->endDate), function ($query) use ($data) {
                     $current = new CarbonImmutable();
                     if ($data->byDate){
-                    return $query->whereDate('created_at', $current->format('Y-m-d'));
+                    return $query->whereBetween('created_at', [
+                                                    $current->startOfDay()->toDateTimeString(),
+                                                    $current->endOfDay()->toDateTimeString()
+                                                ]);
                     }
                     
-                    return $query->whereMonth('created_at', $current->month)
-                                ->whereYear('created_at', $current->year);
+                    return $query->whereBetween('created_at', [
+                                $current->startOfMonth()->toDateTimeString(), 
+                                $current->endOfMonth()->toDateTimeString()
+                            ]);
                 })
                 ->when($data->billing, function($query){
                     return $query->where(function ($q) {
@@ -241,18 +286,43 @@ class AccountsReportService
                             ]);
                         }
                     ])
-                    ->when($params->searchTerm, function ($query) use ($params) {
-                        return  $query->where(function($query) use ($params){
-                                    $query->whereRelation('prescription.visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                        ->orWhereRelation('prescription.visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                        ->orWhereRelation('prescription.visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                        ->orWhereRelation('prescription.visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                        ->orWhereRelation('prescription.visit.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                        ->orWhereRelation('prescription.visit.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                        ->orWhereRelation('prescription.consultation', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                        ->orWhereRelation('prescription.consultation', 'provisional_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );  
-                                });
+                    // ->when($params->searchTerm, function ($query) use ($params) {
+                    //     return  $query->where(function($query) use ($params){
+                    //                 $query->whereRelation('prescription.visit.patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                    //                     ->orWhereRelation('prescription.visit.patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                    //                     ->orWhereRelation('prescription.visit.patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                    //                     ->orWhereRelation('prescription.visit.patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                    //                     ->orWhereRelation('prescription.visit.sponsor', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                    //                     ->orWhereRelation('prescription.visit.sponsor', 'category_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                    //                     ->orWhereRelation('prescription.consultation', 'icd11_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                    //                     ->orWhereRelation('prescription.consultation', 'provisional_diagnosis', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );  
+                    //             });
+                    // })
+
+                    ->when($params->searchTerm, function ($query, $searchTermRaw) {
+                        $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+                        return $query->whereHas('prescription', function ($q) use ($searchTerm, $searchTermRaw) {
+                            $q->where(function ($sub) use ($searchTerm, $searchTermRaw) {
+                                // 1. Check Consultation (direct child of prescription)
+                                $sub->where('icd11_diagnosis', 'LIKE', $searchTerm)
+                                    ->orWhere('provisional_diagnosis', 'LIKE', $searchTerm)
+
+                                    // 2. Check Visit, Patient, and Sponsor (nested children)
+                                    ->orWhereHas('visit', function ($visitQ) use ($searchTerm, $searchTermRaw) {
+                                        $visitQ->whereHas('patient', function ($patientQ) use ($searchTerm, $searchTermRaw) {
+                                            $patientQ->searchByName($searchTermRaw)
+                                                    ->orWhere('card_no', 'LIKE', $searchTerm);
+                                        })
+                                        ->orWhereHas('sponsor', function ($sponsorQ) use ($searchTerm) {
+                                            $sponsorQ->where('name', 'LIKE', $searchTerm)
+                                                    ->orWhere('category_name', 'LIKE', $searchTerm);
+                                        });
+                                    });
+                            });
+                        });
                     })
+
                     ->when($data->startDate && $data->endDate, function ($query) use ($data) {
                         return $query->whereBetween('created_at', [
                             $data->startDate . ' 00:00:00', 
@@ -261,13 +331,17 @@ class AccountsReportService
                     })
                     ->when($data->date, function ($query) use ($data) {
                         $date = new CarbonImmutable($data->date);
-                        return $query->whereMonth('created_at', $date->month)
-                                    ->whereYear('created_at', $date->year);
+                        return $query->whereBetween('created_at', [
+                                $date->startOfMonth()->toDateTimeString(), 
+                                $date->endOfMonth()->toDateTimeString()
+                            ]);
                     })
                     ->when(!$data->date && (!$data->startDate || !$data->endDate), function ($query) {
                         $current = new CarbonImmutable();
-                        return $query->whereMonth('created_at', $current->month)
-                                    ->whereYear('created_at', $current->year);
+                        return $query->whereBetween('created_at', [
+                                $current->startOfMonth()->toDateTimeString(), 
+                                $current->endOfMonth()->toDateTimeString()
+                            ]);
                     })
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
@@ -305,185 +379,333 @@ class AccountsReportService
          };
     }
 
+    // public function getVisitsSummaryBySponsorCategory(DataTableQueryParams $params, $data)
+    // {
+    //     $current    = CarbonImmutable::now();
+
+    //     if ($data->startDate && $data->endDate){
+    //         return DB::table('visits')
+    //         ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(CASE WHEN visits.consulted IS NOT NULL THEN 1 ELSE 0 END) AS visitConsulted, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) AS discount')
+    //         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+    //         ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+    //         ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+    //         ->groupBy('category')
+    //         ->orderBy('patientsCount', 'desc')
+    //         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     if($data->date){
+    //         $date = new Carbon($data->date);
+
+    //         return DB::table('visits')
+    //         ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(CASE WHEN visits.consulted IS NOT NULL THEN 1 ELSE 0 END) AS visitConsulted, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) AS discount')
+    //         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+    //         ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+    //         ->whereMonth('visits.created_at', $date->month)
+    //         ->whereYear('visits.created_at', $date->year)
+    //         ->whereBetween('visits.created_at', [$date->startOfMonth.' 00:00:00', $date->endDate.' 23:59:59'])
+    //         ->groupBy('category')
+    //         ->orderBy('patientsCount', 'desc')
+    //         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     return DB::table('visits')
+    //         ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(CASE WHEN visits.consulted IS NOT NULL THEN 1 ELSE 0 END) AS visitConsulted, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) AS discount')
+    //         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+    //         ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+    //         ->whereMonth('visits.created_at', $current->month)
+    //         ->whereYear('visits.created_at', $current->year)
+    //         ->groupBy('category')
+    //         ->orderBy('patientsCount', 'desc')
+    //         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    // }
+
     public function getVisitsSummaryBySponsorCategory(DataTableQueryParams $params, $data)
     {
-        $current    = CarbonImmutable::now();
-
-        if ($data->startDate && $data->endDate){
-            return DB::table('visits')
-            ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(CASE WHEN visits.consulted IS NOT NULL THEN 1 ELSE 0 END) AS visitConsulted, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) AS discount')
+        // 1. Build the Base Query
+        $query = DB::table('visits')
+            ->selectRaw('
+                COUNT(DISTINCT visits.sponsor_id) as sponsorCount, 
+                sponsor_categories.name as category, 
+                COUNT(DISTINCT visits.patient_id) as patientsCount, 
+                COUNT(DISTINCT visits.id) as visitCount, 
+                COUNT(visits.consulted) AS visitConsulted 
+                SUM(visits.total_hms_bill) AS totalHmsBill, 
+                SUM(visits.total_hmo_bill) AS totalHmoBill, 
+                SUM(visits.total_nhis_bill) AS totalNhisBill, 
+                SUM(visits.total_paid) AS totalPaid, 
+                SUM(visits.total_capitation) AS totalCapitation, 
+                SUM(visits.discount) AS discount
+            ')
             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-            ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-            ->groupBy('category')
-            ->orderBy('patientsCount', 'desc')
-            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id');
+
+        // 2. Determine the SARGable Date Range
+        if ($data->startDate && $data->endDate) {
+            $start = $data->startDate . ' 00:00:00';
+            $end   = $data->endDate . ' 23:59:59';
+        } else {
+            // Default to current month if no date provided, otherwise use the provided date
+            $baseDate = $data->date ? CarbonImmutable::parse($data->date) : CarbonImmutable::now();
+            $start    = $baseDate->startOfMonth()->toDateTimeString();
+            $end      = $baseDate->endOfMonth()->toDateTimeString();
         }
 
-        if($data->date){
-            $date = new Carbon($data->date);
-
-            return DB::table('visits')
-            ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(CASE WHEN visits.consulted IS NOT NULL THEN 1 ELSE 0 END) AS visitConsulted, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) AS discount')
-            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-            ->whereMonth('visits.created_at', $date->month)
-            ->whereYear('visits.created_at', $date->year)
+        // 3. Apply Filters and Execute
+        return $query->whereBetween('visits.created_at', [$start, $end])
             ->groupBy('category')
             ->orderBy('patientsCount', 'desc')
-            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        return DB::table('visits')
-            ->selectRaw('COUNT(DISTINCT(visits.sponsor_id)) as sponsorCount, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(CASE WHEN visits.consulted IS NOT NULL THEN 1 ELSE 0 END) AS visitConsulted, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) AS discount')
-            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-            ->whereMonth('visits.created_at', $current->month)
-            ->whereYear('visits.created_at', $current->year)
-            ->groupBy('category')
-            ->orderBy('patientsCount', 'desc')
-            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            ->paginate(
+                $params->length, 
+                ['*'], 
+                'page', 
+                ($params->length + $params->start) / $params->length
+            );
     }
+
+    // public function getVisitsSummaryBySponsor(DataTableQueryParams $params, $data)
+    // {
+    //     $current = CarbonImmutable::now();
+
+    //     if (! empty($params->searchTerm)) {
+
+    //         if ($data->startDate && $data->endDate){
+    //             return DB::table('visits')
+    //             ->selectRaw('sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
+    //             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+    //             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+    //             ->where(function (QueryBuilder $query) use($params) {
+    //                 $query->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+    //                 ->orWhere('sponsor_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+    //             })
+    //             ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+    //             ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
+    //             ->orderBy('sponsor', 'asc')
+    //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //         }
+    
+    //         if($data->date){
+    //             $date = new Carbon($data->date);
+    
+    //             return DB::table('visits')
+    //             ->selectRaw('sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
+    //             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+    //             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+    //             ->where(function (QueryBuilder $query) use($params) {
+    //                 $query->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+    //                 ->orWhere('sponsor_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+    //             })
+    //             ->whereMonth('visits.created_at', $date->month)
+    //             ->whereYear('visits.created_at', $date->year)
+    //             ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
+    //             ->orderBy('sponsor', 'asc')
+    //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //         }
+    
+    //         return DB::table('visits')
+    //             ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
+    //             ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+    //             ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+    //             ->where(function (QueryBuilder $query) use($params) {
+    //                 $query->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+    //                 ->orWhere('sponsor_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+    //             })
+    //             ->whereMonth('visits.created_at', $current->month)
+    //             ->whereYear('visits.created_at', $current->year)
+    //             ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
+    //             ->orderBy('sponsor', 'asc')
+    //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     if ($data->startDate && $data->endDate){
+    //         return DB::table('visits')
+    //         ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
+    //         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+    //         ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+    //         ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
+    //         ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
+    //         ->orderBy('sponsor', 'asc')
+    //         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     if($data->date){
+    //         $date = new Carbon($data->date);
+
+    //         return DB::table('visits')
+    //         ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
+    //         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+    //         ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+    //         ->whereMonth('visits.created_at', $date->month)
+    //         ->whereYear('visits.created_at', $date->year)
+    //         ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
+    //         ->orderBy('sponsor', 'asc')
+    //         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     return DB::table('visits')
+    //         ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
+    //         ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+    //         ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
+    //         ->whereMonth('visits.created_at', $current->month)
+    //         ->whereYear('visits.created_at', $current->year)
+    //         ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
+    //         ->orderBy('sponsor', 'asc')
+    //         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    // }
 
     public function getVisitsSummaryBySponsor(DataTableQueryParams $params, $data)
     {
         $current = CarbonImmutable::now();
 
-        if (! empty($params->searchTerm)) {
+        // 1. Initialize the Base Query
+        $query = DB::table('visits')
+            ->selectRaw('
+                sponsors.id as id, 
+                sponsors.name as sponsor, 
+                sponsor_categories.name as category, 
+                COUNT(DISTINCT visits.patient_id) as patientsCount, 
+                COUNT(DISTINCT visits.id) as visitCount, 
+                SUM(visits.total_hms_bill) AS totalHmsBill, 
+                SUM(visits.total_hmo_bill) AS totalHmoBill, 
+                SUM(visits.total_nhis_bill) AS totalNhisBill, 
+                SUM(visits.total_paid) AS totalPaid, 
+                SUM(visits.total_capitation) AS totalCapitation, 
+                SUM(visits.discount) as discount, 
+                SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, 
+                sponsors.flag as flagSponsor
+            ')
+            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id');
 
-            if ($data->startDate && $data->endDate){
-                return DB::table('visits')
-                ->selectRaw('sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
-                ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-                ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-                ->where(function (QueryBuilder $query) use($params) {
-                    $query->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                    ->orWhere('sponsor_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                })
-                ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-                ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
-                ->orderBy('sponsor', 'asc')
-                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
-    
-            if($data->date){
-                $date = new Carbon($data->date);
-    
-                return DB::table('visits')
-                ->selectRaw('sponsors.name as sponsor, sponsors.id as id, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
-                ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-                ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-                ->where(function (QueryBuilder $query) use($params) {
-                    $query->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                    ->orWhere('sponsor_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                })
-                ->whereMonth('visits.created_at', $date->month)
-                ->whereYear('visits.created_at', $date->year)
-                ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
-                ->orderBy('sponsor', 'asc')
-                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
-    
-            return DB::table('visits')
-                ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
-                ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-                ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-                ->where(function (QueryBuilder $query) use($params) {
-                    $query->where('sponsors.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                    ->orWhere('sponsor_categories.name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                })
-                ->whereMonth('visits.created_at', $current->month)
-                ->whereYear('visits.created_at', $current->year)
-                ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
-                ->orderBy('sponsor', 'asc')
-                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        // 2. Apply Search Filter (Conditionally)
+        if (!empty($params->searchTerm)) {
+            $term = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            $query->where(function ($q) use ($term) {
+                $q->where('sponsors.name', 'LIKE', $term)
+                ->orWhere('sponsor_categories.name', 'LIKE', $term);
+            });
         }
 
-        if ($data->startDate && $data->endDate){
-            return DB::table('visits')
-            ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
-            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-            ->whereBetween('visits.created_at', [$data->startDate.' 00:00:00', $data->endDate.' 23:59:59'])
-            ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
-            ->orderBy('sponsor', 'asc')
-            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        // 3. Determine SARGable Date Range
+        if ($data->startDate && $data->endDate) {
+            $start = $data->startDate . ' 00:00:00';
+            $end   = $data->endDate . ' 23:59:59';
+        } else {
+            $baseDate = $data->date ? CarbonImmutable::parse($data->date) : $current;
+            $start    = $baseDate->startOfMonth()->toDateTimeString();
+            $end      = $baseDate->endOfMonth()->toDateTimeString();
         }
 
-        if($data->date){
-            $date = new Carbon($data->date);
-
-            return DB::table('visits')
-            ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
-            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-            ->whereMonth('visits.created_at', $date->month)
-            ->whereYear('visits.created_at', $date->year)
+        // 4. Final Execution
+        return $query->whereBetween('visits.created_at', [$start, $end])
             ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
             ->orderBy('sponsor', 'asc')
-            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-
-        return DB::table('visits')
-            ->selectRaw('sponsors.id as id, sponsors.name as sponsor, sponsor_categories.name as category, COUNT(DISTINCT(visits.patient_id)) as patientsCount, COUNT(DISTINCT(visits.id)) as visitCount, SUM(visits.total_hms_bill) AS totalHmsBill, SUM(visits.total_hmo_bill) AS totalHmoBill, SUM(visits.total_nhis_bill) AS totalNhisBill, SUM(visits.total_paid) AS totalPaid, SUM(visits.total_capitation) AS totalCapitation, SUM(visits.discount) as discount, SUM(CASE WHEN visits.resolved IS FALSE THEN 1 ELSE 0 END) AS resolved, sponsors.flag as flagSponsor')
-            ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
-            ->leftJoin('sponsor_categories', 'sponsors.sponsor_category_id', '=', 'sponsor_categories.id')
-            ->whereMonth('visits.created_at', $current->month)
-            ->whereYear('visits.created_at', $current->year)
-            ->groupBy('sponsor', 'id', 'category', 'flagSponsor')
-            ->orderBy('sponsor', 'asc')
-            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            ->paginate(
+                $params->length, 
+                ['*'], 
+                'page', 
+                ($params->length + $params->start) / $params->length
+            );
     }
+
+    // public function getVisitsBySponsor(DataTableQueryParams $params, $data)
+    // {
+    //     $orderBy    = 'created_at';
+    //     $orderDir   =  'asc';
+
+        
+    //     return $this->visit->select('id', 'doctor_id', 'user_id', 'sponsor_id', 'patient_id', 'created_at', 'total_hms_bill', 'total_hmo_bill', 'total_nhis_bill', 'total_paid', 'discount', 'reviewed', 'resolved')
+    //                 ->with([
+    //                     'doctor:id,username',
+    //                     'sponsor:id,category_name',
+    //                     'patient' => function($query){
+    //                         $query->select('id', 'first_name', 'middle_name', 'last_name', 'card_no', 'flag', 'flag_reason', 'flagged_by', 'flagged_at')
+    //                             ->with(['flaggedBy:id,username']);
+    //                     },
+    //                     'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment'
+    //                 ])
+    //             ->whereRelation('sponsor', 'id', '=', $data->sponsorId)
+    //             ->when($params->searchTerm, function ($query) use ($params) {
+    //                 return  $query->where(function($query) use ($params){
+    //                             $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+    //                                 ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+    //                                 ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+    //                                 ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+    //                         });
+    //             })
+    //             ->when($data->startDate && $data->endDate, function ($query) use ($data) {
+    //                 return $query->whereBetween('created_at', [
+    //                     $data->startDate . ' 00:00:00', 
+    //                     $data->endDate . ' 23:59:59'
+    //                 ]);
+    //             })
+    //             ->when($data->date, function ($query) use ($data) {
+    //                 $date = new CarbonImmutable($data->date);
+    //                 return $query->whereMonth('created_at', $date->month)
+    //                             ->whereYear('created_at', $date->year);
+    //             })
+    //             ->when(!$data->date && (!$data->startDate || !$data->endDate), function ($query) {
+    //                 $current = new CarbonImmutable();
+    //                 return $query->whereMonth('created_at', $current->month)
+    //                             ->whereYear('created_at', $current->year);
+    //             })
+    //             ->when($data->state == 'reviewed', function($query) {
+    //                 return $query->whereNull('reviewed');
+    //             })
+    //             ->when($data->state == 'resolved', function($query){
+    //                 return $query->where('resolved', false);
+    //             })
+    //             ->orderBy($orderBy, $orderDir)
+    //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    // }
 
     public function getVisitsBySponsor(DataTableQueryParams $params, $data)
     {
-        $orderBy    = 'created_at';
-        $orderDir   =  'asc';
+        $orderBy  = 'created_at';
+        $orderDir = 'asc';
+        $page = ($params->length + $params->start) / $params->length;
 
-        
         return $this->visit->select('id', 'doctor_id', 'user_id', 'sponsor_id', 'patient_id', 'created_at', 'total_hms_bill', 'total_hmo_bill', 'total_nhis_bill', 'total_paid', 'discount', 'reviewed', 'resolved')
-                    ->with([
-                        'doctor:id,username',
-                        'sponsor:id,category_name',
-                        'patient' => function($query){
-                            $query->select('id', 'first_name', 'middle_name', 'last_name', 'card_no', 'flag', 'flag_reason', 'flagged_by', 'flagged_at')
-                                ->with(['flaggedBy:id,username']);
-                        },
-                        'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment'
-                    ])
-                ->whereRelation('sponsor', 'id', '=', $data->sponsorId)
-                ->when($params->searchTerm, function ($query) use ($params) {
-                    return  $query->where(function($query) use ($params){
-                                $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                    ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                    ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                                    ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                            });
-                })
-                ->when($data->startDate && $data->endDate, function ($query) use ($data) {
-                    return $query->whereBetween('created_at', [
-                        $data->startDate . ' 00:00:00', 
-                        $data->endDate . ' 23:59:59'
-                    ]);
-                })
-                ->when($data->date, function ($query) use ($data) {
-                    $date = new CarbonImmutable($data->date);
-                    return $query->whereMonth('created_at', $date->month)
-                                ->whereYear('created_at', $date->year);
-                })
-                ->when(!$data->date && (!$data->startDate || !$data->endDate), function ($query) {
-                    $current = new CarbonImmutable();
-                    return $query->whereMonth('created_at', $current->month)
-                                ->whereYear('created_at', $current->year);
-                })
-                ->when($data->state == 'reviewed', function($query) {
-                    return $query->whereNull('reviewed');
-                })
-                ->when($data->state == 'resolved', function($query){
-                    return $query->where('resolved', false);
-                })
-                ->orderBy($orderBy, $orderDir)
-                ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+            ->with([
+                'doctor:id,username',
+                'sponsor:id,category_name',
+                'patient' => function ($query) {
+                    $query->select('id', 'first_name', 'middle_name', 'last_name', 'card_no', 'flag', 'flag_reason', 'flagged_by', 'flagged_at')
+                        ->with(['flaggedBy:id,username']);
+                },
+                'latestConsultation:id,visit_id,icd11_diagnosis,provisional_diagnosis,assessment'
+            ])
+            // 1. Direct Filter (Sponsor)
+            ->where('sponsor_id', $data->sponsorId)
+
+            // 2. Search Filter (Optimized for performance)
+            ->when($params->searchTerm, function ($query, $termRaw) {
+                $term = '%' . addcslashes($termRaw, '%_') . '%';
+                return $query->whereHas('patient', function ($q) use ($term, $termRaw) {
+                    $q->searchByName($termRaw) // Full-Text scope
+                    ->orWhere('card_no', 'LIKE', $term);
+                });
+            })
+
+            // 3. SARGable Date Logic (Implicit Month/Year via Range)
+            ->when($data->startDate && $data->endDate, function ($query) use ($data) {
+                return $query->whereBetween('created_at', [$data->startDate . ' 00:00:00', $data->endDate . ' 23:59:59']);
+            })
+            ->when($data->date || (!$data->startDate || !$data->endDate), function ($query) use ($data) {
+                // If specific date provided, use it; otherwise default to current month
+                $baseDate = $data->date ? CarbonImmutable::parse($data->date) : CarbonImmutable::now();
+                return $query->whereBetween('created_at', [
+                    $baseDate->startOfMonth()->toDateTimeString(),
+                    $baseDate->endOfMonth()->toDateTimeString()
+                ]);
+            })
+
+            // 4. State Filters
+            ->when($data->state == 'reviewed', fn($q) => $q->whereNull('reviewed'))
+            ->when($data->state == 'resolved', fn($q) => $q->where('resolved', false))
+
+            ->orderBy($orderBy, $orderDir)
+            ->paginate($params->length, ['*'], 'page', $page);
     }
 
     public function getVisitsBySponsorTransformer(): callable
@@ -508,5 +730,158 @@ class AccountsReportService
                     'flaggedAt'         => $visit->patient?->flagged_at ? (new Carbon($visit->patient?->flagged_at))->format('d-m-y g:ai') : '',
                 ];
             };
+    }
+
+    public function getYearlyIncomeExpenseSummary($year)
+    {
+        $year = $year ?? now()->year;
+        $start = "$year-01-01 00:00:00";
+        $end   = "$year-12-31 23:59:59";
+
+        return DB::table(function ($query) use ($start, $end) {
+            // 1. Get Bills and Paid from Prescriptions
+            $query->selectRaw('MONTH(created_at) as m, SUM(hms_bill) as bill, SUM(paid + capitation) as paid, 0 as expense')
+                ->from('prescriptions')
+                ->whereBetween('created_at', [$start, $end])
+                ->groupBy('m')
+                
+                // 2. Get Expenses
+                ->unionAll(
+                    DB::table('expenses')
+                        ->selectRaw('MONTH(created_at) as m, 0 as bill, 0 as paid, SUM(amount) as expense')
+                        ->whereBetween('created_at', [$start, $end])
+                        ->groupBy('m')
+                );
+        }, 'combined')
+        ->selectRaw('m as month, SUM(bill) as bill, SUM(paid) as paid, SUM(expense) as expense')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get();
+    }
+
+    public function getYearlyIncomeAndExpense2($year)
+    {
+        $year = $year ?? now()->year;
+        $start = "$year-01-01 00:00:00";
+        $end   = "$year-12-31 23:59:59";
+
+        return DB::table(function ($query) use ($start, $end) {
+            // 1. Total Bills (From ALL prescriptions)
+            $query->selectRaw('MONTH(created_at) as m, SUM(hms_bill) as bill, 0 as cashPaid, 0 as paidHmo, 0 as expense')
+                ->from('prescriptions')
+                ->whereBetween('created_at', [$start, $end])
+                ->groupBy('m')
+
+                // 2. Cash Paid (From Individual/Family/NHIS/Retainership)
+                ->unionAll(
+                    DB::table('prescriptions')
+                        ->selectRaw('MONTH(prescriptions.created_at) as m, 0, SUM(prescriptions.paid), 0, 0')
+                        ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
+                        ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                        ->whereBetween('prescriptions.created_at', [$start, $end])
+                        ->whereIn('sponsors.category_name', ['Individual', 'Family', 'NHIS', 'Retainership'])
+                        ->groupBy('m')
+                )
+
+                // 3. HMO Payments (From Reminders where visit_id is null)
+                ->unionAll(
+                    DB::table('reminders')
+                        ->selectRaw('MONTH(created_at) as m, 0, 0, SUM(amount_confirmed), 0')
+                        ->whereNull('visit_id')
+                        ->whereBetween('created_at', [$start, $end])
+                        ->groupBy('m')
+                )
+
+                // 4. Expenses
+                ->unionAll(
+                    DB::table('expenses')
+                        ->selectRaw('MONTH(created_at) as m, 0, 0, 0, SUM(amount)')
+                        ->whereBetween('created_at', [$start, $end])
+                        ->groupBy('m')
+                );
+        }, 'combined')
+        ->selectRaw('m as month, SUM(bill) as bill, SUM(cashPaid) as cashPaid, SUM(paidHmo) as paidHmo, SUM(expense) as expense')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get();
+    }
+
+    // public function getYearlyIncomeAndExpense3($year)
+    // {
+    //     $year = $year ?? now()->year;
+    //     $start = "$year-01-01 00:00:00";
+    //     $end   = "$year-12-31 23:59:59";
+
+    //     // 1. Prescription Data
+    //     $prescriptions = DB::table('prescriptions')
+    //         ->selectRaw('MONTH(created_at) as m, SUM(hms_bill) as bill, 0 as cashPaid, 0 as expense')
+    //         ->whereBetween('created_at', [$start, $end])
+    //         ->groupBy('m');
+
+    //     // 2. Cash Payments Data
+    //     $payments = DB::table('payments')
+    //         ->selectRaw('MONTH(created_at) as m, 0 as bill, SUM(amount_paid) as cashPaid, 0 as expense')
+    //         ->whereBetween('created_at', [$start, $end])
+    //         ->groupBy('m');
+
+    //     // 3. Combine with Expenses and Sum Everything
+    //     return DB::table('expenses')
+    //         ->selectRaw('MONTH(created_at) as m, 0 as bill, 0 as cashPaid, SUM(amount) as expense')
+    //         ->whereBetween('created_at', [$start, $end])
+    //         ->groupBy('m')
+    //         ->unionAll($prescriptions)
+    //         ->unionAll($payments)
+    //         // Wrap the union in a subquery to sum up the months
+    //         ->fromSub(function ($query) use ($prescriptions, $payments, $start, $end) {
+    //             $query->selectRaw('MONTH(created_at) as m, SUM(hms_bill) as bill, 0 as cashPaid, 0 as expense')
+    //                 ->from('prescriptions')->whereBetween('created_at', [$start, $end])->groupBy('m')
+    //                 ->unionAll(
+    //                         DB::table('payments')->selectRaw('MONTH(created_at) as m, 0, SUM(amount_paid), 0')
+    //                         ->whereBetween('created_at', [$start, $end])->groupBy('m')
+    //                 )
+    //                 ->unionAll(
+    //                         DB::table('expenses')->selectRaw('MONTH(created_at) as m, 0, 0, SUM(amount)')
+    //                         ->whereBetween('created_at', [$start, $end])->groupBy('m')
+    //                 );
+    //         }, 'combined')
+    //         ->selectRaw('m as month, SUM(bill) as bill, SUM(cashPaid) as cashPaid, SUM(expense) as expense')
+    //         ->groupBy('month')
+    //         ->orderBy('month')
+    //         ->get();
+    // }
+
+    public function getYearlyIncomeAndExpense3($year)
+    {
+        $year  = $year ?? now()->year;
+        $start = "$year-01-01 00:00:00";
+        $end   = "$year-12-31 23:59:59";
+
+        return DB::table(function ($query) use ($start, $end) {
+            // 1. Get all Prescription bills by month
+            $query->selectRaw('MONTH(created_at) as m, SUM(hms_bill) as bill, 0 as cashPaid, 0 as expense')
+                ->from('prescriptions')
+                ->whereBetween('created_at', [$start, $end])
+                ->groupBy('m')
+                
+                // 2. Stack all Cash Payments on top
+                ->unionAll(
+                    DB::table('payments')
+                        ->selectRaw('MONTH(created_at) as m, 0, SUM(amount_paid), 0')
+                        ->whereBetween('created_at', [$start, $end])
+                        ->groupBy('m')
+                )
+                
+                // 3. Stack all Expenses on top
+                ->unionAll(
+                    DB::table('expenses')
+                        ->selectRaw('MONTH(created_at) as m, 0, 0, SUM(amount)')
+                        ->whereBetween('created_at', [$start, $end])
+                        ->groupBy('m')
+                );
+        }, 'combined_data') // This is our temporary "virtual table"
+        ->selectRaw('m as month, SUM(bill) as bill, SUM(cashPaid) as cashPaid, SUM(expense) as expense')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get();
     }
 }

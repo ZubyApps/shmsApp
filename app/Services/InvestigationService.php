@@ -59,46 +59,74 @@ class InvestigationService
         ->withExists(['investigationsList as isOnList'])
         ->whereNotNull('consulted');
 
-        if (! empty($params->searchTerm)) {
+        // if (! empty($params->searchTerm)) {
 
-            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+        //     $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
 
-            if ($data->filterBy == 'ANC'){
-                return $query->where('visit_type', '=', 'ANC')
-                    ->where(function (Builder $query) use($searchTerm) {
-                        $query->where('created_at', 'LIKE', $searchTerm)
-                        ->orWhere(function($q) use ($searchTerm) {
-                            $terms = array_filter(explode(' ', trim($searchTerm)));
-                            foreach ($terms as $term) {
-                                $q->where(function($subQuery) use ($term) {
-                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
-                                });
-                            }
-                        })
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
-                    })
+        //     if ($data->filterBy == 'ANC'){
+        //         return $query->where('visit_type', '=', 'ANC')
+        //             ->where(function (Builder $query) use($searchTerm) {
+        //                 $query->where('created_at', 'LIKE', $searchTerm)
+        //                 ->orWhere(function($q) use ($searchTerm) {
+        //                     $terms = array_filter(explode(' ', trim($searchTerm)));
+        //                     foreach ($terms as $term) {
+        //                         $q->where(function($subQuery) use ($term) {
+        //                             $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
+        //                                     ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
+        //                                     ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
+        //                         });
+        //                     }
+        //                 })
+        //                 ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
+        //             })
                     
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
+        //             ->orderBy($orderBy, $orderDir)
+        //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        //     }
             
-            $query = $query->where(function (Builder $query) use($searchTerm) {
-                        $query->where('created_at', 'LIKE', $searchTerm)
-                        ->orWhere(function($q) use ($searchTerm) {
-                            $terms = array_filter(explode(' ', trim($searchTerm)));
-                            foreach ($terms as $term) {
-                                $q->where(function($subQuery) use ($term) {
-                                    $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
-                                            ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
-                                });
-                            }
-                        })
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
-                    });
+        //     $query = $query->where(function (Builder $query) use($searchTerm) {
+        //                 $query->where('created_at', 'LIKE', $searchTerm)
+        //                 ->orWhere(function($q) use ($searchTerm) {
+        //                     $terms = array_filter(explode(' ', trim($searchTerm)));
+        //                     foreach ($terms as $term) {
+        //                         $q->where(function($subQuery) use ($term) {
+        //                             $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
+        //                                     ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
+        //                                     ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
+        //                         });
+        //                     }
+        //                 })
+        //                 ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm);
+        //             });
                     
+        //     return $this->helperService->paginateQuery($query, $params);
+        // }
+
+        if (!empty($params->searchTerm)) {
+            $searchTermRaw = trim($params->searchTerm);
+            $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+            // 1. Apply the ANC "Gatekeeper" if needed
+            if ($data->filterBy == 'ANC') {
+                $query->where('visit_type', 'ANC');
+            }
+
+            if (str_starts_with($searchTermRaw, 'pId-')) {
+                $query->where('patient_id', explode('-', $searchTermRaw)[1]);
+                return $this->helperService->paginateQuery($query, $params);
+            }
+
+            // 2. The Consolidated Search Block
+            $query->where(function (Builder $query) use ($searchTerm, $searchTermRaw) {
+                $query->whereBetween('consulted', [$searchTermRaw . ' 00:00:00', $searchTermRaw . ' 23:59:59'])
+                    ->orWhereHas('patient', function ($q) use ($searchTerm, $searchTermRaw) {
+                        // Hits the Full-Text Index for names
+                        $q->searchByName($searchTermRaw) 
+                        ->orWhere('card_no', 'LIKE', $searchTerm);
+                    });
+            });
+
+            // 3. Return using your helper service (or manual pagination)
             return $this->helperService->paginateQuery($query, $params);
         }
 
@@ -196,23 +224,42 @@ class InvestigationService
                             'sampleCollectedBy:id,username'
                         ]);
 
-        if (! empty($params->searchTerm)) {
-            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+        // if (! empty($params->searchTerm)) {
+        //     $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+        //     return $query->whereRelation('resource', 'category', 'Investigations')
+        //             ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
+        //             ->where(function (Builder $query) use($searchTerm) {
+        //                 $query->whereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
+        //                 ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
+        //                 ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
+        //                 ->orWhereRelation('visit.patient', 'Phone', 'LIKE', $searchTerm)
+        //                 ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm);
+        //                 })
+        //             ->whereRelation('visit', 'consulted', '!=', null)
+        //             // ->where('discontinued', false)
+        //             ->where('result_date', null)
+        //             // ->where('dispense_comment', null)
+        //             ->orderBy($orderBy, $orderDir)
+        //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        // }
+
+        if (!empty($params->searchTerm)) {
+            $searchTermRaw = trim($params->searchTerm);
+            $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
             return $query->whereRelation('resource', 'category', 'Investigations')
-                    ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
-                    ->where(function (Builder $query) use($searchTerm) {
-                        $query->whereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
-                        ->orWhereRelation('visit.patient', 'Phone', 'LIKE', $searchTerm)
-                        ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm);
-                        })
-                    ->whereRelation('visit', 'consulted', '!=', null)
-                    // ->where('discontinued', false)
-                    ->where('result_date', null)
-                    // ->where('dispense_comment', null)
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+                ->whereRelation('resource', 'sub_category', '!=', 'Imaging')
+                // 1. Grouped Patient Search via Relationship
+                ->whereHas('visit.patient', function (Builder $q) use ($searchTerm, $searchTermRaw) {
+                    $q->searchByName($searchTermRaw) // Using the Full-Text Index!
+                    ->orWhere('phone', 'LIKE', $searchTerm)
+                    ->orWhere('card_no', 'LIKE', $searchTerm);
+                })
+                // 2. Gatekeepers
+                ->whereRelation('visit', 'consulted', '!=', null)
+                ->whereNull('result_date')
+                ->orderBy($orderBy, $orderDir)
+                ->paginate($params->length, ['*'], 'page', ($params->length + $params->start) / $params->length);
         }
 
         return $query->whereRelation('resource', 'category', 'Investigations')

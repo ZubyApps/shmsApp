@@ -97,10 +97,8 @@ class PharmacyService
 
                 // 2. Patient Block (Uses Full-Text Index + Card No)
                 $query->orWhereHas('patient', function ($q) use ($searchTerm, $searchTermRaw) {
-                    $q->where('first_name', 'LIKE', $searchTerm)
-                        ->orWhere('middle_name', 'LIKE', $searchTerm)
-                        ->orWhere('last_name', 'LIKE', $searchTerm)
-                        ->orWhere('card_no', 'LIKE', $searchTerm);
+                    $q->searchByName($searchTermRaw)
+                    ->orWhere('card_no', 'LIKE', $searchTerm);
                 });
 
                 // 3. Consultations Block
@@ -239,21 +237,26 @@ class PharmacyService
 
     public function bill(Request $data, Prescription $prescription, User $user)
     {
-        if($prescription->qty_dispensed){
+        $resource = $prescription->resource;
+        $resourceCat = $resource->category;
+        $isPhamacyBillable = in_array($resourceCat, ['Medications', 'Consumables']);
+
+        if($prescription->qty_dispensed && $isPhamacyBillable){
             return;
         }
         
-        $visit    = $visit = $prescription->visit()->with('sponsor')->first();
-        $sponsor = $visit?->sponsor;
-        $isNhis = $sponsor->category_name == 'NHIS';
+        $visit      = $visit = $prescription->visit()->with('sponsor')->first();
+        $sponsor    = $visit?->sponsor;
+        $isNhis     = $sponsor->category_name == 'NHIS';
 
         $nhisBill = fn($value)=>$value/10;
         $bill     = 0;
+        
         if ($data->quantity){
             $bill = $prescription->resource->getSellingPriceForSponsor($sponsor) * $data->quantity;
         }
 
-        return DB::transaction(function () use($data, $prescription, $user, $visit, $bill, $isNhis, $nhisBill) {
+        return DB::transaction(function () use($data, $prescription, $user, $visit, $bill, $isNhis, $nhisBill, $isPhamacyBillable) {
               
             $prescriptionUpdates = [
                 'qty_billed'        => $data->quantity ?? 0,
@@ -263,9 +266,7 @@ class PharmacyService
             ];
 
            if ($isNhis){
-                $resourceCat = $prescription->resource->category;
-
-                $isNhisBillable = $resourceCat == 'Medications' || $resourceCat == 'Consumables' ;
+                $isNhisBillable = $isPhamacyBillable;
 
                 $approved = $prescription->approved;
                 // Apply bill adjustment immediately before the main update

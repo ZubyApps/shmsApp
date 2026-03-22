@@ -2,22 +2,23 @@
 
 namespace App\Listeners;
 
+use App\DataObjects\SponsorCategoryDto;
+use App\Events\PaymentDestroyed;
+use App\Models\MortuaryService;
 use App\Models\Visit;
 use App\Models\WalkIn;
-use App\Models\MortuaryService;
-use App\Events\PaymentDestroyed;
 use App\Services\PaymentService;
-use Illuminate\Support\Facades\DB;
-use App\DataObjects\SponsorCategoryDto;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Services\TotalsService;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\DB;
 
 class UpdatePaymentDestroyed
 {
     /**
      * Create the event listener.
      */
-    public function __construct(private readonly PaymentService $paymentService)
+    public function __construct(private readonly PaymentService $paymentService, private readonly TotalsService $totalsService)
     {
         //
     }
@@ -109,49 +110,47 @@ class UpdatePaymentDestroyed
         $this->paymentService->applyPaymentsWaterfall($visit, $totalPayments, $this->getSponsorDto($isNhis));
 
         // 4. Update Visit Totals (SINGLE Database Trip Optimization)
-        $visitId = $visit->id;
-        
-        // // Define SQL segments for conditional 'total_paid' logic
-        // $totalPaidSourceSql = ($visit->sponsor->category_name === 'HMO') 
-        //     ? "(SELECT SUM(paid) FROM prescriptions WHERE visit_id = {$visitId})" // SUM(paid) for HMO
-        //     : $totalPayments; // Static value for cash/individual payment (already retrieved)
+        // $visitId = $visit->id;
+        // $patientId = $visit->patient_id;
 
-        // // Define SQL segments for conditional 'total_nhis_bill' logic
+        $this->totalsService->syncVisitTotals($visit);
+
+        // $totalPaidSourceSql = ($visit->sponsor->category_name === 'HMO') 
+        // ? "(SELECT COALESCE(SUM(paid), 0) FROM prescriptions WHERE visit_id = {$visitId})" 
+        // : $totalPayments;
+
         // $totalNhisBillSql = $isNhis 
-        //     ? "(SELECT SUM(nhis_bill) FROM prescriptions WHERE visit_id = {$visitId})" 
+        //     ? "(SELECT COALESCE(SUM(nhis_bill), 0) FROM prescriptions WHERE visit_id = {$visitId})" 
         //     : 0;
 
         // DB::table('visits')
         //     ->where('id', $visitId)
         //     ->update([
-        //         // total_hms_bill (calculated via SUM subquery)
-        //         'total_hms_bill'  => DB::raw("(SELECT SUM(hms_bill) FROM prescriptions WHERE visit_id = {$visitId})"),
+        //         // total_hms_bill wrap with COALESCE
+        //         // 'total_hms_bill'  => DB::raw("(SELECT COALESCE(SUM(hms_bill), 0) FROM prescriptions WHERE visit_id = {$visitId})"),
                 
-        //         // total_paid (calculated conditionally)
         //         'total_paid'      => DB::raw($totalPaidSourceSql),
                 
-        //         // total_nhis_bill (calculated conditionally)
-        //         'total_nhis_bill' => DB::raw($totalNhisBillSql),
+        //         // 'total_nhis_bill' => DB::raw($totalNhisBillSql),
         //     ]);
 
-        $totalPaidSourceSql = ($visit->sponsor->category_name === 'HMO') 
-        ? "(SELECT COALESCE(SUM(paid), 0) FROM prescriptions WHERE visit_id = {$visitId})" 
-        : $totalPayments;
-
-        $totalNhisBillSql = $isNhis 
-            ? "(SELECT COALESCE(SUM(nhis_bill), 0) FROM prescriptions WHERE visit_id = {$visitId})" 
-            : 0;
-
-        DB::table('visits')
-            ->where('id', $visitId)
-            ->update([
-                // total_hms_bill wrap with COALESCE
-                'total_hms_bill'  => DB::raw("(SELECT COALESCE(SUM(hms_bill), 0) FROM prescriptions WHERE visit_id = {$visitId})"),
-                
-                'total_paid'      => DB::raw($totalPaidSourceSql),
-                
-                'total_nhis_bill' => DB::raw($totalNhisBillSql),
-            ]);
+        // DB::table('patients')
+        // ->where('id', $patientId)
+        // ->update([
+        //     // 'total_bill' => DB::raw("(
+        //     //     SELECT SUM(
+        //     //         CASE 
+        //     //             WHEN sponsors.category_name = 'NHIS' THEN visits.total_nhis_bill 
+        //     //             ELSE visits.total_hms_bill 
+        //     //         END
+        //     //     ) 
+        //     //     FROM visits 
+        //     //     JOIN sponsors ON visits.sponsor_id = sponsors.id 
+        //     //     WHERE visits.patient_id = {$patientId}
+        //     // )"),
+        //     'total_paid'     => DB::raw("(SELECT SUM(total_paid) FROM visits WHERE patient_id = {$patientId})"),
+        //     // 'total_discount' => DB::raw("(SELECT SUM(discount) FROM visits WHERE patient_id = {$patientId})"),
+        // ]);
     }
 
     /**

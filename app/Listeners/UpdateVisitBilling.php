@@ -48,9 +48,9 @@ class UpdateVisitBilling
         // 2. Update the cached totals on the visit
         $visit->update([
                 'total_hms_bill'    => $visit->totalHmsBills(),
-                'total_paid'        => max($visit->totalPaidPrescriptions(), $visit->totalPayments()),// ? $visit->totalPaidPrescriptions() : $visit->totalPayments(),
+                // 'total_paid'        => max($visit->totalPaidPrescriptions(), $visit->totalPayments()),// ? $visit->totalPaidPrescriptions() : $visit->totalPayments(),
                 'total_nhis_bill'   => $isNhis ? $visit->totalNhisBills() : 0, 
-                'total_capitation'  => $visit->totalPrescriptionCapitations(),
+                'total_capitation'  => $isNhis ? $visit->totalPrescriptionCapitations() : 0,
                 'pharmacy_done_by'  => $event->resource && in_array($event->resource->category, ['Medications', 'Consumables']) ? null : $visit->pharmacy_done_by,
                 'nurse_done_by'     => $event->resource->sub_category == 'Injectable' || $resource->category == 'Consumables' ? null : $visit->nurse_done_by,
                 'hmo_done_by'       => null

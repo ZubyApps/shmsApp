@@ -10,6 +10,7 @@ use App\Services\PaymentService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\DataObjects\SponsorCategoryDto;
+use App\Services\TotalsService;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -19,78 +20,10 @@ class UpdatePaymentCreated
      * Create the event listener.
      */
     
-    public function __construct(private readonly PaymentService $paymentService)
+    public function __construct(private readonly PaymentService $paymentService, private readonly TotalsService $totalsService)
     {
         //
     }
-
-    /**
-     * Handle the event.
-     */
-    // public function handle(PaymentCreated $event): void
-    // {
-    //     if (($event->relatedModel instanceof Visit)) {
-    //         $visit = $event->relatedModel->refresh();
-
-    //         // 1. Determine Context (NHIS flag)
-    //         $isNhis = $visit->sponsor->category_name === 'NHIS';
-
-    //         // 2. Recalculate Total Payments (MUST be done inside the listener, after the event)
-    //         $totalPayments = $visit->totalPayments();
-
-    //         // 3. Run Optimized Waterfall Logic
-    //         $this->paymentService->applyPaymentsWaterfall($visit, $totalPayments, $isNhis);
-
-    //         // 4. Update Visit Totals
-    //         $totalHmsBill = $visit->totalHmsBills();
-    //         $totalPaid = $visit->totalPaidPrescriptions();
-            
-    //         $updateData = [
-    //             'total_hms_bill' => $totalHmsBill,
-    //             'total_nhis_bill' => $isNhis ? $visit->totalNhisBills() : 0,
-    //         ];
-            
-    //         if ($visit->sponsor->category_name == 'HMO') {
-    //             $updateData['total_paid'] = $totalPaid;
-    //         } else {
-    //             $updateData['total_paid'] = $totalPayments;
-    //         }
-            
-    //         $visit->update($updateData);
-    //     }
-
-    //     if (($event->relatedModel instanceof WalkIn)) {
-    //         $walkIn = $event->relatedModel->refresh();
-            
-    //         // WalkIn is implicitly Non-NHIS (no sponsor)
-    //         $totalPayments = $walkIn->totalPayments(); 
-            
-    //         // Run Optimized Waterfall Logic (passing false for $isNhis)
-    //         $this->paymentService->applyPaymentsWaterfall($walkIn, $totalPayments, false); 
-            
-    //         // Update WalkIn Totals
-    //         $walkIn->update([
-    //             'total_bill' => $walkIn->totalHmsBills(),
-    //             'total_paid' => $walkIn->totalPaidPrescriptions() ?? $totalPayments,
-    //         ]);
-    //     }
-
-    //     if (($event->relatedModel instanceof MortuaryService)) {
-    //         $mortuaryService = $event->relatedModel->refresh();
-            
-    //         // mortuaryService is implicitly Non-NHIS (no sponsor)
-    //         $totalPayments = $mortuaryService->totalPayments(); 
-            
-    //         // Run Optimized mortuaryService Logic (passing false for $isNhis)
-    //         $this->paymentService->applyPaymentsWaterfall($mortuaryService, $totalPayments, false); 
-            
-    //         // Update mortuaryService Totals
-    //         $walkIn->update([
-    //             'total_bill' => $mortuaryService->totalHmsBills(),
-    //             'total_paid' => $mortuaryService->totalPaidPrescriptions() ?? $totalPayments,
-    //         ]);
-    //     }
-    // }
 
     public function handle(PaymentCreated $event): void
     {
@@ -121,25 +54,48 @@ class UpdatePaymentCreated
         // 4. Update Visit Totals (Single Database Trip Optimization)
         
         // Define SQL segments based on condition
-        $visitId = $visit->id;
-        $totalPaidSourceSql = ($visit->sponsor->category_name === 'HMO') 
-        ? "(SELECT COALESCE(SUM(paid), 0) FROM prescriptions WHERE visit_id = {$visitId})" 
-        : $totalPayments;
+        // $visitId = $visit->id;
+        
+        $this->totalsService->syncVisitTotals($visit);
 
-        $totalNhisBillSql = $isNhis 
-            ? "(SELECT COALESCE(SUM(nhis_bill), 0) FROM prescriptions WHERE visit_id = {$visitId})" 
-            : 0;
+        // $patientId = $visit->patient_id;
+        // $totalPaidSourceSql = ($visit->sponsor->category_name === 'HMO') 
+        // ? "(SELECT COALESCE(SUM(paid), 0) FROM prescriptions WHERE visit_id = {$visitId})" 
+        // : $totalPayments;
 
-        DB::table('visits')
-            ->where('id', $visitId)
-            ->update([
-                // total_hms_bill wrap with COALESCE
-                'total_hms_bill'  => DB::raw("(SELECT COALESCE(SUM(hms_bill), 0) FROM prescriptions WHERE visit_id = {$visitId})"),
+        // $totalNhisBillSql = $isNhis 
+        //     ? "(SELECT COALESCE(SUM(nhis_bill), 0) FROM prescriptions WHERE visit_id = {$visitId})" 
+        //     : 0;
+
+        // DB::table('visits')
+        //     ->where('id', $visitId)
+        //     ->update([
+        //         // total_hms_bill wrap with COALESCE
+        //         'total_hms_bill'  => DB::raw("(SELECT COALESCE(SUM(hms_bill), 0) FROM prescriptions WHERE visit_id = {$visitId})"),
                 
-                'total_paid'      => DB::raw($totalPaidSourceSql),
+        //         'total_paid'      => DB::raw($totalPaidSourceSql),
                 
-                'total_nhis_bill' => DB::raw($totalNhisBillSql),
-            ]);
+        //         'total_nhis_bill' => DB::raw($totalNhisBillSql),
+        //     ]);
+
+        // DB::table('patients')
+        // ->where('id', $patientId)
+        // ->update([
+        //     // 'total_bill' => DB::raw("(
+        //     //     SELECT SUM(
+        //     //         CASE 
+        //     //             WHEN sponsors.category_name = 'NHIS' THEN visits.total_nhis_bill 
+        //     //             ELSE visits.total_hms_bill 
+        //     //         END
+        //     //     ) 
+        //     //     FROM visits 
+        //     //     JOIN sponsors ON visits.sponsor_id = sponsors.id 
+        //     //     WHERE visits.patient_id = {$patientId}
+        //     // )"),
+        //     'total_paid'     => DB::raw("(SELECT SUM(total_paid) FROM visits WHERE patient_id = {$patientId})"),
+        //     // 'total_discount' => DB::raw("(SELECT SUM(discount) FROM visits WHERE patient_id = {$patientId})"),
+        // ]);
+
     }
 
     private function handleWalkInOrMortuaryUpdate(WalkIn|MortuaryService $model): void
