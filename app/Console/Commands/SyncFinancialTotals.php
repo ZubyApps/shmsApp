@@ -36,12 +36,10 @@ class SyncFinancialTotals extends Command
                             v.total_hms_bill = (SELECT COALESCE(SUM(p.hms_bill), 0) FROM prescriptions p WHERE p.visit_id = v.id),
                             v.total_nhis_bill = (
                                 SELECT CASE 
-                                    WHEN s.category_name = 'NHIS' THEN COALESCE(SUM(pr.nhis_bill), 0) 
+                                    WHEN (SELECT category_name FROM sponsors WHERE id = v.sponsor_id) = 'NHIS' 
+                                    THEN (SELECT COALESCE(SUM(nhis_bill), 0) FROM prescriptions WHERE visit_id = v.id)
                                     ELSE 0 
-                                END 
-                                FROM prescriptions pr 
-                                JOIN sponsors s ON v.sponsor_id = s.id 
-                                WHERE pr.visit_id = v.id
+                                END
                             ),
                             v.total_paid = (
                                 SELECT GREATEST(
