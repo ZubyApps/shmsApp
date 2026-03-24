@@ -223,7 +223,7 @@ class PrescriptionService
 
         // --- STEP 2: DATABASE TRANSACTION (Atomic Write) ---
 
-        $prescription = DB::transaction(function () use ($data, $resource, $user, $visitId, $walkInId, $mortuaryId, $bill, $isNhis, $resourceSubCat, $hasBill, $conId, $visit) {
+        $prescription = DB::transaction(function () use ($data, $resource, $user, $visitId, $walkInId, $mortuaryId, $bill, $isNhis, $resourceSubCat, $hasBill, $conId) {
             // Prepare creation data
             $creationData = [
                 'resource_id'           => $resource->id,
