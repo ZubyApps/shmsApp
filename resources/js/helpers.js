@@ -404,10 +404,12 @@ const sponsorAndPayPercent = (row) => {
     }
     return payPercent !== null ? 
         `<div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"     style="height: 40px">
-                <div class="progress-bar text-dark fs-6 px-1 overflow-visible bg-${payPercent <= 50 ?
-                    'danger' : payPercent >= 50 && payPercent < 90 ?
-                    'warning' : payPercent >= 90 && payPercent < 100 ?
-                    'primary-subtle' : 'primary'}" style="width: ${payPercent}%";>
+                <div class="progress-bar text-dark fs-6 px-1 overflow-visible bg-${
+                    payPercent <= 50 ? 'danger' :
+                    payPercent >= 50 && payPercent < 90 ? 'warning' : 
+                    payPercent >= 90 && payPercent < 100 ?'primary-subtle' : 
+                    payPercent === 100 ? 'primary':
+                    'success'}" style="width: ${payPercent}%";>
                     ${`<span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor+'-'+ row.sponsorCategory +' '+payPercent+'%'}</span>`} 
                 </div> 
         </div> ${row.visitType == 'ANC' ? visitType(row) : ''}` : `<div><span class="${flagIndicator(row.flagSponsor)} tooltip-test" title="${flagSponsorReason(row.flagSponsor)}">${row.sponsor+'-'+ row.sponsorCategory} </span></div>${row.visitType == 'ANC' ? visitType(row) : ''}`
