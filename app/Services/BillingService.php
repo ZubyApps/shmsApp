@@ -446,7 +446,7 @@ class BillingService
                 'outstandingPatientBalance'  => $patient->total_bill - $patient->total_discount - $patient->total_paid,
                 'outstandingSponsorBalance'  => $this->sponsorsAllowed($sponsor, ['Family', 'Retainership']) ? $sponsor->total_bill - $sponsor->total_discount - $sponsor->total_paid : null,
                 'outstandingCardNoBalance'   => $this->sponsorsAllowed($sponsor, ['Family', 'Retainership', 'NHIS', 'Individual']) ? $this->sameCardNoOustandings($visit) : null,
-                'outstandingNhisBalance'=> $this->sponsorsAllowed($sponsor, ['NHIS']) ? $patient->total_bill - $visit->total_discount - $patient->total_paid : null,
+                'outstandingNhisBalance'=> $this->sponsorsAllowed($sponsor, ['NHIS']) ? $patient->total_bill - $patient->total_discount - $patient->total_paid : null,
                 'payMethods'            => $this->payMethodService->list(),
                 'notBilled'             => $visit->hasUnbilledPrescriptions,
                 'user'                  => auth()->user()->designation->access_level > 4,
