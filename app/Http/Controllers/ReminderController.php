@@ -126,7 +126,7 @@ class ReminderController extends Controller
 
     public function sendSms(SendSmsRequest $request, Reminder $reminder)
     {
-        if (!$this->helperService->isAirtel($request->phone)){
+        if ($this->helperService->isAirtel($request->phone)){
             return;
         }
 
