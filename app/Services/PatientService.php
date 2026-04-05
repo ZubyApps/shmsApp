@@ -436,6 +436,11 @@ class PatientService
     public function patientList($data)
     {
         if (! empty($data->fullId)){
+            
+            if (str_starts_with($data->fullId, 'pId-')){
+                return;
+            }
+
             $searchTerm = '%' . addcslashes($data->fullId, '%_') . '%';
 
             $query = $this->patient->newQuery();

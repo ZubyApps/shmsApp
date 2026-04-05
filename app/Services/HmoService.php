@@ -1152,7 +1152,7 @@ class HmoService
             ])
             ->with([
                 'sponsor:id,name,category_name,flag', 
-                'latestConsultation:id,visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
+                'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
                 'patient' => fn($q) => $q->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
                                         ->with(['flaggedBy:id,username']), 
                 'doctor:id,username', 
