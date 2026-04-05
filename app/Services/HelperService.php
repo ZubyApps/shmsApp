@@ -9,6 +9,8 @@ use Carbon\CarbonImmutable;
 use App\DataObjects\DataTableQueryParams;
 use Illuminate\Database\Eloquent\Builder;
 
+use function Laravel\Prompts\info;
+
 class HelperService
 {
     public function twoPartDiffInTimePast($date): String
@@ -34,7 +36,7 @@ class HelperService
     public function nccTextTime()
     {
         $start = new CarbonImmutable('08:00:00');
-        $end = $start->addHours(11);
+        $end = $start->addHours(12);
         return Carbon::now()->between($start, $end);
     }
 
@@ -86,9 +88,9 @@ class HelperService
         if (!$phone) return false;
 
         // 2. NCC Quiet Hours & Airtel Block
-        // if (!$this->nccTextTime()) {
-        //     return false;
-        // }
+        if (!$this->nccTextTime()) {
+            return false;
+        }
 
         // 3. Patient Opt-out check (if applicable)
         if ($patient && method_exists($patient, 'canSms') && !$patient->canSms()) {
