@@ -14,6 +14,6 @@ import 'datatables.net-fixedcolumns-bs5';
 import 'datatables.net-select-bs5';
 import 'datatables.net-staterestore-bs5';
 
-import { showToast } from "./toasts/globalNotificationToasts.js";
+// import { showToast } from "./toasts/globalNotificationToasts.js";
 
-window.showToast = showToast;
+// window.showToast = showToast;

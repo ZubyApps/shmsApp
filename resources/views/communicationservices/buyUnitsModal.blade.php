@@ -34,7 +34,7 @@
                                     </div>
                                 </div>
                                 <div class="col-xl-6">
-                                    <div class="form-control">
+                                    <div class="form-control overflow-auto">
                                         <div class="d-flex flex-column flex-md-row p-3 gap-3 py-md-2 m-0 align-items-center justify-content-center">
                                             <div class="list-group">
                                                 <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
