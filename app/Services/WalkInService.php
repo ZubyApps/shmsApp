@@ -20,7 +20,8 @@ class WalkInService
     public function __construct(
         private readonly WalkIn $walkIn, 
         private readonly HelperService $helperService, 
-        private readonly Prescription $prescription
+        private readonly Prescription $prescription,
+        private readonly TotalsService $totalsService
         )
     {
     }
@@ -160,63 +161,7 @@ class WalkInService
          };
     }
 
-    // public function handleVisitLink($walkIn, $visit)
-    // {
-    //     return DB::transaction(function () use ($walkIn, $visit) {
-    //         $consultation = $visit->latestConsultation()->first();
-    
-    //         $updateData = ['visit_id' => $visit->id];
-    
-    //         if ($consultation) {
-    //             $updateData['consultation_id'] = $consultation->id;
-    //         }
-    
-    //         $walkIn->prescriptions()
-    //             ->whereNull('visit_id')
-    //             ->update($updateData);
-    
-    //         $walkIn->payments()
-    //             ->whereNull('visit_id')
-    //             ->update(['visit_id' => $visit->id, 'patient_id' => $visit->patient->id]);
-    
-    //         if ($visit){
-    //             $sums = $visit->prescriptions()
-    //                     ->selectRaw('COALESCE(SUM(paid), 0) as totalPaid, COALESCE(SUM(hms_bill), 0) as totalHmsBill, COALESCE(SUM(nhis_bill), 0) as totalNhisBill')
-    //                     ->first();
-    
-    //             $visit->update(['total_paid' => $sums->totalPaid,  'total_hms_bill' => $sums->totalHmsBill, 'total_nhis_bill' => $sums->totalNhisBill]);
-    //         }
-    
-    //         return true;
-    //     });
-    // }
-
-    // public function handleUnlinkVisit($walkIn)
-    // {
-    //     return DB::transaction(function () use ($walkIn) {
-    
-    //         $visitId = $walkIn->prescriptions()->whereNotNull('visit_id')->value('visit_id');
-
-    //         $visit = $visitId ? Visit::find($visitId) : null;
-
-    //         $walkIn->prescriptions()->update(['visit_id' => null, 'consultation_id' => null]);
-    
-    //         $walkIn->payments()->update(['visit_id' => null, 'patient_id' => null]);
-    
-    //         if ($visit){
-    //             $sums = $visit->prescriptions()
-    //                     ->selectRaw('COALESCE(SUM(paid), 0) as totalPaid, COALESCE(SUM(hms_bill), 0) as totalHmsBill, COALESCE(SUM(nhis_bill), 0) as totalNhisBill')
-    //                     ->first();
-    
-    //             $visit->update(['total_paid' => $sums->totalPaid,  'total_hms_bill' => $sums->totalHmsBill, 'total_nhis_bill' => $sums->totalNhisBill]);
-    //         }
-
-    
-    //         return true;
-    //     });
-    // }
-
-        public function handleVisitLink($walkIn, $visit)
+    public function handleVisitLink($walkIn, $visit)
     {
         return DB::transaction(function () use ($walkIn, $visit) {
             // Use relationship directly to find the latest consultation ID
@@ -241,8 +186,7 @@ class WalkInService
                     'patient_id' => $visit->patient_id 
                 ]);
 
-            // Use the new model method
-            $visit->refreshTotals();
+            $this->totalsService->syncVisitTotals($visit);
 
             return true;
         });
@@ -259,7 +203,9 @@ class WalkInService
 
             if ($visitId) {
                 $visit = Visit::find($visitId);
-                $visit?->refreshTotals();
+                if ($visit){
+                    $this->totalsService->syncVisitTotals($visit);
+                }
             }
 
             return true;

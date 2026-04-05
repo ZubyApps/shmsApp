@@ -7,7 +7,8 @@ namespace App\InvokableObjects;
 use Carbon\CarbonImmutable;
 use App\Models\MedicationChart;
 use App\Services\HelperService;
-use App\Jobs\SendMedicationReminder;
+// use App\Jobs\SendMedicationReminder;
+use App\Notifications\MedicationReminderNotification;
 use Illuminate\Database\Eloquent\Builder;
 
 class MedicationsForSms
@@ -50,12 +51,19 @@ class MedicationsForSms
         $medications->each(function ($medication) use ($helperService) {
             $patient = $medication?->visit?->patient;
 
-            if ($patient?->canSms() && !$helperService->isAirtel($patient?->phone)) {
-                SendMedicationReminder::dispatch(
+            // if ($patient?->canSms() && !$helperService->isAirtel($patient?->phone)) {
+            //     SendMedicationReminder::dispatch(
+            //         $patient?->first_name,
+            //         $patient?->phone,
+            //         $medication->scheduled_time
+            //     )->delay(5);
+            // }
+            if ($helperService->shouldNotify($patient?->phone, $patient)) {
+                $patient->notify(new MedicationReminderNotification (
                     $patient?->first_name,
                     $patient?->phone,
                     $medication->scheduled_time
-                )->delay(5);
+                ));
             }
         });
    }

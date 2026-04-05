@@ -20,10 +20,14 @@ class SmsDetailsResource extends JsonResource
         $isNhis = $this->visit->sponsor->category_name == 'NHIS';
         $visit  = $this->visit;
         $outstanding    = ($isNhis ? $visit->total_nhis_bill : $visit->total_hms_bill) - $visit->discount - $visit->total_paid;
+        $patient        = $visit->patient;
+        $recipient      = $patient->first_name . ' ' . $patient->last_name;
+        $phone          = $patient->phone;
         return [
-            'id'            => $this->id,
-            'phone'         => $visit->patient->phone,
-            'smsDetails'   => 'Dear ' . $visit->patient->first_name . ' ' . $visit->patient->last_name . ', pls be reminded of your hospital bill (N' .number_format($outstanding). ') incurred on ' . (new Carbon($visit->created_at))->format('d/m/Y') . '. Kindly send to Monie Point Nzube Okoye 5496896686 or visit the hospital',
+            'id'           => $this->id,
+            'phone'        => $phone,
+            'recipient'    => $recipient, 
+            'smsDetails'   => 'Dear ' . $recipient . ', pls be reminded of your hospital bill (N' .number_format($outstanding). ') incurred on ' . (new Carbon($visit->created_at))->format('d/m/Y') . '. Kindly send to Monie Point Nzube Okoye 5496896686 or visit the hospital',
         ];
     }
 }

@@ -36,7 +36,7 @@
                                 </x-form-div>
                             </div>
                         </div>
-                        <div class="mb-2 form-control">
+                        <div class="mb-2 form-control overflow-auto">
                             <X-form-div class="py-4">
                                 <table id="medicationChartTable" class="table table-hover align-middle table-sm table-striped">
                                     <thead>

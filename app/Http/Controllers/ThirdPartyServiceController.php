@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 class ThirdPartyServiceController extends Controller
 {
     public function __construct(
-        private readonly SponsorCategoryController $sponsorCategoryController, 
         private readonly DatatablesService $datatablesService, 
         private readonly ThirdPartyServicesService $thirdPartyServicesService,
         )

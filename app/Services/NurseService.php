@@ -185,7 +185,7 @@ class NurseService
         
         // 1. Base Query & Relationships
         $query = $this->visit->newQuery()
-            ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'doctor_done_by', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'closed_opened_at', 'ward', 'bed_no', 'ward_id', 'discount', 'doctor_done_at')
+            ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'doctor_done_by', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'closed_opened_at', 'ward', 'bed_no', 'ward_id', 'discount', 'total_hms_bill', 'total_nhis_bill', 'total_paid', 'doctor_done_at')
             ->with([
                 'sponsor:id,name,category_name,flag',
                 'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment,updated_by',

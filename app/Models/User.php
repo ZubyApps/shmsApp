@@ -265,6 +265,11 @@ class User extends Authenticatable
         return $this->hasMany(InvestigationsList::class);
     }
 
+    public function smsWalletFundings(): HasMany
+    {
+        return $this->hasMany(SmsWalletFunding::class);
+    }
+
     // Doctors
     public function doctorVisits(): HasMany { return $this->hasMany(Visit::class, 'doctor_id'); }
     public function discontinuedPrescriptions(): HasMany { return $this->hasMany(Prescription::class, 'discontinued_by'); }

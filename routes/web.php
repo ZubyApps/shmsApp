@@ -53,7 +53,9 @@ use App\Http\Controllers\MedicationCategoryController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ResourceSubCategoryController;
 use App\Http\Controllers\AntenatalRegisterationController;
+use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\InvestigationsListController;
+use App\Http\Controllers\SmsWalletFundingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -721,6 +723,22 @@ Route::middleware('auth')->group(function () {
         Route::post('', [InvestigationsListController::class, 'store']);
          Route::get('/load/list', [InvestigationsListController::class, 'loadInvestigationsListTable']);
          Route::patch('/void/{investigationsList}', [InvestigationsListController::class, 'voidEntry']);
+    });
+
+    Route::prefix('communication-services')->group(function () {
+        Route::get('', [CommunicationController::class, 'index'])->name('Communication Services');
+        Route::get('/load/sms', [CommunicationController::class, 'load']);
+        Route::post('/buyunits', [CommunicationController::class, 'buyUnits']);
+        Route::get('/current-balance', [CommunicationController::class, 'getCurrentBalance']);
+        Route::delete('/{communication}', [CommunicationController::class, 'destroy']);
+    });
+
+    Route::prefix('wallet-funding')->group(function () {
+        // Route::get('', [CommunicationController::class, 'index'])->name('Communication Services');
+        Route::post('', [SmsWalletFundingController::class, 'store']);
+        Route::get('/load/walletfundings', [SmsWalletFundingController::class, 'load']);
+        Route::patch('/{smsWalletFunding}', [SmsWalletFundingController::class, 'updatePayment']);
+        Route::delete('/{smsWalletFunding}', [SmsWalletFundingController::class, 'destroy']);
     });
 });
 

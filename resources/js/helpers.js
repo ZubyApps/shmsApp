@@ -117,30 +117,64 @@ function dispatchEvent(tag, event) {
     }
 }
 
-function handleValidationErrors(errors, domElement, locate = true) {
-    let elementId = []
-    let element;
+// function handleValidationErrors(errors, domElement, locate = true) {
+//     let elementId = []
+//     let element;
     
+//     for (const name in errors) {
+//         if (name.split('.')[0] == 'value'){
+//             element = domElement.querySelector(`[name="${ name.split('.')[1] }"]`)
+//         } else {
+//             element = domElement.querySelector(`[name="${ name }"]`)
+//         }
+
+//         elementId.push(element.id)
+
+//         element.classList.add('is-invalid')
+
+//         const errorDiv = document.createElement('div')
+
+//         errorDiv.classList.add('invalid-feedback')
+//         errorDiv.textContent = errors[name][0]
+
+//         element.parentNode.append(errorDiv)
+//     }
+//     locate ? location.href = '#'+elementId[0] : ''
+//     window.history.replaceState({}, document.title, "/" + document.title.toLowerCase() )
+// }
+
+function handleValidationErrors(errors, domElement, locate = true) {
+    let firstElementId = null;
+    
+    // Clear existing errors first so they don't stack
+    domElement.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+    domElement.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
     for (const name in errors) {
-        if (name.split('.')[0] == 'value'){
-            element = domElement.querySelector(`[name="${ name.split('.')[1] }"]`)
-        } else {
-            element = domElement.querySelector(`[name="${ name }"]`)
+        // Handle Laravel array validation (e.g., value.phone)
+        const selectorName = name.includes('.') ? name.split('.')[1] : name;
+        const element = domElement.querySelector(`[name="${selectorName}"]`);
+
+        if (element) {
+            if (!firstElementId) firstElementId = element.id;
+
+            element.classList.add('is-invalid');
+
+            const errorDiv = document.createElement('div');
+            errorDiv.classList.add('invalid-feedback');
+            errorDiv.textContent = errors[name][0];
+
+            element.parentNode.append(errorDiv);
         }
-
-        elementId.push(element.id)
-
-        element.classList.add('is-invalid')
-
-        const errorDiv = document.createElement('div')
-
-        errorDiv.classList.add('invalid-feedback')
-        errorDiv.textContent = errors[name][0]
-
-        element.parentNode.append(errorDiv)
     }
-    locate ? location.href = '#'+elementId[0] : ''
-    window.history.replaceState({}, document.title, "/" + document.title.toLowerCase() )
+
+    // Scroll to the first error if requested
+    if (locate && firstElementId) {
+        location.hash = firstElementId;
+    }
+
+    // CLEAN UP: This removes the #hash from the URL without breaking the path
+    window.history.replaceState({}, document.title, window.location.pathname);
 }
 
 function clearValidationErrors(domElement) {
@@ -1322,7 +1356,7 @@ function prescriptionParser(prescription) {
   const frequencyToHours = {
     stat: 24,    // Integer for stat
     Daily: 24.0, // Float for Daily
-    PRN: 24.00, // Float for Daily
+    PRN: 24.00, // Float for PRN
     BD: 12,
     TDS: 8,
     QDS: 6,

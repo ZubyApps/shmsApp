@@ -5,7 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+// use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Prescription extends Model
@@ -257,4 +257,17 @@ class Prescription extends Model
     //     return $this->hasMany(Prescription::class, 'resource_id', 'resource_id')
     //         ->whereColumn('visit_id', 'prescriptions.visit_id');
     // }
+
+    public function scopeLabInvestigations($query)
+    {
+        return $query->whereRelation('resource', 'category', 'Investigations')
+                    ->whereRelation('resource', 'sub_category', '!=', 'Imaging');
+    }
+
+    public function scopePharmacyItems(Builder $query): Builder
+    {
+        return $query->whereHas('resource', function ($q) {
+            $q->whereIn('category', ['Medications', 'Consumables']);
+        });
+    }
 }

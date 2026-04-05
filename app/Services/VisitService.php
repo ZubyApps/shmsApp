@@ -30,6 +30,7 @@ class VisitService
         private readonly Visit $visit, 
         private readonly PaymentService $paymentService, 
         private readonly PayPercentageService $payPercentageService,
+        private readonly TotalsService $totalsService
         )
     {
     }
@@ -260,13 +261,14 @@ class VisitService
                     ->whereNull('consulted');
 
         if (! empty($params->searchTerm)) {
-            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-            return $query->where(function (Builder $query) use($searchTerm) {
+            $searchTermRaw = trim($params->searchTerm);
+            $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+            return $query->where(function (Builder $query) use($searchTerm, $searchTermRaw) {
                             $query->where('created_at', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                            ->orWhereHas('patient', function ($q) use ($searchTerm, $searchTermRaw) {
+                                $q->searchByName($searchTermRaw) 
+                                ->orWhere('card_no', 'LIKE', $searchTerm);
+                            })
                             ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', $searchTerm);
                         })
                         ->orderBy($orderBy, $orderDir)
@@ -401,7 +403,7 @@ class VisitService
             // 4. Recalculate and Update Visit Totals (1 Query)
             // Ensure $visit is up-to-date or re-fetch if necessary to run totalNhisBills()
             // For simplicity, relying on the function to use the newly updated prescriptions data.
-            $visit->refreshTotals(); 
+            $this->totalsService->syncVisitTotals($visit);
 
             return $visit;
         });

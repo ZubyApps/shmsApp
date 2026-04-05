@@ -15,7 +15,7 @@ use App\Models\Visit;
 use App\Services\PaymentService;
 use App\Services\PayPercentageService;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
+// use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -196,7 +196,7 @@ class BillingService
         $page     = ($params->length + $params->start) / $params->length;
 
         $query = $this->visit->query()
-            ->select('id', 'sponsor_id', 'patient_id', 'doctor_id', 'closed_opened_by', 'doctor_done_by', 'closed_opened_at', 'admission_status', 'ward', 'bed_no', 'ward_id', 'visit_type', 'discharge_reason', 'doctor_done_at', 'closed', 'consulted', 'created_at', 'discount')
+            ->select('id', 'sponsor_id', 'patient_id', 'doctor_id', 'closed_opened_by', 'doctor_done_by', 'closed_opened_at', 'admission_status', 'ward', 'bed_no', 'ward_id', 'visit_type', 'discharge_reason', 'doctor_done_at', 'closed', 'consulted', 'created_at', 'discount', 'total_hms_bill', 'total_nhis_bill', 'total_paid')
             ->with([
                 'sponsor:id,name,category_name,flag', 
                 'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
@@ -276,6 +276,7 @@ class BillingService
                 'conId'             => $visit->latestConsultation?->id,
                 'came'              => (new Carbon($visit->consulted ?? $visit->created_at))->format('d/m/y g:ia'),
                 'patient'           => $visit->patient->patientId(),
+                'patientId'           => $visit->patient_id,
                 'age'               => $visit->patient->age(),
                 'sex'               => $visit->patient->sex,
                 'doctor'            => $visit->doctor?->username,
@@ -580,7 +581,8 @@ class BillingService
                             ->where('visit_id', $data->visitId);
 
         if (! empty($params->searchTerm)) {
-            $query->whereRelation('respayMethodource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            $query->whereRelation('payMethod', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                    ->whereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
         }
 
         return $query->orderBy($orderBy, $orderDir)
@@ -636,69 +638,81 @@ class BillingService
 
     public function getVisitsWithOutstandingBills(DataTableQueryParams $params, $data)
     {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
-        $column = $data->sponsorCat == 'NHIS' ? 'total_nhis_bill' : 'total_hms_bill';
-        $query = $this->visit->select('id', 'sponsor_id', 'patient_id', 'doctor_id', 'admission_status', 'ward', 'ward', 'visit_type', 'discharge_reason', 'doctor_done_at', 'closed', 'closed_opened_by', 'closed_opened_at', 'discount', 'consulted')
-                    ->with([
-                        'sponsor:id,name,category_name,flag', 
-                        'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
-                        'patient' => function($query){
-                                    $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
-                                    ->with(['flaggedBy:id,username']);
-                                }, 
-                        'doctor:id,username', 
-                        'closedOpenedBy:id,username',
-                    ]);
-        if ($data->sponsorId){
-            if (! empty($params->searchTerm)) {
-            return $query->where('sponsor_id', $data->sponsorId)
-                        ->where(function (Builder $query) use ($params){
-                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                        })
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
+        $orderBy  = 'created_at';
+        $orderDir = 'desc';
+        $page     = ($params->length + $params->start) / $params->length;
 
-            return $query->where('sponsor_id', $data->sponsorId)
-                    ->whereColumn('total_hms_bill', '!=', 'total_paid')
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        $query = $this->visit->query()
+            ->select([
+                'id', 'sponsor_id', 'patient_id', 'doctor_id', 'admission_status', 
+                'ward', 'visit_type', 'discharge_reason', 'doctor_done_at', 
+                'closed', 'closed_opened_by', 'closed_opened_at', 'discount', 
+                'total_hms_bill', 'total_nhis_bill', 'total_paid', 'consulted', 'created_at'
+            ])
+            ->with([
+                'sponsor:id,name,category_name,flag', 
+                'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment',
+                'patient' => fn($q) => $q->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
+                                        ->with(['flaggedBy:id,username']), 
+                'doctor:id,username', 
+                'closedOpenedBy:id,username',
+            ]);
+
+        // 1. Primary Filter Logic
+        // $query->when($data->sponsorId, fn($q) => $q->where('sponsor_id', $data->sponsorId))
+        //     ->when($data->cardNo, fn($q) => $q->whereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($data->cardNo, '%_') . '%'))
+        //     ->when(!$data->sponsorId && !$data->cardNo, fn($q) => $q->where('patient_id', (int)$data->patientId));
+
+        // 1. Primary Filter Logic (Sponsor/Patient)
+        // We wrap these in a group so they stay "locked"
+        $query->where(function($q) use ($data) {
+            $q->when($data->sponsorId, fn($sq) => $sq->where('sponsor_id', $data->sponsorId))
+            ->when($data->cardNo, fn($sq) => $sq->whereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($data->cardNo, '%_') . '%'))
+            ->when(!$data->sponsorId && !$data->cardNo, fn($sq) => $sq->where('patient_id', (int)$data->patientId));
+        });
+
+        // 2. Search Nuance (Now combined correctly with the Bill check)
+        if (!empty($params->searchTerm)) {
+            $query->whereHas('patient', function ($q) use ($params) {
+                $q->searchByName($params->searchTerm)
+                ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%');
+            });
         }
-        
-        if ($data->cardNo){
+
+        // 3. The "Smart Integrity" Check
+        $query->where(function ($q) {
+            // If the visit's sponsor is NHIS, check the NHIS bill column
+            $q->whereHas('sponsor', function ($sq) {
+                $sq->where('category_name', 'NHIS');
+            })->whereColumn('total_nhis_bill', '!=', 'total_paid')
             
-            if (! empty($params->searchTerm)) {
-            return $query->whereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($data->cardNo, '%_') . '%' )
-                        ->where(function (Builder $query) use ($params){
-                            $query->whereRelation('patient', 'first_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'middle_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                            ->orWhereRelation('patient', 'last_name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
-                        })
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-            }
-            return $query->whereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($data->cardNo, '%_') . '%' )
-                    ->whereColumn($column, '!=', 'total_paid')
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
+            // OR: If the visit's sponsor is NOT NHIS, check the HMS bill column
+            ->orWhere(function ($sq) {
+                $sq->whereHas('sponsor', function ($ssq) {
+                    $ssq->where('category_name', '!=', 'NHIS');
+                })->whereColumn('total_hms_bill', '!=', 'total_paid');
+            });
+        });
 
-        return $query->where('patient_id', (int)$data->patientId)
-                    ->whereColumn($column, '!=', 'total_paid')
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        return $query->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, ['*'], 'page', $page);
     }
 
     public function getPatientBillSummaryTable($data)
     {
         return DB::table('prescriptions')
-                    ->selectRaw('SUM(prescriptions.hms_bill) as totalBill, SUM(prescriptions.nhis_bill) as totalNhisBill, SUM(prescriptions.paid) as totalPaid, resources.'.$data->type.' as service, COUNT(resources.category) as types, SUM(prescriptions.qty_billed) as quantity, visits.discount as discount, sponsors.category_name as sponsorCat')
-                    ->leftJoin('resources', 'prescriptions.resource_id', '=', 'resources.id')
-                    ->leftJoin('visits', 'prescriptions.visit_id', '=', 'visits.id')
-                    ->leftJoin('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
+                    ->selectRaw('
+                    SUM(prescriptions.hms_bill) as totalBill, 
+                    SUM(prescriptions.nhis_bill) as totalNhisBill, 
+                    SUM(prescriptions.paid) as totalPaid, 
+                    resources.'.$data->type.' as service, 
+                    COUNT(resources.category) as types, 
+                    SUM(prescriptions.qty_billed) as quantity, 
+                    visits.discount as discount, 
+                    sponsors.category_name as sponsorCat')
+                    ->join('resources', 'prescriptions.resource_id', '=', 'resources.id')
+                    ->join('visits', 'prescriptions.visit_id', '=', 'visits.id')
+                    ->join('sponsors', 'visits.sponsor_id', '=', 'sponsors.id')
                     ->where('visit_id', $data->visitId)
                     ->groupBy('service', 'discount', 'sponsorCat')
                     ->orderBy('service')

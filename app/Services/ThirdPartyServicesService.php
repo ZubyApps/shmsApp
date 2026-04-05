@@ -8,6 +8,7 @@ use App\DataObjects\DataTableQueryParams;
 use App\Models\Prescription;
 use App\Models\ThirdPartyService;
 use App\Models\User;
+use App\Services\PayPercentageService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -52,7 +53,7 @@ class ThirdPartyServicesService
                                 $query->select('id', 'consultation_id', 'resource_id', 'visit_id', 'user_id', 'hms_bill', 'paid', 'approved', 'rejected')
                                 ->with([
                                         'visit' => function($query){
-                                            $query->select('id', 'sponsor_id', 'patient_id', 'admission_status', 'discharge_reason')
+                                            $query->select('id', 'sponsor_id', 'patient_id', 'admission_status', 'discharge_reason', 'discount', 'total_hms_bill', 'total_nhis_bill', 'total_paid')
                                             ->with([
                                                 'sponsor' => function($query){
                                                     $query->select('id', 'sponsor_category_id', 'name', 'category_name')

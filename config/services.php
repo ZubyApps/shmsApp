@@ -1,5 +1,7 @@
 <?php
 
+use App\Services\Sms\ChurchPlusProvider;
+
 return [
 
     /*
@@ -30,5 +32,19 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+
+    'church_plus' => [
+        'base_url' => env('CHURCH_PLUS_BASEURL'),
+        'tenant_id' => env('CHURCH_PLUS_TENANTID'),
+    ],
+
+    'sms' => [
+        'default' => env('SMS_PROVIDER_DEFAULT', 'church_plus'),
+        'providers' => [
+            'church_plus' => ChurchPlusProvider::class,
+        ],
+    ],
+
+
 
 ];

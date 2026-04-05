@@ -19,7 +19,7 @@
     </div>
 
     <x-footer />
-
+    <x-notification-toast />
 </body>
 
 </html>

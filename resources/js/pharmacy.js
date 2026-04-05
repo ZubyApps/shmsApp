@@ -191,6 +191,9 @@ window.addEventListener('DOMContentLoaded', function () {
             }
 
             if (billingDispenseBtn) {
+                if (visitPrescriptionsTable) {
+                    visitPrescriptionsTable.destroy();
+                }
                 const tableId = '#' + billingDispenseModal._element.querySelector('.visitPrescriptionsTable').id
                 const visitId = billingDispenseBtn.getAttribute('data-id')
                 billingDispenseModal._element.querySelector('#patient').value = billingDispenseBtn.getAttribute('data-patient')
@@ -236,7 +239,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const holdSpan                  = event.target.closest('.holdSpan')
             const dispenseCommentSpan       = event.target.closest('.dispenseCommentSpan')
             const billingDispenseFieldset   = document.querySelector('#billingDispenseFieldset')
-            const isBillingDispenseTable    = table.id = 'visitPrescriptionsTable'
+            const isBillingDispenseTable    = table.id == 'visitPrescriptionsTable'
     
             if (billQtySpan){
                 const prescriptionId    = billQtySpan.getAttribute('data-id')
@@ -479,8 +482,15 @@ window.addEventListener('DOMContentLoaded', function () {
     })
 
     billingDispenseModal._element.addEventListener('hide.bs.modal', function () {
+        document.activeElement.blur();
         refreshMainTables()
         refreshHomeTables()
+
+        if (visitPrescriptionsTable) {
+            visitPrescriptionsTable.destroy()
+            $('#visitPrescriptionsTable').find('tbody').empty();
+            visitPrescriptionsTable = null;
+        }
     })
 
     bulkRequestBtn.addEventListener('click', function () {

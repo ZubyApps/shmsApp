@@ -8,7 +8,8 @@ use App\Models\Reminder;
 use App\Http\Requests\StoreReminderRequestCash;
 use App\Http\Requests\StoreReminderRequestHmo;
 use App\Http\Resources\SmsDetailsResource;
-use App\Jobs\SendOutstandingSms;
+// use App\Jobs\SendOutstandingSms;
+use App\Notifications\SendOutstandingBill;
 use App\Services\DatatablesService;
 use App\Services\HelperService;
 use App\Services\ReminderService;
@@ -126,8 +127,8 @@ class ReminderController extends Controller
 
     public function sendSms(SendSmsRequest $request, Reminder $reminder)
     {
-        if ($this->helperService->isAirtel($request->phone)){
-            return;
+        if (!$this->helperService->shouldNotify($request->phone, null, [])) {
+            return response()->json(['message' => 'SMS cannot be sent at this time'], 403);
         }
 
         if ($request->selectEl == 'firstReminderSelect'){
@@ -139,12 +140,13 @@ class ReminderController extends Controller
         if ($request->selectEl == 'finalReminderSelect'){
             $this->reminderService->finalReminder($request, $reminder, $request->user());
         }
-        
-        if ($this->helperService->nccTextTime()){
-            SendOutstandingSms::dispatch($reminder, $request->smsDetails, $request->phone);
-            return response()->json(['message' => 'SMS queued successfully'], 200);
-        }
+            $reminder->notify(new SendOutstandingBill(
+                $request->recipient,
+                $request->phone,
+                $request->smsDetails
+            ));
 
+            return response()->json(['message' => 'SMS queued successfully'], 200);
     }
 
     public function destroy(Reminder $reminder)

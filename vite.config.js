@@ -37,6 +37,7 @@ export default defineConfig({
                 'resources/js/patientForm.js',
                 'resources/js/walkIns.js',
                 'resources/js/mortuaryService.js',
+                'resources/js/communications.js',
             ],
             refresh: true,
         }),

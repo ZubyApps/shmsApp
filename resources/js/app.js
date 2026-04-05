@@ -13,3 +13,7 @@ import 'datatables.net-buttons/js/buttons.print.mjs';
 import 'datatables.net-fixedcolumns-bs5';
 import 'datatables.net-select-bs5';
 import 'datatables.net-staterestore-bs5';
+
+import { showToast } from "./toasts/globalNotificationToasts.js";
+
+window.showToast = showToast;

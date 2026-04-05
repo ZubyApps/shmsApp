@@ -55,11 +55,13 @@ class SendTestResultDone implements ShouldQueue
         // $response == false ? '' : info('Investigation', ['sent to' => $firstName, 'gateway' => $gateway]);
     }
 
-    private function recentlySent($prescriptions)
+    private function recentlySent($query)
     {
-        $end = CarbonImmutable::now();
-        $start = $end->subMinutes(30);
+        $start = now()->subMinutes(30);
+        $end = now();
 
-        return $prescriptions->where('result', '!=', null)->whereBetween('result_date', [$start, $end])->count();
+        return $query->whereNotNull('result')
+                    ->whereBetween('result_date', [$start, $end])
+                    ->count();
     }
 }

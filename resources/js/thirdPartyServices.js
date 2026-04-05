@@ -55,6 +55,7 @@ window.addEventListener('DOMContentLoaded', function () {
             
         }
     })
+    
     document.querySelector('#thirdPartiesTable').addEventListener('click', function (event) {
         const editBtn    = event.target.closest('.updateBtn')
         const delistBtn  = event.target.closest('.delistBtn')

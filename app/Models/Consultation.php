@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -44,5 +45,10 @@ class Consultation extends Model
     public function nursingCharts() 
     {
         return $this->hasMany(NursingChart::class);
+    }
+
+    public function scopeInpatientOrObservation(Builder $query): Builder
+    {
+        return $query->whereIn('admission_status', ['Inpatient', 'Observation']);
     }
 }

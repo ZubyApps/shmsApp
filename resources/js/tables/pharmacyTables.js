@@ -53,7 +53,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
     return allPatientsTable
 }
 
-const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
+const getPrescriptionsByConsultation = (tableId, visitId) => {
     const consultationItemsTable =  new DataTable(tableId, {
         serverSide: true,
         ajax:  {url: '/pharmacy/load/consultation/prescriptions', data: {
@@ -85,7 +85,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
         let count = 1
                 if (prescriptions.length > 0) {
                     let totalBill = 0
-                    let child = `<table class="table align-middle ">
+                    let child = `<table class="table align-middle">
                                             <thead >
                                                 <tr class="fw-semibold fs-italics">
                                                     <td class="text-secondary">S/N</td>
@@ -102,7 +102,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                             </thead>
                                         <tbody>`
                                 prescriptions.forEach(p => {
-                                        const flag = p.flag.includes(sponsorCat) && (!p.approved && !p.rejected) ? true : false;
+                                        // const flag = p.flag.includes(sponsorCat) && (!p.approved && !p.rejected) ? true : false;
                                         totalBill += NHIS && p.approved ? +p.nhisBill : +p.hmsBill
                                         child += `
                                             <tr>
@@ -115,7 +115,7 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                                                 ${credit || NHIS ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote + pendingIndicator(p): p.statusBy}</td>` : ''}
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
-                                                        <span class="${p.qtyDispensed || closed || flag ? '': 'billQtySpan'} btn btn-${p.qtyBilled ? 'white text-secondary' : flag ? 'danger' : 'outline-primary'} tooltip-test" title="${flag ? 'Flagged' : ''}" data-id="${p.id}" data-stock="${p.stock}">${p.qtyBilled ? p.qtyBilled+' '+p.unit : flag ? 'Flagged' : 'Bill'}${closed ? '<i class="bi bi-lock-fill"></i>': ''}</span>
+                                                        <span class="${p.qtyDispensed || closed || p.flag ? '': 'billQtySpan'} btn btn-${p.qtyBilled ? 'white text-secondary' : p.flag ? 'danger' : 'outline-primary'} tooltip-test" title="${p.flag ? 'Flagged' : ''}" data-id="${p.id}" data-stock="${p.stock}">${p.qtyBilled ? p.qtyBilled+' '+p.unit : p.flag ? 'Flagged' : 'Bill'}${closed ? '<i class="bi bi-lock-fill"></i>': ''}</span>
                                                         <input class="ms-1 form-control billQtyInput d-none text-secondary" type="number" min="0" style="width:6rem;" id="billQtyInput" value="${p.qtyBilled == 0 ? '' : p.qtyBilled}" name="quantity" id="quantity">
                                                         <span class="${closed ? '' : 'holdSpan'} btn btn-${p.reason ? 'danger' : 'outline-primary'} ms-1 ${p.qtyBilled ? 'd-none' : ''}" data-id="${p.id}">${p.reason ? p.reason : 'Hold'}</span>
                                                 
@@ -200,16 +200,20 @@ const getPrescriptionsByConsultation = (tableId, visitId, modal) => {
                 }
     }
 
-    modal._element.addEventListener('hidden.bs.modal', function () {
-        consultationItemsTable.destroy()
-    })
+    // modal._element.addEventListener('hidden.bs.modal', function () {
+    //     consultationItemsTable.destroy()
+    //     $(tableId).find('tbody').empty();
+    //     consultationItemsTable = null;
+    // })
     
     consultationItemsTable.on('draw', function() {
-        // const tableId = consultationItemsTable.table().container().id.split('_')[0]
         consultationItemsTable.rows().every(function () {
             let tr = $(this.node())
             let row = this.row(tr);
-            this.child(format(row.data())).show()
+            const data = row.data();
+            if (data){
+                this.child(format(data)).show()
+            }
         })
     })
     

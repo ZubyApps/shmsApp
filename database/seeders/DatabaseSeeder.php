@@ -291,5 +291,10 @@ class DatabaseSeeder extends Seeder
             'designator'  => 'Super Admin',
             'user_id'   => 1,
         ]);
+            //Added 27/03/2026 23:05pm
+            $this->call([
+            ServiceRateSeeder::class,
+            UnitTransactionSeeder::class,
+        ]);
     }
 }

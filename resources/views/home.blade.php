@@ -30,6 +30,7 @@
                         <a href="{{ $staffD === 'Doctor' || $staffD === 'Nurse' || $staffD === 'Bill Officer' || $staffD === 'HMO Officer' || $staffD === 'Records Clerk'|| $staffD === 'Lab Tech' ||  $staffA  > 3 ? '/walkins' : '' }}" class="btn btn-outline-primary mx-1"> <i class="bi bi-person-fill-exclamation"> WalkIn Services</i></a>
                         <br>
                         <a href="{{ $staffD === 'Doctor' || $staffD === 'Bill Officer' || $staffD === 'HMO Officer' || $staffD === 'Records Clerk' || $staffA  > 3 ? '/mortuaryservices' : '' }}" class="btn btn-outline-primary d-none mx-1"> <i class="bi bi-box2-fill"> Mortuary Services</i></a>
+                        <a href="{{ $staffA > 4 ? '/communication-services' : '' }}" class="btn btn-outline-primary fw- mx-1"><i class="bi bi-broadcast-pin"> Communication Services</i></a>
                     </div>
                     <br>
                     <p class="fs-5 mb-0"><a href="#" class="text-decoration-none text-black">We treat, <span class="text-primary fw-bold">God</span> heals...</a></p>

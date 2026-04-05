@@ -78,7 +78,7 @@ const getWaitingTable = (tableId) => {
     return waitingTable;
 }
 
-const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, sponsorId, cardNo, sponsorCat) => {
+const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, sponsorId, cardNo) => {
     const preparedColumns = [
         {data: "came"},
         {data: row => `<span class="${flagIndicator(row.flagPatient)} tooltip-test" title="${flagPatientReason(row)}" >${row.patient}</span>`},
@@ -123,7 +123,6 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, s
             'patientId': patientId,
             'sponsorId': sponsorId,
             'cardNo': cardNo,
-            'sponsorCat': sponsorCat,
         }},
         orderMulti: true,
         lengthMenu:[25, 50, 100, 150, 200],

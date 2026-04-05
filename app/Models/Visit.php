@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use App\Enum\VerificationStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Visit extends Model
 {
@@ -246,20 +247,8 @@ class Visit extends Model
         return $this->prescriptions()->sum('capitation') ?? 0;
     }
 
-    public function refreshTotals()
+    public function scopeInpatientOrObservation(Builder $query): Builder
     {
-        $sums = $this->prescriptions()
-            ->selectRaw('
-                COALESCE(SUM(paid), 0) as totalPaid, 
-                COALESCE(SUM(hms_bill), 0) as totalHmsBill, 
-                COALESCE(SUM(nhis_bill), 0) as totalNhisBill
-            ')
-            ->first();
-
-        return $this->update([
-            'total_paid'      => $sums->totalPaid,
-            'total_hms_bill'  => $sums->totalHmsBill,
-            'total_nhis_bill' => $sums->totalNhisBill,
-        ]);
+        return $query->whereIn('admission_status', ['Inpatient', 'Observation']);
     }
 }

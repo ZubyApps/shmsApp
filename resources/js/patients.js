@@ -7,6 +7,7 @@ import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfile
 import { getAncVitalSignsTable } from "./tables/nursesTables";
 import { getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
 import { getAppointmentsTable } from "./tables/appointmentsTables";
+import { showToast } from "./toasts/globalNotificationToasts";
 $.fn.dataTable.ext.errMode = 'throw';
 
 window.addEventListener('DOMContentLoaded', function(){
@@ -440,15 +441,13 @@ window.addEventListener('DOMContentLoaded', function(){
         http.post('/patients/generatelink', {...data}, {"html": newPatientModal._element})
         .then((response) => {
             if (response.status >= 200 || response.status <= 300){
-                alert('Link sent')
                 newPatientModal.hide()
-            }
-            if (response.status == 400){
-                alert('Linke NOT sent');
+                showToast(response.data.message, 'success')
             }
         })
         .catch((error) => {
             sendLinkBtn.removeAttribute('disabled')
+            showToast(error.response.data.message, 'error');
             console.log(error.response.data.message)
         })
     })

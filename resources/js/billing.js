@@ -8,6 +8,7 @@ import html2pdf  from "html2pdf.js"
 import { getShiftReportTable } from "./tables/pharmacyTables";
 import { getMedicalReportTable, getProceduresListTable } from "./tables/doctorstables";
 import { getByPayMethodsTable } from "./tables/accountReportTables";
+import { showToast } from "./toasts/globalNotificationToasts";
 $.fn.dataTable.ext.errMode = 'throw';
 
 
@@ -519,8 +520,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
             if (outstandingsBtn){
                 const patientId = outstandingsBtn.dataset.patientid
-                const sponsorCat    = outstandingsBtn.dataset.sponsorcat
-                getPatientsVisitsByFilterTable('#outstandingBillsTable', '', 'outstandings', patientId, '', '', sponsorCat)
+                // const sponsorCat    = outstandingsBtn.dataset.sponsorcat
+                // getPatientsVisitsByFilterTable('#outstandingBillsTable', '', 'outstandings', patientId, '', '', sponsorCat)
+                getPatientsVisitsByFilterTable('#outstandingBillsTable', '', 'outstandings', patientId, '', '')
                 outstandingBillsModal.show()
                 billingModal.hide()
             }
@@ -534,8 +536,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
             if (cardNoOutstandingsBtn){
                 const cardNo        = cardNoOutstandingsBtn.dataset.cardno
-                const sponsorCat    = cardNoOutstandingsBtn.dataset.sponsorcat
-                getPatientsVisitsByFilterTable('#outstandingBillsTable', '', 'outstandings', '', '', cardNo, sponsorCat)
+                // const sponsorCat    = cardNoOutstandingsBtn.dataset.sponsorcat
+                // getPatientsVisitsByFilterTable('#outstandingBillsTable', '', 'outstandings', '', '', cardNo, sponsorCat)
+                getPatientsVisitsByFilterTable('#outstandingBillsTable', '', 'outstandings', '', '', cardNo)
                 outstandingBillsModal.show()
                 billingModal.hide()
             }
@@ -1048,7 +1051,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.get(`/reminders/smsdetails/${reminderId}`)
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
-                                openModals(smsTemplateModal, sendSmsBtn, response.data.data)
+                                openSmsModals(smsTemplateModal, sendSmsBtn, response.data.data)
                                 sendSmsBtn.setAttribute('data-select', 'firstReminderSelect')
                                 sendSmsBtn.setAttribute('data-reminder', firstReminderSelect.value)
                             }
@@ -1082,7 +1085,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.get(`/reminders/smsdetails/${reminderId}`)
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
-                                openModals(smsTemplateModal, sendSmsBtn, response.data.data)
+                                openSmsModals(smsTemplateModal, sendSmsBtn, response.data.data)
                                 sendSmsBtn.setAttribute('data-select', 'secondReminderSelect')
                                 sendSmsBtn.setAttribute('data-reminder', secondReminderSelect.value)
                             }
@@ -1117,7 +1120,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.get(`/reminders/smsdetails/${reminderId}`)
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300) {
-                                openModals(smsTemplateModal, sendSmsBtn, response.data.data)
+                                openSmsModals(smsTemplateModal, sendSmsBtn, response.data.data)
                                 sendSmsBtn.setAttribute('data-select', 'finalReminderSelect')
                                 sendSmsBtn.setAttribute('data-reminder', finalReminderSelect.value)
                             }
@@ -1197,8 +1200,9 @@ window.addEventListener('DOMContentLoaded', function () {
         const reminderId  = sendSmsBtn.getAttribute('data-id')
         const selectEl  = sendSmsBtn.getAttribute('data-select')
         const reminder  = sendSmsBtn.getAttribute('data-reminder')
+        const recipient  = sendSmsBtn.getAttribute('data-recipient')
 
-        let data = {...getDivData(smsTemplateModal._element), selectEl, reminder}
+        let data = {...getDivData(smsTemplateModal._element), selectEl, reminder, recipient}
         
         sendSmsBtn.setAttribute('disabled', 'disabled')
         http.post(`/reminders/sendsms/${reminderId}`, {...data}, {"html": smsTemplateModal._element})
@@ -1208,11 +1212,15 @@ window.addEventListener('DOMContentLoaded', function () {
                     clearDivValues(smsTemplateModal._element)
                     clearValidationErrors(smsTemplateModal._element)
                 }
+                const message = response.data.message;
+                showToast(message, 'success');
                 sendSmsBtn.removeAttribute('disabled')
         })
         .catch((error) => {
             sendSmsBtn.removeAttribute('disabled')
-            console.log(error.response.data.message)
+            const message = error.response.data.message;
+            showToast(message, 'warning');
+            console.log(message);
         })
     })
 
@@ -1263,4 +1271,15 @@ window.addEventListener('DOMContentLoaded', function () {
 
 const smsMessenger = (selectElement) => {
         return selectElement.value == 'Texted'
+}
+
+function openSmsModals(modal, button, {id, recipient, ...data}) {
+    for (let name in data) {
+        const nameInput = modal._element.querySelector(`[name="${ name }"]`)
+        nameInput.value = data[name]
+    }
+    
+    button.setAttribute('data-id', id)
+    button.setAttribute('data-recipient', recipient)
+    modal.show()
 }

@@ -77,4 +77,34 @@ class HelperService
 
         return false;
     }
+
+    public function shouldNotify($phone, $patient = null, array $extraChecks = []): bool
+    {
+        // --- GLOBAL RULES (Apply to everyone) ---
+
+        // 1. Basic Phone check
+        if (!$phone) return false;
+
+        // 2. NCC Quiet Hours & Airtel Block
+        if (!$this->nccTextTime()) {
+            return false;
+        }
+
+        // 3. Patient Opt-out check (if applicable)
+        if ($patient && method_exists($patient, 'canSms') && !$patient->canSms()) {
+            return false;
+        }
+
+        // --- LOCAL RULES (Specific to this call) ---
+
+        foreach ($extraChecks as $check) {
+            if (is_callable($check)) {
+                if (!$check()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }
