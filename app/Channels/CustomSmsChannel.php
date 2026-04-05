@@ -62,7 +62,7 @@ class CustomSmsChannel
         // 4. Resolve the Provider (ChurchPlus, etc.)
         $providerKey = config('services.sms.default');
         $providerClass = config("services.sms.providers.{$providerKey}");
-        
+        info('sms provider', ['provider key' => $providerKey, 'provider class' => $providerClass]);
         /** @var SmsProviderInterface $provider */
         $provider = new $providerClass;
         
