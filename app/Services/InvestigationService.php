@@ -88,10 +88,7 @@ class InvestigationService
         }
 
         if ($data->filterBy == 'Inpatient'){
-            $query->where(function (Builder $query) {
-                        $query->where('admission_status', '=', 'Inpatient')
-                        ->orWhere('admission_status', '=', 'Observation');
-                    });
+            $query->inpatientOrObservation();
         }
         if ($data->filterBy == 'ANC'){
             $query->where('visit_type', '=', 'ANC');
@@ -248,7 +245,7 @@ class InvestigationService
         } 
         // --- 3. INPATIENT FILTER (Apply if not searching specifically by patient) ---
         else {
-            $query->inpatientOrObservation();
+            $query->whereHas('visit', fn($q) => $q->inpatientOrObservation());
         }
 
         return $query->orderBy($orderBy, $orderDir)
