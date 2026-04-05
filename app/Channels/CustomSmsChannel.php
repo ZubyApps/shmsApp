@@ -44,6 +44,8 @@ class CustomSmsChannel
         // 3. Check Global Balance (Hospital Wallet)
         $currentBalance = (float) UnitTransaction::latest('id')->value('running_balance') ?? 0;
 
+        Log::info('current Balance', ['notifiable' => $notifiable, 'current balance' => $currentBalance]);
+
         if ($currentBalance < $cost) {
             Log::warning("SMS Failed: Insufficient Hospital Balance. Cost: {$cost}, Balance: {$currentBalance}");
             Communication::create([

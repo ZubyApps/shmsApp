@@ -4,22 +4,21 @@ declare(strict_types = 1);
 
 namespace App\Services;
 
-use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Patient;
-// use App\Jobs\SendFormLink;
-use Carbon\CarbonImmutable;
-// use App\Jobs\SendCardNumber;
-use Illuminate\Http\Request;
-use App\Models\PatientPreForm;
-use App\Services\HelperService;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\DB;
-use App\DataObjects\FormLinkParams;
 use App\DataObjects\DataTableQueryParams;
+use App\DataObjects\FormLinkParams;
+use App\Models\Patient;
+use App\Models\PatientPreForm;
+use App\Models\User;
 use App\Notifications\FormLinkNotification;
 use App\Notifications\PatientRegistered;
+use App\Services\HelperService;
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class PatientService
 {
@@ -192,6 +191,7 @@ class PatientService
 
         // SendFormLink::dispatch($link, $formLinkParams);
         $patientForm->notify(new FormLinkNotification($link, $formLinkParams));
+        Log::info('Form link went', ['link' => $link, 'formLinkParams' => $formLinkParams]);
         return response()->json(['message' => 'Form link prepared and queued successfully'], 200);
     }
 
