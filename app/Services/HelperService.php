@@ -86,9 +86,9 @@ class HelperService
         if (!$phone) return false;
 
         // 2. NCC Quiet Hours & Airtel Block
-        if (!$this->nccTextTime()) {
-            return false;
-        }
+        // if (!$this->nccTextTime()) {
+        //     return false;
+        // }
 
         // 3. Patient Opt-out check (if applicable)
         if ($patient && method_exists($patient, 'canSms') && !$patient->canSms()) {
