@@ -689,7 +689,7 @@ class PharmacyService
                     'paidNhis'        => $sponsor->category_name === 'NHIS' && $prescription->paid > 0 && ($prescription->paid >= ($prescription->hms_bill / 10)),
                     'amountPaid'      => $prescription->paid ?? 0,
                     'blink'           => $resource && ($resource->stock_level <= $resource->reorder_level),
-                    'flag'            => str_contains($prescription->resource?->flag, $sponsor->category_name) ? true : false,
+                    'flag'            => str_contains($prescription->resource?->flag, $sponsor->category_name) && (!$prescription->approved && !$prescription->rejected) ? true : false,
                 ];
             }),
         ];
