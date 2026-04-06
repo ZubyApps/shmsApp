@@ -206,7 +206,7 @@ class PharmacyService
             ->select([
                 'id', 'patient_id', 'doctor_id', 'sponsor_id', 'doctor_done_by', 'consulted', 
                 'admission_status', 'visit_type', 'discharge_reason', 'closed', 'total_paid', 
-                'total_hms_bill', 'total_nhis_bill', 'doctor_done_at'
+                'total_hms_bill', 'total_nhis_bill', 'discount', 'doctor_done_at'
             ])
             ->with([
                 'sponsor:id,name,category_name,flag', 
