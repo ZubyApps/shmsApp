@@ -58,6 +58,10 @@ class TestResultNotification extends Notification implements CustomSmsNotificati
 
         $totalInvestigationsDone = (clone $totalInvestigations)->whereNotNull('result')->count();
 
+        if ($totalInvestigationsDone <= 0 || $totalInvestigationsC <= 0){
+            return [];
+        }
+
         $message = 'Dear ' .$firstName. ' ' . $totalInvestigationsDone . ' out of ' . $totalInvestigationsC . ' of your test result(s) are ready. This notification is courtesy of Sandra Hospital Management System. To opt out, visit reception';
 
         return [
