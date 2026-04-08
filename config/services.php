@@ -1,6 +1,7 @@
 <?php
 
 use App\Services\Sms\ChurchPlusProvider;
+use App\Services\Sms\TermiiProvider;
 
 return [
 
@@ -38,10 +39,16 @@ return [
         'tenant_id' => env('CHURCH_PLUS_TENANTID'),
     ],
 
+    'termii' => [
+        'api_key'  => env('TERMII_API_KEY'),
+        'base_url' => env('TERMII_BASE_URL'),
+    ],
+
     'sms' => [
         'default' => env('SMS_PROVIDER_DEFAULT', 'church_plus'),
         'providers' => [
             'church_plus' => ChurchPlusProvider::class,
+            'termii'     => TermiiProvider::class,
         ],
     ],
 
