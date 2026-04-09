@@ -429,7 +429,7 @@ class AccountsReportService
                 sponsor_categories.name as category, 
                 COUNT(DISTINCT visits.patient_id) as patientsCount, 
                 COUNT(DISTINCT visits.id) as visitCount, 
-                COUNT(visits.consulted) AS visitConsulted 
+                COUNT(visits.consulted) AS visitConsulted,
                 SUM(visits.total_hms_bill) AS totalHmsBill, 
                 SUM(visits.total_hmo_bill) AS totalHmoBill, 
                 SUM(visits.total_nhis_bill) AS totalNhisBill, 
