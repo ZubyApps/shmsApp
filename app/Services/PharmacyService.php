@@ -769,7 +769,9 @@ class PharmacyService
         // 2. Apply Global Category Constraints (Consolidated)
         $query->where(function (Builder $q) {
             $q->whereIn('category', ['Medications', 'Consumables'])
-            ->where(fn($sq) => $sq->where('sub_category', '!=', 'Lab')->orWhereNull('sub_category'));
+            ->where(fn($sq) => $sq->where('sub_category', '!=', 'Lab')
+            ->orWhereNull('sub_category')
+            );
         });
 
         // 3. Apply Search Filter
@@ -780,6 +782,14 @@ class PharmacyService
                 ->orWhere('sub_category', 'LIKE', $searchTerm)
                 ->orWhere('category', 'LIKE', $searchTerm);
             });
+
+            return $query->orderBy($orderBy, $orderDir)
+                    ->paginate(
+                        $params->length, 
+                        ['*'], 
+                        'page', 
+                        floor($params->start / $params->length) + 1
+                    );
         }
 
         // 4. Apply Specific Filters
