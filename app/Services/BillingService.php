@@ -227,7 +227,12 @@ class BillingService
                     $q->where('created_at', 'LIKE', $searchTerm)
                     ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
                     ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                    ->orWhereHas('patient', fn($pq) => $pq->searchByName($searchTermRaw));
+                    ->orWhereHas('patient', fn($pq) => $pq->searchByName($searchTermRaw))
+                    // D. Sponsor Group (Single Subquery)
+                    ->orWhereHas('sponsor', function ($q) use ($searchTerm) {
+                        $q->where('name', 'LIKE', $searchTerm)
+                        ->orWhere('category_name', 'LIKE', $searchTerm);
+                    });
                 });
             }
             return $query->orderBy($orderBy, $orderDir)->paginate($params->length, ['*'], 'page', $page);
@@ -581,8 +586,9 @@ class BillingService
                             ->where('visit_id', $data->visitId);
 
         if (! empty($params->searchTerm)) {
-            $query->whereRelation('payMethod', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                    ->whereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' );
+            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            $query->whereRelation('payMethod', 'name', 'LIKE',  $searchTerm)
+                    ->whereRelation('user', 'username', 'LIKE', $searchTerm);
         }
 
         return $query->orderBy($orderBy, $orderDir)
