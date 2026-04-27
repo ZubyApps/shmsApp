@@ -11,7 +11,6 @@ use App\Models\Visit;
 use App\Services\PayPercentageService;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\DB;
 
 class AccountsReportService
@@ -673,7 +672,7 @@ class AccountsReportService
                     $query->select('id', 'first_name', 'middle_name', 'last_name', 'card_no', 'flag', 'flag_reason', 'flagged_by', 'flagged_at')
                         ->with(['flaggedBy:id,username']);
                 },
-                'latestConsultation:id,visit_id,icd11_diagnosis,provisional_diagnosis,assessment'
+                'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment'
             ])
             // 1. Direct Filter (Sponsor)
             ->where('sponsor_id', $data->sponsorId)
