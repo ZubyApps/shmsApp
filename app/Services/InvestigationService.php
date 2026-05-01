@@ -52,8 +52,7 @@ class InvestigationService
                     ->where('result_date', '!=', null);
             },
         ])
-        ->withExists(['investigationsList as isOnList'])
-        ->whereNotNull('consulted');
+        ->withExists(['investigationsList as isOnList']);
 
         if (!empty($params->searchTerm)) {
             $searchTermRaw = trim($params->searchTerm);
@@ -84,11 +83,13 @@ class InvestigationService
 
         if ($data->filterBy == 'Outpatient'){
             $query->where('admission_status', '=', 'Outpatient')
-                ->where('visit_type', '!=', 'ANC');
+                ->where('visit_type', '!=', 'ANC')
+                ->whereNotNull('consulted');
         }
 
         if ($data->filterBy == 'Inpatient'){
-            $query->inpatientOrObservation();
+            $query->inpatientOrObservation()
+            ->whereNotNull('consulted');
         }
         if ($data->filterBy == 'ANC'){
             $query->where('visit_type', '=', 'ANC');
