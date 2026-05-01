@@ -689,8 +689,8 @@ class PrescriptionService
             'medicationCharts as givenCount' => function (Builder $query) {
                 $query->whereNotNull('dose_given');
             },
-        ])
-        ->whereRelation('visit', 'visit_type', '!=', 'ANC');
+        ]);
+        // ->whereRelation('visit', 'visit_type', '!=', 'ANC');
 
         function applyCategoriesFilter(Builder $query){
             return $query->where(function(Builder $query) {
