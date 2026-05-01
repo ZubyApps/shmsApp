@@ -669,7 +669,7 @@ class PrescriptionService
             'resource:id,name,stock_level,unit_description', 
             'user:id,username', 
             'visit' => function($query) {
-                $query->select('id' ,'closed', 'admission_status', 'sponsor_id', 'patient_id')
+                $query->select('id' ,'closed', 'admission_status', 'sponsor_id', 'patient_id', 'visit_type')
                 ->with(
                     [
                         'sponsor'  => function ($query) {
@@ -690,13 +690,23 @@ class PrescriptionService
                 $query->whereNotNull('dose_given');
             },
         ])
-        ->whereRelation('visit', 'visit_type', '!=', 'ANC');
+        ->whereNotNull('visit_id');
+        // ->whereRelation('visit', 'visit_type', '!=', 'ANC');
 
-        function applyCategoriesFilter(Builder $query){
+        function applyCategoriesFilter(Builder $query, ?bool $isPharm = false){
+            if ($isPharm){
+                return $query->where(function(Builder $query) {
+                            $query->whereRelation('resource', 'category', 'Medications')
+                            ->orWhereRelation('resource', 'category', 'Medical Services')
+                            ->orWhereRelation('resource', 'category', 'Consumables')
+                            ->orWhere('chartable', true);
+                        });
+            }
             return $query->where(function(Builder $query) {
                             $query->whereRelation('resource', 'category', 'Medications')
                             ->orWhereRelation('resource', 'category', 'Medical Services')
                             ->orWhereRelation('resource', 'category', 'Consumables')
+                            ->orWhereRelation('resource', 'category', 'Investigations')
                             ->orWhere('chartable', true);
                         });
         }
@@ -715,7 +725,7 @@ class PrescriptionService
         }
 
         if ($data->viewer == 'pharmacy'){
-            $query  = applyCategoriesFilter($query);
+            $query  = applyCategoriesFilter($query, true);
             return $query->where('consultation_id', null)
                     ->where('qty_dispensed', 0)
                     ->orderBy($orderBy, $orderDir)
@@ -733,19 +743,20 @@ class PrescriptionService
        return  function (Prescription $prescription) {
             return [
                 'id'                => $prescription->id,
-                'visitId'           => $prescription->visit->id,
-                'patient'           => $prescription->visit->patient->patientId(),
-                'sponsor'           => $prescription->visit->sponsor->name,
-                'closed'            => $prescription->visit->closed,
-                'sponsorCategory'   => $prescription->visit->sponsor->category_name,
+                'visitId'           => $prescription->visit?->id,
+                'patient'           => $prescription->visit?->patient->patientId() . ($prescription->visit->visit_type == 'ANC' ? ' (ANC)' : ''),
+                'sponsor'           => $prescription->visit?->sponsor->name,
+                'closed'            => $prescription->visit?->closed,
+                'sponsorCategory'   => $prescription->visit?->sponsor->category_name,
                 'sponsorCategoryClass' => $prescription->visit?->sponsor?->sponsorCategory?->pay_class,
+                'visitType'         => $prescription->visit->visit_type,
                 'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
                 'item'              => $prescription->resource->name,
                 'prescription'      => $prescription->prescription,
                 'prescribedBy'      => $prescription->user->username,
                 'doc'               => $prescription->doctorOnCall?->username,
                 'note'              => $prescription->note,
-                'admissionStatus'   => $prescription->visit->admission_status,
+                'admissionStatus'   => $prescription->visit?->admission_status,
                 'prescribedFormatted'   => (new Carbon($prescription->created_at))->format('Y-m-d\TH:i'),
                 'chartable'             => $prescription->chartable,
                 'doseCount'             => $doseCount = $prescription->doseCount,
@@ -760,7 +771,7 @@ class PrescriptionService
                 'rejected'              => $prescription->rejected,
                 'paid'                  => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
                 'paid1'                 => $prescription->paid,
-                'paidNhis'              => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit->sponsor->category_name == 'NHIS',
+                'paidNhis'              => $prescription->paid > 0 && $prescription->approved && $prescription->paid >= $prescription->nhis_bill && $prescription->visit?->sponsor->category_name == 'NHIS',
             ];
          };
     }
