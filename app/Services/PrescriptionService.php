@@ -703,7 +703,7 @@ class PrescriptionService
 
         if (! empty($params->searchTerm)) {
             $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-            $query  = applyCategoriesFilter($query);
+            // $query  = applyCategoriesFilter($query);
             return $query->where(function(Builder $query) use($searchTerm) {
                             $query->whereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
                             ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
@@ -721,7 +721,7 @@ class PrescriptionService
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }
-        $query  = applyCategoriesFilter($query);
+        // $query  = applyCategoriesFilter($query);
         return $query->where('consultation_id', null)
                     ->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
