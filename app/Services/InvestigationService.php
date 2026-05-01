@@ -115,9 +115,9 @@ class InvestigationService
        return  function (Visit $visit) {
             return [
                 'id'                => $visit->id,
-                'came'              => (new Carbon($visit->consulted))->format('d/m/y g:ia'),
+                'came'              => $visit->consulted ? (new Carbon($visit->consulted))->format('d/m/y g:ia') : '',
                 'patient'           => $visit->patient->patientId(),
-                'doctor'            => $visit->doctor->username,
+                'doctor'            => $visit->doctor?->username,
                 'diagnosis'         => $visit->latestConsultation?->icd11_diagnosis ?? 
                                        $visit->latestConsultation?->provisional_diagnosis ?? 
                                        $visit->latestConsultation?->assessment,
