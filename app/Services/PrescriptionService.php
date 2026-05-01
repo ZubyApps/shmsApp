@@ -661,81 +661,142 @@ class PrescriptionService
     //     });
     // }
 
-    public function getEmergencyPrescriptions(DataTableQueryParams $params, $data)
+    // public function getEmergencyPrescriptions1(DataTableQueryParams $params, $data)
+    // {
+    //     $orderBy    = 'created_at';
+    //     $orderDir   =  'desc';
+    //     $query = $this->prescription->select('id', 'visit_id', 'resource_id', 'user_id', 'chartable','prescription','qty_billed', 'note', 'qty_dispensed', 'created_at', 'doctor_on_call', 'held_by', 'approved', 'rejected', 'paid', 'hms_bill', 'nhis_bill')->with([
+    //         'resource:id,name,stock_level,unit_description', 
+    //         'user:id,username', 
+    //         'visit' => function($query) {
+    //             $query->select('id' ,'closed', 'admission_status', 'sponsor_id', 'patient_id', 'visit_type')
+    //             ->with(
+    //                 [
+    //                     'sponsor'  => function ($query) {
+    //                                 $query->select('id', 'name', 'category_name', 'flag', 'sponsor_category_id' )
+    //                                 ->with([
+    //                                     'sponsorCategory:id,pay_class',
+    //                                 ]);
+    //                             }, 
+    //                     'patient:id,first_name,middle_name,last_name,card_no'
+    //                     ]);
+    //         },
+    //         'heldBy:id,username',
+    //         'doctorOnCall:id,username'     
+    //     ])
+    //     ->withCount([
+    //         'medicationCharts as doseCount',
+    //         'medicationCharts as givenCount' => function (Builder $query) {
+    //             $query->whereNotNull('dose_given');
+    //         },
+    //     ])
+    //     ->whereNotNull('visit_id');
+    //     // ->whereRelation('visit', 'visit_type', '!=', 'ANC');
+
+    //     function applyCategoriesFilter(Builder $query, ?bool $isPharm = false){
+    //         if ($isPharm){
+    //             return $query->where(function(Builder $query) {
+    //                         $query->whereRelation('resource', 'category', 'Medications')
+    //                         ->orWhereRelation('resource', 'category', 'Medical Services')
+    //                         ->orWhereRelation('resource', 'category', 'Consumables')
+    //                         ->orWhere('chartable', true);
+    //                     });
+    //         }
+    //         return $query->where(function(Builder $query) {
+    //                         $query->whereRelation('resource', 'category', 'Medications')
+    //                         ->orWhereRelation('resource', 'category', 'Medical Services')
+    //                         ->orWhereRelation('resource', 'category', 'Consumables')
+    //                         ->orWhereRelation('resource', 'category', 'Investigations')
+    //                         ->orWhere('chartable', true);
+    //                     });
+    //     }
+
+    //     if (! empty($params->searchTerm)) {
+    //         $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+    //         $query  = applyCategoriesFilter($query);
+    //         return $query->where(function(Builder $query) use($searchTerm) {
+    //                         $query->whereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
+    //                         ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
+    //                         ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
+    //                         ->orWhereRelation('resource', 'name', 'LIKE', $searchTerm);
+    //                     })
+    //                     ->orderBy($orderBy, $orderDir)
+    //                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     if ($data->viewer == 'pharmacy'){
+    //         $query  = applyCategoriesFilter($query, true);
+    //         return $query->where('consultation_id', null)
+    //                 ->where('qty_dispensed', 0)
+    //                 ->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+    //     $query  = applyCategoriesFilter($query);
+    //     return $query->where('consultation_id', null)
+    //                 ->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+
+    // }
+
+        public function getEmergencyPrescriptions(DataTableQueryParams $params, $data)
     {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
-        $query = $this->prescription->select('id', 'visit_id', 'resource_id', 'user_id', 'chartable','prescription','qty_billed', 'note', 'qty_dispensed', 'created_at', 'doctor_on_call', 'held_by', 'approved', 'rejected', 'paid', 'hms_bill', 'nhis_bill')->with([
-            'resource:id,name,stock_level,unit_description', 
-            'user:id,username', 
-            'visit' => function($query) {
-                $query->select('id' ,'closed', 'admission_status', 'sponsor_id', 'patient_id', 'visit_type')
-                ->with(
-                    [
-                        'sponsor'  => function ($query) {
-                                    $query->select('id', 'name', 'category_name', 'flag', 'sponsor_category_id' )
-                                    ->with([
-                                        'sponsorCategory:id,pay_class',
-                                    ]);
-                                }, 
-                        'patient:id,first_name,middle_name,last_name,card_no'
-                        ]);
-            },
-            'heldBy:id,username',
-            'doctorOnCall:id,username'     
-        ])
-        ->withCount([
-            'medicationCharts as doseCount',
-            'medicationCharts as givenCount' => function (Builder $query) {
-                $query->whereNotNull('dose_given');
-            },
-        ])
-        ->whereNotNull('visit_id');
-        // ->whereRelation('visit', 'visit_type', '!=', 'ANC');
+        $isPharm = ($data->viewer === 'pharmacy');
 
-        function applyCategoriesFilter(Builder $query, ?bool $isPharm = false){
-            if ($isPharm){
-                return $query->where(function(Builder $query) {
-                            $query->whereRelation('resource', 'category', 'Medications')
-                            ->orWhereRelation('resource', 'category', 'Medical Services')
-                            ->orWhereRelation('resource', 'category', 'Consumables')
-                            ->orWhere('chartable', true);
-                        });
-            }
-            return $query->where(function(Builder $query) {
-                            $query->whereRelation('resource', 'category', 'Medications')
-                            ->orWhereRelation('resource', 'category', 'Medical Services')
-                            ->orWhereRelation('resource', 'category', 'Consumables')
-                            ->orWhereRelation('resource', 'category', 'Investigations')
-                            ->orWhere('chartable', true);
-                        });
+        // 1. Base Query with specific column selection
+        $query = $this->prescription->query()
+            ->select([
+                'id', 'visit_id', 'resource_id', 'user_id', 'chartable', 'prescription', 
+                'qty_billed', 'note', 'qty_dispensed', 'created_at', 'doctor_on_call', 
+                'held_by', 'approved', 'rejected', 'paid', 'hms_bill', 'nhis_bill'
+            ])
+            ->with([
+                'resource:id,name,stock_level,unit_description', 
+                'user:id,username', 
+                'visit.sponsor.sponsorCategory:id,pay_class',
+                'visit.patient:id,first_name,middle_name,last_name,card_no',
+                'heldBy:id,username',
+                'doctorOnCall:id,username'     
+            ])
+            ->withCount([
+                'medicationCharts as doseCount',
+                'medicationCharts as givenCount' => fn($q) => $q->whereNotNull('dose_given'),
+            ])
+            ->whereNotNull('visit_id')
+            ->whereNull('consultation_id');
+
+        // 2. Optimized Category Filter (Consolidated into one subquery)
+        $categories = $isPharm 
+            ? ['Medications', 'Medical Services', 'Consumables'] 
+            : ['Medications', 'Medical Services', 'Consumables', 'Investigations'];
+
+        $query->where(function($q) use ($categories) {
+            $q->whereHas('resource', fn($res) => $res->whereIn('category', $categories))
+            ->orWhere('chartable', true);
+        });
+
+        if ($isPharm) {
+            $query->where('qty_dispensed', 0);
         }
 
-        if (! empty($params->searchTerm)) {
-            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-            $query  = applyCategoriesFilter($query);
-            return $query->where(function(Builder $query) use($searchTerm) {
-                            $query->whereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('resource', 'name', 'LIKE', $searchTerm);
-                        })
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        // 3. Search Logic using your Patient Scope
+        if (!empty($params->searchTerm)) {
+            $query->where(function($q) use ($params) {
+                $q->whereHas('visit.patient', function($p) use ($params) {
+                    // Utilizing your existing scope
+                    $p->searchByName($params->searchTerm); 
+                })
+                // Still allow searching by the Resource name
+                ->orWhereHas('resource', function($r) use ($params) {
+                    $r->where('name', 'LIKE', '%' . $params->searchTerm . '%');
+                });
+            });
         }
 
-        if ($data->viewer == 'pharmacy'){
-            $query  = applyCategoriesFilter($query, true);
-            return $query->where('consultation_id', null)
-                    ->where('qty_dispensed', 0)
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-        }
-        $query  = applyCategoriesFilter($query);
-        return $query->where('consultation_id', null)
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-
+        // 4. Clean Execution
+        $page = ($params->length > 0) ? (($params->length + $params->start) / $params->length) : 1;
+        
+        return $query->orderBy('created_at', 'desc')
+                    ->paginate($params->length, ['*'], 'page', $page);
     }
 
     public function getEmergencyPrescriptionsformer(): callable
