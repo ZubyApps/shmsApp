@@ -206,7 +206,7 @@ class InvestigationService
     //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     // }
 
-    public function getInpatientLabRequests(DataTableQueryParams $params, $data)
+    public function getInpatientLabRequests1(DataTableQueryParams $params, $data)
     {
         $orderBy  = 'created_at';
         $orderDir = 'desc';
@@ -249,6 +249,63 @@ class InvestigationService
         // --- 3. INPATIENT FILTER (Apply if not searching specifically by patient) ---
         else {
             $query->whereHas('visit', fn($q) => $q->inpatientOrObservation());
+        }
+
+        return $query->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, ['*'], 'page', $page);
+    }
+
+    public function getInpatientLabRequests(DataTableQueryParams $params, $data)
+    {
+        $orderBy  = 'prescriptions.created_at';
+        $orderDir = 'desc';
+        $page     = ($params->start / $params->length) + 1;
+
+        $query = $this->prescription->query()
+            ->select([
+                'prescriptions.id', 'prescriptions.resource_id', 'prescriptions.user_id', 
+                'prescriptions.visit_id', 'prescriptions.consultation_id', 'prescriptions.created_at', 
+                'prescriptions.result_date', 'prescriptions.approved', 'prescriptions.rejected', 
+                'prescriptions.paid', 'prescriptions.discontinued', 'prescriptions.hms_bill', 
+                'prescriptions.nhis_bill', 'prescriptions.discontinued_by', 
+                'prescriptions.sample_collected_at', 'prescriptions.sample_collected_by'
+            ])
+            // 1. Flatten the Gatekeepers with Joins
+            ->join('resources', 'prescriptions.resource_id', '=', 'resources.id')
+            ->join('visits', 'prescriptions.visit_id', '=', 'visits.id')
+            
+            // 2. Eager load the metadata (remains fast for display)
+            ->with([
+                'resource:id,name,category', 
+                'user:id,username', 
+                'visit.sponsor.sponsorCategory:id,pay_class',
+                'visit.patient:id,first_name,middle_name,last_name,card_no',
+                'consultation:id,icd11_diagnosis,provisional_diagnosis,assessment,admission_status',
+                'discontinuedBy:id,username',
+                'sampleCollectedBy:id,username'
+            ])
+
+            // 3. Apply Filters directly on the Joined Tables
+            ->where('resources.category', 'Investigations')
+            ->where('resources.sub_category', '!=', 'Imaging')
+            ->whereNull('prescriptions.result_date')
+            ->whereNull('prescriptions.dispense_comment')
+            ->whereNotNull('visits.consulted');
+
+        // 4. Inpatient Logic (Modified to use the joined 'visits' table)
+        if (empty($params->searchTerm)) {
+            $query->whereIn('visits.admission_status', ['Inpatient', 'Observation']);
+        } else {
+            $searchTermRaw = trim($params->searchTerm);
+            $searchTerm    = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+            $query->where(function ($sub) use ($searchTerm, $searchTermRaw) {
+                $sub->whereHas('visit.patient', function (Builder $q) use ($searchTerm, $searchTermRaw) {
+                    $q->searchByName($searchTermRaw)
+                    ->orWhere('phone', 'LIKE', $searchTerm)
+                    ->orWhere('card_no', 'LIKE', $searchTerm);
+                });
+            });
         }
 
         return $query->orderBy($orderBy, $orderDir)
@@ -356,7 +413,7 @@ class InvestigationService
         else {
             if ($data->notLab) {
                 // "Not Lab" likely means viewing requests regardless of result status, within a time window
-                $query->where('created_at', '>', now()->subDays(2));
+                $query->where('created_at', '>', today()->subDays(2));
             } else {
                 // Default view: Pending requests only
                 $query->whereNull('result_date')

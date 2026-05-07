@@ -11,6 +11,7 @@ use App\Services\HelperService;
 use App\Services\PayPercentageService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class NurseService
 {
@@ -179,13 +180,142 @@ class NurseService
     //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     // }
 
+    // public function getPaginatedFilteredNurseVisits(DataTableQueryParams $params, $data)
+    // {
+    //     $searchTerm = trim($params->searchTerm ?? '');
+        
+    //     // 1. Base Query & Relationships
+    //     $query = $this->visit->newQuery()
+    //         ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'doctor_done_by', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'closed_opened_at', 'ward', 'bed_no', 'ward_id', 'discount', 'total_hms_bill', 'total_nhis_bill', 'total_paid', 'doctor_done_at')
+    //         ->with([
+    //             'sponsor:id,name,category_name,flag',
+    //             'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment,updated_by',
+    //             'latestConsultation.updatedBy:id,username',
+    //             'patient' => fn($q) => $q->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')->with('flaggedBy:id,username'),
+    //             'antenatalRegisteration:id,visit_id',
+    //             'doctor:id,username',
+    //             'closedOpenedBy:id,username',
+    //             'doctorDoneBy:id,username',
+    //             'wards:id,visit_id,short_name,bed_number'
+    //         ])
+    //         ->withCount([
+    //             'prescriptions as prescriptionsCharted' => fn($q) => $q->where('chartable', true)->where('discontinued', false)->whereDoesntHave('medicationCharts')->whereRelation('resource', 'sub_category', 'Injectable'),
+    //             'prescriptions as otherChartables' => fn($q) => $q->where('chartable', true)->where('discontinued', false)->whereDoesntHave('nursingCharts')->whereRelation('resource', 'sub_category', '!=', 'Injectable'),
+    //             'prescriptions as otherPrescriptions' => fn($q) => $q->where('chartable', false)->whereRelation('resource', fn($r) => $r->whereIn('category', ['Medications', 'Consumables'])),
+    //             'medicationCharts as doseCount',
+    //             'medicationCharts as givenCount' => fn($q) => $q->whereNotNull('dose_given'),
+    //             'nursingCharts as scheduleCount',
+    //             'nursingCharts as doneCount' => fn($q) => $q->whereNotNull('time_done'),
+    //             'vitalSigns as vitalSignsCount',
+    //             'consultations as consultationsCount'
+    //         ]);
+
+    //     // 2. Handle Search (Priority)
+    //     if (!empty($searchTerm)) {
+    //         $this->applyNurseSearch($query, $searchTerm);
+    //         // Per your request: No 'nurse_done_by' or 'closed' constraints during search
+    //     } 
+    //     // 3. Handle Filters (Only if NOT searching)
+    //     else {
+    //         $query->where('nurse_done_by', null)->where('closed', false);
+    //         $this->applyNurseFilters($query, $data->filterBy);
+    //     }
+
+    //     // 4. Finalize Sorting and Pagination
+    //     $orderBy = $data->filterBy === 'ANC' ? 'created_at' : 'consulted';
+        
+    //     return $query->orderBy($orderBy, 'desc')
+    //         ->paginate(
+    //             $params->length, 
+    //             ['*'], 
+    //             'page', 
+    //             floor($params->start / $params->length) + 1
+    //         );
+    // }
+
+    // /**
+    //  * Extracted Search Logic
+    //  */
+    private function applyNurseSearch(Builder $query, string $searchTermRaw): void
+    {
+        if (str_starts_with($searchTermRaw, 'pId-')) {
+            $query->where('patient_id', explode('-', $searchTermRaw)[1]);
+            return;
+        }
+
+        $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+        $query->where(function (Builder $sub) use ($searchTerm, $searchTermRaw) {
+            // Date Search
+            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $searchTermRaw)) {
+                $sub->whereBetween('consulted', [$searchTermRaw . ' 00:00:00', $searchTermRaw . ' 23:59:59']);
+            }
+
+            // Patient Search
+            $sub->orWhereHas('patient', fn($q) => 
+                $q->searchByName($searchTermRaw)
+                    ->orWhere('card_no', 'LIKE', $searchTerm)->orWhere('phone', 'LIKE', $searchTerm))
+                // ->orWhereHas('consultations', function ($q) use ($searchTerm) {
+                //     $q->where('icd11_diagnosis', 'LIKE', $searchTerm)
+                //     ->orWhere('provisional_diagnosis', 'LIKE', $searchTerm)
+                //     ->orWhere('admission_status', 'LIKE', $searchTerm);
+                // })
+                ->orWhereHas('sponsor', fn($q) => $q->where('name', 'LIKE', $searchTerm)->orWhere('category_name', 'LIKE', $searchTerm));
+        });
+    }
+
+    // /**
+    //  * Extracted Filter Logic
+    //  */
+    // private function applyNurseFilters(Builder $query, string $filterBy): void
+    // {
+    //     switch ($filterBy) {
+    //         case 'ANC':
+    //             $query->where('visit_type', 'ANC');
+    //             break;
+
+    //         case 'Outpatient':
+    //             $query->whereNotNull('consulted')
+    //                 ->where('admission_status', 'Outpatient')
+    //                 ->where('visit_type', '!=', 'ANC')
+    //                 ->whereRelation('prescriptions.resource', 'sub_category', 'Injectable');
+    //             break;
+
+    //         case 'Inpatient':
+    //             $query->whereNotNull('consulted')
+    //                 ->whereIn('admission_status', ['Inpatient', 'Observation'])
+    //                 ->where(function (Builder $sub) {
+    //                     // We check if the visit has ANY relevant prescription 
+    //                     $sub->whereHas('prescriptions', function (Builder $p) {
+    //                         $p->where('chartable', true) // Priority check: anything marked chartable
+    //                             ->orWhereHas('resource', function (Builder $r) {
+    //                                 // Or any specific categories that require nursing attention
+    //                                 $r->whereIn('category', ['Medications', 'Medical Services']);
+    //                             });
+    //                     });
+    //                 });
+    //             break;
+
+    //         default:
+    //             $query->whereNotNull('consulted');
+    //             break;
+    //     }
+    // }
+
     public function getPaginatedFilteredNurseVisits(DataTableQueryParams $params, $data)
     {
         $searchTerm = trim($params->searchTerm ?? '');
         
-        // 1. Base Query & Relationships
-        $query = $this->visit->newQuery()
-            ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'doctor_done_by', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'closed_opened_at', 'ward', 'bed_no', 'ward_id', 'discount', 'total_hms_bill', 'total_nhis_bill', 'total_paid', 'doctor_done_at')
+        $query = $this->visit->query()
+            ->select([
+                'visits.id', 'visits.patient_id', 'visits.doctor_id', 'visits.sponsor_id', 
+                'visits.doctor_done_by', 'visits.consulted', 'visits.admission_status', 
+                'visits.visit_type', 'visits.discharge_reason', 'visits.discharge_remark', 
+                'visits.closed', 'visits.closed_opened_by', 'visits.closed_opened_at', 
+                'visits.ward', 'visits.bed_no', 'visits.ward_id', 'visits.discount', 
+                'visits.total_hms_bill', 'visits.total_nhis_bill', 'visits.total_paid', 
+                'visits.doctor_done_at'
+            ])
             ->with([
                 'sponsor:id,name,category_name,flag',
                 'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment,updated_by',
@@ -209,96 +339,38 @@ class NurseService
                 'consultations as consultationsCount'
             ]);
 
-        // 2. Handle Search (Priority)
         if (!empty($searchTerm)) {
             $this->applyNurseSearch($query, $searchTerm);
-            // Per your request: No 'nurse_done_by' or 'closed' constraints during search
-        } 
-        // 3. Handle Filters (Only if NOT searching)
-        else {
-            $query->where('nurse_done_by', null)->where('closed', false);
-            $this->applyNurseFilters($query, $data->filterBy);
+        } else {
+            // Apply Global constraints
+            $query->whereNull('nurse_done_by')->where('closed', false)->whereNotNull('consulted');
+            
+            // Restore the specific filter branching
+            match ($data->filterBy) {
+                'ANC' => $query->where('visit_type', 'ANC'),
+
+                'Outpatient' => $query->where('admission_status', 'Outpatient')
+                                    ->where('visit_type', '!=', 'ANC')
+                                    ->whereHas('prescriptions.resource', fn($q) => $q->where('sub_category', 'Injectable')),
+
+                'Inpatient' => $query->whereIn('admission_status', ['Inpatient', 'Observation'])
+                                    ->whereExists(function ($sub) {
+                                        $sub->select(DB::raw(1))
+                                            ->from('prescriptions')
+                                            ->join('resources', 'prescriptions.resource_id', '=', 'resources.id')
+                                            ->whereColumn('prescriptions.visit_id', 'visits.id')
+                                            ->where(fn($p) => $p->where('prescriptions.chartable', true)
+                                                                ->orWhereIn('resources.category', ['Medications', 'Medical Services']));
+                                    }),
+
+                default => $query, // Default already has consulted/closed/nurse_done_by applied
+            };
         }
 
-        // 4. Finalize Sorting and Pagination
         $orderBy = $data->filterBy === 'ANC' ? 'created_at' : 'consulted';
         
-        return $query->orderBy($orderBy, 'desc')
-            ->paginate(
-                $params->length, 
-                ['*'], 
-                'page', 
-                floor($params->start / $params->length) + 1
-            );
-    }
-
-    /**
-     * Extracted Search Logic
-     */
-    private function applyNurseSearch(Builder $query, string $searchTermRaw): void
-    {
-        if (str_starts_with($searchTermRaw, 'pId-')) {
-            $query->where('patient_id', explode('-', $searchTermRaw)[1]);
-            return;
-        }
-
-        $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
-
-        $query->where(function (Builder $sub) use ($searchTerm, $searchTermRaw) {
-            // Date Search
-            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $searchTermRaw)) {
-                $sub->whereBetween('consulted', [$searchTermRaw . ' 00:00:00', $searchTermRaw . ' 23:59:59']);
-            }
-
-            // Patient Search
-            $sub->orWhereHas('patient', fn($q) => 
-                $q->searchByName($searchTermRaw)
-                    ->orWhere('card_no', 'LIKE', $searchTerm))
-                ->orWhereHas('consultations', function ($q) use ($searchTerm) {
-                    $q->where('icd11_diagnosis', 'LIKE', $searchTerm)
-                    ->orWhere('provisional_diagnosis', 'LIKE', $searchTerm)
-                    ->orWhere('admission_status', 'LIKE', $searchTerm);
-                })
-                ->orWhereHas('sponsor', fn($q) => $q->where('name', 'LIKE', $searchTerm)->orWhere('category_name', 'LIKE', $searchTerm));
-        });
-    }
-
-    /**
-     * Extracted Filter Logic
-     */
-    private function applyNurseFilters(Builder $query, string $filterBy): void
-    {
-        switch ($filterBy) {
-            case 'ANC':
-                $query->where('visit_type', 'ANC');
-                break;
-
-            case 'Outpatient':
-                $query->whereNotNull('consulted')
-                    ->where('admission_status', 'Outpatient')
-                    ->where('visit_type', '!=', 'ANC')
-                    ->whereRelation('prescriptions.resource', 'sub_category', 'Injectable');
-                break;
-
-            case 'Inpatient':
-                $query->whereNotNull('consulted')
-                    ->whereIn('admission_status', ['Inpatient', 'Observation'])
-                    ->where(function (Builder $sub) {
-                        // We check if the visit has ANY relevant prescription 
-                        $sub->whereHas('prescriptions', function (Builder $p) {
-                            $p->where('chartable', true) // Priority check: anything marked chartable
-                                ->orWhereHas('resource', function (Builder $r) {
-                                    // Or any specific categories that require nursing attention
-                                    $r->whereIn('category', ['Medications', 'Medical Services']);
-                                });
-                        });
-                    });
-                break;
-
-            default:
-                $query->whereNotNull('consulted');
-                break;
-        }
+        return $query->orderBy("visits.$orderBy", 'desc')
+                    ->paginate($params->length, ['*'], 'page', floor($params->start / $params->length) + 1);
     }
 
     public function getConsultedVisitsNursesTransformer(): callable

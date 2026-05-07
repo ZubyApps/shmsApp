@@ -218,61 +218,123 @@ class MedicationChartService
          };
     }
 
+    // public function getUpcomingMedications(DataTableQueryParams $params, $data)
+    // {
+    //     $orderBy    = 'scheduled_time';
+    //     $orderDir   =  'asc';
+    //     $query = $this->medicationChart::with([
+    //         'user:id,username',
+    //         'prescription' => function ($query) {
+    //             $query->select('id', 'prescription', 'discontinued', 'resource_id')
+    //             ->with([
+    //                 'resource:id,name',
+    //             ])
+    //             ->withCount('medicationCharts as medicationChartsCount');
+    //         },
+    //         'visit' => function($query) {
+    //             $query->select('id', 'ward', 'bed_no', 'patient_id', 'ward_id')
+    //             ->with([
+    //                 'patient' => function($query){
+    //                                 $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
+    //                                 ->with(['flaggedBy:id,username']);
+    //                             },
+    //                 'wards:id,visit_id,short_name,bed_number'
+    //             ]);
+    //         },
+    //         'givenBy:id,username',
+    //     ]);
+
+    //     if (! empty($params->searchTerm)) {
+    //         $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+    //         return $query->where('status', false)
+    //                     ->whereRelation('visit', 'discharge_reason', null)
+    //                     ->where(function (Builder $query){
+    //                         $query->whereRelation('visit', 'admission_status', '=', 'Inpatient')
+    //                         ->orWhereRelation('visit', 'admission_status', '=','Observation');
+    //                     })
+    //                     ->where(function (Builder $query) use($searchTerm) {
+    //                         $query->WhereRelation('prescription.resource', 'name', 'LIKE', $searchTerm)
+    //                         ->orWhereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
+    //                         ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
+    //                         ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
+    //                         ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm)
+    //                         ->orWhereRelation('visit.sponsor', 'name', 'LIKE', $searchTerm);
+    //                     })
+    //                     ->orderBy($orderBy, $orderDir)
+    //                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     return $query->where('status', false)
+    //                 ->whereRelation('prescription', 'discontinued', false)
+    //                 ->whereRelation('visit', 'discharge_reason', null)
+    //                 ->where(function (Builder $query){
+    //                     $query->whereRelation('visit', 'admission_status', '=', 'Inpatient')
+    //                     ->orWhereRelation('visit', 'admission_status', '=','Observation');
+    //                 })
+    //                 ->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    // }
+
     public function getUpcomingMedications(DataTableQueryParams $params, $data)
     {
-        $orderBy    = 'scheduled_time';
-        $orderDir   =  'asc';
-        $query = $this->medicationChart::with([
-            'user:id,username',
-            'prescription' => function ($query) {
-                $query->select('id', 'prescription', 'discontinued', 'resource_id')
-                ->with([
-                    'resource:id,name',
-                ])
-                ->withCount('medicationCharts as medicationChartsCount');
-            },
-            'visit' => function($query) {
-                $query->select('id', 'ward', 'bed_no', 'patient_id', 'ward_id')
-                ->with([
-                    'patient' => function($query){
-                                    $query->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
-                                    ->with(['flaggedBy:id,username']);
-                                },
-                    'wards:id,visit_id,short_name,bed_number'
-                ]);
-            },
-            'givenBy:id,username',
-        ]);
+        $orderBy  = 'medication_charts.scheduled_time';
+        $orderDir = 'asc';
+        $page     = ($params->start / $params->length) + 1;
 
-        if (! empty($params->searchTerm)) {
-            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-            return $query->where('status', false)
-                        ->whereRelation('visit', 'discharge_reason', null)
-                        ->where(function (Builder $query){
-                            $query->whereRelation('visit', 'admission_status', '=', 'Inpatient')
-                            ->orWhereRelation('visit', 'admission_status', '=','Observation');
-                        })
-                        ->where(function (Builder $query) use($searchTerm) {
-                            $query->WhereRelation('prescription.resource', 'name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('visit.patient', 'first_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('visit.patient', 'middle_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('visit.patient', 'last_name', 'LIKE', $searchTerm)
-                            ->orWhereRelation('visit.patient', 'card_no', 'LIKE', $searchTerm)
-                            ->orWhereRelation('visit.sponsor', 'name', 'LIKE', $searchTerm);
-                        })
-                        ->orderBy($orderBy, $orderDir)
-                        ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        $query = $this->medicationChart->query()
+            // Select only the columns you actually need
+            ->select([
+                'medication_charts.id',
+                'medication_charts.prescription_id',
+                'medication_charts.visit_id',
+                'medication_charts.user_id',
+                'medication_charts.scheduled_time',
+                'medication_charts.dose_prescribed',
+                'medication_charts.dose_count',
+                'medication_charts.status',
+                'medication_charts.time_given',
+                'medication_charts.not_given',
+                'medication_charts.given_by',
+            ])
+            // Join for filtering speed
+            ->join('prescriptions', 'medication_charts.prescription_id', '=', 'prescriptions.id')
+            ->join('visits', 'medication_charts.visit_id', '=', 'visits.id')
+            // Eager load for the transformer
+            ->with([
+                'user:id,username',
+                'givenBy:id,username',
+                'prescription' => function($q) {
+                                $q->select('id')
+                                ->withCount('medicationCharts as medicationChartsCount');
+                            },
+                'prescription:id,prescription,discontinued,resource_id',
+                'prescription.resource:id,name',
+                'visit:id,ward,ward_id,bed_no,patient_id,admission_status',
+                'visit.wards:id,visit_id,short_name,bed_number',
+                'visit.patient' => fn($q) => $q->select('id', 'flagged_by', 'flag', 'flag_reason', 'flagged_at', 'first_name', 'middle_name', 'last_name', 'date_of_birth', 'card_no')
+                                            ->with('flaggedBy:id,username'),
+            ]);
+
+        // Apply Global Base Filters on Joined Tables
+        $query->where('medication_charts.status', false)
+            ->where('prescriptions.discontinued', false)
+            ->whereNull('visits.discharge_reason')
+            ->whereIn('visits.admission_status', ['Inpatient', 'Observation']);
+
+        if (!empty($params->searchTerm)) {
+            $searchTermRaw = trim($params->searchTerm);
+            $searchTerm    = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+            $query->where(function ($sub) use ($searchTerm, $searchTermRaw) {
+                $sub->whereHas('prescription.resource', fn($q) => $q->where('name', 'LIKE', $searchTerm))
+                    ->orWhereHas('visit.patient', fn($q) => $q->searchByName($searchTermRaw)
+                        ->orWhere('card_no', 'LIKE', $searchTerm));
+                    // ->orWhereHas('visit.sponsor', fn($q) => $q->where('name', 'LIKE', $searchTerm));
+            });
         }
 
-        return $query->where('status', false)
-                    ->whereRelation('prescription', 'discontinued', false)
-                    ->whereRelation('visit', 'discharge_reason', null)
-                    ->where(function (Builder $query){
-                        $query->whereRelation('visit', 'admission_status', '=', 'Inpatient')
-                        ->orWhereRelation('visit', 'admission_status', '=','Observation');
-                    })
-                    ->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        return $query->orderBy($orderBy, $orderDir)
+                    ->paginate($params->length, ['*'], 'page', $page);
     }
 
     public function upcomingMedicationsTransformer(): callable

@@ -98,10 +98,6 @@ class Sponsor extends Model
 
     public function scopeHmoDeptCategories(Builder $query): Builder
     {
-        return $query->where(function (Builder $q) {
-            $q->where('category_name', 'HMO')
-              ->orWhere('category_name', 'NHIS')
-              ->orWhere('category_name', 'Retainership');
-        });
+        return $query->whereIn('category_name', ['HMO', 'NHIS', 'Retainership']);
     }
 }

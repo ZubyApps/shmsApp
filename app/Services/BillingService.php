@@ -211,7 +211,7 @@ class BillingService
         // 1. Handle Search Term logic (DRY)
         if (!empty($params->searchTerm)) {
             $searchTermRaw = trim($params->searchTerm);
-            $searchTerm    = '%' . addcslashes($searchTermRaw, '%_') . '%';
+            $searchTerm    = addcslashes($searchTermRaw, '%_') . '%';
 
             // Apply ANC filter if needed during search
             if ($data->filterBy == 'ANC') {
@@ -223,12 +223,25 @@ class BillingService
             } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $searchTermRaw)) {
             $query->whereBetween('created_at', [$searchTermRaw . ' 00:00:00', $searchTermRaw . ' 23:59:59']);
             }   else {
-                $query->where(function ($q) use ($searchTerm, $searchTermRaw) {
-                    $q->where('created_at', 'LIKE', $searchTerm)
-                    ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
-                    ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-                    ->orWhereHas('patient', fn($pq) => $pq->searchByName($searchTermRaw))
-                    // D. Sponsor Group (Single Subquery)
+                // $query->where(function ($q) use ($searchTerm, $searchTermRaw) {
+                //     $q->where('created_at', 'LIKE', $searchTerm)
+                //     ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
+                //     ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
+                //     ->orWhereHas('patient', fn($pq) => $pq->searchByName($searchTermRaw))
+                //     // D. Sponsor Group (Single Subquery)
+                //     ->orWhereHas('sponsor', function ($q) use ($searchTerm) {
+                //         $q->where('name', 'LIKE', $searchTerm)
+                //         ->orWhere('category_name', 'LIKE', $searchTerm);
+                //     });
+                // });
+                $query->where(function ($sub) use ($searchTerm, $searchTermRaw) {
+                    $sub->whereHas('patient', function ($q) use ($searchTerm, $searchTermRaw) {
+                        $q->where(function ($patientSub) use ($searchTerm, $searchTermRaw) {
+                            $patientSub->searchByName($searchTermRaw)
+                                    ->orWhere('card_no', 'LIKE', $searchTerm)
+                                    ->orWhere('phone', 'LIKE', $searchTerm);
+                        });
+                    })
                     ->orWhereHas('sponsor', function ($q) use ($searchTerm) {
                         $q->where('name', 'LIKE', $searchTerm)
                         ->orWhere('category_name', 'LIKE', $searchTerm);
@@ -423,7 +436,9 @@ class BillingService
 
     public function getPatientBillTransformer(): callable
     {
-        return  function (Visit $visit) {
+        $payMethods = $this->payMethodService->list();
+        $accessLevel = auth()->user()->designation->access_level ?? 0;
+        return  function (Visit $visit) use ($payMethods, $accessLevel) {
 
             $sponsor = $visit->sponsor;
             $patient = $visit->patient;
@@ -453,9 +468,9 @@ class BillingService
                 'outstandingSponsorBalance'  => $this->sponsorsAllowed($sponsor, ['Family', 'Retainership']) ? $sponsor->total_bill - $sponsor->total_discount - $sponsor->total_paid : null,
                 'outstandingCardNoBalance'   => $this->sponsorsAllowed($sponsor, ['Family', 'Retainership', 'NHIS', 'Individual']) ? $this->sameCardNoOustandings($visit) : null,
                 'outstandingNhisBalance'=> $this->sponsorsAllowed($sponsor, ['NHIS']) ? $patient->total_bill - $patient->total_discount - $patient->total_paid : null,
-                'payMethods'            => $this->payMethodService->list(),
+                'payMethods'            => $payMethods,
                 'notBilled'             => $visit->hasUnbilledPrescriptions,
-                'user'                  => auth()->user()->designation->access_level > 4,
+                'user'                  => $accessLevel > 4,
                 'reminder'              => $visit->hasReminder,
                 'prescriptions'         => $visit->prescriptions->map(fn(Prescription $prescription) => [
                     'prescriptionId'    => $prescription->id,
@@ -673,7 +688,7 @@ class BillingService
         // We wrap these in a group so they stay "locked"
         $query->where(function($q) use ($data) {
             $q->when($data->sponsorId, fn($sq) => $sq->where('sponsor_id', $data->sponsorId))
-            ->when($data->cardNo, fn($sq) => $sq->whereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($data->cardNo, '%_') . '%'))
+            ->when($data->cardNo, fn($sq) => $sq->whereRelation('patient', 'card_no', 'LIKE', addcslashes($data->cardNo, '%_') . '%'))
             ->when(!$data->sponsorId && !$data->cardNo, fn($sq) => $sq->where('patient_id', (int)$data->patientId));
         });
 
@@ -681,7 +696,7 @@ class BillingService
         if (!empty($params->searchTerm)) {
             $query->whereHas('patient', function ($q) use ($params) {
                 $q->searchByName($params->searchTerm)
-                ->orWhereRelation('patient', 'card_no', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%');
+                ->orWhereRelation('patient', 'card_no', 'LIKE', addcslashes($params->searchTerm, '%_') . '%');
             });
         }
 

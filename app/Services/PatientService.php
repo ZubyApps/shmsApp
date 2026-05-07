@@ -42,12 +42,12 @@ class PatientService
                         "date_of_birth"         => $data->dateOfBirth,
                         "email"                 => $data->email,
                         "ethnic_group"          => $data->ethnicGroup,
-                        "first_name"            => $data->firstName,
+                        "first_name"            => $this->trimValue($data->firstName),
                         "genotype"              => $data->genotype,
                         "known_conditions"      => $data->knownConditions,
-                        "last_name"             => $data->lastName,
+                        "last_name"             => $this->trimValue($data->lastName),
                         "marital_status"        => $data->maritalStatus,
-                        "middle_name"           => $data->middleName,
+                        "middle_name"           => $this->trimValue($data->middleName),
                         "nationality"           => $data->nationality,
                         "next_of_kin"           => $data->nextOfKin,
                         "next_of_kin_phone"     => $data->nextOfKinPhone,
@@ -98,12 +98,12 @@ class PatientService
                 "date_of_birth"         => $data->dateOfBirth,
                 "email"                 => $data->email,
                 "ethnic_group"          => $data->ethnicGroup,
-                "first_name"            => $data->firstName,
+                "first_name"            => $this->trimValue($data->firstName),
                 "genotype"              => $data->genotype,
                 "known_conditions"      => $data->knownConditions,
-                "last_name"             => $data->lastName,
+                "last_name"             => $this->trimValue($data->lastName),
                 "marital_status"        => $data->maritalStatus,
-                "middle_name"           => $data->middleName,
+                "middle_name"           => $this->trimValue($data->middleName),
                 "nationality"           => $data->nationality,
                 "next_of_kin"           => $data->nextOfKin,
                 "next_of_kin_phone"     => $data->nextOfKinPhone,
@@ -128,6 +128,10 @@ class PatientService
         if ($cardNumber){$patient->update(["card_no" => $data->cardNumber]);}
 
         return $patient;
+    }
+
+    function trimValue(mixed $value){
+        return trim($value);
     }
 
     public function updateKnownClinicalInfo(Request $data, Patient $patient, User $user): Patient
@@ -195,54 +199,105 @@ class PatientService
         return response()->json(['message' => 'Form link prepared and queued successfully'], 200);
     }
 
-    public function getPaginatedPatients(DataTableQueryParams $params, $data)
-    {
-        $orderBy    = 'created_at';
-        $orderDir   =  'desc';
-        $query      = $this->patient->select('id', 'sponsor_id', 'user_id', 'flag', 'flag_reason', 'first_name', 'middle_name', 'last_name', 'card_no', 'date_of_birth', 'phone', 'sex', 'is_active', 'created_at', 'flagged_by', 'flagged_at')
-                        ->with([
-                            'user:id,username', 
-                            'sponsor:id,name,category_name,flag',
-                            'flaggedBy:id,username'
-                            ])
-                        ->withExists(['visits as hasVisits']);
+    // public function getPaginatedPatients(DataTableQueryParams $params, Request $data)
+    // {
+    //     $orderBy    = 'created_at';
+    //     $orderDir   =  'desc';
+    //     $query      = $this->patient->select('id', 'sponsor_id', 'user_id', 'flag', 'flag_reason', 'first_name', 'middle_name', 'last_name', 'card_no', 'date_of_birth', 'phone', 'sex', 'is_active', 'created_at', 'flagged_by', 'flagged_at')
+    //                     ->with([
+    //                         'user:id,username', 
+    //                         'sponsor:id,name,category_name,flag',
+    //                         'flaggedBy:id,username'
+    //                         ])
+    //                     ->withExists(['visits as hasVisits']);
 
-        if (! empty($params->searchTerm)) {
+    //     if (! empty($params->searchTerm)) {
+    //         $searchTermRaw = trim($params->searchTerm);
+    //         $reservedSymbols = ['-', '+', '<', '>', '@', '(', ')', '~', '*'];
+    //         // $term = str_replace($reservedSymbols, '', $data->fullId);
+            
+    //         foreach ($reservedSymbols as $symbols) {
+    //             if (str_starts_with($searchTermRaw, $symbols) || str_ends_with($searchTermRaw, $symbols)) {
+    //                 $searchTermRaw = str_replace($reservedSymbols, '', $data->fullId);
+    //             }
+    //         }
+    //         $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+
+    //         return $query->where(function (Builder $query) use ($searchTerm, $searchTermRaw) {
+    //         // 1. Full-Text Name Search first (Most efficient)
+    //             $query->searchByname($searchTermRaw)
+
+    //                 // 2. Local Patient Columns
+    //                 ->orWhere('card_no', 'LIKE', $searchTerm)
+    //                 ->orWhere('phone', 'LIKE', $searchTerm)
+    //                 ->orWhere('sex', 'LIKE', $searchTerm)
+    //                 ->orWhere('date_of_birth', 'LIKE', $searchTerm)
+    //                 // 3. Nested Relations (Grouped to reduce subqueries)
+    //                 ->orWhereHas('sponsor', function ($q) use ($searchTerm) {
+    //                     $q->where('name', 'LIKE', $searchTerm)
+    //                         ->orWhereHas('sponsorCategory', function ($sub) use ($searchTerm) {
+    //                             $sub->where('name', 'LIKE', $searchTerm);
+    //                         });
+    //                 });
+    //         })
+    //         ->orderBy($orderBy, $orderDir)
+    //         ->paginate($params->length, ['*'], 'page', ($params->length + $params->start) / $params->length);
+
+    //     }
+
+    //     if ($data->filterBy == 'flaggedPatients'){
+    //         return $query->where('flag', true)
+    //         ->orderBy($orderBy, $orderDir)
+    //         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    //     }
+
+    //     return $query->orderBy($orderBy, $orderDir)
+    //                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+
+       
+    // }
+
+    public function getPaginatedPatients(DataTableQueryParams $params, Request $data)
+    {
+        $orderBy  = 'created_at';
+        $orderDir = 'desc';
+
+        $query = $this->patient->select('id', 'sponsor_id', 'user_id', 'flag', 'flag_reason', 'first_name', 'middle_name', 'last_name', 'card_no', 'date_of_birth', 'phone', 'sex', 'is_active', 'created_at', 'flagged_by', 'flagged_at')
+            ->with([
+                'user:id,username', 
+                'sponsor:id,name,category_name,flag',
+                'flaggedBy:id,username'
+            ])
+            ->withExists(['visits as hasVisits']);
+
+        if (!empty($params->searchTerm)) {
             $searchTermRaw = trim($params->searchTerm);
             $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
 
-            return $query->where(function (Builder $query) use ($searchTerm, $searchTermRaw) {
-            // 1. Full-Text Name Search first (Most efficient)
-                $query->searchByname($searchTermRaw)
-
-                    // 2. Local Patient Columns
+            $query->where(function (Builder $query) use ($searchTerm, $searchTermRaw) {
+                // 1. High speed Name search
+                $query->searchByName($searchTermRaw)
                     ->orWhere('card_no', 'LIKE', $searchTerm)
-                    ->orWhere('phone', 'LIKE', $searchTerm)
-                    ->orWhere('sex', 'LIKE', $searchTerm)
-                    ->orWhere('date_of_birth', 'LIKE', $searchTerm)
-                    // 3. Nested Relations (Grouped to reduce subqueries)
-                    ->orWhereHas('sponsor', function ($q) use ($searchTerm) {
-                        $q->where('name', 'LIKE', $searchTerm)
-                            ->orWhereHas('sponsorCategory', function ($sub) use ($searchTerm) {
-                                $sub->where('name', 'LIKE', $searchTerm);
-                            });
-                    });
-            })
-            ->orderBy($orderBy, $orderDir)
-            ->paginate($params->length, ['*'], 'page', ($params->length + $params->start) / $params->length);
+                    ->orWhere('phone', 'LIKE', $searchTerm);
 
+                // 2. Optimized Sponsor search (Joined or simplified)
+                $query->orWhereHas('sponsor', function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', $searchTerm)
+                    ->orWhere('category_name', 'LIKE', $searchTerm); 
+                });
+            });
         }
 
-        if ($data->filterBy == 'flaggedPatients'){
-            return $query->where('flag', true)
-            ->orderBy($orderBy, $orderDir)
-            ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+        // Flagged patients filter
+        if ($data->filterBy == 'flaggedPatients') {
+            $query->where('flag', true);
         }
+
+        // Pagination Calculation
+        $page = ($params->start / $params->length) + 1;
 
         return $query->orderBy($orderBy, $orderDir)
-                    ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
-
-       
+                    ->paginate($params->length, ['*'], 'page', $page);
     }
 
     public function getLoadTransformer(): callable
@@ -267,7 +322,6 @@ class PatientService
                 'patient'           => $patient->patientId(),
                 'flaggedBy'         => $patient->flaggedBy?->username,
                 'flaggedAt'         => $patient->flagged_at ? (new Carbon($patient->flagged_at))->format('d/m/y g:ia') : '',
-                'count'             => $patient?->visitsCount
             ];
          };
     }
@@ -382,7 +436,7 @@ class PatientService
                 ->withCount(['visits as visitsCount']);
 
         if (! empty($params->searchTerm)) {
-            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            $searchTerm = addcslashes($params->searchTerm, '%_') . '%';
             if($data->date){
                 $date = new Carbon($data->date);
 
@@ -433,32 +487,73 @@ class PatientService
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
-    public function patientList($data)
+    // public function patientList(Request $data)
+    // {
+    //     if (empty($data->fullId)) {
+    //         return collect(); 
+    //     }
+
+    //     $query = $this->patient->newQuery();
+
+    //     // 1. Strict Filter: This must apply to everything below
+    //     if ($data->type === 'ANC') {
+    //         $query->whereHas('visits', function ($q) {
+    //             $q->where('visit_type', 'ANC');
+    //         });
+    //     }
+
+    //     // 2. Search Group: We wrap ORs in a closure so they don't break the ANC filter
+    //     $query->where(function ($q) use ($data) {
+    //         // High-Performance Full-Text (Passes raw string, NO wildcards)
+    //         $q->searchByName($data->fullId);
+
+    //         // Fallback/ID Search (Uses standard wildcards)
+    //         $wildcard = '%' . addcslashes($data->fullId, '%_') . '%';
+    //         $q->orWhere('card_no', 'LIKE', $wildcard)
+    //         ->orWhere('phone', 'LIKE', $wildcard);
+    //     });
+
+    //     // 3. Execution: Limit is the "safety net" for your RAM
+    //     return $query
+    //         ->orderBy('first_name', 'asc')
+    //         ->limit(20) 
+    //         ->get([
+    //             'first_name', 'middle_name', 'last_name',
+    //             'card_no', 'sponsor_id', 'phone', 'id'
+    //         ]);
+    // }
+
+    public function patientList(Request $data)
     {
-        if (! empty($data->fullId)){
+        if (empty($data->fullId)) {
+            return collect(); 
+        }
+
+        $query = $this->patient->newQuery();
+
+        // 1. ANC Filter
+        if ($data->type === 'ANC') {
+            $query->whereHas('visits', fn($q) => $q->where('visit_type', 'ANC'));
+        }
+
+        // 2. Optimized Search Group
+        $query->where(function ($q) use ($data) {
+            $searchTerm = trim($data->fullId);
             
-            if (str_starts_with($data->fullId, 'pId-')){
-                return;
-            }
+            // Full-Text search (if your searchByName uses MATCH AGAINST)
+            $q->searchByName($searchTerm);
 
-            $searchTerm = '%' . addcslashes($data->fullId, '%_') . '%';
+            // INDEX-FRIENDLY: "Starts With" (No leading %)
+            $startsWith = addcslashes($searchTerm, '%_') . '%';
+            
+            $q->orWhere('card_no', 'LIKE', $startsWith)
+            ->orWhere('phone', 'LIKE', $startsWith);
+        });
 
-            $query = $this->patient->newQuery();
-
-            if ($data->type === 'ANC') {
-                $query->whereRelation('visits', 'visit_type', 'ANC');
-            }
-            $query->searchByName($searchTerm);
-            $query->orWhere('card_no', 'LIKE', $searchTerm)
-                ->orWhere('phone', 'LIKE', $searchTerm);
-
-            return $query
-                    ->orderBy('created_at', 'asc')
-                    ->get([
-                       'first_name', 'middle_name', 'last_name',
-                       'card_no', 'sponsor_id', 'phone', 'id'
-                   ]);
-;        }      
+        return $query
+            ->orderBy('first_name', 'asc')
+            ->limit(20) 
+            ->get(['first_name', 'middle_name', 'last_name', 'card_no', 'sponsor_id', 'phone', 'id']);
     }
 
     public function listTransformer()

@@ -78,6 +78,9 @@ class Patient extends Model
 
     public function age()
     {
+        if (!$this->date_of_birth) {
+            return 'N/A';
+        }
         return str_replace(['a', 'g', 'o'], '', (new Carbon($this->date_of_birth))->diffForHumans(['other' => null, 'parts' => 2, 'short' => true]), );
     }
 
@@ -86,23 +89,22 @@ class Patient extends Model
         return $this->fullName().', '.$this->age().', '.$this->sex;
     }
 
-    public function scopeSearchByName(Builder $query, $rawSearchTerm): Builder
+    public function scopeSearchByName(Builder $query, string $rawSearchTerm): Builder
     {
-        // 1. Clean and split the search string into individual words
-        $terms = array_filter(explode(' ', trim($rawSearchTerm)));
+        // Remove characters that have special meaning in MySQL Boolean Mode
+        $cleanTerm = preg_replace('/[+\-><()~*\"@]/', ' ', $rawSearchTerm);
+
+        $terms = array_filter(explode(' ', trim($cleanTerm)));
 
         if (empty($terms)) {
             return $query;
         }
 
-        // 2. Format the terms for Boolean Mode
-        // Example: "John Doe" becomes "+John* +Doe*"
+        // Convert "John Doe" into "+John* +Doe*"
         $booleanSearch = collect($terms)
             ->map(fn($term) => "+{$term}*")
             ->implode(' ');
-        
-        // 3. Execute the Full-Text search
-        // Ensure the column order here matches your migration exactly
+
         return $query->whereFullText(
             ['first_name', 'middle_name', 'last_name'], 
             $booleanSearch, 

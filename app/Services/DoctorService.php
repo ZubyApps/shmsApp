@@ -24,19 +24,21 @@ class DoctorService
     private function baseQuery(): Builder
     {
         return $this->visit
-        ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'doctor_done_by', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'closed_opened_at', 'ward', 'bed_no', 'ward_id', 'waiting_for', 'discount', 'total_hms_bill', 'total_nhis_bill', 'total_paid', 'doctor_done_at')->with([
+        ->select('id', 'patient_id', 'doctor_id', 'sponsor_id', 'doctor_done_by', 'consulted', 'admission_status', 'visit_type', 'discharge_reason', 'discharge_remark', 'closed', 'closed_opened_by', 'closed_opened_at', 'ward', 'bed_no', 'ward_id', 'waiting_for', 'discount', 'total_hms_bill', 'total_nhis_bill', 'total_paid', 'doctor_done_at')
+        ->addSelect(['visits_count' => function ($query) {
+            $query->selectRaw('count(*)')
+                ->from('visits as v2')
+                ->whereColumn('v2.patient_id', 'visits.patient_id')
+                ->where('v2.consulted', '>', today()->subDays(30));
+        }])
+        ->with([
             'sponsor:id,name,category_name,flag',
             'latestConsultation:id,consultations.visit_id,icd11_diagnosis,provisional_diagnosis,assessment' => with(['updatedBy' => function ($query) {
                 $query->select('id', 'username');
             }]), 
             'patient' => function($query) {
                 $query->select('id', 'sex', 'flag', 'flag_reason', 'first_name', 'middle_name', 'last_name', 'card_no', 'date_of_birth', 'flagged_by', 'flagged_at')
-                ->with(['flaggedBy:id,username'])
-                ->withCount([
-                    'visits as visitsCount' => function (Builder $query) {
-                    $query->where('consulted', '>', Carbon::now()->subDays(30));
-                    },
-                ]);
+                ->with(['flaggedBy:id,username']);
             },
             'antenatalRegisteration:id,visit_id'=> with(['ancVitalSigns' => function ($query) {
                 $query->select('id', 'antenatal_registeration_id');
@@ -68,10 +70,8 @@ class DoctorService
             },
             'prescriptions as otherPrescriptions' => function (Builder $query) {
             $query->where('chartable', false)
-            ->where('chartable', false)
-            ->where(function(Builder $query) {
-                $query->whereRelation('resource', 'category', 'Medications')
-                        ->orWhereRelation('resource', 'category', 'Consumables');
+                    ->whereHas('resource', function($q) {
+                    $q->whereIn('category', ['Medications', 'Consumables']);
                 });
             },
             'medicationCharts as doseCount',
@@ -83,57 +83,10 @@ class DoctorService
                 $query->whereNotNull('time_done');
             },
             'vitalSigns as vitalSignsCount',
-            'consultations as consultationsCount'
+            'consultations as consultationsCount',
         ])
         ->whereNotNull('consulted');
     }
-
-    // private function applySearch(Builder $query, string $searchTerm): Builder
-    // {
-    //     $searchTerm = '%' . addcslashes($searchTerm, '%_') . '%';
-    //     return $query->where(function (Builder $query) use ($searchTerm) {
-    //         $query->where('created_at', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('patient', 'first_name', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('consultations', 'provisional_diagnosis', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
-    //     });
-    // }
-
-    // private function applySearch(Builder $query, string $searchTerm): Builder
-    // {
-    //     $searchTerm = trim($searchTerm);
-
-    //     if (explode('-', $searchTerm)[0] == 'pId'){
-    //         return  $query->where('patient_id', explode('-', $searchTerm)[1]);
-    //     }
-    //     $searchTerm = '%' . addcslashes(trim($searchTerm), '%_') . '%';
-    //     return $query->where(function (Builder $query) use ($searchTerm) {
-    //         $query->where('created_at', 'LIKE', $searchTerm)
-    //             ->orWhere(function($q) use ($searchTerm) {
-    //                         $terms = array_filter(explode(' ', trim($searchTerm)));
-    //                         foreach ($terms as $term) {
-    //                             $q->where(function($subQuery) use ($term) {
-    //                                 $subQuery->whereRelation('patient', 'first_name', 'LIKE', $term)
-    //                                         ->orWhereRelation('patient', 'middle_name', 'LIKE', $term)
-    //                                         ->orWhereRelation('patient', 'last_name', 'LIKE', $term);
-    //                             });
-    //                         }
-    //                     })
-    //             ->orWhereRelation('patient', 'phone', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('consultations', 'icd11_diagnosis', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('consultations', 'provisional_diagnosis', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('consultations', 'admission_status', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('sponsor', 'name', 'LIKE', $searchTerm)
-    //             ->orWhereRelation('sponsor', 'category_name', 'LIKE', $searchTerm);
-    //     });
-    // }
 
     private function applySearch(Builder $query, string $searchTerm): Builder
     {
@@ -144,7 +97,7 @@ class DoctorService
             return $query->where('patient_id', explode('-', $searchTermRaw)[1]);
         }
 
-        $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+        $searchTerm = addcslashes($searchTermRaw, '%_') . '%';
 
         return $query->where(function (Builder $query) use ($searchTerm, $searchTermRaw) {
             // A. Direct Visit Column
@@ -157,12 +110,12 @@ class DoctorService
                     ->orWhere('card_no', 'LIKE', $searchTerm);
                 })
 
-                // C. Consultations Group (Single Subquery)
-                ->orWhereHas('consultations', function ($q) use ($searchTerm) {
-                    $q->where('icd11_diagnosis', 'LIKE', $searchTerm)
-                    ->orWhere('provisional_diagnosis', 'LIKE', $searchTerm)
-                    ->orWhere('admission_status', 'LIKE', $searchTerm);
-                })
+                // // C. Consultations Group (Single Subquery)
+                // ->orWhereHas('consultations', function ($q) use ($searchTerm) {
+                //     $q->where('icd11_diagnosis', 'LIKE', $searchTerm)
+                //     ->orWhere('provisional_diagnosis', 'LIKE', $searchTerm)
+                //     ->orWhere('admission_status', 'LIKE', $searchTerm);
+                // })
 
                 // D. Sponsor Group (Single Subquery)
                 ->orWhereHas('sponsor', function ($q) use ($searchTerm) {
@@ -179,16 +132,13 @@ class DoctorService
                         ->where('visit_type', '!=', 'ANC');
         }
         if ($method == 'inPatients') {
-            $query = $query->where(function (Builder $query) {
-                $query->where('admission_status', '=', 'Inpatient')
-                    ->orWhere('admission_status', '=', 'Observation');
-            });
+            $query = $query->inpatientOrObservation();
         }
         return $query->where('doctor_done_by', null)
             ->where('closed', false);
     }
 
-    public function getPaginatedOutpatientConsultedVisits($data, DataTableQueryParams $params, User $user)
+    public function getPaginatedOutpatientConsultedVisits(Request $data, DataTableQueryParams $params, User $user)
     {
         $query = $this->baseQuery();
 
@@ -206,7 +156,7 @@ class DoctorService
         return $this->helperService->paginateQuery($query, $params);
     }
 
-    public function getPaginatedInpatientConsultedVisits($data, DataTableQueryParams $params, User $user)
+    public function getPaginatedInpatientConsultedVisits(Request $data, DataTableQueryParams $params, User $user)
     {
         $query = $this->baseQuery();
 
@@ -224,7 +174,7 @@ class DoctorService
         return $this->helperService->paginateQuery($query, $params);
     }
 
-    public function getPaginatedAncConsultedVisits($data, DataTableQueryParams $params, User $user)
+    public function getPaginatedAncConsultedVisits(Request $data, DataTableQueryParams $params, User $user)
     {
         $query = $this->baseQuery()->where('visit_type', '=', 'ANC');
 
@@ -288,7 +238,7 @@ class DoctorService
                 'discharged'        => $visit->discharge_reason,
                 'reason'            => $visit->discharge_reason,
                 'remark'            => $visit->discharge_remark ?? '',
-                '30dayCount'        => $visit->patient->visitsCount . ' visit(s)',
+                '30dayCount'        => $visit-> visits_count . ' visit(s)',
                 'doctorDone'        => $visit->doctorDoneBy->username ?? '',
                 'doctorDoneAt'      => $visit->doctor_done_at ? (new Carbon($visit->doctor_done_at))->format('d/m/y g:ia') : '',
                 'ancCount'          => $visit->visit_type == 'ANC' ? $visit->consultationsCount : '',

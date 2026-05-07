@@ -80,8 +80,8 @@ class AddResourceStockService
 
                             
         if (! empty($params->searchTerm)) {
-            return $query->where('created_at', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
-                        ->orWhereRelation('resource', 'name', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+            return $query->where('created_at', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' )
+                        ->orWhereRelation('resource', 'name', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }

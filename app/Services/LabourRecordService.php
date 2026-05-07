@@ -333,7 +333,7 @@ Class LabourRecordService
     {
         return $this->baseQuery()
                     ->where('summarized_by', null)
-                    ->where('created_at', '>=', Carbon::now()->subDays(7))
+                    ->where('created_at', '>=', today()->subDays(7))
                     ->orderBy('created_at', 'desc')
                     ->get();
     }

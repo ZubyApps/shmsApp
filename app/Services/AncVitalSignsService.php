@@ -44,7 +44,7 @@ class AncVitalSignsService
         if (! empty($params->searchTerm)) {
             return $query
                         ->Where('antenatal_registeration_id', $data->ancRegId)
-                        ->WhereRelation('user', 'username', 'LIKE', '%' . addcslashes($params->searchTerm, '%_') . '%' )
+                        ->WhereRelation('user', 'username', 'LIKE', addcslashes($params->searchTerm, '%_') . '%' )
                         ->orderBy($orderBy, $orderDir)
                         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
         }

@@ -114,21 +114,37 @@ class SponsorService
          };
     }
 
-    public function HmoSponsorList($data)
-    {
-        if (! empty($data->fullId)){
-            $searchTerm = '%' . addcslashes($data->fullId, '%_') . '%';
+    // public function HmoSponsorList($data)
+    // {
+    //     if (! empty($data->fullId)){
+    //         $searchTerm = '%' . addcslashes($data->fullId, '%_') . '%';
 
-            return $this->sponsor
-                        ->where(function (Builder $query) {
-                            $query->where('category_name', 'HMO')
-                            ->orWhere('category_name', 'NHIS')
-                            ->orWhere('category_name', 'Retainership');
-                        })
-                        ->Where('name', 'LIKE', $searchTerm)
-                        ->orderBy('created_at', 'asc')
-                        ->get(['name']);
-        }      
+    //         return $this->sponsor
+    //                     ->where(function (Builder $query) {
+    //                         $query->where('category_name', 'HMO')
+    //                         ->orWhere('category_name', 'NHIS')
+    //                         ->orWhere('category_name', 'Retainership');
+    //                     })
+    //                     ->Where('name', 'LIKE', $searchTerm)
+    //                     ->orderBy('created_at', 'asc')
+    //                     ->get(['name']);
+    //     }      
+    // }
+
+    public function HmoSponsorList(Request $data)
+    {
+        if (empty($data->fullId)) {
+            return collect(); // Return empty collection if no ID
+        }
+
+        $searchTerm = addcslashes($data->fullId, '%_') . '%'; // Removed leading %
+
+        return $this->sponsor
+            ->whereIn('category_name', ['HMO', 'NHIS', 'Retainership']) // Cleaner & faster
+            ->where('name', 'LIKE', $searchTerm)
+            ->orderBy('name', 'asc') // Better for UX and indexing
+            ->limit(15) // CRITICAL: Stop the "Full Memory" crash
+            ->get(['name']);
     }
 
     public function listTransformer()
