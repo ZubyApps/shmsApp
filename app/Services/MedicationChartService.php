@@ -304,10 +304,10 @@ class MedicationChartService
                 'user:id,username',
                 'givenBy:id,username',
                 'prescription' => function($q) {
-                                $q->select('id')
+                                $q->select('id', 'prescription', 'discontinued', 'resource_id')
                                 ->withCount('medicationCharts as medicationChartsCount');
                             },
-                'prescription:id,prescription,discontinued,resource_id',
+                // 'prescription:id,prescription,discontinued,resource_id',
                 'prescription.resource:id,name',
                 'visit:id,ward,ward_id,bed_no,patient_id,admission_status',
                 'visit.wards:id,visit_id,short_name,bed_number',
