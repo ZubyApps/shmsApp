@@ -559,7 +559,7 @@ class PharmacyService
                     ->select('id', 'visit_id', 'consultation_id', 'created_at', 'resource_id', 'user_id', 'hms_bill_by', 'dispensed_by', 'approved_by', 'rejected_by', 'prescription', 'hms_bill', 'nhis_bill', 'hms_bill_date', 'approved', 'rejected', 'hmo_note', 'qty_dispensed', 'dispense_date', 'held', 'dispense_comment', 'note', 'qty_billed', 'paid')
                     ->with([
                         'resource'=> function($rq) use ($sponsorId) {
-                            $rq->select('id', 'name', 'category', 'flag', 'unit_description_id', 'marked_for_id', 'selling_price')
+                            $rq->select('id', 'name', 'category', 'flag', 'stock_level', 'unit_description_id', 'marked_for_id', 'selling_price', 'reorder_level')
                                 ->with([
                                         'markedFor:id,name',
                                         'unitDescription:id,short_name',
