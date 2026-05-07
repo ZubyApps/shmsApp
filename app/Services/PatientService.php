@@ -47,7 +47,7 @@ class PatientService
                         "known_conditions"      => $data->knownConditions,
                         "last_name"             => $this->trimValue($data->lastName),
                         "marital_status"        => $data->maritalStatus,
-                        "middle_name"           => $this->trimValue($data->middleName),
+                        "middle_name"           => $data->middleName ? $this->trimValue($data->middleName) : '',
                         "nationality"           => $data->nationality,
                         "next_of_kin"           => $data->nextOfKin,
                         "next_of_kin_phone"     => $data->nextOfKinPhone,
