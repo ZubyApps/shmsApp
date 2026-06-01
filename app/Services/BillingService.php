@@ -383,8 +383,9 @@ class BillingService
         $orderBy  = 'created_at';
         $orderDir = 'desc';
         $page     = ($params->length + $params->start) / $params->length;
-
-        $sponsorId = $this->visit->where('id', $data->visitId)->value('sponsor_id');
+        $visitId = (int)$data->visitId;
+        info($visitId);
+        $sponsorId = $this->visit->where('id', $visitId)->value('sponsor_id');
 
         return $this->visit->query()
             ->select([
@@ -429,7 +430,7 @@ class BillingService
                 'reminders as hasReminder',
                 'prescriptions as hasUnbilledPrescriptions' => fn($q) => $q->where('qty_billed', 0),
             ])
-            ->where('id', $data->visitId)
+            ->where('id', $visitId)
             ->orderBy($orderBy, $orderDir)
             ->paginate($params->length, ['*'], 'page', $page);
     }

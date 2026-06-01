@@ -12,6 +12,7 @@ use App\Models\Ward;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ConsultationService
 {
@@ -132,8 +133,9 @@ class ConsultationService
                     ->get();
     }
 
-    public function determineWard($visit, $consultation, $data, ?User $user = null)
+    public function determineWard(Visit $visit, Consultation $consultation, Request $data, ?User $user = null)
     {
+        Log::info($data);
         $wardModel = fn($wardId)=>$this->ward::find($wardId);
 
         if ($ward = $wardModel($visit->ward_id)){

@@ -122,7 +122,7 @@ const getAllHmoPatientsVisitTable = (tableId, filter) => {
         orderMulti: true,
         search:true,
         // searchDelay: 500,
-        lengthMenu:[100, 150, 200, 250, 300, 500],
+        lengthMenu:[50, 100, 150, 200],
         language: {
             emptyTable: "No patient",
             searchPlaceholder: searchPlaceholderText
@@ -193,7 +193,7 @@ const getApprovalListTable = (tableId, sponsor) => {
         orderMulti: true,
         search:true,
         searchDelay: 500,
-        lengthMenu:[25, 50, 100, 150, 200],
+        lengthMenu:[20, 30, 50, 100],
         language: {
             emptyTable: 'No items for approval',
             searchPlaceholder: searchPlaceholderText
@@ -279,7 +279,7 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
             'visitId': visitId 
         }},
         orderMulti: true,
-        lengthMenu:[25, 50, 100, 150, 200],
+        lengthMenu:[20, 40, 60, 80, 100],
         search:true,
         searchDelay: 500,
         language: {
@@ -369,7 +369,7 @@ const getSentBillsTable = (tableId, startDate, endDate, date, filterByOpen) => {
             'filterByOpen'   : filterByOpen, 
         }},
         orderMulti: true,
-        lengthMenu:[25, 50, 100, 150, 200, 500],
+        lengthMenu:[20, 40, 60, 80, 100],
         search:true,
         searchDelay: 500,
         dom: 'lfrtip<"my-5 text-center "B>',
@@ -430,7 +430,7 @@ const getHmoReportsTable = (tableId, category, startDate, endDate, date) => {
             'date'   : date,
         }},
         orderMulti: false,
-        lengthMenu:[25, 50, 100, 150, 200],
+        lengthMenu:[20, 40, 60, 80, 100],
         searchDelay: 500,
         dom: 'l<"my-1 text-center "B>frtip',
         buttons: [
@@ -667,7 +667,7 @@ const getNhisReconTable = (tableId, date) => {
         }},
         orderMulti: false,
         searchDelay: 500,
-        lengthMenu:[25, 50, 100, 150, 200],
+        lengthMenu:[20, 40, 60, 80, 100],
         dom: 'lfrtip<"my-5 text-center "B>',
         buttons: [
             {extend: 'copy', className: 'btn-primary'},
@@ -746,7 +746,7 @@ const getBillReminderTable = (tableId, startDate, endDate, date) => {
             {extend: 'pdfHtml5', className: 'btn-primary', footer: true},
             {extend: 'print', className: 'btn-primary', footer: true},
         ],
-        lengthMenu:[20, 40, 80, 120, 200],
+        lengthMenu:[20, 40, 60, 80, 100],
         columns: [
             {data: "sponsor"},
             {data: "monthSentFor"},
@@ -816,7 +816,7 @@ const getDueHmoRemindersTable = (tableId) => {
         orderMulti: true,
         search:true,
         searchDelay: 500,
-        lengthMenu:[50, 100, 150, 200],
+        lengthMenu:[20, 40, 60, 80, 100],
         language: {
             emptyTable: 'No reminders due'
         },

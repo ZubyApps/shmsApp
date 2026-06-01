@@ -2,10 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\AddResourceStock;
+use App\Models\BulkRequest;
+use App\Models\MarkedFor;
+use App\Models\MedicationCategory;
+use App\Models\Prescription;
+use App\Models\ResourceSponsor;
+use App\Models\ResourceSubCategory;
+use App\Models\ResourceSupplier;
+use App\Models\Sponsor;
+use App\Models\UnitDescription;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 
 class Resource extends Model
 {
@@ -147,8 +158,7 @@ class Resource extends Model
     public function scopeHospitalAndOthersCategories(Builder $query): Builder
     {
         return $query->where(function (Builder $query) {
-                    $query->where('category', 'Hospital Services')
-                        ->orWhere('category', 'Other Services');
+                    $query->whereIn('category', ['Hospital Services', 'Other Services']);
                 });
     }
 }

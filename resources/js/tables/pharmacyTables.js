@@ -38,7 +38,7 @@ const getPatientsVisitByFilterTable = (tableId, filter) => {
             'filterBy': filter 
         }},
         orderMulti: true,
-        lengthMenu:[25, 50, 100, 150, 200],
+        lengthMenu:[10, 20, 40, 60, 80, 100],
         search:true,
         searchDelay: 500,
         language: {
@@ -229,7 +229,7 @@ const getExpirationStockTable = (tableId, filter) => {
         orderMulti: true,
         search:true,
         searchDelay: 500,
-        lengthMenu:[100, 150, 200, 250, 300],
+        lengthMenu:[20, 40, 60, 80, 100, 200],
         dom: 'l<"my-5 text-center "B>frtip',
         buttons: [
             {

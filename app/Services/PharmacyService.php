@@ -303,6 +303,53 @@ class PharmacyService
          };
     }
 
+    // public function bill(Request $data, Prescription $prescription, User $user)
+    // {
+    //     $resource = $prescription->resource;
+    //     $resourceCat = $resource->category;
+    //     $isPhamacyBillable = in_array($resourceCat, ['Medications', 'Consumables']);
+
+    //     if($prescription->qty_dispensed && $isPhamacyBillable){
+    //         return;
+    //     }
+        
+    //     $visit      = $visit = $prescription->visit()->with('sponsor')->first();
+    //     $sponsor    = $visit?->sponsor;
+    //     $isNhis     = $sponsor->category_name == 'NHIS';
+
+    //     $nhisBill = fn($value)=>$value/10;
+    //     $bill     = 0;
+        
+    //     if ($data->quantity){
+    //         $bill = $prescription->resource->getSellingPriceForSponsor($sponsor) * $data->quantity;
+    //     }
+
+    //     return DB::transaction(function () use($data, $prescription, $user, $visit, $bill, $isNhis, $nhisBill, $isPhamacyBillable) {
+              
+    //         $prescriptionUpdates = [
+    //             'qty_billed'        => $data->quantity ?? 0,
+    //             'hms_bill'          => $bill,
+    //             'hms_bill_date'     => $bill ? new Carbon() : null,
+    //             'hms_bill_by'       => $bill ? $user->id : null,
+    //         ];
+
+    //        if ($isNhis){
+    //             $isNhisBillable = $isPhamacyBillable;
+
+    //             $approved = $prescription->approved;
+    //             // Apply bill adjustment immediately before the main update
+    //             $prescriptionUpdates['nhis_bill'] = $isNhisBillable ? ( $approved ? $nhisBill($bill) : $bill) : ($approved ? 0 : $bill);
+    //         }
+
+    //         // 3. Perform Single Prescription Update (1 Query)
+    //         $prescription->update($prescriptionUpdates);
+
+    //         PrescriptionBilled::dispatch($visit, $isNhis);
+            
+    //         return $prescription;
+    //     });
+    // }
+
     public function bill(Request $data, Prescription $prescription, User $user)
     {
         $resource = $prescription->resource;
@@ -313,18 +360,16 @@ class PharmacyService
             return;
         }
         
-        $visit      = $visit = $prescription->visit()->with('sponsor')->first();
+        $visit      = $prescription->visit()->with('sponsor')->first();
         $sponsor    = $visit?->sponsor;
         $isNhis     = $sponsor->category_name == 'NHIS';
-
-        $nhisBill = fn($value)=>$value/10;
-        $bill     = 0;
         
-        if ($data->quantity){
-            $bill = $prescription->resource->getSellingPriceForSponsor($sponsor) * $data->quantity;
-        }
+        $billArray = $this->helperService->biller($resource, $sponsor, $data->quantity, $prescription->approved);
+        info($billArray);
+        
+        $bill = $billArray['bill'];
 
-        return DB::transaction(function () use($data, $prescription, $user, $visit, $bill, $isNhis, $nhisBill, $isPhamacyBillable) {
+        return DB::transaction(function () use($data, $prescription, $user, $visit, $bill, $isNhis, $billArray) {
               
             $prescriptionUpdates = [
                 'qty_billed'        => $data->quantity ?? 0,
@@ -334,11 +379,8 @@ class PharmacyService
             ];
 
            if ($isNhis){
-                $isNhisBillable = $isPhamacyBillable;
-
-                $approved = $prescription->approved;
                 // Apply bill adjustment immediately before the main update
-                $prescriptionUpdates['nhis_bill'] = $isNhisBillable ? ( $approved ? $nhisBill($bill) : $bill) : ($approved ? 0 : $bill);
+                $prescriptionUpdates['nhis_bill'] = $billArray['nhisBill'];
             }
 
             // 3. Perform Single Prescription Update (1 Query)
@@ -761,7 +803,7 @@ class PharmacyService
     //     }
     // }
 
-    public function getExpirationStock(DataTableQueryParams $params, $data)
+    public function getExpirationStock(DataTableQueryParams $params, Request $data)
     {
         $orderBy  = 'expiry_date';
         $orderDir = 'asc';
@@ -784,7 +826,7 @@ class PharmacyService
 
         // 3. Apply Search Filter
         if (!empty($params->searchTerm)) {
-            $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
+            $searchTerm = addcslashes($params->searchTerm, '%_') . '%';
             $query->where(function (Builder $q) use ($searchTerm) {
                 $q->where('name', 'LIKE', $searchTerm)
                 ->orWhere('sub_category', 'LIKE', $searchTerm)
@@ -804,7 +846,7 @@ class PharmacyService
         if ($data->filterBy === 'expiration') {
             $query->where('is_active', true)
                 ->where('stock_level', '>', 0)
-                ->where('expiry_date', '<', now()->addMonths(6));
+                ->where('expiry_date', '<', today()->addMonths(6));
         }
 
         if ($data->filterBy === 'stockLevel') {

@@ -17,6 +17,7 @@
 @include('nurses.treatmentDetailsModal', ['title' => 'ANC Treatment Details', 'isAnc' => true, 'isLab' => false, 'isHmo' => true, 'id' => 'ancTreatmentDetailsModal'])
 @include('doctors.appointmentModal', ['title' => 'Set Appointment', 'isDoctor' => false, 'id' => 'appointmentModal'])
 @include('patients.sponsorTariffModal')
+@include('patients.sponsorPercentagesModal')
 
 <div class="container mt-5">
     <input type="text" class="d-none" value="{{ $feverBenchMark }}" id="feverBenchMark">

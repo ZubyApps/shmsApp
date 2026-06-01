@@ -16,7 +16,7 @@ const getSponsorsTable = (tableId) => {
         serverSide: true,
         ajax:  '/sponsors/load',
         orderMulti: true,
-        lengthMenu:[20, 40, 80, 120, 200],
+        lengthMenu:[10, 20, 40, 60, 80, 100],
         search:true,
         searchDelay: 500,
         dom: 'lfrtip<"my-5 text-center "B>',
@@ -51,18 +51,25 @@ const getSponsorsTable = (tableId) => {
                         return `
                         <div class="d-flex flex-">
                             <button class=" btn btn-outline-primary updateBtn tooltip-test" title="update" data-id="${ row.id }">
-                            <i class="bi bi-pencil-fill"></i>
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
+                            <button class="ms-1 btn btn-outline-primary openPercentagesBtn ${row.showAll ? '' : 'd-none'}" data-id="${ row.id }" data-sponsor="${row.name + ' - ' + row.category}">
+                                <i class="bi bi-sliders2-vertical"></i>
+                            </button>
                             <button type="submit" class="ms-1 btn btn-outline-primary deleteBtn tooltip-test" title="delete" data-id="${ row.id }">
-                            <i class="bi bi-trash3-fill"></i>
-                        </button>
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
                         </div>
                     `
                     } else {
                         return `
                         <div class="d-flex flex-">
                             <button class=" btn btn-outline-primary updateBtn" data-id="${ row.id }">
-                            <i class="bi bi-pencil-fill"></i>
-                        </button>
+                                <i class="bi bi-pencil-fill"></i>
+                            </button>
+                            <button class="ms-1 btn btn-outline-primary openPercentagesBtn ${row.showAll ? '' : 'd-none'}" data-id="${ row.id }" data-sponsor="${row.name + ' - ' + row.category}">
+                                <i class="bi bi-sliders2-vertical"></i>
+                            </button>
                         </div>
                     `
                     }
@@ -164,7 +171,7 @@ const getAllPatientsTable = (tableId, filter) => {
             'filterBy' : filter
         }},
         orderMulti: true,
-        lengthMenu:[20, 40, 60, 80, 100],
+        lengthMenu:[10, 20, 40, 60, 80, 100],
         search:true,
         language: {
             searchPlaceholder: searchPlaceholderText
@@ -261,7 +268,7 @@ const getNewRegisteredPatientsTable = (tableId, date) => {
         }},
         orderMulti: true,
         search:true,
-        lengthMenu:[50, 100, 150, 200, 300],
+        lengthMenu:[20, 60, 120, 200, 300],
         "sAjaxDataProp": "data.data",
         drawCallback: function (settings) {
             var api = this.api()
@@ -514,4 +521,40 @@ const getPrePatientsTable = (tableId) => {
     return prePatientsTable
 }
 
-export {getSponsorsTable, getAllPatientsTable, getNewRegisteredPatientsTable, getSexAggregateTable, getAgeAggregateTable, getVisitsSummaryTable, getPatientsBySponsorTable, getVisitsTable, getPrePatientsTable}
+const getResourceCatPercentagesTable = (tableId, sponsorId) => {
+
+    const resourceCatPercentagesTable = new DataTable(`#${tableId}`, {
+        serverSide: true,
+        ajax:  `/sponsors/rcategories/${sponsorId}`,
+        orderMulti: false,
+        search:false,
+        searching:false,
+        lengthChange: false,
+        info: false,
+        paging: false,
+        columns: [
+            {data: "name"},
+            {
+                data: row =>  () => {
+                    return `
+                    <div class="d-flex">
+                        <span class="setPercentageSpan tooltip-test" title="${row.percentage ? `% set by ${row.createdBy}` : 'Set %'}">${row.percentage ? row.percentage + '%' : 'Set %'}</span>
+                        <input class="ms-1 form-control percentageInput d-none" id="percentage" name="percentage" data-id="${row.id}" data-sponsor="${sponsorId}" value="${row.percentage ?? ''}">
+                    </div>
+                    `    
+                }
+            },
+            {data: row => () => {
+                return `
+                    <button class="ms-1 btn btn-outline-primary clearPercentageBtn" title="clear percentage" data-id="${ row.id }" data-sponsor="${sponsorId}">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                `
+            } }
+        ]
+    })
+
+    return resourceCatPercentagesTable
+}
+
+export {getSponsorsTable, getAllPatientsTable, getNewRegisteredPatientsTable, getSexAggregateTable, getAgeAggregateTable, getVisitsSummaryTable, getPatientsBySponsorTable, getVisitsTable, getPrePatientsTable, getResourceCatPercentagesTable}

@@ -24,11 +24,11 @@ class PrescriptionCreated
      */
     public function __construct(
         public Prescription $prescription,
+        public int|bool $isNhis,
+        public ?Resource $resource = null,
         public ?Visit $visit = null,
         public ?WalkIn $walkIn = null,
         public ?MortuaryService $mortuary = null,
-        public ?Resource $resource = null,
-        public bool $isNhis
     )
     {
         //

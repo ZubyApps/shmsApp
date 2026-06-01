@@ -18,7 +18,7 @@ const getOutpatientsVisitTable = (tableId, filter) => {
         orderMulti: true,
         search:true,
         // searchDelay: 500,
-        lengthMenu:[25, 50, 100, 150, 200],
+        lengthMenu:[20, 50, 100, 150, 200],
         language: {
             emptyTable: "No patient",
             searchPlaceholder: searchPlaceholderText
@@ -87,7 +87,7 @@ const getInpatientsVisitTable = (tableId, filter) => {
         orderMulti: true,
         search:true,
         searchDelay: 500,
-        lengthMenu:[25, 50, 100, 150, 200],
+        lengthMenu:[20, 50, 100, 150, 200],
         language: {
             emptyTable: "No patient",
             searchPlaceholder: searchPlaceholderText
@@ -158,7 +158,7 @@ const getAncPatientsVisitTable = (tableId, filter) => {
         orderMulti: true,
         search:true,
         searchDelay: 500,
-        lengthMenu:[25, 50, 100, 150, 200],
+        lengthMenu:[20, 50, 100, 150, 200],
         language: {
             emptyTable: "No patient",
             searchPlaceholder: searchPlaceholderText

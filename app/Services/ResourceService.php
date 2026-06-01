@@ -155,7 +155,7 @@ class ResourceService
     public function getFormattedList2($data)
     {
         if (! empty($data->resource)){
-            return $this->resource->select('id', 'name', 'expiry_date', 'sub_category', 'category', 'flag', 'stock_level', 'selling_price')
+            return $this->resource->select('id', 'name', 'expiry_date', 'sub_category', 'category', 'flag', 'stock_level', 'selling_price', 'unit_description')
                         ->where('name', 'LIKE', '%' . addcslashes($data->resource, '%_') . '%' )
                         // ->where('is_active', true)
                         // ->whereNot('flag','LIKE', '%' . addcslashes($data->sponsorCat, '%_') . '%' )
@@ -250,7 +250,8 @@ class ResourceService
                 'category'              => $resource->category,
                 'subCategory'           => $resource->sub_category,
                 'flag'                  => $resource->flag,
-                'price'                 => $resource->selling_price
+                'price'                 => $resource->selling_price,
+                'unit'                  => $resource?->unit_description
             ];
         };   
     }

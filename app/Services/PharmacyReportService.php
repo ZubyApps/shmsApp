@@ -9,6 +9,7 @@ use App\Models\Resource;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 class PharmacyReportService
 {
@@ -18,7 +19,7 @@ class PharmacyReportService
     {
     }
 
-    public function getPharmacySummary(DataTableQueryParams $params, $data)
+    public function getPharmacySummary(DataTableQueryParams $params, Request $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
@@ -83,7 +84,7 @@ class PharmacyReportService
          };
     }
 
-    public function getMissingSummary(DataTableQueryParams $params, $data)
+    public function getMissingSummary(DataTableQueryParams $params, Request $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';

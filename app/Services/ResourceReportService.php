@@ -218,10 +218,10 @@ class ResourceReportService
         $query      = $this->resource->select('id', 'name', 'stock_level', 'reorder_level', 'unit_description', 'purchase_price', 'selling_price', 'expiry_date')
                         ->withCount([
                             'prescriptions as prescriptionFrequency' => function($query){
-                            $query->where('created_at', '>', (new Carbon())->subDays(30));
+                            $query->where('created_at', '>', today()->subDays(30));
                             },
                             'prescriptions as dispenseFrequency' => function($query){
-                            $query->where('dispense_date', '>', (new Carbon())->subDays(30));
+                            $query->where('dispense_date', '>', today()->subDays(30));
                             },
                         ]);
         if (! empty($params->searchTerm)) {
@@ -259,8 +259,8 @@ class ResourceReportService
                 'purchasePrice'         => $resource->purchase_price,
                 'sellingPrice'          => $resource->selling_price,
                 'expiring'              => $resource->expiry_date ? $this->helperService->twoPartDiffInTimeToCome($resource->expiry_date) : '',
-                'prescriptionFrequency' => $resource->prescriptions->where('created_at', '>', (new Carbon())->subDays(30))->count(),
-                'dispenseFrequency'     => $resource->prescriptions->where('dispense_date', '>', (new Carbon())->subDays(30))->count(),
+                'prescriptionFrequency' => $resource->prescriptions->where('created_at', '>', today()->subDays(30))->count(),
+                'dispenseFrequency'     => $resource->prescriptions->where('dispense_date', '>', today()->subDays(30))->count(),
                 'flag'                  => $resource->expiry_date ? $this->helperService->flagExpired($resource->expiry_date) : '',
             ];
         };

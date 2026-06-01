@@ -9,7 +9,7 @@ const getWaitingTable = (tableId) => {
         orderMulti: true,
         search:true,
         searchDelay: 500,
-        lengthMenu:[25, 50, 75, 100],
+        lengthMenu:[20, 40, 60, 80, 100],
         language: {
             emptyTable: 'No patient is waiting',
             searchPlaceholder: searchPlaceholderText
@@ -166,7 +166,7 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
             'filterBy': filter
         }},
         orderMulti: true,
-        lengthMenu:[25, 50, 75, 100, 125],
+        lengthMenu:[20, 40, 60, 80, 100],
         search:true,
         searchDelay: 500,
         language: {
@@ -188,7 +188,7 @@ const getNurseMedicationsByFilter = (tableId, conId, modal, visitId, isHistory) 
             'visitId': visitId
         }},
         paging: true,
-        lengthMenu:[25, 50, 75, 100, 125],
+        lengthMenu:[20, 40, 60, 80],
         searching: false,
         orderMulti: false,
         language: {
@@ -324,7 +324,7 @@ const getNurseMedicationsByFilter = (tableId, conId, modal, visitId, isHistory) 
 }
 
 const getOtherPrescriptionsByFilterNurses = (tableId, conId, modal, visitId, isHistory) => {
-    const medicationTable =  new DataTable('#'+tableId, {
+    const otherPrescriptionsTable =  new DataTable('#'+tableId, {
         serverSide: true,
         ajax:  {url: '/prescription/load/others', data: {
             'conId': conId,
@@ -446,19 +446,19 @@ const getOtherPrescriptionsByFilterNurses = (tableId, conId, modal, visitId, isH
     }
 
     modal.addEventListener('hidden.bs.modal', function () {
-        medicationTable.destroy()
+        otherPrescriptionsTable.destroy()
     })
 
-    medicationTable.on('draw', function() {
-        const tableId = medicationTable.table().container().id.split('_')[0]
-        medicationTable.rows().every(function () {
+    otherPrescriptionsTable.on('draw', function() {
+        const tableId = otherPrescriptionsTable.table().container().id.split('_')[0]
+        otherPrescriptionsTable.rows().every(function () {
             let tr = $(this.node())
             let row = this.row(tr);
             this.child(format(row.data(), tableId)).show()
         })
     })
     
-    return medicationTable
+    return otherPrescriptionsTable
 }
 
 const getMedicationChartByPrescription = (tableId, prescriptionId, modal) => {
@@ -552,7 +552,7 @@ const getUpcomingMedicationsTable = (tableId, button, span) => {
         ajax: '/medicationchart/load/upcoming',
         orderMulti: false,
         searchDelay: 500,
-        lengthMenu:[20, 40, 60, 80, 100],
+        lengthMenu:[10, 20, 40, 60, 80],
         language: {
             emptyTable: 'No medication has been charted'
         },
@@ -618,7 +618,7 @@ const getUpcomingNursingChartsTable = (tableId, button, span) => {
         serverSide: true,
         ajax: '/nursingchart/load/upcoming',
         orderMulti: false,
-        lengthMenu:[20, 40, 60, 80, 100],
+        lengthMenu:[10, 20, 40, 60, 80],
         searchDelay: 500,
         language: {
             emptyTable: 'No service has been charted'
@@ -733,7 +733,7 @@ const getAncVitalSignsTable = (tableId, ancRegId, modal, viewer) => {
         }},
         orderMulti: false,
         searching: false,
-        lengthMenu:[40, 80, 120, 160, 200],
+        lengthMenu:[20, 40, 60, 80, 100],
         language: {
             emptyTable: 'No vital sign has been recorded'
         },
@@ -779,7 +779,7 @@ const getEmergencyTable = (tableId, viewer) => {
             'viewer' : viewer
         }},
         orderMulti: true,
-        lengthMenu:[25, 50, 100, 150, 200],
+        lengthMenu:[20, 40, 60, 80, 100],
         search:true,
         searchDelay: 500,
         language: {
@@ -789,7 +789,7 @@ const getEmergencyTable = (tableId, viewer) => {
             {data: "prescribed"},
             {data: "patient"},
             {data: "sponsor"},
-            {data: row => admissionStatusX(row)},
+            {data: row => admissionStatus(row)},
             {data: row => () => {
                 const credit = row?.sponsorCategoryClass == 'Credit'
                 const NHIS = row?.sponsorCategory == 'NHIS'

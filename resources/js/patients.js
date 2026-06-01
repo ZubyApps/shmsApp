@@ -1,8 +1,8 @@
 import { Modal } from "bootstrap"
-import { getDivData, clearDivValues, clearValidationErrors, displayList, openModals, getPatientSponsorDatalistOptionId, getOrdinal, getDatalistOptionId, displayItemsList2 } from "./helpers"
+import { getDivData, clearDivValues, clearValidationErrors, displayList, openModals, getPatientSponsorDatalistOptionId, getOrdinal, getDatalistOptionId, displayItemsList2, resetFocusEndofLine } from "./helpers"
 import http from "./http"
 import $ from 'jquery';
-import { getAgeAggregateTable, getAllPatientsTable, getNewRegisteredPatientsTable, getPatientsBySponsorTable, getPrePatientsTable, getSexAggregateTable, getSponsorsTable, getVisitsSummaryTable, getVisitsTable } from "./tables/patientsTables";
+import { getAgeAggregateTable, getAllPatientsTable, getNewRegisteredPatientsTable, getPatientsBySponsorTable, getPrePatientsTable, getResourceCatPercentagesTable, getSexAggregateTable, getSponsorsTable, getVisitsSummaryTable, getVisitsTable } from "./tables/patientsTables";
 import { AncPatientReviewDetails, regularReviewDetails } from "./dynamicHTMLfiles/consultations";
 import { getAncVitalSignsTable } from "./tables/nursesTables";
 import { getLabTableByConsultation, getMedicationsByFilter, getOtherPrescriptionsByFilter, getVitalSignsTableByVisit } from "./tables/doctorstables";
@@ -21,6 +21,7 @@ window.addEventListener('DOMContentLoaded', function(){
     const ancTreatmentDetailsModal          = new Modal(document.getElementById('ancTreatmentDetailsModal'))
     const appointmentModal                  = new Modal(document.getElementById('appointmentModal'))
     const sponsorTariffModal                = new Modal(document.getElementById('sponsorTariffModal'))
+    const sponsorPercentagesModal           = new Modal(document.getElementById('sponsorPercentagesModal'))
 
     const regularTreatmentDiv               = treatmentDetailsModal._element.querySelector('#treatmentDiv')
     const ancTreatmentDiv                   = ancTreatmentDetailsModal._element.querySelector('#treatmentDiv')
@@ -61,7 +62,7 @@ window.addEventListener('DOMContentLoaded', function(){
     const prePatientsTab                    = document.querySelector('#nav-prePatients-tab')
     const appointmentsTab                   = document.querySelector('#nav-appointments-tab')
 
-    let allPatientsTable, sponsorsTable, visitsTable, newRegPatientsTable, sexAggregateTable, patientsBySponsorTable, visitsSummaryTable, prePatientsTable, appointmentsTable
+    let allPatientsTable, sponsorsTable, visitsTable, newRegPatientsTable, sexAggregateTable, patientsBySponsorTable, visitsSummaryTable, prePatientsTable, appointmentsTable, resourceCatPercentagesTable
 
     allPatientsTable = getAllPatientsTable('#allPatientsTable')
     $('#allPatientsTable, #sponsorsTable, #visitsTable, #newRegPatientsTable, #sexAggregateTable, #patientsBySponsorTable, #visitsSummaryTable').on('error.dt', function(e, settings, techNote, message) {techNote == 7 ? window.location.reload() : ''})
@@ -153,8 +154,9 @@ window.addEventListener('DOMContentLoaded', function(){
     document.querySelector('#sponsorsTable').addEventListener('click', function (event) {
         const editBtn    = event.target.closest('.updateBtn')
         const deleteBtn  = event.target.closest('.deleteBtn')
-        const sponsorTariffBtn  = event.target.closest('.sponsorTariffBtn')
-        const deleteTariffBtn  = event.target.closest('.deleteTariffBtn')
+        const sponsorTariffBtn = event.target.closest('.sponsorTariffBtn')
+        const deleteTariffBtn = event.target.closest('.deleteTariffBtn')
+        const openPercentagesBtn = event.target.closest('.openPercentagesBtn')
 
         if (editBtn) {
             editBtn.setAttribute('disabled', 'disabled')
@@ -215,6 +217,19 @@ window.addEventListener('DOMContentLoaded', function(){
                         alert(error)
                     })
             }
+        }
+
+        if (openPercentagesBtn){
+            const sponsorId = openPercentagesBtn.getAttribute('data-id')
+            const sponsorName = openPercentagesBtn.getAttribute('data-sponsor')
+            sponsorPercentagesModal._element.querySelector('#sponsorName').value = sponsorName
+    
+            sponsorPercentagesModal.show()
+            
+            setTimeout(() => {
+                resourceCatPercentagesTable = getResourceCatPercentagesTable('percentagesTable', sponsorId);
+            }, 1000)
+            
         }
     })
 
@@ -290,6 +305,55 @@ window.addEventListener('DOMContentLoaded', function(){
             saveSponsorBtn.removeAttribute('disabled')
             alert(error.response.data.message)
         })
+    })
+
+    document.querySelector('#percentagesTable').addEventListener('click', function (event) {
+        const setPercentageSpan = event.target.closest('.setPercentageSpan')
+        const clearPercentageBtn = event.target.closest('.clearPercentageBtn')
+
+        if (setPercentageSpan){
+            const div               = setPercentageSpan.parentElement
+            const percentageInput   = div.querySelector('.percentageInput')
+
+            setPercentageSpan.classList.add('d-none')
+            percentageInput.classList.remove('d-none')
+            resetFocusEndofLine(percentageInput)
+
+            percentageInput.addEventListener('blur', function () {  
+                const resourceCatId = percentageInput.getAttribute('data-id')
+                const sponsorId = percentageInput.getAttribute('data-sponsor')
+                http.post(`/resourcecategory/percentage/${sponsorId}/${resourceCatId}`, {percentage: percentageInput.value}, {'html' : div})
+                .then((response) => {
+                    if (response.status >= 200 || response.status <= 300) {
+                        resourceCatPercentagesTable ? resourceCatPercentagesTable.draw() : '';
+                    }
+                })
+                .catch((error) => {
+                        console.log(error)
+                        resourceCatPercentagesTable ? resourceCatPercentagesTable.draw() : '';
+                })
+            })
+        }
+
+        if (clearPercentageBtn){
+            const resourceCatId = clearPercentageBtn.getAttribute('data-id')
+            const sponsorId = clearPercentageBtn.getAttribute('data-sponsor')
+
+            clearPercentageBtn.setAttribute('disabled', 'disabled')
+            if (confirm('Are you sure you want to delete this Percentage?')) {
+                http.delete(`/resourcecategory/remove/percentage/${sponsorId}/${resourceCatId}`)
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300){
+                            resourceCatPercentagesTable ? resourceCatPercentagesTable.draw() : '';
+                        }
+                        clearPercentageBtn.removeAttribute('disabled')
+                    })
+                    .catch((error) => {
+                        clearPercentageBtn.removeAttribute('disabled')
+                        alert(error)
+                    })
+            }
+        }
     })
 
     document.querySelector('#allPatientsTable').addEventListener('click', function (event) {
@@ -668,6 +732,10 @@ window.addEventListener('DOMContentLoaded', function(){
     initiatePatientModal._element.addEventListener('hidden.bs.modal', function () {
         clearValidationErrors(initiatePatientModal._element)
         clearDivValues(initiatePatientModal._element)
+    })
+
+    sponsorPercentagesModal._element.addEventListener('hidden.bs.modal', function () {
+        resourceCatPercentagesTable ? resourceCatPercentagesTable.destroy() : '';
     })
 })
 

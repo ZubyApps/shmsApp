@@ -264,6 +264,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const toggleVisitBtn        = event.target.closest('#closeVisitBtn, #openVisitBtn')
             const medicalReportBtn      = event.target.closest('.medicalReportBtn')
             const updateResourceListBtn = event.target.closest('#updateResourceListBtn');  const wardBedBtn = event.target.closest('.wardBedBtn')
+            const viewBillSummaryBtn    = event.target.closest('.viewBillSummaryBtn')
             const viewer                = 'doctor'
             let [iteration, count]        = [0, 0]
     
@@ -295,7 +296,8 @@ window.addEventListener('DOMContentLoaded', function () {
                     ],
                     values: [
                         { targetSelector: '#selectedDiagnosis', sourceAttr: 'data-selecteddiagnosis' },
-                        { targetSelector: '#provisionalDiagnosis', sourceAttr: 'data-provisionaldiagnosis' }
+                        { targetSelector: '#provisionalDiagnosis', sourceAttr: 'data-provisionaldiagnosis' },
+                        { targetSelector: '#ward', sourceAttr: 'data-wardid', extraVal: 'data-ward'},
                     ]
                 };
 
@@ -317,8 +319,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 const config = isAnc
                 ? { modal: ancConsultationReviewModal, div: ancConsultationReviewDiv, displayFunction: AncPatientReviewDetails, vitalSignsTable: getAncVitalSignsTable, vitalSignsChart: getAncVitalsignsChart, id: ancRegId, url: 'ancvitalsigns', suffixId: 'AncConReview' }
                 : { modal: consultationReviewModal, div: regularConsultationReviewDiv, displayFunction: regularReviewDetails, vitalSignsTable: getVitalSignsTableByVisit, vitalSignsChart: getVitalsignsChartByVisit, id: visitId, url: 'vitalsigns', suffixId: 'ConReview' };
-        
                 closeReviewButtons(config.modal, +closed)
+                const viewBillSummaryBtn = config.modal._element.querySelector('.viewBillSummaryBtn')
+                viewBillSummaryBtn.setAttribute('data-visitid', visitId)
+                viewBillSummaryBtn.setAttribute('data-suffixid', config.suffixId)
+                
                 async function handleConsultationReview() {
                     try {
                         // Fetch consultations
@@ -367,7 +372,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         deliveryNoteTable = getDeliveryNoteTable('deliveryNoteTable', visitId, false, config.modal._element);
                         surgeryNoteTable = getSurgeryNoteTable('surgeryNoteTable', visitId, true, config.modal._element);
                         patientsFilesTable = getPatientsFileTable(`patientsFileTable${config.suffixId}`, visitId, config.modal._element);
-                        getbillingTableByVisit(`billingTable${config.suffixId}`, visitId, config.modal._element);
+                        // getbillingTableByVisit(`billingTable${config.suffixId}`, visitId, config.modal._element);
             
                         // Show modal
                         config.modal.show();
@@ -526,6 +531,16 @@ window.addEventListener('DOMContentLoaded', function () {
                 editMedicalReportTemplateModal._element.querySelector('#sex').value = medicalReportBtn.getAttribute('data-sex')
                 medicalReportTable = getMedicalReportTable('medicalReportTable', visitId, medicalReportListModal._element, true)
                 medicalReportListModal.show()
+            }
+
+            if (viewBillSummaryBtn){
+                const visitId = viewBillSummaryBtn.dataset.visitid
+                const suffixId = viewBillSummaryBtn.dataset.suffixid
+                const tableId = `billingTable${suffixId}`;
+                const modal = table.id == 'consultationReviewModal' ? consultationReviewModal : ancConsultationReviewModal
+                if ($.fn.DataTable.isDataTable( '#'+tableId )){$('#'+tableId).dataTable().fnDestroy()};
+                getbillingTableByVisit(tableId, visitId, modal._element, false, viewBillSummaryBtn)
+
             }
         })
     })
@@ -1262,6 +1277,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const resultBtn                             = event.target.closest('#addResultBtn, #updateResultBtn')
             const deleteResultBtn                       = event.target.closest('.deleteResultBtn')
             const discontinueBtn                        = event.target.closest('.discontinueBtn')
+            const viewBillSummaryBtn                    = event.target.closest('.viewBillSummaryBtn')
             const viewer                                = 'doctor'
             if (collapseConsultationBtn) {
                 const gotoDiv = document.querySelector(collapseConsultationBtn.getAttribute('data-goto'))
@@ -1305,7 +1321,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     getDeliveryNoteTable('deliveryNoteTableHistory'+visitId, visitId, false, consultationHistoryModal._element)
                     getSurgeryNoteTable('surgeryNoteTableHistory'+visitId, visitId, true, consultationHistoryModal._element)
                     getPatientsFileTable('patientsFileTableHistory'+visitId, visitId, consultationHistoryModal._element)
-                    getbillingTableByVisit('billingTableHistory'+visitId, visitId, consultationHistoryModal._element)
+                    // getbillingTableByVisit('billingTableHistory'+visitId, visitId, consultationHistoryModal._element)
                 }
                 setTimeout(goto, 300)
             }
@@ -1426,6 +1442,13 @@ window.addEventListener('DOMContentLoaded', function () {
                         })
                 }
                 deleteResultBtn.removeAttribute('disabled')
+            }
+
+            if (viewBillSummaryBtn){
+                const visitId = viewBillSummaryBtn.dataset.visitid
+                const tableId = `billingTableHistory${visitId}`;
+                if ($.fn.DataTable.isDataTable( '#'+tableId )){$('#'+tableId).dataTable().fnDestroy()};
+                getbillingTableByVisit(tableId, visitId, consultationHistoryModal._element, false, viewBillSummaryBtn)
             }
         })
     })

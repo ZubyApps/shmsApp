@@ -124,7 +124,8 @@ const visitDetails = (visitIteration, numberConverter, visit, viewer, isAnc) => 
                                 </div>
                             </div>
                             <div "class" = "mb-2">
-                                <div class="mb-2 form-control">
+                                <button class="btn btn-primary my-2 viewBillSummaryBtn" data-visitid="${visit.id}">View Bill Summary</button>
+                                <div class="mb-2 form-control d-none billSummaryDiv${visit.id}">
                                     <x-form-label>Patient's Bill Details</x-form-label>
                                     <X-form-div class="my-4">
                                         <table id="billingTableHistory${ visit.id }" class="table align-middle">

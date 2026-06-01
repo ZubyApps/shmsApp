@@ -842,9 +842,11 @@ window.addEventListener('DOMContentLoaded', function () {
 
     createShiftReportBtn.addEventListener('click', function() {
         createShiftReportBtn.setAttribute('disabled', 'disabled')
+        let deptEl = newShiftReportTemplateModal._element.querySelector('#department')
+        const deptVal = deptEl.value
         http.post(`shiftreport`, {
             report: newShiftReportTemplateModal._element.querySelector('#report').value, 
-            department: newShiftReportTemplateModal._element.querySelector('#department').value,
+            department: deptVal,
             shift:  newShiftReportTemplateModal._element.querySelector('#shift').value,
         }, 
             {'html': newShiftReportTemplateModal._element})
@@ -853,6 +855,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 newShiftReportTemplateModal.hide()
                 clearDivValues(newShiftReportTemplateModal._element)
                 clearValidationErrors(newShiftReportTemplateModal._element)
+                deptEl.value = deptVal
                 billingShiftReportTable.draw(false)
             }
             createShiftReportBtn.removeAttribute('disabled')

@@ -30,7 +30,8 @@ class VisitService
         private readonly Visit $visit, 
         private readonly PaymentService $paymentService, 
         private readonly PayPercentageService $payPercentageService,
-        private readonly TotalsService $totalsService
+        private readonly TotalsService $totalsService,
+        private readonly HelperService $helperService
         )
     {
     }
@@ -316,7 +317,7 @@ class VisitService
          };
     }
 
-    public function changeVisitSponsor(Request $data, Visit $visit, User $user)
+    public function changeVisitSponsor1(Request $data, Visit $visit, User $user)
     {
         // --- STEP 1: PRE-TRANSACTION READS & CONTEXT GATHERING ---
 
@@ -353,15 +354,6 @@ class VisitService
             if (!empty($ids)) {
                 
                 if ($isNhis) {
-                    // Prescription::where('visit_id', $visit->id)
-                    // ->whereIn('id', $ids)
-                    // ->update([
-                    //     'nhis_bill' => DB::raw('CASE 
-                    //         WHEN approved = 1 THEN hms_bill / 10
-                    //         ELSE hms_bill 
-                    //     END')
-                    // ]);
-
                     Prescription::join('resources', 'prescriptions.resource_id', '=', 'resources.id')
                     ->where('prescriptions.visit_id', $visit->id)
                     ->whereIn('prescriptions.id', $ids)
@@ -403,6 +395,268 @@ class VisitService
             // 4. Recalculate and Update Visit Totals (1 Query)
             // Ensure $visit is up-to-date or re-fetch if necessary to run totalNhisBills()
             // For simplicity, relying on the function to use the newly updated prescriptions data.
+            $this->totalsService->syncVisitTotals($visit);
+
+            return $visit;
+        });
+    }
+
+    // public function changeVisitSponsor(Request $data, Visit $visit, User $user)
+    // {
+    //     // --- STEP 1: PRE-TRANSACTION READS & CONTEXT GATHERING (Eager Loaded) ---
+
+    //     // 1. Load the new sponsor along with its custom resource billing rules
+    //     $newSponsor = Sponsor::with(['resourceCategories'])->find($data->sponsor); 
+        
+    //     if (!$newSponsor) {
+    //         return response('New sponsor not found.', 404);
+    //     }
+
+    //     $sponsorCatName       = $newSponsor->category_name;
+    //     $isNhis               = ($sponsorCatName === 'NHIS');
+    //     $isIndividualOrFamily = ($sponsorCatName === 'Individual' || $sponsorCatName === 'Family');
+
+    //     // 2. Fetch prescriptions with the exact deep relationships needed for the biller method
+    //     $prescriptions = $visit->prescriptions()
+    //         ->with([
+    //             'resource.resourceSubCategory' // Required to trace back to resource_category_id
+    //         ])
+    //         ->get(['id', 'resource_id', 'hms_bill', 'qty_billed', 'approved']); 
+
+    //     $totalPayments = (float)$visit->totalPayments();
+        
+    //     // --- STEP 2: DATABASE TRANSACTION (ATOMIC WRITES) ---
+
+    //     return DB::transaction(function () use ($visit, $user, $newSponsor, $isNhis, $isIndividualOrFamily, $prescriptions, $totalPayments) {
+            
+    //         // 1. Update the Visit's Sponsor
+    //         $visit->update([
+    //             "sponsor_id"         => $newSponsor->id,
+    //             "sponsor_changed_by" => $user->id,
+    //         ]);
+
+    //         // 2. Process and Update Prescriptions
+    //         if ($prescriptions->isNotEmpty()) {
+                
+    //             // Loop through each prescription and process the billing logic in-memory
+    //             foreach ($prescriptions as $prescription) {
+    //                 $resource = $prescription->resource;
+
+    //                 if ($isIndividualOrFamily) {
+    //                     // Reset approval flags and wipe nhis_bill for self-paying patients
+    //                     $prescription->nhis_bill   = 0;
+    //                     $prescription->approved    = false;
+    //                     $prescription->approved_by = null;
+    //                     $prescription->rejected    = false;
+    //                     $prescription->rejected_by = null;
+    //                 } else {
+    //                     // For NHIS, Corporate, or any sponsor utilizing the custom biller rules.
+    //                     // Pass the already eager-loaded relationships safely down the pipe
+    //                     $billDetails = $this->helperService->biller(
+    //                         $resource, 
+    //                         $newSponsor, 
+    //                         $prescription->qty_billed, 
+    //                         (bool)$prescription->approved
+    //                     );
+
+    //                     $prescription->nhis_bill = $billDetails['nhisBill'];
+                        
+    //                     // If the sponsor contract scales the primary bill instead of coverage
+    //                     if (!$isNhis) {
+    //                         $prescription->hms_bill = $billDetails['bill'];
+    //                     }
+    //                 }
+
+    //                 // Save if dirty changes exist (Only runs a query if values actually changed)
+    //                 if ($prescription->isDirty()) {
+    //                     $prescription->save();
+    //                 }
+    //             }
+    //         }
+            
+    //         // 3. Apply Payments Waterfall
+    //         $dto = new SponsorCategoryDto(isNhis: $isNhis);
+    //         $this->paymentService->applyPaymentsWaterfall($visit, $totalPayments, $dto);
+            
+    //         // 4. Recalculate and Update Visit Totals
+    //         $this->totalsService->syncVisitTotals($visit);
+
+    //         return $visit;
+    //     });
+    // }
+
+    public function changeVisitSponsorForStudy(Request $data, Visit $visit, User $user)
+    {
+        // --- STEP 1: PRE-TRANSACTION READS & CONTEXT GATHERING ---
+        $newSponsor = Sponsor::with(['resourceCategories'])->find($data->sponsor); 
+        
+        if (!$newSponsor) {
+            return response('New sponsor not found.', 404);
+        }
+
+        $sponsorCatName       = $newSponsor->category_name;
+        $isNhis               = ($sponsorCatName === 'NHIS');
+        $isIndividualOrFamily = ($sponsorCatName === 'Individual' || $sponsorCatName === 'Family');
+
+        // Deep eager load to keep all lookups inside memory
+        $prescriptions = $visit->prescriptions()
+            ->with(['resource.resourceSubCategory.resourceCategory'])
+            ->get(['id', 'resource_id', 'hms_bill', 'nhis_bill', 'qty_billed', 'approved']); 
+
+        $totalPayments = (float)$visit->totalPayments();
+        
+        // --- STEP 2: DATABASE TRANSACTION (ATOMIC WRITES) ---
+        return DB::transaction(function () use ($visit, $user, $newSponsor, $isNhis, $isIndividualOrFamily, $prescriptions, $totalPayments) {
+            
+        // 1. Update the Visit's Sponsor (1 Query)
+        $visit->update([
+            "sponsor_id"         => $newSponsor->id,
+            "sponsor_changed_by" => $user->id,
+        ]);
+
+        if ($prescriptions->isNotEmpty()) {
+            // Group prescription IDs by their unique math outcome to execute bulk writes
+            $updateBuckets = [];
+
+            foreach ($prescriptions as $prescription) {
+                // Run EVERY prescription through the master biller rules
+                $billDetails = $this->helperService->biller(
+                    $prescription->resource, 
+                    $newSponsor, 
+                    $prescription->qty_billed, 
+                    (bool)$prescription->approved
+                );
+
+                $newHmsBill  = $billDetails['bill'];
+                $newNhisBill = $billDetails['nhisBill'];
+
+                // Handle the specialized approval state resets for Individual/Family
+                $approved   = $prescription->approved;
+                $approvedBy = $prescription->approved_by;
+                $rejected   = $prescription->rejected;
+                $rejectedBy = $prescription->rejected_by;
+
+                if ($isIndividualOrFamily) {
+                    $approved   = false;
+                    $approvedBy = null;
+                    $rejected   = false;
+                    $rejectedBy = null;
+                }
+
+                // Create a unique composite string key representing this exact dataset state
+                $bucketKey = "hms:{$newHmsBill}|nhis:{$newNhisBill}|app:" . ($approved ? '1' : '0');
+
+                // Cache the target state details on the first hit of this pattern
+                if (!isset($updateBuckets[$bucketKey])) {
+                    $updateBuckets[$bucketKey] = [
+                        'ids'    => [],
+                        'values' => [
+                            'hms_bill'    => $newHmsBill,
+                            'nhis_bill'   => $newNhisBill,
+                            'approved'    => $approved,
+                            'approved_by' => $approvedBy,
+                            'rejected'    => $rejected,
+                            'rejected_by' => $rejectedBy,
+                        ]
+                    ];
+                }
+
+                // Drop this prescription ID into the matching bucket
+                $updateBuckets[$bucketKey]['ids'][] = $prescription->id;
+            }
+
+            // 2. Execute Batch Updates (Only hits the database once per unique data pattern)
+            foreach ($updateBuckets as $bucket) {
+                Prescription::whereIn('id', $bucket['ids'])->update($bucket['values']);
+            }
+        }
+        
+            // 3. Apply Payments Waterfall
+            $dto = new SponsorCategoryDto(isNhis: $isNhis);
+            $this->paymentService->applyPaymentsWaterfall($visit, $totalPayments, $dto);
+            
+            // 4. Recalculate and Update Visit Totals
+            $this->totalsService->syncVisitTotals($visit);
+
+            return $visit;
+        });
+    }
+
+    public function changeVisitSponsor(Request $data, Visit $visit, User $user)
+    {
+        // --- STEP 1: PRE-TRANSACTION READS & CONTEXT GATHERING ---
+        $newSponsor = Sponsor::with(['resourceCategories'])->find($data->sponsor); 
+        
+        if (!$newSponsor) {
+            return response('New sponsor not found.', 404);
+        }
+
+        $sponsorCatName       = $newSponsor->category_name;
+        $isNhis               = ($sponsorCatName === 'NHIS');
+        $isIndividualOrFamily = ($sponsorCatName === 'Individual' || $sponsorCatName === 'Family');
+
+        // Deep eager load to keep all lookups inside memory
+        $prescriptions = $visit->prescriptions()
+            ->with(['resource.resourceSubCategory.resourceCategory'])
+            ->get(['id', 'resource_id', 'hms_bill', 'nhis_bill', 'qty_billed', 'approved']); 
+
+        $totalPayments = (float)$visit->totalPayments();
+        
+        // --- STEP 2: DATABASE TRANSACTION (ATOMIC WRITES) ---
+        return DB::transaction(function () use ($visit, $user, $newSponsor, $isNhis, $isIndividualOrFamily, $prescriptions, $totalPayments) {
+            
+        // 1. Update the Visit's Sponsor (1 Query)
+        $visit->update([
+            "sponsor_id"         => $newSponsor->id,
+            "sponsor_changed_by" => $user->id,
+        ]);
+
+        if ($prescriptions->isNotEmpty()) {
+    
+            // 1. Calculate the new values for every prescription in memory
+            $processedPrescriptions = $prescriptions->map(function ($prescription) use ($newSponsor, $isIndividualOrFamily) {
+                $billDetails = $this->helperService->biller(
+                    $prescription->resource, 
+                    $newSponsor, 
+                    $prescription->qty_billed, 
+                    (bool)$prescription->approved
+                );
+
+                return [
+                    'id'          => $prescription->id,
+                    'hms_bill'    => $billDetails['bill'],
+                    'nhis_bill'   => $billDetails['nhisBill'],
+                    'approved'    => $isIndividualOrFamily ? false : $prescription->approved ?? false,
+                    'approved_by' => $isIndividualOrFamily ? null  : $prescription->approved_by,
+                    'rejected'    => $isIndividualOrFamily ? false : $prescription->rejected ?? false,
+                    'rejected_by' => $isIndividualOrFamily ? null  : $prescription->rejected_by,
+                ];
+            });
+
+            // 2. Group them automatically by identical values
+            // Laravel handles the math buckets behind the scenes here!
+            $groupedUpdates = $processedPrescriptions->groupBy(function ($item) {
+                return $item['hms_bill'] . '-' . $item['nhis_bill'] . '-' . ($item['approved'] ? '1' : '0');
+            });
+
+            // 3. Run a bulk update for each group
+            foreach ($groupedUpdates as $group) {
+                // Pull out all the prescription IDs in this specific group
+                $prescriptionIds = $group->pluck('id')->toArray();
+
+                // Grab the update values from the very first item in this group (since they are all identical)
+                $updateValues = collect($group->first())->except('id')->toArray();
+
+                // One single query for this entire group!
+                Prescription::whereIn('id', $prescriptionIds)->update($updateValues);
+            }
+        }
+        
+            // 3. Apply Payments Waterfall 
+            $dto = new SponsorCategoryDto(isNhis: $isNhis);
+            $this->paymentService->applyPaymentsWaterfall($visit, $totalPayments, $dto);
+            
+            // 4. Recalculate and Update Visit Totals
             $this->totalsService->syncVisitTotals($visit);
 
             return $visit;

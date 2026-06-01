@@ -309,12 +309,12 @@ class NurseService
         $query = $this->visit->query()
             ->select([
                 'visits.id', 'visits.patient_id', 'visits.doctor_id', 'visits.sponsor_id', 
-                'visits.doctor_done_by', 'visits.consulted', 'visits.admission_status', 
+                'visits.doctor_done_by', 'visits.nurse_done_by', 'visits.consulted', 'visits.admission_status', 
                 'visits.visit_type', 'visits.discharge_reason', 'visits.discharge_remark', 
                 'visits.closed', 'visits.closed_opened_by', 'visits.closed_opened_at', 
                 'visits.ward', 'visits.bed_no', 'visits.ward_id', 'visits.discount', 
                 'visits.total_hms_bill', 'visits.total_nhis_bill', 'visits.total_paid', 
-                'visits.doctor_done_at'
+                'visits.doctor_done_at', 'visits.nurse_done_at'
             ])
             ->with([
                 'sponsor:id,name,category_name,flag',
@@ -325,6 +325,7 @@ class NurseService
                 'doctor:id,username',
                 'closedOpenedBy:id,username',
                 'doctorDoneBy:id,username',
+                'nurseDoneBy:id,username',
                 'wards:id,visit_id,short_name,bed_number'
             ])
             ->withCount([
@@ -425,7 +426,6 @@ class NurseService
                 'closed'            => $visit->closed,
                 'closedBy'          => $visit->closedOpenedBy?->username,
                 'closedAt'          => $visit->closed_opened_at ? (new Carbon($visit->closed_opened_at))->format('d/m/y g:ia') : '',
-                'visitType'         => $visit->visit_type,
             ];
          };
     }

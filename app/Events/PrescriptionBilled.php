@@ -20,7 +20,7 @@ class PrescriptionBilled
      */
     public function __construct(
         public Visit $visit,
-        public bool $isNhis
+        public int|bool $isNhis
     )
     {
         //

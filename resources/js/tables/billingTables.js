@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import {admissionStatusX, closedOpened, deferredCondition, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, pendingIndicator, preSearch, searchDecider, searchMin, searchPlaceholderText, selectReminderOptions, sponsorAndPayPercent, visitType, wardState } from "../helpers";
+import {admissionStatusX, closedOpened, deferredCondition, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getSpinners, pendingIndicator, preSearch, searchDecider, searchMin, searchPlaceholderText, selectReminderOptions, sponsorAndPayPercent, visitType, wardState } from "../helpers";
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
 import pdfFonts from './vfs_fontes'
@@ -140,14 +140,36 @@ const getPatientsVisitsByFilterTable = (tableId, filter, urlSuffix, patientId, s
     return patientsVisitisByFilterTable
 }
 
-const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
+const getbillingTableByVisit = (tableId, visitId, modal, billing, button) => {
     const buttonColour = (value) => {return value > 0 ? 'danger' : value === 0 ? 'primary' : 'success'}
-    
+    let buttonInnerHTML = ''
+    if (!billing){
+        buttonInnerHTML = button.innerHTML
+        button.innerHTML = getSpinners(6);
+    }
     const billingTable =  new DataTable('#'+tableId, {
         serverSide: true,
-        ajax:  {url: '/billing/bill', data: {
-            'visitId': visitId,
-        }},
+        ajax:  {
+            url: '/billing/bill', 
+            data: {'visitId': visitId},
+            dataSrc: function (json) {
+
+                if (!billing) {
+                    button.innerHTML = buttonInnerHTML;
+                    let isHistory = modal.id == 'consultationHistoryModal';
+                    let billSummaryDiv = modal.querySelector(`.billSummaryDiv${isHistory ? visitId : ''}`);
+                    
+                    if (billSummaryDiv) {
+                        billSummaryDiv.classList.remove('d-none');
+                    }
+                    
+                    isHistory = null;
+                    billSummaryDiv = null;
+                }
+                
+                return json.data; 
+            }
+        },
         orderMulti: true,
         search:true,
         searching: false,
@@ -182,14 +204,14 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
             },
             {
                 sortable: false,
-                data: row => () => {
+                data: row => {
                     const outstanding = row.sponsorCategory === 'NHIS' ? row.outstandingNhisBalance : row.outstandingPatientBalance
                     return `<span class="btn fw-bold text-${buttonColour(outstanding)} outstandingsBtn" data-patientid="${row.patientId}" data-sponsorcat="${row.sponsorCategory}">Patient's Outstanding: ${outstanding}</span>`
                 }
             },
             {
                 sortable: false,
-                data: row => () => {
+                data: row => {
                     const outstandingSponsor = row.outstandingSponsorBalance
                     const outstandingCardNo = row.outstandingCardNoBalance
                     const allSponsorCategories = ['Family', 'Retainership', 'NHIS', 'Individual']
@@ -392,7 +414,6 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
     }
 
     billingTable.on('draw', function() {
-        // const tableId = billingTable.table().container().id.split('_')[0]
         billingTable.rows().every(function () {
             let tr = $(this.node())
             let row = this.row(tr);
@@ -401,7 +422,12 @@ const getbillingTableByVisit = (tableId, visitId, modal, billing) => {
     })
 
     modal.addEventListener('hidden.bs.modal', function () {
-        billingTable.destroy()
+        buttonInnerHTML = null;
+        billingTable.destroy();
+        if (!billing){
+            const billSummaryDiv = modal.querySelector('.billSummaryDiv');
+            billSummaryDiv && !billSummaryDiv.classList.contains('d-none') ? billSummaryDiv.classList.add('d-none') : '';
+        }
     })
 
     return billingTable

@@ -7,6 +7,8 @@ namespace App\Services;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use App\DataObjects\DataTableQueryParams;
+use App\Models\Resource;
+use App\Models\Sponsor;
 use Illuminate\Database\Eloquent\Builder;
 
 class HelperService
@@ -106,5 +108,44 @@ class HelperService
         }
 
         return true;
+    }
+
+    public function biller(Resource $resource, Sponsor $sponsor, string|int $quantity, bool|int $approved = false)
+    {
+        $sponsorCat = $sponsor->category_name;
+        $isFamily = $sponsorCat === 'Family';
+        $isNhis   = $sponsorCat === 'NHIS';
+
+        $sellingPrice = $resource->getSellingPriceForSponsor($sponsor);
+
+        $bill = (float) $sellingPrice * $quantity;
+
+        $billArray = ['bill' => $bill, 'nhisBill' => $isNhis ? $bill : 0.0];
+
+        $sponsorResourceCat = $sponsor->resourceCategories
+            ->where('id', $resource->resourceSubCategory->resourceCategory->id)
+            ->first();
+
+        if ($sponsorResourceCat){
+                $percentage = $sponsorResourceCat->pivot->billable_percentage;
+                $percentageBill = (float) ($bill * ($percentage / 100));
+               
+                if ($isNhis) {
+                    // For NHIS: use discounted rate if approved, else full price
+                    $billArray['nhisBill'] = $approved ? $percentageBill : $bill;
+                    
+                } elseif ($isFamily) {
+                    // For Family: always use the discounted rate
+                    $billArray['bill'] = $percentageBill;
+                } else {
+                    if ($approved){
+                        // For Private/Corporate: use discounted rate if approved, else full price
+                        $billArray['bill'] = $percentageBill;
+                    }
+                    
+                }
+        }
+
+        return $billArray;
     }
 }

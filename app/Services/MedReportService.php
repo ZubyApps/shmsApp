@@ -319,18 +319,18 @@ class MedReportService
                             ->orWhere('admission_status', '=', 'Observation');
                         });
                         
-        function applySearch(Builder $query, string $searchTerm): Builder
-        {
-            $searchTerm = '%' . addcslashes($searchTerm, '%_') . '%';
-            return $query->where(function (Builder $query) use($searchTerm) {
-                        $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm )
-                        ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm )
-                        ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm )
-                        ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm )
-                        ->orWhereRelation('patient.sponsor', 'name', 'LIKE', $searchTerm )
-                        ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', $searchTerm );
-                    });
-        }
+        // function applySearch(Builder $query, string $searchTerm): Builder
+        // {
+        //     $searchTerm = '%' . addcslashes($searchTerm, '%_') . '%';
+        //     return $query->where(function (Builder $query) use($searchTerm) {
+        //                 $query->whereRelation('patient', 'first_name', 'LIKE', $searchTerm )
+        //                 ->orWhereRelation('patient', 'middle_name', 'LIKE', $searchTerm )
+        //                 ->orWhereRelation('patient', 'last_name', 'LIKE', $searchTerm )
+        //                 ->orWhereRelation('patient', 'card_no', 'LIKE', $searchTerm )
+        //                 ->orWhereRelation('patient.sponsor', 'name', 'LIKE', $searchTerm )
+        //                 ->orWhereRelation('patient.sponsor', 'category_name', 'LIKE', $searchTerm );
+        //             });
+        // }
 
         if (! empty($params->searchTerm)) {
             if ($data->startDate && $data->endDate){

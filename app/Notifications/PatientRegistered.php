@@ -18,7 +18,6 @@ class PatientRegistered extends Notification implements CustomSmsNotificationInt
 
     public function __construct()
     {
-        //
     }
 
     public function backoff(): array
@@ -36,18 +35,7 @@ class PatientRegistered extends Notification implements CustomSmsNotificationInt
         return [CustomSmsChannel::class];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
-    // public function toMail(object $notifiable): MailMessage
-    // {
-    //     return (new MailMessage)
-    //                 ->line('The introduction to the notification.')
-    //                 ->action('Notification Action', url('/'))
-    //                 ->line('Thank you for using our application!');
-    // }
-
-    public function toCustomSms($notifiable): array
+    public function toCustomSms(mixed $notifiable): array
     {
         $firstName = $notifiable->first_name;
         $cardNumber = $notifiable->card_no;

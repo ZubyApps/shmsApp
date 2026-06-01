@@ -56,7 +56,7 @@ const getInpatientsInvestigationsTable = (tableId, notLab, button, span) => {
         paging: true,
         orderMulti: false,
         searchDelay: 500,
-        lengthMenu:[25, 50, 100, 200],
+        lengthMenu:[10, 20, 40, 60, 80],
         language: {
             emptyTable: 'No lab investigation requested'
         },
@@ -124,7 +124,7 @@ const getOutpatientsInvestigationTable = (tableId, notLab) => {
         paging: true,
         orderMulti: false,
         searchDelay: 500,
-        lengthMenu:[25, 50, 100, 200],
+        lengthMenu:[20, 40, 60, 80],
         language: {
             emptyTable: 'No lab investigation requested'
         },
@@ -180,7 +180,7 @@ const getInvestigationsListTable = (tableId, date) => {
         // select: true,
         orderMulti: false,
         searchDelay: 500,
-        lengthMenu:[20, 50, 100, 150, 200],
+        lengthMenu:[20, 40, 60, 80, 100],
         language: {
             emptyTable: 'No investigations listed'
         },

@@ -758,7 +758,52 @@ class HmoService
     //     });
     // }
 
-    public function approve($data, Prescription $prescription, User $user)
+    // public function approve($data, Prescription $prescription, User $user)
+    // {
+    //     // Use optional chaining for conciseness and single return
+    //     if ($prescription->approved || $prescription->rejected) {
+    //         $approvedBy = $prescription->approvedBy?->username;
+    //         $rejectedBy = $prescription->rejectedBy?->username;
+    //         $username = $approvedBy ?? $rejectedBy;
+
+    //         // Using HTTP Status 409 Conflict is often better for "already done" logic
+    //         return response('Already treated by ' . ($username ?? 'an unknown user'), 409);
+    //     }
+
+    //     $visit = $prescription->visit()->with('sponsor')->first();
+
+    //     $isNhis = $visit->sponsor->category_name == 'NHIS';
+
+    //     $resourceCat = $prescription->resource->category;
+
+    //     $isNhisBillable = $resourceCat == 'Medications' || $resourceCat == 'Consumables' ;
+
+    //     return DB::transaction(function () use($data, $prescription, $user, $visit, $isNhis, $isNhisBillable) {
+
+    //         // 1. Prepare Prescription Update Data
+    //         $prescriptionUpdates = [
+    //             'approved'             => true,
+    //             'hmo_note'             => $data->note,
+    //             'approved_by'          => $user->id,
+    //             'approved_rejected_at' => Carbon::now(),
+    //         ];
+
+    //         if ($isNhis){
+    //             // Apply bill adjustment immediately before the main update
+    //             // $prescriptionUpdates['nhis_bill'] = $prescription->hms_bill / 10;
+    //             $prescriptionUpdates['nhis_bill'] = $isNhisBillable ? ($prescription->hms_bill ? $prescription->hms_bill/10 : 0) : 0;
+    //         }
+            
+    //         // 3. Perform Single Prescription Update (1 Query)
+    //         $prescription->update($prescriptionUpdates);
+
+    //         PrescriptionTreated::dispatch($visit, $isNhis);
+
+    //         return $prescription;
+    //     });
+    // }
+
+    public function approve(Request $data, Prescription $prescription, User $user)
     {
         // Use optional chaining for conciseness and single return
         if ($prescription->approved || $prescription->rejected) {
@@ -774,11 +819,13 @@ class HmoService
 
         $isNhis = $visit->sponsor->category_name == 'NHIS';
 
-        $resourceCat = $prescription->resource->category;
+        // $resourceCat = $prescription->resource->category;
 
-        $isNhisBillable = $resourceCat == 'Medications' || $resourceCat == 'Consumables' ;
+        $billArray = $this->helperService->biller($prescription->resource, $visit->sponsor, $prescription->qty_billed, true);
 
-        return DB::transaction(function () use($data, $prescription, $user, $visit, $isNhis, $isNhisBillable) {
+        // $isNhisBillable = $resourceCat == 'Medications' || $resourceCat == 'Consumables' ;
+
+        return DB::transaction(function () use($data, $prescription, $user, $visit, $isNhis, $billArray) {
 
             // 1. Prepare Prescription Update Data
             $prescriptionUpdates = [
@@ -790,8 +837,7 @@ class HmoService
 
             if ($isNhis){
                 // Apply bill adjustment immediately before the main update
-                // $prescriptionUpdates['nhis_bill'] = $prescription->hms_bill / 10;
-                $prescriptionUpdates['nhis_bill'] = $isNhisBillable ? ($prescription->hms_bill ? $prescription->hms_bill/10 : 0) : 0;
+                $prescriptionUpdates['nhis_bill'] = $billArray['nhisBill'];
             }
             
             // 3. Perform Single Prescription Update (1 Query)
@@ -836,7 +882,47 @@ class HmoService
 
     // }
 
-    public function reject($data, Prescription $prescription, User $user)
+    // public function reject($data, Prescription $prescription, User $user)
+    // {
+    //     // Use optional chaining for conciseness and single return
+    //     if ($prescription->approved || $prescription->rejected) {
+    //         $approvedBy = $prescription->approvedBy?->username;
+    //         $rejectedBy = $prescription->rejectedBy?->username;
+    //         $username = $approvedBy ?? $rejectedBy;
+
+    //         // Using HTTP Status 409 Conflict is often better for "already done" logic
+    //         return response('Already treated by ' . ($username ?? 'an unknown user'), 409);
+    //     }
+
+    //     $visit = $prescription->visit()->with('sponsor')->first();
+
+    //     $isNhis = $visit->sponsor->category_name == 'NHIS';
+
+    //     return DB::transaction(function () use($data, $prescription, $user, $visit, $isNhis) {
+
+    //         // 1. Prepare Prescription Update Data
+    //         $prescriptionUpdates = [
+    //             'rejected'          => true,
+    //             'hmo_note'          => $data->note,
+    //             'rejected_by'       => $user->id,
+    //             'approved_rejected_at' => Carbon::now()
+    //         ];
+
+    //         if ($isNhis){
+    //             // Apply bill adjustment immediately before the main update
+    //             $prescriptionUpdates['nhis_bill'] = $prescription->hms_bill;
+    //         }
+            
+    //         // 3. Perform Single Prescription Update (1 Query)
+    //         $prescription->update($prescriptionUpdates);
+
+    //         PrescriptionTreated::dispatch($visit, $isNhis);
+
+    //         return $prescription;
+    //     });
+
+    // }
+    public function reject(Request $data, Prescription $prescription, User $user)
     {
         // Use optional chaining for conciseness and single return
         if ($prescription->approved || $prescription->rejected) {
@@ -907,7 +993,7 @@ class HmoService
 
     // }
 
-    public function pending($data, Prescription $prescription, User $user)
+    public function pending(Request $data, Prescription $prescription, User $user)
     {
          // Use optional chaining for conciseness and single return
         if ($prescription->approved || $prescription->rejected) {
@@ -1214,7 +1300,7 @@ class HmoService
         // --- 2. SEARCH LOGIC ---
         if (!empty($params->searchTerm)) {
             $searchTermRaw = trim($params->searchTerm);
-            $searchTerm    = '%' . addcslashes($searchTermRaw, '%_') . '%';
+            $searchTerm    = addcslashes($searchTermRaw, '%_') . '%';
 
             if (str_starts_with($searchTermRaw, 'pId-')) {
                 $query->where('patient_id', explode('-', $searchTermRaw)[1]);
@@ -1275,7 +1361,7 @@ class HmoService
         };
     }
 
-    public function getReportSummaryTable(DataTableQueryParams $params, $data)
+    public function getReportSummaryTable(DataTableQueryParams $params, Request $data)
     {
         $current    = Carbon::now();
 
@@ -1617,7 +1703,7 @@ class HmoService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));                        
     }
 
-    public function getReportsSummaryTransformer($data)
+    public function getReportsSummaryTransformer(Request $data)
     {
         return function (Sponsor $sponsor) use ($data){
             $monthName  = (new Carbon($data->date ?? $data->startDate))->monthName;
@@ -2086,7 +2172,7 @@ class HmoService
                     ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
-    public function getSponsorsByDateTransformer($data)
+    public function getSponsorsByDateTransformer(Request $data)
     {
         $monthYear = (new Carbon($data->date))->format('F Y');
 
@@ -2116,7 +2202,7 @@ class HmoService
         };
     }
 
-    public function totalYearlyIncomeFromHmoPatients($data)
+    public function totalYearlyIncomeFromHmoPatients(Request $data)
     {
         $currentDate = new Carbon();
         if ($data->year){

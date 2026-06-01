@@ -43,7 +43,7 @@ class SendOutstandingBill extends Notification implements CustomSmsNotificationI
         return [CustomSmsChannel::class];
     }
 
-    public function toCustomSms($notifiable): array
+    public function toCustomSms(mixed $notifiable): array
     {
         return [
                 'name'          => $this->recipient,

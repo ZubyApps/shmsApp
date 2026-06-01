@@ -55,6 +55,7 @@ use App\Http\Controllers\ResourceSubCategoryController;
 use App\Http\Controllers\AntenatalRegisterationController;
 use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\InvestigationsListController;
+use App\Http\Controllers\ResourceCategorySponsorController;
 use App\Http\Controllers\SmsWalletFundingController;
 
 /*
@@ -113,6 +114,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/{resourceCategory}', [ResourceCategoryController::class, 'edit']);
             Route::delete('/{resourceCategory}', [ResourceCategoryController::class, 'destroy']);
             Route::post('/{resourceCategory}', [ResourceCategoryController::class, 'update']);
+            Route::post('percentage/{sponsor}/{resourceCategory}', [ResourceCategorySponsorController::class, 'storeResourceCatSponsorPercentage']);
+            Route::delete('remove/percentage/{sponsor}/{resourceCategory}', [ResourceCategorySponsorController::class, 'removeSponsorResourceCatPercentage']);
         })->name('Resource Category');
     
         Route::prefix('resourcesubcategory')->group(function (){
@@ -454,6 +457,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/{sponsor}', [SponsorController::class, 'edit']);
         Route::delete('/{sponsor}', [SponsorController::class, 'destroy']);
         Route::post('/{sponsor}', [SponsorController::class, 'update']);
+        Route::get('rcategories/{sponsor}', [SponsorController::class, 'getResourceCategories']);
     })->name('Sponsors');
 
     Route::prefix('visits')->group(function () {

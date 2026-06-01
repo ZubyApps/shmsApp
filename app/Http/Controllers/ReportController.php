@@ -538,56 +538,6 @@ class ReportController extends Controller
         ]);
     }
 
-    // public function loadYearlyIncomeAndExpense2(Request $request)
-    // {
-    //     $chart = $request->input('chart');
-    //     $params = $chart ? null : $this->datatablesService->getDataTableQueryParameters($request);
-        
-    //     $forExtractionsOfBills   = $this->prescriptionService->totalYearlyIncomeFromPrescription($request);
-    //     $totalCashPatients = $this->prescriptionService->totalYearlyIncomeFromPrescriptionCash($request);
-    //     // $totalCashPatients = $this->paymentService->totalYearlyIncomeFromCashPatients($request);
-    //     $totalHmoPatients = $this->hmoService->totalYearlyIncomeFromHmoPatients($request);
-    //     $totalExpenses  = $this->expenseService->totalYearlyExpense($request);
-    //     $incomeArray = [...$totalCashPatients, ...$totalHmoPatients, ...$totalExpenses, ...$forExtractionsOfBills];
-
-    //     $months = [
-    //         ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'January', 'm' => 1],
-    //         ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'February', 'm' => 2],
-    //         ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'March', 'm' => 3],
-    //         ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'April', 'm' => 4],
-    //         ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'May', 'm' => 5],
-    //         ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'June', 'm' => 6],
-    //         ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'July', 'm' => 7],
-    //         ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'August', 'm' => 8],
-    //         ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'September', 'm' => 9],
-    //         ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'October', 'm' => 10],
-    //         ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'November', 'm' => 11],
-    //         ['bill' => 0, 'cashPaid' => 0, 'paidHmo' => 0, 'expense' => 0, 'month_name' => 'December', 'm' => 12],
-    //     ];
-
-    //     foreach($incomeArray as $income){
-    //         foreach($months as $key => $month){
-    //             if ($month['m'] === $income->month){
-    //                 $income?->bill ?? '' ? $months[$key]['bill'] = $income?->bill : '' ;
-    //                 $income?->cashPaid ?? '' ? $months[$key]['cashPaid'] = $income?->cashPaid : '' ;
-    //                 $income?->paidHmo ?? '' ? $months[$key]['paidHmo'] = $income?->paidHmo : '' ;
-                   
-
-    //                 $months[$key]['expense'] = $income?->amount ?? 0;
-    //             }
-    //         }
-    //     }
-
-    //     $total = count($months);
-
-    //     return response()->json([
-    //         'data' => $months,
-    //         'draw' => $chart ? 1 : $params->draw,
-    //         'recordsTotal' => $total,
-    //         'recordsFiltered' => $total
-    //     ]);
-    // }
-
     public function loadYearlyIncomeAndExpense2(Request $request)
     {
         $year = $request->input('year', now()->year);
@@ -619,53 +569,6 @@ class ReportController extends Controller
             'recordsFiltered' => $total
         ]);
     }
-
-    // public function loadYearlyIncomeAndExpense3(Request $request)
-    // {
-    //     $chart = $request->input('chart');
-    //     $params = $chart ? null : $this->datatablesService->getDataTableQueryParameters($request);
-        
-    //     $totalBill = $this->prescriptionService->totalYearlyIncomeFromPrescription($request);
-    //     $totalHmoPatients = $this->paymentService->totalYearlyIncomeFromCashPatients($request);
-    //     $totalExpenses  = $this->expenseService->totalYearlyExpense($request);
-    //     // var_dump($totalBill);
-    //     $incomeArray = [...$totalBill, ...$totalHmoPatients, ...$totalExpenses];
-    //     $months = [
-    //         ['bill' => 0, 'cashPaid' => 0, 'expense' => 0, 'month_name' => 'January', 'm' => 1],
-    //         ['bill' => 0, 'cashPaid' => 0, 'expense' => 0, 'month_name' => 'February', 'm' => 2],
-    //         ['bill' => 0, 'cashPaid' => 0, 'expense' => 0, 'month_name' => 'March', 'm' => 3],
-    //         ['bill' => 0, 'cashPaid' => 0, 'expense' => 0, 'month_name' => 'April', 'm' => 4],
-    //         ['bill' => 0, 'cashPaid' => 0, 'expense' => 0, 'month_name' => 'May', 'm' => 5],
-    //         ['bill' => 0, 'cashPaid' => 0, 'expense' => 0, 'month_name' => 'June', 'm' => 6],
-    //         ['bill' => 0, 'cashPaid' => 0, 'expense' => 0, 'month_name' => 'July', 'm' => 7],
-    //         ['bill' => 0, 'cashPaid' => 0, 'expense' => 0, 'month_name' => 'August', 'm' => 8],
-    //         ['bill' => 0, 'cashPaid' => 0, 'expense' => 0, 'month_name' => 'September', 'm' => 9],
-    //         ['bill' => 0, 'cashPaid' => 0, 'expense' => 0, 'month_name' => 'October', 'm' => 10],
-    //         ['bill' => 0, 'cashPaid' => 0, 'expense' => 0, 'month_name' => 'November', 'm' => 11],
-    //         ['bill' => 0, 'cashPaid' => 0, 'expense' => 0, 'month_name' => 'December', 'm' => 12],
-    //     ];
-
-    //     foreach($incomeArray as $income){
-    //         foreach($months as $key => $month){
-    //             if ($month['m'] === $income->month){
-    //                 $income?->bill ?? '' ? $months[$key]['bill'] = $income?->bill : '' ;
-    //                 $income?->cashPaid ?? '' ? $months[$key]['cashPaid'] = $income?->cashPaid : '' ;
-                   
-
-    //                 $months[$key]['expense'] = $income?->amount ?? 0;
-    //             }
-    //         }
-    //     }
-
-    //     $total = count($months);
-
-    //     return response()->json([
-    //         'data' => $months,
-    //         'draw' => $chart ? 1 : $params->draw,
-    //         'recordsTotal' => $total,
-    //         'recordsFiltered' => $total
-    //     ]);
-    // }
 
     public function loadYearlyIncomeAndExpense3(Request $request)
     {

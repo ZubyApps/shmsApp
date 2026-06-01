@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSponsorRequest;
 use App\Http\Requests\UpdateSponsorRequest;
 use App\Http\Resources\SponsorResource;
+use App\Models\ResourceCategory;
 use App\Models\Sponsor;
 use App\Services\DatatablesService;
 use App\Services\SponsorService;
@@ -38,6 +39,38 @@ class SponsorController extends Controller
         $loadTransformer = $this->sponsorService->getLoadTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
+    }
+
+    public function getResourceCategories(Request $request, Sponsor $sponsor)
+    {
+        $params = $this->datatablesService->getDataTableQueryParameters($request);
+        // 1. Eager load the rules for this specific sponsor to keep it fast
+        $sponsor->load('resourceCategories');
+
+        $query = ResourceCategory::query();
+
+        $totalRecords = $query->count();
+
+        // 2. Get all categories and map the sponsor's specific data onto them
+        $categories = $query->get(['id', 'name'])->map(function ($category) use ($sponsor) {
+            // Find if this sponsor has a rule for this category in the loaded collection
+            $rule = $sponsor->resourceCategories->firstWhere('id', $category->id);
+
+            return [
+                'id' => $category->id,
+                'name' => $category->name,
+                // Return the percentage or a default value
+                'percentage' => $rule ? $rule->pivot->billable_percentage : '',
+                'createdBy' => $rule? $rule->pivot->createdByUser?->username : ''
+            ];
+        });
+
+        return response()->json([
+            'data' => $categories,
+            'draw' => (int) $params->draw,
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords
+        ]);
     }
 
     public function edit(Sponsor $sponsor)

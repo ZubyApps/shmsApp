@@ -133,10 +133,11 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    document.querySelectorAll('#outPatientsTable, #inPatientsTable, #ancPatientsTable').forEach(table => {
+    document.querySelectorAll('#outPatientsTable, #inPatientsTable, #ancPatientsTable, #treatmentDetailsModal, #ancTreatmentDetailsModal').forEach(table => {
         table.addEventListener('click', function (event) {
-            const consultationDetailsBtn    = event.target.closest('.consultationDetailsBtn')
-            const billingDispenseBtn         = event.target.closest('.billingDispenseBtn')
+            const consultationDetailsBtn  = event.target.closest('.consultationDetailsBtn')
+            const billingDispenseBtn      = event.target.closest('.billingDispenseBtn')
+            const viewBillSummaryBtn      = event.target.closest('.viewBillSummaryBtn')
     
             const viewer = 'hmo'
 
@@ -148,7 +149,10 @@ window.addEventListener('DOMContentLoaded', function () {
                 const [visitId, visitType, ancRegId] = [consultationDetailsBtn.getAttribute('data-id'), consultationDetailsBtn.getAttribute('data-visitType'), consultationDetailsBtn.getAttribute('data-ancregid')] 
                 const isAnc = visitType === 'ANC'
                 const [modal, div, displayFunction, vitalSignsTable, id, suffixId] = isAnc ? [ancTreatmentDetailsModal, ancTreatmentDiv, AncPatientReviewDetails, getAncVitalSignsTable, ancRegId, 'AncConDetails'] : [treatmentDetailsModal, regularTreatmentDiv, regularReviewDetails, getVitalSignsTableByVisit, visitId, 'ConDetails']
-    
+                const viewBillSummaryBtn = modal._element.querySelector('.viewBillSummaryBtn')
+                viewBillSummaryBtn.setAttribute('data-visitid', visitId)
+                viewBillSummaryBtn.setAttribute('data-suffixid', suffixId)
+
                 http.get(`/consultation/consultations/${visitId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
@@ -178,7 +182,6 @@ window.addEventListener('DOMContentLoaded', function () {
                             })
     
                             vitalSignsTable(`#vitalSignsTableNurses${suffixId}`, id, modal)
-                            getbillingTableByVisit(`billingTable${suffixId}`, visitId, modal._element)
                             modal.show()
                         }
                         consultationDetailsBtn.innerHTML = btnHtml
@@ -194,15 +197,28 @@ window.addEventListener('DOMContentLoaded', function () {
                 if (visitPrescriptionsTable) {
                     visitPrescriptionsTable.destroy();
                 }
-                const tableId = '#' + billingDispenseModal._element.querySelector('.visitPrescriptionsTable').id
+                const modal = billingDispenseModal;
+                const tableId = '#' + modal._element.querySelector('.visitPrescriptionsTable').id
                 const visitId = billingDispenseBtn.getAttribute('data-id')
-                billingDispenseModal._element.querySelector('#patient').value = billingDispenseBtn.getAttribute('data-patient')
-                billingDispenseModal._element.querySelector('#sponsor').value = billingDispenseBtn.getAttribute('data-sponsor') +' - '+ billingDispenseBtn.getAttribute('data-sponsorcat')
+                modal._element.querySelector('#patient').value = billingDispenseBtn.getAttribute('data-patient')
+                modal._element.querySelector('#sponsor').value = billingDispenseBtn.getAttribute('data-sponsor') +' - '+ billingDispenseBtn.getAttribute('data-sponsorcat')
                 markDoneBtn.setAttribute('data-id', visitId)
     
-                visitPrescriptionsTable = getPrescriptionsByConsultation(tableId, visitId, billingDispenseModal)
-                billingTable = getbillingTableByVisit('billingTable1', visitId, billingDispenseModal._element)
-                billingDispenseModal.show()
+                visitPrescriptionsTable = getPrescriptionsByConsultation(tableId, visitId, modal)
+                const viewBillSummaryBtn = modal._element.querySelector('.viewBillSummaryBtn')
+                viewBillSummaryBtn.setAttribute('data-visitid', visitId)
+                // billingTable = getbillingTableByVisit('billingTable1', visitId, billingDispenseModal._element)
+                modal.show()
+            }
+
+            if (viewBillSummaryBtn){
+                const visitId = viewBillSummaryBtn.dataset.visitid
+                const suffixId = viewBillSummaryBtn.dataset.suffixid
+                const tableId = `billingTable${suffixId}`;
+                const modal = table.id == 'treatmentDetailsModal' ? treatmentDetailsModal : ancTreatmentDetailsModal
+                if ($.fn.DataTable.isDataTable( '#'+tableId )){$('#'+tableId).dataTable().fnDestroy()};
+                getbillingTableByVisit(tableId, visitId, modal._element, false, viewBillSummaryBtn)
+
             }
         })
     })
@@ -232,14 +248,15 @@ window.addEventListener('DOMContentLoaded', function () {
     //     getExpirationStockTable('expirationStockTable', filterListOption.value)
     // })
 
-    document.querySelectorAll('#visitPrescriptionsTable, #emergencyTable').forEach(table => {
+    document.querySelectorAll('#billingDispenseModal, #emergencyTable').forEach(table => {
         table.addEventListener('click', function (event) {
             const billQtySpan               = event.target.closest('.billQtySpan')
             const dispenseQtySpan           = event.target.closest('.dispenseQtySpan')
             const holdSpan                  = event.target.closest('.holdSpan')
             const dispenseCommentSpan       = event.target.closest('.dispenseCommentSpan')
             const billingDispenseFieldset   = document.querySelector('#billingDispenseFieldset')
-            const isBillingDispenseTable    = table.id == 'visitPrescriptionsTable'
+            const isBillingDispenseTable    = table.id == 'billingDispenseModal';
+            const viewBillSummaryBtn        = event.target.closest('.viewBillSummaryBtn')
     
             if (billQtySpan){
                 const prescriptionId    = billQtySpan.getAttribute('data-id')
@@ -268,7 +285,7 @@ window.addEventListener('DOMContentLoaded', function () {
                                 if (isBillingDispenseTable){
                                     visitPrescriptionsTable.draw(false);
                                     visitPrescriptionsTable.on('draw', removeDisabled(billingDispenseFieldset));
-                                    billingTable.draw();
+                                    // billingTable.draw();
                                 } else {
                                     emergencyTable.draw(false);
                                 }
@@ -394,7 +411,16 @@ window.addEventListener('DOMContentLoaded', function () {
                            
                 })
             }
+            
+            if (viewBillSummaryBtn){
+                const visitId = viewBillSummaryBtn.dataset.visitid
+                const tableId = `billingTable1`;
+                if ($.fn.DataTable.isDataTable( '#'+tableId )){$('#'+tableId).dataTable().fnDestroy()};
+                getbillingTableByVisit(tableId, visitId, billingDispenseModal._element, false, viewBillSummaryBtn)
+
+            }
         })
+
     })
 
     document.querySelector('#bulkRequestsTable').addEventListener('click', function (event) {

@@ -350,7 +350,7 @@ const detailsBtn2 = (row) => {
 }
 
 const prescriptionStatusContorller = (row, tableId) => {
-    return `<span class="text-decoration-underline btn tootip-test ${row.doseComplete ? '' : 'discontinueBtn'} position-relative" title="${row.doseComplete ? 'completed' : 'discontinue'}" data-id="${row.id}" data-table="${tableId}" data-discontinue=${row.discontinued}>
+    return `<span class="text-decoration-underline btn tootip-test ${row.doseComplete ? '' : 'discontinueBtn'} position-relative" title="${row.doseComplete ? 'completed' : row.discontinued ? `discontinued by ${row.discontinuedBy + ' ' + row.discontinuedAt} ` : 'discontinue'}" data-id="${row.id}" data-table="${tableId}" data-discontinue=${row.discontinued}>
                 ${row.prescription == '' ? row.note ?? '' : row.prescription}  ${row.held ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">${'held - '+ row.held + ' by ' + row.heldBy}</span>` : ''}
             </span>`      
 }
@@ -386,7 +386,7 @@ const reviewBtn = (row) => {
         </a>
             <ul class="dropdown-menu">
             <li>
-                <a class=" btn btn-outline-primary dropdown-item consultationReviewBtn tooltip-test" title="details" data-id="${ row.id }" data-visittype="${ row.visitType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}" data-selecteddiagnosis="${row.selectedDiagnosis}" data-provisionaldiagnosis="${row.provisionalDiagnosis}" data-visittype="${row.visitType}">
+                <a class=" btn btn-outline-primary dropdown-item consultationReviewBtn tooltip-test" title="details" data-id="${ row.id }" data-visittype="${ row.visitType }" data-sponsorcat="${row.sponsorCategory}" data-ancregid="${row.ancRegId}" data-patient="${ row.patient }" data-patientid="${ row.patientId }" data-sponsor="${ row.sponsor }" data-admissionstatus="${row.admissionStatus}" data-diagnosis="${row.diagnosis}" data-reason="${row.reason}" data-remark="${row.remark}" data-doctordone="${row.doctorDone}" data-closed="${row.closed}" data-selecteddiagnosis="${row.selectedDiagnosis}" data-provisionaldiagnosis="${row.provisionalDiagnosis}" data-visittype="${row.visitType}" data-wardid="${row.wardId}" data-ward="${row.ward}">
                     Review
                 </a>
                 
@@ -720,7 +720,7 @@ const displayItemsList = (datalistEl, data, optionName) => {
 
 const displayItemsList2 = (datalistEl, data, optionName) => {
     data.forEach(line => {
-        const addedName = line.name + ' - ' + account.format(line.price);
+        const addedName = line.name + ' - ' + account.format(line.price) + '/' + line.unit;
         const option = document.createElement("OPTION")
         option.setAttribute('id', optionName)
         option.setAttribute('value', addedName)
@@ -1141,11 +1141,18 @@ const populateModal = ({ modal, sourceBtn, attributes = [], values = [], element
     });
 
     // Set values or innerHTML on target elements
-    values.forEach(({ targetSelector, sourceAttr, property = 'value' }) => {
+    values.forEach(({ targetSelector, sourceAttr, property = 'value', extraVal = '' }) => {
         const element = resolveElement(targetSelector);
         let value = sourceBtn?.getAttribute(sourceAttr);
+        let text = sourceBtn?.getAttribute(extraVal);
         if (element && value) {
             if (property === 'value') {
+                //fixed ward bug. So that wards don't blink after a review is saved
+                if (element.tagName === 'SELECT') {
+                    const newOpt = new Option(text, value)
+                    element.add(newOpt);
+                    element.value = value;
+                }
                 element.value = value;
             } else if (property === 'innerHTML') {
                 element.innerHTML = value;
@@ -1417,4 +1424,18 @@ function prescriptionParser(prescription) {
   return null; // Return null for invalid input
 }
 
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider, dynamicDebounce, visitType, populateModal, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, getPartographDivData, getLabourInProgressDetails, getTimeToNextObservation, labourRecordDelay, displayItemsList2, ucFirst, closedOpened, pendingIndicator, prescriptionParser}
+const getSpinners = (num) => {
+    let spinners = '';
+    let spinnerContent = `
+                        <div class="spinner-grow spinner-grow-sm" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        `;
+
+    for (let i = 1; i <= num; i++) {
+            spinners += spinnerContent;
+        }
+    return spinners;
+
+}
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider, dynamicDebounce, visitType, populateModal, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, getPartographDivData, getLabourInProgressDetails, getTimeToNextObservation, labourRecordDelay, displayItemsList2, ucFirst, closedOpened, pendingIndicator, prescriptionParser, getSpinners}

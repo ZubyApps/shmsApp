@@ -60,7 +60,6 @@ const getResourceTable = (tableId) => {
         search:true,
         searchDelay: 500,
         fixedHeader: true,
-        lengthMenu:[50, 100, 150, 200, 500],
         dom: 'l<"my-1 text-center "B>frtip',
         buttons: [
             {

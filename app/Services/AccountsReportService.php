@@ -12,6 +12,7 @@ use App\Services\PayPercentageService;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class AccountsReportService
 {
@@ -24,7 +25,7 @@ class AccountsReportService
     {
     }
 
-    public function getPayMethodsIncomeSummary(DataTableQueryParams $params, $data)
+    public function getPayMethodsIncomeSummary(DataTableQueryParams $params, Request $data)
     {
         return DB::table('pay_methods')
             ->selectRaw('COUNT(payments.id) as paymentCount, pay_methods.name AS pMethod, pay_methods.id AS id, SUM(payments.amount_paid) as amountPaid')
@@ -52,7 +53,7 @@ class AccountsReportService
             ->toArray();
     }
 
-    public function getPayMethodsExpenseSummary(DataTableQueryParams $params, $data)
+    public function getPayMethodsExpenseSummary(DataTableQueryParams $params, Request $data)
     {
         return DB::table('pay_methods')
             ->selectRaw('COUNT(DISTINCT(expenses.id)) as expenseCount, pay_methods.name AS pMethod, pay_methods.id AS id, SUM(expenses.amount) as amount')
@@ -80,7 +81,7 @@ class AccountsReportService
             ->toArray();
     }
 
-    public function getTPSSummary(DataTableQueryParams $params, $data)
+    public function getTPSSummary(DataTableQueryParams $params, Request $data)
     {
 
         return DB::table('third_party_services')
@@ -114,7 +115,7 @@ class AccountsReportService
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
-    public function getExpenseSummary(DataTableQueryParams $params, $data)
+    public function getExpenseSummary(DataTableQueryParams $params, Request $data)
     {
         return DB::table('expenses')
         ->selectRaw('expense_categories.name AS eCategory, expense_categories.id AS id, COUNT(expenses.id) as expenseCount, SUM(expenses.amount) as totalExpense')
@@ -144,7 +145,7 @@ class AccountsReportService
             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     }
 
-    public function getPaymentsByPayMethod(DataTableQueryParams $params, $data)
+    public function getPaymentsByPayMethod(DataTableQueryParams $params, Request $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'asc';
@@ -256,7 +257,7 @@ class AccountsReportService
             };
     }
 
-    public function getThirdPartyServicesByThirdParty(DataTableQueryParams $params, $data)
+    public function getThirdPartyServicesByThirdParty(DataTableQueryParams $params, Request $data)
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
@@ -419,7 +420,7 @@ class AccountsReportService
     //         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     // }
 
-    public function getVisitsSummaryBySponsorCategory(DataTableQueryParams $params, $data)
+    public function getVisitsSummaryBySponsorCategory(DataTableQueryParams $params, Request $data)
     {
         // 1. Build the Base Query
         $query = DB::table('visits')
@@ -552,7 +553,7 @@ class AccountsReportService
     //         ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     // }
 
-    public function getVisitsSummaryBySponsor(DataTableQueryParams $params, $data)
+    public function getVisitsSummaryBySponsor(DataTableQueryParams $params, Request $data)
     {
         $current = CarbonImmutable::now();
 
@@ -658,7 +659,7 @@ class AccountsReportService
     //             ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
     // }
 
-    public function getVisitsBySponsor(DataTableQueryParams $params, $data)
+    public function getVisitsBySponsor(DataTableQueryParams $params, Request $data)
     {
         $orderBy  = 'created_at';
         $orderDir = 'asc';
@@ -731,7 +732,7 @@ class AccountsReportService
             };
     }
 
-    public function getYearlyIncomeExpenseSummary($year)
+    public function getYearlyIncomeExpenseSummary(string|int $year)
     {
         $year = $year ?? now()->year;
         $start = "$year-01-01 00:00:00";
@@ -758,7 +759,7 @@ class AccountsReportService
         ->get();
     }
 
-    public function getYearlyIncomeAndExpense2($year)
+    public function getYearlyIncomeAndExpense2(string|int $year)
     {
         $year = $year ?? now()->year;
         $start = "$year-01-01 00:00:00";
@@ -849,7 +850,7 @@ class AccountsReportService
     //         ->get();
     // }
 
-    public function getYearlyIncomeAndExpense3($year)
+    public function getYearlyIncomeAndExpense3(string|int $year)
     {
         $year  = $year ?? now()->year;
         $start = "$year-01-01 00:00:00";

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\ResourceCategorySponsor;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,5 +20,13 @@ class ResourceCategory extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function sponsors()
+    {
+        return $this->belongsToMany(Sponsor::class)
+                    ->using(ResourceCategorySponsor::class)
+                    ->withPivot('billable_percentage', 'user_id')
+                    ->withTimestamps();
     }
 }

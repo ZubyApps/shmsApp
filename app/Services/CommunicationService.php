@@ -28,7 +28,7 @@ class CommunicationService
 
         if (! empty($params->searchTerm)) {
             $searchTermRaw = trim($params->searchTerm);
-            $searchTerm = '%' . addcslashes($searchTermRaw, '%_') . '%';
+            $searchTerm = addcslashes($searchTermRaw, '%_') . '%';
 
             $query->where('recipient_name', 'LIKE', $searchTerm);
         }
@@ -48,7 +48,6 @@ class CommunicationService
                 'message'           => $communication->message,
                 'units'             => $communication->units_deducted,
                 'status'            => $communication->status,
-                'messageType'       => $communication->message_type,
                 'messageType'       => $communication->message_type,
                 'createdAt'         => (new Carbon($communication->created_at))->format('d/m/Y g:ia'),
             ];

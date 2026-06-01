@@ -91,7 +91,9 @@ class PatientService
    
         $cardNumber = $user->designation->access_level > 4 && $patient->card_no != $data->cardNumber;
         $newFlagger = $data->flagPatient && ($patient->flag_reason !== $data->flagReason);
-        $patient->update([
+        
+        
+        $prepareData = [
                 "patient_type"          => $data->patientType,
                 "address"               => $data->address,
                 "blood_group"           => $data->bloodGroup,
@@ -123,9 +125,11 @@ class PatientService
                 "state_of_origin"       => $data->stateOrigin,
                 "state_of_residence"    => $data->stateResidence,
 
-        ]);
+        ];
+        
+        if ($cardNumber){$prepareData["card_no"] = $data->cardNumber;}
 
-        if ($cardNumber){$patient->update(["card_no" => $data->cardNumber]);}
+        $patient->update($prepareData);
 
         return $patient;
     }

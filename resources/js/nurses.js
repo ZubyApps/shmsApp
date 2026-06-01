@@ -329,7 +329,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     })
 
-    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #waitingTable, #emergencyTable, #treatmentDetailsModal, #medicationPrescriptionsModal').forEach(table => {
+    document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #waitingTable, #emergencyTable, #treatmentDetailsModal, #ancTreatmentDetailsModal, #medicationPrescriptionsModal').forEach(table => {
         table.addEventListener('click', function (event) {
             const consultationDetailsBtn    = event.target.closest('.consultationDetailsBtn')
             const vitalsignsBtn             = event.target.closest('.vitalSignsBtn, .ancVitalSignsBtn')
@@ -343,6 +343,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const reportsListBtn            = event.target.closest('.reportsListBtn')
             const markDoneBtn               = event.target.closest('.markDoneBtn')
             const wardBedBtn                = event.target.closest('.wardBedBtn')
+            const viewBillSummaryBtn        = event.target.closest('.viewBillSummaryBtn')
             const viewer = 'nurse'
             let [iteration, count]          = [0, 0]
     
@@ -356,6 +357,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 setAttributesId([createDeliveryNoteBtn, uploadFileBtn, createLabourRecordBtn], ['data-visitid'], [visitId]); populateLabourModals([newLabourRecordModal, viewLabourRecordModal, updateLabourRecordModal, saveLabourSummaryModal, viewLabourSummaryModal], consultationDetailsBtn);
                 closed ? modal._element.querySelector('.addVitalsignsDiv').classList.add('d-none') : modal._element.querySelector('.addVitalsignsDiv').classList.remove('d-none')
                 modal._element.querySelector('.historyBtn').setAttribute('data-visittype', visitType); modal._element.querySelector('.historyBtn').setAttribute('data-patientid', patientId)
+
+                const viewBillSummaryBtn = modal._element.querySelector('.viewBillSummaryBtn')
+                viewBillSummaryBtn.setAttribute('data-visitid', visitId)
+                viewBillSummaryBtn.setAttribute('data-suffixid', suffixId)
+
                 http.get(`/consultation/consultations/${visitId}`)
                     .then((response) => {
                         if (response.status >= 200 || response.status <= 300) {
@@ -384,7 +390,7 @@ window.addEventListener('DOMContentLoaded', function () {
                             surgeryNoteTable    = getSurgeryNoteTable('surgeryNoteTable', visitId, false, modal._element)
                             patientsFilesTable  = getPatientsFileTable(`patientsFileTable`, visitId, modal._element)
                             labourRecordTable   = getLabourRecordTable('labourRecordTable', visitId, true, modal._element)
-                            getbillingTableByVisit(`billingTable${suffixId}`, visitId, modal._element)
+                            // getbillingTableByVisit(`billingTable${suffixId}`, visitId, modal._element)
                             modal.show()
                         }
                         consultationDetailsBtn.innerHTML = btnHtml
@@ -546,6 +552,16 @@ window.addEventListener('DOMContentLoaded', function () {
                     })
                 }
         
+            }
+
+            if (viewBillSummaryBtn){
+                const visitId = viewBillSummaryBtn.dataset.visitid
+                const suffixId = viewBillSummaryBtn.dataset.suffixid
+                const tableId = `billingTable${suffixId}`;
+                const modal = table.id == 'treatmentDetailsModal' ? treatmentDetailsModal : ancTreatmentDetailsModal
+                if ($.fn.DataTable.isDataTable( '#'+tableId )){$('#'+tableId).dataTable().fnDestroy()};
+                getbillingTableByVisit(tableId, visitId, modal._element, false, viewBillSummaryBtn)
+
             }
         })
     })
@@ -1093,6 +1109,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const deleteServiceBtn          = event.target.closest('#deleteServiceBtn')
             const discontinueBtn            = event.target.closest('.discontinueBtn')
             const reportServiceBtn          = event.target.closest('#reportServiceBtn')
+            const viewBillSummaryBtn        = event.target.closest('.viewBillSummaryBtn')
             const viewer                    = 'nurse'
     
             if (collapseConsultationBtn) {
@@ -1167,7 +1184,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
                 chartMedicationModal._element.querySelector('#prescription').value = prescription
                 const parsedPrescription = prescriptionParser(prescription)
-                console.log(parsedPrescription)
                 chartMedicationModal._element.querySelector('#dose').value = parsedPrescription?.dose.number
                 chartMedicationModal._element.querySelector('#unit').value = parsedPrescription?.dose.unit
                 chartMedicationModal._element.querySelector('#frequency').value = parsedPrescription?.frequency.number
@@ -1294,6 +1310,13 @@ window.addEventListener('DOMContentLoaded', function () {
                         console.log(error)
                     })
                 }
+            }
+
+            if (viewBillSummaryBtn){
+                const visitId = viewBillSummaryBtn.dataset.visitid
+                const tableId = `billingTableHistory${visitId}`;
+                if ($.fn.DataTable.isDataTable( '#'+tableId )){$('#'+tableId).dataTable().fnDestroy()};
+                getbillingTableByVisit(tableId, visitId, consultationHistoryModal._element, false, viewBillSummaryBtn)
             }
         })
     })

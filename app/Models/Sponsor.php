@@ -100,4 +100,12 @@ class Sponsor extends Model
     {
         return $query->whereIn('category_name', ['HMO', 'NHIS', 'Retainership']);
     }
+
+    public function resourceCategories()
+    {
+        return $this->belongsToMany(ResourceCategory::class)
+                    ->using(ResourceCategorySponsor::class)
+                    ->withPivot('billable_percentage', 'user_id')
+                    ->withTimestamps();
+    }
 }
