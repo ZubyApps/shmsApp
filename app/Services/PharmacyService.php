@@ -363,9 +363,9 @@ class PharmacyService
         $visit      = $prescription->visit()->with('sponsor')->first();
         $sponsor    = $visit?->sponsor;
         $isNhis     = $sponsor->category_name == 'NHIS';
+        $quantity   = $data->quantity ?? 0;
         
-        $billArray = $this->helperService->biller($resource, $sponsor, $data->quantity, $prescription->approved);
-        info($billArray);
+        $billArray = $this->helperService->biller($resource, $sponsor, $quantity, $prescription->approved);
         
         $bill = $billArray['bill'];
 
