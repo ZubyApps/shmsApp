@@ -207,10 +207,13 @@ class PrescriptionService
         $quantity = (float)($data->quantity ?? 0); // Ensure quantity is a float/int
         $hasQuantity = $quantity > 0;
         $billArray = null;
+        $bill = 0.00;
 
-        if ($hasQuantity) {
+        if ($hasQuantity && $visit) {
             // Calculate bill once outside the transaction
             $billArray = $this->helperService->biller($resource, $sponsor, $data->quantity);
+        } else {
+            $bill = $resource->getSellingPriceForSponsor($sponsor) * $data->quantity;
         }
         
         // Prepare transaction variables
@@ -224,7 +227,7 @@ class PrescriptionService
 
         // --- STEP 2: DATABASE TRANSACTION (Atomic Write) ---
 
-        $prescription = DB::transaction(function () use ($data, $resource, $user, $visitId, $walkInId, $mortuaryId, $billArray, $isNhis, $resourceSubCat, $hasQuantity, $conId) {
+        $prescription = DB::transaction(function () use ($data, $resource, $user, $visitId, $walkInId, $mortuaryId, $billArray, $isNhis, $resourceSubCat, $hasQuantity, $conId, $bill) {
             // Prepare creation data
             $creationData = [
                 'resource_id'           => $resource->id,
@@ -242,7 +245,7 @@ class PrescriptionService
             // Only set bill date/user if a quantity was billed
             if ($hasQuantity) {
                 $creationData['qty_billed'] = $this->determineBillQuantity($resource, $data);
-                $creationData['hms_bill']   = $billArray['bill'];
+                $creationData['hms_bill']   = $billArray['bill'] ?? $bill;
                 $creationData['nhis_bill']  = $isNhis ? $billArray['nhisBill'] : 0.0;
                 $creationData['hms_bill_date'] = Carbon::now();
                 $creationData['hms_bill_by'] = $user->id;
