@@ -17,6 +17,13 @@
                                 <x-input-span id="descriptionLabel">Description</x-input-span>
                                 <x-form-input name="description" value="" />
                             </x-form-div>
+                            <x-form-div class="col-xl-12">
+                                <x-input-span>Is Active</x-input-span>
+                                <select class="form-select form-select-md" name="isActive">
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>  
+                                </select>
+                            </x-form-div>
                         </div>
                     </div>
                 </div>

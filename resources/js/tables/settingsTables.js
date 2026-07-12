@@ -200,7 +200,7 @@ const getPayMethodTable = () => {
 }
 
 const getExpenseCategoryTable = (table) => {
-    const resourceCategoryTable = new DataTable('#'+table, {
+    const expenseCategoryTable = new DataTable('#'+table, {
         serverSide: true,
         ajax:  '/expensecategory/load',
         orderMulti: true,
@@ -211,6 +211,7 @@ const getExpenseCategoryTable = (table) => {
                 return `<span class="text-primary"> ${row.name}</span>`
             }},
             {data: "description"},
+            {data: row => !row.isActive ? '<span class="fw-bold text-danger">No</span>' : 'Yes' },
             {data: "createdBy"},
             {data: "createdAt"},
             {
@@ -241,7 +242,7 @@ const getExpenseCategoryTable = (table) => {
                     }
         ]
     });
-    return resourceCategoryTable
+    return expenseCategoryTable
 }
 
 const getMedicationCategoryTable = (table) => {

@@ -135,7 +135,6 @@ class ConsultationService
 
     public function determineWard(Visit $visit, Consultation $consultation, Request $data, ?User $user = null)
     {
-        Log::info($data);
         $wardModel = fn($wardId)=>$this->ward::find($wardId);
 
         if ($ward = $wardModel($visit->ward_id)){

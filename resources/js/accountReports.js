@@ -612,7 +612,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (response.status >= 200 || response.status <= 300){
                 newExpenseModal.hide()
                     clearDivValues(newExpenseModal._element)
-                    expensesTable ? expensesTable.draw() : ''
+                    expensesTable ? expensesTable.draw(false) : ''
                 }
                 saveExpenseBtn.removeAttribute('disabled')
         })
@@ -650,7 +650,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     http.delete(`/expenses/${expense}`)
                         .then((response) => {
                             if (response.status >= 200 || response.status <= 300){
-                                expensesTable ? expensesTable.draw() : ''
+                                expensesTable ? expensesTable.draw(false) : ''
                             }
                             deleteExpenseBtn.removeAttribute('disabled')
                         })

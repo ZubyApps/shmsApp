@@ -21,8 +21,8 @@
                     <button class="nav-link active" id="nav-listOfSentSms-tab" data-bs-toggle="tab" data-bs-target="#nav-listOfSentSms" 
                     type="button" role="tab" aria-controls="nav-listOfSentSms" aria-selected="true">SMS</button>
 
-                    <button class="nav-link" id="nav-thirdParties-tab" data-bs-toggle="tab" data-bs-target="#nav-thirdParties"
-                        type="button" role="tab" aria-controls="nav-thirdParties" aria-selected="false">WhatsApp</button>
+                    {{-- <button class="nav-link" id="nav-thirdParties-tab" data-bs-toggle="tab" data-bs-target="#nav-thirdParties"
+                        type="button" role="tab" aria-controls="nav-thirdParties" aria-selected="false">WhatsApp</button> --}}
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
@@ -55,7 +55,7 @@
                     </div>
                 </div>
                 <!-- Third Party table -->
-                <div class="tab-pane fade" id="nav-thirdParties" role="tabpanel" aria-labelledby="nav-thirdParties-tab" tabindex="0">
+                {{-- <div class="tab-pane fade" id="nav-thirdParties" role="tabpanel" aria-labelledby="nav-thirdParties-tab" tabindex="0">
                     <div class="py-4">
                         <div class="text-start py-3">
                             <button type="button" id="newThirdPartyBtn" class="btn btn-primary">
@@ -80,7 +80,7 @@
                             <tbody></tbody>
                         </table>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>

@@ -19,9 +19,16 @@ class ExpenseCategoryController extends Controller
         
     }
 
+    // public function showAll(string ...$columns)
+    // {
+    //     return ExpenseCategory::all($columns);
+    // }
+
     public function showAll(string ...$columns)
     {
-        return ExpenseCategory::all($columns);
+        $columns = empty($columns) ? ['*'] : $columns;
+
+        return ExpenseCategory::active()->get($columns);
     }
 
     public function store(StoreExpenseCategoryRequest $request)

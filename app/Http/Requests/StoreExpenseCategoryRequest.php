@@ -24,6 +24,7 @@ class StoreExpenseCategoryRequest extends FormRequest
         return [
             'name'          => ['required'],
             'description'   => ['required'],
+            'isActive'      => ['required'],
         ];
     }
 }

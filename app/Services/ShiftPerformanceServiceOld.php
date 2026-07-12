@@ -44,7 +44,7 @@ Class ShiftPerformanceServiceOld
             }
 
             $nursesOnDuty = User::whereRelation('designation', 'designation', 'Nurse')->where('is_active', true)->pluck('username')->toArray();
-            $timingSwaper = $this->helperService->prescriptionTimeSwapper();
+            $timingSwaper = ''; //$this->helperService->prescriptionTimeSwapper();
             $column       = $this->setColumn($timingSwaper);
             
             $injectablesChartRate   = $this->injectablesChartRate($shiftPerformance, $column);
@@ -75,7 +75,7 @@ Class ShiftPerformanceServiceOld
                 $medicationTimeCounts = ($medicationTimeValues ? $medicationTimeValues['medicationsNotGiven'] : 0) . ' medication(s)';
                 $serviceTimeCounts = ($serviceTimeValues ? $serviceTimeValues['servicesNotDone'] : 0) . ' service(s)';
                 // info('busyCount values =>', ['totalInjectablePrescriptions' => $injectablesChartRate ? $injectablesChartRate['totalInjectablePrescriptions'] : 0, 'medicationsDueInShift' => $medicationTimeValues ? $medicationTimeValues['medicationsDueInShift'] : 0, 'medicationsGivenInShift' => $medicationTimeValues ? $medicationTimeValues['medicationsGivenInShift'] : 0, 'servicesDoneInShift' => $serviceTimeValues ? $serviceTimeValues['servicesDoneInShift'] : 0]);
-                info('busyCount =>', [$busyCount]);
+                
 
                 $shiftPerformance->update([
                     'performance'  => $this->getPerformance($shiftPerformance, $busyCount),

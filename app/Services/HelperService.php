@@ -110,7 +110,7 @@ class HelperService
         return true;
     }
 
-    public function biller(Resource $resource, Sponsor $sponsor, string|int $quantity, bool|int $approved = false)
+    public function biller(Resource $resource, ?Sponsor $sponsor, string|int $quantity, bool|int $approved = false)
     {
         $sponsorCat = $sponsor->category_name;
         $isFamily = $sponsorCat === 'Family';
@@ -122,7 +122,7 @@ class HelperService
 
         $billArray = ['bill' => $bill, 'nhisBill' => $isNhis ? $bill : 0.0];
 
-        $sponsorResourceCat = $sponsor->resourceCategories
+        $sponsorResourceCat = $sponsor?->resourceCategories
             ->where('id', $resource->resourceSubCategory->resourceCategory->id)
             ->first();
 

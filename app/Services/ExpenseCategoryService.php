@@ -29,6 +29,7 @@ class ExpenseCategoryService
        $expenseCategory->update([
             'name'          => $data->name,
             'description'   => $data->description,
+            'is_active'     => $data->isActive,
             'user_id'       => $user->id
         ]);
 
@@ -40,7 +41,7 @@ class ExpenseCategoryService
         $orderBy    = 'created_at';
         $orderDir   = 'desc';
 
-        $query = $this->expenseCategory->select('id', 'name', 'description', 'created_at', 'user_id')
+        $query = $this->expenseCategory->select('id', 'name', 'description', 'created_at', 'user_id', 'is_active')
                     ->with([
                         'user:id,username',
                     ])
@@ -64,6 +65,7 @@ class ExpenseCategoryService
             return [
                 'id'            => $expenseCategory->id,
                 'name'          => $expenseCategory->name,
+                'isActive'      => $expenseCategory->is_active,
                 'description'   => $expenseCategory->description,
                 'createdBy'     => $expenseCategory->user->username,
                 'createdAt'     => (new Carbon($expenseCategory->created_at))->format('d/m/Y gi:a'),

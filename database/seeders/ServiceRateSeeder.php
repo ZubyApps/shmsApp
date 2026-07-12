@@ -15,10 +15,10 @@ class ServiceRateSeeder extends Seeder
         }
 
         $rates = [
-            ['identifier' => 'mtn',     'unit_cost' => 2.95],
+            ['identifier' => 'mtn',     'unit_cost' => 3.00],
             ['identifier' => 'airtel',  'unit_cost' => 3.55],
-            ['identifier' => 'glo',     'unit_cost' => 3.05],
-            ['identifier' => '9mobile', 'unit_cost' => 3.10],
+            ['identifier' => 'glo',     'unit_cost' => 3.55],
+            ['identifier' => '9mobile', 'unit_cost' => 3.55],
             ['identifier' => 'other',   'unit_cost' => 4.00],
         ];
 

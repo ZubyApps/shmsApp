@@ -184,6 +184,7 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Description</th>
+                                    <th>Is Active</th>
                                     <th>Created By</th>
                                     <th>Created At</th>
                                     <th>Actions</th>

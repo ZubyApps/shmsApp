@@ -384,7 +384,7 @@ class BillingService
         $orderDir = 'desc';
         $page     = ($params->length + $params->start) / $params->length;
         $visitId = (int)$data->visitId;
-        info($visitId);
+
         $sponsorId = $this->visit->where('id', $visitId)->value('sponsor_id');
 
         return $this->visit->query()
