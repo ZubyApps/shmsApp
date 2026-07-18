@@ -231,7 +231,11 @@ class PharmacyService
                 // Patient/Card search
                 if (str_starts_with($searchTermRaw, 'pId-')) {
                     $sub->where('patient_id', explode('-', $searchTermRaw)[1]);
-                } else {
+                } 
+                elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $searchTermRaw)) {
+                    $sub->whereBetween('created_at', [$searchTermRaw . ' 00:00:00', $searchTermRaw . ' 23:59:59']);
+                }
+                else {
                     $sub->whereHas('patient', fn($p) => $p->searchByName($searchTermRaw)->orWhere('card_no', 'LIKE', $searchTerm)->orWhere('phone', 'LIKE', $searchTerm))
                         ->orWhereHas('sponsor', fn($s) => $s->where('name', 'LIKE', $searchTerm));
                         // ->orWhereHas('latestConsultation', fn($c) => $c->where('icd11_diagnosis', 'LIKE', $searchTerm));
