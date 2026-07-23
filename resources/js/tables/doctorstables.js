@@ -7,7 +7,7 @@ DataTable.Buttons.jszip(jszip)
 DataTable.Buttons.pdfMake(pdfmake)
 pdfMake.vfs = pdfFonts;
 $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
-import { admissionStatus, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getOrdinal, histroyBtn, pendingIndicator, prescriptionOnLatestConsultation, prescriptionStatusContorller, preSearch, reviewBtn, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, visitType, wardState } from "../helpers";
+import { admissionStatus, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getOrdinal, histroyBtn, pendingIndicator, prescriptionOnLatestConsultation, prescriptionStatusContorller, preSearch, reviewBtn, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, visitType, vitalsAndNursingReport, wardState } from "../helpers";
 
 const getOutpatientsVisitTable = (tableId, filter) => {
     const outPatientsTable =  new DataTable(tableId, {
@@ -53,19 +53,20 @@ const getOutpatientsVisitTable = (tableId, filter) => {
             {data: row =>  `
                         <div class="d-flex justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn px-1 tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
-                                ${row.labPrescribed}<i class="bi bi-eyedropper"></i>${row.labDone}
+                                ${row.labPrescribed}/${row.labDone}
                             </button>
                         </div>`                
             },
-            {data: row => function () {
-                   return `
-                    <div class="d-flex flex-">
-                        <button class=" btn btn-outline-primary vitalSignsBtn px-2 tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
-                        <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
-                        </button>
-                    </div>`
-                }
-            },
+            // {data: row => function () {
+            //        return `
+            //         <div class="d-flex flex-">
+            //             <button class=" btn btn-outline-primary vitalSignsBtn px-2 tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+            //             <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
+            //             </button>
+            //         </div>`
+            //     }
+            // },
+            {data: row => vitalsAndNursingReport(row)},
             {data: row => admissionStatus(row)},
             {
                 sortable: false,
@@ -122,19 +123,20 @@ const getInpatientsVisitTable = (tableId, filter) => {
             {data: row =>  `
                         <div class="d-flex flex- justify-content-center">
                             <button class=" btn btn-outline-primary investigationsBtn tooltip-test" title="View Investigations" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
-                                ${row.labPrescribed}<i class="bi bi-eyedropper"></i>${row.labDone}
+                                ${row.labPrescribed}/${row.labDone}
                             </button>
                         </div>`                
             },
-            {data: row => function () {
-                   return `
-                    <div class="d-flex flex-">
-                        <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
-                        <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
-                        </button>
-                    </div>`
-                }
-            },
+            // {data: row => function () {
+            //        return `
+            //         <div class="d-flex flex-">
+            //             <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+            //             <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
+            //             </button>
+            //         </div>`
+            //     }
+            // },
+            {data: row => vitalsAndNursingReport(row)},
             {data: row => admissionStatus(row)},
             {data: row => wardState(row)},
             {

@@ -94,7 +94,7 @@ class HmoController extends Controller
 
         $sponsors = $this->hmoService->getPaginatedVisitPrescriptionsRequest($params, $request);
        
-        $loadTransformer = $this->hmoService->getAllPrescriptionsTransformer();
+        $loadTransformer = $this->hmoService->getVisitsPrescriptionsTransformer();
 
         return $this->datatablesService->datatableResponse($loadTransformer, $sponsors, $params);  
     }

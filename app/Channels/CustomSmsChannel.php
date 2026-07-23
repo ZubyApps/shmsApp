@@ -33,13 +33,36 @@ class CustomSmsChannel
             return;
         }
 
+        $numbers = explode(',', $data['to']);
+        // $count = count($numbers);
+        
         // 2. Resolve Network and Rate
-        $network = $this->getNetwork($data['to']);
-        $rate = ServiceRate::where('identifier', $network)->first() 
-                ?? ServiceRate::where('identifier', 'other')->first();
-
+        // $network = $this->getNetwork($data['to']);
+        // $rate = ServiceRate::where('identifier', $network)->first() 
+        //         ?? ServiceRate::where('identifier', 'other')->first();
                 
-        $cost = $rate ? (float) $rate->unit_cost : 4.00; // Fallback to 4 units
+        // $cost = $rate ? (float) $rate->unit_cost : 4.00; // Fallback to 4 units
+
+        $characterCount = mb_strlen($data['message']);
+        $smsPages = $characterCount > 160 ? (int) ceil($characterCount / 153) : 1;
+
+        $totalCost = 0;
+        $network = '';
+        // Loop through the numbers just to calculate the true aggregate cost based on individual networks
+        foreach ($numbers as $number) {
+            $cleanNumber = trim($number);
+            $network = $this->getNetwork($cleanNumber);
+            
+            $rate = ServiceRate::where('identifier', $network)->first() 
+                    ?? ServiceRate::where('identifier', 'other')->first();
+                    
+            $baseCost = $rate ? (float) $rate->unit_cost : 4.00;
+            
+            // Add up the cost for each individual number * its page count
+            $totalCost += ($baseCost * $smsPages);
+        }
+
+        $cost = $totalCost;
                 
         // 3. Check Global Balance (Hospital Wallet)
         $currentBalance = (float) UnitTransaction::latest('id')->value('running_balance') ?? 0;

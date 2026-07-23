@@ -606,9 +606,9 @@ const getHmoReconciliationTable = (tableId, sponsorId, modal, from, to, date) =>
                                                 <td class="text-secondary fw-semibold">${p.capitation}</td>
                                                 <td class="text-secondary"> 
                                                     <div class="d-flex text-secondary">
-                                                        <span class="btn payBtnSpan" data-id="${p.id}">${p.paid ? p.paid : 'Pay'}</span>
-                                                        <input class="ms-1 form-control payInput d-none text-secondary" type="number" min="0" style="width:6rem;" value="${p.paid == 0 ? '' : p.paid}" name="amountPaid" id="amountPaid">
-                                                        <span class="ms-1 ${p.paid > 0 ? '' : 'd-none'} btn addSpanBtn text-primary" data-id="${p.id}">Add </span> <input class="ms-1 form-control addAmount d-none" type="number" min="0" style="width:6rem;" name="addAmount" id="addAmount">
+                                                        <span class="btn payBtnSpan" data-id="${p.id}">${p.paid1 ? p.paid1 : 'Pay'}</span>
+                                                        <input class="ms-1 form-control payInput d-none text-secondary" type="number" min="0" style="width:6rem;" value="${p.paid1 == 0 ? '' : p.paid1}" name="amountPaid" id="amountPaid">
+                                                        <span class="ms-1 ${p.paid1 > 0 ? '' : 'd-none'} btn addSpanBtn text-primary" data-id="${p.id}">Add </span> <input class="ms-1 form-control addAmount d-none" type="number" min="0" style="width:6rem;" name="addAmount" id="addAmount">
                                                     </div>
                                                 </td>
                                             </tr>

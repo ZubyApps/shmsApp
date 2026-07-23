@@ -22,14 +22,14 @@
                         </div>
                         <div class="mb-2 form-control">
                             <x-form-span class="fs-5">Nurses Report</x-form-span>
-                            <div class="text-start py-4">
+                            <div class="text-start py-4 {{ $isNurses ? '' : 'd-none' }}">
                                 <button type="button" id="newNursesReportBtn" class="btn btn-primary">
                                     <i class="bi bi-plus-circle me-1"></i>
                                     New Report
                                 </button>
                             </div>
                             <div class="row overflow-auto my-3">
-                                <table id="nursesReportTable" class="table table-sm nursesReportTable">
+                                <table id="nursesReportTable{{ $isNurses ? '' : 'D' }}" class="table table-sm nursesReportTable">
                                     <thead>
                                         <tr>
                                             <th>Date</th>

@@ -54,6 +54,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ResourceSubCategoryController;
 use App\Http\Controllers\AntenatalRegisterationController;
 use App\Http\Controllers\CommunicationController;
+use App\Http\Controllers\CustomSmsController;
 use App\Http\Controllers\InvestigationsListController;
 use App\Http\Controllers\ResourceCategorySponsorController;
 use App\Http\Controllers\SmsWalletFundingController;
@@ -86,6 +87,7 @@ Route::middleware('auth')->group(function () {
 
         Route::prefix('users')->group(function () {
             Route::get('', [RegisteredUserController::class, 'create'])->name('Users');
+            Route::get('/list/staff', [RegisteredUserController::class, 'getStaffList']);
             Route::post('', [RegisteredUserController::class, 'store'])->name('register');
             Route::get('/allstaff', [RegisteredUserController::class, 'loadAllUsers']);
             Route::get('/activestaff', [RegisteredUserController::class, 'loadActiveUsers']);
@@ -743,6 +745,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/load/walletfundings', [SmsWalletFundingController::class, 'load']);
         Route::patch('/{smsWalletFunding}', [SmsWalletFundingController::class, 'updatePayment']);
         Route::delete('/{smsWalletFunding}', [SmsWalletFundingController::class, 'destroy']);
+    });
+
+    Route::prefix('customsms')->group(function () {
+         Route::post('/singlepatient', [CustomSmsController::class, 'sendSinglePatientSms']);
+         Route::post('/singlestaff', [CustomSmsController::class, 'sendSingleStaffSms']);
+         Route::post('/number', [CustomSmsController::class, 'sendNumberSms']);
+         Route::post('/multipatients', [CustomSmsController::class, 'sendMultiPatientsSms']);
+         Route::post('/multistaff', [CustomSmsController::class, 'sendMultiStaffSms']);
     });
 });
 

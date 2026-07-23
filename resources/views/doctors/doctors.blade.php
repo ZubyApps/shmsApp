@@ -39,6 +39,8 @@
 @include('nurses.summaryOfLabourModal', ['title' => 'Save Labour Summary', 'isUpdate' => true, 'dept' => 'doctors', 'isView' => false, 'id' => 'saveLabourSummaryModal'])
 @include('nurses.summaryOfLabourModal', ['title' => 'View Labour Summary', 'isUpdate' => false, 'dept' => 'doctors', 'isView' => true, 'id' => 'viewLabourSummaryModal'])
 @include('nurses.partographModal', ['title' => 'Partograph', 'isDoctor' => true, 'id' => 'partographModal', ])
+@include('billing.billingModal', ['title' => 'Billing Details', 'isBilling' => false, 'id' => 'billingModal'])
+@include('extras.nursesReportModal', ['title' => 'Nurses Report', 'isNurses' => false, 'id' => 'nursesReportModal'])
 
     <div class="container mt-5">
         <input type="text" class="d-none" value="{{ $feverBenchMark }}" id="feverBenchMark">
@@ -246,8 +248,8 @@
                                     <th>Last 30days</th>
                                     <th>Rx Count</th>
                                     <th>Other Rx</th>
-                                    <th>Lab Count</th>
-                                    <th>Vitals</th>
+                                    <th>Lab</th>
+                                    <th>Vitals/Report</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -278,8 +280,8 @@
                                     <th>Last 30days</th>
                                     <th>Rx Count</th>
                                     <th>Other Rx</th>
-                                    <th>Lab Count</th>
-                                    <th>Vitals</th>
+                                    <th>Lab</th>
+                                    <th>Vitals/Reports</th>
                                     <th>Status</th>
                                     <th>Ward</th>
                                     <th>Actions</th>

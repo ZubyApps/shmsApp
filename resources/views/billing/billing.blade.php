@@ -4,7 +4,7 @@
 @vite(['resources/css/colourblink.scss', 'resources/js/billing.js'])
 
 @include('investigations.addResultModal', ['title' => 'Add Result', 'isUpdate' => false, 'id' => 'addResultModal'])
-@include('billing.billingModal', ['title' => 'Billing Details', 'isUpdate' => false, 'id' => 'billingModal'])
+@include('billing.billingModal', ['title' => 'Billing Details', 'isBilling' => true, 'id' => 'billingModal'])
 @include('billing.dischargeBillModal', ['title' => 'Add Discharge Bill', 'id' => 'dischargeBillModal'])
 @include('billing.outstandingBillsModal', ['title' => "Patient's Outstanding Bills", 'isUpdate' => false, 'id' => 'outstandingBillsModal'])
 @include('billing.billModal', ['title' => "", 'isSummary' => true, 'id' => 'billModal'])

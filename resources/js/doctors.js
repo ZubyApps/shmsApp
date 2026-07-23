@@ -8,7 +8,7 @@ import { getWaitingTable, getVitalSignsTableByVisit, getPrescriptionTableByConsu
 import { getAncVitalsignsChart, getVitalsignsChartByVisit } from "./charts/vitalsignsCharts"
 import $ from 'jquery';
 import { getbillingTableByVisit } from "./tables/billingTables"
-import { getAncVitalSignsTable, getDeliveryNoteTable, getEmergencyTable, getLabourRecordTable, getNurseMedicationsByFilter, getOtherPrescriptionsByFilterNurses, getPartographTable } from "./tables/nursesTables"
+import { getAncVitalSignsTable, getDeliveryNoteTable, getEmergencyTable, getLabourRecordTable, getNurseMedicationsByFilter, getNursesReportTable, getOtherPrescriptionsByFilterNurses, getPartographTable } from "./tables/nursesTables"
 import { visitDetails } from "./dynamicHTMLfiles/visits"
 import html2pdf  from "html2pdf.js"
 import { getAppointmentsTable } from "./tables/appointmentsTables"
@@ -52,6 +52,8 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveLabourSummaryModal        = new Modal(document.getElementById('saveLabourSummaryModal'))
     const viewLabourSummaryModal        = new Modal(document.getElementById('viewLabourSummaryModal'))
     const partographModal               = new Modal(document.getElementById('partographModal'))
+    const billingModal                  = new Modal(document.getElementById('billingModal'))
+    const nursesReportModal             = new Modal(document.getElementById('nursesReportModal'))
     const accordionCollapseList = [...document.querySelectorAll('.accordion-collapse')].map(accordionCollapseEl => new Collapse(accordionCollapseEl, {toggle:false}))
     
     const regularConsultationReviewDiv      = consultationReviewModal._element.querySelector('#consultationReviewDiv')
@@ -141,7 +143,7 @@ window.addEventListener('DOMContentLoaded', function () {
     // ICD11 handler
     ECT.Handler.configure(mySettings, myCallbacks)
     //visit Tables and consultations that are active
-    let inPatientsVisitTable, ancPatientsVisitTable, prescriptionTable, medicalReportTable, patientsFilesTable, surgeryNoteTable, deliveryNoteTable, appointmentsTable, proceduresTable, labourRecordTable, partographCharts
+    let inPatientsVisitTable, ancPatientsVisitTable, prescriptionTable, medicalReportTable, patientsFilesTable, surgeryNoteTable, deliveryNoteTable, appointmentsTable, proceduresTable, labourRecordTable, partographCharts, nursesReportTable, billingTable
 
     const labourInProgress = () => {
         getLabourInProgressDetails(labourInProgressDiv);
@@ -265,8 +267,10 @@ window.addEventListener('DOMContentLoaded', function () {
             const medicalReportBtn      = event.target.closest('.medicalReportBtn')
             const updateResourceListBtn = event.target.closest('#updateResourceListBtn');  const wardBedBtn = event.target.closest('.wardBedBtn')
             const viewBillSummaryBtn    = event.target.closest('.viewBillSummaryBtn')
-            const viewer                = 'doctor'
-            let [iteration, count]        = [0, 0]
+            const viewer                = 'doctor';
+            const billingDetailsBtn     = event.target.closest('.billingDetailsBtn')
+            const reportsListBtn        = event.target.closest('.reportsListBtn')
+            let [iteration, count]      = [0, 0]
     
             if (consultationReviewBtn) {
                 consultationReviewBtn.setAttribute('disabled', 'disabled')
@@ -362,15 +366,15 @@ window.addEventListener('DOMContentLoaded', function () {
                             displayWardList(config.modal._element.querySelector("#ward"), wardData);
                         }
                         config.vitalSignsTable(`#vitalSignsConsultation${config.suffixId}`, config.id, config.modal);
-
                         // Fetch and render chart
                         const chartData = await httpRequest(`/${config.url}/load/chart`, 'GET',{ params: { visitId: config.id, ancRegId: config.id } }, 'Failed to fetch chart data');
                         config.vitalSignsChart(config.modal._element.querySelector(`#vitalsignsChart${config.suffixId}`), { data: chartData }, config.modal);
             
                         // Render remaining tables
-                        labourRecordTable   = getLabourRecordTable('labourRecordTable', visitId, true, config.modal._element)
+                        nursesReportTable = getNursesReportTable('nursesReportTable', visitId, config.modal)
+                        labourRecordTable = getLabourRecordTable('labourRecordTable', visitId, true, config.modal._element)
                         deliveryNoteTable = getDeliveryNoteTable('deliveryNoteTable', visitId, false, config.modal._element);
-                        surgeryNoteTable = getSurgeryNoteTable('surgeryNoteTable', visitId, true, config.modal._element);
+                        surgeryNoteTable  = getSurgeryNoteTable('surgeryNoteTable', visitId, true, config.modal._element);
                         patientsFilesTable = getPatientsFileTable(`patientsFileTable${config.suffixId}`, visitId, config.modal._element);
                         // getbillingTableByVisit(`billingTable${config.suffixId}`, visitId, config.modal._element);
             
@@ -542,6 +546,19 @@ window.addEventListener('DOMContentLoaded', function () {
                 getbillingTableByVisit(tableId, visitId, modal._element, false, viewBillSummaryBtn)
 
             }
+
+            if (billingDetailsBtn){
+                const [visitId, conId] = [billingDetailsBtn.getAttribute('data-id'),  billingDetailsBtn.getAttribute('data-conid')]
+                billingTable = getbillingTableByVisit('billingTable', visitId, billingModal._element, true)
+                billingModal.show()
+            }
+
+            if (reportsListBtn){
+                    const visitId = reportsListBtn.getAttribute('data-id')
+                    populatePatientSponsor(nursesReportModal, reportsListBtn)
+                    nursesReportTable = getNursesReportTable('nursesReportTableD', visitId, nursesReportModal)
+                    nursesReportModal.show()
+                }
         })
     })
 
@@ -1938,6 +1955,40 @@ window.addEventListener('DOMContentLoaded', function () {
                 button.removeAttribute('disabled');
             }
 
+            })
+        }
+    })
+
+    document.querySelector('#billingTable').addEventListener('click',  function (event) {
+        const discountBtn               = event.target.closest('.discountBtn')
+        if (discountBtn){
+            const visitId    = discountBtn.getAttribute('data-id')
+            const discountInput      = discountBtn.parentElement.querySelector('.discountInput')
+            discountBtn.classList.add('d-none')
+            discountInput.classList.remove('d-none')
+            resetFocusEndofLine(discountInput)
+            
+            discountInput.addEventListener('blur', function () {
+                if (discountInput.value){
+                    http.patch(`/billing/discount/${visitId}`, {discount: discountInput.value})
+                    .then((response) => {
+                        if (response.status >= 200 || response.status <= 300) {
+                            if ($.fn.DataTable.isDataTable( '#billingTable' )){
+                                $('#billingTable').dataTable().fnDraw()
+                            }
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        if ($.fn.DataTable.isDataTable( '#billingTable' )){
+                            $('#billingTable').dataTable().fnDraw()
+                        }
+                    })
+                } else {
+                    if ($.fn.DataTable.isDataTable( '#billingTable' )){
+                        $('#billingTable').dataTable().fnDraw()
+                    }
+                }                 
             })
         }
     })

@@ -50,6 +50,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const saveLabourSummaryModal        = new Modal(document.getElementById('saveLabourSummaryModal'))
     const viewLabourSummaryModal        = new Modal(document.getElementById('viewLabourSummaryModal'))
     const partographModal               = new Modal(document.getElementById('partographModal'))
+    const billingModal                  = new Modal(document.getElementById('billingModal'))
     const accordionCollapseList = [...document.querySelectorAll('.accordion-collapse')].map(accordionCollapseEl => new Collapse(accordionCollapseEl, {toggle:false}))
     let nursingPerformanceDropDown;
     setTimeout(() => {
@@ -127,7 +128,7 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     });
 
-    let outPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable, theatreRequestsTable, emergencyTable, nursesReportTable, surgeryNoteTable, deliveryNoteTable, medicationsTable, patientsFilesTable, labourRecordTable, partographCharts
+    let outPatientsVisitTable, ancPatientsVisitTable, bulkRequestsTable, theatreRequestsTable, emergencyTable, nursesReportTable, surgeryNoteTable, deliveryNoteTable, medicationsTable, patientsFilesTable, labourRecordTable, partographCharts, billingTable
 
     const inPatientsVisitTable          = getPatientsVisitsByFilterTable('#inPatientsVisitTable', 'Inpatient')
     const waitingTable                  = getWaitingTable('#waitingTable')
@@ -344,7 +345,8 @@ window.addEventListener('DOMContentLoaded', function () {
             const markDoneBtn               = event.target.closest('.markDoneBtn')
             const wardBedBtn                = event.target.closest('.wardBedBtn')
             const viewBillSummaryBtn        = event.target.closest('.viewBillSummaryBtn')
-            const viewer = 'nurse'
+            const viewer = 'nurse';
+            const billingDetailsBtn         = event.target.closest('.billingDetailsBtn')
             let [iteration, count]          = [0, 0]
     
             if (consultationDetailsBtn) {
@@ -563,6 +565,12 @@ window.addEventListener('DOMContentLoaded', function () {
                 getbillingTableByVisit(tableId, visitId, modal._element, false, viewBillSummaryBtn)
 
             }
+
+            if (billingDetailsBtn){
+                    const [visitId, conId] = [billingDetailsBtn.getAttribute('data-id'),  billingDetailsBtn.getAttribute('data-conid')]
+                    billingTable = getbillingTableByVisit('billingTable', visitId, billingModal._element, true)
+                    billingModal.show()
+                }
         })
     })
 

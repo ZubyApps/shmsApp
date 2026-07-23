@@ -337,7 +337,8 @@ class NurseService
                 'nursingCharts as scheduleCount',
                 'nursingCharts as doneCount' => fn($q) => $q->whereNotNull('time_done'),
                 'vitalSigns as vitalSignsCount',
-                'consultations as consultationsCount'
+                'consultations as consultationsCount',
+                'nursesReports as reportCount'
             ]);
 
         if (!empty($searchTerm)) {
@@ -402,7 +403,7 @@ class NurseService
                 'updatedBy'         => $visit->latestConsultation?->updatedBy?->username ?? 'Nurse...',
                 'conId'             => $visit->latestConsultation?->id,
                 'visitType'         => $visit->visit_type,
-                'vitalSigns'        => $visit->vitalSignsCount,
+                'vitalSigns'        => $visit->vitalSignsCount < 1 ? '' : $visit->vitalSignsCount,
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
                 'chartableMedications'  => $visit->prescriptionsCharted,
                 'otherChartables'       => $visit->otherChartables,
@@ -426,6 +427,7 @@ class NurseService
                 'closed'            => $visit->closed,
                 'closedBy'          => $visit->closedOpenedBy?->username,
                 'closedAt'          => $visit->closed_opened_at ? (new Carbon($visit->closed_opened_at))->format('d/m/y g:ia') : '',
+                'reportCount'       => $visit->reportCount < 1 ? '' : $visit->reportCount
             ];
          };
     }

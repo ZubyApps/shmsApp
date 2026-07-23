@@ -111,6 +111,15 @@ class RegisteredUserController extends Controller
         return $this->userService->markForLogout($request, $user);
     }
 
+    public function getStaffList(Request $request)
+    {
+        $users = $this->userService->getUsersList($request);
+
+        $userTransformer = $this->userService->userTransformer();
+
+        return array_map($userTransformer, (array)$users->getIterator());
+    }
+
     public function destroy(User $user)
     {
         return $user->destroy($user->id);

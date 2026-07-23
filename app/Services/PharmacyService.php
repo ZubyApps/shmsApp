@@ -602,7 +602,7 @@ class PharmacyService
                 'visit.sponsor.sponsorCategory:id,pay_class',
                 // Using a cleaner closure for the nested prescriptions
                 'prescriptions' => fn($q) => $q->pharmacyItems() // Using the scope!
-                    ->select('id', 'visit_id', 'consultation_id', 'created_at', 'resource_id', 'user_id', 'hms_bill_by', 'dispensed_by', 'approved_by', 'rejected_by', 'prescription', 'hms_bill', 'nhis_bill', 'hms_bill_date', 'approved', 'rejected', 'hmo_note', 'qty_dispensed', 'dispense_date', 'held', 'dispense_comment', 'note', 'qty_billed', 'paid')
+                    ->select('id', 'visit_id', 'consultation_id', 'created_at', 'resource_id', 'user_id', 'hms_bill_by', 'dispensed_by', 'approved_by', 'rejected_by', 'prescription', 'hms_bill', 'nhis_bill', 'hms_bill_date', 'approved', 'rejected', 'hmo_note', 'qty_dispensed', 'dispense_date', 'held', 'dispense_comment', 'note', 'qty_billed', 'paid', 'discontinued', 'discontinued_by', 'discountinued_at',)
                     ->with([
                         'resource'=> function($rq) use ($sponsorId) {
                             $rq->select('id', 'name', 'category', 'flag', 'stock_level', 'unit_description_id', 'marked_for_id', 'selling_price', 'reorder_level')
@@ -617,21 +617,10 @@ class PharmacyService
                         'approvedBy:id,username',
                         'rejectedBy:id,username',
                         'user:id,username',
+                        'discontinuedBy:id,username'
                     ])
                     ->orderBy('created_at', 'desc')
             ]);
-
-        // --- SEARCH LOGIC ---
-        // if (!empty($params->searchTerm)) {
-        //     $searchTerm = '%' . addcslashes($params->searchTerm, '%_') . '%';
-
-        //     $query->where(function (Builder $q) use ($searchTerm) {
-        //         $q->where('icd11_diagnosis', 'LIKE', $searchTerm)
-        //         ->orWhereRelation('user', 'username', 'LIKE', $searchTerm)
-        //         ->orWhereRelation('prescriptions.resource', 'name', 'LIKE', $searchTerm)
-        //         ->orWhereRelation('prescriptions.hmoBillBy', 'username', 'LIKE', $searchTerm);
-        //     });
-        // }
 
         return $query->orderBy($orderBy, $orderDir)
                     ->paginate($params->length, ['*'], 'page', $page);
@@ -738,6 +727,9 @@ class PharmacyService
                         'dispenseComment' => $prescription->dispense_comment ?? '',
                         'note'            => $prescription->note ?? '',
                         'status'          => $prescription->status ?? '',
+                        'discontinued'    => $prescription->discontinued,
+                        'discontinuedBy'  => $prescription->discontinuedBy?->username,
+                        'discontinuedAt'  => $prescription->discountinued_at ? (new Carbon($prescription->dispense_date))->format('d/m/y g:ia') : '',
                         // Cleaned up Payment Logic
                         'paid'            => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
                         'paidNhis'        => $sponsor->category_name === 'NHIS' && $prescription->paid > 0 && ($prescription->paid >= ($prescription->hms_bill / 10)),

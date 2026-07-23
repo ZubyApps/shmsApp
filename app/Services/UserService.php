@@ -185,7 +185,6 @@ class UserService
                             ->orderBy($orderBy, $orderDir)
                             ->get(['id', 'username']);
         }
-
     }
 
     public function getActiveStaffList(DataTableQueryParams $params)
@@ -237,5 +236,25 @@ class UserService
             'logout'    => new Carbon()
         ]);
         return;
+    }
+
+    public function getUsersList(Request $data)
+    {
+        if (! empty($data->username)){
+            return $this->user->select('id', 'username', 'phone_number')
+                        ->where('username', 'LIKE', '%' . addcslashes($data->username, '%_') . '%' )
+                        ->orderBy('username', 'asc')
+                        ->get();
+        }      
+    }
+
+    public function userTransformer()
+    {
+        return function (User $user){
+            return [
+                'id'            => $user->id,
+                'staff'         => $user->username . ' ' . $user->phone_number,
+            ];
+        };
     }
 }

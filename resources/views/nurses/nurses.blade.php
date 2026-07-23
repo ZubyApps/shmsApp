@@ -38,6 +38,7 @@
 @include('nurses.summaryOfLabourModal', ['title' => 'Save Labour Summary', 'isUpdate' => true, 'dept' => 'nurses', 'isView' => false, 'id' => 'saveLabourSummaryModal'])
 @include('nurses.summaryOfLabourModal', ['title' => 'View Labour Summary', 'isUpdate' => false, 'dept' => 'nurses', 'isView' => true, 'id' => 'viewLabourSummaryModal'])
 @include('nurses.partographModal', ['title' => 'Partograph', 'isDoctor' => true, 'id' => 'partographModal', ])
+@include('billing.billingModal', ['title' => 'Billing Details', 'isBilling' => false, 'id' => 'billingModal'])
 
 <div class="container mt-5">
     <input type="text" class="d-none" value="{{ $feverBenchMark }}" id="feverBenchMark">
@@ -262,7 +263,7 @@
                                 <th>Sponsor</th>
                                 <th>Rx count</th>
                                 <th>Other Rx</th>
-                                <th>Vitals</th>
+                                <th>Vitals/Reports</th>
                                 <th>Status</th>
                                 <th>Ward</th>
                                 <th>Actions</th>

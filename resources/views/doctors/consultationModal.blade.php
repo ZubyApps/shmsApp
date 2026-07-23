@@ -67,6 +67,23 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="mb-2 form-control nursesReportDiv">
+                                <x-form-span class="fs-5">Nurses Report</x-form-span>
+                                <div class="row overflow-auto my-3">
+                                    <table id="nursesReportTable{{ $isSpecialist ? 'Specialist' : 'New' }}" class="table table-sm nursesReportTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Shift</th>
+                                                <th>Report</th>
+                                                <th>Written By</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
                             <div class="consultationParentDiv">
                                 <div class="mb-2 form-control" id="consultationDiv" {!! $isSpecialist ? 'data-div="specialist"' : 'data-div="new"' !!}>
                                     <x-form-label>Consultation</x-form-label>

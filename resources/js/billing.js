@@ -282,7 +282,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('#outPatientsVisitTable, #inPatientsVisitTable, #ancPatientsVisitTable, #outstandingBillsTable, #openVisitsTable, #waitingTable').forEach(table => {
         table.addEventListener('click', function (event) {
-            const billingDetailsBtn = event.target.closest('.consultationDetailsBtn')
+            const billingDetailsBtn = event.target.closest('.consultationDetailsBtn, .billingDetailsBtn')
             const patientsBillBtn   = event.target.closest('.patientsBillBtn')
             const medicalReportBtn  = event.target.closest('.medicalReportBtn')
             // const closeVisitBtn     = event.target.closest('.closeVisitBtn')

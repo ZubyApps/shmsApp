@@ -46,6 +46,7 @@ Class NursesReportService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
+
         $query      = $this->nursesReport->select('id', 'user_id', 'visit_id', 'created_at', 'shift', 'report',)
                         ->with([
                             'visit:id,closed',

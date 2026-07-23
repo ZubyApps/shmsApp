@@ -4,6 +4,7 @@
 @vite(['resources/js/communications.js'])
 
 @include('communicationservices.buyUnitsModal', ['title' => 'Place order for Units', 'id' => 'buyUnitsModal'])
+@include('communicationservices.sendSmsModal', ['title' => 'Send SMS', 'id' => 'sendSmsModal'])
 
     <div class="container mt-5 bg-white">
         <div>
@@ -30,12 +31,12 @@
                 <div class="tab-pane fade show active" id="nav-listOfSentSms" role="tabpanel"
                     aria-labelledby="nav-listOfSentSms-tab" tabindex="0">
                     <div class="py-4">
-                        {{-- <div class="text-start py-3">
-                            <button type="button" id="sendSmsBtn" class="btn btn-primary">
+                        <div class="text-start py-3">
+                            <button type="button" id="openSendSmsBtn" class="btn btn-primary">
                                 <i class="bi bi-send"></i>
                                 Send SMS
                             </button>
-                        </div> --}}
+                        </div>
                         <table id="listOfSentSmsTable" class="table table-sm">
                             <thead>
                                 <tr>

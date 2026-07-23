@@ -84,6 +84,7 @@ class DoctorService
             },
             'vitalSigns as vitalSignsCount',
             'consultations as consultationsCount',
+            'nursesReports as reportCount'
         ])
         ->whereNotNull('consulted');
     }
@@ -215,7 +216,7 @@ class DoctorService
                 'flagReason'        => $visit->patient->flag_reason,
                 'flaggedBy'         => $visit->patient->flaggedBy?->username,
                 'flaggedAt'         => $visit->patient->flagged_at ? (new Carbon($visit->patient->flagged_at))->format('d/m/y g:ia') : '',
-                'vitalSigns'        => $visit->vitalSignsCount,
+                'vitalSigns'        => $visit->vitalSignsCount < 1 ? '' : $visit->vitalSignsCount,
                 'ancVitalSigns'     => $visit->antenatalRegisteration?->ancVitalSigns->count(),
                 'admissionStatus'   => $visit->admission_status,
                 'ward'              => $visit->ward ? $this->helperService->displayWard($visit) : '',
@@ -245,6 +246,7 @@ class DoctorService
                 'closed'            => $visit->closed,
                 'closedBy'          => $visit->closedOpenedBy?->username,
                 'closedAt'          => $visit->closed_opened_at ? (new Carbon($visit->closed_opened_at))->format('d/m/y g:ia') : '',
+                'reportCount'       => $visit->reportCount < 1 ? '' : $visit->reportCount
             ];
         };
     }

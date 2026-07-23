@@ -26,7 +26,7 @@
                             </table>
                         </X-form-div>
                     </div>
-                    <div class="mb-2 form-control">
+                    <div class="mb-2 form-control {{ $isBilling ? '' : 'd-none' }}">
                         <x-form-label>Payment Details</x-form-label>
                         <X-form-div class="mt-2">
                             <table id="paymentTable" class="table align-middle">

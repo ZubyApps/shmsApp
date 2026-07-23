@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { admissionStatus, admissionStatusX, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, labourRecordDelay, prescriptionParser, prescriptionStatusContorller, preSearch, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, visitType, wardState } from "../helpers";
+import { admissionStatus, admissionStatusX, detailsBtn, detailsBtn1, detailsBtn2, displayPaystatus, flagIndicator, flagPatientReason, flagSponsorReason, getMinsDiff, getOrdinal, histroyBtn, labourRecordDelay, prescriptionParser, prescriptionStatusContorller, preSearch, searchDecider, searchMin, searchPlaceholderText, sponsorAndPayPercent, visitType, vitalsAndNursingReport, wardState } from "../helpers";
 
 const getWaitingTable = (tableId) => {
     const waitingTable = new DataTable(tableId, {
@@ -142,12 +142,13 @@ const getPatientsVisitsByFilterTable = (tableId, filter) => {
                                     </button>
                                 </div>`
                             } else {
-                                return `
-                                <div class="d-flex flex-">
-                                    <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test px-2" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
-                                    <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
-                                    </button>
-                                </div>`
+                                // return `
+                                // <div class="d-flex flex-">
+                                //     <button class=" btn btn-outline-primary vitalSignsBtn tooltip-test px-2" title="Add Vitals Signs" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                                //     <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
+                                //     </button>
+                                // </div>`
+                                return vitalsAndNursingReport(row);
                             }
                     }
                 }

@@ -33,9 +33,6 @@ class WalkInController extends Controller
     {
         return view('walkins.walkins', [
             'payMethods'    => $this->payMethodService->list(collection:true),
-            // 'categories' => $this->sponsorCategoryController->showAll('id', 'name'),
-            // 'doctors' => $this->userService->listStaff(designation: 'Doctor'),
-            // 'feverBenchMark' => Cache::get('feverBenchmark', 37.3)
             ]
         );
     }

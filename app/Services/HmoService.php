@@ -31,6 +31,7 @@ class HmoService
         private readonly Sponsor $sponsor,
         private readonly PaymentService $paymentService,
         private readonly HelperService $helperService,
+        private readonly TotalsService $totalsService
         )
     {
         
@@ -619,11 +620,11 @@ class HmoService
                 'prescriptions.note', 
                 'prescriptions.hms_bill', 
                 'prescriptions.hms_bill_date', 
-                'prescriptions.hmo_bill', 
+                // 'prescriptions.hmo_bill', 
                 'prescriptions.approved', 
                 'prescriptions.rejected', 
                 'prescriptions.qty_dispensed', 
-                'prescriptions.hmo_bill_by', 
+                // 'prescriptions.hmo_bill_by', 
                 'prescriptions.approved_by', 
                 'prescriptions.rejected_by', 
                 'prescriptions.created_at', // Simplified for clarity, specify columns if preferred
@@ -643,7 +644,7 @@ class HmoService
                 'visit.sponsor.sponsorCategory:id,pay_class',
                 'resource:id,flag,name,selling_price',
                 'consultation:id,icd11_diagnosis,provisional_diagnosis,assessment',
-                'hmoBillBy:id,username',
+                // 'hmoBillBy:id,username',
                 'approvedBy:id,username',
                 'rejectedBy:id,username',
                 'user:id,username',
@@ -707,15 +708,15 @@ class HmoService
                 'hmsBill'           => $prescription->hms_bill ?? '',
                 'nhisBill'          => $prescription->nhis_bill ?? '',
                 'hmsBillDate'       => $prescription->hms_bill_date ? (new Carbon($prescription->hms_bill_date))->format('d/m/y g:ia') : '',
-                'hmoBill'           => $prescription->hmo_bill ?? '',
-                'hmoBillBy'         => $prescription->hmoBillBy?->username,
-                'paid'              => $prescription->paid ?? '',
+                // 'hmoBill'           => $prescription->hmo_bill ?? '',
+                // 'hmoBillBy'         => $prescription->hmoBillBy?->username,
+                // 'paid'              => $prescription->paid ?? '',
                 'approved'          => $prescription->approved,
                 'approvedBy'        => $prescription->approvedBy?->username,
                 'rejected'          => $prescription->rejected,
                 'rejectedBy'        => $prescription->rejectedBy?->username,
                 'dispensed'         => $prescription->qty_dispensed,
-                'hmoDoneBy'         => $prescription->visit?->hmoDoneBy?->username,
+                // 'hmoDoneBy'         => $prescription->visit?->hmoDoneBy?->username,
                 'flagSponsor'       => $prescription->visit?->sponsor?->flag,
                 'flagPatient'       => $prescription->visit?->patient?->flag,
                 'flagReason'        => $prescription->visit?->patient?->flag_reason,
@@ -1054,12 +1055,10 @@ class HmoService
     {
         $orderBy    = 'created_at';
         $orderDir   =  'desc';
-        $query      = $this->prescription->select('id', 'visit_id', 'resource_id', 'user_id', 'consultation_id', 'prescription', 'qty_billed', 'note', 'hms_bill', 'hmo_bill', 'approved', 'rejected', 'hmo_bill_by', 'approved_by', 'rejected_by', 'created_at', 'paid', 'nhis_bill')->with([ 
+        $query      = $this->prescription->select('id', 'visit_id', 'resource_id', 'user_id', 'consultation_id', 'prescription', 'qty_billed', 'note', 'hms_bill', 'hmo_bill', 'approved', 'rejected', 'hmo_bill_by', 'created_at', 'paid', 'nhis_bill')->with([ 
             'resource:id,flag,name,selling_price',
             'consultation:id,icd11_diagnosis,provisional_diagnosis,assessment',
             'hmoBillBy:id,username',
-            'approvedBy:id,username',
-            'rejectedBy:id,username',
             'user:id,username',
             'visit' => function ($query) {
                 $query->select('id', 'sponsor_id')
@@ -1101,6 +1100,52 @@ class HmoService
         return $query->where('visit_id', $data->visitId)
                 ->orderBy($orderBy, $orderDir)
                 ->paginate($params->length, '*', '', (($params->length + $params->start)/$params->length));
+    }
+
+    public function getVisitsPrescriptionsTransformer(): callable
+    {
+       return  function (Prescription $prescription) {
+        $sponsorCategory = $prescription->visit?->sponsor->category_name;
+        $flag = $prescription->resource->flag;
+            return [
+                'id'                => $prescription->id,
+                // 'patient'           => $prescription->visit?->patient?->patientId(),
+                // 'age'               => $prescription->visit?->patient?->age(),
+                // 'sponsor'           => $prescription->visit?->sponsor?->name,
+                'sponsorCategory'   => $sponsorCategory,
+                'sponsorCategoryClass'   => $prescription->visit?->sponsor?->sponsorCategory?->pay_class,
+                'doctor'            => $prescription->user->username,
+                'prescribed'        => (new Carbon($prescription->created_at))->format('d/m/y g:ia'),
+                'diagnosis'         => $prescription->consultation?->icd11_diagnosis ?? 
+                                       $prescription->consultation?->provisional_diagnosis ?? 
+                                       $prescription->consultation?->assessment, 
+                'resource'          => $prescription->resource->name,
+                'resourcePrice'     => $prescription->resource->selling_price,
+                // 'resourceFlagged'   => str_contains($flag, $sponsorCategory ?? '') ? true : false,
+                'prescription'      => $prescription->prescription,
+                'quantity'          => $prescription->qty_billed,
+                // 'totalQuantity'     => $prescription->total_qty_resource_billed,//totalQtyResourceBilled,//resource->prescriptions->where('visit_id', $prescription->visit->id)->sum('qty_billed'),
+                'note'              => $prescription->note,
+                'hmsBill'           => $prescription->hms_bill ?? '',
+                'nhisBill'          => $prescription->nhis_bill ?? '',
+                // 'hmsBillDate'       => $prescription->hms_bill_date ? (new Carbon($prescription->hms_bill_date))->format('d/m/y g:ia') : '',
+                'hmoBill'           => $prescription->hmo_bill ?? '',
+                'hmoBillBy'         => $prescription->hmoBillBy?->username,
+                'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
+                'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->nhis_bill && $sponsorCategory == 'NHIS',
+                'approved'          => $prescription->approved,
+                // 'approvedBy'        => $prescription->approvedBy?->username,
+                'rejected'          => $prescription->rejected,
+                // 'rejectedBy'        => $prescription->rejectedBy?->username,
+                // 'dispensed'         => $prescription->qty_dispensed,
+                'hmoDoneBy'         => $prescription->visit?->hmoDoneBy?->username,
+                // 'flagSponsor'       => $prescription->visit?->sponsor?->flag,
+                // 'flagPatient'       => $prescription->visit?->patient?->flag,
+                // 'flagReason'        => $prescription->visit?->patient?->flag_reason,
+                // 'flaggedBy'         => $prescription->visit?->patient?->flaggedBy?->username,
+                // 'flaggedAt'         => $prescription->visit?->patient?->flagged_at ? (new Carbon($prescription->visit?->patient?->flagged_at))->format('d/m/y g:ia') : '',
+            ];
+         };
     }
 
     public function saveBill(Request $data, Prescription $prescription, User $user): Prescription
@@ -1765,9 +1810,11 @@ class HmoService
                     ->with(['flaggedBy:id,username']);
                 }, 
             'prescriptions' => function ($query) {
-                $query->select('id', 'visit_id', 'resource_id', 'user_id', 'consultation_id', 'prescription', 'qty_billed', 'note', 'hms_bill', 'nhis_bill', 'hmo_bill', 'approved', 'rejected', 'capitation', 'approved_by', 'rejected_by', 'paid')
+                $query->select('id', 'visit_id', 'resource_id', 'user_id', 'consultation_id', 'prescription', 'qty_billed', 'note', 'hms_bill', 'nhis_bill', 'hmo_bill', 'approved', 'rejected', 'capitation', 'approved_by', 'rejected_by', 'paid', 'created_at')
                 ->with([
-                    'resource:id,name',
+                    'resource' => function ($q) {
+                        $q->select('id', 'unit_description_id', 'name')->with(['unitDescription:id,short_name']);
+                    },
                     'approvedBy:id,username',
                     'rejectedBy:id,username',
                 ]);
@@ -1865,7 +1912,7 @@ class HmoService
                     'item'              => $prescription->resource->name,
                     'prescription'      => $prescription->prescription ?? '',
                     'qtyBilled'         => $prescription->qty_billed,
-                    // 'unit'              => $prescription->resource->unitDescription?->short_name,
+                    'unit'              => $prescription->resource->unitDescription?->short_name,
                     'hmoBill'           => $prescription->hmo_bill ?? '',
                     'hmsBill'           => $prescription->hms_bill ?? '',
                     'nhisBill'          => $prescription->nhis_bill ?? '',
@@ -1876,8 +1923,9 @@ class HmoService
                     'statusBy'          => $prescription->approvedBy?->username ?? $prescription->rejectedBy?->username ?? '',
                     'note'              => $prescription->note ?? '',
                     'status'            => $prescription->status ?? '',
-                    // 'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->nhis_bill && $visit->sponsor->category_name == 'NHIS',
-                    'paid'              => $prescription->paid ?? '',
+                    'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->nhis_bill && $visit->sponsor->category_name == 'NHIS',
+                    'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
+                    'paid1'             => $prescription->paid ?? ''
                 ]),
                 'flagPatient'       => $visit->patient->flag,
                 'flagReason'        => $visit->patient?->flag_reason,
@@ -1955,7 +2003,7 @@ class HmoService
 
         // 1. Get the necessary Visit ID outside the transaction for context.
         // This assumes the prescription's visit_id is already set.
-        $visitId = $prescription->visit_id;
+        $visit = $prescription->visit;
 
         // Prepare update data
         $paidAmount = (float)($data->amountPaid ?? 0);
@@ -1964,7 +2012,7 @@ class HmoService
 
         // --- STEP 2: DATABASE TRANSACTION (Atomic Writes) ---
 
-        return DB::transaction(function () use($prescription, $visitId, $paidAmount, $userId, $now) {
+        return DB::transaction(function () use($prescription, $visit, $paidAmount, $userId, $now) {
 
             // 1. Update the Prescription (1 Query)
             $prescription->update([
@@ -1979,17 +2027,18 @@ class HmoService
             // b) Updates the 'total_paid' column on the Visit table with the new sum.
             
             // Ensure the table name 'visits' is correct for your setup
-            DB::table('visits')
-                ->where('id', $visitId)
-                ->update([
-                    'total_paid' => DB::raw("(SELECT SUM(paid) FROM prescriptions WHERE visit_id = {$visitId})"),
-                ]);
+            // DB::table('visits')
+            //     ->where('id', $visitId)
+            //     ->update([
+            //         'total_paid' => DB::raw("(SELECT SUM(paid) FROM prescriptions WHERE visit_id = {$visitId})"),
+            //     ]);
                 
             // NOTE: The second argument [$visitId] binds the value to the placeholder (?)
             // inside the raw SQL subquery.
 
             // You could also execute $visit->totalPaidPrescriptions() here if it's an efficient raw query.
             // If totalPaidPrescriptions() is just an aggregate query, this raw DB::update is the most efficient way to run it.
+            $this->totalsService->syncVisitTotals($visit);
 
             return $prescription;
         });
@@ -2010,7 +2059,8 @@ class HmoService
             $this->paymentService->applyPaymentsWaterfall($visit, (float)$data->bulkPayment, $dto);
                 
 
-            $visit->update(['total_paid' => $visit->totalPaidPrescriptions()]);
+            // $visit->update(['total_paid' => $visit->totalPaidPrescriptions()]);
+            $this->totalsService->syncVisitTotals($visit);
 
             return $visit;
         });

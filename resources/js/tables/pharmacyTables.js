@@ -110,7 +110,11 @@ const getPrescriptionsByConsultation = (tableId, visitId) => {
                                                 <td class="text-secondary">${p.prescribed}</td>                
                                                 <td class="text-secondary">${p.prescribedBy}</td>                
                                                 <td class="text-${p.rejected ? 'danger' : 'primary'} fw-semibold">${`<span class="${p.blink ? 'colour-change2' : ''} resourceSpan">${p.item}</span>` +' '+ displayPaystatus(p, credit, NHIS)}</td>                
-                                                <td class="text-secondary">${p.prescription}</td>                
+                                                <td class="text-secondary">
+                                                    <span class="text-decoration-underline btn position-relative">
+                                                        ${p.prescription}  ${p.discontinued ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">discontinued by ${p.discontinuedBy + ' ' + p.discontinuedAt}</span>` : ''}
+                                                    </span>
+                                                </td>                
                                                 <td class="text-secondary">${p.note}</td>
                                                 ${credit || NHIS ? `<td class="text-primary fst-italic">${p.hmoNote ? p.statusBy+'-'+p.hmoNote + pendingIndicator(p): p.statusBy}</td>` : ''}
                                                 <td class="text-secondary"> 

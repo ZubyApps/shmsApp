@@ -95,6 +95,23 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="mb-2 form-control nursesReportDiv {{ $isAnc ? 'd-none' : '' }}">
+                                <x-form-span class="fs-5 position-relative">Nurses Report <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">New</span></x-form-span>
+                                <div class="row overflow-auto my-3">
+                                    <table id="nursesReportTable" class="table table-sm nursesReportTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Shift</th>
+                                                <th>Report</th>
+                                                <th>Written By</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                         <div id="consultationReviewDiv" data-bs-spy="scroll" tabindex="0" data-bs-smooth-scroll="true">
                         </div>

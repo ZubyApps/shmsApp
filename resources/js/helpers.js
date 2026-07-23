@@ -350,7 +350,7 @@ const detailsBtn2 = (row) => {
 }
 
 const prescriptionStatusContorller = (row, tableId) => {
-    return `<span class="text-decoration-underline btn tootip-test ${row.doseComplete ? '' : 'discontinueBtn'} position-relative" title="${row.doseComplete ? 'completed' : row.discontinued ? `discontinued by ${row.discontinuedBy + ' ' + row.discontinuedAt} ` : 'discontinue'}" data-id="${row.id}" data-table="${tableId}" data-discontinue=${row.discontinued}>
+    return `<span class="text-decoration-underline btn tootip-test ${row.doseComplete ? '' : 'discontinueBtn'} position-relative" title="${row.doseComplete ? 'completed' : row.discontinued ? `discontinued by ${row.discontinuedBy + ' ' + row.discontinuedAt}` : 'discontinue'}" data-id="${row.id}" data-table="${tableId}" data-discontinue=${row.discontinued}>
                 ${row.prescription == '' ? row.note ?? '' : row.prescription}  ${row.held ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">${'held - '+ row.held + ' by ' + row.heldBy}</span>` : ''}
             </span>`      
 }
@@ -437,7 +437,7 @@ const sponsorAndPayPercent = (row) => {
         payPercent = row.payPercent
     }
     return payPercent !== null ? 
-        `<div class="progress" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"     style="height: 40px">
+        `<div class="progress billingDetailsBtn" role="progressbar" aria-label="sponsor bill" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="height: 40px" data-id="${ row.id }" data-conid="${ row.conId }" data-patientId="${ row.patient }" data-visitType="${ row.visitType }">
                 <div class="progress-bar text-dark fs-6 px-1 overflow-visible bg-${
                     payPercent <= 50 ? 'danger' :
                     payPercent >= 50 && payPercent < 90 ? 'warning' : 
@@ -1438,4 +1438,18 @@ const getSpinners = (num) => {
     return spinners;
 
 }
-export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider, dynamicDebounce, visitType, populateModal, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, getPartographDivData, getLabourInProgressDetails, getTimeToNextObservation, labourRecordDelay, displayItemsList2, ucFirst, closedOpened, pendingIndicator, prescriptionParser, getSpinners}
+
+const vitalsAndNursingReport = (row) => {
+    const admissionStatus = ['Inpatient', 'Observation'];
+    return `
+            <div class="d-flex flex-">
+                <button class="btn btn-outline-primary vitalSignsBtn" title="View VitalSigns" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                    <i class="bi bi-check-circle-fill">${row.vitalSigns}</i>
+                </button>
+                <button class="btn btn-outline-primary reportsListBtn ms-1 ${admissionStatus.includes(row.admissionStatus) ? '': 'd-none'}" title="Nurses Report" data-id="${ row.id }" data-patient="${ row.patient }" data-sponsor="${ row.sponsor }" data-sponsorcat="${row.sponsorCategory}">
+                    <i class="bi bi-r-circle-fill">${row.reportCount}</i>
+                </button>
+            </div>`
+}
+
+export {clearDivValues, clearItemsList, stringToRoman, getOrdinal, getDivData, removeAttributeLoop, toggleAttributeLoop, querySelectAllTags, textareaHeightAdjustment, dispatchEvent, handleValidationErrors, clearValidationErrors, getSelctedText, displayList, getDatalistOptionId, openModals, doctorsModalClosingTasks, addDays, getWeeksDiff, getWeeksModulus, loadingSpinners, detailsBtn, reviewBtn, sponsorAndPayPercent, displayPaystatus, bmiCalculator, lmpCalculator, filterPatients, removeDisabled, resetFocusEndofLine, getPatientSponsorDatalistOptionId, admissionStatus, dischargeColour, populateConsultationModal, populateDischargeModal, populatePatientSponsor, populateVitalsignsModal, lmpCurrentCalculator, histroyBtn, displayConsultations, displayVisits, displayItemsList, closeReviewButtons, prescriptionStatusContorller, getMinsDiff, openMedicalReportModal, displayMedicalReportModal, prescriptionOnLatestConsultation, detailsBtn1, admissionStatusX, populateWardAndBedModal, getSelectedResourceValues, populateAncReviewDiv, getDatalistOptionStock, detailsBtn2, getShiftPerformance, getTimeToEndOfShift, selectReminderOptions, deferredCondition, flagSponsorReason, flagIndicator, flagPatientReason, populateAppointmentModal, displayWardList, clearSelectList, wardState, searchMin, searchPlaceholderText, debounce, getExportOptions, preSearch, searchDecider, dynamicDebounce, visitType, populateModal, exclusiveCheckboxer, setAttributesId, populateLabourModals, savePatographValues, getPartographDivData, getLabourInProgressDetails, getTimeToNextObservation, labourRecordDelay, displayItemsList2, ucFirst, closedOpened, pendingIndicator, prescriptionParser, getSpinners, vitalsAndNursingReport}
