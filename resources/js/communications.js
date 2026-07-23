@@ -348,7 +348,7 @@ window.addEventListener('DOMContentLoaded', function () {
             }
            
             sendSmsBtn.setAttribute('disabled', 'disabled')
-            http.post(`/customsms/${url}/`, {...data}, {"html": sendSmsModal._element})
+            http.post(`/customsms/${url}`, {...data}, {"html": sendSmsModal._element})
             .then((response) => {
                 if (response.status >= 200 || response.status <= 300){
                         sendSmsModal.hide()
