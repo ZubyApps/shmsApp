@@ -1134,6 +1134,7 @@ class HmoService
                 'paid'              => $prescription->paid > 0 && $prescription->paid >= $prescription->hms_bill,
                 'paidNhis'          => $prescription->paid > 0 && $prescription->paid >= $prescription->nhis_bill && $sponsorCategory == 'NHIS',
                 'approved'          => $prescription->approved,
+                'paidHms'           => $prescription->paid,
                 // 'approvedBy'        => $prescription->approvedBy?->username,
                 'rejected'          => $prescription->rejected,
                 // 'rejectedBy'        => $prescription->rejectedBy?->username,
