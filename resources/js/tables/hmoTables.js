@@ -291,7 +291,7 @@ const getVisitPrescriptionsTable = (tableId, visitId, modal) => {
                 const sumCol8 = api.column(8, { page: 'current' }).data().sum();
                 const sumCol9 = api.column(9, { page: 'current' }).data().sum();
                 const sumCol10 = api.column(10, { page: 'current' }).data().sum();
-                const sumPaidHms = api.data({ page: 'current' }).pluck('paid').sum();
+                const sumPaidHms = api.data({ page: 'current' }).pluck('paidHms').sum();
 
                 $( 'tr:eq(0) td:eq(8)', api.table().footer() ).html(account.format(sumCol8));
                 $( 'tr:eq(0) td:eq(9)', api.table().footer() ).html(account.format(sumCol9));
